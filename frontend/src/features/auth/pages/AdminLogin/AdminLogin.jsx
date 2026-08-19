@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
+import {toast} from "react-toastify";
 
 import useAuth from "../../../../shared/hooks/useAuth";
 
@@ -67,6 +68,10 @@ function AdminLogin() {
                 "Admin Login Failed"
             );
 
+            toast.error(err.response?.data?.message);
+
+        } finally {
+            setLoading(false);
         }
 
     };

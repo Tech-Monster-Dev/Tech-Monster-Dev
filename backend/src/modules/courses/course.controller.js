@@ -16,7 +16,7 @@ import streamifier from "streamifier";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const coursesDir = path.resolve(__dirname, "../../data/course");
+const coursesDir = path.resolve(__dirname, "../../../data/course");
 const TASK_DEADLINE_MS = 48 * 60 * 60 * 1000;
 
 const normalizeSlug = (slug) =>

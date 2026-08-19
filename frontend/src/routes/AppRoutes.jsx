@@ -183,19 +183,21 @@ function AppRoutes() {
 
                     <Route path='tasks' element={<TaskApproval />} />
                     <Route
-
                         path="tasks/:id"
-
                         element={<TaskApprovalDetails />}
-
                     />
                     <Route path='reports' element={<Reports />} />
                     <Route path='certificates' element={<CertificateApproval />} />
                     <Route path='settings' element={<StudentSetting />} />
+                    <Route
+                        path="notification"
+                        element={<Notification />}
+                    />
+                    <Route
+                        path="message"
+                        element={<Message />}
+                    />
                 </Route>
-
-
-
 
                 {/* 404 Fallback */}
                 <Route path="*" element={<NotFound />} />
