@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import AuthContext from "./AuthContext";
 import * as authService from "../../../services/api/authService";
 import { tokenStorage } from "../../../services/auth/tokenStorage";
@@ -67,52 +67,6 @@ function AuthProvider({ children }) {
         }
 
     }, []);
-
-
-    useEffect(() => {
-
-        if (!user?._id || !token) {
-            return;
-        }
-
-
-        const handleConnect = () => {
-
-            socket.emit(
-                "join",
-                String(user._id)
-            );
-
-        };
-
-
-        socket.on(
-            "connect",
-            handleConnect
-        );
-
-
-        if (!socket.connected) {
-
-            socket.connect();
-
-        } else {
-
-            handleConnect();
-
-        }
-
-
-        return () => {
-
-            socket.off(
-                "connect",
-                handleConnect
-            );
-
-        };
-
-    }, [user?._id, token]);
 
 
     return (

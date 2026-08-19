@@ -9,9 +9,7 @@ const allowedOrigins = [
     "http://localhost:5199",
     "http://localhost:3000",
 
-    "https://tech-monster.vercel.app",
-
-    "https://tech-monster-5zqd74uad-deb24.vercel.app"
+    "https://tech-monster-frontend.vercel.app"
 ];
 
 
@@ -41,14 +39,22 @@ export const initSocket = (server) => {
 
     io.on("connection", (socket) => {
 
-
-        // =====================================
-        // JOIN USER
-        // =====================================
+        console.log(
+            "🟢 SOCKET CONNECTED:",
+            socket.id
+        );
 
         socket.on("join", (userId) => {
 
+            console.log(
+                "👤 SOCKET JOIN REQUEST:",
+                userId
+            );
+
             if (!userId) {
+                console.log(
+                    "❌ Join rejected: no userId"
+                );
                 return;
             }
 
@@ -59,6 +65,19 @@ export const initSocket = (server) => {
                 socket.id
             );
 
+            console.log(
+                "✅ USER REGISTERED:",
+                id,
+                "=>",
+                socket.id
+            );
+
+            console.log(
+                "👥 ONLINE USERS:",
+                Array.from(
+                    onlineUsers.entries()
+                )
+            );
 
             io.emit(
                 "onlineUsers",
@@ -66,111 +85,37 @@ export const initSocket = (server) => {
                     onlineUsers.keys()
                 )
             );
-
         });
 
+        socket.on("disconnect", () => {
 
-        // =====================================
-        // TYPING
-        // =====================================
+            console.log(
+                "🔴 SOCKET DISCONNECTED:",
+                socket.id
+            );
 
-        socket.on(
-            "typing",
-            ({ receiver }) => {
+            for (
+                const [
+                    userId,
+                    socketId
+                ] of onlineUsers.entries()
+            ) {
 
-                if (!receiver) {
-                    return;
-                }
+                if (socketId === socket.id) {
 
-                const receiverSocketId =
-                    onlineUsers.get(
-                        String(receiver)
+                    onlineUsers.delete(
+                        userId
                     );
 
-                if (receiverSocketId) {
-
-                    io.to(receiverSocketId)
-                        .emit("typing");
-
-                }
-
-            }
-        );
-
-
-        // =====================================
-        // STOP TYPING
-        // =====================================
-
-        socket.on(
-            "stopTyping",
-            ({ receiver }) => {
-
-                if (!receiver) {
-                    return;
-                }
-
-                const receiverSocketId =
-                    onlineUsers.get(
-                        String(receiver)
+                    console.log(
+                        "❌ USER REMOVED:",
+                        userId
                     );
 
-                if (receiverSocketId) {
-
-                    io.to(receiverSocketId)
-                        .emit("stopTyping");
-
+                    break;
                 }
-
             }
-        );
-
-
-        // =====================================
-        // DISCONNECT
-        // =====================================
-
-        socket.on(
-            "disconnect",
-            () => {
-
-                console.log(
-                    "🔴 Socket disconnected:",
-                    socket.id
-                );
-
-                for (
-                    const [
-                        userId,
-                        socketId
-                    ]
-                    of onlineUsers.entries()
-                ) {
-
-                    if (
-                        socketId === socket.id
-                    ) {
-
-                        onlineUsers.delete(
-                            userId
-                        );
-
-                        break;
-
-                    }
-
-                }
-
-
-                io.emit(
-                    "onlineUsers",
-                    Array.from(
-                        onlineUsers.keys()
-                    )
-                );
-
-            }
-        );
+        });
 
     });
 
@@ -215,25 +160,57 @@ export const emitToUser = (
 ) => {
 
     if (!io) {
+
+        console.log(
+            "❌ Socket.IO is not initialized"
+        );
+
         return;
     }
 
+    const normalizedUserId =
+        String(userId);
+
     const socketId =
         onlineUsers.get(
-            String(userId)
+            normalizedUserId
         );
 
-    if (socketId) {
+    console.log(
+        "📡 EMIT TO USER:",
+        {
+            userId: normalizedUserId,
+            socketId,
+            event
+        }
+    );
 
-        io.to(socketId).emit(
-            event,
-            payload
+    if (!socketId) {
+
+        console.log(
+            "❌ USER NOT ONLINE:",
+            normalizedUserId
         );
 
         console.log(
-            `🔔 ${event} sent to user ${userId}`
+            "👥 CURRENT ONLINE USERS:",
+            Array.from(
+                onlineUsers.entries()
+            )
         );
 
+        return;
     }
 
+    io.to(socketId).emit(
+        event,
+        payload
+    );
+
+    console.log(
+        "✅ NOTIFICATION SENT:",
+        event,
+        "=>",
+        normalizedUserId
+    );
 };

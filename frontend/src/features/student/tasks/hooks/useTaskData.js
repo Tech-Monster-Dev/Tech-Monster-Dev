@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import api from "../../../../services/api/axios";
 import { getProfile } from "../../../../services/api/profileService";
 import { getMyCourseSubmissions } from "../../../../services/api/submissionService";
+import useAuth from "../../../../shared/hooks/useAuth";
 
 import {
     loadTaskState,
@@ -25,6 +26,8 @@ const useTaskData = ({
     routeCourseSlug,
     slug,
 }) => {
+
+    const {user} = useAuth();
 
     const getApiResource = (type) => {
         return type === "internship"
@@ -341,10 +344,10 @@ const useTaskData = ({
                 let stored = {};
 
                 if (TESTING_RESET_ON_REFRESH) {
-                    clearTaskState(targetSlug);
+                    clearTaskState(user?._id || user?.id, targetSlug);
                     stored = {};
                 } else {
-                    stored = loadTaskState(targetSlug);
+                    stored = loadTaskState(user?._id || user?.id,targetSlug);
                 }
 
                 setTaskStatusMap(stored);
