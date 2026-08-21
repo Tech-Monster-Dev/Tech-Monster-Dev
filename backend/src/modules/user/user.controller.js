@@ -5,7 +5,7 @@ import User from "./models/User.js";
 import asyncHandler from "../../core/http/asyncHandler.js";
 import AppError from "../../core/errors/AppError.js";
 
-export const getCurrentUser = asyncHandler( async (req, res) => {
+export const getCurrentUser = asyncHandler(async (req, res) => {
 
     const user = req.user;
 
@@ -18,22 +18,33 @@ export const getCurrentUser = asyncHandler( async (req, res) => {
     }
 
     return res.status(200).json({
-      success: true,
-      message: "User fetched successfully",
-      user: user,
-    });
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
+        success: true,
+        message: "User fetched successfully",
+        user: user,
     });
 
 });
 
 
-export const updateProfile = asyncHandler( async (req, res) => {
+export const updateProfile = asyncHandler(async (req, res) => {
 
-        const {
+    const {
+        firstName,
+        lastName,
+        phone,
+        bio,
+        college,
+        skills,
+        location,
+        github,
+        linkedin
+    } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+
+        req.user._id,
+
+        {
             firstName,
             lastName,
             phone,
@@ -43,140 +54,116 @@ export const updateProfile = asyncHandler( async (req, res) => {
             location,
             github,
             linkedin
-        } = req.body;
+        },
 
-        const user = await User.findByIdAndUpdate(
+        {
+            new: true,
+            runValidators: true
+        }
 
-            req.user._id,
+    ).select("-password");
 
-            {
-                firstName,
-                lastName,
-                phone,
-                bio,
-                college,
-                skills,
-                location,
-                github,
-                linkedin
-            },
+    return res.status(200).json({
 
-            {
-                new: true,
-                runValidators: true
-            }
+        success: true,
 
-        ).select("-password");
+        message: "Profile updated successfully",
 
-        return res.status(200).json({
+        user
 
-            success: true,
+    });
 
-            message: "Profile updated successfully",
+    return res.status(500).json({
 
-            user
+        success: false,
 
-        });
+        message: "Internal Server Error"
 
-        return res.status(500).json({
-
-            success: false,
-
-            message: "Internal Server Error"
-
-        });
+    });
 });
 
 
-export const changePassword = asyncHandler( async (req, res) => {
+export const changePassword = asyncHandler(async (req, res) => {
 
-        const {
+    const {
 
-            currentPassword,
+        currentPassword,
 
-            newPassword
+        newPassword
 
-        } = req.body;
+    } = req.body;
 
-        if (!currentPassword || !newPassword) {
+    if (!currentPassword || !newPassword) {
 
-            throw new AppError(
-                "All fields are required",
-                400
-            )
+        throw new AppError(
+            "All fields are required",
+            400
+        )
 
-        }
+    }
 
-        const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id);
 
-        const isMatch = await bcrypt.compare(
+    const isMatch = await bcrypt.compare(
 
-            currentPassword,
+        currentPassword,
 
-            user.password
+        user.password
 
-        );
+    );
 
-        if (!isMatch) {
+    if (!isMatch) {
 
-            throw new AppError(
-                "Current password is incorrect",
-                400
-            )
+        throw new AppError(
+            "Current password is incorrect",
+            400
+        )
 
-        }
+    }
 
-        user.password = newPassword;
+    user.password = newPassword;
 
-        await user.save();
+    await user.save();
 
-        return res.status(200).json({
+    return res.status(200).json({
 
-            success: true,
+        success: true,
 
-            message: "Password changed successfully"
+        message: "Password changed successfully"
 
-        });
+    });
 
-        return res.status(500).json({
+    return res.status(500).json({
 
-            success: false,
+        success: false,
 
-            message: "Internal Server Error"
+        message: "Internal Server Error"
 
-        });
+    });
 
 });
 
 
-export const deleteAccount = asyncHandler( async (req, res) => {
+export const deleteAccount = asyncHandler(async (req, res) => {
 
-        await OTP.deleteMany({
+    await OTP.deleteMany({
 
-            email: req.user.email
+        email: req.user.email
 
-        });
+    });
 
-        await User.findByIdAndDelete(
+    await User.findByIdAndDelete(
 
-            req.user._id
+        req.user._id
 
-        );
+    );
 
-        return res.status(200).json({
+    return res.status(200).json({
 
-            success: true,
+        success: true,
 
-            message: "Account deleted successfully"
+        message: "Account deleted successfully"
 
-        });
-
-        return res.status(500).json({
-
-            success: false,
-
-            message: "Internal Server Error"
-
-        });
+    });
 
 });

@@ -1,0 +1,319 @@
+.public-button {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        color 0.25s ease;
+}
+
+
+/* =========================
+   CONTENT
+========================= */
+
+.public-button-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+.public-button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+
+    transition: transform 0.25s ease;
+}
+
+
+/* =========================
+   SIZE
+========================= */
+
+.public-button-small {
+    min-height: 40px;
+    padding: 0 17px;
+
+    font-size: 14px;
+}
+
+.public-button-medium {
+    min-height: 52px;
+    padding: 0 28px;
+
+    font-size: 16px;
+}
+
+.public-button-large {
+    min-height: 58px;
+    padding: 0 34px;
+
+    font-size: 17px;
+}
+
+
+/* =========================
+   PRIMARY
+   Filled Button
+========================= */
+
+.public-button-primary {
+    color: #ffffff;
+
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #0ea5e9
+    );
+
+    border-color: rgba(0, 191, 255, 0.45);
+
+    box-shadow:
+        0 6px 20px rgba(0, 102, 255, 0.20);
+}
+
+
+/* Primary Hover */
+
+.public-button-primary:not(:disabled):hover {
+    background: linear-gradient(
+        135deg,
+        #3b82f6,
+        #06b6d4
+    );
+
+    border-color: #00eaff;
+
+    box-shadow:
+        0 8px 28px rgba(0, 191, 255, 0.30);
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   OUTLINE
+   No Background Button
+========================= */
+
+.public-button-outline {
+    color: #ffffff;
+
+    background: transparent;
+
+    border-color: rgba(0, 191, 255, 0.45);
+}
+
+
+/* Outline Hover */
+
+.public-button-outline:not(:disabled):hover {
+    color: #00eaff;
+
+    background: rgba(0, 191, 255, 0.07);
+
+    border-color: #00eaff;
+
+    box-shadow:
+        0 0 18px rgba(0, 234, 255, 0.18);
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   GHOST
+========================= */
+
+.public-button-ghost {
+    color: #00d9ff;
+
+    background: transparent;
+
+    border-color: transparent;
+}
+
+.public-button-ghost:not(:disabled):hover {
+    color: #ffffff;
+
+    background: rgba(0, 191, 255, 0.08);
+
+    border-color: rgba(0, 191, 255, 0.25);
+}
+
+
+/* =========================
+   BACKGROUND PROP
+========================= */
+
+/*
+    background={false}
+
+    This guarantees that the
+    button will not have a
+    background.
+*/
+
+.public-button-no-background {
+    background: transparent !important;
+    box-shadow: none;
+}
+
+
+/* =========================
+   ICON HOVER
+========================= */
+
+.public-button:not(:disabled):hover .public-button-icon {
+    transform: translateX(3px);
+}
+
+
+/* Left icon should not move right */
+
+.public-button:not(:disabled):hover
+.public-button-content:has(.public-button-icon:first-child)
+.public-button-icon:first-child {
+    transform: translateX(-3px);
+}
+
+
+/* =========================
+   ACTIVE
+========================= */
+
+.public-button:not(:disabled):active {
+    transform: translateY(0);
+}
+
+
+/* =========================
+   FOCUS
+========================= */
+
+.public-button:focus-visible {
+    outline: 2px solid #00eaff;
+    outline-offset: 3px;
+}
+
+
+/* =========================
+   DISABLED
+========================= */
+
+.public-button:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+
+    transform: none;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.public-button-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+}
+
+.public-button-spinner {
+    width: 17px;
+    height: 17px;
+
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+
+    border-radius: 50%;
+
+    animation: publicButtonSpin 0.7s linear infinite;
+}
+
+@keyframes publicButtonSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================
+   FULL WIDTH
+========================= */
+
+.public-button-full-width {
+    width: 100%;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+    .public-button-large {
+        min-height: 54px;
+        padding: 0 26px;
+
+        font-size: 16px;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .public-button {
+        border-radius: 9px;
+    }
+
+    .public-button-small {
+        min-height: 38px;
+        padding: 0 14px;
+
+        font-size: 13px;
+    }
+
+    .public-button-medium {
+        min-height: 48px;
+        padding: 0 20px;
+
+        font-size: 15px;
+    }
+
+    .public-button-large {
+        min-height: 50px;
+        padding: 0 22px;
+
+        font-size: 15px;
+    }
+
+}

@@ -44,27 +44,27 @@ function NotificationProvider({ children }) {
 
             setLoading(true);
 
-            console.log(
-                "📥 Loading notifications for:",
-                userId
-            );
+            // console.log(
+            //     "📥 Loading notifications for:",
+            //     userId
+            // );
 
             const res = await getNotifications();
 
-            console.log(
-                "📦 FULL NOTIFICATION RESPONSE:",
-                res
-            );
+            // console.log(
+            //     "📦 FULL NOTIFICATION RESPONSE:",
+            //     res
+            // );
 
             const notificationList =
                 Array.isArray(res?.notifications)
                     ? res.notifications
                     : [];
 
-            console.log(
-                "📦 NOTIFICATION ARRAY:",
-                notificationList
-            );
+            // console.log(
+            //     "📦 NOTIFICATION ARRAY:",
+            //     notificationList
+            // );
 
             setNotifications(notificationList);
 
@@ -117,20 +117,20 @@ function NotificationProvider({ children }) {
 
         const handleConnect = () => {
 
-            console.log(
-                "🟢 Notification socket connected:",
-                socket.id
-            );
+            // console.log(
+            //     "🟢 Notification socket connected:",
+            //     socket.id
+            // );
 
             socket.emit(
                 "join",
                 String(userId)
             );
 
-            console.log(
-                "👤 Notification socket joined:",
-                userId
-            );
+            // console.log(
+            //     "👤 Notification socket joined:",
+            //     userId
+            // );
 
         };
 
@@ -214,9 +214,9 @@ function NotificationProvider({ children }) {
 
         if (!socket.connected) {
 
-            console.log(
-                "🔌 Connecting notification socket..."
-            );
+            // console.log(
+            //     "🔌 Connecting notification socket..."
+            // );
 
             socket.connect();
 

@@ -17,7 +17,7 @@ import {
     sendInternshipJoinedEmail,
     sendLessonCompletedEmail,
     sendProgramCompletedEmail
-} from "../../infrastructure/email/email.service.js";
+} from "../../infrastructure/email/index.js";
 
 import cloudinary from "../../infrastructure/storage/cloudinary.js";
 import streamifier from "streamifier";

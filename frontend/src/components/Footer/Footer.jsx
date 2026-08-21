@@ -1,14 +1,3 @@
-/**
- * ============================================================
- * File Name : Footer.jsx
- *
- * Purpose:
- * Animated futuristic website footer
- *
- * ============================================================
- */
-
-
 import {
     FaGithub,
     FaLinkedin,
@@ -16,16 +5,17 @@ import {
     FaInstagram,
 } from "react-icons/fa";
 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import "./Footer.css";
 
 
 import logoImg from "../../assets/logo/logo.png"
+import PublicButton from '../../components/ui/Button/PublicButton';
 
 
-function Footer(){
-
+function Footer() {
+    const navigate = useNavigate();
 
     return (
 
@@ -39,11 +29,11 @@ function Footer(){
 
                     <div id="social">
 
-                        <a><FaGithub/></a>
-                        <a><FaLinkedin/></a>
-                        <a><FaTwitter/></a>
+                        <a><FaGithub /></a>
+                        <a><FaLinkedin /></a>
+                        <a><FaTwitter /></a>
 
-                        <a href="https://www.instagram.com/tech_m0nster?igsh=MTdnanFlOG00YnJuNw==" target="_blank"><FaInstagram/></a>
+                        <a href="https://www.instagram.com/tech_m0nster?igsh=MTdnanFlOG00YnJuNw==" target="_blank"><FaInstagram /></a>
                     </div>
                 </div>
 
@@ -61,19 +51,23 @@ function Footer(){
                 <div id="footer-news">
                     <h3>Join Us</h3>
                     <p>Get internship updates</p>
-                    <div id="footer-signup">
-                        <Link to={'/signup'}>Sign Up</Link>
-                    </div>
+                    <PublicButton
+                        variant="primary"
+                        size="medium"
+                        onClick={() => navigate('/signup')}
+                    >
+                        Get Started
+                    </PublicButton>
                 </div>
 
-                <div id="footerLogo" style={{marginLeft: "5rem"}}>
+                <div id="footerLogo" style={{ marginLeft: "5rem" }}>
                     <img src={logoImg} alt="Footer logo" />
                 </div>
             </div>
 
             <div id="footer-bottom">
                 <p>© 2026 Tech Monster. All Rights Reserved.</p>
-                    <div id="vrLine"></div>
+                <div id="vrLine"></div>
                 <p>Code. Secure. Solve.</p>
             </div>
 

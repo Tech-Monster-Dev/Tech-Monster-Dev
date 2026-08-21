@@ -15,7 +15,7 @@ import AuthLayout from "../../../../layouts/AuthLayout";
 
 import OTPInput from "../../../../components/ui/OTPInput";
 
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 
 import {
@@ -245,34 +245,13 @@ function VerifyResetOTP() {
 
                     }
 
-
-
-
-                    <Button
-
+                    <AuthButton
                         fullWidth
-
                         onClick={handleVerify}
-
                         disabled={loading}
-
                     >
-
-                        {
-                            loading
-
-                                ?
-
-                                "Verifying..."
-
-                                :
-
-                                "Verify OTP"
-
-                        }
-
-
-                    </Button>
+                        {loading ? "Verifying..." : "Verify OTP"}
+                    </AuthButton>
 
 
 

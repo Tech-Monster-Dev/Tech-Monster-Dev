@@ -10,7 +10,7 @@ import AuthLayout from "../../../../layouts/AuthLayout";
 
 import Input from "../../../../components/ui/Input";
 import PasswordInput from "../../../../components/ui/PasswordInput";
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 import { FaEnvelope } from "react-icons/fa";
 
@@ -32,12 +32,28 @@ function Login() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
+
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem("rememberMe") === "true";
+  });
+
+  useEffect(() => {
+
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+    const isRemembered = localStorage.getItem("rememberMe") === "true";
+
+    if (rememberedEmail && isRemembered) {
+      setFormData((prev) => ({
+        ...prev,
+        email: rememberedEmail
+      }));
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,6 +61,45 @@ function Login() {
       ...prev,
       [name]: value
     }));
+  };
+
+  const saveCredential = async ({
+    email,
+    password,
+    username
+  }) => {
+
+    if (!rememberMe) return;
+
+    if (
+      !window.isSecureContext ||
+      !("credentials" in navigator) ||
+      !("PasswordCredential" in window)
+    ) {
+      return;
+    }
+
+    try {
+
+      const credential =
+        new PasswordCredential({
+          id: email,
+          password,
+          name: username || email
+        });
+
+      await navigator.credentials.store(
+        credential
+      );
+
+    } catch (error) {
+
+      console.warn(
+        "Password Manager save unavailable:",
+        error
+      );
+
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -62,6 +117,47 @@ function Login() {
         accessToken,
         user
       } = response.data;
+
+
+      /* =========================================
+         REMEMBER ME
+      ========================================= */
+
+      if (rememberMe) {
+
+        localStorage.setItem(
+          "rememberMe",
+          "true"
+        );
+
+        localStorage.setItem(
+          "rememberedEmail",
+          formData.email
+        );
+
+
+        // Ask browser password manager
+        await saveCredential({
+
+          email: formData.email,
+
+          password: formData.password,
+
+          username: user?.username || formData.email
+
+        });
+
+      } else {
+
+        localStorage.removeItem(
+          "rememberMe"
+        );
+
+        localStorage.removeItem(
+          "rememberedEmail"
+        );
+
+      }
 
       // Store Auth Data
       login({
@@ -103,7 +199,7 @@ function Login() {
         )
       }
 
-      
+
       <AuthLayout
         title="Welcome Back"
         subtitle="Login to continue your internship journey."
@@ -112,6 +208,7 @@ function Login() {
         <motion.form
           className="login-form"
           onSubmit={handleSubmit}
+          autoComplete="on"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
@@ -124,6 +221,7 @@ function Login() {
             value={formData.email}
             onChange={handleChange}
             icon={<FaEnvelope />}
+            autoComplete="username"
             required
           />
 
@@ -133,6 +231,7 @@ function Login() {
             value={formData.password}
             onChange={handleChange}
             placeholder="Enter your password"
+            autoComplete="current-password"
             required
           />
 
@@ -148,12 +247,16 @@ function Login() {
               <input
                 type="checkbox"
                 checked={rememberMe}
-                onChange={() =>
-                  setRememberMe(!rememberMe)
+                onChange={(e) =>
+                  setRememberMe(e.target.checked)
                 }
               />
-              Remember Me
+              <span>
+                Remember Me
+              </span>
             </label>
+
+
             <Link
               to="/forgot-password"
               className="forgot-link"
@@ -162,13 +265,13 @@ function Login() {
             </Link>
           </div>
 
-          <Button
+          <AuthButton
             type="submit"
             fullWidth
             disabled={loading}
           >
             {loading ? "Logging In..." : "Login"}
-          </Button>
+          </AuthButton>
 
           <p className="signup-text">
             Don't have an account?

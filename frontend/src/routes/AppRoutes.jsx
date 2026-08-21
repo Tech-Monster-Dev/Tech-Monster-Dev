@@ -13,6 +13,7 @@ import SomethingWentWrong from "../pages/status/SomethingWentWrong";
 import Offline from "../pages/status/Offline";
 
 import Landing from "../pages/landing/Landing";
+import LearnMore from "../pages/landing/LearnMore";
 
 import Contact from "../pages/landing/Contact";
 
@@ -75,6 +76,7 @@ function AppRoutes() {
 
                 {/* Public Routes */}
                 <Route path='/' element={<Landing />} />
+                <Route path='/learn-more' element={<LearnMore />} />
                 <Route path='/contact' element={<Contact />} />
 
                 <Route path='/login' element={<Login />} />

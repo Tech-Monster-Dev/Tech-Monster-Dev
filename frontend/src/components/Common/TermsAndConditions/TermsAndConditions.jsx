@@ -13,6 +13,8 @@ import {
     FaEnvelope
 } from "react-icons/fa";
 
+import BackButton from "../../ui/Button/BackButton";
+
 function TermsAndConditions() {
     return (
         <div className="terms-page">
@@ -25,17 +27,11 @@ function TermsAndConditions() {
             <div className="terms-container">
 
                 {/* Back */}
-                <motion.div
+                <BackButton
+                    to="/signup"
+                    label="Back to Signup page"
                     className="terms-back"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Link to="/signup">
-                        <FaArrowLeft />
-                        Back to Signup
-                    </Link>
-                </motion.div>
+                />
 
                 {/* Header */}
                 <motion.header

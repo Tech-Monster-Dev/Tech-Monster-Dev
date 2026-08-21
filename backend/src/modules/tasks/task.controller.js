@@ -17,7 +17,7 @@ import logActivity from "../activity/logActivity.js";
 
 import { generateCertificatePDF } from "../certificates/services/generateCertificatePDF.js";
 
-import { sendCertificateEmail } from "../../infrastructure/email/email.service.js";
+import { sendCertificateEmail } from "../../infrastructure/email/index.js";
 
 // =====================================
 // CREATE TASK

@@ -12,7 +12,7 @@ import AuthLayout from "../../../../layouts/AuthLayout";
 
 import Input from "../../../../components/ui/Input";
 import PasswordInput from "../../../../components/ui/PasswordInput";
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 import { adminLogin } from "../../../../services/api/authService";
 import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
@@ -124,13 +124,13 @@ function AdminLogin() {
                         </p>
                     )}
 
-                    <Button
+                    <AuthButton
                         type="submit"
                         fullWidth
                         disabled={loading}
                     >
                         {loading ? "Logging in..." : "Login as Admin"}
-                    </Button>
+                    </AuthButton>
 
                     <p id="user-login-link">
                         User login !
