@@ -12,11 +12,15 @@ import {
 
 const StatsCards = ({ stats }) => {
 
+  const totalinternships = stats?.internships?.total || 0;
+  const totalCourses = stats?.courses?.total || 0;
+  const showTotalJoinInternshipandCourses = `${totalinternships} / ${totalCourses}`;
+
   const data = [
     {
       id: "internships",
-      title: "Join Internships",
-      value: stats?.internships?.total || 0,
+      title: "Internships/Courses",
+      value: showTotalJoinInternshipandCourses,
       suffix: "",
       icon: HiAcademicCap,
       color: "#00E5FF",

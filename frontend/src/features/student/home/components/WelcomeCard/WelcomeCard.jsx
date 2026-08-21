@@ -19,6 +19,8 @@ const WelcomeCard = ({
   streak,
 }) => {
 
+  console.log("Welcome card Stats",stats)
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -40,14 +42,12 @@ const WelcomeCard = ({
         user.username.slice(1)
         : "Student";
 
-  const internshipCount =
-    stats?.internships?.total || 0;
+  const internshipCount = stats?.internships?.total || 0;
+  const courseCount = stats?.courses?.total || 0;
 
-  const badgeCount =
-    stats?.badges || 0;
+  const badgeCount = stats?.badges || 0;
 
-  const streakDays =
-    streak?.days || 0;
+  const streakDays = streak?.days || 0;
 
 
   return (
@@ -143,8 +143,8 @@ const WelcomeCard = ({
           <HiAcademicCap />
 
           <div>
-            <h2>{internshipCount}</h2>
-            <span>Join Internships</span>
+            <h2>{internshipCount} / {courseCount}</h2>
+            <span>Internships/Courses</span>
           </div>
         </motion.div>
 
