@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const serverSideURI = "https://tech-monster-backend.onrender.com/api";
+const serverSideURI = "https://tech-monster-dev.onrender.com/api";
 const testing = true;
 
 const api = axios.create({
