@@ -3,11 +3,16 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import './SettingsSection.css';
 import { toast } from 'react-toastify';
+import Warning from '../../../../../components/ui/Warning';
+import api from '../../../../../services/api/axios';
+import { API } from '../../../../../services/api/endpoints';
 
 export default function SettingsSection() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
   const [darkModeGlow, setDarkModeGlow] = useState(true);
+  const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const [passwords, setPasswords] = useState({
     oldPassword: '',
@@ -21,18 +26,44 @@ export default function SettingsSection() {
   };
 
   const handleDeleteAccount = () => {
-    const confirmDelete = window.confirm("WARNING: This will permanently delete your account and remove all data from the database. Are you sure?");
-    if (confirmDelete) {
-      // Clear all local database/storage session info
+    setShowDeleteWarning(true);
+  };
+
+  const handleCancelDelete = () => {
+    if (isDeleting === false) {
+      setShowDeleteWarning(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (isDeleting === true) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await api.delete(API.USER.DELETE_ACCOUNT);
+
       localStorage.clear();
       sessionStorage.clear();
-      // Redirect straight to landing page
-      navigate('/');
+      navigate("/");
+    } catch (error) {
+      setIsDeleting(false);
+      toast.error(error.response?.data?.message || "Account deletion failed. Please try again.");
     }
   };
 
   return (
     <>
+      <Warning
+        open={showDeleteWarning}
+        title="Permanently Delete Account?"
+        message="This action will permanently delete your student account and all related data from the database. Your data cannot be recovered or restored after deletion."
+        confirmText={isDeleting ? "Deleting..." : "Confirm"}
+        cancelText="Cancel"
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
       {/* Appearance Settings */}
       <motion.div 
         className="settings-section-card"

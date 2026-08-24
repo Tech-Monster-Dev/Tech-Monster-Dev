@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import OTP from "../auth/models/OTP.js";
 import User from "./models/User.js";
+import deleteAccountData from "./services/deleteAccount.service.js";
+
 
 import asyncHandler from "../../core/http/asyncHandler.js";
 import AppError from "../../core/errors/AppError.js";
@@ -146,23 +148,13 @@ export const changePassword = asyncHandler(async (req, res) => {
 
 export const deleteAccount = asyncHandler(async (req, res) => {
 
-    await OTP.deleteMany({
-
-        email: req.user.email
-
-    });
-
-    await User.findByIdAndDelete(
-
-        req.user._id
-
-    );
+    await deleteAccountData(req.user);
 
     return res.status(200).json({
 
         success: true,
 
-        message: "Account deleted successfully"
+        message: "Account and all related data deleted successfully"
 
     });
 
