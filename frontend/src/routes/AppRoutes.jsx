@@ -17,7 +17,7 @@ import LearnMore from "../pages/landing/LearnMore";
 
 import Contact from "../pages/landing/Contact";
 
-import TermsAndConditions from "../components/Common/TermsAndConditions/TermsAndConditions.jsx";
+import TermsAndConditions from "../components/common/TermsAndConditions";
 
 import Login from '../features/auth/pages/Login';
 import Signup from '../features/auth/pages/Signup';
