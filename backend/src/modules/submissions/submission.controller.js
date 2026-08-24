@@ -386,15 +386,25 @@ const unlockTaskForStudent = async (
         });
 
     // =========================================
-    // CREATE NEW UNLOCKED TASK
+    // TASK IS AVAILABLE -> CREATE REAL SUBMISSION
     // =========================================
+    //
+    // The task unlock itself is persisted in MongoDB.
+    // This is the SERVER-AUTHORITATIVE timer source.
+    //
+    // createdAt  -> document creation time
+    // unlockedAt -> exact unlock time
+    // expiresAt  -> unlockedAt + 48 hours
+    //
+    // IMPORTANT:
+    // If the document already exists, NEVER recreate it
+    // and NEVER restart its timer.
 
     if (!submission) {
 
         const internship =
             await Internship.findOne({
-                slug:
-                    normalizedCourseSlug,
+                slug: normalizedCourseSlug,
             });
 
         const unlockedAt =
@@ -451,11 +461,23 @@ const unlockTaskForStudent = async (
                     null,
             });
 
+        emitToUser(
+            studentId,
+            "taskUnlocked",
+            {
+                submission,
+                taskKey:
+                    getSubmissionTaskKey(
+                        submission
+                    ),
+            }
+        );
+
         return submission;
     }
 
     // =========================================
-    // LOCKED → UNLOCKED
+    // LOCKED -> UNLOCKED
     // =========================================
 
     if (
@@ -562,6 +584,8 @@ export const submitCode = asyncHandler(async (req, res) => {
     const normalizedLessonId = String(lessonId || "").trim();
 
     // Upsert the submission so a task has only one active record.
+    let isNewSubmission = false;
+
     let submission = await Submission.findOne({
         student: req.user._id,
         courseSlug: normalizedCourseSlug,
@@ -571,9 +595,11 @@ export const submitCode = asyncHandler(async (req, res) => {
     });
 
     if (!submission) {
+        isNewSubmission = true;
+
         const courseData = await readCourseData(normalizedCourseSlug);
         const orderedTasks = getOrderedCourseTasks(courseData);
-        const firstTask = orderedTasks[0];
+
         const requestedTask = orderedTasks.find(
             (task) =>
                 task.moduleId === moduleId &&
@@ -581,20 +607,71 @@ export const submitCode = asyncHandler(async (req, res) => {
                 task.taskId === taskId
         );
 
-        if (
-            !firstTask ||
-            firstTask.taskId !== requestedTask?.taskId ||
-            firstTask.moduleId !== requestedTask?.moduleId ||
-            String(firstTask.lessonId || "") !== String(requestedTask?.lessonId || "")
-        ) {
-            throw new AppError("This task is locked until the previous task is approved.", 403);
+        if (!requestedTask) {
+            throw new AppError("Task not found.", 404);
         }
 
-        submission = await unlockTaskForStudent(
-            req.user._id,
-            normalizedCourseSlug,
-            requestedTask
+        const requestedIndex = orderedTasks.findIndex(
+            (task) =>
+                task.moduleId === requestedTask.moduleId &&
+                String(task.lessonId || "") ===
+                    String(requestedTask.lessonId || "") &&
+                task.taskId === requestedTask.taskId
         );
+
+        const previousTask =
+            requestedIndex > 0
+                ? orderedTasks[requestedIndex - 1]
+                : null;
+
+        if (previousTask) {
+            const previousSubmission =
+                await Submission.findOne({
+                    student: req.user._id,
+                    courseSlug: normalizedCourseSlug,
+                    moduleId: previousTask.moduleId,
+                    lessonId: String(previousTask.lessonId || ""),
+                    taskId: previousTask.taskId,
+                    status: "approved"
+                });
+
+            if (!previousSubmission) {
+                throw new AppError(
+                    "This task is locked until the previous task is approved.",
+                    403
+                );
+            }
+        }
+
+        submission = new Submission({
+            student: req.user._id,
+            courseSlug: normalizedCourseSlug,
+            moduleId: requestedTask.moduleId,
+            moduleTitle:
+                moduleTitle ||
+                requestedTask.moduleTitle ||
+                "",
+            lessonId:
+                String(requestedTask.lessonId || ""),
+            taskId: requestedTask.taskId,
+            taskTitle:
+                taskTitle ||
+                requestedTask.taskTitle ||
+                "Task",
+            problemStatement:
+                problemStatement ||
+                requestedTask.problemStatement ||
+                "",
+            code,
+            answer: answer || "",
+            githubLink: githubLink || "",
+            liveLink: liveLink || "",
+            status: "pending",
+            submittedAt: new Date(),
+            reviewedBy: null,
+            reviewedAt: null,
+            reviewComment: ""
+        });
     }
 
     await markExpiredIfNeeded(submission);
@@ -608,6 +685,20 @@ export const submitCode = asyncHandler(async (req, res) => {
 
     if (submission.status === "locked") {
         throw new AppError("This task is locked until the previous task is approved.", 403);
+    }
+
+    // IMPORTANT:
+    // Do not allow an already-pending submission to be submitted again.
+    // Re-submitting was resetting submittedAt and therefore restarting
+    // the task timer from the beginning.
+    if (
+        !isNewSubmission &&
+        submission.status === "pending"
+    ) {
+        throw new AppError(
+            "This task is already submitted and is waiting for admin approval.",
+            400
+        );
     }
 
     if (submission.status === "approved") {
@@ -747,10 +838,14 @@ export const getMyCourseSubmissions = asyncHandler(
 
             const key = getSubmissionTaskKey(submission);
 
-            submissionMap.set(
-                key,
-                submission
-            );
+            // Submissions are sorted newest first.
+            // Keep only the latest submission for each task.
+            if (!submissionMap.has(key)) {
+                submissionMap.set(
+                    key,
+                    submission
+                );
+            }
         });
 
         // -----------------------------------------
@@ -985,7 +1080,44 @@ export const approveSubmission = asyncHandler(async (req, res) => {
 
     await submission.save();
 
-    const unlockedSubmission = await unlockNextTask(submission);
+    // =========================================
+    // APPROVE -> UNLOCK NEXT TASK
+    // =========================================
+
+    const courseSlug = normalizeSlug(
+        submission.courseSlug
+    );
+
+    const courseData =
+        await readCourseData(courseSlug);
+
+    const orderedTasks =
+        getOrderedCourseTasks(courseData);
+
+    const currentTaskIndex =
+        orderedTasks.findIndex(
+            (task) =>
+                String(task.moduleId || "") ===
+                    String(submission.moduleId || "") &&
+                String(task.lessonId || "") ===
+                    String(submission.lessonId || "") &&
+                String(task.taskId || "") ===
+                    String(submission.taskId || "")
+        );
+
+    const nextTask =
+        currentTaskIndex >= 0
+            ? orderedTasks[currentTaskIndex + 1]
+            : null;
+
+    const unlockedSubmission =
+        nextTask
+            ? await unlockTaskForStudent(
+                submission.student,
+                courseSlug,
+                nextTask
+            )
+            : null;
 
     await Notification.create({
         user: submission.student,

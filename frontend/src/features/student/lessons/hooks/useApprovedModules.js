@@ -3,45 +3,31 @@ import { useEffect, useState } from "react";
 import api from "../../../../services/api/axios";
 import { API } from "../../../../services/api/endpoints";
 
-const useApprovedModules = (courseSlug) => {
+const useApprovedModules = (
+    courseSlug,
+    lessonData
+) => {
 
     const [approvedModuleIds, setApprovedModuleIds] =
         useState(new Set());
 
     useEffect(() => {
 
-        if (!courseSlug) return;
+        if (
+            !courseSlug ||
+            !Array.isArray(lessonData?.modules)
+        ) {
+            return;
+        }
 
         let active = true;
 
         const fetchApprovedModules = async () => {
 
-            // Local cache
-            try {
+            // =========================================
+            // BACKEND SUBMISSIONS
+            // =========================================
 
-                const raw = localStorage.getItem(
-                    `approvedModules_${courseSlug}`
-                );
-
-                if (raw) {
-
-                    const cached =
-                        JSON.parse(raw);
-
-                    if (Array.isArray(cached)) {
-
-                        setApprovedModuleIds(
-                            new Set(cached)
-                        );
-                    }
-                }
-
-            } catch {
-                // Ignore cache errors
-            }
-
-
-            // Backend
             try {
 
                 const response =
@@ -54,38 +40,175 @@ const useApprovedModules = (courseSlug) => {
                 const submissions =
                     response?.data?.submissions || [];
 
-                const approved =
+
+                // =========================================
+                // APPROVED TASK KEYS
+                // =========================================
+
+                const approvedTaskKeys =
                     new Set(
                         submissions
                             .filter(
-                                item =>
-                                    item.status ===
+                                (submission) =>
+                                    submission.status ===
                                     "approved"
                             )
                             .map(
-                                item =>
-                                    item.moduleId
+                                (submission) =>
+                                    [
+                                        String(
+                                            submission.moduleId
+                                        ),
+                                        String(
+                                            submission.lessonId ||
+                                            ""
+                                        ),
+                                        String(
+                                            submission.taskId
+                                        ),
+                                    ].join("_")
                             )
-                            .filter(Boolean)
                     );
 
-                if (active) {
 
-                    setApprovedModuleIds(
-                        approved
-                    );
+                // =========================================
+                // FIND FULLY APPROVED MODULES
+                // =========================================
 
-                    localStorage.setItem(
-                        `approvedModules_${courseSlug}`,
-                        JSON.stringify(
-                            [...approved]
-                        )
-                    );
+                const fullyApprovedModules =
+                    new Set();
+
+
+                lessonData.modules.forEach(
+                    (module) => {
+
+                        const moduleId =
+                            String(
+                                module.id ||
+                                module.moduleId ||
+                                ""
+                            );
+
+
+                        const tasks =
+                            (module.sections || [])
+                                .flatMap(
+                                    (section) =>
+                                        section.tasks || []
+                                );
+
+
+                        // No tasks = don't unlock
+                        // next module based on this module.
+                        if (!tasks.length) {
+                            return;
+                        }
+
+
+                        const allTasksApproved =
+                            tasks.every(
+                                (task) => {
+
+                                    const taskId =
+                                        String(
+                                            task.taskId ||
+                                            task.id ||
+                                            ""
+                                        );
+
+                                    const lessonId =
+                                        String(
+                                            task.lessonId ||
+                                            ""
+                                        );
+
+                                    const key =
+                                        [
+                                            moduleId,
+                                            lessonId,
+                                            taskId,
+                                        ].join("_");
+
+                                    return approvedTaskKeys.has(
+                                        key
+                                    );
+                                }
+                            );
+
+
+                        if (
+                            allTasksApproved
+                        ) {
+
+                            fullyApprovedModules.add(
+                                moduleId
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                if (!active) {
+                    return;
                 }
 
-            } catch {
-                // Keep local cache
+
+                setApprovedModuleIds(
+                    fullyApprovedModules
+                );
+
+
+                localStorage.setItem(
+                    `approvedModules_${courseSlug}`,
+                    JSON.stringify(
+                        [
+                            ...fullyApprovedModules
+                        ]
+                    )
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Failed to load approved modules:",
+                    error
+                );
+
+                // Keep existing cached state
+                try {
+
+                    const raw =
+                        localStorage.getItem(
+                            `approvedModules_${courseSlug}`
+                        );
+
+                    if (raw && active) {
+
+                        const cached =
+                            JSON.parse(raw);
+
+                        if (
+                            Array.isArray(
+                                cached
+                            )
+                        ) {
+
+                            setApprovedModuleIds(
+                                new Set(cached)
+                            );
+
+                        }
+
+                    }
+
+                } catch {
+                    // Ignore cache errors
+                }
+
             }
+
         };
 
         fetchApprovedModules();
@@ -94,7 +217,10 @@ const useApprovedModules = (courseSlug) => {
             active = false;
         };
 
-    }, [courseSlug]);
+    }, [
+        courseSlug,
+        lessonData,
+    ]);
 
     return approvedModuleIds;
 };

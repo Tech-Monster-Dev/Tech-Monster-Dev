@@ -123,7 +123,30 @@ const unlockFirstEligibleLessonTask = async ({
     }
 
     // --------------------------------------------------
-    // Module 1 is automatically eligible
+    // Current module lessons must all be completed
+    // --------------------------------------------------
+
+    const studentCourse = await StudentInternship.findOne({
+        student,
+        course: course._id
+    });
+
+    const completedLessons =
+        studentCourse?.completedLessons || [];
+
+    const currentModuleCompleted =
+        isModuleLessonsCompleted(
+            courseData,
+            targetTask.moduleId,
+            completedLessons
+        );
+
+    if (!currentModuleCompleted) {
+        return null;
+    }
+
+    // --------------------------------------------------
+    // Previous module tasks must all be approved
     // --------------------------------------------------
 
     if (moduleIndex > 0) {
@@ -132,19 +155,20 @@ const unlockFirstEligibleLessonTask = async ({
             courseData.modules[moduleIndex - 1];
 
         const previousModuleId =
-            previousModule.moduleId;
+            previousModule.moduleId ||
+            previousModule.id ||
+            "";
 
-        // Previous module must have an approved submission
         const previousModuleApproved =
-            await Submission.exists({
+            await areModuleTasksApproved({
                 student,
                 course: course._id,
                 courseSlug,
                 moduleId: previousModuleId,
-                status: "approved"
+                courseData
             });
 
-        if (!previousModuleApproved) {
+        if (previousModuleApproved === false) {
             return null;
         }
     }
@@ -152,56 +176,142 @@ const unlockFirstEligibleLessonTask = async ({
     // --------------------------------------------------
     // Unlock task
     // --------------------------------------------------
+    // IMPORTANT:
+    // Unlocking a task must NOT create a Submission.
+    // Submission is created only when the student
+    // actually submits the task.
 
     const unlockedAt = new Date();
 
-    const submission = await Submission.create({
-
+    const taskUnlock = {
         student,
-
         course: course._id,
-
         courseSlug,
-
         moduleId: targetTask.moduleId,
-
         moduleTitle: targetTask.moduleTitle,
-
         lessonId: targetTask.lessonId,
-
         taskId: targetTask.taskId,
-
         taskTitle: targetTask.taskTitle,
-
         problemStatement:
             targetTask.problemStatement,
-
         status: "unlocked",
-
         unlockedAt,
-
         expiresAt: new Date(
             unlockedAt.getTime() +
             TASK_DEADLINE_MS
         )
-    });
+    };
 
     // --------------------------------------------------
     // Notify student
     // --------------------------------------------------
 
     emitToUser(student, "taskUnlocked", {
-
-        submission,
+        taskUnlock,
 
         taskKey:
-            getSubmissionTaskKey(
-    submission
-)
-
+            [
+                String(taskUnlock.moduleId || ""),
+                String(taskUnlock.lessonId || ""),
+                String(taskUnlock.taskId || "")
+            ].join("_")
     });
 
-    return submission;
+    return taskUnlock;
+};
+
+
+const isModuleLessonsCompleted = (courseData, moduleId, completedLessons = []) => {
+    const module = (courseData?.modules || []).find(
+        (item) =>
+            String(item.moduleId || item.id || "") ===
+            String(moduleId)
+    );
+
+    if (
+        module == null ||
+        Array.isArray(module.lessons) == false ||
+        module.lessons.length === 0
+    ) {
+        return false;
+    }
+
+    const completedSet = new Set(completedLessons);
+
+    return module.lessons.every((lesson) => {
+        const lessonId = String(
+            lesson.lessonId ||
+            lesson.id ||
+            ""
+        );
+
+        return (
+            lessonId &&
+            completedSet.has(lessonId)
+        );
+    });
+};
+
+const areModuleTasksApproved = async ({
+    student,
+    course,
+    courseSlug,
+    moduleId,
+    courseData
+}) => {
+    const module = (courseData?.modules || []).find(
+        (item) =>
+            String(item.moduleId || item.id || "") ===
+            String(moduleId)
+    );
+
+    if (
+        module == null ||
+        Array.isArray(module.lessons) == false
+    ) {
+        return false;
+    }
+
+    const taskIds = [];
+
+    module.lessons.forEach((lesson) => {
+        (lesson.tasks || []).forEach((task) => {
+            const taskId = String(
+                task.taskId ||
+                task.id ||
+                ""
+            );
+
+            const lessonId = String(
+                lesson.lessonId ||
+                lesson.id ||
+                ""
+            );
+
+            if (taskId && lessonId) {
+                taskIds.push({
+                    lessonId,
+                    taskId
+                });
+            }
+        });
+    });
+
+    if (taskIds.length === 0) {
+        return false;
+    }
+
+    const approvedCount =
+        await Submission.countDocuments({
+            student,
+            course,
+            courseSlug,
+            moduleId: String(moduleId),
+            status: "approved",
+            $or: taskIds
+        });
+
+    return approvedCount === taskIds.length;
 };
 
 const uploadToCloudinary = (fileBuffer) =>

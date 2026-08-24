@@ -44,6 +44,9 @@ export const normalizeLessonData = (learningData) => {
 
                         lesson,
 
+                        tasks:
+                            lesson.tasks || [],
+
                         moduleTitle:
                             module.moduleTitle ||
                             `Module ${moduleIndex + 1}`
