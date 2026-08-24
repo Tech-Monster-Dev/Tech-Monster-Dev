@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const serverSideURI = "https://tech-monster-backend.onrender.com/api";
+const testing = true;
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "https://tech-monster.onrender.com/api",
+    baseURL: `${testing ? "http://localhost:8001/api" : serverSideURI || import.meta.env.VITE_API_URL}`,
     withCredentials: true,
     timeout: 30000, // Increased timeout to 60s for slow email sending / cold starts
     headers: {

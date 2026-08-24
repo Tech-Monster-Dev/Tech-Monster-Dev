@@ -1,0 +1,236 @@
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-button {
+    position: relative;
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(0, 234, 255, 0.3);
+
+    border-radius: 12px;
+
+    background: rgba(2, 6, 23, 0.9);
+
+    color: var(--neon, #00eaff);
+
+    cursor: pointer;
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 0 15px rgba(0, 234, 255, 0.08);
+
+    z-index: 1000;
+
+    transition:
+        border-color 0.3s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.back-button-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: var(--neon, #00eaff);
+
+    font-size: 1.2rem;
+
+    transition:
+        transform 0.3s ease;
+}
+
+
+/* =========================================================
+   TOOLTIP
+========================================================= */
+
+.back-button-tooltip {
+    position: absolute;
+
+    left: calc(100% + 12px);
+
+    top: 50%;
+
+    transform:
+        translateY(-50%)
+        translateX(-8px);
+
+    white-space: nowrap;
+
+    padding: 0.55rem 0.85rem;
+
+    border: 1px solid rgba(0, 234, 255, 0.3);
+
+    border-radius: 8px;
+
+    background: rgba(2, 6, 23, 0.98);
+
+    color: #e2e8f0;
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.3px;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    box-shadow:
+        0 0 20px rgba(0, 234, 255, 0.12);
+
+    z-index: 9999;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+/* =========================================================
+   TOOLTIP ARROW
+========================================================= */
+
+.back-button-tooltip::before {
+    content: "";
+
+    position: absolute;
+
+    left: -5px;
+
+    top: 50%;
+
+    width: 9px;
+    height: 9px;
+
+    transform:
+        translateY(-50%)
+        rotate(45deg);
+
+    border-left:
+        1px solid rgba(0, 234, 255, 0.3);
+
+    border-bottom:
+        1px solid rgba(0, 234, 255, 0.3);
+
+    background: rgba(2, 6, 23, 0.98);
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.back-button:hover {
+
+    border-color:
+        var(--neon, #00eaff);
+
+    background:
+        rgba(0, 234, 255, 0.08);
+
+    box-shadow:
+        0 0 20px rgba(0, 234, 255, 0.18),
+        0 0 40px rgba(0, 234, 255, 0.06);
+}
+
+
+.back-button:hover .back-button-icon {
+    transform: translateX(-3px);
+}
+
+
+.back-button:hover .back-button-tooltip {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(-50%)
+        translateX(0);
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.back-button:focus-visible {
+
+    outline: none;
+
+    border-color:
+        var(--neon, #00eaff);
+
+    box-shadow:
+        0 0 0 3px rgba(0, 234, 255, 0.12),
+        0 0 25px rgba(0, 234, 255, 0.15);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .back-button {
+        width: 40px;
+        height: 40px;
+
+        border-radius: 10px;
+    }
+
+    .back-button-icon {
+        font-size: 1rem;
+    }
+
+    .back-button-tooltip {
+        font-size: 0.68rem;
+
+        padding: 0.5rem 0.7rem;
+
+        left: calc(100% + 8px);
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 470px) {
+
+    .back-button {
+        width: 38px;
+        height: 38px;
+    }
+
+    .back-button-tooltip {
+        font-size: 0.62rem;
+
+        padding: 0.45rem 0.65rem;
+    }
+}

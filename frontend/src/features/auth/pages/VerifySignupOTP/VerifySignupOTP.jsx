@@ -8,13 +8,10 @@ import useAuth from "../../../../shared/hooks/useAuth";
 import AuthLayout from "../../../../layouts/AuthLayout";
 
 import OTPInput from "../../../../components/ui/OTPInput";
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 import Hash from '../../../../features/dashboard/common/LoaderPage/Hash';
 
-import {
-    verifyOtp,
-    resendOtp
-} from "../../../../services/api/authService";
+import {verifyOtp, resendOtp} from "../../../../services/api/authService";
 
 
 
@@ -69,11 +66,6 @@ function VerifySignupOTP() {
 
 
     }, [timer]);
-
-
-
-
-
 
 
     const handleVerify = async () => {
@@ -277,33 +269,13 @@ function VerifySignupOTP() {
                         </p>
                     }
 
-
-
-
-                    <Button
-
+                    <AuthButton
                         fullWidth
-
                         onClick={handleVerify}
-
                         disabled={loading}
-
                     >
-
-                        {
-                            loading
-
-                                ?
-
-                                "Verifying..."
-
-                                :
-
-                                "Verify OTP"
-                        }
-
-
-                    </Button>
+                        {loading ? "Verifying..." : "Verify OTP"}
+                    </AuthButton>
 
 
 

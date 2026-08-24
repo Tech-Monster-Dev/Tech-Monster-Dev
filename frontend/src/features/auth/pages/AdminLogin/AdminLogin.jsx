@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
+import {toast} from "react-toastify";
 
 import useAuth from "../../../../shared/hooks/useAuth";
 
@@ -11,7 +12,7 @@ import AuthLayout from "../../../../layouts/AuthLayout";
 
 import Input from "../../../../components/ui/Input";
 import PasswordInput from "../../../../components/ui/PasswordInput";
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 import { adminLogin } from "../../../../services/api/authService";
 import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
@@ -67,6 +68,10 @@ function AdminLogin() {
                 "Admin Login Failed"
             );
 
+            toast.error(err.response?.data?.message);
+
+        } finally {
+            setLoading(false);
         }
 
     };
@@ -119,13 +124,13 @@ function AdminLogin() {
                         </p>
                     )}
 
-                    <Button
+                    <AuthButton
                         type="submit"
                         fullWidth
                         disabled={loading}
                     >
                         {loading ? "Logging in..." : "Login as Admin"}
-                    </Button>
+                    </AuthButton>
 
                     <p id="user-login-link">
                         User login !

@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 
-import useNotification
-  from "../../../../shared/hooks/useNotification";
+import useNotification from "../../../../shared/hooks/useNotification";
 
 import "./Notification.css";
 
@@ -34,6 +33,16 @@ export default function Notification() {
     );
 
   }
+
+  console.log(
+    "📄 NOTIFICATION PAGE:",
+    notifications
+  );
+
+  console.log(
+    "🔢 UNREAD COUNT:",
+    unreadCount
+  );
 
 
   return (

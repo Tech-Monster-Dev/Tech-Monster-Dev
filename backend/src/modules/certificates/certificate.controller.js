@@ -4,7 +4,7 @@ import Notification from "../notifications/models/Notification.js";
 
 import { generateCertificatePDF } from "./services/generateCertificatePDF.js";
 
-import { sendCertificateEmail } from "../../infrastructure/email/email.service.js";
+import { sendCertificateEmail } from "../../infrastructure/email/index.js";
 
 import logActivity from "../activity/logActivity.js";
 

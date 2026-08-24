@@ -14,7 +14,7 @@ import AuthLayout from "../../../../layouts/AuthLayout";
 
 import Input from "../../../../components/ui/Input";
 import PasswordInput from "../../../../components/ui/PasswordInput";
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 import PasswordStrength from "../../../../components/ui/PasswordStrength";
 
 import { signup as signupService } from "../../../../services/api/authService";
@@ -77,7 +77,7 @@ function Signup() {
           }
         });
 
-      }, 1200);
+      }, 800);
 
     } catch (err) {
 
@@ -170,13 +170,13 @@ function Signup() {
           </label>
           <p id="terms-error">{errors.terms?.message}</p>
 
-          <Button
+          <AuthButton
             type="submit"
             fullWidth
             disabled={loading}
           >
             {loading ? "Creating Account..." : "Create Account"}
-          </Button>
+          </AuthButton>
 
           <p id="login-link">
             Already have an account?

@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 import logo from "../../assets/logo/logo.png";
 import authImage from "../../assets/auth/auth-image.jpg";
 
+import BackButton from "../../components/ui/Button/BackButton/BackButton";
+
 function AuthLayout({
     title,
     subtitle,
@@ -42,6 +44,7 @@ function AuthLayout({
 
         <div id="auth-layout" >
 
+
             <img id="auth-layout-bg-img" src={authImage} alt="Auth image" />
 
             <SystemBar />
@@ -57,6 +60,11 @@ function AuthLayout({
                     transition={{ duration: .8 }}
                 >
                     <div id="auth-left-content">
+                        <BackButton
+                            to="/"
+                            label="Back to Landing Page"
+                            className="auth-back-button"
+                        />
 
                         <Link
                             to="/"

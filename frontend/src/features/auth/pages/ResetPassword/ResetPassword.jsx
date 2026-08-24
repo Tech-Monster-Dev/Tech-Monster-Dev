@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AuthLayout from "../../../../layouts/AuthLayout";
 
 import PasswordInput from "../../../../components/ui/PasswordInput";
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 import PasswordStrength from "../../../../components/ui/PasswordStrength";
 
 import { resetPasswordSchema } from "../../../../validations/auth/resetPasswordSchema";
@@ -198,31 +198,14 @@ function ResetPassword() {
 
                     }
 
-                    <Button
-
+                    <AuthButton
                         fullWidth
-
                         type="submit"
-
                         disabled={loading}
-
                     >
+                        {loading ? "Updating..." : "Update Password"}
 
-                        {
-
-                            loading
-
-                                ?
-
-                                "Updating..."
-
-                                :
-
-                                "Update Password"
-
-                        }
-
-                    </Button>
+                    </AuthButton>
 
                 </motion.form>
 

@@ -13,6 +13,7 @@ import SomethingWentWrong from "../pages/status/SomethingWentWrong";
 import Offline from "../pages/status/Offline";
 
 import Landing from "../pages/landing/Landing";
+import LearnMore from "../pages/landing/LearnMore";
 
 import Contact from "../pages/landing/Contact";
 
@@ -48,7 +49,7 @@ import StudentProfile from '../features/profile/StudentProfile';
 
 import Notification from '../features/dashboard/common/Notification';
 import Message from '../features/messaging/Message';
-import HelpSupport from '../features/dashboard/common/Help&Supp/HelpSupport';
+import HelpSupport from '../features/dashboard/common/HelpSupport';
 
 // Admin Dashboard
 import Overview from '../features/admin/overview';
@@ -75,6 +76,7 @@ function AppRoutes() {
 
                 {/* Public Routes */}
                 <Route path='/' element={<Landing />} />
+                <Route path='/learn-more' element={<LearnMore />} />
                 <Route path='/contact' element={<Contact />} />
 
                 <Route path='/login' element={<Login />} />
@@ -183,19 +185,21 @@ function AppRoutes() {
 
                     <Route path='tasks' element={<TaskApproval />} />
                     <Route
-
                         path="tasks/:id"
-
                         element={<TaskApprovalDetails />}
-
                     />
                     <Route path='reports' element={<Reports />} />
                     <Route path='certificates' element={<CertificateApproval />} />
                     <Route path='settings' element={<StudentSetting />} />
+                    <Route
+                        path="notification"
+                        element={<Notification />}
+                    />
+                    <Route
+                        path="message"
+                        element={<Message />}
+                    />
                 </Route>
-
-
-
 
                 {/* 404 Fallback */}
                 <Route path="*" element={<NotFound />} />

@@ -1,6 +1,7 @@
 import './Hero.css';
 
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 import api from "../../../services/api/axios";
 import { API } from "../../../services/api/endpoints";
@@ -9,10 +10,11 @@ import { Link } from 'react-router-dom';
 
 import { motion } from 'framer-motion';
 import { FaArrowRight, FaPlayCircle, FaShieldAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { heroContent } from './HeroData';
 import HeroImage from '../../../assets/logo/logo.png';
 
-import Button from '../../../components/ui/Button';
+import PublicButton from '../../../components/ui/Button/PublicButton';
 import Card from '../../../components/ui/Card';
 
 
@@ -33,9 +35,13 @@ const fadeUp = {
 };
 
 function Hero() {
+
+    const navigate = useNavigate();
+
     const [heroStats, setHeroStats] = useState({
         students: 0,
         internships: 0,
+        courses: 0,
         admins: 0
     });
 
@@ -52,11 +58,7 @@ function Hero() {
                 );
 
                 if (response.data.success) {
-
-                    setHeroStats(
-                        response.data.stats
-                    );
-
+                    setHeroStats(response.data.stats);
                 }
 
             } catch (error) {
@@ -65,6 +67,7 @@ function Hero() {
                     "Failed to fetch hero stats:",
                     error
                 );
+                toast.error("Failed to fetch hero stats")
 
             } finally {
 
@@ -91,17 +94,26 @@ function Hero() {
                         <motion.h1 id='hero-title' variants={fadeUp} initial='hidden' animate='show' custom={0.2}>{heroContent.title} <span> <FaShieldAlt /></span> <span>{heroContent.highlight}</span></motion.h1>
                         <motion.p id='hero-description' variants={fadeUp} initial='hidden' animate='show' custom={0.4}>{heroContent.description}</motion.p>
                         <motion.div id='hero-buttons' variants={fadeUp} initial='hidden' animate='show' custom={0.6}>
-                            <Link to={'/signup'}>
-                                <Button variant="primary" icon={<FaArrowRight />}>
-                                    {heroContent.primaryButton}
-                                </Button>
-                            </Link>
+                            <PublicButton
+                                variant="primary"
+                                size="medium"
+                                icon={<FaArrowRight />}
+                                iconPosition="right"
+                                onClick={() => navigate('/signup')}
+                            >
+                                {heroContent.primaryButton}
+                            </PublicButton>
 
-                            <Link to={'/learnmore'}>
-                                <Button variant='secondary' icon={<FaPlayCircle />}>
-                                    {heroContent.secondaryButton}
-                                </Button>
-                            </Link>
+                            <PublicButton
+                                variant="outline"
+                                background={false}
+                                size="medium"
+                                icon={<FaPlayCircle />}
+                                iconPosition="right"
+                                onClick={() => navigate('/learn-more')}
+                            >
+                                {heroContent.secondaryButton}
+                            </PublicButton>
                         </motion.div>
 
                         <motion.div className='hero-stats' variants={fadeUp} initial='hidden' animate='show' custom={0.8}>
@@ -109,7 +121,7 @@ function Hero() {
                                 <h2>
                                     {statsLoading
                                         ? "..."
-                                        : `${heroStats.students}+`}
+                                        : `${heroStats.students || 0}`}
                                 </h2>
                                 <p>Students</p>
                             </Card>
@@ -118,7 +130,7 @@ function Hero() {
                                 <h2>
                                     {statsLoading
                                         ? "..."
-                                        : `${heroStats.internships}+`}
+                                        : `${heroStats.internships || 0}`}
                                 </h2>
                                 <p>Internships</p>
                             </Card>
@@ -127,7 +139,16 @@ function Hero() {
                                 <h2>
                                     {statsLoading
                                         ? "..."
-                                        : `${heroStats.admins}+`}
+                                        : `${heroStats.courses || 0}`}
+                                </h2>
+                                <p>Courses</p>
+                            </Card>
+
+                            <Card className="stat-card">
+                                <h2>
+                                    {statsLoading
+                                        ? "..."
+                                        : `${heroStats.admins || 0}`}
                                 </h2>
                                 <p>Mentors</p>
                             </Card>

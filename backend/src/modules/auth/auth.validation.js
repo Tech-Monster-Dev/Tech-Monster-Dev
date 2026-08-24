@@ -21,6 +21,11 @@ export const registerSchema = z.object({
         .regex(/[0-9]/, "At least one number")
         .regex(/[^A-Za-z0-9]/, "At least one special character"),
 
+    terms: z
+        .literal(true, {
+            error: "You must accept the Terms & Conditions"
+        }),
+
     role: z
         .enum(["student", "admin"])
         .optional()

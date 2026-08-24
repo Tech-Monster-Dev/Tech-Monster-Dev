@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import api from "../../../../services/api/axios";
 
 import { saveTaskState } from "../../../../utils/taskStorage";
+import useAuth from "../../../../shared/hooks/useAuth";
 
 const useTaskSubmission = ({
     courseSlug,
@@ -15,8 +16,8 @@ const useTaskSubmission = ({
     setDeadlineMap,
     setSubmittedAtMap,
 }) => {
-    const [submitting, setSubmitting] =
-        useState(false);
+    const {user} = useAuth();
+    const [submitting, setSubmitting] = useState(false);
 
     const handleSubmit = async (
         taskId,
@@ -57,8 +58,7 @@ const useTaskSubmission = ({
                 }
             );
 
-            const submission =
-                response?.data?.submission || null;
+            const submission = response?.data?.submission || null;
 
             const nowIso = new Date().toISOString();
 
@@ -70,6 +70,7 @@ const useTaskSubmission = ({
             setTaskStatusMap(nextStatus);
 
             saveTaskState(
+                user?._id || user?.id,
                 courseSlug,
                 nextStatus
             );

@@ -7,7 +7,7 @@ export const signupSchema = z
         username: z
             .string()
             .trim()
-            .min(2, "First name must be at least 2 characters")
+            .min(3, "First name must be at least 3 characters")
             .max(30, "First name too long"),
 
         email: z

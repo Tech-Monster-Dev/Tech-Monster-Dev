@@ -1,5 +1,6 @@
 import User from "../user/models/User.js";
 import Internship from "../internships/models/Internship.js";
+import Course from "../courses/models/Course.js";
 
 import asyncHandler from "../../core/http/asyncHandler.js";
 
@@ -8,7 +9,8 @@ export const getHeroStats = asyncHandler(async (req, res) => {
     const [
         totalStudents,
         totalAdmins,
-        totalInternships
+        totalInternships,
+        totalCourses
     ] = await Promise.all([
 
         User.countDocuments({
@@ -23,6 +25,10 @@ export const getHeroStats = asyncHandler(async (req, res) => {
 
         Internship.countDocuments({
             isPublished: true
+        }),
+
+        Course.countDocuments({
+            isPublished: true
         })
 
     ]);
@@ -34,7 +40,8 @@ export const getHeroStats = asyncHandler(async (req, res) => {
         stats: {
             students: totalStudents,
             internships: totalInternships,
-            admins: totalAdmins
+            courses: totalCourses,
+            admins: totalAdmins,
         }
 
     });

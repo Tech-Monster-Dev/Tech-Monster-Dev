@@ -23,6 +23,7 @@ import { toast } from "react-toastify";
 function NotificationProvider({ children }) {
 
     const { user, token } = useAuth();
+    const userId = user?._id || user?.id;
 
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -34,7 +35,7 @@ function NotificationProvider({ children }) {
 
     const loadNotifications = useCallback(async () => {
 
-        if (!user?._id || !token) {
+        if (!userId || !token) {
             setNotifications([]);
             return;
         }
@@ -43,11 +44,29 @@ function NotificationProvider({ children }) {
 
             setLoading(true);
 
+            // console.log(
+            //     "📥 Loading notifications for:",
+            //     userId
+            // );
+
             const res = await getNotifications();
 
-            setNotifications(
-                res.notifications || []
-            );
+            // console.log(
+            //     "📦 FULL NOTIFICATION RESPONSE:",
+            //     res
+            // );
+
+            const notificationList =
+                Array.isArray(res?.notifications)
+                    ? res.notifications
+                    : [];
+
+            // console.log(
+            //     "📦 NOTIFICATION ARRAY:",
+            //     notificationList
+            // );
+
+            setNotifications(notificationList);
 
         } catch (error) {
 
@@ -62,7 +81,7 @@ function NotificationProvider({ children }) {
 
         }
 
-    }, [user?._id, token]);
+    }, [userId, token]);
 
 
     // ==========================================
@@ -71,11 +90,19 @@ function NotificationProvider({ children }) {
 
     useEffect(() => {
 
-        queueMicrotask(() => {
-            loadNotifications();
-        });
+        if (!userId || !token) {
+            return;
+        }
 
-    }, [loadNotifications]);
+        // This effect intentionally triggers the initial API load.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadNotifications();
+
+    }, [
+        loadNotifications,
+        userId,
+        token
+    ]);
 
 
     // ==========================================
@@ -84,61 +111,137 @@ function NotificationProvider({ children }) {
 
     useEffect(() => {
 
-        if (!user?._id || !token) {
+        if (!userId || !token) {
             return;
         }
 
+        const handleConnect = () => {
 
-        const handleNewNotification = (
-            notification
-        ) => {
+            // console.log(
+            //     "🟢 Notification socket connected:",
+            //     socket.id
+            // );
+
+            socket.emit(
+                "join",
+                String(userId)
+            );
+
+            // console.log(
+            //     "👤 Notification socket joined:",
+            //     userId
+            // );
+
+        };
+
+        const handleDisconnect = (reason) => {
 
             console.log(
-                "🔔 New notification:",
+                "🔴 Notification socket disconnected:",
+                reason
+            );
+
+        };
+
+        const handleConnectError = (error) => {
+
+            console.error(
+                "❌ Notification socket connection error:",
+                error.message
+            );
+
+        };
+
+        const handleNewNotification = (notification) => {
+
+            console.log(
+                "🔔 LIVE NOTIFICATION RECEIVED:",
                 notification
             );
 
-
-            // Add notification at top
             setNotifications((prev) => [
 
                 notification,
 
                 ...prev.filter(
-                    item =>
+                    (item) =>
                         item._id !== notification._id
                 )
 
             ]);
 
-
-            // Live popup
             toast.info(
 
                 <div>
+
                     <strong>
                         {notification.title}
                     </strong>
 
-                    <div style={{
-                        marginTop: "4px"
-                    }}>
+                    <div
+                        style={{
+                            marginTop: "4px"
+                        }}
+                    >
                         {notification.message}
                     </div>
+
                 </div>
 
             );
 
         };
 
+        socket.on(
+            "connect",
+            handleConnect
+        );
+
+        socket.on(
+            "disconnect",
+            handleDisconnect
+        );
+
+        socket.on(
+            "connect_error",
+            handleConnectError
+        );
 
         socket.on(
             "newNotification",
             handleNewNotification
         );
 
+        if (!socket.connected) {
+
+            // console.log(
+            //     "🔌 Connecting notification socket..."
+            // );
+
+            socket.connect();
+
+        } else {
+
+            handleConnect();
+
+        }
 
         return () => {
+
+            socket.off(
+                "connect",
+                handleConnect
+            );
+
+            socket.off(
+                "disconnect",
+                handleDisconnect
+            );
+
+            socket.off(
+                "connect_error",
+                handleConnectError
+            );
 
             socket.off(
                 "newNotification",
@@ -147,7 +250,7 @@ function NotificationProvider({ children }) {
 
         };
 
-    }, [user?._id, token]);
+    }, [userId, token]);
 
 
     // ==========================================
@@ -164,17 +267,18 @@ function NotificationProvider({ children }) {
 
             setNotifications((prev) =>
 
-                prev.map((notification) =>
+                prev.map(
+                    (notification) =>
 
-                    notification._id === id
+                        String(notification._id) ===
+                            String(id)
 
-                        ? {
-                            ...notification,
-                            isRead: true
-                        }
+                            ? {
+                                ...notification,
+                                isRead: true
+                            }
 
-                        : notification
-
+                            : notification
                 )
 
             );
@@ -210,10 +314,12 @@ function NotificationProvider({ children }) {
 
             setNotifications((prev) =>
 
-                prev.map((notification) => ({
-                    ...notification,
-                    isRead: true
-                }))
+                prev.map(
+                    (notification) => ({
+                        ...notification,
+                        isRead: true
+                    })
+                )
 
             );
 
@@ -248,8 +354,9 @@ function NotificationProvider({ children }) {
             setNotifications((prev) =>
 
                 prev.filter(
-                    notification =>
-                        notification._id !== id
+                    (notification) =>
+                        String(notification._id) !==
+                        String(id)
                 )
 
             );
@@ -274,7 +381,7 @@ function NotificationProvider({ children }) {
 
     const unreadCount =
         notifications.filter(
-            notification =>
+            (notification) =>
                 !notification.isRead
         ).length;
 

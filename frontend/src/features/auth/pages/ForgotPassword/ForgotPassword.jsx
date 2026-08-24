@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AuthLayout from "../../../../layouts/AuthLayout";
 
 import Input from "../../../../components/ui/Input";
-import Button from "../../../../components/ui/Button";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 import { forgotPasswordSchema } from "../../../../validations/auth/forgotPasswordSchema";
 
@@ -140,31 +140,13 @@ function ForgotPassword() {
 
                     }
 
-                    <Button
-
+                    <AuthButton
                         type="submit"
-
                         fullWidth
-
                         disabled={loading}
-
                     >
-
-                        {
-
-                            loading
-
-                                ?
-
-                                "Sending OTP..."
-
-                                :
-
-                                "Send OTP"
-
-                        }
-
-                    </Button>
+                        {loading ? "Sending OTP..." : "Send OTP"}
+                    </AuthButton>
 
                     <p className="login-back">
 

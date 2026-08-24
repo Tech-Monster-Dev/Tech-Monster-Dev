@@ -1,6 +1,6 @@
 import './Navbar.css';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,8 +9,11 @@ import { navLinks } from './Navbardata.js';
 import Systembar from "../common/navbar/SystemBar";
 
 import logo from "../../assets/logo/logo.png"
+import PublicButton from '../ui/Button/PublicButton/PublicButton.jsx';
 
 function Navbar() {
+
+    const navigate = useNavigate();
 
     const [isOpen, setIsOpen] = useState(false);
     const [activeLink, setActiveLink] = useState("#");
@@ -64,9 +67,23 @@ function Navbar() {
 
                         <div id="auth-buttons">
 
-                            <Link to={'/login'} id='login-btn'>Login</Link>
+                            <PublicButton
+                                variant="outline"
+                                background={false}
+                                size="medium"
+                                onClick={() => navigate('/login')}
+                            >
+                                Sign in
+                            </PublicButton>
+                            
+                            <PublicButton
+                                variant="primary"
+                                size="medium"
+                                onClick={() => navigate('/signup')}
+                            >
+                                Get Started
+                            </PublicButton>
 
-                            <Link to={'/signup'} id='signup-btn'>Sign Up</Link>
 
                         </div>
                     </div>

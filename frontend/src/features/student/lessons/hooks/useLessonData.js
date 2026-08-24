@@ -55,7 +55,12 @@ const useLessonData = (
                     courseSlug
                 );
                 const response = await api.get(endpoint);
-                
+
+                console.log("📚 CONTENT TYPE:", contentType);
+                console.log("📚 COURSE SLUG:", courseSlug);
+                console.log("📚 ENDPOINT:", endpoint);
+                console.log("📚 API RESPONSE:", response?.data);
+
                 if (!mounted) return;
 
                 const data =

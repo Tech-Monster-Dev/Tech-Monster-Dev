@@ -1,9 +1,9 @@
 import "./Contact.css";
-import { Link } from 'react-router-dom';
 import { contactInfo } from "./ContactData";
 import { motion } from "framer-motion";
 
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import emailjs from "@emailjs/browser";
 
@@ -12,8 +12,12 @@ import Button from "../../../components/ui/Button";
 import Input from '../../../components/ui/Input';
 import Textarea from '../../../components/ui/TextArea';
 
+import BackButton from "../../../components/ui/Button/BackButton/BackButton";
+
 
 function Contact() {
+
+  const location = useLocation();
 
   const [errors, setErrors] = useState({});
 
@@ -128,12 +132,13 @@ function Contact() {
     <section className="section" id="contact">
       <div id="contactPage">
 
-        <div id="contact-back-wrapper">
-          <Link to="/" className="contact-back-link">
-            <span id="contact-back-arrow">←</span>
-            Back to Landing Page
-          </Link>
-        </div>
+        {location.pathname === "/contact" && (
+          <BackButton
+            to="/"
+            label="Back to Landing Page"
+            className="contact-back-button"
+          />
+        )}
 
         <SectionHeader
           badge="CONTACT US"
