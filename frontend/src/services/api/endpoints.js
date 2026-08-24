@@ -28,6 +28,10 @@ export const API = {
   },
 
 
+  USER: {
+    DELETE_ACCOUNT: "/users/delete-account"
+  },
+
   STUDENT: {
 
     PROFILE: "/student/profile",
