@@ -4,7 +4,7 @@ import "../AllInternship/AllInternship.css";
 
 
 
-const AllCourses = ({ courses = [], refreshDashboard }) => {
+const AllCourses = ({ courses = [], refreshDashboard, setLoading }) => {
   const allCount = Array.isArray(courses) ? courses.length : 0;
 
   return (
@@ -24,6 +24,7 @@ const AllCourses = ({ courses = [], refreshDashboard }) => {
         {courses.map((course, index) => (
           
             <CourseCard
+              setLoading={setLoading}
               key={course._id || course.slug}
               index={index}
               internship={course}

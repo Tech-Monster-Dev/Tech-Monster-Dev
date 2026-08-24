@@ -51,6 +51,7 @@ const useTaskData = ({
     const [deadlineMap, setDeadlineMap] = useState({});
     const [submissionIdMap, setSubmissionIdMap] = useState({});
     const [submittedAtMap, setSubmittedAtMap] = useState({});
+    const [reviewCommentMap, setReviewCommentMap] = useState({});
     const [initialTaskId, setInitialTaskId] = useState(null);
 
     const applySubmissionState = useCallback(
@@ -150,6 +151,17 @@ const useTaskData = ({
                             submission.expiredAt ||
                             null,
                     },
+                })
+            );
+
+            // ==============================
+            // REVIEW COMMENT
+            // ==============================
+
+            setReviewCommentMap(
+                (prev) => ({
+                    ...prev,
+                    [key]: submission.reviewComment || "",
                 })
             );
 
@@ -388,13 +400,14 @@ const useTaskData = ({
                             );
 
                         const submissions =
-                            subRes?.data?.submissions || [];
+                            subRes?.submissions || [];
 
                         if (submissions.length) {
                             const serverMap = {};
                             const timeMap = {};
                             const deadlineInfo = {};
                             const submissionIds = {};
+                            const reviewComments = {};
 
                             // Prefer APPROVED submission for the same task.
                             // Otherwise keep the newest submission because
@@ -456,6 +469,9 @@ const useTaskData = ({
 
                                 submissionIds[key] =
                                     submission._id;
+
+                                reviewComments[key] =
+                                    submission.reviewComment || "";
                             });
 
                             const merged = {
@@ -468,6 +484,9 @@ const useTaskData = ({
                             setDeadlineMap(deadlineInfo);
                             setSubmissionIdMap(
                                 submissionIds
+                            );
+                            setReviewCommentMap(
+                                reviewComments
                             );
 
                             saveTaskState(
@@ -708,6 +727,8 @@ const useTaskData = ({
         setSubmissionIdMap,
         submittedAtMap,
         setSubmittedAtMap,
+        reviewCommentMap,
+        setReviewCommentMap,
         applySubmissionState,
     };
 };

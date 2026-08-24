@@ -15,6 +15,7 @@ const useTaskSubmission = ({
     setTaskStatusMap,
     setDeadlineMap,
     setSubmittedAtMap,
+    setReviewCommentMap,
 }) => {
     const {user} = useAuth();
     const [submitting, setSubmitting] = useState(false);
@@ -83,6 +84,13 @@ const useTaskSubmission = ({
                         nowIso,
                 })
             );
+
+            if (setReviewCommentMap) {
+                setReviewCommentMap((prev) => ({
+                    ...prev,
+                    [taskId]: "",
+                }));
+            }
 
             if (setDeadlineMap && submission) {
                 setDeadlineMap((prev) => ({

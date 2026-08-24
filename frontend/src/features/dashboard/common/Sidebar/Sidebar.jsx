@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
+
+
 import SearchBar from "../../../../components/ui/SearchBar";
 import Loader from "../../../../components/ui/Loader";
 
@@ -30,6 +32,7 @@ import {
 function Sidebar({
     role = "student",
     isCourseCompleted = false,
+    dailyTaskUnlocked = false,
     collapsed = false,
     onToggleCollapse,
     mobileSidebarOpen = false,
@@ -40,6 +43,8 @@ function Sidebar({
     const location = useLocation();
 
     const [loading, setLoading] = useState(false);
+
+    const dailyTaskLocked = role === "student" && !dailyTaskUnlocked;
 
     useEffect(() => {
         if (mobileSidebarOpen) {
@@ -68,7 +73,8 @@ function Sidebar({
         {
             name: "Daily Task",
             path: taskPath,
-            icon: <FiCheckSquare />
+            icon: <FiCheckSquare />,
+            locked: dailyTaskLocked,
         },
 
         { name: "Attendance", path: "/student/attendance", icon: <FiCalendar /> },
@@ -90,9 +96,23 @@ function Sidebar({
     const navLinks = role === 'admin' ? adminLinks : studentLinks;
 
     const handleLinkClick = (e, link) => {
-        if (link.locked) {
-            e.preventDefault();
-            toast.warning("Complete all internship tasks to unlock your certificate!");
+        if (!link.locked) {
+            return;
+        }
+
+        e.preventDefault();
+
+        if (link.name === "Certificate") {
+            toast.warning(
+                "Complete all internship tasks to unlock your certificate!"
+            );
+            return;
+        }
+
+        if (link.name === "Daily Task") {
+            toast.warning(
+                "Complete the previous module tasks to unlock Daily Task!"
+            );
         }
     };
 

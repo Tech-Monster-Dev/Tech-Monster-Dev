@@ -94,7 +94,14 @@ const useApprovedModules = (
                             (module.sections || [])
                                 .flatMap(
                                     (section) =>
-                                        section.tasks || []
+                                        (section.tasks || []).map(
+                                            (task) => ({
+                                                ...task,
+                                                lessonId:
+                                                    task.lessonId ||
+                                                    section.id
+                                            })
+                                        )
                                 );
 
 
@@ -128,6 +135,17 @@ const useApprovedModules = (
                                             lessonId,
                                             taskId,
                                         ].join("_");
+
+                                    console.log(
+                                        "🔎 MODULE TASK KEY CHECK:",
+                                        {
+                                            key,
+                                            approved: approvedTaskKeys.has(key),
+                                            approvedKeys: [
+                                                ...approvedTaskKeys
+                                            ]
+                                        }
+                                    );
 
                                     return approvedTaskKeys.has(
                                         key

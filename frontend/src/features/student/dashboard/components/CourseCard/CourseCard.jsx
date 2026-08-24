@@ -7,13 +7,14 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../../../services/api/axios";
 import { API } from "../../../../../services/api/endpoints";
 
-const CourseCard = ({ internship, refreshDashboard, index, type }) => {
+const CourseCard = ({ internship, refreshDashboard, index, type, setLoading }) => {
   const navigate = useNavigate();
   const isCourse = type === "course";
   const label = isCourse ? "Course" : "Internship";
 
   const handleJoin = async () => {
     try {
+      setLoading(true);
       await api.post(isCourse ? API.COURSES.JOIN(internship._id) : API.INTERNSHIPS.JOIN(internship._id));
 
       await refreshDashboard?.();
@@ -25,6 +26,8 @@ const CourseCard = ({ internship, refreshDashboard, index, type }) => {
         `Unable to join ${label.toLowerCase()}`
       );
 
+    } finally{
+      setLoading(false);
     }
   };
 
