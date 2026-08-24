@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import api from "../../../../services/api/axios";
 import { getProfile } from "../../../../services/api/profileService";
@@ -27,7 +27,7 @@ const useTaskData = ({
     slug,
 }) => {
 
-    const {user} = useAuth();
+    const { user } = useAuth();
 
     const getApiResource = (type) => {
         return type === "internship"
@@ -53,108 +53,128 @@ const useTaskData = ({
     const [submittedAtMap, setSubmittedAtMap] = useState({});
     const [initialTaskId, setInitialTaskId] = useState(null);
 
-    const applySubmissionState = (
-        submission
-    ) => {
+    const applySubmissionState = useCallback(
+        (submission) => {
 
-        if (
-            !submission?.moduleId ||
-            !submission?.taskId
-        ) {
-            return;
-        }
+            if (
+                !submission?.moduleId ||
+                !submission?.taskId
+            ) {
+                return;
+            }
 
-        const key =
-            getTaskKey(
+            const key =
+                getTaskKey(
+                    submission
+                );
+
+            console.log(
+                "REALTIME SUBMISSION RECEIVED:",
                 submission
             );
 
-        if (!key) {
-            return;
-        }
+            console.log(
+                "REALTIME TASK KEY:",
+                key,
+                "STATUS:",
+                submission.status
+            );
 
-        // ==============================
-        // STATUS
-        // ==============================
-
-        setTaskStatusMap(
-            (prev) => {
-
-                const next = {
-                    ...prev,
-                    [key]:
-                        submission.status,
-                };
-
-                if (courseSlug) {
-                    saveTaskState(
-                        courseSlug,
-                        next
-                    );
-                }
-
-                return next;
+            if (!key) {
+                return;
             }
-        );
 
-        // ==============================
-        // SUBMITTED AT
-        // ==============================
+            // ==============================
+            // STATUS
+            // ==============================
 
-        if (
-            submission.submittedAt
-        ) {
+            setTaskStatusMap(
+                (prev) => {
 
-            setSubmittedAtMap(
+                    const next = {
+                        ...prev,
+                        [key]:
+                            submission.status,
+                    };
+
+                    if (courseSlug) {
+                        saveTaskState(
+                            user?._id || user?.id,
+                            courseSlug,
+                            next
+                        );
+                    }
+
+                    return next;
+                }
+            );
+
+            // ==============================
+            // SUBMITTED AT
+            // ==============================
+
+            if (
+                submission.submittedAt
+            ) {
+
+                setSubmittedAtMap(
+                    (prev) => ({
+                        ...prev,
+
+                        [key]:
+                            submission.submittedAt,
+                    })
+                );
+            }
+
+            // ==============================
+            // DEADLINE
+            // ==============================
+
+            setDeadlineMap(
                 (prev) => ({
+
                     ...prev,
 
-                    [key]:
-                        submission.submittedAt,
+                    [key]: {
+
+                        unlockedAt:
+                            submission.unlockedAt ||
+                            null,
+
+                        expiresAt:
+                            submission.expiresAt ||
+                            null,
+
+                        expiredAt:
+                            submission.expiredAt ||
+                            null,
+                    },
                 })
             );
-        }
 
-        // ==============================
-        // DEADLINE
-        // ==============================
+            // ==============================
+            // SUBMISSION ID
+            // ==============================
 
-        setDeadlineMap(
-            (prev) => ({
+            setSubmissionIdMap(
+                (prev) => ({
 
-                ...prev,
+                    ...prev,
 
-                [key]: {
+                    [key]:
+                        submission._id,
+                })
+            );
+        },
 
-                    unlockedAt:
-                        submission.unlockedAt ||
-                        null,
+        [
+            courseSlug,
+            user?._id,
+            user?.id,
+        ]
 
-                    expiresAt:
-                        submission.expiresAt ||
-                        null,
-
-                    expiredAt:
-                        submission.expiredAt ||
-                        null,
-                },
-            })
-        );
-
-        // ==============================
-        // SUBMISSION ID
-        // ==============================
-
-        setSubmissionIdMap(
-            (prev) => ({
-
-                ...prev,
-
-                [key]:
-                    submission._id,
-            })
-        );
-    };
+    );
 
     const resolveContentSlug = async () => {
         const type = String(contentType || "")
@@ -347,7 +367,7 @@ const useTaskData = ({
                     clearTaskState(user?._id || user?.id, targetSlug);
                     stored = {};
                 } else {
-                    stored = loadTaskState(user?._id || user?.id,targetSlug);
+                    stored = loadTaskState(user?._id || user?.id, targetSlug);
                 }
 
                 setTaskStatusMap(stored);
@@ -355,6 +375,10 @@ const useTaskData = ({
                 // -----------------------------------------
                 // BACKEND SUBMISSIONS
                 // -----------------------------------------
+                // TESTING MODE:
+                // Ignore previously stored server submissions
+                // on refresh so testing always starts fresh.
+                // Database records are NOT deleted.
 
                 if (!TESTING_RESET_ON_REFRESH) {
                     try {
@@ -372,7 +396,39 @@ const useTaskData = ({
                             const deadlineInfo = {};
                             const submissionIds = {};
 
+                            // Prefer APPROVED submission for the same task.
+                            // Otherwise keep the newest submission because
+                            // backend returns submissions sorted newest first.
+                            const preferredSubmissions = {};
+
                             submissions.forEach((submission) => {
+                                const key =
+                                    getTaskKey(submission);
+
+                                if (!key) return;
+
+                                const current =
+                                    preferredSubmissions[key];
+
+                                if (!current) {
+                                    preferredSubmissions[key] =
+                                        submission;
+                                    return;
+                                }
+
+                                if (
+                                    submission.status === "approved" &&
+                                    current.status !== "approved"
+                                ) {
+                                    preferredSubmissions[key] =
+                                        submission;
+                                }
+                            });
+
+                            Object.values(
+                                preferredSubmissions
+                            ).forEach((submission) => {
+
                                 const key =
                                     getTaskKey(submission);
 
@@ -435,11 +491,82 @@ const useTaskData = ({
 
                 console.log("Flat Tasks:=", flatTasks);
 
+                // =========================================
+                // SERVER-AUTHORITATIVE TASK STATE
+                // =========================================
+                // IMPORTANT:
+                // Do NOT use only local "stored" state here.
+                // Backend submission status is the source of truth.
+                // This also keeps unlockedAt/expiresAt available
+                // after refresh without restarting the timer.
+
                 const latestMap = {
                     ...stored,
                 };
 
-                console.log("Latest Map:=", latestMap);
+                if (!TESTING_RESET_ON_REFRESH) {
+                    try {
+                        const serverResponse =
+                            await getMyCourseSubmissions(
+                                targetSlug
+                            );
+
+                        const serverSubmissions =
+                            serverResponse?.data?.submissions || [];
+
+                        serverSubmissions.forEach((submission) => {
+                            const key =
+                                getTaskKey(submission);
+
+                            if (!key) return;
+
+                            latestMap[key] =
+                                submission.status;
+
+                            // Keep the server deadline in the same
+                            // deadlineMap key used by TaskItem/TaskDeadlineCard.
+                            setDeadlineMap((prev) => ({
+                                ...prev,
+                                [key]: {
+                                    unlockedAt:
+                                        submission.unlockedAt || null,
+
+                                    expiresAt:
+                                        submission.expiresAt || null,
+
+                                    expiredAt:
+                                        submission.expiredAt || null,
+                                },
+                            }));
+
+                            if (submission.submittedAt) {
+                                setSubmittedAtMap((prev) => ({
+                                    ...prev,
+                                    [key]:
+                                        submission.submittedAt,
+                                }));
+                            }
+
+                            if (submission._id) {
+                                setSubmissionIdMap((prev) => ({
+                                    ...prev,
+                                    [key]:
+                                        submission._id,
+                                }));
+                            }
+                        });
+                    } catch (err) {
+                        console.log(
+                            "Server state sync error:",
+                            err
+                        );
+                    }
+                }
+
+                console.log(
+                    "SERVER AUTHORITATIVE TASK MAP:",
+                    latestMap
+                );
 
                 if (!TESTING_RESET_ON_REFRESH) {
                     try {
@@ -448,14 +575,47 @@ const useTaskData = ({
                                 targetSlug
                             );
 
+                        const preferredForAvailability = {};
+
                         (
                             subRes?.data?.submissions || []
                         ).forEach((submission) => {
-                            latestMap[
-                                getTaskKey(submission)
-                            ] = submission.status;
+
+                            const key =
+                                getTaskKey(submission);
+
+                            if (!key) return;
+
+                            const current =
+                                preferredForAvailability[key];
+
+                            if (!current) {
+                                preferredForAvailability[key] =
+                                    submission;
+                                return;
+                            }
+
+                            // APPROVED always wins.
+                            if (
+                                submission.status === "approved" &&
+                                current.status !== "approved"
+                            ) {
+                                preferredForAvailability[key] =
+                                    submission;
+                            }
                         });
-                    } catch(err) {
+
+                        Object.values(
+                            preferredForAvailability
+                        ).forEach((submission) => {
+
+                            const key =
+                                getTaskKey(submission);
+
+                            latestMap[key] =
+                                submission.status;
+                        });
+                    } catch (err) {
                         console.log("Submission Error 2:=", err);
                         toast.error("Subbmission Error 2")
                     }
@@ -471,7 +631,7 @@ const useTaskData = ({
                             status !== "expired"
                         );
                     }) || flatTasks[0];
-                
+
                 console.log("First Available:=", firstAvailable);
                 return firstAvailable?.id || null;
             } catch (error) {
@@ -516,7 +676,10 @@ const useTaskData = ({
                 setInitialTaskId(
                     firstAvailable
                 );
-                console.log("Initial Task ID:=", initialTaskId);
+                console.log(
+                    "INITIAL TASK ID SET TO:",
+                    firstAvailable
+                );
             }
         });
 

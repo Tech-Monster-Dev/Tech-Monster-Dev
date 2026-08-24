@@ -1,4 +1,8 @@
-import { useEffect } from "react";
+import {
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 
 import { toast } from "react-toastify";
 
@@ -13,31 +17,120 @@ const useTaskRealtime = ({
     setActiveTaskId,
 }) => {
     useEffect(() => {
-        if (!user?._id && !user?.id) {
-            return;
-        }
 
-        if (!socket.connected) {
-            socket.connect();
+        console.log(
+            "🔥 TASK REALTIME EFFECT START",
+            {
+                userId: user?._id || user?.id,
+                courseSlug,
+                socketConnected: socket.connected,
+                socketId: socket.id,
+            }
+        );
+
+        if (!user?._id && !user?.id) {
+
+            console.log(
+                "❌ TASK REALTIME: NO USER"
+            );
+
+            return;
         }
 
         const userId = String(
             user._id || user.id
         );
 
-        socket.emit("join", userId);
+        const handleConnect = () => {
+
+            console.log(
+                "🟢 TASK SOCKET CONNECTED:",
+                socket.id
+            );
+
+            console.log(
+                "👤 TASK SOCKET JOIN:",
+                userId
+            );
+
+            socket.emit(
+                "join",
+                userId
+            );
+        };
+
+        const handleDisconnect = (reason) => {
+
+            console.log(
+                "🔴 TASK SOCKET DISCONNECTED:",
+                reason
+            );
+        };
+
+        const handleConnectError = (error) => {
+
+            console.error(
+                "❌ TASK SOCKET ERROR:",
+                error.message
+            );
+        };
+
+        socket.on(
+            "connect",
+            handleConnect
+        );
+
+        socket.on(
+            "disconnect",
+            handleDisconnect
+        );
+
+        socket.on(
+            "connect_error",
+            handleConnectError
+        );
+
+        if (!socket.connected) {
+
+            console.log(
+                "🔌 TASK SOCKET CONNECTING..."
+            );
+
+            socket.connect();
+
+        } else {
+
+            console.log(
+                "🟢 TASK SOCKET ALREADY CONNECTED:",
+                socket.id
+            );
+
+            socket.emit(
+                "join",
+                userId
+            );
+        }
 
         const handleApproved = ({
             submission,
             unlockedSubmission,
         }) => {
+
+            console.log(
+                "🚨🚨 TASK APPROVED EVENT RECEIVED 🚨🚨",
+                {
+                    submission,
+                    unlockedSubmission,
+                    socketId: socket.id,
+                    connected: socket.connected,
+                }
+            );
             if (submission) {
                 applySubmissionState(submission);
 
                 toast.success(
-                    `Approved: ${
-                        submission.taskTitle ||
-                        submission.taskId
+                    `Approved: ${submission.taskTitle ||
+                    submission.taskId
                     }`
                 );
             }
@@ -51,9 +144,8 @@ const useTaskRealtime = ({
                     getTaskKey(unlockedSubmission);
 
                 toast.info(
-                    `Unlocked: ${
-                        unlockedSubmission.taskTitle ||
-                        unlockedSubmission.taskId
+                    `Unlocked: ${unlockedSubmission.taskTitle ||
+                    unlockedSubmission.taskId
                     }`
                 );
 
@@ -69,9 +161,8 @@ const useTaskRealtime = ({
             applySubmissionState(submission);
 
             toast.success(
-                `Deadline extended: ${
-                    submission.taskTitle ||
-                    submission.taskId
+                `Deadline extended: ${submission.taskTitle ||
+                submission.taskId
                 }`
             );
         };
@@ -82,9 +173,8 @@ const useTaskRealtime = ({
             applySubmissionState(submission);
 
             toast.error(
-                `Expired: ${
-                    submission.taskTitle ||
-                    submission.taskId
+                `Expired: ${submission.taskTitle ||
+                submission.taskId
                 }`
             );
         };
@@ -97,9 +187,8 @@ const useTaskRealtime = ({
             const taskKey = getTaskKey(submission);
 
             toast.info(
-                `Unlocked: ${
-                    submission.taskTitle ||
-                    submission.taskId
+                `Unlocked: ${submission.taskTitle ||
+                submission.taskId
                 }`
             );
 
@@ -114,9 +203,8 @@ const useTaskRealtime = ({
             applySubmissionState(submission);
 
             toast.warning(
-                `Needs correction: ${
-                    submission.taskTitle ||
-                    submission.taskId
+                `Needs correction: ${submission.taskTitle ||
+                submission.taskId
                 }`
             );
         };
@@ -147,6 +235,26 @@ const useTaskRealtime = ({
         );
 
         return () => {
+
+            console.log(
+                "🧹 TASK REALTIME CLEANUP"
+            );
+
+            socket.off(
+                "connect",
+                handleConnect
+            );
+
+            socket.off(
+                "disconnect",
+                handleDisconnect
+            );
+
+            socket.off(
+                "connect_error",
+                handleConnectError
+            );
+
             socket.off(
                 "taskApproved",
                 handleApproved

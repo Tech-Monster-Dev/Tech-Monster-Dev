@@ -386,98 +386,39 @@ const unlockTaskForStudent = async (
         });
 
     // =========================================
-    // TASK IS AVAILABLE -> CREATE REAL SUBMISSION
+    // TASK IS AVAILABLE — DO NOT CREATE SUBMISSION
     // =========================================
     //
-    // The task unlock itself is persisted in MongoDB.
-    // This is the SERVER-AUTHORITATIVE timer source.
-    //
-    // createdAt  -> document creation time
-    // unlockedAt -> exact unlock time
-    // expiresAt  -> unlockedAt + 48 hours
-    //
-    // IMPORTANT:
-    // If the document already exists, NEVER recreate it
-    // and NEVER restart its timer.
+    // A task becoming available is NOT a submission.
+    // Submission documents are created only by submitCode()
+    // after the student actually submits code.
 
     if (!submission) {
-
-        const internship =
-            await Internship.findOne({
-                slug: normalizedCourseSlug,
-            });
-
-        const unlockedAt =
-            new Date();
-
-        const expiresAt =
-            new Date(
-                unlockedAt.getTime() +
-                DEADLINE_MS
-            );
-
-        submission =
-            await Submission.create({
-
-                student:
-                    studentId,
-
-                internship:
-                    internship?._id ||
-                    null,
-
-                courseSlug:
-                    normalizedCourseSlug,
-
-                moduleId:
-                    normalizedModuleId,
-
-                moduleTitle:
-                    taskInfo.moduleTitle ||
-                    "",
-
-                lessonId:
-                    normalizedLessonId,
-
-                taskId:
-                    normalizedTaskId,
-
-                taskTitle:
-                    taskInfo.taskTitle ||
-                    "Task",
-
-                problemStatement:
-                    taskInfo.problemStatement ||
-                    "",
-
-                status:
-                    "unlocked",
-
-                unlockedAt,
-
-                expiresAt,
-
-                expiredAt:
-                    null,
-            });
-
-        emitToUser(
-            studentId,
-            "taskUnlocked",
-            {
-                submission,
-                taskKey:
-                    getSubmissionTaskKey(
-                        submission
-                    ),
-            }
-        );
-
-        return submission;
+        return {
+            student: studentId,
+            courseSlug: normalizedCourseSlug,
+            moduleId: normalizedModuleId,
+            moduleTitle:
+                taskInfo.moduleTitle ||
+                "",
+            lessonId: normalizedLessonId,
+            taskId: normalizedTaskId,
+            taskTitle:
+                taskInfo.taskTitle ||
+                "Task",
+            problemStatement:
+                taskInfo.problemStatement ||
+                "",
+            status: "unlocked",
+            unlockedAt: null,
+            expiresAt: null,
+            expiredAt: null,
+            isVirtualUnlock: true,
+        };
     }
 
     // =========================================
-    // LOCKED -> UNLOCKED
+    // LOCKED → UNLOCKED
     // =========================================
 
     if (
@@ -584,8 +525,6 @@ export const submitCode = asyncHandler(async (req, res) => {
     const normalizedLessonId = String(lessonId || "").trim();
 
     // Upsert the submission so a task has only one active record.
-    let isNewSubmission = false;
-
     let submission = await Submission.findOne({
         student: req.user._id,
         courseSlug: normalizedCourseSlug,
@@ -595,8 +534,6 @@ export const submitCode = asyncHandler(async (req, res) => {
     });
 
     if (!submission) {
-        isNewSubmission = true;
-
         const courseData = await readCourseData(normalizedCourseSlug);
         const orderedTasks = getOrderedCourseTasks(courseData);
 
@@ -685,20 +622,6 @@ export const submitCode = asyncHandler(async (req, res) => {
 
     if (submission.status === "locked") {
         throw new AppError("This task is locked until the previous task is approved.", 403);
-    }
-
-    // IMPORTANT:
-    // Do not allow an already-pending submission to be submitted again.
-    // Re-submitting was resetting submittedAt and therefore restarting
-    // the task timer from the beginning.
-    if (
-        !isNewSubmission &&
-        submission.status === "pending"
-    ) {
-        throw new AppError(
-            "This task is already submitted and is waiting for admin approval.",
-            400
-        );
     }
 
     if (submission.status === "approved") {
@@ -1080,44 +1003,10 @@ export const approveSubmission = asyncHandler(async (req, res) => {
 
     await submission.save();
 
-    // =========================================
-    // APPROVE -> UNLOCK NEXT TASK
-    // =========================================
-
-    const courseSlug = normalizeSlug(
-        submission.courseSlug
-    );
-
-    const courseData =
-        await readCourseData(courseSlug);
-
-    const orderedTasks =
-        getOrderedCourseTasks(courseData);
-
-    const currentTaskIndex =
-        orderedTasks.findIndex(
-            (task) =>
-                String(task.moduleId || "") ===
-                    String(submission.moduleId || "") &&
-                String(task.lessonId || "") ===
-                    String(submission.lessonId || "") &&
-                String(task.taskId || "") ===
-                    String(submission.taskId || "")
-        );
-
-    const nextTask =
-        currentTaskIndex >= 0
-            ? orderedTasks[currentTaskIndex + 1]
-            : null;
-
-    const unlockedSubmission =
-        nextTask
-            ? await unlockTaskForStudent(
-                submission.student,
-                courseSlug,
-                nextTask
-            )
-            : null;
+    // Next tasks are not automatically unlocked here.
+    // Module availability is determined by lesson completion
+    // and previous module approval on the student side.
+    const unlockedSubmission = null;
 
     await Notification.create({
         user: submission.student,

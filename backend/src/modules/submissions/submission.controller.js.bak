@@ -1080,44 +1080,10 @@ export const approveSubmission = asyncHandler(async (req, res) => {
 
     await submission.save();
 
-    // =========================================
-    // APPROVE -> UNLOCK NEXT TASK
-    // =========================================
-
-    const courseSlug = normalizeSlug(
-        submission.courseSlug
-    );
-
-    const courseData =
-        await readCourseData(courseSlug);
-
-    const orderedTasks =
-        getOrderedCourseTasks(courseData);
-
-    const currentTaskIndex =
-        orderedTasks.findIndex(
-            (task) =>
-                String(task.moduleId || "") ===
-                    String(submission.moduleId || "") &&
-                String(task.lessonId || "") ===
-                    String(submission.lessonId || "") &&
-                String(task.taskId || "") ===
-                    String(submission.taskId || "")
-        );
-
-    const nextTask =
-        currentTaskIndex >= 0
-            ? orderedTasks[currentTaskIndex + 1]
-            : null;
-
-    const unlockedSubmission =
-        nextTask
-            ? await unlockTaskForStudent(
-                submission.student,
-                courseSlug,
-                nextTask
-            )
-            : null;
+    // Next tasks are not automatically unlocked here.
+    // Module availability is determined by lesson completion
+    // and previous module approval on the student side.
+    const unlockedSubmission = await unlockNextTask(submission);
 
     await Notification.create({
         user: submission.student,

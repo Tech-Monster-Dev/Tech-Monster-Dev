@@ -55,11 +55,13 @@ export default function LessonSidebar({
                             lesson={lesson}
                             key={lesson.id}
                             module={lesson.sections}
+                            moduleId={lesson.id}
                             activeLesson={activeLesson}
                             setActiveLesson={setActiveLesson}
                             courseSlug={courseSlug}
                             contentType={contentType}
                             approvedModuleIds={approvedModuleIds}
+                            canStart={lesson.canStart !== false}
                             moduleNumber={moduleIndex + 1}
                         />
 

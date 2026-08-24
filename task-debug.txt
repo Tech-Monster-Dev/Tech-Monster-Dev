@@ -1,0 +1,1391 @@
+
+====================================================================================================
+FILE: frontend/src/features/student/tasks/Task.jsx
+====================================================================================================
+
+--- LINES 38-448 ---
+38: const Task = () => {
+39:     const {
+40:         type: routeType,
+41:         slug,
+42:         courseSlug: routeCourseSlug,
+43:     } = useParams();
+44:     const location = useLocation();
+45:     const contentType = routeType === "internship" ? "internship" : "course";
+46:     const taskScope = location.state || {};
+47: 
+48:     const { user } = useAuth();
+49: 
+50:     const [activeTaskId, setActiveTaskId] = useState(null);
+51: 
+52:     const [now, setNow] = useState(() => Date.now());
+53: 
+54:     // -----------------------------------------
+55:     // TASK DATA
+56:     // -----------------------------------------
+57:     const {
+58:         courseSlug,
+59:         courseTitle,
+60:         studentName,
+61:         modules,
+62:         initialTaskId,
+63: 
+64:         loading,
+65:         error,
+66: 
+67:         taskStatusMap,
+68:         setTaskStatusMap,
+69: 
+70:         deadlineMap,
+71:         setDeadlineMap,
+72: 
+73:         submittedAtMap,
+74:         setSubmittedAtMap,
+75: 
+76:         applySubmissionState,
+77:     } = useTaskData({
+78:         contentType,
+79:         routeCourseSlug,
+80:         slug,
+81:     });
+82: 
+83:     // -----------------------------------------
+84:     // CLOCK
+85:     // -----------------------------------------
+86: 
+87:     useEffect(() => {
+88:         const timer =
+89:             window.setInterval(() => {
+90:                 setNow(Date.now());
+91:             }, 1000);
+92: 
+93:         return () => {
+94:             window.clearInterval(timer);
+95:         };
+96:     }, []);
+97: 
+98:     // -----------------------------------------
+99:     // REALTIME SOCKET
+100:     // -----------------------------------------
+101: 
+102:     useTaskRealtime({
+103:         user,
+104:         courseSlug,
+105:         applySubmissionState,
+106:         setActiveTaskId,
+107:     });
+108: 
+109:     // -----------------------------------------
+110:     // ALL TASKS
+111:     // -----------------------------------------
+112: 
+113:     const allTasks = useMemo(() => {
+114:         return modules.flatMap(
+115:             (module) => module.tasks
+116:         );
+117:     }, [modules]);
+118: 
+119:     const scopedModules = useMemo(() => {
+120: 
+121:         if (!modules.length) {
+122:             return [];
+123:         }
+124: 
+125:         // -----------------------------------------
+126:         // FIND FIRST MODULE THAT IS NOT COMPLETED
+127:         // -----------------------------------------
+128: 
+129:         let availableModuleIndex = 0;
+130: 
+131:         for (
+132:             let moduleIndex = 0;
+133:             moduleIndex < modules.length;
+134:             moduleIndex++
+135:         ) {
+136: 
+137:             const module = modules[moduleIndex];
+138: 
+139:             const moduleTasks =
+140:                 module.tasks || [];
+141: 
+142:             if (!moduleTasks.length) {
+143:                 continue;
+144:             }
+145: 
+146:             const moduleCompleted =
+147:                 moduleTasks.every(
+148:                     (task) =>
+149:                         taskStatusMap[task.id] ===
+150:                         "approved"
+151:                 );
+152: 
+153:             if (!moduleCompleted) {
+154:                 availableModuleIndex =
+155:                     moduleIndex;
+156: 
+157:                 break;
+158:             }
+159: 
+160:             // If every module before this one is
+161:             // approved, the next module becomes available.
+162:             availableModuleIndex =
+163:                 Math.min(
+164:                     moduleIndex + 1,
+165:                     modules.length - 1
+166:                 );
+167:         }
+168: 
+169:         const activeModule =
+170:             modules[availableModuleIndex];
+171: 
+172:         if (!activeModule) {
+173:             return [];
+174:         }
+175: 
+176:         // -----------------------------------------
+177:         // KEEP ONLY CURRENT AVAILABLE MODULE
+178:         // -----------------------------------------
+179: 
+180:         let availableTasks = [
+181:             ...(activeModule.tasks || [])
+182:         ];
+183: 
+184:         // -----------------------------------------
+185:         // TASK SCOPE FROM LESSONS PAGE
+186:         // -----------------------------------------
+187: 
+188:         const scopeModuleId =
+189:             String(taskScope.moduleId || "").trim();
+190: 
+191:         const scopeLessonId =
+192:             String(taskScope.lessonId || "").trim();
+193: 
+194:         if (
+195:             scopeModuleId &&
+196:             String(activeModule.id) ===
+197:                 scopeModuleId &&
+198:             scopeLessonId
+199:         ) {
+200: 
+201:             const scopedLessons =
+202:                 (activeModule.lessons || []).filter(
+203:                     (lesson) =>
+204:                         String(
+205:                             lesson.lessonId || ""
+206:                         ) === scopeLessonId
+207:                 );
+208: 
+209:             const scopedTasks =
+210:                 scopedLessons.flatMap(
+211:                     (lesson) =>
+212:                         lesson.tasks || []
+213:                 );
+214: 
+215:             if (scopedTasks.length) {
+216:                 availableTasks =
+217:                     scopedTasks;
+218:             }
+219:         }
+220: 
+221:         // -----------------------------------------
+222:         // ONLY SHOW TASKS UP TO FIRST UNAPPROVED
+223:         // -----------------------------------------
+224: 
+225:         const firstUnapprovedIndex =
+226:             availableTasks.findIndex(
+227:                 (task) =>
+228:                     taskStatusMap[task.id] !==
+229:                     "approved"
+230:             );
+231: 
+232:         const visibleTaskList =
+233:             firstUnapprovedIndex === -1
+234:                 ? availableTasks
+235:                 : availableTasks.slice(
+236:                     0,
+237:                     firstUnapprovedIndex + 1
+238:                 );
+239: 
+240:         // -----------------------------------------
+241:         // REBUILD LESSON GROUPS
+242:         // -----------------------------------------
+243: 
+244:         const visibleTaskIds =
+245:             new Set(
+246:                 visibleTaskList.map(
+247:                     (task) => task.id
+248:                 )
+249:             );
+250: 
+251:         const lessons =
+252:             (activeModule.lessons || [])
+253:                 .map((lesson) => ({
+254:                     ...lesson,
+255:                     tasks: (lesson.tasks || []).filter(
+256:                         (task) =>
+257:                             visibleTaskIds.has(
+258:                                 task.id
+259:                             )
+260:                     ),
+261:                 }))
+262:                 .filter(
+263:                     (lesson) =>
+264:                         lesson.tasks.length > 0
+265:                 );
+266: 
+267:         return [
+268:             {
+269:                 ...activeModule,
+270:                 lessons,
+271:                 tasks: visibleTaskList,
+272:             },
+273:         ];
+274: 
+275:     }, [
+276:         modules,
+277:         taskStatusMap,
+278:         taskScope.moduleId,
+279:         taskScope.lessonId,
+280:     ]);
+281: 
+282:     const visibleTasks = useMemo(() => {
+283:         return scopedModules.flatMap(
+284:             (module) => module.tasks
+285:         );
+286:     }, [scopedModules]);
+287: 
+288:     const selectedTaskId = useMemo(() => {
+289: 
+290:         if (!visibleTasks.length) {
+291:             return null;
+292:         }
+293: 
+294:         // -----------------------------------------
+295:         // 1. KEEP EXPLICITLY ACTIVE TASK
+296:         // -----------------------------------------
+297: 
+298:         const activeIsVisible =
+299:             visibleTasks.some(
+300:                 (task) =>
+301:                     task.id === activeTaskId
+302:             );
+303: 
+304:         if (activeIsVisible) {
+305:             return activeTaskId;
+306:         }
+307: 
+308:         // -----------------------------------------
+309:         // 2. AFTER APPROVAL, SELECT FIRST
+310:         //    NON-APPROVED TASK
+311:         // -----------------------------------------
+312: 
+313:         const firstAvailableTask =
+314:             visibleTasks.find(
+315:                 (task) => {
+316:                     const status =
+317:                         taskStatusMap[task.id];
+318: 
+319:                     return (
+320:                         status !== "approved" &&
+321:                         status !== "expired"
+322:                     );
+323:                 }
+324:             );
+325: 
+326:         if (firstAvailableTask) {
+327:             return firstAvailableTask.id;
+328:         }
+329: 
+330:         // -----------------------------------------
+331:         // 3. REQUESTED TASK
+332:         // -----------------------------------------
+333: 
+334:         const requestedTaskId =
+335:             String(
+336:                 taskScope.taskId || ""
+337:             ).trim();
+338: 
+339:         const requestedTask =
+340:             visibleTasks.find(
+341:                 (task) =>
+342:                     requestedTaskId &&
+343:                     (
+344:                         task.id ===
+345:                             requestedTaskId ||
+346:                         task.taskId ===
+347:                             requestedTaskId
+348:                     )
+349:             );
+350: 
+351:         if (requestedTask) {
+352:             return requestedTask.id;
+353:         }
+354: 
+355:         // -----------------------------------------
+356:         // 4. INITIAL TASK FALLBACK
+357:         // -----------------------------------------
+358: 
+359:         const initialTask =
+360:             visibleTasks.find(
+361:                 (task) =>
+362:                     task.id ===
+363:                     initialTaskId
+364:             );
+365: 
+366:         if (initialTask) {
+367:             return initialTask.id;
+368:         }
+369: 
+370:         return visibleTasks[0]?.id || null;
+371: 
+372:     }, [
+373:         activeTaskId,
+374:         initialTaskId,
+375:         taskScope.taskId,
+376:         taskStatusMap,
+377:         visibleTasks,
+378:     ]);
+379: 
+380:     // -----------------------------------------
+381:     // LOCKED TASKS
+382:     // -----------------------------------------
+383: 
+384:     const lockedIds = useMemo(() => {
+385:         const locked = new Set();
+386: 
+387:         /*
+388:          * Task locking is handled inside the currently
+389:          * selected module only.
+390:          *
+391:          * We do NOT globally lock tasks across modules.
+392:          * A new module becomes available only after the
+393:          * previous module has been approved from the
+394:          * Lessons flow.
+395:          */
+396: 
+397:         const scopedTasks = visibleTasks;
+398: 
+399:         for (
+400:             let index = 1;
+401:             index < scopedTasks.length;
+402:             index++
+403:         ) {
+404:             const previousTask =
+405:                 scopedTasks[index - 1];
+406: 
+407:             const currentTask =
+408:                 scopedTasks[index];
+409: 
+410:             if (
+411:                 taskStatusMap[
+412:                 previousTask.id
+413:                 ] !== "approved"
+414:             ) {
+415:                 locked.add(
+416:                     currentTask.id
+417:                 );
+418:             }
+419:         }
+420: 
+421:         return locked;
+422:     }, [
+423:         visibleTasks,
+424:         taskStatusMap,
+425:     ]);
+426: 
+427:     // -----------------------------------------
+428:     // DEADLINE
+429:     // -----------------------------------------
+430:     // Deadline is controlled by backend submission state.
+431:     // Do NOT create a new timer on the frontend.
+432: 
+433:     // -----------------------------------------
+434:     // CURRENT TASK
+435:     // -----------------------------------------
+436: 
+437:     const currentTask = useMemo(() => {
+438:         return (
+439:             allTasks.find(
+440:                 (task) =>
+441:                     task.id ===
+442:                     selectedTaskId
+443:             ) || null
+444:         );
+445:     }, [
+446:         allTasks,
+447:         selectedTaskId,
+448:     ]);
+
+--- LINES 471-777 ---
+471:     // -----------------------------------------
+472:     // CURRENT TASK STATE
+473:     // -----------------------------------------
+474:     const currentDeadline =
+475:         currentTask
+476:             ? deadlineMap[
+477:             currentTask.id
+478:             ]
+479:             : null;
+480: 
+481:     const currentStatus =
+482:         currentTask
+483:             ? taskStatusMap[
+484:             currentTask.id
+485:             ]
+486:             : null;
+487: 
+488:     const currentExpired =
+489:         currentStatus === "expired" ||
+490:         (
+491:             getTaskExpiresAt(currentDeadline) &&
+492:             currentStatus !== "approved" &&
+493:             new Date(
+494:                 getTaskExpiresAt(currentDeadline)
+495:             ).getTime() <= now
+496:         );
+497: 
+498:     // -----------------------------------------
+499:     // AUTO EXPIRE
+500:     // -----------------------------------------
+501: 
+502:     useEffect(() => {
+503:         if (
+504:             !currentTask ||
+505:             !currentExpired ||
+506:             currentStatus ===
+507:             "expired"
+508:         ) {
+509:             return;
+510:         }
+511: 
+512:         setTaskStatusMap((prev) => {
+513:             const next = {
+514:                 ...prev,
+515:                 [currentTask.id]:
+516:                     "expired",
+517:             };
+518: 
+519:             saveTaskState(
+520:                 courseSlug,
+521:                 next
+522:             );
+523: 
+524:             return next;
+525:         });
+526:     }, [
+527:         courseSlug,
+528:         currentExpired,
+529:         currentStatus,
+530:         currentTask,
+531:         setTaskStatusMap,
+532:     ]);
+533: 
+534:     // -----------------------------------------
+535:     // COMPLETION
+536:     // -----------------------------------------
+537: 
+538:     const approvedCount =
+539:         useMemo(() => {
+540:             return visibleTasks.filter(
+541:                 (task) =>
+542:                     taskStatusMap[
+543:                     task.id
+544:                     ] === "approved"
+545:             ).length;
+546:         }, [
+547:             visibleTasks,
+548:             taskStatusMap,
+549:         ]);
+550: 
+551:     const allCompleted =
+552:         visibleTasks.length > 0 &&
+553:         approvedCount ===
+554:         visibleTasks.length;
+555: 
+556:     // -----------------------------------------
+557:     // GLOBAL COMPLETION SIGNAL
+558:     // -----------------------------------------
+559: 
+560:     useEffect(() => {
+561:         try {
+562:             localStorage.setItem(
+563:                 "all_tasks_completed",
+564:                 allCompleted
+565:                     ? "true"
+566:                     : "false"
+567:             );
+568:         } catch {
+569:             // Ignore localStorage errors.
+570:         }
+571:     }, [allCompleted]);
+572: 
+573:     // -----------------------------------------
+574:     // TASK SELECT
+575:     // -----------------------------------------
+576: 
+577:     const handleSelectTask = (
+578:         taskId
+579:     ) => {
+580:         if (
+581:             lockedIds.has(taskId)
+582:         ) {
+583:             return;
+584:         }
+585: 
+586:         setActiveTaskId(taskId);
+587:     };
+588: 
+589:     // -----------------------------------------
+590:     // SUBMISSION
+591:     // -----------------------------------------
+592: 
+593:     const {
+594:         submitting,
+595:         handleSubmit,
+596:     } = useTaskSubmission({
+597:         courseSlug,
+598:         allTasks,
+599:         currentModule,
+600:         taskStatusMap,
+601:         setTaskStatusMap,
+602:         setDeadlineMap,
+603:         setSubmittedAtMap,
+604:     });
+605: 
+606:     // -----------------------------------------
+607:     // LOADING
+608:     // -----------------------------------------
+609: 
+610:     if (loading) {
+611:         return (
+612:             <motion.div
+613:                 className="tasks-page task-page-loading"
+614:                 initial={{
+615:                     opacity: 0,
+616:                 }}
+617:                 animate={{
+618:                     opacity: 1,
+619:                 }}
+620:             >
+621:                 <Spinner message="Loading tasks..." size={60} />
+622:             </motion.div>
+623:         );
+624:     }
+625: 
+626:     // -----------------------------------------
+627:     // ERROR / EMPTY
+628:     // -----------------------------------------
+629: 
+630:     if (
+631:         error ||
+632:         !modules.length ||
+633:         !visibleTasks.length
+634:     ) {
+635:         return (
+636:             <motion.div
+637:                 className="tasks-page task-page-loading"
+638:                 initial={{
+639:                     opacity: 0,
+640:                 }}
+641:                 animate={{
+642:                     opacity: 1,
+643:                 }}
+644:             >
+645:                 {error || "No tasks found for this internship."}
+646:             </motion.div>
+647:         );
+648:     }
+649: 
+650:     // -----------------------------------------
+651:     // UI
+652:     // -----------------------------------------
+653: 
+654:     return (
+655:         <motion.div
+656:             className="tasks-page"
+657:             initial={{
+658:                 opacity: 0,
+659:             }}
+660:             animate={{
+661:                 opacity: 1,
+662:             }}
+663:             transition={{
+664:                 duration: 0.4,
+665:             }}
+666:         >
+667:             <TaskHeader
+668:                 studentName={studentName}
+669:                 internshipTitle={courseTitle}
+670:                 moduleTitle={currentModule?.title || ""}
+671:                 completedCount={approvedCount}
+672:                 totalCount={visibleTasks.length}
+673:             />
+674: 
+675:             <div className="tasks-layout">
+676:                 <TaskModuleSidebar
+677:                     contentType={contentType}
+678:                     modules={scopedModules}
+679:                     activeTaskId={selectedTaskId}
+680:                     taskStatusMap={taskStatusMap}
+681:                     deadlineMap={deadlineMap}
+682:                     now={now}
+683:                     lockedIds={[
+684:                         ...lockedIds,
+685:                     ]}
+686:                     onSelectTask={handleSelectTask}
+687:                 />
+688: 
+689:                 <div className="tasks-main">
+690:                     {currentTask ? (
+691:                         <>
+692:                             <TaskDetailView
+693:                                 task={
+694:                                     currentTask
+695:                                 }
+696:                             />
+697: 
+698:                             <TaskStatusNotice
+699:                                 submittedAt={
+700:                                     submittedAtMap[
+701:                                     currentTask.id
+702:                                     ] || null
+703:                                 }
+704:                                 status={
+705:                                     taskStatusMap[
+706:                                     currentTask.id
+707:                                     ]
+708:                                 }
+709:                             />
+710: 
+711:                             <TaskDeadlineCard
+712:                                 deadline={
+713:                                     currentDeadline
+714:                                 }
+715:                                 now={now}
+716:                                 expired={
+717:                                     currentExpired
+718:                                 }
+719:                                 status={
+720:                                     currentStatus
+721:                                 }
+722:                             />
+723: 
+724:                             {taskStatusMap[
+725:                                 currentTask.id
+726:                             ] !== "pending" &&
+727:                                 taskStatusMap[
+728:                                 currentTask.id
+729:                                 ] !==
+730:                                 "approved" && (
+731:                                     <CodeSubmission
+732:                                         task={
+733:                                             currentTask
+734:                                         }
+735:                                         onSubmit={
+736:                                             handleSubmit
+737:                                         }
+738:                                         submitting={
+739:                                             submitting
+740:                                         }
+741:                                         disabled={
+742:                                             lockedIds.has(
+743:                                                 currentTask.id
+744:                                             ) ||
+745:                                             currentExpired
+746:                                         }
+747:                                         expired={
+748:                                             currentExpired
+749:                                         }
+750:                                     />
+751:                                 )}
+752:                         </>
+753:                     ) : (
+754:                         <div className="tasks-main-empty">
+755:                             Select a task to get
+756:                             started.
+757:                         </div>
+758:                     )}
+759:                 </div>
+760:             </div>
+761: 
+762:             <CertificateBanner
+763:                 completedCount={
+764:                     approvedCount
+765:                 }
+766:                 totalCount={
+767:                     visibleTasks.length
+768:                 }
+769:                 allCompleted={
+770:                     allCompleted
+771:                 }
+772:             />
+773:         </motion.div>
+774:     );
+775: };
+776: 
+777: export default Task;
+
+====================================================================================================
+FILE: frontend/src/features/student/tasks/hooks/useTaskData.js
+====================================================================================================
+
+--- LINES 4-115 ---
+4: import { getProfile } from "../../../../services/api/profileService";
+5: import { getMyCourseSubmissions } from "../../../../services/api/submissionService";
+6: import useAuth from "../../../../shared/hooks/useAuth";
+7: 
+8: import {
+9:     loadTaskState,
+10:     saveTaskState,
+11:     clearTaskState,
+12: } from "../../../../utils/taskStorage";
+13: 
+14: import {
+15:     normalizeSlug,
+16:     buildModules,
+17:     getTaskKey,
+18:     getContentFromResponse,
+19: } from "../utils/taskUtils";
+20: import { toast } from "react-toastify";
+21: 
+22: const TESTING_RESET_ON_REFRESH = false;
+23: 
+24: const useTaskData = ({
+25:     contentType,
+26:     routeCourseSlug,
+27:     slug,
+28: }) => {
+29: 
+30:     const { user } = useAuth();
+31: 
+32:     const getApiResource = (type) => {
+33:         return type === "internship"
+34:             ? "internships"
+35:             : "courses";
+36:     };
+37: 
+38:     const [courseSlug, setCourseSlug] = useState(
+39:         normalizeSlug(routeCourseSlug || slug || "")
+40:     );
+41: 
+42:     const [courseTitle, setCourseTitle] = useState("Internship");
+43:     const [studentName, setStudentName] = useState("Student");
+44: 
+45:     const [modules, setModules] = useState([]);
+46: 
+47:     const [loading, setLoading] = useState(true);
+48:     const [error, setError] = useState(null);
+49: 
+50:     const [taskStatusMap, setTaskStatusMap] = useState({});
+51:     const [deadlineMap, setDeadlineMap] = useState({});
+52:     const [submissionIdMap, setSubmissionIdMap] = useState({});
+53:     const [submittedAtMap, setSubmittedAtMap] = useState({});
+54:     const [initialTaskId, setInitialTaskId] = useState(null);
+55: 
+56:     const applySubmissionState = useCallback(
+57:         (submission) => {
+58: 
+59:             if (
+60:                 !submission?.moduleId ||
+61:                 !submission?.taskId
+62:             ) {
+63:                 return;
+64:             }
+65: 
+66:             const key =
+67:                 getTaskKey(
+68:                     submission
+69:                 );
+70: 
+71:             console.log(
+72:                 "REALTIME SUBMISSION RECEIVED:",
+73:                 submission
+74:             );
+75: 
+76:             console.log(
+77:                 "REALTIME TASK KEY:",
+78:                 key,
+79:                 "STATUS:",
+80:                 submission.status
+81:             );
+82: 
+83:             if (!key) {
+84:                 return;
+85:             }
+86: 
+87:             // ==============================
+88:             // STATUS
+89:             // ==============================
+90: 
+91:             setTaskStatusMap(
+92:                 (prev) => {
+93: 
+94:                     const next = {
+95:                         ...prev,
+96:                         [key]:
+97:                             submission.status,
+98:                     };
+99: 
+100:                     if (courseSlug) {
+101:                         saveTaskState(
+102:                             user?._id || user?.id,
+103:                             courseSlug,
+104:                             next
+105:                         );
+106:                     }
+107: 
+108:                     return next;
+109:                 }
+110:             );
+111: 
+112:             // ==============================
+113:             // SUBMITTED AT
+114:             // ==============================
+115: 
+
+--- LINES 129-166 ---
+129: 
+130:             // ==============================
+131:             // DEADLINE
+132:             // ==============================
+133: 
+134:             setDeadlineMap(
+135:                 (prev) => ({
+136: 
+137:                     ...prev,
+138: 
+139:                     [key]: {
+140: 
+141:                         unlockedAt:
+142:                             submission.unlockedAt ||
+143:                             null,
+144: 
+145:                         expiresAt:
+146:                             submission.expiresAt ||
+147:                             null,
+148: 
+149:                         expiredAt:
+150:                             submission.expiredAt ||
+151:                             null,
+152:                     },
+153:                 })
+154:             );
+155: 
+156:             // ==============================
+157:             // SUBMISSION ID
+158:             // ==============================
+159: 
+160:             setSubmissionIdMap(
+161:                 (prev) => ({
+162: 
+163:                     ...prev,
+164: 
+165:                     [key]:
+166:                         submission._id,
+
+--- LINES 342-586 ---
+342: 
+343:                     return;
+344:                 }
+345: 
+346:                 if (!mounted) return;
+347: 
+348:                 setCourseTitle(
+349:                     contentData.title ||
+350:                     contentType ||
+351:                     "Content"
+352:                 );
+353: 
+354:                 const builtModules = buildModules(contentData);
+355:                 console.log("Built Modules:=", builtModules);
+356: 
+357:                 setModules(builtModules);
+358:                 console.log("Modules:=", modules);
+359: 
+360:                 // -----------------------------------------
+361:                 // LOCAL TASK STATE
+362:                 // -----------------------------------------
+363: 
+364:                 let stored = {};
+365: 
+366:                 if (TESTING_RESET_ON_REFRESH) {
+367:                     clearTaskState(user?._id || user?.id, targetSlug);
+368:                     stored = {};
+369:                 } else {
+370:                     stored = loadTaskState(user?._id || user?.id, targetSlug);
+371:                 }
+372: 
+373:                 setTaskStatusMap(stored);
+374: 
+375:                 // -----------------------------------------
+376:                 // BACKEND SUBMISSIONS
+377:                 // -----------------------------------------
+378:                 // TESTING MODE:
+379:                 // Ignore previously stored server submissions
+380:                 // on refresh so testing always starts fresh.
+381:                 // Database records are NOT deleted.
+382: 
+383:                 if (!TESTING_RESET_ON_REFRESH) {
+384:                     try {
+385:                         const subRes =
+386:                             await getMyCourseSubmissions(
+387:                                 targetSlug
+388:                             );
+389: 
+390:                         const submissions =
+391:                             subRes?.data?.submissions || [];
+392: 
+393:                         if (submissions.length) {
+394:                             const serverMap = {};
+395:                             const timeMap = {};
+396:                             const deadlineInfo = {};
+397:                             const submissionIds = {};
+398: 
+399:                             // Prefer APPROVED submission for the same task.
+400:                             // Otherwise keep the newest submission because
+401:                             // backend returns submissions sorted newest first.
+402:                             const preferredSubmissions = {};
+403: 
+404:                             submissions.forEach((submission) => {
+405:                                 const key =
+406:                                     getTaskKey(submission);
+407: 
+408:                                 if (!key) return;
+409: 
+410:                                 const current =
+411:                                     preferredSubmissions[key];
+412: 
+413:                                 if (!current) {
+414:                                     preferredSubmissions[key] =
+415:                                         submission;
+416:                                     return;
+417:                                 }
+418: 
+419:                                 if (
+420:                                     submission.status === "approved" &&
+421:                                     current.status !== "approved"
+422:                                 ) {
+423:                                     preferredSubmissions[key] =
+424:                                         submission;
+425:                                 }
+426:                             });
+427: 
+428:                             Object.values(
+429:                                 preferredSubmissions
+430:                             ).forEach((submission) => {
+431: 
+432:                                 const key =
+433:                                     getTaskKey(submission);
+434: 
+435:                                 serverMap[key] =
+436:                                     submission.status;
+437: 
+438:                                 if (submission.submittedAt) {
+439:                                     timeMap[key] =
+440:                                         submission.submittedAt;
+441:                                 }
+442: 
+443:                                 deadlineInfo[key] = {
+444:                                     unlockedAt:
+445:                                         submission.unlockedAt ||
+446:                                         null,
+447: 
+448:                                     expiresAt:
+449:                                         submission.expiresAt ||
+450:                                         null,
+451: 
+452:                                     expiredAt:
+453:                                         submission.expiredAt ||
+454:                                         null,
+455:                                 };
+456: 
+457:                                 submissionIds[key] =
+458:                                     submission._id;
+459:                             });
+460: 
+461:                             const merged = {
+462:                                 ...stored,
+463:                                 ...serverMap,
+464:                             };
+465: 
+466:                             setTaskStatusMap(merged);
+467:                             setSubmittedAtMap(timeMap);
+468:                             setDeadlineMap(deadlineInfo);
+469:                             setSubmissionIdMap(
+470:                                 submissionIds
+471:                             );
+472: 
+473:                             saveTaskState(
+474:                                 targetSlug,
+475:                                 merged
+476:                             );
+477:                         }
+478:                     } catch (err) {
+479:                         console.log("Submission Error 1:=", err);
+480:                         toast.error("Subbmission Error 1")
+481:                     }
+482:                 }
+483: 
+484:                 // -----------------------------------------
+485:                 // SELECT FIRST AVAILABLE TASK
+486:                 // -----------------------------------------
+487: 
+488:                 const flatTasks = builtModules.flatMap(
+489:                     (module) => module.tasks
+490:                 );
+491: 
+492:                 console.log("Flat Tasks:=", flatTasks);
+493: 
+494:                 const latestMap = {
+495:                     ...stored,
+496:                 };
+497: 
+498:                 console.log("Latest Map:=", latestMap);
+499: 
+500:                 if (!TESTING_RESET_ON_REFRESH) {
+501:                     try {
+502:                         const subRes =
+503:                             await getMyCourseSubmissions(
+504:                                 targetSlug
+505:                             );
+506: 
+507:                         const preferredForAvailability = {};
+508: 
+509:                         (
+510:                             subRes?.data?.submissions || []
+511:                         ).forEach((submission) => {
+512: 
+513:                             const key =
+514:                                 getTaskKey(submission);
+515: 
+516:                             if (!key) return;
+517: 
+518:                             const current =
+519:                                 preferredForAvailability[key];
+520: 
+521:                             if (!current) {
+522:                                 preferredForAvailability[key] =
+523:                                     submission;
+524:                                 return;
+525:                             }
+526: 
+527:                             // APPROVED always wins.
+528:                             if (
+529:                                 submission.status === "approved" &&
+530:                                 current.status !== "approved"
+531:                             ) {
+532:                                 preferredForAvailability[key] =
+533:                                     submission;
+534:                             }
+535:                         });
+536: 
+537:                         Object.values(
+538:                             preferredForAvailability
+539:                         ).forEach((submission) => {
+540: 
+541:                             const key =
+542:                                 getTaskKey(submission);
+543: 
+544:                             latestMap[key] =
+545:                                 submission.status;
+546:                         });
+547:                     } catch (err) {
+548:                         console.log("Submission Error 2:=", err);
+549:                         toast.error("Subbmission Error 2")
+550:                     }
+551:                 }
+552: 
+553:                 const firstAvailable =
+554:                     flatTasks.find((task) => {
+555:                         const status =
+556:                             latestMap[task.id];
+557: 
+558:                         return (
+559:                             status !== "approved" &&
+560:                             status !== "expired"
+561:                         );
+562:                     }) || flatTasks[0];
+563: 
+564:                 console.log("First Available:=", firstAvailable);
+565:                 return firstAvailable?.id || null;
+566:             } catch (error) {
+567:                 console.error("❌ TASK DATA LOAD ERROR:", error);
+568: 
+569:                 console.error(
+570:                     "❌ API STATUS:",
+571:                     error?.response?.status
+572:                 );
+573: 
+574:                 console.error(
+575:                     "❌ API DATA:",
+576:                     error?.response?.data
+577:                 );
+578: 
+579:                 console.error(
+580:                     "❌ API URL:",
+581:                     error?.config?.url
+582:                 );
+583: 
+584:                 if (mounted) {
+585:                     setError(
+586:                         error?.response?.data?.message ||
+
+--- LINES 620-644 ---
+620:         // eslint-disable-next-line react-hooks/exhaustive-deps
+621:     }, [courseSlug, contentType]);
+622: 
+623:     return {
+624:         courseSlug,
+625:         setCourseSlug,
+626:         courseTitle,
+627:         studentName,
+628:         modules,
+629:         initialTaskId,
+630:         loading,
+631:         error,
+632:         taskStatusMap,
+633:         setTaskStatusMap,
+634:         deadlineMap,
+635:         setDeadlineMap,
+636:         submissionIdMap,
+637:         setSubmissionIdMap,
+638:         submittedAtMap,
+639:         setSubmittedAtMap,
+640:         applySubmissionState,
+641:     };
+642: };
+643: 
+644: export default useTaskData;
+
+====================================================================================================
+FILE: frontend/src/features/student/tasks/utils/taskUtils.js
+====================================================================================================
+
+--- LINES 4-40 ---
+4: 
+5: export const normalizeSlug = (slug) =>
+6:     String(slug || "")
+7:         .trim()
+8:         .toLowerCase()
+9:         .replace(/_/g, "-");
+10: 
+11: 
+12: // =========================================
+13: // TASK KEY
+14: // =========================================
+15: 
+16: export const getTaskKey = (submission) => {
+17:     if (
+18:         !submission?.moduleId ||
+19:         !submission?.taskId
+20:     ) {
+21:         return "";
+22:     }
+23: 
+24:     return [
+25:         String(submission.moduleId),
+26:         String(submission.lessonId || ""),
+27:         String(submission.taskId),
+28:     ].join("_");
+29: };
+30: 
+31: 
+32: // =========================================
+33: // FORMAT COUNTDOWN
+34: // =========================================
+35: 
+36: export const formatCountdown = (
+37:     expiresAt,
+38:     now = Date.now()
+39: ) => {
+40: 
+
+--- LINES 95-190 ---
+95: };
+96: 
+97: 
+98: // =========================================
+99: // TASK EXPIRES AT
+100: // =========================================
+101: 
+102: export const getTaskExpiresAt = (deadline) => {
+103:     if (deadline?.expiresAt) {
+104:         return deadline.expiresAt;
+105:     }
+106: 
+107:     if (!deadline?.unlockedAt) {
+108:         return null;
+109:     }
+110: 
+111:     const unlockedTime =
+112:         new Date(deadline.unlockedAt).getTime();
+113: 
+114:     if (Number.isNaN(unlockedTime)) {
+115:         return null;
+116:     }
+117: 
+118:     return new Date(
+119:         unlockedTime +
+120:         48 * 60 * 60 * 1000
+121:     ).toISOString();
+122: };
+123: 
+124: 
+125: // =========================================
+126: // BUILD MODULES
+127: // =========================================
+128: 
+129: export const buildModules = (contentData) => {
+130:     console.log("contentData:=",contentData);
+131: 
+132:     if (
+133:         !contentData ||
+134:         !Array.isArray(contentData.modules)
+135:     ) {
+136:         return [];
+137:     }
+138: 
+139:     return contentData.modules.map(
+140:         (module, moduleIndex) => {
+141: 
+142:             const moduleId = String(
+143:                 module.moduleId ||
+144:                 module.id ||
+145:                 `module-${moduleIndex + 1}`
+146:             );
+147: 
+148:             const moduleTitle =
+149:                 module.moduleTitle ||
+150:                 module.title ||
+151:                 `Module ${moduleIndex + 1}`;
+152: 
+153:             const lessons = [];
+154: 
+155:             // =====================================
+156:             // MODULE LEVEL TASKS
+157:             // =====================================
+158: 
+159:             if (
+160:                 Array.isArray(module.tasks) &&
+161:                 module.tasks.length
+162:             ) {
+163: 
+164:                 const moduleTasks = [];
+165: 
+166:                 module.tasks.forEach(
+167:                     (task, taskIndex) => {
+168: 
+169:                         const taskId = String(
+170:                             task.taskId ||
+171:                             task.id ||
+172:                             `task-${taskIndex + 1}`
+173:                         );
+174: 
+175:                         const lessonId = String(
+176:                             task.lessonId || ""
+177:                         );
+178: 
+179:                         const uniqueKey = [
+180:                             moduleId,
+181:                             lessonId,
+182:                             taskId,
+183:                         ].join("_");
+184: 
+185:                         moduleTasks.push({
+186:                             id: uniqueKey,
+187: 
+188:                             moduleId,
+189: 
+190:                             lessonId,
+
+--- LINES 241-287 ---
+241:                             lesson.lessonId ||
+242:                             lesson.id ||
+243:                             `lesson-${lessonIndex + 1}`
+244:                         );
+245: 
+246:                         const lessonTitle =
+247:                             lesson.lessonTitle ||
+248:                             lesson.title ||
+249:                             `Lesson ${lessonIndex + 1}`;
+250: 
+251:                         if (
+252:                             !Array.isArray(
+253:                                 lesson.tasks
+254:                             )
+255:                         ) {
+256:                             return;
+257:                         }
+258: 
+259:                         const tasks = [];
+260: 
+261:                         const seenTasks = new Set();
+262: 
+263:                         lesson.tasks.forEach(
+264:                             (task, taskIndex) => {
+265: 
+266:                                 const taskId = String(
+267:                                     task.taskId ||
+268:                                     task.id ||
+269:                                     `task-${taskIndex + 1}`
+270:                                 );
+271: 
+272:                                 // =================================
+273:                                 // IMPORTANT
+274:                                 // module + lesson + task
+275:                                 // =================================
+276: 
+277:                                 const uniqueKey = [
+278:                                     moduleId,
+279:                                     lessonId,
+280:                                     taskId,
+281:                                 ].join("_");
+282: 
+283:                                 if (
+284:                                     seenTasks.has(
+285:                                         uniqueKey
+286:                                     )
+287:                                 ) {
+
+--- LINES 343-379 ---
+343:                         }
+344:                     }
+345:                 );
+346:             }
+347: 
+348: 
+349:             // =====================================
+350:             // ALL TASKS
+351:             // =====================================
+352: 
+353:             const tasks = lessons.flatMap(
+354:                 (lesson) =>
+355:                     lesson.tasks || []
+356:             );
+357: 
+358: 
+359:             return {
+360: 
+361:                 id: moduleId,
+362: 
+363:                 title: moduleTitle,
+364: 
+365:                 lessons,
+366: 
+367:                 tasks,
+368:             };
+369:         }
+370:     );
+371: };
+372: 
+373: 
+374: // =========================================
+375: // GET CONTENT FROM API RESPONSE
+376: // =========================================
+377: 
+378: export const getContentFromResponse = (
+379:     response
+
+====================================================================================================
+END OF TASK DEBUG
+====================================================================================================
