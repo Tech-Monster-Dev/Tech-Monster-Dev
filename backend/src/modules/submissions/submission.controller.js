@@ -932,11 +932,25 @@ export const getMyCourseSubmissions = asyncHandler(
                     : null;
 
             // First task OR previous task approved
-            if (
+            //
+            // IMPORTANT:
+            // Never auto-unlock the first task of a
+            // different module. Module transitions are
+            // controlled by the Lessons/module lifecycle.
+            const sameModuleAsPrevious =
+                index > 0 &&
+                String(task.moduleId || "") ===
+                String(previousTask?.moduleId || "");
+
+            const canUnlock =
                 index === 0 ||
-                previousSubmission?.status ===
-                "approved"
-            ) {
+                (
+                    sameModuleAsPrevious &&
+                    previousSubmission?.status ===
+                    "approved"
+                );
+
+            if (canUnlock) {
 
                 const unlocked =
                     await unlockTaskForStudent(
@@ -1105,10 +1119,50 @@ export const approveSubmission = asyncHandler(async (req, res) => {
                     String(submission.taskId || "")
         );
 
-    const nextTask =
+    const candidateNextTask =
         currentTaskIndex >= 0
             ? orderedTasks[currentTaskIndex + 1]
             : null;
+
+    // =========================================
+    // ONLY UNLOCK NEXT TASK INSIDE SAME MODULE
+    // =========================================
+    //
+    // When the approved task is the final task
+    // of the current module, do NOT unlock the
+    // first task of the next module.
+    //
+    // The next module becomes available only
+    // after all of its lessons are completed.
+    //
+    const nextTask =
+        candidateNextTask &&
+        String(candidateNextTask.moduleId || "") ===
+            String(submission.moduleId || "")
+            ? candidateNextTask
+            : null;
+
+    const moduleCompleted =
+        currentTaskIndex >= 0 &&
+        (candidateNextTask == null ||
+            String(candidateNextTask.moduleId || "") !==
+            String(submission.moduleId || ""));
+
+    // =========================================
+    // CHECK FULL COURSE COMPLETION
+    // =========================================
+    // Certificate unlocks only when every task
+    // in the entire course has been approved.
+    const approvedSubmissionCount =
+        await Submission.countDocuments({
+            student: submission.student,
+            courseSlug,
+            status: "approved",
+        });
+
+    const allTasksCompleted =
+        orderedTasks.length > 0 &&
+        approvedSubmissionCount >= orderedTasks.length;
 
     const unlockedSubmission =
         nextTask
@@ -1138,7 +1192,9 @@ export const approveSubmission = asyncHandler(async (req, res) => {
                 String(unlockedSubmission.lessonId || ""),
                 String(unlockedSubmission.taskId),
             ].join("_")
-            : null
+            : null,
+        moduleCompleted,
+        allTasksCompleted
     });
 
     res.status(200).json({
@@ -1213,7 +1269,7 @@ export const extendSubmissionDeadline = asyncHandler(async (req, res) => {
     }
 
     const now = new Date();
-    const hours = Number(req.body.hours || 48);
+    const hours = Number(req.body.hours || 24);
     const extensionMs = Math.max(1, hours) * 60 * 60 * 1000;
 
     submission.status = "unlocked";

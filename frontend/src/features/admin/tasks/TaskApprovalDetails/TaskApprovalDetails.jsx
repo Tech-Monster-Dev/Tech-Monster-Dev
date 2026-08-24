@@ -116,11 +116,11 @@ export default function TaskApprovalDetails() {
 
             setExtending(true);
 
-            const res = await extendSubmissionDeadline(id, 48);
+            const res = await extendSubmissionDeadline(id, 24);
 
             setTask(res.submission);
 
-            toast.success("Deadline extended by 48 hours");
+            toast.success("Deadline extended by 24 hours");
 
         } catch (err) {
 

@@ -6,6 +6,7 @@ import {
 
 import {
     useLocation,
+    useNavigate,
     useParams,
 } from "react-router-dom";
 
@@ -43,6 +44,7 @@ const Task = () => {
         courseSlug: routeCourseSlug,
     } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
     const contentType = routeType === "internship" ? "internship" : "course";
     const taskScope = location.state || {};
 
@@ -73,6 +75,8 @@ const Task = () => {
 
         submittedAtMap,
         setSubmittedAtMap,
+        reviewCommentMap,
+        setReviewCommentMap,
 
         applySubmissionState,
     } = useTaskData({
@@ -105,6 +109,40 @@ const Task = () => {
         courseSlug,
         applySubmissionState,
         setActiveTaskId,
+        onModuleCompleted: () => {
+            try {
+                localStorage.setItem(
+                    "daily_task_unlocked_" + courseSlug,
+                    "false"
+                );
+            } catch {
+                // Ignore localStorage errors.
+            }
+
+            window.dispatchEvent(
+                new CustomEvent(
+                    "dailyTaskAccessChanged",
+                    {
+                        detail: {
+                            courseSlug,
+                            unlocked: false,
+                            moduleId: null,
+                        },
+                    }
+                )
+            );
+
+            toast.success(
+                "Module completed. Returning to lessons..."
+            );
+
+            navigate(
+                "/student/lessons/" +
+                contentType +
+                "/" +
+                courseSlug
+            );
+        },
     });
 
     // -----------------------------------------
@@ -139,11 +177,40 @@ const Task = () => {
         let activeModule = null;
 
         if (scopeModuleId) {
-            activeModule = modules.find(
-                (module) =>
-                    String(module.id) ===
-                    scopeModuleId
-            );
+            const requestedModuleIndex =
+                modules.findIndex(
+                    (module) =>
+                        String(module.id) ===
+                        scopeModuleId
+                );
+
+            if (requestedModuleIndex === 0) {
+                activeModule =
+                    modules[requestedModuleIndex];
+            } else if (requestedModuleIndex > 0) {
+                const previousModules =
+                    modules.slice(
+                        0,
+                        requestedModuleIndex
+                    );
+
+                const previousModulesCompleted =
+                    previousModules.every(
+                        (module) =>
+                            (module.tasks || []).length > 0 &&
+                            (module.tasks || []).every(
+                                (task) =>
+                                    taskStatusMap[
+                                        task.id
+                                    ] === "approved"
+                            )
+                    );
+
+                if (previousModulesCompleted) {
+                    activeModule =
+                        modules[requestedModuleIndex];
+                }
+            }
         }
 
         // Fallback when no module was supplied in route state.
@@ -221,26 +288,9 @@ const Task = () => {
         if (scopeModuleId === String(activeModule.id) &&
             scopeLessonId) {
 
-            const scopedLessons =
-                (activeModule.lessons || []).filter(
-                    (lesson) =>
-                        String(
-                            lesson.lessonId || ""
-                        ) === scopeLessonId
-                );
-
-            const scopedTasks =
-                scopedLessons.flatMap(
-                    (lesson) =>
-                        lesson.tasks || []
-                );
-
-            // We intentionally DO NOT replace
-            // availableTasks with scopedTasks.
-            //
-            // The whole module must remain visible
-            // lesson-wise so the student can see all
-            // locked tasks.
+            // We intentionally keep the complete
+            // module visible so the student can see
+            // all lesson-wise tasks.
         }
 
         // -----------------------------------------
@@ -500,6 +550,11 @@ const Task = () => {
             ]
             : null;
 
+    const currentReviewComment =
+        currentTask
+            ? reviewCommentMap[currentTask.id] || ""
+            : "";
+
     const currentExpired =
         currentStatus === "expired" ||
         (
@@ -552,21 +607,32 @@ const Task = () => {
 
     const approvedCount =
         useMemo(() => {
-            return visibleTasks.filter(
+            return allTasks.filter(
                 (task) =>
                     taskStatusMap[
                     task.id
                     ] === "approved"
             ).length;
         }, [
-            visibleTasks,
+            allTasks,
             taskStatusMap,
         ]);
 
+    // Current module progress only.
+    // This is used by the Task page progress UI.
+    const currentModuleApprovedCount =
+        visibleTasks.filter(
+            (task) =>
+                taskStatusMap[task.id] ===
+                "approved"
+        ).length;
+
+    // Certificate unlocks ONLY when every task
+    // across every module of the course is approved.
     const allCompleted =
-        visibleTasks.length > 0 &&
+        allTasks.length > 0 &&
         approvedCount ===
-        visibleTasks.length;
+        allTasks.length;
 
     // -----------------------------------------
     // GLOBAL COMPLETION SIGNAL
@@ -659,6 +725,7 @@ const Task = () => {
         setTaskStatusMap,
         setDeadlineMap,
         setSubmittedAtMap,
+        setReviewCommentMap,
     });
 
     // -----------------------------------------
@@ -726,7 +793,7 @@ const Task = () => {
                 studentName={studentName}
                 internshipTitle={courseTitle}
                 moduleTitle={currentModule?.title || ""}
-                completedCount={approvedCount}
+                completedCount={currentModuleApprovedCount}
                 totalCount={visibleTasks.length}
             />
 
@@ -747,6 +814,13 @@ const Task = () => {
                 <div className="tasks-main">
                     {currentTask ? (
                         <>
+                            {currentStatus === "rejected" && currentReviewComment && (
+                                <div className="task-review-reason">
+                                    <strong>Admin Review Reason</strong>
+                                    <p>{currentReviewComment}</p>
+                                </div>
+                            )}
+
                             <TaskDetailView
                                 task={
                                     currentTask
@@ -779,13 +853,9 @@ const Task = () => {
                                 }
                             />
 
-                            {taskStatusMap[
-                                currentTask.id
-                            ] !== "pending" &&
-                                taskStatusMap[
-                                currentTask.id
-                                ] !==
-                                "approved" && (
+                            {currentStatus !== "pending" &&
+                                currentStatus !== "approved" &&
+                                currentStatus !== "expired" && (
                                     <CodeSubmission
                                         task={
                                             currentTask
@@ -819,7 +889,7 @@ const Task = () => {
 
             <CertificateBanner
                 completedCount={
-                    approvedCount
+                    currentModuleApprovedCount
                 }
                 totalCount={
                     visibleTasks.length

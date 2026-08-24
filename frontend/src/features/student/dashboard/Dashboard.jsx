@@ -100,6 +100,7 @@ function Dashboard() {
                     />
 
                     <AllCourses
+                        setLoading={setLoading}
                         courses={
                             dashboard?.allCourses || []
                         }
@@ -107,6 +108,7 @@ function Dashboard() {
                     />
 
                     <AllInternship
+                        loading={loading}
                         internships={
                             dashboard?.allInternships || []
                         }

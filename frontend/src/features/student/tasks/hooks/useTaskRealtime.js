@@ -1,8 +1,4 @@
-import {
-    useCallback,
-    useEffect,
-    useState,
-} from "react";
+import { useEffect } from "react";
 
 import { toast } from "react-toastify";
 
@@ -15,18 +11,9 @@ const useTaskRealtime = ({
     courseSlug,
     applySubmissionState,
     setActiveTaskId,
+    onModuleCompleted,
 }) => {
     useEffect(() => {
-
-        console.log(
-            "🔥 TASK REALTIME EFFECT START",
-            {
-                userId: user?._id || user?.id,
-                courseSlug,
-                socketConnected: socket.connected,
-                socketId: socket.id,
-            }
-        );
 
         if (!user?._id && !user?.id) {
 
@@ -100,11 +87,6 @@ const useTaskRealtime = ({
 
         } else {
 
-            console.log(
-                "🟢 TASK SOCKET ALREADY CONNECTED:",
-                socket.id
-            );
-
             socket.emit(
                 "join",
                 userId
@@ -114,6 +96,7 @@ const useTaskRealtime = ({
         const handleApproved = ({
             submission,
             unlockedSubmission,
+            moduleCompleted,
         }) => {
 
             console.log(
@@ -133,6 +116,30 @@ const useTaskRealtime = ({
                     submission.taskId
                     }`
                 );
+            }
+
+            if (unlockedSubmission) {
+                try {
+                    localStorage.setItem(
+                        `daily_task_unlocked_${courseSlug}`,
+                        "true"
+                    );
+
+                    window.dispatchEvent(
+                        new CustomEvent("dailyTaskAccessChanged", {
+                            detail: {
+                                courseSlug,
+                                unlocked: true,
+                            },
+                        })
+                    );
+                } catch {
+                    // Ignore storage errors.
+                }
+            }
+
+            if (moduleCompleted && onModuleCompleted) {
+                onModuleCompleted(submission);
             }
 
             if (unlockedSubmission) {
@@ -236,10 +243,6 @@ const useTaskRealtime = ({
 
         return () => {
 
-            console.log(
-                "🧹 TASK REALTIME CLEANUP"
-            );
-
             socket.off(
                 "connect",
                 handleConnect
@@ -286,6 +289,7 @@ const useTaskRealtime = ({
         courseSlug,
         applySubmissionState,
         setActiveTaskId,
+        onModuleCompleted,
     ]);
 };
 
