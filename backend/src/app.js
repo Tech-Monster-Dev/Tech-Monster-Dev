@@ -43,7 +43,7 @@ const allowedOrigins = [
   "http://localhost:3000",
 
   // Production
-  "https://tech-monster-frontend.vercel.app"
+  "https://tech-monster-dev-lac.vercel.app"
 ];
 
 app.use(
