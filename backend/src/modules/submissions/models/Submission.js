@@ -14,6 +14,12 @@ const submissionSchema = new mongoose.Schema(
             default: null,
         },
 
+        course: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course",
+            default: null,
+        },
+
         courseSlug: {
             type: String,
             required: true,

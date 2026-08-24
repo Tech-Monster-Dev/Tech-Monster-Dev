@@ -30,7 +30,7 @@ export default function Lessons() {
 
     const { lessonData, setLessonData, loading, error } = useLessonData(courseSlug, contentType);
     const { completedLessonIds, completeLesson } = useLessonProgress(courseSlug, contentType);
-    const approvedModuleIds = useApprovedModules(courseSlug);
+    const approvedModuleIds = useApprovedModules(courseSlug, lessonData);
 
     const { search, setSearch, readingMode, setReadingMode } = useLessonPreferences();
 
@@ -110,10 +110,27 @@ export default function Lessons() {
     }
 
     const handleNext = () => {
-        if (activeLesson < lessons.length - 1) {
-            setActiveLesson((prev) => prev + 1);
-            window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        if (activeLesson >= lessons.length - 1) {
+            return;
         }
+
+        const nextLesson =
+            lessons[activeLesson + 1];
+
+        // Do not allow pagination to bypass lesson/module locking.
+        if (nextLesson?.locked) {
+            toast.warning(
+                "Complete the current module and get Admin approval before continuing!"
+            );
+            return;
+        }
+
+        setActiveLesson((prev) => prev + 1);
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "auto"
+        });
     };
 
     const handlePrevious = () => {

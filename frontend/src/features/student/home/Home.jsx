@@ -1,6 +1,7 @@
 import "./Home.css";
 
 import { useEffect, useState } from "react";
+import {toast} from "react-toastify";
 
 import api from "../../../services/api/axios";
 import { API } from "../../../services/api/endpoints";
@@ -28,6 +29,7 @@ const Home = () => {
     } catch (error) {
       
       console.error("Status:", error.response?.status);
+      toast.error(error.response?.data?.message || "Something went wrong");
 
       setDashboard(null);
     } finally {

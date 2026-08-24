@@ -10,11 +10,9 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-import defaultProfileImage
-  from "../../../../../assets/profile/default-profile.svg";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 
-import useAuth
-  from "../../../../../shared/hooks/useAuth";
+import useAuth from "../../../../../shared/hooks/useAuth";
 
 
 const ProfileSummary = ({ username }) => {

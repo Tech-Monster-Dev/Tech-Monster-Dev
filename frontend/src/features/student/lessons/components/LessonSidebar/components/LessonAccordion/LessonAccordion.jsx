@@ -16,14 +16,16 @@ import "./LessonAccordion.css";
 export default function LessonAccordion({
     lesson,
     module,
+    moduleId,
     activeLesson,
     setActiveLesson,
     courseSlug,
     contentType,
     approvedModuleIds = new Set(),
+    canStart = true,
     moduleNumber = 1,
 }) {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(canStart);
     const navigate = useNavigate();
 
     // All lessons in this module must be completed before the task unlocks.
@@ -34,6 +36,13 @@ export default function LessonAccordion({
     const isModuleTaskApproved = approvedModuleIds.has(lesson?.id);
 
     const handleLessonClick = (lessonItem) => {
+        if (!canStart) {
+            toast.warning(
+                `Complete and get approval for Module ${moduleNumber - 1} before starting Module ${moduleNumber}.`
+            );
+            return;
+        }
+
         if (lessonItem.locked) {
             // Blocked because the PREVIOUS module's task is not yet approved.
             toast.warning(
@@ -45,9 +54,18 @@ export default function LessonAccordion({
         setActiveLesson(lessonItem.id);
     };
 
-    const handleTaskClick = () => {
-        if (!isModuleCompleted) {
-            toast.warning("Complete all lessons in this module before attempting the Task!");
+    const handleTaskClick = (lessonItem) => {
+        if (!canStart) {
+            toast.warning(
+                `Complete and get approval for Module ${moduleNumber - 1} before starting Module ${moduleNumber}.`
+            );
+            return;
+        }
+
+        if (!lessonItem?.completed) {
+            toast.warning(
+                "Complete this lesson before attempting its task!"
+            );
             return;
         }
 
@@ -56,8 +74,8 @@ export default function LessonAccordion({
             {
                 state: {
                     courseSlug: courseSlug || null,
-                    moduleId: lesson?.id || null,
-                    lessonId: null,
+                    moduleId: moduleId || lesson?.id || null,
+                    lessonId: lessonItem.id || null,
                 },
             }
         );
@@ -70,10 +88,23 @@ export default function LessonAccordion({
             <motion.div
                 whileTap={{ scale: 0.98 }}
                 id="module-header"
-                onClick={() => setOpen(!open)}
+                onClick={() => {
+                    if (!canStart) {
+                        toast.warning(
+                            `Complete and get approval for Module ${moduleNumber - 1} before starting Module ${moduleNumber}.`
+                        );
+                        return;
+                    }
+
+                    setOpen(!open);
+                }}
             >
                 <div id="module-title">
-                    <BookOpen size={18} />
+                    {canStart ? (
+                        <BookOpen size={18} />
+                    ) : (
+                        <FiLock size={18} className="locked" />
+                    )}
 
                     <div>
                         <h3>{lesson.title}</h3>
@@ -84,10 +115,12 @@ export default function LessonAccordion({
                     </div>
                 </div>
 
-                {open ? (
-                    <ChevronDown size={20} />
-                ) : (
-                    <ChevronRight size={20} />
+                {canStart && (
+                    open ? (
+                        <ChevronDown size={20} />
+                    ) : (
+                        <ChevronRight size={20} />
+                    )
                 )}
             </motion.div>
 
@@ -156,45 +189,58 @@ export default function LessonAccordion({
                             </motion.div>
                         ))}
 
-                        {/* Module Task Bar (rendered after the last lesson) */}
-                        <motion.div
-                            whileHover={{ x: 6 }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`accordion-task ${isModuleCompleted
-                                ? "task-unlocked"
-                                : "task-locked"}`}
-                            onClick={handleTaskClick}
-                        >
-                            <div className="task-icon">
-                                {isModuleTaskApproved ? (
-                                    <FiCheck
-                                        size={18}
-                                        className="task-check"
-                                    />
-                                ) : isModuleCompleted ? (
-                                    <FiCheckSquare
-                                        size={18}
-                                        className="task-ready"
-                                    />
-                                ) : (
-                                    <FiLock
-                                        size={18}
-                                        className="task-lock"
-                                    />
-                                )}
-                            </div>
+                        {/* Module Task Bar */}
 
-                            <div id="task-text">
-                                <h4>Module Task</h4>
-                                <small>{lesson.title} assignment</small>
-                            </div>
+        {isModuleCompleted && (
+            <motion.div
+                whileHover={{ x: 6 }}
+                whileTap={{ scale: 0.98 }}
+                className="accordion-task task-unlocked"
+                onClick={() => {
+                    navigate(
+                        `/student/tasks/${contentType}/${courseSlug}`,
+                        {
+                            state: {
+                                courseSlug: courseSlug || null,
+                                moduleId: moduleId || null,
+                            },
+                        }
+                    );
+                }}
+            >
+                <div className="task-icon">
+                    {approvedModuleIds.has(moduleId) ? (
+                        <FiCheckSquare
+                            size={18}
+                            className="task-ready"
+                        />
+                    ) : (
+                        <FiCheckSquare
+                            size={18}
+                            className="task-ready"
+                        />
+                    )}
+                </div>
 
-                            {isModuleTaskApproved ? (
-                                <span className="task-badge badge-approved">Approved</span>
-                            ) : isModuleCompleted ? (
-                                <span className="task-badge">Ready</span>
-                            ) : null}
-                        </motion.div>
+                <div id="task-text">
+                    <h4>
+                        Module {moduleNumber} Tasks
+                    </h4>
+
+                    <small>
+                        {approvedModuleIds.has(moduleId)
+                            ? "All tasks approved"
+                            : "Ready to attempt"}
+                    </small>
+                </div>
+
+                <span className="task-badge">
+                    {approvedModuleIds.has(moduleId)
+                        ? "Approved"
+                        : "READY"}
+                </span>
+            </motion.div>
+        )}
                     </motion.div>
                 )}
 
