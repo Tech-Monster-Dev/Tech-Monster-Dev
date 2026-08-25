@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const serverSideURI = "https://tech-monster-dev.onrender.com/api";
-const testing = true;
+const testing = false;
 
 const api = axios.create({
     baseURL: `${testing ? "http://localhost:8001/api" : serverSideURI || import.meta.env.VITE_API_URL}`,
