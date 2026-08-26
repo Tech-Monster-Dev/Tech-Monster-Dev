@@ -1,17 +1,20 @@
 import express from "express";
 
-import { protect } from "../../core/security/auth.middleware.js";
+import {
+    protect,
+} from "../../core/security/auth.middleware.js";
+
 import authorizeRoles from "../../core/security/role.middleware.js";
 
 import {
     submitCode,
     getMySubmissions,
-    getMyCourseSubmissions
-} from "./submission.controller.js";
+    getMyCourseSubmissions,
+} from "./controllers/submission.controller.js";
 
-const router = express.Router();
+const router =
+    express.Router();
 
-// Student submits code for a task
 router.post(
     "/",
     protect,
@@ -19,7 +22,6 @@ router.post(
     submitCode
 );
 
-// Student's own submissions
 router.get(
     "/my",
     protect,
@@ -27,7 +29,6 @@ router.get(
     getMySubmissions
 );
 
-// Student's submissions for a specific course
 router.get(
     "/course/:courseSlug",
     protect,

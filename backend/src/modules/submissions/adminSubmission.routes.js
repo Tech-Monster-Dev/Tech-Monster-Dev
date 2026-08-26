@@ -1,6 +1,9 @@
 import express from "express";
 
-import { protect } from "../../core/security/auth.middleware.js";
+import {
+    protect,
+} from "../../core/security/auth.middleware.js";
+
 import authorizeRoles from "../../core/security/role.middleware.js";
 
 import {
@@ -8,12 +11,12 @@ import {
     getSubmissionDetails,
     approveSubmission,
     rejectSubmission,
-    extendSubmissionDeadline
-} from "./submission.controller.js";
+    extendSubmissionDeadline,
+} from "./controllers/adminSubmission.controller.js";
 
-const router = express.Router();
+const router =
+    express.Router();
 
-// Admin reviews all student code submissions
 router.get(
     "/",
     protect,
@@ -21,7 +24,6 @@ router.get(
     getAllSubmissions
 );
 
-// Admin views a single submission
 router.get(
     "/:id",
     protect,
@@ -29,7 +31,6 @@ router.get(
     getSubmissionDetails
 );
 
-// Admin approves a submission
 router.put(
     "/:id/approve",
     protect,
@@ -37,7 +38,6 @@ router.put(
     approveSubmission
 );
 
-// Admin rejects a submission
 router.put(
     "/:id/reject",
     protect,
@@ -45,7 +45,6 @@ router.put(
     rejectSubmission
 );
 
-// Admin extends/reactivates a student's task deadline
 router.put(
     "/:id/extend",
     protect,
