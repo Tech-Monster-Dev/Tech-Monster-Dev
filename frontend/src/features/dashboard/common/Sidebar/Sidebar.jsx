@@ -39,12 +39,13 @@ function Sidebar({
     onCloseMobileSidebar,
     enrolledCourse
 }) {
+
     const navigate = useNavigate();
     const location = useLocation();
 
     const [loading, setLoading] = useState(false);
 
-    const dailyTaskLocked = role === "student" && !dailyTaskUnlocked;
+    const dailyTaskLocked = role === "student" && (!enrolledCourse || !dailyTaskUnlocked);
 
     useEffect(() => {
         if (mobileSidebarOpen) {
@@ -55,10 +56,9 @@ function Sidebar({
 
     const lessonPath = enrolledCourse?.type && enrolledCourse?.slug ? `/student/lessons/${enrolledCourse.type}/${enrolledCourse.slug}` : "/student/lessons";
 
-    const taskPath =
-        enrolledCourse?.type && enrolledCourse?.slug
+    const taskPath = enrolledCourse?.type && enrolledCourse?.slug
             ? `/student/tasks/${enrolledCourse.type}/${enrolledCourse.slug}`
-            : "/student/tasks";
+            : `/student/tasks/`;
 
     const studentLinks = [
         { name: "Home", path: "/student", icon: <FiHome /> },
@@ -74,7 +74,7 @@ function Sidebar({
             name: "Daily Task",
             path: taskPath,
             icon: <FiCheckSquare />,
-            locked: dailyTaskLocked,
+            locked: dailyTaskLocked && !isCourseCompleted,
         },
 
         { name: "Attendance", path: "/student/attendance", icon: <FiCalendar /> },

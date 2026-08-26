@@ -3,20 +3,11 @@ import { useEffect, useState } from "react";
 import api from "../../../../services/api/axios";
 import { API } from "../../../../services/api/endpoints";
 
-const useApprovedModules = (
-    courseSlug,
-    lessonData
-) => {
-
-    const [approvedModuleIds, setApprovedModuleIds] =
-        useState(new Set());
+const useApprovedModules = (courseSlug, lessonData) => {
+    const [approvedModuleIds, setApprovedModuleIds] = useState(new Set());
 
     useEffect(() => {
-
-        if (
-            !courseSlug ||
-            !Array.isArray(lessonData?.modules)
-        ) {
+        if (!courseSlug || !Array.isArray(lessonData?.modules)) {
             return;
         }
 
@@ -27,82 +18,48 @@ const useApprovedModules = (
             // =========================================
             // BACKEND SUBMISSIONS
             // =========================================
-
             try {
+                const response = await api.get(API.SUBMISSIONS.COURSE(courseSlug));
 
-                const response =
-                    await api.get(
-                        API.SUBMISSIONS.COURSE(
-                            courseSlug
-                        )
-                    );
-
-                const submissions =
-                    response?.data?.submissions || [];
-
+                const submissions = response?.data?.submissions || [];
 
                 // =========================================
                 // APPROVED TASK KEYS
                 // =========================================
-
-                const approvedTaskKeys =
-                    new Set(
-                        submissions
-                            .filter(
-                                (submission) =>
-                                    submission.status ===
-                                    "approved"
-                            )
-                            .map(
-                                (submission) =>
-                                    [
-                                        String(
-                                            submission.moduleId
-                                        ),
-                                        String(
-                                            submission.lessonId ||
-                                            ""
-                                        ),
-                                        String(
-                                            submission.taskId
-                                        ),
-                                    ].join("_")
-                            )
-                    );
+                const approvedTaskKeys = new Set(
+                    submissions
+                        .filter((submission) => submission.status === "approved")
+                        .map((submission) => [
+                            String(submission.moduleId),
+                            String(submission.lessonId || ""),
+                            String(submission.taskId),
+                        ].join("_")
+                        )
+                );
 
 
                 // =========================================
                 // FIND FULLY APPROVED MODULES
                 // =========================================
 
-                const fullyApprovedModules =
-                    new Set();
-
+                const fullyApprovedModules = new Set();
 
                 lessonData.modules.forEach(
                     (module) => {
 
-                        const moduleId =
-                            String(
-                                module.id ||
-                                module.moduleId ||
-                                ""
+                        const moduleId = String(module.id || module.moduleId || "");
+                        const tasks = (module.sections || [])
+                            .flatMap(
+                                (section) =>
+                                    (section.tasks || []).map(
+                                        (task) => ({
+                                            ...task,
+                                            lessonId:
+                                                task.lessonId ||
+                                                section.id
+                                        })
+                                    )
                             );
-
-
-                        const tasks =
-                            (module.sections || [])
-                                .flatMap(
-                                    (section) =>
-                                        (section.tasks || []).map(
-                                            (task) => ({
-                                                ...task,
-                                                lessonId:
-                                                    task.lessonId ||
-                                                    section.id
-                                            })
-                                        )
-                                );
 
 
                         // No tasks = don't unlock
@@ -112,71 +69,30 @@ const useApprovedModules = (
                         }
 
 
-                        const allTasksApproved =
-                            tasks.every(
-                                (task) => {
+                        const allTasksApproved = tasks.every((task) => {
+                            const taskId = String(task.taskId || task.id || "");
+                            const lessonId = String(task.lessonId || "");
 
-                                    const taskId =
-                                        String(
-                                            task.taskId ||
-                                            task.id ||
-                                            ""
-                                        );
+                            const key = [
+                                moduleId,
+                                lessonId,
+                                taskId,
+                            ].join("_");
 
-                                    const lessonId =
-                                        String(
-                                            task.lessonId ||
-                                            ""
-                                        );
+                            return approvedTaskKeys.has(key);
+                        });
 
-                                    const key =
-                                        [
-                                            moduleId,
-                                            lessonId,
-                                            taskId,
-                                        ].join("_");
-
-                                    console.log(
-                                        "🔎 MODULE TASK KEY CHECK:",
-                                        {
-                                            key,
-                                            approved: approvedTaskKeys.has(key),
-                                            approvedKeys: [
-                                                ...approvedTaskKeys
-                                            ]
-                                        }
-                                    );
-
-                                    return approvedTaskKeys.has(
-                                        key
-                                    );
-                                }
-                            );
-
-
-                        if (
-                            allTasksApproved
-                        ) {
-
-                            fullyApprovedModules.add(
-                                moduleId
-                            );
-
+                        if (allTasksApproved) {
+                            fullyApprovedModules.add(moduleId);
                         }
-
                     }
                 );
-
 
                 if (!active) {
                     return;
                 }
 
-
-                setApprovedModuleIds(
-                    fullyApprovedModules
-                );
-
+                setApprovedModuleIds(fullyApprovedModules);
 
                 localStorage.setItem(
                     `approvedModules_${courseSlug}`,
@@ -197,28 +113,16 @@ const useApprovedModules = (
                 // Keep existing cached state
                 try {
 
-                    const raw =
-                        localStorage.getItem(
-                            `approvedModules_${courseSlug}`
-                        );
+                    const raw = localStorage.getItem(`approvedModules_${courseSlug}`);
 
                     if (raw && active) {
+                        const cached = JSON.parse(raw);
 
-                        const cached =
-                            JSON.parse(raw);
-
-                        if (
-                            Array.isArray(
-                                cached
-                            )
-                        ) {
-
+                        if (Array.isArray(cached)) {
                             setApprovedModuleIds(
                                 new Set(cached)
                             );
-
                         }
-
                     }
 
                 } catch {
@@ -242,5 +146,6 @@ const useApprovedModules = (
 
     return approvedModuleIds;
 };
+
 
 export default useApprovedModules;

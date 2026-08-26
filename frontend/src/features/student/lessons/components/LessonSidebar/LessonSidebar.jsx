@@ -48,9 +48,7 @@ export default function LessonSidebar({
             <div id="lesson-list">
 
                 {
-
                     filteredLessons.map((lesson, moduleIndex) => (
-
                         <LessonAccordion
                             lesson={lesson}
                             key={lesson.id}
@@ -64,11 +62,8 @@ export default function LessonSidebar({
                             canStart={lesson.canStart !== false}
                             moduleNumber={moduleIndex + 1}
                         />
-
                     ))
-
                 }
-
             </div>
 
             {/* Footer */}
@@ -78,9 +73,7 @@ export default function LessonSidebar({
                 <div id="sidebar-progress">
                     <div
                         id="sidebar-progress-fill"
-                        style={{
-                            width: `${progress}%`,
-                        }}
+                        style={{width: `${progress}%`}}
                     />
                 </div>
                 <span>
