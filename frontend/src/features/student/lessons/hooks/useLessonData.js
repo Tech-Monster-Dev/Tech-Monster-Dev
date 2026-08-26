@@ -10,17 +10,13 @@ const getContentEndpoint = (
     type,
     slug
 ) => {
-
     if (type === "internship") {
-
-        return API.INTERNSHIPS.BY_SLUG
-            ? API.INTERNSHIPS.BY_SLUG(slug)
-            : `/internships/slug/${slug}`;
+        const internshipEndpoint = API.INTERNSHIPS.BY_SLUG ? API.INTERNSHIPS.BY_SLUG(slug) : `/internships/slug/${slug}`;
+        return internshipEndpoint;
     }
 
-    return API.COURSES.BY_SLUG
-        ? API.COURSES.BY_SLUG(slug)
-        : `/courses/slug/${slug}`;
+    const courseEndpoint = API.COURSES.BY_SLUG ? API.COURSES.BY_SLUG(slug) : `/courses/slug/${slug}`;
+    return courseEndpoint;
 };
 
 const useLessonData = (
@@ -30,7 +26,6 @@ const useLessonData = (
 
     const [lessonData, setLessonData] = useState(null);
     const [loading, setLoading] = useState(true);
-
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -44,70 +39,39 @@ const useLessonData = (
         let mounted = true;
 
         const fetchLearningContent = async () => {
-
             try {
-
                 setLoading(true);
                 setError(null);
 
-                const endpoint = getContentEndpoint(
-                    contentType,
-                    courseSlug
-                );
+                const endpoint = getContentEndpoint(contentType, courseSlug);
                 const response = await api.get(endpoint);
-
-                console.log("📚 CONTENT TYPE:", contentType);
-                console.log("📚 COURSE SLUG:", courseSlug);
-                console.log("📚 ENDPOINT:", endpoint);
-                console.log("📚 API RESPONSE:", response?.data);
 
                 if (!mounted) return;
 
-                const data =
-                    response?.data?.course ||
-                    response?.data?.internship ||
-                    response?.data?.data ||
-                    response?.data ||
-                    null;
-
+                const data = response?.data?.course|| response?.data?.internship || response?.data?.data || response?.data || null;
 
                 if (!data) {
-
                     throw new Error(
                         `${contentType} content could not be loaded.`
                     );
                 }
-
                 const normalized = normalizeLessonData(data);
-
                 setLessonData(normalized);
-
             } catch (err) {
-
                 if (!mounted) return;
-
                 console.error(
                     "Learning content error:",
                     err
                 );
-
-                const message =
-                    err?.response?.data?.message ||
-                    err?.message ||
-                    `Unable to load ${contentType} content.`;
-
+                const message = err?.response?.data?.message || err?.message || `Unable to load ${contentType} content.`;
                 setError(message);
-
-                toast.error(message);
-
+                toast.error("Unable to load learning content.");
             } finally {
-
                 if (mounted) {
                     setLoading(false);
                 }
             }
         };
-
         fetchLearningContent();
 
         return () => {

@@ -14,12 +14,13 @@ function DashboardLayout({ role = "student" }) {
     const { user } = useAuth();
 
     const [collapsed, setCollapsed] = useState(false);
-
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
     const [enrolledCourse, setEnrolledCourse] = useState(null);
     const [dailyTaskUnlocked, setDailyTaskUnlocked] = useState(false);
     const [allTasksCompleted, setAllTasksCompleted] = useState(false);
+
+    const enrolledCourseSlug = enrolledCourse?.slug;
+
 
     // ==========================================
     // GET ACTIVE / ENROLLED LEARNING
@@ -30,21 +31,13 @@ function DashboardLayout({ role = "student" }) {
         const loadActiveLearning = () => {
 
             try {
-
-                const storedLearning =
-                    localStorage.getItem("activeLearning");
+                const storedLearning = localStorage.getItem("activeLearning");
 
                 if (storedLearning) {
-
-                    const learning =
-                        JSON.parse(storedLearning);
-
+                    const learning = JSON.parse(storedLearning);
                     setEnrolledCourse(learning);
-
                 } else {
-
                     setEnrolledCourse(null);
-
                 }
 
             } catch (error) {
@@ -63,60 +56,48 @@ function DashboardLayout({ role = "student" }) {
 
     }, []);
 
+
+// ==========================================
+// DAILY TASK ACCESS Locked or Unlocked
+// ==========================================
+
     useEffect(() => {
-        if (role !== "student" || !enrolledCourse?.slug) {
+        if (role !== "student" || !enrolledCourseSlug) {
             return;
         }
 
-        const storageKey =
-            `daily_task_unlocked_${enrolledCourse.slug}`;
+        const storageKey = `daily_task_unlocked_${enrolledCourse.slug}`;
+        const storeValue = localStorage.getItem(storageKey);
+
+        if (!storeValue) {
+            localStorage.setItem(storageKey, "false");
+        }
 
         const readDailyTaskAccess = () => {
             try {
-                setDailyTaskUnlocked(
-                    localStorage.getItem(storageKey) === "true"
-                );
+                setDailyTaskUnlocked(localStorage.getItem(storageKey) === "true");
             } catch {
                 setDailyTaskUnlocked(false);
             }
         };
-
         readDailyTaskAccess();
 
         const handleAccessChanged = (event) => {
-            if (
-                event.detail?.courseSlug ===
-                enrolledCourse.slug
-            ) {
-                readDailyTaskAccess();
+            if (event.detail?.courseSlug === enrolledCourse.slug) {
+                setDailyTaskUnlocked(Boolean(event.detail?.unlocked));
             }
         };
 
-        window.addEventListener(
-            "dailyTaskAccessChanged",
-            handleAccessChanged
-        );
-
-        window.addEventListener(
-            "storage",
-            readDailyTaskAccess
-        );
+        window.addEventListener("dailyTaskAccessChanged", handleAccessChanged);
+        window.addEventListener("storage", readDailyTaskAccess);
 
         return () => {
-            window.removeEventListener(
-                "dailyTaskAccessChanged",
-                handleAccessChanged
-            );
-
-            window.removeEventListener(
-                "storage",
-                readDailyTaskAccess
-            );
+            window.removeEventListener("dailyTaskAccessChanged", handleAccessChanged);
+            window.removeEventListener("storage", readDailyTaskAccess);
         };
-    }, [
-        role,
-        enrolledCourse?.slug,
-    ]);
+    }, [role, enrolledCourseSlug, enrolledCourse?.slug]);
+
+// ========================================================================================================
 
 
     // ==========================================
@@ -125,16 +106,12 @@ function DashboardLayout({ role = "student" }) {
     // when the student is on another page.
     // ==========================================
     useEffect(() => {
-        if (
-            role !== "student" ||
-            (!user?._id && !user?.id)
+        if (role !== "student" || (!user?._id && !user?.id)
         ) {
             return;
         }
 
-        const userId = String(
-            user._id || user.id
-        );
+        const userId = String(user._id || user.id);
 
         const handleConnect = () => {
             socket.emit("join", userId);
@@ -149,17 +126,9 @@ function DashboardLayout({ role = "student" }) {
                 return;
             }
 
-            const activeLearning =
-                enrolledCourse;
+            const activeLearning = enrolledCourse;
 
-            if (
-                !activeLearning?.slug ||
-                String(
-                    submission.courseSlug || ""
-                ) !== String(
-                    activeLearning.slug
-                )
-            ) {
+            if (!activeLearning?.slug || String(submission.courseSlug || "") !== String(activeLearning.slug)) {
                 return;
             }
 
@@ -324,30 +293,18 @@ function DashboardLayout({ role = "student" }) {
                 <Sidebar
                     role={role}
                     dailyTaskUnlocked={dailyTaskUnlocked}
-
-                    isCourseCompleted={
-                        role === "student"
-                            ? readAllTasksCompleted()
-                            : false
-                    }
-
+                    isCourseCompleted={role === "student" ? readAllTasksCompleted() : false}
                     collapsed={collapsed}
-
                     onToggleCollapse={
                         handleToggleCollapse
                     }
-
                     mobileSidebarOpen={
                         mobileSidebarOpen
                     }
-
                     onCloseMobileSidebar={
                         handleCloseMobileSidebar
                     }
-
-                    enrolledCourse={
-                        enrolledCourse
-                    }
+                    enrolledCourse={enrolledCourse}
                 />
 
 

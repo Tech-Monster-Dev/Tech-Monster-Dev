@@ -9,27 +9,21 @@ const useLessonProgress = (
     contentType
 ) => {
 
-    const [completedLessonIds, setCompletedLessonIds] =
-        useState([]);
+    const [completedLessonIds, setCompletedLessonIds] = useState([]);
 
     useEffect(() => {
-
         if (!courseSlug) return;
-
         let active = true;
-
         const fetchCompleted = async () => {
 
+            // Try to load from cache
             try {
-
                 const raw = localStorage.getItem(
                     `completedLessons_${courseSlug}`
                 );
 
                 if (raw) {
-
                     const cached = JSON.parse(raw);
-
                     if (Array.isArray(cached)) {
                         setCompletedLessonIds(cached);
                     }
@@ -38,31 +32,19 @@ const useLessonProgress = (
             } catch {
                 // Ignore invalid cache
             }
+            // ============================================
 
+            // Try to load from API endpoint
             try {
+                const endpoint = contentType === "course" ? API.COURSES.COMPLETED_LESSONS(courseSlug) : API.INTERNSHIPS.COMPLETED_LESSONS(courseSlug);
 
-                const endpoint =
-                    contentType === "course"
-                        ? API.COURSES.COMPLETED_LESSONS(
-                            courseSlug
-                        )
-                        : API.INTERNSHIPS.COMPLETED_LESSONS(
-                            courseSlug
-                        );
+                const response = await api.get(endpoint);
 
-                const response =
-                    await api.get(endpoint);
+                const lessons = response?.data?.completedLessons;
 
-                const lessons =
-                    response?.data?.completedLessons;
-
-                if (
-                    active &&
-                    Array.isArray(lessons)
-                ) {
-
+                // If active, update state
+                if (active && Array.isArray(lessons)) {
                     setCompletedLessonIds(lessons);
-
                     localStorage.setItem(
                         `completedLessons_${courseSlug}`,
                         JSON.stringify(lessons)
@@ -70,14 +52,13 @@ const useLessonProgress = (
                 }
 
             } catch (err) {
-
-                const message =
-                    err?.response?.data?.message ||
-                    err?.message;
-
-                toast.error(message);
+                const message = err?.response?.data?.message || err?.message;
+                console.error(message);
+                toast.error("Unable to load completed lessons.");
             }
         };
+
+        // ==========================================================
 
         fetchCompleted();
 
@@ -103,15 +84,8 @@ const useLessonProgress = (
     ]);
 
 
-    const completeLesson = async (
-        lessonId
-    ) => {
-
-        if (
-            completedLessonIds.includes(
-                lessonId
-            )
-        ) {
+    const completeLesson = async (lessonId) => {
+        if (completedLessonIds.includes(lessonId)) {
             return;
         }
 
@@ -123,7 +97,6 @@ const useLessonProgress = (
         setCompletedLessonIds(updated);
 
         try {
-
             localStorage.setItem(
                 `completedLessons_${courseSlug}`,
                 JSON.stringify(updated)
@@ -133,23 +106,10 @@ const useLessonProgress = (
             // Ignore localStorage error
         }
 
-
-        const endpoint =
-            contentType === "course"
-                ? API.COURSES.COMPLETE_LESSON(
-                    courseSlug
-                )
-                : API.INTERNSHIPS.COMPLETE_LESSON(
-                    courseSlug
-                );
+        const endpoint = contentType === "course" ? API.COURSES.COMPLETE_LESSON(courseSlug) : API.INTERNSHIPS.COMPLETE_LESSON(courseSlug);
 
         try {
-
-            await api.post(
-                endpoint,
-                { lessonId }
-            );
-
+            await api.post(endpoint, { lessonId });
         } catch {
             // Local progress remains available.
         }

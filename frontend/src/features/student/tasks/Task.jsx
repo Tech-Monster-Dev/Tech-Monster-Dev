@@ -676,11 +676,9 @@ const Task = () => {
         // EXPIRED TASK
         // -----------------------------------------
 
-        const deadline =
-            deadlineMap[taskId];
+        const deadline = deadlineMap[taskId];
 
-        const expiresAt =
-            deadline?.expiresAt;
+        const expiresAt = deadline?.expiresAt;
 
         const expiredByTime =
             expiresAt &&
