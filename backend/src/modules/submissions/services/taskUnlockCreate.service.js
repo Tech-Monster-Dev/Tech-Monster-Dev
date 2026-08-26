@@ -1,5 +1,7 @@
 import Submission from "../models/Submission.js";
-import Internship from "../../internships/models/Internship.js";
+import {
+    resolveEnrollment,
+} from "./submissionEnrollment.service.js";
 
 import {
     emitToUser,
@@ -18,10 +20,13 @@ export const createUnlockedSubmission =
         courseSlug,
         taskInfo
     ) => {
-        const internship =
-            await Internship.findOne({
-                slug: courseSlug,
-            });
+        const {
+            internship,
+            course,
+        } = await resolveEnrollment(
+            studentId,
+            courseSlug
+        );
 
         const unlockedAt =
             new Date();
@@ -39,6 +44,10 @@ export const createUnlockedSubmission =
 
                 internship:
                     internship?._id ||
+                    null,
+
+                course:
+                    course?._id ||
                     null,
 
                 courseSlug,

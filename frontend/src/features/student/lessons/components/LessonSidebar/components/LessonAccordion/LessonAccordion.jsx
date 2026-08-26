@@ -55,6 +55,7 @@ export default function LessonAccordion({
                 state: {
                     courseSlug: courseSlug || null,
                     moduleId: moduleId || null,
+                    isModuleCompleted,
                 },
             }
         );

@@ -22,6 +22,7 @@ const useApprovedModules = (courseSlug, lessonData) => {
                 const response = await api.get(API.SUBMISSIONS.COURSE(courseSlug));
 
                 const submissions = response?.data?.submissions || [];
+                console.log("Submission", response?.data)
 
                 // =========================================
                 // APPROVED TASK KEYS

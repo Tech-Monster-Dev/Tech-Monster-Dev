@@ -118,9 +118,9 @@ export const API = {
   },
 
   // NEW
-    LEARNING: {
-      CONTENT: (type, slug) => `/learning/${type}/${slug}`
-    },
+  LEARNING: {
+    CONTENT: (type, slug) => `/learning/${type}/${slug}`
+  },
 
   SUBMISSIONS: {
     BASE: "/submissions",

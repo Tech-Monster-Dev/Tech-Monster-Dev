@@ -20,9 +20,7 @@ const ContinueCard = ({ learning }) => {
 
   const isCourse = type === "course";
 
-  const learningLabel = isCourse
-    ? "Course"
-    : "Internship";
+  const learningLabel = isCourse ? "Course" : "Internship";
 
   const handleContinue = () => {
 
@@ -35,14 +33,7 @@ const ContinueCard = ({ learning }) => {
     }
 
     // Save currently selected course/internship
-    localStorage.setItem(
-      "activeLearning",
-      JSON.stringify({
-        type,
-        slug,
-        title
-      })
-    );
+    localStorage.setItem("activeLearning", JSON.stringify({type, slug, title}));
 
     navigate(
       `/student/lessons/${type}/${slug}`
