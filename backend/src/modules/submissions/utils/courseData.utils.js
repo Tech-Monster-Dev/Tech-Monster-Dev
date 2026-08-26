@@ -15,11 +15,11 @@ const __dirname =
 const contentDataDirs = [
     path.resolve(
         __dirname,
-        "../../../data/course"
+        "../../../../data/course"
     ),
     path.resolve(
         __dirname,
-        "../../../data/internship"
+        "../../../../data/internship"
     ),
     path.resolve(
         __dirname,

@@ -18,6 +18,9 @@ import {
     getContentFromResponse,
 } from "../utils/taskUtils";
 import { toast } from "react-toastify";
+import { getSubmissionState } from "../utils/applySubmissionState";
+import { resolveContentSlug } from "../utils/contentSlugResolver";
+import { getSubmissionsFromResponse, getPreferredSubmissions, buildSubmissionMaps } from "../utils/submissionState";
 
 const TESTING_RESET_ON_REFRESH = false;
 
@@ -56,217 +59,65 @@ const useTaskData = ({
 
     const applySubmissionState = useCallback(
         (submission) => {
-
-            if (
-                !submission?.moduleId ||
-                !submission?.taskId
-            ) {
-                return;
-            }
-
-            const key =
-                getTaskKey(
-                    submission
-                );
-
-            console.log(
-                "REALTIME SUBMISSION RECEIVED:",
+            const state = getSubmissionState(
                 submission
             );
 
-            console.log(
-                "REALTIME TASK KEY:",
-                key,
-                "STATUS:",
-                submission.status
-            );
+            if (!state) {
+                return;
+            }
+
+            const key = getTaskKey(submission);
 
             if (!key) {
                 return;
             }
 
-            // ==============================
-            // STATUS
-            // ==============================
+            setTaskStatusMap((prev) => {
+                const next = {
+                    ...prev,
+                    [key]: state.status,
+                };
 
-            setTaskStatusMap(
-                (prev) => {
-
-                    const next = {
-                        ...prev,
-                        [key]:
-                            submission.status,
-                    };
-
-                    if (courseSlug) {
-                        saveTaskState(
-                            user?._id || user?.id,
-                            courseSlug,
-                            next
-                        );
-                    }
-
-                    return next;
+                if (courseSlug) {
+                    saveTaskState(
+                        user?._id || user?.id,
+                        courseSlug,
+                        next
+                    );
                 }
-            );
 
-            // ==============================
-            // SUBMITTED AT
-            // ==============================
+                return next;
+            });
 
-            if (
-                submission.submittedAt
-            ) {
-
-                setSubmittedAtMap(
-                    (prev) => ({
-                        ...prev,
-
-                        [key]:
-                            submission.submittedAt,
-                    })
-                );
+            if (state.submittedAt) {
+                setSubmittedAtMap((prev) => ({
+                    ...prev,
+                    [key]: state.submittedAt,
+                }));
             }
 
-            // ==============================
-            // DEADLINE
-            // ==============================
+            setDeadlineMap((prev) => ({
+                ...prev,
+                [key]: state.deadline,
+            }));
 
-            setDeadlineMap(
-                (prev) => ({
+            setReviewCommentMap((prev) => ({
+                ...prev,
+                [key]: state.reviewComment,
+            }));
 
-                    ...prev,
-
-                    [key]: {
-
-                        unlockedAt:
-                            submission.unlockedAt ||
-                            null,
-
-                        expiresAt:
-                            submission.expiresAt ||
-                            null,
-
-                        expiredAt:
-                            submission.expiredAt ||
-                            null,
-                    },
-                })
-            );
-
-            // ==============================
-            // REVIEW COMMENT
-            // ==============================
-
-            setReviewCommentMap(
-                (prev) => ({
-                    ...prev,
-                    [key]: submission.reviewComment || "",
-                })
-            );
-
-            // ==============================
-            // SUBMISSION ID
-            // ==============================
-
-            setSubmissionIdMap(
-                (prev) => ({
-
-                    ...prev,
-
-                    [key]:
-                        submission._id,
-                })
-            );
+            setSubmissionIdMap((prev) => ({
+                ...prev,
+                [key]: state.submissionId,
+            }));
         },
-
         [
             courseSlug,
             user?._id,
             user?.id,
         ]
-
     );
-
-    const resolveContentSlug = async () => {
-        const type = String(contentType || "")
-            .trim()
-            .toLowerCase();
-
-        if (!type) {
-            return null;
-        }
-
-        const resource = getApiResource(type);
-
-        try {
-            const myRes = await api.get(
-                `/${resource}/student/my`
-            );
-
-            const data = myRes?.data || {};
-
-            const myList =
-                Object.values(data).find(
-                    (value) => Array.isArray(value)
-                ) || [];
-
-            const enrolledItem =
-                myList.find(
-                    (item) =>
-                        item?.slug ||
-                        item?.course?.slug ||
-                        item?.internship?.slug
-                );
-
-            const enrolledSlug =
-                enrolledItem?.slug ||
-                enrolledItem?.course?.slug ||
-                enrolledItem?.internship?.slug;
-
-            if (enrolledSlug) {
-                return normalizeSlug(enrolledSlug);
-            }
-        } catch (error) {
-            console.warn(
-                `Failed to load ${resource} enrollment:`,
-                error
-            );
-        }
-
-        try {
-            const allRes = await api.get(
-                `/${resource}`
-            );
-
-            const data = allRes?.data || {};
-
-            const allList =
-                Object.values(data).find(
-                    (value) => Array.isArray(value)
-                ) || [];
-
-            const firstItem =
-                allList.find(
-                    (item) => item?.slug
-                );
-
-            const firstSlug =
-                firstItem?.slug;
-
-            return firstSlug
-                ? normalizeSlug(firstSlug)
-                : null;
-
-        } catch (error) {
-            console.warn(
-                `Failed to load ${resource}:`,
-                error
-            );
-
-            return null;
-        }
-    };
 
     useEffect(() => {
         let mounted = true;
@@ -282,9 +133,7 @@ const useTaskData = ({
                 try {
 
                     const profileRes = await getProfile();
-
                     const profile = profileRes?.data?.user || profileRes?.data || {};
-
                     const name =
                         [
                             profile.firstName,
@@ -312,19 +161,16 @@ const useTaskData = ({
                 let targetSlug = courseSlug;
 
                 if (!targetSlug) {
-                    targetSlug = await resolveContentSlug();
+                    targetSlug = await resolveContentSlug(contentType);
 
                     if (mounted && targetSlug) {
-                        setCourseSlug(targetSlug);
+                        setCourseSlug(targetSlug)
                     }
                 }
 
                 if (!targetSlug) {
                     if (mounted) {
-                        setError(
-                            "No internship found. Please enroll in a course first."
-                        );
-
+                        setError("No internship found. Please enroll in a course first.");
                         setLoading(false);
                     }
 
@@ -336,38 +182,22 @@ const useTaskData = ({
                 // -----------------------------------------
 
                 const resource = getApiResource(contentType);
-
-                const response = await api.get(
-                    `/${resource}/slug/${targetSlug}`
-                );
+                const response = await api.get(`/${resource}/slug/${targetSlug}`);
 
                 const contentData = getContentFromResponse(response);
 
                 if (!contentData) {
                     if (mounted) {
-                        setError(
-                            "Course content could not be loaded."
-                        );
-
+                        setError("Course content could not be loaded.");
                         setLoading(false);
                     }
-
                     return;
                 }
 
                 if (!mounted) return;
-
-                setCourseTitle(
-                    contentData.title ||
-                    contentType ||
-                    "Content"
-                );
-
+                setCourseTitle(contentData.title || contentType || "Content");
                 const builtModules = buildModules(contentData);
-                console.log("Built Modules:=", builtModules);
-
                 setModules(builtModules);
-                console.log("Modules:=", modules);
 
                 // -----------------------------------------
                 // LOCAL TASK STATE
@@ -392,132 +222,9 @@ const useTaskData = ({
                 // on refresh so testing always starts fresh.
                 // Database records are NOT deleted.
 
-                if (!TESTING_RESET_ON_REFRESH) {
-                    try {
-                        const subRes =
-                            await getMyCourseSubmissions(
-                                targetSlug
-                            );
-
-                        const submissions =
-                            subRes?.submissions || [];
-
-                        if (submissions.length) {
-                            const serverMap = {};
-                            const timeMap = {};
-                            const deadlineInfo = {};
-                            const submissionIds = {};
-                            const reviewComments = {};
-
-                            // Prefer APPROVED submission for the same task.
-                            // Otherwise keep the newest submission because
-                            // backend returns submissions sorted newest first.
-                            const preferredSubmissions = {};
-
-                            submissions.forEach((submission) => {
-                                const key =
-                                    getTaskKey(submission);
-
-                                if (!key) return;
-
-                                const current =
-                                    preferredSubmissions[key];
-
-                                if (!current) {
-                                    preferredSubmissions[key] =
-                                        submission;
-                                    return;
-                                }
-
-                                if (
-                                    submission.status === "approved" &&
-                                    current.status !== "approved"
-                                ) {
-                                    preferredSubmissions[key] =
-                                        submission;
-                                }
-                            });
-
-                            Object.values(
-                                preferredSubmissions
-                            ).forEach((submission) => {
-
-                                const key =
-                                    getTaskKey(submission);
-
-                                serverMap[key] =
-                                    submission.status;
-
-                                if (submission.submittedAt) {
-                                    timeMap[key] =
-                                        submission.submittedAt;
-                                }
-
-                                deadlineInfo[key] = {
-                                    unlockedAt:
-                                        submission.unlockedAt ||
-                                        null,
-
-                                    expiresAt:
-                                        submission.expiresAt ||
-                                        null,
-
-                                    expiredAt:
-                                        submission.expiredAt ||
-                                        null,
-                                };
-
-                                submissionIds[key] =
-                                    submission._id;
-
-                                reviewComments[key] =
-                                    submission.reviewComment || "";
-                            });
-
-                            const merged = {
-                                ...stored,
-                                ...serverMap,
-                            };
-
-                            setTaskStatusMap(merged);
-                            setSubmittedAtMap(timeMap);
-                            setDeadlineMap(deadlineInfo);
-                            setSubmissionIdMap(
-                                submissionIds
-                            );
-                            setReviewCommentMap(
-                                reviewComments
-                            );
-
-                            saveTaskState(
-                                targetSlug,
-                                merged
-                            );
-                        }
-                    } catch (err) {
-                        console.log("Submission Error 1:=", err);
-                        toast.error("Subbmission Error 1")
-                    }
-                }
-
-                // -----------------------------------------
-                // SELECT FIRST AVAILABLE TASK
-                // -----------------------------------------
-
                 const flatTasks = builtModules.flatMap(
                     (module) => module.tasks
                 );
-
-                console.log("Flat Tasks:=", flatTasks);
-
-                // =========================================
-                // SERVER-AUTHORITATIVE TASK STATE
-                // =========================================
-                // IMPORTANT:
-                // Do NOT use only local "stored" state here.
-                // Backend submission status is the source of truth.
-                // This also keeps unlockedAt/expiresAt available
-                // after refresh without restarting the timer.
 
                 const latestMap = {
                     ...stored,
@@ -525,133 +232,88 @@ const useTaskData = ({
 
                 if (!TESTING_RESET_ON_REFRESH) {
                     try {
-                        const serverResponse =
+                        const response =
                             await getMyCourseSubmissions(
                                 targetSlug
                             );
 
-                        const serverSubmissions =
-                            serverResponse?.data?.submissions || [];
+                        const submissions =
+                            getSubmissionsFromResponse(
+                                response
+                            );
 
-                        serverSubmissions.forEach((submission) => {
-                            const key =
-                                getTaskKey(submission);
+                        const preferredSubmissions =
+                            getPreferredSubmissions(
+                                submissions
+                            );
 
-                            if (!key) return;
+                        const {
+                            statusMap,
+                            submittedAtMap,
+                            deadlineMap,
+                            submissionIdMap,
+                            reviewCommentMap,
+                        } = buildSubmissionMaps(
+                            preferredSubmissions
+                        );
 
-                            latestMap[key] =
-                                submission.status;
+                        const merged = {
+                            ...stored,
+                            ...statusMap,
+                        };
 
-                            // Keep the server deadline in the same
-                            // deadlineMap key used by TaskItem/TaskDeadlineCard.
-                            setDeadlineMap((prev) => ({
-                                ...prev,
-                                [key]: {
-                                    unlockedAt:
-                                        submission.unlockedAt || null,
+                        setTaskStatusMap(merged);
+                        setSubmittedAtMap(
+                            submittedAtMap
+                        );
+                        setDeadlineMap(
+                            deadlineMap
+                        );
+                        setSubmissionIdMap(
+                            submissionIdMap
+                        );
+                        setReviewCommentMap(
+                            reviewCommentMap
+                        );
 
-                                    expiresAt:
-                                        submission.expiresAt || null,
+                        saveTaskState(
+                            user?._id || user?.id,
+                            targetSlug,
+                            merged
+                        );
 
-                                    expiredAt:
-                                        submission.expiredAt || null,
-                                },
-                            }));
-
-                            if (submission.submittedAt) {
-                                setSubmittedAtMap((prev) => ({
-                                    ...prev,
-                                    [key]:
-                                        submission.submittedAt,
-                                }));
-                            }
-
-                            if (submission._id) {
-                                setSubmissionIdMap((prev) => ({
-                                    ...prev,
-                                    [key]:
-                                        submission._id,
-                                }));
-                            }
-                        });
+                        Object.assign(
+                            latestMap,
+                            merged
+                        );
                     } catch (err) {
-                        console.log(
-                            "Server state sync error:",
+                        console.error(
+                            "SUBMISSION STATE SYNC ERROR:",
                             err
                         );
-                    }
-                }
-
-                console.log(
-                    "SERVER AUTHORITATIVE TASK MAP:",
-                    latestMap
-                );
-
-                if (!TESTING_RESET_ON_REFRESH) {
-                    try {
-                        const subRes =
-                            await getMyCourseSubmissions(
-                                targetSlug
-                            );
-
-                        const preferredForAvailability = {};
-
-                        (
-                            subRes?.data?.submissions || []
-                        ).forEach((submission) => {
-
-                            const key =
-                                getTaskKey(submission);
-
-                            if (!key) return;
-
-                            const current =
-                                preferredForAvailability[key];
-
-                            if (!current) {
-                                preferredForAvailability[key] =
-                                    submission;
-                                return;
-                            }
-
-                            // APPROVED always wins.
-                            if (
-                                submission.status === "approved" &&
-                                current.status !== "approved"
-                            ) {
-                                preferredForAvailability[key] =
-                                    submission;
-                            }
-                        });
-
-                        Object.values(
-                            preferredForAvailability
-                        ).forEach((submission) => {
-
-                            const key =
-                                getTaskKey(submission);
-
-                            latestMap[key] =
-                                submission.status;
-                        });
-                    } catch (err) {
-                        console.log("Submission Error 2:=", err);
-                        toast.error("Subbmission Error 2")
-                    }
-                }
-
-                const firstAvailable =
-                    flatTasks.find((task) => {
-                        const status =
-                            latestMap[task.id];
-
-                        return (
-                            status !== "approved" &&
-                            status !== "expired"
+                        console.error(
+                            "SUBMISSION RESPONSE ERROR DATA:",
+                            err?.response?.data
                         );
-                    }) || flatTasks[0];
+                        console.error(
+                            "SUBMISSION RESPONSE STATUS:",
+                            err?.response?.status
+                        );
+                        toast.error(
+                            "Submission state could not be synced."
+                        );
+                    }
+                }
 
-                console.log("First Available:=", firstAvailable);
+                const firstAvailable = flatTasks.find((task) => {
+                    const status = latestMap[task.id];
+
+                    return (
+                        status !== "approved" &&
+                        status !== "expired"
+                    );
+                }) || flatTasks[0];
+
                 return firstAvailable?.id || null;
             } catch (error) {
                 console.error("❌ TASK DATA LOAD ERROR:", error);
@@ -693,10 +355,6 @@ const useTaskData = ({
                 firstAvailable
             ) {
                 setInitialTaskId(
-                    firstAvailable
-                );
-                console.log(
-                    "INITIAL TASK ID SET TO:",
                     firstAvailable
                 );
             }

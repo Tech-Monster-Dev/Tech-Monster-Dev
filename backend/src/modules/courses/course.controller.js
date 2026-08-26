@@ -76,60 +76,39 @@ const unlockFirstEligibleLessonTask = async ({
     lessonId,
     courseData
 }) => {
+    const modules = courseData?.modules || [];
 
-    const orderedTasks = getOrderedCourseTasks(
-        courseData,
-        courseSlug
-    );
-
-    const targetIndex = orderedTasks.findIndex(
-        (task) => task.lessonId === lessonId
-    );
-
-    if (targetIndex < 0) {
-        return null;
-    }
-
-    const targetTask = orderedTasks[targetIndex];
-
-    // --------------------------------------------------
-    // Prevent duplicate submission
-    // --------------------------------------------------
-
-    const existing = await Submission.findOne({
-        student,
-        course: course._id,
-        courseSlug,
-        moduleId: targetTask.moduleId,
-        lessonId: targetTask.lessonId,
-        taskId: targetTask.taskId
-    });
-
-    if (existing) {
-        return existing;
-    }
-
-    // --------------------------------------------------
-    // Find current module
-    // --------------------------------------------------
-
-    const moduleIndex = courseData.modules.findIndex(
-        (module) =>
-            module.moduleId === targetTask.moduleId
+    const moduleIndex = modules.findIndex((module) =>
+        (module.lessons || []).some((lesson) =>
+            String(
+                lesson.lessonId ||
+                lesson.id ||
+                ""
+            ) === String(lessonId)
+        )
     );
 
     if (moduleIndex < 0) {
         return null;
     }
 
-    // --------------------------------------------------
-    // Current module lessons must all be completed
-    // --------------------------------------------------
+    const currentModule = modules[moduleIndex];
 
-    const studentCourse = await StudentInternship.findOne({
-        student,
-        course: course._id
-    });
+    const moduleId = String(
+        currentModule.moduleId ||
+        currentModule.id ||
+        ""
+    ).trim();
+
+    if (!moduleId) {
+        return null;
+    }
+
+    const studentCourse =
+        await StudentInternship.findOne({
+            student,
+            course: course._id
+        });
 
     const completedLessons =
         studentCourse?.completedLessons || [];
@@ -137,7 +116,7 @@ const unlockFirstEligibleLessonTask = async ({
     const currentModuleCompleted =
         isModuleLessonsCompleted(
             courseData,
-            targetTask.moduleId,
+            moduleId,
             completedLessons
         );
 
@@ -145,19 +124,30 @@ const unlockFirstEligibleLessonTask = async ({
         return null;
     }
 
-    // --------------------------------------------------
-    // Previous module tasks must all be approved
-    // --------------------------------------------------
-
     if (moduleIndex > 0) {
-
         const previousModule =
-            courseData.modules[moduleIndex - 1];
+            modules[moduleIndex - 1];
 
         const previousModuleId =
-            previousModule.moduleId ||
-            previousModule.id ||
-            "";
+            String(
+                previousModule.moduleId ||
+                previousModule.id ||
+                ""
+            ).trim();
+
+        const previousModuleTasks =
+            getOrderedCourseTasks(
+                {
+                    modules: [
+                        previousModule
+                    ]
+                },
+                courseSlug
+            );
+
+        if (!previousModuleTasks.length) {
+            return null;
+        }
 
         const previousModuleApproved =
             await areModuleTasksApproved({
@@ -168,58 +158,122 @@ const unlockFirstEligibleLessonTask = async ({
                 courseData
             });
 
-        if (previousModuleApproved === false) {
+        if (!previousModuleApproved) {
             return null;
         }
     }
 
-    // --------------------------------------------------
-    // Unlock task
-    // --------------------------------------------------
-    // IMPORTANT:
-    // Unlocking a task must NOT create a Submission.
-    // Submission is created only when the student
-    // actually submits the task.
+    const currentModuleTasks =
+        getOrderedCourseTasks(
+            {
+                modules: [
+                    currentModule
+                ]
+            },
+            courseSlug
+        );
 
-    const unlockedAt = new Date();
+    if (!currentModuleTasks.length) {
+        return null;
+    }
 
-    const taskUnlock = {
+    const targetTask =
+        currentModuleTasks[0];
+
+    const existing =
+        await Submission.findOne({
+            student,
+            course: course._id,
+            courseSlug,
+            moduleId:
+                targetTask.moduleId,
+            lessonId:
+                targetTask.lessonId,
+            taskId:
+                targetTask.taskId
+        });
+
+    if (existing) {
+        return existing;
+    }
+
+    const unlockedAt =
+        new Date();
+
+    const submission =
+        await Submission.create({
+            student,
+
+            course:
+                course._id,
+
+            internship:
+                null,
+
+            courseSlug,
+
+            moduleId:
+                targetTask.moduleId,
+
+            moduleTitle:
+                targetTask.moduleTitle,
+
+            lessonId:
+                targetTask.lessonId,
+
+            taskId:
+                targetTask.taskId,
+
+            taskTitle:
+                targetTask.taskTitle,
+
+            problemStatement:
+                targetTask.problemStatement,
+
+            status:
+                "unlocked",
+
+            unlockedAt,
+
+            expiresAt:
+                new Date(
+                    unlockedAt.getTime() +
+                    TASK_DEADLINE_MS
+                ),
+
+            expiredAt:
+                null
+        });
+
+    const taskUnlock =
+        submission;
+
+    emitToUser(
         student,
-        course: course._id,
-        courseSlug,
-        moduleId: targetTask.moduleId,
-        moduleTitle: targetTask.moduleTitle,
-        lessonId: targetTask.lessonId,
-        taskId: targetTask.taskId,
-        taskTitle: targetTask.taskTitle,
-        problemStatement:
-            targetTask.problemStatement,
-        status: "unlocked",
-        unlockedAt,
-        expiresAt: new Date(
-            unlockedAt.getTime() +
-            TASK_DEADLINE_MS
-        )
-    };
+        "taskUnlocked",
+        {
+            taskUnlock,
 
-    // --------------------------------------------------
-    // Notify student
-    // --------------------------------------------------
-
-    emitToUser(student, "taskUnlocked", {
-        taskUnlock,
-
-        taskKey:
-            [
-                String(taskUnlock.moduleId || ""),
-                String(taskUnlock.lessonId || ""),
-                String(taskUnlock.taskId || "")
-            ].join("_")
-    });
+            taskKey:
+                [
+                    String(
+                        taskUnlock.moduleId ||
+                        ""
+                    ),
+                    String(
+                        taskUnlock.lessonId ||
+                        ""
+                    ),
+                    String(
+                        taskUnlock.taskId ||
+                        ""
+                    )
+                ].join("_")
+        }
+    );
 
     return taskUnlock;
 };
-
 
 const isModuleLessonsCompleted = (courseData, moduleId, completedLessons = []) => {
     const module = (courseData?.modules || []).find(
@@ -546,16 +600,16 @@ export const completeLesson = asyncHandler(async (req, res) => {
         studentCourse.completedLessons.push(lessonId);
     }
 
+    await studentCourse.save();
+
     const courseData = await readCourseDataFromFile(normalizedSlug);
-    const unlockedSubmission = !alreadyCompleted
-        ? await unlockFirstEligibleLessonTask({
+    const unlockedSubmission = await unlockFirstEligibleLessonTask({
             student: req.user._id,
             course: course._id,
             courseSlug: normalizedSlug,
             lessonId,
             courseData
-        })
-        : null;
+        });
 
     const totalLessons = (courseData?.modules || []).reduce(
         (sum, module) => sum + (module.lessons?.length || 0),

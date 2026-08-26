@@ -155,6 +155,37 @@ const getOrderedCourseTasks = (courseData, courseSlug) => {
     });
 };
 
+const isModuleLessonsCompleted = (courseData, moduleId, completedLessons = []) => {
+    const module = (courseData?.modules || []).find(
+        (item) =>
+            String(item.moduleId || item.id || "") ===
+            String(moduleId)
+    );
+
+    if (
+        module == null ||
+        Array.isArray(module.lessons) === false ||
+        module.lessons.length === 0
+    ) {
+        return false;
+    }
+
+    const completedSet = new Set(completedLessons);
+
+    return module.lessons.every((lesson) => {
+        const lessonId = String(
+            lesson.lessonId ||
+            lesson.id ||
+            ""
+        );
+
+        return (
+            lessonId &&
+            completedSet.has(lessonId)
+        );
+    });
+};
+
 const unlockFirstEligibleLessonTask = async ({
     student,
     internship,
@@ -162,57 +193,205 @@ const unlockFirstEligibleLessonTask = async ({
     lessonId,
     courseData
 }) => {
-    const orderedTasks = getOrderedCourseTasks(courseData, courseSlug);
-    const targetIndex = orderedTasks.findIndex((task) => task.lessonId === lessonId);
+    const modules =
+        courseData?.modules || [];
 
-    if (targetIndex < 0) return null;
+    const moduleIndex =
+        modules.findIndex((module) =>
+            (module.lessons || []).some(
+                (lesson) =>
+                    String(
+                        lesson.lessonId ||
+                        lesson.id ||
+                        ""
+                    ) === String(lessonId)
+            )
+        );
 
-    const targetTask = orderedTasks[targetIndex];
-    const existing = await Submission.findOne({
-        student,
-        courseSlug,
-        moduleId: targetTask.moduleId,
-        lessonId: targetTask.lessonId,
-        taskId: targetTask.taskId
-    });
-
-    if (existing) return existing;
-
-    const previousTask = orderedTasks[targetIndex - 1];
-    if (previousTask) {
-        const previousSubmission = await Submission.findOne({
-            student,
-            courseSlug,
-            moduleId: previousTask.moduleId,
-            taskId: previousTask.taskId,
-            status: "approved"
-        });
-
-        if (!previousSubmission) return null;
+    if (moduleIndex < 0) {
+        return null;
     }
 
-    const unlockedAt = new Date();
-    const submission = await Submission.create({
-        student,
-        internship,
-        courseSlug,
-        moduleId: targetTask.moduleId,
-        moduleTitle: targetTask.moduleTitle,
-        lessonId: targetTask.lessonId,
-        taskId: targetTask.taskId,
-        taskTitle: targetTask.taskTitle,
-        problemStatement: targetTask.problemStatement,
-        status: "unlocked",
-        unlockedAt,
-        expiresAt: new Date(unlockedAt.getTime() + TASK_DEADLINE_MS)
-    });
+    const currentModule =
+        modules[moduleIndex];
 
-    emitToUser(student, "taskUnlocked", {
-        submission,
-        taskKey: getSubmissionTaskKey(
-    submission
-)
-    });
+    const moduleId =
+        String(
+            currentModule.moduleId ||
+            currentModule.id ||
+            ""
+        ).trim();
+
+    if (!moduleId) {
+        return null;
+    }
+
+    const studentInternship =
+        await StudentInternship.findOne({
+            student,
+            internship:
+                internship?._id ||
+                internship
+        });
+
+    const completedLessons =
+        studentInternship?.completedLessons ||
+        [];
+
+    const currentModuleCompleted =
+        isModuleLessonsCompleted(
+            courseData,
+            moduleId,
+            completedLessons
+        );
+
+    if (!currentModuleCompleted) {
+        return null;
+    }
+
+    if (moduleIndex > 0) {
+        const previousModule =
+            modules[moduleIndex - 1];
+
+        const previousModuleId =
+            String(
+                previousModule.moduleId ||
+                previousModule.id ||
+                ""
+            ).trim();
+
+        const previousModuleTasks =
+            getOrderedCourseTasks(
+                {
+                    modules: [
+                        previousModule
+                    ]
+                },
+                courseSlug
+            );
+
+        if (!previousModuleTasks.length) {
+            return null;
+        }
+
+        const approvedCount =
+            await Submission.countDocuments({
+                student,
+                internship:
+                    internship?._id ||
+                    internship,
+                courseSlug,
+                moduleId:
+                    previousModuleId,
+                status:
+                    "approved"
+            });
+
+        if (
+            approvedCount !==
+            previousModuleTasks.length
+        ) {
+            return null;
+        }
+    }
+
+    const currentModuleTasks =
+        getOrderedCourseTasks(
+            {
+                modules: [
+                    currentModule
+                ]
+            },
+            courseSlug
+        );
+
+    if (!currentModuleTasks.length) {
+        return null;
+    }
+
+    const targetTask =
+        currentModuleTasks[0];
+
+    const existing =
+        await Submission.findOne({
+            student,
+            internship:
+                internship?._id ||
+                internship,
+            courseSlug,
+            moduleId:
+                targetTask.moduleId,
+            lessonId:
+                targetTask.lessonId,
+            taskId:
+                targetTask.taskId
+        });
+
+    if (existing) {
+        return existing;
+    }
+
+    const unlockedAt =
+        new Date();
+
+    const submission =
+        await Submission.create({
+            student,
+
+            internship:
+                internship?._id ||
+                internship,
+
+            course:
+                null,
+
+            courseSlug,
+
+            moduleId:
+                targetTask.moduleId,
+
+            moduleTitle:
+                targetTask.moduleTitle,
+
+            lessonId:
+                targetTask.lessonId,
+
+            taskId:
+                targetTask.taskId,
+
+            taskTitle:
+                targetTask.taskTitle,
+
+            problemStatement:
+                targetTask.problemStatement,
+
+            status:
+                "unlocked",
+
+            unlockedAt,
+
+            expiresAt:
+                new Date(
+                    unlockedAt.getTime() +
+                    TASK_DEADLINE_MS
+                ),
+
+            expiredAt:
+                null
+        });
+
+    emitToUser(
+        student,
+        "taskUnlocked",
+        {
+            submission,
+
+            taskKey:
+                getSubmissionTaskKey(
+                    submission
+                )
+        }
+    );
 
     return submission;
 };
@@ -788,15 +967,13 @@ export const completeLesson = asyncHandler(async (req, res) => {
     // Compute the total number of lessons from the course JSON file.
     const courseData = await readCourseDataFromFile(normalizedSlug);
 
-    const unlockedSubmission = !alreadyCompleted
-        ? await unlockFirstEligibleLessonTask({
+    const unlockedSubmission = await unlockFirstEligibleLessonTask({
             student: req.user._id,
             internship: internship._id,
             courseSlug: normalizedSlug,
             lessonId,
             courseData
-        })
-        : null;
+        });
 
     const totalLessons = (courseData?.modules || []).reduce(
         (sum, module) => sum + (module.lessons?.length || 0),

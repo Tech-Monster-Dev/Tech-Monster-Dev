@@ -161,27 +161,13 @@ export default function TaskModuleSidebar({
                             lessonIndex === 0 ||
                             activeLessonId === lesson.id
                         }
-                        onToggleLesson={
-                            toggleLesson
-                        }
-                        activeTaskId={
-                            activeTaskId
-                        }
-                        taskStatusMap={
-                            taskStatusMap
-                        }
-                        deadlineMap={
-                            deadlineMap
-                        }
-                        now={
-                            now
-                        }
-                        lockedIds={
-                            lockedIds
-                        }
-                        onSelectTask={
-                            handleTaskClick
-                        }
+                        onToggleLesson={toggleLesson}
+                        activeTaskId={activeTaskId}
+                        taskStatusMap={taskStatusMap}
+                        deadlineMap={deadlineMap}
+                        now={now}
+                        lockedIds={lockedIds}
+                        onSelectTask={handleTaskClick}
                     />
                 ))}
 

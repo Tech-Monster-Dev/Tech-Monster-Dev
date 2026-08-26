@@ -165,6 +165,16 @@ export const approveSubmission =
             approvedCount >=
             orderedTasks.length;
 
+        console.log("=== TASK APPROVAL UNLOCK DEBUG ===");
+        console.log("currentIndex:", currentIndex);
+        console.log("approvedTask:", {
+            moduleId: submission.moduleId,
+            lessonId: submission.lessonId,
+            taskId: submission.taskId,
+        });
+        console.log("candidate:", candidate);
+        console.log("nextTask:", nextTask);
+
         const unlockedSubmission =
             nextTask
                 ? await unlockTaskForStudent(
@@ -173,6 +183,9 @@ export const approveSubmission =
                     nextTask
                 )
                 : null;
+
+        console.log("unlockedSubmission:", unlockedSubmission);
+        console.log("=== END TASK APPROVAL UNLOCK DEBUG ===");
 
         await Notification.create({
             user:

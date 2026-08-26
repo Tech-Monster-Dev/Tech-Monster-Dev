@@ -186,16 +186,18 @@ const useTaskRealtime = ({
             );
         };
 
-        const handleUnlocked = ({ submission }) => {
-            if (!submission) return;
+        const handleUnlocked = ({ submission, taskUnlock }) => {
+            const unlockedSubmission = submission || taskUnlock;
 
-            applySubmissionState(submission);
+            if (!unlockedSubmission) return;
 
-            const taskKey = getTaskKey(submission);
+            applySubmissionState(unlockedSubmission);
+
+            const taskKey = getTaskKey(unlockedSubmission);
 
             toast.info(
-                `Unlocked: ${submission.taskTitle ||
-                submission.taskId
+                `Unlocked: ${unlockedSubmission.taskTitle ||
+                unlockedSubmission.taskId
                 }`
             );
 

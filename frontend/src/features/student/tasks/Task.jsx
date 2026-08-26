@@ -1,5 +1,4 @@
 import {
-    useEffect,
     useMemo,
     useState,
 } from "react";
@@ -27,13 +26,19 @@ import Spinner from '../../dashboard/common/LoaderPage/Spinner';
 import useTaskData from "./hooks/useTaskData";
 import useTaskRealtime from "./hooks/useTaskRealtime";
 import useTaskSubmission from "./hooks/useTaskSubmission";
+import useTaskClock from "./hooks/useTaskClock";
+import useTaskSelection from "./hooks/useTaskSelection";
+import useTaskLocking from "./hooks/useTaskLocking";
+import useTaskLifecycle from "./hooks/useTaskLifecycle";
 
 import {
-    saveTaskState,
 } from "../../../utils/taskStorage";
 import {
-    getTaskExpiresAt,
 } from "./utils/taskUtils";
+import {
+    getScopedTaskModule,
+    buildScopedTaskModule,
+} from "./utils/taskModuleScope";
 
 import "./Task.css";
 
@@ -52,7 +57,7 @@ const Task = () => {
 
     const [activeTaskId, setActiveTaskId] = useState(null);
 
-    const [now, setNow] = useState(() => Date.now());
+    const now = useTaskClock();
 
     // -----------------------------------------
     // TASK DATA
@@ -84,21 +89,6 @@ const Task = () => {
         routeCourseSlug,
         slug,
     });
-
-    // -----------------------------------------
-    // CLOCK
-    // -----------------------------------------
-
-    useEffect(() => {
-        const timer =
-            window.setInterval(() => {
-                setNow(Date.now());
-            }, 1000);
-
-        return () => {
-            window.clearInterval(timer);
-        };
-    }, []);
 
     // -----------------------------------------
     // REALTIME SOCKET
@@ -156,175 +146,29 @@ const Task = () => {
     }, [modules]);
 
     const scopedModules = useMemo(() => {
+        const moduleId = String(
+            taskScope.moduleId || ""
+        ).trim();
 
-        if (!modules.length) {
-            return [];
-        }
-
-        // -----------------------------------------
-        // SELECT MODULE
-        // -----------------------------------------
-        // If the user came from a specific module/lesson
-        // in the Lessons page, ALWAYS show that module.
-        // Do not replace it with the first incomplete module.
-
-        const scopeModuleId =
-            String(taskScope.moduleId || "").trim();
-
-        const scopeLessonId =
-            String(taskScope.lessonId || "").trim();
-
-        let activeModule = null;
-
-        if (scopeModuleId) {
-            const requestedModuleIndex =
-                modules.findIndex(
-                    (module) =>
-                        String(module.id) ===
-                        scopeModuleId
-                );
-
-            if (requestedModuleIndex === 0) {
-                activeModule =
-                    modules[requestedModuleIndex];
-            } else if (requestedModuleIndex > 0) {
-                const previousModules =
-                    modules.slice(
-                        0,
-                        requestedModuleIndex
-                    );
-
-                const previousModulesCompleted =
-                    previousModules.every(
-                        (module) =>
-                            (module.tasks || []).length > 0 &&
-                            (module.tasks || []).every(
-                                (task) =>
-                                    taskStatusMap[
-                                        task.id
-                                    ] === "approved"
-                            )
-                    );
-
-                if (previousModulesCompleted) {
-                    activeModule =
-                        modules[requestedModuleIndex];
-                }
-            }
-        }
-
-        // Fallback when no module was supplied in route state.
-        if (!activeModule) {
-
-            let availableModuleIndex = 0;
-
-            for (
-                let moduleIndex = 0;
-                moduleIndex < modules.length;
-                moduleIndex++
-            ) {
-
-                const module =
-                    modules[moduleIndex];
-
-                const moduleTasks =
-                    module.tasks || [];
-
-                if (!moduleTasks.length) {
-                    continue;
-                }
-
-                const moduleCompleted =
-                    moduleTasks.every(
-                        (task) =>
-                            taskStatusMap[task.id] ===
-                            "approved"
-                    );
-
-                if (!moduleCompleted) {
-                    availableModuleIndex =
-                        moduleIndex;
-
-                    break;
-                }
-
-                availableModuleIndex =
-                    Math.min(
-                        moduleIndex + 1,
-                        modules.length - 1
-                    );
-            }
-
-            activeModule =
-                modules[availableModuleIndex];
-        }
+        const activeModule = getScopedTaskModule(
+            modules,
+            taskStatusMap,
+            moduleId
+        );
 
         if (!activeModule) {
             return [];
         }
 
-        // -----------------------------------------
-        // SHOW ALL TASKS OF THIS MODULE
-        // -----------------------------------------
-        // IMPORTANT:
-        // Do NOT remove tasks after the first pending task.
-        // All lesson-wise tasks must remain visible.
-        // lockedIds below decides which task can be opened.
+        const scopedModule = buildScopedTaskModule(
+            activeModule
+        );
 
-        let availableTasks = [
-            ...(activeModule.tasks || [])
-        ];
-
-        // -----------------------------------------
-        // OPTIONAL LESSON SCOPE
-        // -----------------------------------------
-        // When the Lessons page sends a lessonId,
-        // keep that lesson's tasks selected as the
-        // initial visible task group.
-        //
-        // But if the requested lesson cannot be found,
-        // keep the complete module visible.
-
-        if (scopeModuleId === String(activeModule.id) &&
-            scopeLessonId) {
-
-            // We intentionally keep the complete
-            // module visible so the student can see
-            // all lesson-wise tasks.
-        }
-
-        // -----------------------------------------
-        // REBUILD ALL LESSON GROUPS
-        // -----------------------------------------
-        // Keep every lesson and every task.
-        // Locking is handled separately by lockedIds.
-
-        const lessons =
-            (activeModule.lessons || [])
-                .map((lesson) => ({
-                    ...lesson,
-                    tasks: [
-                        ...(lesson.tasks || [])
-                    ],
-                }))
-                .filter(
-                    (lesson) =>
-                        lesson.tasks.length > 0
-                );
-
-        return [
-            {
-                ...activeModule,
-                lessons,
-                tasks: availableTasks,
-            },
-        ];
-
+        return scopedModule ? [scopedModule] : [];
     }, [
         modules,
         taskStatusMap,
         taskScope.moduleId,
-        taskScope.lessonId,
     ]);
 
     const visibleTasks = useMemo(() => {
@@ -333,161 +177,22 @@ const Task = () => {
         );
     }, [scopedModules]);
 
-    const selectedTaskId = useMemo(() => {
+    const requestedTaskId = String(
+        taskScope.taskId || ""
+    ).trim();
 
-        if (!visibleTasks.length) {
-            return null;
-        }
-
-        // -----------------------------------------
-        // 1. KEEP EXPLICITLY ACTIVE TASK
-        // -----------------------------------------
-
-        const activeIsVisible =
-            visibleTasks.some(
-                (task) =>
-                    task.id === activeTaskId
-            );
-
-        if (activeIsVisible) {
-            return activeTaskId;
-        }
-
-        // -----------------------------------------
-        // 2. AFTER APPROVAL, SELECT FIRST
-        //    NON-APPROVED TASK
-        // -----------------------------------------
-
-        const firstAvailableTask =
-            visibleTasks.find(
-                (task) => {
-                    const status =
-                        taskStatusMap[task.id];
-
-                    return (
-                        status !== "approved" &&
-                        status !== "expired"
-                    );
-                }
-            );
-
-        if (firstAvailableTask) {
-            return firstAvailableTask.id;
-        }
-
-        // -----------------------------------------
-        // 3. REQUESTED TASK
-        // -----------------------------------------
-
-        const requestedTaskId =
-            String(
-                taskScope.taskId || ""
-            ).trim();
-
-        const requestedTask =
-            visibleTasks.find(
-                (task) =>
-                    requestedTaskId &&
-                    (
-                        task.id ===
-                            requestedTaskId ||
-                        task.taskId ===
-                            requestedTaskId
-                    )
-            );
-
-        if (requestedTask) {
-            return requestedTask.id;
-        }
-
-        // -----------------------------------------
-        // 4. INITIAL TASK FALLBACK
-        // -----------------------------------------
-
-        const initialTask =
-            visibleTasks.find(
-                (task) =>
-                    task.id ===
-                    initialTaskId
-            );
-
-        if (initialTask) {
-            return initialTask.id;
-        }
-
-        return visibleTasks[0]?.id || null;
-
-    }, [
+    const selectedTaskId = useTaskSelection({
+        visibleTasks,
         activeTaskId,
         initialTaskId,
-        taskScope.taskId,
+        requestedTaskId,
         taskStatusMap,
-        visibleTasks,
-    ]);
+    });
 
-    // -----------------------------------------
-    // LOCKED TASKS
-    // -----------------------------------------
-
-    const lockedIds = useMemo(() => {
-
-        const locked = new Set();
-
-        const scopedTasks = visibleTasks;
-
-        // -----------------------------------------
-        // SEQUENTIAL TASK LOCKING
-        // -----------------------------------------
-        // Task 1 is open.
-        //
-        // Task N is unlocked ONLY when every task
-        // before it has been approved.
-        //
-        // Example:
-        //
-        // Task 1 = approved
-        // Task 2 = pending
-        // Task 3 = locked
-        // Task 4 = locked
-        //
-        // After Task 2 becomes approved:
-        //
-        // Task 3 = unlocked
-        // Task 4 = locked
-        //
-        // This guarantees strict sequential progress.
-
-        for (
-            let index = 1;
-            index < scopedTasks.length;
-            index++
-        ) {
-
-            const hasUnapprovedPreviousTask =
-                scopedTasks
-                    .slice(0, index)
-                    .some(
-                        (previousTask) =>
-                            taskStatusMap[
-                                previousTask.id
-                            ] !== "approved"
-                    );
-
-            if (hasUnapprovedPreviousTask) {
-
-                locked.add(
-                    scopedTasks[index].id
-                );
-
-            }
-        }
-
-        return locked;
-
-    }, [
+    const lockedIds = useTaskLocking({
         visibleTasks,
         taskStatusMap,
-    ]);
+    });
 
     // -----------------------------------------
     // DEADLINE
@@ -495,161 +200,27 @@ const Task = () => {
     // Deadline is controlled by backend submission state.
     // Do NOT create a new timer on the frontend.
 
-    // -----------------------------------------
-    // CURRENT TASK
-    // -----------------------------------------
-
-    const currentTask = useMemo(() => {
-        return (
-            allTasks.find(
-                (task) =>
-                    task.id ===
-                    selectedTaskId
-            ) || null
-        );
-    }, [
-        allTasks,
-        selectedTaskId,
-    ]);
-
-    // -----------------------------------------
-    // CURRENT MODULE
-    // -----------------------------------------
-
-    const currentModule = useMemo(() => {
-        if (!currentTask) {
-            return null;
-        }
-
-        return (
-            modules.find(
-                (module) =>
-                    module.id ===
-                    currentTask.moduleId
-            ) || null
-        );
-    }, [
-        modules,
+    const {
         currentTask,
-    ]);
-
-    // -----------------------------------------
-    // CURRENT TASK STATE
-    // -----------------------------------------
-    const currentDeadline =
-        currentTask
-            ? deadlineMap[
-            currentTask.id
-            ]
-            : null;
-
-    const currentStatus =
-        currentTask
-            ? taskStatusMap[
-            currentTask.id
-            ]
-            : null;
-
-    const currentReviewComment =
-        currentTask
-            ? reviewCommentMap[currentTask.id] || ""
-            : "";
-
-    const currentExpired =
-        currentStatus === "expired" ||
-        (
-            getTaskExpiresAt(currentDeadline) &&
-            currentStatus !== "approved" &&
-            new Date(
-                getTaskExpiresAt(currentDeadline)
-            ).getTime() <= now
-        );
-
-    // -----------------------------------------
-    // AUTO EXPIRE
-    // -----------------------------------------
-
-    useEffect(() => {
-        if (
-            !currentTask ||
-            !currentExpired ||
-            currentStatus ===
-            "expired"
-        ) {
-            return;
-        }
-
-        setTaskStatusMap((prev) => {
-            const next = {
-                ...prev,
-                [currentTask.id]:
-                    "expired",
-            };
-
-            saveTaskState(
-                courseSlug,
-                next
-            );
-
-            return next;
-        });
-    }, [
-        courseSlug,
-        currentExpired,
+        currentModule,
+        currentDeadline,
         currentStatus,
-        currentTask,
+        currentReviewComment,
+        currentExpired,
+        currentModuleApprovedCount,
+        allCompleted,
+    } = useTaskLifecycle({
+        allTasks,
+        visibleTasks,
+        modules,
+        selectedTaskId,
+        taskStatusMap,
         setTaskStatusMap,
-    ]);
-
-    // -----------------------------------------
-    // COMPLETION
-    // -----------------------------------------
-
-    const approvedCount =
-        useMemo(() => {
-            return allTasks.filter(
-                (task) =>
-                    taskStatusMap[
-                    task.id
-                    ] === "approved"
-            ).length;
-        }, [
-            allTasks,
-            taskStatusMap,
-        ]);
-
-    // Current module progress only.
-    // This is used by the Task page progress UI.
-    const currentModuleApprovedCount =
-        visibleTasks.filter(
-            (task) =>
-                taskStatusMap[task.id] ===
-                "approved"
-        ).length;
-
-    // Certificate unlocks ONLY when every task
-    // across every module of the course is approved.
-    const allCompleted =
-        allTasks.length > 0 &&
-        approvedCount ===
-        allTasks.length;
-
-    // -----------------------------------------
-    // GLOBAL COMPLETION SIGNAL
-    // -----------------------------------------
-
-    useEffect(() => {
-        try {
-            localStorage.setItem(
-                "all_tasks_completed",
-                allCompleted
-                    ? "true"
-                    : "false"
-            );
-        } catch {
-            // Ignore localStorage errors.
-        }
-    }, [allCompleted]);
+        deadlineMap,
+        reviewCommentMap,
+        courseSlug,
+        now,
+    });
 
     // -----------------------------------------
     // TASK SELECT

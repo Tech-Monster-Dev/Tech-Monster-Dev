@@ -89,10 +89,7 @@ export default function Lessons() {
             );
         });
 
-        console.log("🟢 Ready Module:", readyModule?.id);
-
         const dailyTaskUnlocked = Boolean(readyModule);
-        console.log("🟢 Daily Task Unlocked:", dailyTaskUnlocked);
 
         try {
             localStorage.setItem(
@@ -102,11 +99,6 @@ export default function Lessons() {
         } catch {
             // Ignore localStorage errors.
         }
-
-        console.log("lession page data",localStorage.getItem("daily_task_unlocked_" + courseSlug));
-        console.log("lession page data",localStorage.getItem(dailyTaskUnlocked));
-
-        console.log("🚨 DAILY TASK EVENT DISPATCH:", { courseSlug, unlocked: dailyTaskUnlocked, moduleId: readyModule?.id || null });
 
         window.dispatchEvent(new CustomEvent("dailyTaskAccessChanged",
             {
