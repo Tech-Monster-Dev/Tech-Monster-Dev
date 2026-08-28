@@ -25,6 +25,10 @@ import {
     unlockTaskForStudent,
 } from "./taskUnlock.service.js";
 
+import {
+    qualifyLearningDay,
+} from "../../learning/learningDay.service.js";
+
 export const approveSubmission =
     async (
         submissionId,
@@ -164,6 +168,28 @@ export const approveSubmission =
             orderedTasks.length > 0 &&
             approvedCount >=
             orderedTasks.length;
+
+        await qualifyLearningDay({
+            studentId:
+                submission.student,
+
+            courseSlug,
+
+            courseId:
+                submission.course || null,
+
+            internshipId:
+                submission.internship || null,
+
+            lessonId:
+                submission.lessonId,
+
+            taskId:
+                submission.taskId,
+
+            approvedAt:
+                submission.reviewedAt || new Date()
+        });
 
         console.log("=== TASK APPROVAL UNLOCK DEBUG ===");
         console.log("currentIndex:", currentIndex);

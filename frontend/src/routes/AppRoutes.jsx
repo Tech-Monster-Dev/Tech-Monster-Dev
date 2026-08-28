@@ -39,6 +39,7 @@ import StudentDashboard from '../features/student/dashboard';
 import Lessons from '../features/student/lessons';
 import StudentTask from '../features/student/tasks';
 import StudentAttendance from '../features/student/attendance';
+import StudentBadges from '../features/student/badges';
 import StudentAccount from '../features/student/account';
 import StudentCertificate from '../features/student/certificate';
 import StudentSetting from '../features/student/settings';
@@ -136,6 +137,7 @@ function AppRoutes() {
                         element={<StudentTask />}
                     />
                     <Route path="attendance" element={<StudentAttendance />} />
+                    <Route path="badges" element={<StudentBadges />} />
                     <Route path="account" element={<StudentAccount />} />
                     <Route
                         path="user-profile/:userId"

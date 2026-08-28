@@ -8,6 +8,8 @@ import Footer from "../../features/dashboard/common/Footer";
 import Main from "../../features/dashboard/common/Main";
 import { socket } from "../../services/socket/socket";
 import useAuth from "../../shared/hooks/useAuth";
+import useActiveWebsiteTime from "../../shared/hooks/useActiveWebsiteTime";
+import api from "../../services/api/axios";
 
 function DashboardLayout({ role = "student" }) {
 
@@ -18,8 +20,56 @@ function DashboardLayout({ role = "student" }) {
     const [enrolledCourse, setEnrolledCourse] = useState(null);
     const [dailyTaskUnlocked, setDailyTaskUnlocked] = useState(false);
     const [allTasksCompleted, setAllTasksCompleted] = useState(false);
+    const [activeWebsiteSeconds, setActiveWebsiteSeconds] = useState(0);
+    const [activeTimeInitialized, setActiveTimeInitialized] = useState(false);
+
+    const handleActiveWebsiteTime = (milliseconds) => {
+        setActiveWebsiteSeconds(milliseconds);
+
+        window.dispatchEvent(
+            new CustomEvent("activeWebsiteTimeChanged", {
+                detail: {
+                    milliseconds
+                }
+            })
+        );
+    };
+
+    useActiveWebsiteTime(
+        role === "student" && Boolean(user) && activeTimeInitialized,
+        handleActiveWebsiteTime,
+        activeWebsiteSeconds
+    );
 
     const enrolledCourseSlug = enrolledCourse?.slug;
+
+    // LOAD TODAY ACTIVE TIME
+    useEffect(() => {
+        if (role !== "student" || user == null) {
+            return;
+        }
+
+        const loadTodayActiveTime = async () => {
+            try {
+                const { data } = await api.get("/attendance/active-time");
+                const seconds = data?.activeSeconds || 0;
+                const milliseconds = seconds * 1000;
+                setActiveWebsiteSeconds(milliseconds);
+                setActiveTimeInitialized(true);
+
+                window.dispatchEvent(
+                    new CustomEvent("activeWebsiteTimeChanged", {
+                        detail: { milliseconds }
+                    })
+                );
+            } catch (error) {
+                console.error("Failed to load today active time:", error);
+                setActiveTimeInitialized(true);
+            }
+        };
+
+        loadTodayActiveTime();
+    }, [role, user]);
 
 
     // ==========================================
@@ -284,6 +334,8 @@ function DashboardLayout({ role = "student" }) {
                     handleOpenMobileSidebar
                 }
             />
+
+
 
 
             <div id="sideMain">

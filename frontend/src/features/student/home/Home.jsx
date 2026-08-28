@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {toast} from "react-toastify";
 
 import api from "../../../services/api/axios";
+import { socket } from "../../../services/socket/socket";
 import { API } from "../../../services/api/endpoints";
 
 import WelcomeCard from "./components/WelcomeCard";
@@ -40,6 +41,32 @@ const Home = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDashboard();
+
+    const handleDashboardSync = () => {
+      loadDashboard();
+    };
+
+    window.addEventListener(
+      "tech-monster-badge-sync",
+      handleDashboardSync
+    );
+
+    socket.on(
+      "studentDashboardSync",
+      handleDashboardSync
+    );
+
+    return () => {
+      window.removeEventListener(
+        "tech-monster-badge-sync",
+        handleDashboardSync
+      );
+
+      socket.off(
+        "studentDashboardSync",
+        handleDashboardSync
+      );
+    };
   }, []);
 
   if (loading) {
@@ -144,7 +171,9 @@ const Home = () => {
       <WelcomeCard
         username={dashboard?.user}
         stats={dashboard?.stats}
-        streak={dashboard?.streak}
+        streak={{
+          days: dashboard?.dayStreak || 0
+        }}
       />
 
       <ProfileSummary

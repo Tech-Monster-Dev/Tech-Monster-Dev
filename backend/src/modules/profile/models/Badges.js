@@ -23,6 +23,16 @@ const badgeSchema = new mongoose.Schema({
 
     requirement: {
         type: String
+    },
+
+    category: {
+        type: String,
+        enum: [
+            "COURSE",
+            "TASK",
+            "ATTENDANCE"
+        ],
+        default: "COURSE"
     }
 
 }, {

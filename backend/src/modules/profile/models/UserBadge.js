@@ -15,9 +15,19 @@ const userBadgeSchema=new mongoose.Schema({
     earnedAt:{
         type:Date,
         default:Date.now
+    },
+
+    earnedDate:{
+        type:Date,
+        required:true
     }
 
 });
+
+userBadgeSchema.index(
+    { user: 1, badge: 1, earnedDate: 1 },
+    { unique: true }
+);
 
 export default mongoose.model(
     "UserBadge",

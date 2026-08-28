@@ -28,8 +28,8 @@ const StatsCards = ({ stats }) => {
     {
       id: "attendance",
       title: "Attendance",
-      value: stats?.attendance?.percentage || 0,
-      suffix: "%",
+      value: stats?.attendance?.present || 0,
+      suffix: "",
       icon: HiCalendarDays,
       color: "#10B981",
     },

@@ -20,7 +20,17 @@ const attendanceSchema = new mongoose.Schema(
 
             ref: "Internship",
 
-            required: true
+            required: false
+
+        },
+
+        course: {
+
+            type: mongoose.Schema.Types.ObjectId,
+
+            ref: "Course",
+
+            required: false
 
         },
 

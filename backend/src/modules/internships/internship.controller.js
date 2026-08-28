@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 
 import Internship from "./models/Internship.js";
 import StudentInternship from "./models/StudentInternship.js";
+import { recordLessonLearningDay } from "../learning/learningDay.service.js";
 import Submission from "../submissions/models/Submission.js";
 
 import { emitToUser } from "../../infrastructure/socket/socket.js";
@@ -974,6 +975,14 @@ export const completeLesson = asyncHandler(async (req, res) => {
             lessonId,
             courseData
         });
+
+    await recordLessonLearningDay({
+        studentId: req.user._id,
+        courseSlug: normalizedSlug,
+        internshipId: internship._id,
+        lessonId,
+        startedAt: studentInternship.startedAt
+    });
 
     const totalLessons = (courseData?.modules || []).reduce(
         (sum, module) => sum + (module.lessons?.length || 0),

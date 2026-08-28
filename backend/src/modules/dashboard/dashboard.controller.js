@@ -11,7 +11,8 @@ import {
     getAllCourses,
     getRecommendedInternships,
     getSuggestedUsers,
-    getBadges
+    getBadges,
+    getActiveTime
 } from "./student/index.js";
 
 import {
@@ -39,7 +40,8 @@ export const studentDashboard = asyncHandler(async (req, res) => {
         allCourses,
         recommendedInternships,
         suggestedUsers,
-        badges
+        badges,
+        activeTime
     ] = await Promise.all([
         getUserInfo(userId),
         getStudentStats(userId),
@@ -51,7 +53,8 @@ export const studentDashboard = asyncHandler(async (req, res) => {
         getAllCourses(userId),
         getRecommendedInternships(userId),
         getSuggestedUsers(userId),
-        getBadges(userId)
+        getBadges(userId),
+        getActiveTime(userId)
     ]);
 
     return res.status(200).json({
@@ -59,6 +62,18 @@ export const studentDashboard = asyncHandler(async (req, res) => {
         dashboard: {
             user,
             stats,
+            dayStreak: attendance?.dayStreak || 0,
+
+            streak: {
+                days: stats?.streak || 0,
+                progress: Math.min(
+                    Math.round(
+                        ((stats?.streak || 0) / 7) * 100
+                    ),
+                    100
+                )
+            },
+
             attendance,
             analytics,
             internships,
@@ -67,7 +82,8 @@ export const studentDashboard = asyncHandler(async (req, res) => {
             allCourses,
             recommendedInternships,
             suggestedUsers,
-            badges
+            badges,
+            activeTime
         }
     });
 
@@ -103,6 +119,7 @@ export const adminDashboard = asyncHandler(async (req, res) => {
 
         dashboard: {
             stats,
+            streak: stats?.streak || 0,
             attendanceSummary,
             weeklyAttendance,
             recentActivities,
