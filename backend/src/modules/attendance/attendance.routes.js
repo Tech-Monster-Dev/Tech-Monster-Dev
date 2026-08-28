@@ -6,30 +6,30 @@ import authorizeRoles from "../../core/security/role.middleware.js";
 
 import {
 
-    checkIn,
-
-    checkOut,
-
     getMyAttendance,
 
-    getInternAttendance
+    getInternAttendance,
+
+    recordActiveTime,
+
+    getTodayActiveTime
 
 } from "./attendance.controller.js";
 
 const router = express.Router();
 
-router.post(
-    "/check-in",
+router.get(
+    "/active-time",
     protect,
     authorizeRoles("student"),
-    checkIn
+    getTodayActiveTime
 );
 
-router.put(
-    "/check-out/:id",
+router.post(
+    "/active-time",
     protect,
     authorizeRoles("student"),
-    checkOut
+    recordActiveTime
 );
 
 router.get(

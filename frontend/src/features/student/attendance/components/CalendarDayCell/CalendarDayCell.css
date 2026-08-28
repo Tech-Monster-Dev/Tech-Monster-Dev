@@ -1,0 +1,148 @@
+.day-cell {
+  aspect-ratio: 1;
+  min-height: 105px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  position: relative;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.day-cell:hover {
+  transform: translateY(-2px);
+  border-color: #00f0ff;
+}
+
+.day-cell.empty {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.day-cell.before-account {
+  background: rgba(100, 110, 125, 0.10);
+  border-color: rgba(100, 110, 125, 0.12);
+  color: rgba(145, 155, 170, 0.45);
+  cursor: default;
+}
+
+.day-cell.present {
+  background: rgba(0, 255, 102, 0.14);
+  border-color: rgba(0, 255, 102, 0.65);
+  color: #00ff66;
+  box-shadow:
+    0 0 18px rgba(0, 255, 102, 0.08);
+}
+
+.day-cell.absent {
+  background: rgba(255, 51, 102, 0.14);
+  border-color: rgba(255, 51, 102, 0.65);
+  color: #ff456f;
+}
+
+.day-cell.enrollment-day {
+  background: rgba(255, 193, 7, 0.14);
+  border-color: rgba(255, 193, 7, 0.70);
+  color: #ffc107;
+  box-shadow:
+    0 0 18px rgba(255, 193, 7, 0.08);
+}
+
+.day-cell.account-created-day {
+  background: rgba(164, 92, 255, 0.15);
+  border-color: rgba(164, 92, 255, 0.75);
+  color: #b76cff;
+  box-shadow:
+    0 0 18px rgba(164, 92, 255, 0.08);
+}
+
+.day-cell.current-day {
+  outline: 1px solid rgba(0, 240, 255, 0.75);
+  outline-offset: 2px;
+}
+
+.calendar-day-number {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.day-status-label {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.active-time {
+  margin-top: 2px;
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 700;
+  color: #00f0ff;
+  white-space: nowrap;
+}
+
+.enrollment-time {
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.day-cell.before-account .active-time,
+.day-cell.before-account .enrollment-time {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .day-cell {
+    min-height: 85px;
+  }
+
+  .calendar-day-number {
+    font-size: 15px;
+  }
+
+  .day-status-label {
+    font-size: 8px;
+  }
+
+  .active-time,
+  .enrollment-time {
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 600px) {
+  .day-cell {
+    min-height: 65px;
+    border-radius: 8px;
+    gap: 3px;
+  }
+
+  .calendar-day-number {
+    font-size: 12px;
+  }
+
+  .day-status-label {
+    font-size: 7px;
+  }
+
+  .active-time,
+  .enrollment-time {
+    font-size: 6px;
+  }
+}

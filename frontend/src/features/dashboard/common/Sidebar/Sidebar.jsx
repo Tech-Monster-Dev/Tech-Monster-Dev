@@ -78,6 +78,7 @@ function Sidebar({
         },
 
         { name: "Attendance", path: "/student/attendance", icon: <FiCalendar /> },
+        { name: "Badges", path: "/student/badges", icon: <FiAward /> },
         { name: "Account", path: "/student/account", icon: <FiUser /> },
         { name: "Certificate", path: "/student/certificate", icon: <FiAward />, locked: !isCourseCompleted },
         { name: "Help & Support", path: "/student/help&support", icon: <FiHelpCircle /> },

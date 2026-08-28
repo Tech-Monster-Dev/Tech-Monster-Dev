@@ -13,6 +13,7 @@ import AppError from "../../core/errors/AppError.js";
 
 import cloudinary from "../../infrastructure/storage/cloudinary.js";
 import streamifier from "streamifier";
+import { recordLessonLearningDay } from "../learning/learningDay.service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -610,6 +611,14 @@ export const completeLesson = asyncHandler(async (req, res) => {
             lessonId,
             courseData
         });
+
+    await recordLessonLearningDay({
+        studentId: req.user._id,
+        courseSlug: normalizedSlug,
+        courseId: course._id,
+        lessonId,
+        startedAt: studentCourse.startedAt
+    });
 
     const totalLessons = (courseData?.modules || []).reduce(
         (sum, module) => sum + (module.lessons?.length || 0),

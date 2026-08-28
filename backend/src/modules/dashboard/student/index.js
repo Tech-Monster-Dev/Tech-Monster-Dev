@@ -9,6 +9,7 @@ import getAllCourses from "./getAllCourses.js";
 import getRecommendedInternships from "./getRecommendedInternships.js";
 import getSuggestedUsers from "./getSuggestedUsers.js";
 import getBadges from "./getBadges.js";
+import getActiveTime from "./getActiveTime.js";
 
 export {
 
@@ -32,6 +33,8 @@ export {
 
     getSuggestedUsers,
 
-    getBadges
+    getBadges,
+
+    getActiveTime
 
 };

@@ -4,6 +4,7 @@ import "./ProfileView.css";
 import { FaCheck } from "react-icons/fa";
 
 import useProfileEdit from "./hooks/useProfileEdit";
+import useBadgesData from "../../../badges/hooks/useBadgesData";
 
 import {
   ProfileHeader,
@@ -46,6 +47,11 @@ export default function ProfileView({
   const male = data.gender === "male";
   const female = data.gender === "female";
   const other = data.gender === "other";
+
+  const {
+    badges,
+    loading: badgesLoading
+  } = useBadgesData();
 
 
 
@@ -236,7 +242,10 @@ export default function ProfileView({
       {/* BADGES */}
       {/* ============================== */}
 
-      <BadgesSection />
+      <BadgesSection
+        badges={badges}
+        loading={badgesLoading}
+      />
 
     </motion.div>
   );

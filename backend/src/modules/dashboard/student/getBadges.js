@@ -32,6 +32,8 @@ const getBadges = async (userId) => {
 
         color: item.badge.color,
 
+        category: item.badge.category,
+
         earnedAt: item.createdAt
 
     }));

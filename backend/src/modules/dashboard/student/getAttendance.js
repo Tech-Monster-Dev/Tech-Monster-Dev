@@ -1,5 +1,60 @@
 import Attendance from "../../attendance/models/Attendance.js";
 
+const getDayKey = date => {
+    const value = new Date(date);
+
+    value.setHours(0, 0, 0, 0);
+
+    return value.getTime();
+};
+
+const getAttendanceDayStreak = (
+    attendance,
+    accountCreatedAt
+) => {
+
+    if (!accountCreatedAt) {
+        return 0;
+    }
+
+    const presentDays = new Set(
+        attendance
+            .filter(item => item.status === "Present")
+            .map(item => getDayKey(item.createdAt))
+    );
+
+    if (presentDays.size === 0) {
+        return 0;
+    }
+
+    const cursor = new Date();
+
+    cursor.setHours(0, 0, 0, 0);
+
+    const accountDate = new Date(accountCreatedAt);
+
+    accountDate.setHours(0, 0, 0, 0);
+
+    let streak = 0;
+
+    while (cursor >= accountDate) {
+
+        const dayKey = cursor.getTime();
+
+        if (!presentDays.has(dayKey)) {
+            break;
+        }
+
+        streak++;
+
+        cursor.setDate(
+            cursor.getDate() - 1
+        );
+    }
+
+    return streak;
+};
+
 const getAttendance = async (userId) => {
 
     const attendance = await Attendance.find({
@@ -11,6 +66,20 @@ const getAttendance = async (userId) => {
         createdAt: -1
 
     });
+
+    const User = (
+        await import("../../user/models/User.js")
+    ).default;
+
+    const student = await User.findById(
+        userId
+    ).select("createdAt");
+
+    const dayStreak =
+        getAttendanceDayStreak(
+            attendance,
+            student?.createdAt
+        );
 
     // ==========================
     // Attendance Summary
@@ -125,6 +194,8 @@ const getAttendance = async (userId) => {
             averageHours
 
         },
+
+        dayStreak,
 
         recentAttendance
 
