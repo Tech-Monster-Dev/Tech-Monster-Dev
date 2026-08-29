@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 
 import "./Lessons.css";
 
+import EmptyState from "../../../components/ui/EmptyState";
+
 import LessonSidebar from "./components/LessonSidebar";
 import LessonContent from "./components/LessonContent";
 import Pagination from "./components/Pagination";
@@ -139,6 +141,16 @@ export default function Lessons() {
                     <Spinner message="Loading lesson content..." size={60} />
                 </div>
             </motion.div>
+        );
+    }
+
+    if (!routeType || !routeSlug) {
+        return (
+            <EmptyState
+                fullPage
+                heading="Enroll in a Course or Internship"
+                paragraph="You have not enrolled in any course or internship yet. Please enroll in a course or internship first to start learning."
+            />
         );
     }
 

@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 
 import TaskLesson from "./TaskLesson";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 import "./TaskModuleSidebar.css";
 
@@ -146,9 +147,11 @@ export default function TaskModuleSidebar({
 
             <div className="task-sidebar-list">
                 {lessonList.length === 0 && (
-                    <div className="task-sidebar-empty">
-                        No tasks yet.
-                    </div>
+                    <EmptyState
+                        compact
+                        heading="No Tasks Yet"
+                        paragraph="There are no tasks available for this internship yet."
+                    />
                 )}
 
 

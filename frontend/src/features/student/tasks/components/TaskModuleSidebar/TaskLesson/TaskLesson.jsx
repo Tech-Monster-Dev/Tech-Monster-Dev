@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 import TaskItem from "./TaskItem";
+import EmptyState from "../../../../../../components/ui/EmptyState";
 
 import "./TaskLesson.css";
 
@@ -87,9 +88,11 @@ export default function TaskLesson({
                     >
 
                         {tasks.length === 0 && (
-                            <div className="task-no-items">
-                                No tasks available.
-                            </div>
+                            <EmptyState
+                                compact
+                                heading="No Tasks Available"
+                                paragraph="There are no tasks available for this lesson yet."
+                            />
                         )}
 
 

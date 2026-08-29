@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import CourseCard from "../CourseCard";
 import "../AllInternship/AllInternship.css";
 
+import EmptyState from '../../../../../components/ui/EmptyState';
+import CourseCard from "../CourseCard";
 
 
 const AllCourses = ({ courses = [], refreshDashboard, setLoading }) => {
@@ -9,7 +10,6 @@ const AllCourses = ({ courses = [], refreshDashboard, setLoading }) => {
 
   return (
     <section id="all-courses">
-
       <motion.div
         id="course-heading"
         initial={{ opacity: 0, x: -40 }}
@@ -20,9 +20,15 @@ const AllCourses = ({ courses = [], refreshDashboard, setLoading }) => {
         <p>Explore every available course</p>
       </motion.div>
 
-      <div id="course-grid">
-        {courses.map((course, index) => (
-          
+      {allCount === 0 ? (
+        <EmptyState
+          heading="No Courses Yet"
+          paragraph="You have not joined any course yet. Explore the available learning programs below."
+        />
+      ) : (
+        <div id="course-grid">
+          {courses.map((course, index) => (
+
             <CourseCard
               setLoading={setLoading}
               key={course._id || course.slug}
@@ -31,9 +37,10 @@ const AllCourses = ({ courses = [], refreshDashboard, setLoading }) => {
               type="course"
               refreshDashboard={refreshDashboard}
             />
-        ))}
+          ))}
 
-      </div>
+        </div>
+      )}
 
     </section>
   );

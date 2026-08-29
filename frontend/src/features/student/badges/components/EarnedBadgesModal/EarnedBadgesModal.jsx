@@ -1,3 +1,5 @@
+import EmptyState from "../../../../../components/ui/EmptyState";
+
 export default function EarnedBadgesModal({
     badges,
     onClose
@@ -36,12 +38,10 @@ export default function EarnedBadgesModal({
 
                 <div className="earned-badges-list">
                     {badges.length === 0 ? (
-                        <div className="no-earned-badges">
-                            <span>🏅</span>
-                            <p>
-                                No badges earned yet.
-                            </p>
-                        </div>
+                        <EmptyState
+                            heading="No Badges Yet"
+                            paragraph="You have not earned any badges yet."
+                        />
                     ) : (
                         badges.map(badge => (
                             <div

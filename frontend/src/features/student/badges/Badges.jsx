@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { FaTrophy } from "react-icons/fa";
 import BadgeSectionHeader from "./components/BadgeSectionHeader";
 import useBadgesData from "./hooks/useBadgesData";
@@ -48,10 +47,6 @@ export default function Badges() {
                     <span className="badges-eyebrow">
                         ACHIEVEMENTS
                     </span>
-
-                    <h1>
-                        Badges
-                    </h1>
 
                     <p>
                         Complete challenges and unlock

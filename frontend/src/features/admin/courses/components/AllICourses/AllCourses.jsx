@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import DeleteModal from "../../../../../components/ui/DeleteModal";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 import CourseCard from "../CourseCard";
 import InternshipSkeleton from "../../../internships/components/InternshipSkeleton";
@@ -105,63 +106,31 @@ export default function AllCourses() {
                 </Link>
             </div>
 
-
-
-            <div id="allCoursesCards">
-
-
-                {
-                    loading ?
-
+            {courses.length === 0 ? (
+                <EmptyState
+                    heading="No Courses Yet"
+                    paragraph="There are no courses available right now. Add a course to start building the learning catalog."
+                />
+            ) : (
+                <div id="allCoursesCards">
+                    {loading ? (
                         <InternshipSkeleton />
-
-
-                        :
-
-                        courses.length === 0 ?
-
-                            <h3>
-                                No courses Found
-                            </h3>
-
-                            :
-
-                            <CourseCard
-                                courses={courses}
-                                onDelete={(id) => setDeleteId(id)}
-                            />
-
-                        }
-                        <DeleteModal
-        
-        
-                            open={deleteId !== null}
-        
-        
-                            onCancel={() => setDeleteId(null)}
-        
-        
-                            onConfirm={() => {
-        
-        
-                                handleDelete(deleteId);
-        
-                                setDeleteId(null);
-        
-        
-                            }}
-        
-        
+                    ) : (
+                        <CourseCard
+                            courses={courses}
+                            onDelete={(id) => setDeleteId(id)}
                         />
-
-
-
-            </div>
-
-
+                    )}
+                    <DeleteModal
+                        open={deleteId !== null}
+                        onCancel={() => setDeleteId(null)}
+                        onConfirm={() => {
+                            handleDelete(deleteId);
+                            setDeleteId(null);
+                        }}
+                    />
+                </div>
+            )}
         </div>
-
-
     )
-
 }

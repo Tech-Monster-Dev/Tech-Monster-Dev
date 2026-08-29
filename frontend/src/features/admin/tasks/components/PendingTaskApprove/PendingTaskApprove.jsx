@@ -5,6 +5,7 @@ import { getPendingTasks, getAllSubmissions } from "../../../../../services/api/
 import { socket } from "../../../../../services/socket/socket";
 
 import "./PendingTaskApprove.css";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 export default function PendingTaskApprove({ refresh }) {
 
@@ -111,11 +112,10 @@ export default function PendingTaskApprove({ refresh }) {
 
                     tasks.length === 0 && (
 
-                        <p>
-
-                            No Pending Task Found
-
-                        </p>
+                        <EmptyState
+                            heading="No Pending Tasks"
+                            paragraph="There are no tasks waiting for approval right now."
+                        />
 
                     )
 

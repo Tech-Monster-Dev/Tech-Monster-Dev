@@ -131,9 +131,6 @@ export default function InternshipCard({
     internships,
     onDelete
 }) {
-    if (!internships || internships.length === 0) {
-        return <div className="noInternships">No Internships Available</div>;
-    }
 
     return (
         <>

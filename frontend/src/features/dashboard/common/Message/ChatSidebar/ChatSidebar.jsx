@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import "./ChatSidebar.css";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 export default function ChatSidebar({
 
@@ -72,11 +73,11 @@ export default function ChatSidebar({
 
                         (
 
-                            <div className="noUsers">
-
-                                No Users
-
-                            </div>
+                            <EmptyState
+                                compact
+                                heading="No Users Found"
+                                paragraph="There are no users available to start a conversation with right now."
+                            />
 
                         )
 

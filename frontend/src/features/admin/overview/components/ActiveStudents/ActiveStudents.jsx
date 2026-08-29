@@ -1,4 +1,5 @@
 import "./ActiveStudents.css";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 export default function ActiveStudents({ students = [] }) {
 
@@ -13,9 +14,10 @@ export default function ActiveStudents({ students = [] }) {
                 {
                     students.length === 0 ? (
 
-                        <p id="activeEmptyStudent">
-                            No Active Students
-                        </p>
+                        <EmptyState
+                            heading="No Active Students"
+                            paragraph="There are no active students to display right now."
+                        />
 
                     ) : (
 

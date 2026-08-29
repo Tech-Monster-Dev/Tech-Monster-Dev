@@ -2,6 +2,7 @@ import "./InternshipRecommendation.css";
 
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 import {
   HiArrowRight,
@@ -93,18 +94,11 @@ const InternshipRecommendation = ({
 
       {internships.length === 0 ? (
 
-        <div className="internship-empty">
-          <HiBookOpen />
-
-          <h3>
-            No recommendations yet
-          </h3>
-
-          <p>
-            Complete your profile to get
-            personalized internship recommendations.
-          </p>
-        </div>
+        <EmptyState
+        compact
+        heading="No Recommendations Yet"
+        paragraph="Complete your profile to get personalized internship recommendations."
+      />
 
       ) : (
 
