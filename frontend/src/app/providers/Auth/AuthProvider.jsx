@@ -47,6 +47,8 @@ function AuthProvider({ children }) {
 
     const logout = useCallback(async () => {
 
+        sessionStorage.setItem("logoutInProgress", "true");
+
         try {
 
             await authService.logout();

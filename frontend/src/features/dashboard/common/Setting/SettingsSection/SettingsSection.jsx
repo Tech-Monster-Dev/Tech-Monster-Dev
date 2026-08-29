@@ -42,12 +42,15 @@ export default function SettingsSection() {
 
     try {
       setIsDeleting(true);
+
       await api.delete(API.USER.DELETE_ACCOUNT);
 
       localStorage.clear();
       sessionStorage.clear();
+      sessionStorage.setItem("accountDeletionInProgress", "true");
       navigate("/");
     } catch (error) {
+      sessionStorage.removeItem("accountDeletionInProgress");
       setIsDeleting(false);
       toast.error(error.response?.data?.message || "Account deletion failed. Please try again.");
     }
