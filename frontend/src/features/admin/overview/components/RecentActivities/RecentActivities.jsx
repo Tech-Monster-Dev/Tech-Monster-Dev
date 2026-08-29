@@ -1,8 +1,8 @@
 import "./RecentActivities.css";
 import EmptyState from "../../../../../components/ui/EmptyState";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 
 export default function RecentActivities({ activities = [] }) {
-    console.log("Activities", activities);
     return (
         <div id="recentActivities">
             <h2>Recent Activities</h2>
@@ -21,12 +21,15 @@ export default function RecentActivities({ activities = [] }) {
                         >
 
                             <img
-                                src={activity.avatar || "/profile/default-profile.svg"}
-                                alt={activity.fullName}
+                                src={activity.user?.avatar && activity.user.avatar !== "/profile/default-profile.svg" ? activity.user.avatar : defaultProfileImage}
+                                onError={(event) => {
+                                    event.currentTarget.src = defaultProfileImage;
+                                }}
+                                alt={activity.user?.fullName || "User"}
                             />
 
                             <div id="activityInfo">
-                                <h4>{activity.fullName}</h4>
+                                <h4>{activity.user?.fullName || "Unknown User"}</h4>
                                 <p>{activity.description}</p>
                                 <small>{activity.module}</small>
                             </div>

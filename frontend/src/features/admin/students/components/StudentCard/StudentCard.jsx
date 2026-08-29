@@ -1,6 +1,7 @@
 // StudentCard component
 
 import "./StudentCard.css";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -85,13 +86,15 @@ export default function StudentCard({
 
                     src={
 
-                        student.avatar ||
-
-                        "/profile/default-profile.svg"
+                        student.avatar && student.avatar !== "/profile/default-profile.svg" ? student.avatar : defaultProfileImage
 
                     }
 
                     alt=""
+
+                    onError={(event) => {
+                        event.currentTarget.src = defaultProfileImage;
+                    }}
 
                 />
 

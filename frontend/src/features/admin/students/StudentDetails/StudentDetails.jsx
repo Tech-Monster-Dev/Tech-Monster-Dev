@@ -1,6 +1,7 @@
 // Admin student details
 
 import "./StudentDetails.css";
+import defaultProfileImage from "../../../../assets/profile/default-profile.svg";
 
 import {
     useCallback,
@@ -114,9 +115,13 @@ export default function StudentDetails() {
 
                 <img
 
-                    src={student.avatar || "/profile/default-profile.svg"}
+                    src={student.avatar && student.avatar !== "/profile/default-profile.svg" ? student.avatar : defaultProfileImage}
 
                     alt=""
+
+                    onError={(event) => {
+                        event.currentTarget.src = defaultProfileImage;
+                    }}
 
                 />
 

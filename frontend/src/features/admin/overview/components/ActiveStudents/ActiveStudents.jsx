@@ -1,5 +1,6 @@
 import "./ActiveStudents.css";
 import EmptyState from "../../../../../components/ui/EmptyState";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 
 export default function ActiveStudents({ students = [] }) {
 
@@ -29,7 +30,10 @@ export default function ActiveStudents({ students = [] }) {
                             >
 
                                 <img
-                                    src={student.avatar || "/profile/default-profile.svg"}
+                                    src={student.avatar && student.avatar !== "/profile/default-profile.svg" ? student.avatar : defaultProfileImage}
+                                    onError={(event) => {
+                                        event.currentTarget.src = defaultProfileImage;
+                                    }}
                                     alt={student.fullName}
                                 />
 

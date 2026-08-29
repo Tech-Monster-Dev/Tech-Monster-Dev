@@ -73,7 +73,6 @@ const SuggestedUsers = ({
       {users.length === 0 ? (
 
         <EmptyState
-          compact
           heading="No Suggested Users"
           paragraph="More suggestions will appear as you complete your profile."
         />
@@ -120,8 +119,9 @@ const SuggestedUsers = ({
 
                     <img
                       src={
-                        user?.avatar ||
-                        defaultProfileImage
+                        user?.avatar && user.avatar !== "/profile/default-profile.svg"
+                        ? user.avatar
+                        : defaultProfileImage
                       }
 
                       alt={

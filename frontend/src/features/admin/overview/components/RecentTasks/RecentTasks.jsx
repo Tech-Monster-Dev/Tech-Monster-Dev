@@ -1,4 +1,5 @@
 import "./RecentTasks.css";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 
 export default function RecentTasks({
 
@@ -55,7 +56,10 @@ export default function RecentTasks({
                             id="overViewRecentTasksCard"
                         >
                             <img
-                                src={task.avatar || "/profile/default-profile.svg"}
+                                src={task.avatar && task.avatar !== "/profile/default-profile.svg" ? task.avatar : defaultProfileImage}
+                                onError={(event) => {
+                                    event.currentTarget.src = defaultProfileImage;
+                                }}
                                 alt={task.student}
                             />
 

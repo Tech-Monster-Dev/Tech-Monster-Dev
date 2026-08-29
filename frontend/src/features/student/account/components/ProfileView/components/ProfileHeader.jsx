@@ -1,12 +1,11 @@
 import { motion } from "framer-motion";
+import defaultProfileImage from "../../../../../../assets/profile/default-profile.svg";
 
 export default function ProfileHeader({
     data,
     imageLoading,
     handleImageUpdate
 }) {
-
-    console.log("Profile stats", data?.profileStats);
 
     return (
         <motion.div
@@ -37,13 +36,15 @@ export default function ProfileHeader({
 
                     <img
                         src={
-                            data?.avatar ||
-                            "/profile/default-profile.svg"
+                            data?.avatar && data.avatar !== "/profile/default-profile.svg" ? data.avatar : defaultProfileImage
                         }
 
                         alt="Profile"
 
                         id="profile-large-avatar"
+                        onError={(event) => {
+                            event.currentTarget.src = defaultProfileImage;
+                        }}
                     />
 
 
