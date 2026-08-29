@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import DeleteModal from "../../../../../components/ui/DeleteModal";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 import InternshipCard from "../InternshipsCard";
 import InternshipSkeleton from "../InternshipSkeleton";
@@ -25,12 +26,8 @@ export default function AllInternships() {
     const fetchInternships = async () => {
 
         try {
-
             const res = await getAllInternships();
-
-
             setInternships(res.data.internships);
-
         }
         catch (error) {
             console.log(error);
@@ -40,43 +37,30 @@ export default function AllInternships() {
 
         }
         finally {
-
             setLoading(false);
-
         }
 
     };
 
     useEffect(() => {
-
         queueMicrotask(() => {
             fetchInternships();
         });
-
     }, []);
 
 
     const handleDelete = async (id) => {
-
-
         try {
-
-
             await deleteInternship(id);
-
             setInternships(
                 prev => prev.filter(
                     item => item._id !== id
                 )
             );
 
-
-
             toast.success(
                 "Internship deleted successfully"
             );
-
-
         }
         catch (error) {
             console.error("Delete failed:", error);
@@ -84,10 +68,7 @@ export default function AllInternships() {
             toast.error(
                 "Delete failed"
             );
-
         }
-
-
     };
 
 
@@ -132,9 +113,10 @@ export default function AllInternships() {
 
                         internships.length === 0 ?
 
-                            <h3>
-                                No Internship Found
-                            </h3>
+                            <EmptyState
+                                heading="No Internships Yet"
+                                paragraph="There are no internships available right now. Add an internship to start offering learning opportunities."
+                            />
 
 
                             :

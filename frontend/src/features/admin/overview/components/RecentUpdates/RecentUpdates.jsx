@@ -1,4 +1,5 @@
 import "./RecentUpdates.css";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 import { HiUserAdd } from "react-icons/hi";
 
@@ -20,11 +21,10 @@ export default function RecentUpdates({ students = [] }) {
 
                     students.length === 0 ?
 
-                        <p className="emptyData">
-
-                            No Recent Activity
-
-                        </p>
+                        <EmptyState
+                            heading="No Recent Activity"
+                            paragraph="There are no recent updates to display right now."
+                        />
 
                         :
 

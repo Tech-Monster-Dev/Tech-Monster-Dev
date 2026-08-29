@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import EmptyState from "../../../../../../components/ui/EmptyState";
 
 export default function BadgesSection({
   badges = [],
@@ -28,9 +29,11 @@ export default function BadgesSection({
         </div>
       ) : badges.length === 0 ? (
         <div id="badges-row">
-          <span className="profile-badge-empty">
-            No badges earned yet
-          </span>
+          <EmptyState
+            compact
+            heading="No Badges Yet"
+            paragraph="You have not earned any badges yet."
+          />
         </div>
       ) : (
         <div id="badges-row">

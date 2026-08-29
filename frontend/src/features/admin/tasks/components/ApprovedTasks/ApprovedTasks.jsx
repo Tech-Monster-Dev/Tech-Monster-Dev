@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getApprovedTasks, getAllSubmissions } from "../../../../../services/api/adminTask.service";
 
 import "./ApprovedTasks.css";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 export default function ApprovedTasks({ refresh }) {
 
@@ -90,7 +91,10 @@ export default function ApprovedTasks({ refresh }) {
 
                     tasks.length === 0 && (
 
-                        <p>No Approved Task Found</p>
+                        <EmptyState
+                            heading="No Approved Tasks Yet"
+                            paragraph="There are no approved tasks to display right now."
+                        />
 
                     )
 

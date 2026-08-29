@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import ContinueCard from "../ContinueCard/ContinueCard";
+import EmptyState from "../../../../../components/ui/EmptyState";
 import "./ContinueLearning.css";
 
 const ContinueLearning = ({ learningItems = [] }) => {
@@ -10,7 +11,6 @@ const ContinueLearning = ({ learningItems = [] }) => {
 
   return (
     <section id="continue-learning">
-
       <motion.div
         id="section-title"
         initial={{ opacity: 0, x: -40 }}
@@ -28,18 +28,10 @@ const ContinueLearning = ({ learningItems = [] }) => {
 
       {joinedCount === 0 ? (
 
-        <div id="empty-internship">
-
-          <h3>
-            No Learning Content Yet
-          </h3>
-
-          <p>
-            You haven't joined any course or internship yet.
-            Explore the available learning programs below.
-          </p>
-
-        </div>
+        <EmptyState
+          heading="No Learning Content Yet"
+          paragraph="You have not joined any course or internship yet. Explore the available learning programs below."
+        />
 
       ) : (
 

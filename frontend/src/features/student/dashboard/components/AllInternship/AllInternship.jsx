@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import CourseCard from "../CourseCard/CourseCard";
 import "./AllInternship.css";
 
+import EmptyState from "../../../../../components/ui/EmptyState";
+import CourseCard from "../CourseCard/CourseCard";
 
 
 const AllInternship = ({ internships = [], refreshDashboard }) => {
@@ -20,8 +21,14 @@ const AllInternship = ({ internships = [], refreshDashboard }) => {
         <p>Explore every available Internships</p>
       </motion.div>
 
-      <div id="course-grid">
-        {internships.map((internship, index) => (
+      {allCount === 0 ? (
+        <EmptyState
+          heading="No Internships Yet"
+          paragraph="You have not joined any Internship yet. Explore the available Internships below."
+        />
+      ) : (
+        <div id="course-grid">
+          {internships.map((internship, index) => (
             <CourseCard
               key={internship._id || internship.slug}
               index={index}
@@ -29,9 +36,10 @@ const AllInternship = ({ internships = [], refreshDashboard }) => {
               type="internship"
               refreshDashboard={refreshDashboard}
             />
-        ))}
+          ))}
 
-      </div>
+        </div>
+      )}
 
     </section>
   );

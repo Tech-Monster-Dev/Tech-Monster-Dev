@@ -1,6 +1,7 @@
 import "./SuggestedUsers.css";
 
 import { motion } from "framer-motion";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 import {
   HiUsers,
@@ -70,20 +71,11 @@ const SuggestedUsers = ({
 
       {users.length === 0 ? (
 
-        <div className="users-empty">
-
-          <HiUsers />
-
-          <h3>
-            No suggested users
-          </h3>
-
-          <p>
-            More suggestions will appear
-            as you complete your profile.
-          </p>
-
-        </div>
+        <EmptyState
+          compact
+          heading="No Suggested Users"
+          paragraph="More suggestions will appear as you complete your profile."
+        />
 
       ) : (
 

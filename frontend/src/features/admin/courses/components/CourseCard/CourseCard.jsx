@@ -127,10 +127,6 @@ export default function CourseCard({
     courses,
     onDelete
 }) {
-    if (!courses || courses.length === 0) {
-        return <div className="noInternships">No Courses Available</div>;
-    }
-
     return (
         <>
             {

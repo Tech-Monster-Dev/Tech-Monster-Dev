@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import EmptyState from '../../../components/ui/EmptyState';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -38,7 +39,11 @@ export default function ProfileCards({
               </div>
             ))
           ) : (
-            <p className="empty-text">No active internships enrolled</p>
+            <EmptyState
+              compact
+              heading="No Active Internships"
+              paragraph="You are not enrolled in any active internships yet."
+            />
           )}
         </div>
       </motion.div>
@@ -64,7 +69,11 @@ export default function ProfileCards({
               </div>
             ))
           ) : (
-            <p className="empty-text">No courses enrolled yet</p>
+            <EmptyState
+              compact
+              heading="No Courses Enrolled"
+              paragraph="You have not enrolled in any courses yet."
+            />
           )}
         </div>
       </motion.div>
@@ -118,9 +127,11 @@ export default function ProfileCards({
 
           ) : (
 
-            <p className="empty-text">
-              No certificates earned yet
-            </p>
+            <EmptyState
+              compact
+              heading="No Certificates Yet"
+              paragraph="You have not earned any certificates yet."
+            />
 
           )}
 
@@ -169,9 +180,11 @@ export default function ProfileCards({
 
           ) : (
 
-            <p className="empty-text">
-              No badges earned yet
-            </p>
+            <EmptyState
+              compact
+              heading="No Badges Yet"
+              paragraph="You have not earned any badges yet."
+            />
 
           )}
 

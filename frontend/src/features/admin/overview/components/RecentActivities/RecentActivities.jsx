@@ -1,4 +1,5 @@
 import "./RecentActivities.css";
+import EmptyState from "../../../../../components/ui/EmptyState";
 
 export default function RecentActivities({ activities = [] }) {
     console.log("Activities", activities);
@@ -7,7 +8,11 @@ export default function RecentActivities({ activities = [] }) {
             <h2>Recent Activities</h2>
             {
                 activities.length === 0 ? (
-                    <p>No Recent Activities</p>
+                    <EmptyState
+                        compact
+                        heading="No Recent Activities"
+                        paragraph="There are no recent activities to display right now."
+                    />
                 ) : (
                     activities.map((activity) => (
                         <div

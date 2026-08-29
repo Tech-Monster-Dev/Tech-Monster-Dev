@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import EmptyState from "../../../../../../components/ui/EmptyState";
 
 export default function SkillsSection({
     skills
@@ -43,9 +44,11 @@ export default function SkillsSection({
 
                 ) : (
 
-                    <span className="empty-value">
-                        No skills added
-                    </span>
+                    <EmptyState
+                        compact
+                        heading="No Skills Added"
+                        paragraph="No skills have been added to this profile yet."
+                    />
 
                 )}
 
