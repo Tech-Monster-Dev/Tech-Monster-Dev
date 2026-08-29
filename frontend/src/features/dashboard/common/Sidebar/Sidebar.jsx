@@ -92,6 +92,7 @@ function Sidebar({
         { name: "Task Approval", path: "/admin/tasks", icon: <FiCheckSquare /> },
         { name: "Reports", path: "/admin/reports", icon: <FiGrid /> },
         { name: "Certificate Approval", path: "/admin/certificates", icon: <FiCreditCard /> },
+        { name: "Support Inbox", path: "/admin/support", icon: <FiHelpCircle /> },
     ];
 
     const navLinks = role === 'admin' ? adminLinks : studentLinks;

@@ -138,6 +138,21 @@ export const API = {
 
   },
 
+  SUPPORT: {
+
+    CONVERSATION: "/support/conversation",
+    CONVERSATION_BY_ID: (conversationId) => `/support/conversation/${conversationId}`,
+
+    INBOX: "/support/inbox",
+
+    MESSAGES: (conversationId) =>
+      `/support/conversation/${conversationId}/messages`,
+
+    UPDATE_CONVERSATION: (conversationId) =>
+      `/support/conversation/${conversationId}`
+
+  },
+
   FOLLOW: {
     FOLLOW_USER: (userId) => `/follow/${userId}`,
     UNFOLLOW_USER: (userId) => `/follow/${userId}`,

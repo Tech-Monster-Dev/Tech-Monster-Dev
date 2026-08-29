@@ -63,6 +63,7 @@ import CourseForm from '../features/admin/courses/components/CoursesForm';
 import TaskApproval from '../features/admin/tasks';
 import TaskApprovalDetails from "../features/admin/tasks/TaskApprovalDetails";
 import CertificateApproval from '../features/admin/certificates';
+import SupportInbox from '../features/admin/support';
 import InternshipsForm from '../features/admin/internships/components/InternshipsForm';
 
 
@@ -192,6 +193,7 @@ function AppRoutes() {
                     />
                     <Route path='reports' element={<Reports />} />
                     <Route path='certificates' element={<CertificateApproval />} />
+                    <Route path='support' element={<SupportInbox />} />
                     <Route path='settings' element={<StudentSetting />} />
                     <Route
                         path="notification"

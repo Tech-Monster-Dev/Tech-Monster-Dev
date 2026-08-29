@@ -56,6 +56,18 @@ const messageSchema = new mongoose.Schema(
             default: null
 
         },
+
+        supportConversation: {
+
+            type: mongoose.Schema.Types.ObjectId,
+
+            ref: "SupportConversation",
+
+            default: null,
+
+            index: true
+
+        },
     },
     {
         timestamps: true
