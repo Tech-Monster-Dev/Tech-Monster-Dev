@@ -25,6 +25,7 @@ function Login() {
     if (sessionStorage.getItem("logoutSuccess")) {
       toast.success("Logout Successfully");
       sessionStorage.removeItem("logoutSuccess");
+      sessionStorage.removeItem("logoutInProgress");
     }
   }, []);
 
@@ -33,27 +34,17 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [formData, setFormData] = useState({
-    email: "",
+  const [formData, setFormData] = useState(() => ({
+    email:
+      localStorage.getItem("rememberMe") === "true"
+        ? localStorage.getItem("rememberedEmail") || ""
+        : "",
     password: ""
-  });
+  }));
 
   const [rememberMe, setRememberMe] = useState(() => {
     return localStorage.getItem("rememberMe") === "true";
   });
-
-  useEffect(() => {
-
-    const rememberedEmail = localStorage.getItem("rememberedEmail");
-    const isRemembered = localStorage.getItem("rememberMe") === "true";
-
-    if (rememberedEmail && isRemembered) {
-      setFormData((prev) => ({
-        ...prev,
-        email: rememberedEmail
-      }));
-    }
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

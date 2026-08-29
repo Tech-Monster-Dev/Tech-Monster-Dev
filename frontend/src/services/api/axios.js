@@ -53,7 +53,19 @@ api.interceptors.response.use(
         }
 
         switch (status) {
-            case 401:
+            case 401: {
+                const hasAccessToken =
+                    Boolean(localStorage.getItem("accessToken")) ||
+                    Boolean(localStorage.getItem("adminAccessToken"));
+
+                const isAuthTransition =
+                    sessionStorage.getItem("accountDeletionInProgress") === "true" ||
+                    sessionStorage.getItem("logoutInProgress") === "true";
+
+                if (!hasAccessToken || isAuthTransition) {
+                    return Promise.reject(error);
+                }
+
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("adminAccessToken");
                 localStorage.removeItem("user");
@@ -62,7 +74,9 @@ api.interceptors.response.use(
                 if (window.location.pathname !== "/session-expired") {
                     window.location.href = "/session-expired";
                 }
+
                 break;
+            }
 
             case 403:
                 if (error.response?.data?.message === "Your account has been blocked.") {
