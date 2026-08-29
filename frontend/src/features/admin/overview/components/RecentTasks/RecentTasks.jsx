@@ -55,7 +55,7 @@ export default function RecentTasks({
                             id="overViewRecentTasksCard"
                         >
                             <img
-                                src={task.avatar || "/default-avatar.png"}
+                                src={task.avatar || "/profile/default-profile.svg"}
                                 alt={task.student}
                             />
 

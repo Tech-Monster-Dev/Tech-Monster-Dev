@@ -38,7 +38,7 @@ export default function ProfileHeader({
                     <img
                         src={
                             data?.avatar ||
-                            "/default-avatar.png"
+                            "/profile/default-profile.svg"
                         }
 
                         alt="Profile"

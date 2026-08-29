@@ -125,9 +125,9 @@ export default function ChatSidebar({
 
                                             src={
 
-                                                user.profileImage ||
+                                                user.avatar ||
 
-                                                "/default-avatar.png"
+                                                "/profile/default-profile.svg"
 
                                             }
 
