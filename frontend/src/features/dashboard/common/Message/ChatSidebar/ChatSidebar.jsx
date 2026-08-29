@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import "./ChatSidebar.css";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 import EmptyState from "../../../../../components/ui/EmptyState";
 
 export default function ChatSidebar({
@@ -133,7 +134,11 @@ export default function ChatSidebar({
 
                                             alt="profile"
 
-                                            className="chatAvatar"
+
+
+                                            onError={(event) => {
+                                                event.currentTarget.src = defaultProfileImage;
+                                            }}className="chatAvatar"
 
                                         />
 

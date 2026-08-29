@@ -30,7 +30,6 @@ export default function BadgesSection({
       ) : badges.length === 0 ? (
         <div id="badges-row">
           <EmptyState
-            compact
             heading="No Badges Yet"
             paragraph="You have not earned any badges yet."
           />

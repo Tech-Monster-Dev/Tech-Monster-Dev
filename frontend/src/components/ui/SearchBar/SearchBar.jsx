@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiSearch, FiX, FiBookOpen, FiUser } from "react-icons/fi";
+import defaultProfileImage from "../../../assets/profile/default-profile.svg";
 import { searchInternships, searchUsers } from "../../../services/api/search.service";
 import "./SearchBar.css";
 
@@ -193,11 +194,13 @@ function SearchBar() {
                                             onClick={() => handleUserClick(user)}
                                         >
                                             <div id="search-result-avatar">
-                                                {user.avatar ? (
-                                                    <img src={user.avatar} alt={user.username} />
-                                                ) : (
-                                                    <FiUser />
-                                                )}
+                                                <img
+                                                src={user.avatar || defaultProfileImage}
+                                                alt={user.username || "User"}
+                                                onError={(event) => {
+                                                    event.currentTarget.src = defaultProfileImage;
+                                                }}
+                                            />
                                             </div>
                                             <div id="search-result-text">
                                                 <span id="search-result-title">

@@ -1,4 +1,5 @@
 import "./RecentUpdates.css";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 import EmptyState from "../../../../../components/ui/EmptyState";
 
 import { HiUserAdd } from "react-icons/hi";
@@ -42,7 +43,10 @@ export default function RecentUpdates({ students = [] }) {
 
                                     <img
 
-                                        src={student.avatar || "/profile/default-profile.svg"}
+                                        src={student.avatar && student.avatar !== "/profile/default-profile.svg" ? student.avatar : defaultProfileImage}
+                                        onError={(event) => {
+                                            event.currentTarget.src = defaultProfileImage;
+                                        }}
 
                                         alt={student.firstName}
 

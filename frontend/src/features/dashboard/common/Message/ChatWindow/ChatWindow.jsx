@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import MessageBubble from "../MessageBubble";
 
 import "./ChatWindow.css";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 
 export default function ChatWindow({
 
@@ -85,13 +86,17 @@ export default function ChatWindow({
 
                         src={
 
-                            selectedUser.avatar ||
-
-                            "/profile/default-profile.svg"
+                            selectedUser.avatar && selectedUser.avatar !== "/profile/default-profile.svg"
+                            ? selectedUser.avatar
+                            : defaultProfileImage
 
                         }
 
                         alt="profile"
+
+                        onError={(event) => {
+                            event.currentTarget.src = defaultProfileImage;
+                        }}
 
                     />
 
