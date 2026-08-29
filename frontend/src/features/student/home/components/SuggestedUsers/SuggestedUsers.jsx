@@ -1,4 +1,5 @@
 import "./SuggestedUsers.css";
+import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 
 import { motion } from "framer-motion";
 import EmptyState from "../../../../../components/ui/EmptyState";
@@ -120,7 +121,7 @@ const SuggestedUsers = ({
                     <img
                       src={
                         user?.avatar ||
-                        "/default-profile.png"
+                        defaultProfileImage
                       }
 
                       alt={
@@ -132,7 +133,7 @@ const SuggestedUsers = ({
                         event
                       ) => {
                         event.currentTarget.src =
-                          "/default-profile.png";
+                          defaultProfileImage;
                       }}
                     />
 

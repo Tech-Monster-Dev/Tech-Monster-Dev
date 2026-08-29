@@ -114,7 +114,7 @@ export default function StudentDetails() {
 
                 <img
 
-                    src={student.avatar}
+                    src={student.avatar || "/profile/default-profile.svg"}
 
                     alt=""
 

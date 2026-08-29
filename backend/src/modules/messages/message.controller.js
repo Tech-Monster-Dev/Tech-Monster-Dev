@@ -290,7 +290,7 @@ export const getChatUsers = asyncHandler(async (req, res) => {
 
         .select(
 
-            "firstName lastName email profileImage role"
+            "firstName lastName email avatar role"
 
         )
 
@@ -360,7 +360,7 @@ export const getChatUsers = asyncHandler(async (req, res) => {
 
                 role: user.role,
 
-                profileImage: user.profileImage,
+                avatar: user.avatar,
 
                 unreadCount,
 

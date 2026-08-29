@@ -21,7 +21,7 @@ export default function RecentActivities({ activities = [] }) {
                         >
 
                             <img
-                                src={activity.avatar}
+                                src={activity.avatar || "/profile/default-profile.svg"}
                                 alt={activity.fullName}
                             />
 

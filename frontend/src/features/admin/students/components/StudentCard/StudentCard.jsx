@@ -87,7 +87,7 @@ export default function StudentCard({
 
                         student.avatar ||
 
-                        "/images/default-avatar.png"
+                        "/profile/default-profile.svg"
 
                     }
 

@@ -85,9 +85,9 @@ export default function ChatWindow({
 
                         src={
 
-                            selectedUser.profileImage ||
+                            selectedUser.avatar ||
 
-                            "/default-avatar.png"
+                            "/profile/default-profile.svg"
 
                         }
 

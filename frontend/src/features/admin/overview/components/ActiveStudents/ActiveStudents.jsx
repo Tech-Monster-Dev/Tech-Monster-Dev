@@ -29,7 +29,7 @@ export default function ActiveStudents({ students = [] }) {
                             >
 
                                 <img
-                                    src={student.avatar}
+                                    src={student.avatar || "/profile/default-profile.svg"}
                                     alt={student.fullName}
                                 />
 

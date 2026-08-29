@@ -42,7 +42,7 @@ export default function RecentUpdates({ students = [] }) {
 
                                     <img
 
-                                        src={student.avatar}
+                                        src={student.avatar || "/profile/default-profile.svg"}
 
                                         alt={student.firstName}
 
