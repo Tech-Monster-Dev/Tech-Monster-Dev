@@ -10,6 +10,7 @@ import {
 
 import useScrollAnimation from "../../../../../shared/hooks/useScrollAnimation";
 import "./CourseCard.css";
+import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
 
 function SingleCoursesCard({
     item,
@@ -20,7 +21,7 @@ function SingleCoursesCard({
 
     // Image URL Handling (Uploaded relative path support)
     const getImageUrl = (image) => {
-        if (!image) return "/placeholder-course.png";
+        if (!image) return defaultThumbnail;
         if (image.startsWith("http") || image.startsWith("data:") || image.startsWith("blob:")) {
             return image;
         }
@@ -41,6 +42,10 @@ function SingleCoursesCard({
             <div className="cardImage">
                 <img
                     src={imageSrc}
+                    onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = defaultThumbnail;
+                    }}
                     alt={item.title}
                 />
 
@@ -100,6 +105,10 @@ function SingleCoursesCard({
             <div className="meta">
                 <span>
                     Level: {item.level || 'N/A'}
+                </span>
+
+                <span>
+                    Price: ₹{item.price ?? 0}
                 </span>
 
                 {item.duration && (

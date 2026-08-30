@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import "./ContinueCard.css";
+import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
 
 const ContinueCard = ({ learning }) => {
 
@@ -60,7 +61,7 @@ const ContinueCard = ({ learning }) => {
       <div id="card-bg">
 
         <img
-          src={thumbnail}
+          src={thumbnail || defaultThumbnail}
           alt={title}
         />
 
