@@ -26,84 +26,50 @@ import streamifier from "streamifier";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const internshipsDir = path.resolve(__dirname, "../../data/internship");
+const internshipsDir = path.resolve(__dirname, "../../../data/internships");
 const TASK_DEADLINE_MS = 48 * 60 * 60 * 1000;
 
 const readInternshipDataFromFile = async (internshipSlug) => {
-
     if (!internshipSlug) {
         return null;
     }
 
-    const normalizedSlug = normalizeSlug(
-        internshipSlug
-    );
-
-    const filePath = path.join(
-        internshipsDir,
-        `${normalizedSlug}.json`
-    );
+    const normalizedTarget = normalizeSlug(internshipSlug);
 
     try {
-
-        const raw = await readFile(
-            filePath,
-            "utf8"
+        const folders = await (await import("fs/promises")).readdir(
+            internshipsDir,
+            { withFileTypes: true }
         );
 
-        const data = JSON.parse(raw);
+        for (const folder of folders) {
+            if (!folder.isDirectory()) continue;
 
-        console.log(
-            "========== INTERNSHIP JSON =========="
-        );
+            const filePath = path.join(
+                internshipsDir,
+                folder.name,
+                "internship.json"
+            );
 
-        console.log(
-            "Slug:",
-            normalizedSlug
-        );
+            try {
+                const raw = await readFile(filePath, "utf8");
+                const parsed = JSON.parse(raw);
+                const internshipData =
+                    parsed?.internship || parsed;
 
-        console.log(
-            "File:",
-            filePath
-        );
+                if (
+                    normalizeSlug(internshipData?.slug) ===
+                    normalizedTarget
+                ) {
+                    return internshipData;
+                }
+            } catch {
+                continue;
+            }
+        }
 
-        console.log(
-            "Modules:",
-            data?.modules?.length || 0
-        );
-
-        console.log(
-            "First Module:",
-            data?.modules?.[0]?.moduleTitle
-        );
-
-        console.log(
-            "First Lesson:",
-            data?.modules?.[0]?.lessons?.[0]?.lessonTitle
-        );
-
-        console.log(
-            "====================================="
-        );
-
-        return data;
-
-    } catch (error) {
-
-        console.error(
-            "❌ INTERNSHIP JSON LOAD FAILED"
-        );
-
-        console.error(
-            "File:",
-            filePath
-        );
-
-        console.error(
-            "Error:",
-            error.message
-        );
-
+        return null;
+    } catch {
         return null;
     }
 };
@@ -430,6 +396,7 @@ export const createInternship = asyncHandler(async (req, res) => {
         level,
         description,
         duration,
+        price,
         totalTasks,
         totalNotes
     } = req.body || {};
@@ -458,6 +425,8 @@ export const createInternship = asyncHandler(async (req, res) => {
         thumbnail,
 
         duration,
+
+        price,
 
         totalTasks,
 
@@ -1117,6 +1086,7 @@ export const updateInternship = asyncHandler(async (req, res) => {
             description: description || internship.description,
             thumbnail: thumbnail,
             duration: duration || internship.duration,
+            price: price !== undefined ? price : internship.price,
             totalTasks:
                 totalTasks !== undefined
                     ?

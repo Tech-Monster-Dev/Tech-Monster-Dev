@@ -1,4 +1,5 @@
 import "./InternshipRecommendation.css";
+import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
 
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -140,7 +141,7 @@ const InternshipRecommendation = ({
                   <img
                     src={
                       internship?.thumbnail ||
-                      "/default-internship.jpg"
+                      defaultThumbnail
                     }
 
                     alt={
@@ -150,7 +151,7 @@ const InternshipRecommendation = ({
 
                     onError={(event) => {
                       event.currentTarget.src =
-                        "/default-internship.jpg";
+                        defaultThumbnail;
                     }}
                   />
 

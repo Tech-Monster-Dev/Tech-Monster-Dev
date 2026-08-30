@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Clock3, ArrowRight } from "lucide-react";
 import "./CourseCard.css";
+import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 
@@ -43,7 +44,7 @@ const CourseCard = ({ internship, refreshDashboard, index, type, setLoading }) =
     >
       {/* Top Banner */}
       <div id="allIntenrship-student-side-card-banner">
-        <img src={internship?.thumbnail} alt={internship?.title} />
+        <img src={internship?.thumbnail || defaultThumbnail} alt={internship?.title} />
       </div>
       <div id="allIntenrship-student-side-card-banner-text" className={internship?.enrolled ? "enrolled" : ""}>
         {internship?.enrolled ? "Enrolled" : "New"}

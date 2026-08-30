@@ -1,4 +1,5 @@
 import "./TopInternships.css";
+import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
 
 export default function TopInternships({
 
@@ -20,8 +21,12 @@ export default function TopInternships({
                         key={item._id}
                     >
                         <img
-                            src={item.thumbnail}
-                            alt={item.title}
+                            src={item.thumbnail || defaultThumbnail}
+                            onError={(event) => {
+                                event.currentTarget.onerror = null;
+                                event.currentTarget.src = defaultThumbnail;
+                            }}
+                            alt={item.title || "Internship"}
                         />
 
                         <div id="topInternshipInfo">

@@ -17,7 +17,7 @@ import { recordLessonLearningDay } from "../learning/learningDay.service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const coursesDir = path.resolve(__dirname, "../../../data/course");
+const coursesDir = path.resolve(__dirname, "../../../data/courses");
 const TASK_DEADLINE_MS = 48 * 60 * 60 * 1000;
 
 const normalizeSlug = (slug) =>
@@ -30,11 +30,39 @@ const readCourseDataFromFile = async (courseSlug) => {
     if (!courseSlug) return null;
 
     try {
-        const raw = await readFile(
-            path.join(coursesDir, `${normalizeSlug(courseSlug)}.json`),
-            "utf8"
+        const folders = await (await import("fs/promises")).readdir(
+            coursesDir,
+            { withFileTypes: true }
         );
-        return JSON.parse(raw);
+
+        const normalizedTarget = normalizeSlug(courseSlug);
+
+        for (const folder of folders) {
+            if (!folder.isDirectory()) continue;
+
+            const filePath = path.join(
+                coursesDir,
+                folder.name,
+                "course.json"
+            );
+
+            try {
+                const raw = await readFile(filePath, "utf8");
+                const parsed = JSON.parse(raw);
+                const courseData = parsed?.course || parsed;
+
+                if (
+                    normalizeSlug(courseData?.slug) ===
+                    normalizedTarget
+                ) {
+                    return courseData;
+                }
+            } catch {
+                continue;
+            }
+        }
+
+        return null;
     } catch {
         return null;
     }
@@ -392,6 +420,7 @@ export const createCourse = asyncHandler(async (req, res) => {
         level,
         description,
         duration,
+        price,
         totalTasks,
         totalNotes
     } = req.body || {};
@@ -410,6 +439,7 @@ export const createCourse = asyncHandler(async (req, res) => {
         description,
         thumbnail,
         duration,
+        price,
         totalTasks,
         totalNotes,
         isPublished: true
@@ -666,7 +696,7 @@ export const getCompletedLessons = asyncHandler(async (req, res) => {
 });
 
 export const updateCourse = asyncHandler(async (req, res) => {
-    const { title, slug, category, level, description, duration, totalTasks, totalNotes } = req.body;
+    const { title, slug, category, level, description, duration, price, totalTasks, totalNotes } = req.body;
 
     let course = await Course.findById(req.params.id);
     if (!course) {
@@ -689,6 +719,7 @@ export const updateCourse = asyncHandler(async (req, res) => {
             description: description || course.description,
             thumbnail,
             duration: duration || course.duration,
+            price: price !== undefined ? price : course.price,
             totalTasks: totalTasks !== undefined ? totalTasks : course.totalTasks,
             totalNotes: totalNotes !== undefined ? totalNotes : course.totalNotes
         },

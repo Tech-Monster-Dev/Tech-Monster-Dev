@@ -23,6 +23,7 @@ export default function CoursesForm() {
         level: '',
         description: '',
         duration: '',
+        price: '',
         totalTasks: '',
         totalNotes: '',
     });
@@ -39,6 +40,7 @@ export default function CoursesForm() {
                 level: editData.level || '',
                 description: editData.description || '',
                 duration: editData.duration || '',
+                price: editData.price ?? '',
                 totalTasks: editData.totalTasks || '',
                 totalNotes: editData.totalNotes || '',
             });
@@ -79,6 +81,7 @@ export default function CoursesForm() {
         data.append('level', formData.level);
         data.append('description', formData.description);
         data.append('duration', formData.duration);
+        data.append('price', formData.price);
         data.append('totalTasks', formData.totalTasks);
         data.append('totalNotes', formData.totalNotes);
 
@@ -153,6 +156,10 @@ export default function CoursesForm() {
                 <div id="formGroup">
                     <label htmlFor="duration">Duration</label>
                     <input type="text" name='duration' id='duration' value={formData.duration} placeholder='Enter duration (e.g., 3 Months)' onChange={handleInputChange} required />
+                </div>
+                <div id="formGroup">
+                    <label htmlFor="price">Price</label>
+                    <input type="number" name="price" id="price" value={formData.price} placeholder="Enter price" min="0" step="0.01" onChange={handleInputChange} required />
                 </div>
                 <div id="formGroup">
                     <label>Slug</label>

@@ -44,6 +44,12 @@ const courseSchema = new mongoose.Schema({
         required: true
     },
 
+    price: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+
     totalTasks: {
         type: Number,
         default: 0
