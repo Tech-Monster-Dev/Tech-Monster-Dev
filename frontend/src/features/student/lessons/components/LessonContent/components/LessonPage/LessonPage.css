@@ -5,72 +5,179 @@
 #lesson-page {
     position: relative;
     width: 100%;
-    padding: 1rem 1.25rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    color: var(--text);
-    background-color: var(--surface);
-    border-radius: 1rem;
-    border: 1px solid var(--glow);
-    transition: all 0.3s ease;
-    scroll-behavior: smooth;
+    min-width: 0;
+    padding: 1.8rem 2rem 2.5rem;
+
+    color: var(--text, #f8fafc);
+
+    background:
+        radial-gradient(
+            circle at 8% 5%,
+            rgba(34, 211, 238, 0.045),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 95%,
+            rgba(16, 185, 129, 0.035),
+            transparent 28%
+        ),
+        var(--surface, #0f172a);
+
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
-#lesson-page:hover {
-    box-shadow: 0 0 10px var(--neon);
+/* ==========================================
+   TOP ACCENT
+========================================== */
+
+#lesson-page::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 7%;
+    right: 7%;
+
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34, 211, 238, 0.45),
+        rgba(52, 211, 153, 0.3),
+        transparent
+    );
+
+    pointer-events: none;
 }
 
-.lesson-page__toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-}
-
-.lesson-page__pill {
-    border: 1px solid rgba(255,255,255,0.12);
-    background: transparent;
-    color: var(--text);
-    border-radius: 999px;
-    padding: 0.55rem 0.85rem;
-    cursor: pointer;
-}
-
-.lesson-page__pill.is-active {
-    background: var(--primary);
-    border-color: var(--primary);
-}
+/* ==========================================
+   CONTENT COLUMN
+========================================== */
 
 .lesson-section {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+
+    min-width: 0;
 }
+
+.lesson-section > * {
+    flex-shrink: 0;
+}
+
+/* ==========================================
+   COMPONENT SPACING
+========================================== */
+
+.lesson-section > .lesson-heading:first-child {
+    margin-top: 0;
+}
+
+.lesson-section > .lesson-paragraph + .lesson-paragraph {
+    margin-top: 0.05rem;
+}
+
+/* ==========================================
+   ACTIONS
+========================================== */
 
 .lesson-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.75rem;
-    margin-top: 0.5rem;
+    margin-top: 1.4rem;
 }
+
+/* ==========================================
+   EMPTY / LOADING / ERROR
+========================================== */
 
 .lesson-page--loading,
 .lesson-page--error {
-    padding: 1.5rem;
+    width: 100%;
+    min-height: 180px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 2rem 1.5rem;
+
     text-align: center;
-    color: var(--text);
+
+    color: var(--text-secondary, #94a3b8);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(34, 211, 238, 0.035),
+            rgba(15, 23, 42, 0.5)
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   FOCUS ACCESSIBILITY
+========================================== */
+
+#lesson-page :focus-visible {
+    outline: 2px solid rgba(34, 211, 238, 0.65);
+    outline-offset: 3px;
 }
 
 /* ==========================================
    RESPONSIVE
 ========================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     #lesson-page {
-        padding: 1rem;
+        padding: 1.55rem 1.5rem 2.2rem;
+        border-radius: 16px;
     }
 
-    .lesson-page__header {
+    .lesson-section {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    #lesson-page {
+        padding: 1.3rem 1.05rem 1.8rem;
+        border-radius: 13px;
+    }
+
+    .lesson-actions {
+        gap: 0.55rem;
+        margin-top: 1.15rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #lesson-page {
+        padding: 1rem 0.8rem 1.45rem;
+        border-radius: 11px;
+    }
+
+    .lesson-actions {
         flex-direction: column;
+        align-items: stretch;
     }
 }

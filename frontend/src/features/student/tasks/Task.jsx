@@ -150,6 +150,12 @@ const Task = () => {
             taskScope.moduleId || ""
         ).trim();
 
+        console.log("=== TASK MODULE SCOPE DEBUG ===");
+        console.log("taskScope:", taskScope);
+        console.log("requested moduleId:", moduleId);
+        console.log("modules:", modules);
+        console.log("taskStatusMap:", taskStatusMap);
+
         const activeModule = getScopedTaskModule(
             modules,
             taskStatusMap,

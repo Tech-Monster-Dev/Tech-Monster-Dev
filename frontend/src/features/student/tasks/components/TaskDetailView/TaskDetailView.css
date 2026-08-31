@@ -159,3 +159,237 @@
     border-radius: 0.85rem;
     padding: 1rem;
 }
+
+
+/* =========================================
+   BEFORE YOU SUBMIT
+========================================= */
+
+.task-detail-submit-info {
+    margin-top: 1.5rem;
+    padding: 1rem 1.1rem;
+    border-radius: 0.9rem;
+
+    background: rgba(0, 234, 255, 0.035);
+    border: 1px solid rgba(0, 234, 255, 0.16);
+}
+
+.task-detail-submit-info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.task-detail-submit-info-header svg {
+    flex-shrink: 0;
+    color: var(--neon);
+    font-size: 1rem;
+}
+
+.task-detail-submit-info-header h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.task-detail-submit-info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.task-detail-submit-info-content p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+.task-detail-submit-info-content strong {
+    color: var(--text);
+    font-weight: 700;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+    .task-detail-view {
+        padding: 1.15rem;
+    }
+
+    .task-detail-submit-info {
+        padding: 0.9rem;
+    }
+
+    .task-detail-submit-info-content p {
+        font-size: 0.84rem;
+    }
+}
+
+/* =========================================
+   SOLUTION ACTION
+========================================= */
+
+.task-detail-solution-action {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.task-detail-solution-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 36px;
+    padding: 0.45rem 0.8rem;
+    border-radius: 0.55rem;
+    border: 1px solid rgba(0, 234, 255, 0.3);
+    background: rgba(0, 234, 255, 0.08);
+    color: var(--neon);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task-detail-solution-btn:hover {
+    background: rgba(0, 234, 255, 0.14);
+    border-color: rgba(0, 234, 255, 0.5);
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.12);
+}
+
+.task-detail-solution-btn:active {
+    transform: scale(0.97);
+}
+
+.task-detail-solution-btn svg {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   SOLUTION INFO
+========================================= */
+
+.task-detail-solution-info {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: var(--muted);
+    cursor: help;
+}
+
+.task-detail-solution-info > svg {
+    width: 15px;
+    height: 15px;
+    transition: color 0.2s ease;
+}
+
+.task-detail-solution-info:hover > svg {
+    color: var(--neon);
+}
+
+
+/* =========================================
+   INFO TOOLTIP
+========================================= */
+
+.task-detail-solution-info span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.65rem);
+    z-index: 20;
+
+    width: 250px;
+    padding: 0.7rem 0.8rem;
+
+    border-radius: 0.65rem;
+    background: rgba(10, 15, 25, 0.97);
+    border: 1px solid rgba(0, 234, 255, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+
+    color: var(--muted);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    text-align: left;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform:
+        translate(-50%, 5px);
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task-detail-solution-info span::after {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    top: 100%;
+
+    width: 8px;
+    height: 8px;
+
+    background: rgba(10, 15, 25, 0.97);
+    border-right: 1px solid rgba(0, 234, 255, 0.2);
+    border-bottom: 1px solid rgba(0, 234, 255, 0.2);
+
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.task-detail-solution-info:hover span {
+    opacity: 1;
+    visibility: visible;
+    transform:
+        translate(-50%, 0);
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 480px) {
+    .task-detail-solution-action {
+        align-items: flex-start;
+    }
+
+    .task-detail-solution-info span {
+        left: 0;
+        width: min(250px, calc(100vw - 3rem));
+        transform: translate(0, 5px);
+    }
+
+    .task-detail-solution-info:hover span {
+        transform: translate(0, 0);
+    }
+
+    .task-detail-solution-info span::after {
+        left: 13px;
+    }
+}

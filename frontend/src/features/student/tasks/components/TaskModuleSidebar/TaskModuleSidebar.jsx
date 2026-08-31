@@ -1,10 +1,7 @@
-import {
-    useMemo,
-    useState,
-} from "react";
 import { motion } from "framer-motion";
 import {
     CheckCircle2,
+    BookOpenCheck,
 } from "lucide-react";
 
 import {
@@ -12,11 +9,10 @@ import {
     FiLock,
 } from "react-icons/fi";
 
-import TaskLesson from "./TaskLesson";
+import TaskItem from "./TaskLesson/TaskItem/TaskItem";
 import EmptyState from "../../../../../components/ui/EmptyState";
 
 import "./TaskModuleSidebar.css";
-
 
 export default function TaskModuleSidebar({
     modules = [],
@@ -28,85 +24,16 @@ export default function TaskModuleSidebar({
     onSelectTask,
     contentType = "Task",
 }) {
-    const moduleList = useMemo(() => {
-        if (Array.isArray(modules)) {
-            return modules;
-        }
-
-        return modules
+    const moduleList = Array.isArray(modules)
+        ? modules
+        : modules
             ? [modules]
             : [];
-    }, [modules]);
 
-    const lessonList = useMemo(() => {
-        return moduleList.flatMap(
-            (module) => module.lessons || []
-        );
-    }, [moduleList]);
-
-
-    // =========================================
-    // OPEN LESSONS
-    // =========================================
-
-    const [openLessons, setOpenLessons] =
-        useState(
-            () => new Set()
-        );
-
-    const activeLessonId = useMemo(() => {
-        const activeLesson = lessonList.find(
-            (lesson) =>
-                (lesson.tasks || []).some(
-                    (task) =>
-                        task.id === activeTaskId
-                )
-        );
-
-        return activeLesson?.id || null;
-    }, [
-        activeTaskId,
-        lessonList,
-    ]);
-
-
-    // =========================================
-    // TOGGLE LESSON
-    // =========================================
-
-    const toggleLesson = (lessonId) => {
-
-        setOpenLessons((prev) => {
-
-            const next = new Set(prev);
-
-            if (next.has(lessonId)) {
-                next.delete(lessonId);
-            } else {
-                next.add(lessonId);
-            }
-
-            return next;
-        });
-    };
-
-
-    // =========================================
-    // SELECT TASK
-    // =========================================
-
-    const handleTaskClick = (task) => {
-
-        if (lockedIds.includes(task.id)) {
-            return;
-        }
-
-        onSelectTask?.(task.id);
-    };
-
+    const activeModule = moduleList[0] || null;
+    const tasks = activeModule?.tasks || [];
 
     return (
-
         <motion.aside
             className="task-module-sidebar"
             initial={{
@@ -121,11 +48,6 @@ export default function TaskModuleSidebar({
                 duration: 0.45,
             }}
         >
-
-            {/* ================================= */}
-            {/* HEADER */}
-            {/* ================================= */}
-
             <div className="task-sidebar-header">
                 <span className="task-sidebar-icon">
                     <FiClock />
@@ -135,54 +57,69 @@ export default function TaskModuleSidebar({
                     <h3>
                         {contentType.toUpperCase()} Tasks
                     </h3>
+
                     <p>
                         Complete in order to unlock
                     </p>
                 </div>
             </div>
 
-            {/* ================================= */}
-            {/* LESSON LIST */}
-            {/* ================================= */}
-
             <div className="task-sidebar-list">
-                {lessonList.length === 0 && (
+                {!activeModule || tasks.length === 0 ? (
                     <EmptyState
                         compact
                         heading="No Tasks Yet"
-                        paragraph="There are no tasks available for this internship yet."
+                        paragraph="There are no tasks available for this module yet."
                     />
+                ) : (
+                    <>
+                        <div className="task-sidebar-module">
+                            <div className="task-sidebar-module-header">
+                                <div className="task-sidebar-module-icon">
+                                    <BookOpenCheck size={16} />
+                                </div>
+
+                                <div>
+                                    <h4>
+                                        {activeModule.title}
+                                    </h4>
+
+                                    <span>
+                                        {tasks.length} Tasks
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="task-sidebar-task-list">
+                                {tasks.map((task) => (
+                                    <TaskItem
+                                        key={task.id}
+                                        task={task}
+                                        active={
+                                            activeTaskId === task.id
+                                        }
+                                        taskStatusMap={
+                                            taskStatusMap
+                                        }
+                                        deadlineMap={
+                                            deadlineMap
+                                        }
+                                        now={now}
+                                        lockedIds={
+                                            lockedIds
+                                        }
+                                        onSelectTask={
+                                            onSelectTask
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </>
                 )}
-
-
-                {lessonList.map((lesson, lessonIndex) => (
-                    <TaskLesson
-                        key={lesson.id}
-                        lesson={lesson}
-                        isOpen={
-                            openLessons.has(lesson.id) ||
-                            lessonIndex === 0 ||
-                            activeLessonId === lesson.id
-                        }
-                        onToggleLesson={toggleLesson}
-                        activeTaskId={activeTaskId}
-                        taskStatusMap={taskStatusMap}
-                        deadlineMap={deadlineMap}
-                        now={now}
-                        lockedIds={lockedIds}
-                        onSelectTask={handleTaskClick}
-                    />
-                ))}
-
             </div>
 
-
-            {/* ================================= */}
-            {/* FOOTER */}
-            {/* ================================= */}
-
             <div className="task-sidebar-footer">
-
                 <span>
                     <CheckCircle2 size={14} />
                     Approved
@@ -197,9 +134,7 @@ export default function TaskModuleSidebar({
                     <FiLock size={14} />
                     Locked
                 </span>
-
             </div>
-
         </motion.aside>
     );
 }

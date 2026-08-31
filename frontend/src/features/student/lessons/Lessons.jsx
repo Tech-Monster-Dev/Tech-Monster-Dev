@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -22,7 +22,6 @@ import { normalizeSlug } from "./utils/lessonHelpers";
 
 export default function Lessons() {
     const { type: routeType, slug: routeSlug, courseSlug: routeCourseSlug } = useParams();
-    const contentContainerRef = useRef(null);
 
     const contentType = routeType === "internship" ? "internship" : "course";
     const courseSlug = normalizeSlug(routeSlug || routeCourseSlug || "");
@@ -38,7 +37,7 @@ export default function Lessons() {
     const { search, setSearch, readingMode, setReadingMode } = useLessonPreferences();
 
     useLayoutEffect(() => {
-        const element = contentContainerRef.current;
+        const element = document.querySelector("#lesson-content-wrapper .lesson-content-scroll-area");
         if (!element) return;
 
         element.style.scrollBehavior = "auto";
@@ -191,11 +190,6 @@ export default function Lessons() {
     const handlePrevious = () => {
         if (activeLesson > 0) {
             setActiveLesson((prev) => prev - 1);
-            contentContainerRef.current?.scrollTo({
-                top: 0,
-                left: 0,
-                behavior: "auto"
-            });
         }
     };
 
@@ -278,7 +272,6 @@ export default function Lessons() {
                     readPercent={readPercent}
                     completed={currentLesson.completed}
                     onScrollProgress={setReadPercent}
-                    contentRef={contentContainerRef}
                 />
 
                 <Pagination

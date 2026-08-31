@@ -97,6 +97,7 @@ const useTaskRealtime = ({
             submission,
             unlockedSubmission,
             moduleCompleted,
+            allTasksCompleted,
         }) => {
 
             console.log(
@@ -110,6 +111,39 @@ const useTaskRealtime = ({
             );
             if (submission) {
                 applySubmissionState(submission);
+
+                /*
+                 * Forward the backend approval payload
+                 * to the Lessons page.
+                 *
+                 * This keeps module approval state in sync
+                 * immediately without page refresh.
+                 */
+                try {
+                    window.dispatchEvent(
+                        new CustomEvent(
+                            "taskApproved",
+                            {
+                                detail: {
+                                    submission,
+                                    unlockedSubmission:
+                                        unlockedSubmission ||
+                                        null,
+                                    moduleCompleted:
+                                        Boolean(
+                                            moduleCompleted
+                                        ),
+                                    allTasksCompleted:
+                                        Boolean(
+                                            allTasksCompleted
+                                        ),
+                                },
+                            }
+                        )
+                    );
+                } catch {
+                    // Ignore browser event errors.
+                }
 
                 toast.success(
                     `Approved: ${submission.taskTitle ||

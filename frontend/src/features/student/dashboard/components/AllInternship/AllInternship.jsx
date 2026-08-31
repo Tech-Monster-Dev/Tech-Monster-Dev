@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import "./AllInternship.css";
 
 import EmptyState from "../../../../../components/ui/EmptyState";
-import CourseCard from "../CourseCard/CourseCard";
+import CourseCard from "../CourseCard";
 
 
-const AllInternship = ({ internships = [], refreshDashboard }) => {
+const AllInternship = ({ internships = [], refreshDashboard, onPreview }) => {
   const allCount = Array.isArray(internships) ? internships.length : 0;
 
   return (
@@ -35,6 +35,7 @@ const AllInternship = ({ internships = [], refreshDashboard }) => {
               internship={internship}
               type="internship"
               refreshDashboard={refreshDashboard}
+            onPreview={onPreview}
             />
           ))}
 

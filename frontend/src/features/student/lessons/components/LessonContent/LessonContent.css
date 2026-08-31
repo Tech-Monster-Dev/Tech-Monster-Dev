@@ -1,53 +1,118 @@
 /* ==========================================
-   LESSON CONTENT
+   LESSON CONTENT ROOT
 ========================================== */
 
 #lesson-content-wrapper {
     position: relative;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 1 auto;
+
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: 0.5rem;
-    padding-top: 0;
-    /* Instant scroll reset when switching lessons (no smooth animation). */
-    scroll-behavior: auto !important;
+
+    overflow: hidden;
 }
 
-#lesson-content-wrapper::-webkit-scrollbar {
+/* ==========================================
+   FIXED NAVBAR
+========================================== */
+
+.lesson-navbar-fixed {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 60px;
+    z-index: 20;
+}
+
+/* ==========================================
+   SCROLLABLE LESSON AREA
+========================================== */
+
+.lesson-content-scroll-area {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 0;
+
+    flex: 1 1 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-right: 0.5rem;
+    padding-bottom: 1rem;
+
+    scroll-behavior: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon) var(--dark);
+}
+
+.lesson-content-scroll-area::-webkit-scrollbar {
     width: 7px;
 }
 
-#lesson-content-wrapper::-webkit-scrollbar-thumb {
+.lesson-content-scroll-area::-webkit-scrollbar-thumb {
     background: var(--neon);
     border-radius: 2rem;
 }
 
-#lesson-content-wrapper::-webkit-scrollbar-track {
+.lesson-content-scroll-area::-webkit-scrollbar-track {
     background: var(--dark);
 }
-
-
 
 /* ==========================================
    GLASS CARD
 ========================================== */
 
 .glass-card {
-    background: rgba(255, 255, 255, .04);
-    border: 1px solid rgba(0, 255, 255, .12);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 255, 255, 0.12);
     border-radius: 18px;
     backdrop-filter: blur(15px);
     padding: 26px;
-    transition: .3s;
+    transition: 0.3s;
 }
 
 .glass-card:hover {
-    border-color: rgba(0, 255, 255, .25);
+    border-color: rgba(0, 255, 255, 0.25);
 }
 
 /* ==========================================
    RESPONSIVE
 ========================================== */
+
+@media (max-width: 768px) {
+    .lesson-content-scroll-area {
+        padding-right: 0.3rem;
+        padding-bottom: 0.75rem;
+    }
+}
+
+/* ==========================================
+   FLEX HEIGHT SAFETY
+========================================== */
+
+#lesson-right > .lesson-content-root {
+    flex: 1 1 0;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.lesson-content-root > .lesson-content-scroll-area {
+    flex: 1 1 0;
+    min-height: 0;
+    height: auto;
+    max-height: 100%;
+}

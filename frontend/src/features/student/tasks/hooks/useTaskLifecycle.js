@@ -6,6 +6,7 @@ import {
 
 import {
     getTaskExpiresAt,
+    getTaskKey,
 } from "../utils/taskUtils";
 
 const useTaskLifecycle = ({
@@ -48,16 +49,26 @@ const useTaskLifecycle = ({
         currentTask,
     ]);
 
-    const currentDeadline = currentTask
-        ? deadlineMap[currentTask.id]
+    const currentTaskKey = currentTask
+        ? getTaskKey({
+            moduleId: currentTask.moduleId,
+            lessonId: currentTask.lessonId,
+            taskId:
+                currentTask.taskId ||
+                currentTask.id,
+        })
+        : "";
+
+    const currentDeadline = currentTaskKey
+        ? deadlineMap[currentTaskKey]
         : null;
 
-    const currentStatus = currentTask
-        ? taskStatusMap[currentTask.id]
+    const currentStatus = currentTaskKey
+        ? taskStatusMap[currentTaskKey]
         : null;
 
-    const currentReviewComment = currentTask
-        ? reviewCommentMap[currentTask.id] || ""
+    const currentReviewComment = currentTaskKey
+        ? reviewCommentMap[currentTaskKey] || ""
         : "";
 
     const currentExpired =
@@ -82,7 +93,7 @@ const useTaskLifecycle = ({
         setTaskStatusMap((prev) => {
             const next = {
                 ...prev,
-                [currentTask.id]: "expired",
+                [currentTaskKey]: "expired",
             };
 
             saveTaskState(

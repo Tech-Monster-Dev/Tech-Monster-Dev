@@ -1,67 +1,228 @@
 import "./LessonPage.css";
 
 import Heading from "./components/Heading";
-import SubHeading from "./components/SubHeading";
 import Paragraph from "./components/Paragraph";
+import Image from "./components/Image";
+import Lists from "./components/Lists";
 import CodeBlock from "./components/CodeBlock";
 import NotePoint from "./components/NotePoint";
-import Lists from "./components/Lists";
-import Table from "./components/Table";
-import OutputPreview from "./components/OutputPreview";
-import Button from "./components/Button";
+import LessonCallout from "./components/LessonCallout";
+import Practical from "./components/Practical";
+import Quiz from "./components/Quiz";
+import LearningObjectives from "./components/LearningObjectives/LearningObjectives.jsx";
+import LessonSummary from "./components/LessonSummary";
+import LessonResources from "./components/LessonResources";
+
 
 export default function LessonPage({ lesson }) {
-  // `lesson` is the normalized section. The raw lesson body (notes, tasks, etc.)
-  // lives on `lesson.lesson`. Fall back gracefully either way.
-  const rawLesson = lesson?.lesson || lesson || {};
-  const notes = rawLesson?.notes ? [rawLesson.notes] : [];
+    const rawLesson =
+        lesson?.lesson ||
+        lesson ||
+        {};
 
-  const renderNotes = () => {
-    if (!notes.length) {
-      return <Paragraph text="No lesson content is available for this course yet." />;
+    const notes = Array.isArray(rawLesson?.notes)
+        ? rawLesson.notes
+        : [];
+
+    const practicals = Array.isArray(rawLesson?.practicals)
+        ? rawLesson.practicals
+        : [];
+
+    const quiz = Array.isArray(rawLesson?.quiz)
+        ? rawLesson.quiz
+        : [];
+
+    const getSemanticTone = (index) => {
+        for (let i = index - 1; i >= 0; i -= 1) {
+            const previousNote = notes[i];
+
+            if (previousNote?.type !== "heading") {
+                continue;
+            }
+
+            const headingText = String(previousNote.text || "")
+                .trim()
+                .toLowerCase();
+
+            if (
+                headingText.includes("common mistakes") ||
+                headingText.includes("mistakes") ||
+                headingText.includes("common errors")
+            ) {
+                return "warning";
+            }
+
+            if (
+                headingText.includes("core ideas") ||
+                headingText.includes("key concepts") ||
+                headingText.includes("concepts")
+            ) {
+                return "info";
+            }
+
+            if (
+                headingText.includes("best practices") ||
+                headingText.includes("best practice") ||
+                headingText.includes("recommended practices")
+            ) {
+                return "success";
+            }
+
+            return "";
+        }
+
+        return "";
+    };
+
+    const renderNote = (note, index) => {
+        if (!note) return null;
+
+        const key =
+            `${note.type || "note"}-${index}`;
+
+        const semanticTone =
+            getSemanticTone(index);
+
+        switch (note.type) {
+            case "heading":
+                return (
+                    <Heading
+                        key={key}
+                        title={note.text}
+                        level={note.level}
+                    />
+                );
+
+            case "paragraph":
+                return (
+                    <Paragraph
+                        key={key}
+                        text={note.text}
+                    />
+                );
+
+            case "image":
+                return (
+                    <Image
+                        key={key}
+                        src={note.src}
+                        alt={note.alt}
+                        caption={note.caption}
+                    />
+                );
+
+            case "unorderedList":
+                return (
+                    <Lists
+                        key={key}
+                        items={note.items}
+                        ordered={false}
+                        tone={semanticTone}
+                    />
+                );
+
+            case "orderedList":
+                return (
+                    <Lists
+                        key={key}
+                        items={note.items}
+                        ordered
+                        tone={semanticTone}
+                    />
+                );
+
+            case "code":
+                return (
+                    <CodeBlock
+                        key={key}
+                        code={note.code}
+                        language={note.language}
+                        filename={note.filename}
+                    />
+                );
+
+            case "tip":
+                return (
+                    <LessonCallout
+                        key={key}
+                        type="tip"
+                        title={note.title}
+                        text={note.text}
+                    />
+                );
+
+            case "warning":
+                return (
+                    <LessonCallout
+                        key={key}
+                        type="warning"
+                        title={note.title}
+                        text={note.text}
+                    />
+                );
+
+            case "checklist":
+                return (
+                    <NotePoint
+                        key={key}
+                        points={note.items}
+                    />
+                );
+
+            default:
+                return null;
+        }
+    };
+
+    if (!notes.length && !practicals.length) {
+        return (
+            <div id="lesson-page">
+                <Paragraph
+                    text="No lesson content is available for this lesson yet."
+                />
+            </div>
+        );
     }
 
-    return notes.map((note, index) => (
-      <section className="lesson-section" key={`${note?.heading || "note"}-${index}`}>
-        <Heading title={note?.heading || lesson?.heading} />
-        <SubHeading text={note?.subHeading || note?.heading || lesson?.heading} />
-        <Paragraph text={note?.paragraph || note?.overview || lesson?.paragraph} />
+    return (
+        <div id="lesson-page">
+            <section className="lesson-section">
+                <LearningObjectives
+                    objectives={rawLesson.learningObjectives}
+                />
 
-        {note?.importantNotesPoint?.length ? (
-          <NotePoint points={note.importantNotesPoint} />
-        ) : null}
+                {notes.map(renderNote)}
 
-        {note?.keyPoints?.length ? (
-          <Lists items={note.keyPoints} title="Key Points" />
-        ) : null}
+                {practicals.length > 0 ? (
+                    <div className="lesson-practicals">
+                        {practicals.map(
+                            (practical, index) => (
+                                <Practical
+                                    key={
+                                        practical.id ||
+                                        `practical-${index}`
+                                    }
+                                    practical={practical}
+                                    language={rawLesson.language || "javascript"}
+                                />
+                            )
+                        )}
+                    </div>
+                ) : null}
+                {quiz.length > 0 ? (
+                    <Quiz
+                        questions={quiz}
+                    />
+                ) : null}
 
-        {note?.demoCode ? (
-          <CodeBlock code={note.demoCode} language={note.codeLanguage || "javascript"} />
-        ) : null}
+                <LessonSummary
+                    summary={rawLesson.summary}
+                />
 
-        {note?.tableData ? <Table data={note.tableData} /> : null}
-        {note?.expectedOutput || note?.output ? (
-          <OutputPreview output={note.expectedOutput || note.output} />
-        ) : null}
-
-        {note?.actionButtons?.length ? (
-          <div className="lesson-actions">
-            {note.actionButtons.map((button, btnIndex) => (
-              <Button
-                key={`${button.label}-${btnIndex}`}
-                label={button.label}
-                variant={btnIndex === 0 ? "primary" : "secondary"}
-              />
-            ))}
-          </div>
-        ) : null}
-      </section>
-    ));
-  };
-
-  return (
-    <div id="lesson-page">
-      {renderNotes()}
-    </div>
-  );
+                <LessonResources
+                    resources={rawLesson.resources}
+                />
+            </section>
+        </div>
+    );
 }

@@ -15,6 +15,10 @@ import cloudinary from "../../infrastructure/storage/cloudinary.js";
 import streamifier from "streamifier";
 import { recordLessonLearningDay } from "../learning/learningDay.service.js";
 
+import {
+    safeSendActivityEmail,
+} from "../../infrastructure/email/index.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const coursesDir = path.resolve(__dirname, "../../../data/courses");
@@ -69,33 +73,105 @@ const readCourseDataFromFile = async (courseSlug) => {
 };
 
 const getOrderedCourseTasks = (courseData, courseSlug) => {
-    if (!Array.isArray(courseData?.modules)) return [];
+    if (!Array.isArray(courseData?.modules)) {
+        return [];
+    }
 
-    return courseData.modules.flatMap((module) => {
-        const moduleId = module.moduleId || "";
-        const seen = new Set();
-        const tasks = [];
+    const orderedTasks = [];
+    const seen = new Set();
 
-        (module.lessons || []).forEach((lesson) => {
-            (lesson.tasks || []).forEach((task) => {
-                const taskId = task.taskId || "";
-                if (!taskId || seen.has(taskId)) return;
+    courseData.modules.forEach((module) => {
+        const moduleId = String(
+            module.moduleId ||
+            module.id ||
+            ""
+        ).trim();
+
+        const moduleTitle =
+            module.moduleTitle ||
+            module.title ||
+            "";
+
+        // Current structure: module.tasks[]
+        if (Array.isArray(module.tasks)) {
+            module.tasks.forEach((task) => {
+                const taskId = String(
+                    task.taskId ||
+                    task.id ||
+                    ""
+                ).trim();
+
+                if (!taskId || seen.has(taskId)) {
+                    return;
+                }
+
                 seen.add(taskId);
 
-                tasks.push({
+                orderedTasks.push({
                     courseSlug,
                     moduleId,
-                    moduleTitle: module.moduleTitle || "",
-                    lessonId: lesson.lessonId || "",
+                    moduleTitle,
+                    lessonId: String(
+                        task.lessonId ||
+                        ""
+                    ).trim(),
                     taskId,
-                    taskTitle: task.title || "Task",
-                    problemStatement: task.problemStatement || ""
+                    taskTitle:
+                        task.title ||
+                        "Task",
+                    problemStatement:
+                        task.problemStatement ||
+                        "",
                 });
             });
-        });
+        }
 
-        return tasks;
+        // Backward compatibility:
+        // older structure: lesson.tasks[]
+        if (Array.isArray(module.lessons)) {
+            module.lessons.forEach((lesson) => {
+                const lessonId = String(
+                    lesson.lessonId ||
+                    lesson.id ||
+                    ""
+                ).trim();
+
+                if (!Array.isArray(lesson.tasks)) {
+                    return;
+                }
+
+                lesson.tasks.forEach((task) => {
+                    const taskId = String(
+                        task.taskId ||
+                        task.id ||
+                        ""
+                    ).trim();
+
+                    if (!taskId || seen.has(taskId)) {
+                        return;
+                    }
+
+                    seen.add(taskId);
+
+                    orderedTasks.push({
+                        courseSlug,
+                        moduleId,
+                        moduleTitle,
+                        lessonId,
+                        taskId,
+                        taskTitle:
+                            task.title ||
+                            "Task",
+                        problemStatement:
+                            task.problemStatement ||
+                            "",
+                    });
+                });
+            });
+        }
     });
+
+    return orderedTasks;
 };
 
 const unlockFirstEligibleLessonTask = async ({
@@ -348,37 +424,59 @@ const areModuleTasksApproved = async ({
             String(moduleId)
     );
 
-    if (
-        module == null ||
-        Array.isArray(module.lessons) == false
-    ) {
+    if (module == null) {
         return false;
     }
 
     const taskIds = [];
 
-    module.lessons.forEach((lesson) => {
-        (lesson.tasks || []).forEach((task) => {
+    // Current course structure stores tasks directly
+    // on the module: module.tasks[].
+    if (Array.isArray(module.tasks)) {
+        module.tasks.forEach((task) => {
             const taskId = String(
                 task.taskId ||
                 task.id ||
                 ""
-            );
+            ).trim();
 
-            const lessonId = String(
-                lesson.lessonId ||
-                lesson.id ||
-                ""
-            );
-
-            if (taskId && lessonId) {
+            if (taskId) {
                 taskIds.push({
-                    lessonId,
+                    lessonId: String(
+                        task.lessonId ||
+                        ""
+                    ).trim(),
                     taskId
                 });
             }
         });
-    });
+    }
+
+    // Backward compatibility for older lesson-level tasks.
+    if (taskIds.length === 0) {
+        module.lessons?.forEach((lesson) => {
+            (lesson.tasks || []).forEach((task) => {
+                const taskId = String(
+                    task.taskId ||
+                    task.id ||
+                    ""
+                ).trim();
+
+                const lessonId = String(
+                    lesson.lessonId ||
+                    lesson.id ||
+                    ""
+                ).trim();
+
+                if (taskId) {
+                    taskIds.push({
+                        lessonId,
+                        taskId
+                    });
+                }
+            });
+        });
+    }
 
     if (taskIds.length === 0) {
         return false;
@@ -634,13 +732,33 @@ export const completeLesson = asyncHandler(async (req, res) => {
     await studentCourse.save();
 
     const courseData = await readCourseDataFromFile(normalizedSlug);
-    const unlockedSubmission = await unlockFirstEligibleLessonTask({
+    console.log("=== LESSON TASK UNLOCK DEBUG ===");
+    console.log("courseSlug:", normalizedSlug);
+    console.log("lessonId:", lessonId);
+    console.log("courseId:", String(course._id));
+    console.log(
+        "completedLessons:",
+        studentCourse.completedLessons
+    );
+    console.log(
+        "courseModules:",
+        courseData?.modules?.length || 0
+    );
+
+    const unlockedSubmission =
+        await unlockFirstEligibleLessonTask({
             student: req.user._id,
             course: course._id,
             courseSlug: normalizedSlug,
             lessonId,
             courseData
         });
+
+    console.log(
+        "unlockedSubmission:",
+        unlockedSubmission
+    );
+    console.log("=== END LESSON TASK UNLOCK DEBUG ===");
 
     await recordLessonLearningDay({
         studentId: req.user._id,
