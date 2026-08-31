@@ -21,11 +21,25 @@ export const getTaskKey = (submission) => {
         return "";
     }
 
-    return [
-        String(submission.moduleId),
-        String(submission.lessonId || ""),
-        String(submission.taskId),
-    ].join("_");
+    const moduleId =
+        String(submission.moduleId);
+
+    const lessonId =
+        String(submission.lessonId || "").trim();
+
+    const taskId =
+        String(submission.taskId);
+
+    return lessonId
+        ? [
+            moduleId,
+            lessonId,
+            taskId,
+        ].join("_")
+        : [
+            moduleId,
+            taskId,
+        ].join("_");
 };
 
 
@@ -127,7 +141,7 @@ export const getTaskExpiresAt = (deadline) => {
 // =========================================
 
 export const buildModules = (contentData) => {
-    console.log("contentData:=",contentData);
+    console.log("contentData:=", contentData);
 
     if (
         !contentData ||
@@ -156,75 +170,74 @@ export const buildModules = (contentData) => {
             // MODULE LEVEL TASKS
             // =====================================
 
-            if (
-                Array.isArray(module.tasks) &&
-                module.tasks.length
-            ) {
+            const tasks = Array.isArray(module.tasks)
+                ? module.tasks.map((task, taskIndex) => {
 
-                const moduleTasks = [];
+                    const taskId = String(
+                        task.taskId ||
+                        task.id ||
+                        `task-${taskIndex + 1}`
+                    );
 
-                module.tasks.forEach(
-                    (task, taskIndex) => {
+                    const uniqueKey = [
+                        moduleId,
+                        taskId,
+                    ].join("_");
 
-                        const taskId = String(
-                            task.taskId ||
-                            task.id ||
-                            `task-${taskIndex + 1}`
-                        );
+                    return {
+                        id: uniqueKey,
 
-                        const lessonId = String(
-                            task.lessonId || ""
-                        );
+                        moduleId,
 
-                        const uniqueKey = [
-                            moduleId,
-                            lessonId,
-                            taskId,
-                        ].join("_");
-
-                        moduleTasks.push({
-                            id: uniqueKey,
-
-                            moduleId,
-
-                            lessonId,
-
-                            taskId,
-
-                            title:
-                                task.title ||
-                                task.taskTitle ||
-                                `Task ${taskIndex + 1}`,
-
-                            level:
-                                task.level ||
-                                "Task",
-
-                            problemStatement:
-                                task.problemStatement ||
-                                "",
-
-                            hint:
-                                task.hint ||
-                                "",
-
-                            solutionCode:
-                                task.solutionCode ||
-                                "",
-                        });
-                    }
-                );
-
-                if (moduleTasks.length) {
-                    lessons.push({
-                        id: `${moduleId}_module`,
                         lessonId: "",
-                        title: "General Tasks",
-                        tasks: moduleTasks,
-                    });
-                }
-            }
 
+                        taskId,
+
+                        title:
+                            task.title ||
+                            task.taskTitle ||
+                            `Task ${taskIndex + 1}`,
+
+                        level:
+                            task.level ||
+                            task.difficulty ||
+                            "Task",
+
+                        description:
+                            task.description ||
+                            "",
+
+                        problemStatement:
+                            task.problemStatement ||
+                            task.description ||
+                            "",
+
+                        objectives:
+                            Array.isArray(task.objectives)
+                                ? task.objectives
+                                : Array.isArray(task.requirements)
+                                    ? task.requirements
+                                    : [],
+
+                        requirements:
+                            Array.isArray(task.requirements)
+                                ? task.requirements
+                                : [],
+
+                        hint:
+                            task.hint ||
+                            "",
+
+                        solutionCode:
+                            task.solutionCode ||
+                            "",
+
+                        solutionExplanation:
+                            task.solutionExplanation ||
+                            "",
+                    };
+                })
+                : [];
 
             // =====================================
             // LESSONS
@@ -308,12 +321,30 @@ export const buildModules = (contentData) => {
                                         `Task ${taskIndex + 1}`,
 
                                     level:
+                                        task.difficulty ||
                                         task.level ||
                                         "Task",
 
+                                    description:
+                                        task.description ||
+                                        "",
+
                                     problemStatement:
                                         task.problemStatement ||
+                                        task.description ||
                                         "",
+
+                                    requirements:
+                                        Array.isArray(task.requirements)
+                                            ? task.requirements
+                                            : [],
+
+                                    objectives:
+                                        Array.isArray(task.objectives)
+                                            ? task.objectives
+                                            : Array.isArray(task.requirements)
+                                                ? task.requirements
+                                                : [],
 
                                     hint:
                                         task.hint ||
@@ -349,21 +380,10 @@ export const buildModules = (contentData) => {
             // =====================================
             // ALL TASKS
             // =====================================
-
-            const tasks = lessons.flatMap(
-                (lesson) =>
-                    lesson.tasks || []
-            );
-
-
             return {
-
                 id: moduleId,
-
                 title: moduleTitle,
-
                 lessons,
-
                 tasks,
             };
         }

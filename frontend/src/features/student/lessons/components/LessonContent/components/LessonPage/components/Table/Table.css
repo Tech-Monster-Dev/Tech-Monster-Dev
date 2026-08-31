@@ -1,27 +1,283 @@
-.lesson-table-wrapper {
-  margin: 1rem 0;
-  overflow-x: auto;
+/* ==========================================
+   LESSON TABLE
+========================================== */
+
+.lesson-table-block {
+    position: relative;
+    width: 100%;
+    margin: 1.5rem 0 1.8rem;
+
+    border: 1px solid rgba(34, 211, 238, 0.15);
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(34, 211, 238, 0.055),
+            rgba(15, 23, 42, 0.5) 55%,
+            rgba(16, 185, 129, 0.025)
+        );
+
+    box-shadow:
+        0 16px 35px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.lesson-table-block:hover {
+    border-color: rgba(34, 211, 238, 0.24);
+
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.22),
+        0 0 26px rgba(34, 211, 238, 0.045);
+}
+
+/* ==========================================
+   TABLE TITLE
+========================================== */
+
+.lesson-table-block__header {
+    display: flex;
+    align-items: center;
+
+    padding: 0.85rem 1rem;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(34, 211, 238, 0.07),
+            rgba(255, 255, 255, 0.025)
+        );
 }
 
 .lesson-table-title {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  color: var(--text);
+    position: relative;
+
+    margin: 0;
+    padding-left: 0.75rem;
+
+    color: var(--text, #f8fafc);
+
+    font-size: 0.98rem;
+    font-weight: 750;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
 }
 
-.lesson-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
+.lesson-table-title::before {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    top: 0.2em;
+
+    width: 3px;
+    height: 1.05em;
+
+    border-radius: 999px;
+
+    background: linear-gradient(
+        180deg,
+        #22d3ee,
+        #34d399
+    );
+
+    box-shadow:
+        0 0 10px rgba(34, 211, 238, 0.25);
 }
+
+/* ==========================================
+   SCROLL AREA
+========================================== */
+
+.lesson-table-scroll {
+    width: 100%;
+
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        rgba(34, 211, 238, 0.45)
+        transparent;
+}
+
+.lesson-table-scroll:focus-visible {
+    outline: 2px solid rgba(34, 211, 238, 0.5);
+    outline-offset: -2px;
+}
+
+.lesson-table-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.lesson-table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.lesson-table-scroll::-webkit-scrollbar-thumb {
+    background: rgba(34, 211, 238, 0.45);
+    border-radius: 999px;
+}
+
+.lesson-table-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(34, 211, 238, 0.65);
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.lesson-table {
+    width: 100%;
+    min-width: 560px;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    color: var(--text-secondary, #c7d2e0);
+
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   CELLS
+========================================== */
 
 .lesson-table th,
 .lesson-table td {
-  padding: 0.7rem 0.8rem;
-  border: 1px solid rgba(255,255,255,0.1);
-  text-align: left;
+    padding: 0.85rem 1rem;
+
+    text-align: left;
+    vertical-align: top;
+
+    border-right: 1px solid rgba(255, 255, 255, 0.055);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+
+    overflow-wrap: anywhere;
 }
 
+.lesson-table th:last-child,
+.lesson-table td:last-child {
+    border-right: 0;
+}
+
+.lesson-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+/* ==========================================
+   HEADER CELLS
+========================================== */
+
 .lesson-table th {
-  background: rgba(255,255,255,0.06);
+    position: relative;
+
+    color: #67e8f9;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(8, 47, 73, 0.55),
+            rgba(8, 47, 73, 0.32)
+        );
+
+    font-size: 0.82rem;
+    font-weight: 750;
+
+    letter-spacing: 0.025em;
+
+    white-space: nowrap;
+}
+
+.lesson-table th::after {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+
+    height: 1px;
+
+    background: rgba(34, 211, 238, 0.18);
+}
+
+/* ==========================================
+   BODY ROWS
+========================================== */
+
+.lesson-table tbody tr {
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.lesson-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.012);
+}
+
+.lesson-table tbody tr:hover {
+    background: rgba(34, 211, 238, 0.045);
+}
+
+.lesson-table td {
+    color: var(--text-secondary, #c7d2e0);
+}
+
+.lesson-table tbody tr:hover td {
+    color: var(--text, #f8fafc);
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+    .lesson-table-block {
+        margin: 1.2rem 0 1.5rem;
+        border-radius: 13px;
+    }
+
+    .lesson-table-block__header {
+        padding: 0.75rem 0.85rem;
+    }
+
+    .lesson-table {
+        min-width: 500px;
+        font-size: 0.86rem;
+    }
+
+    .lesson-table th,
+    .lesson-table td {
+        padding: 0.7rem 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .lesson-table-block {
+        border-radius: 11px;
+    }
+
+    .lesson-table {
+        min-width: 460px;
+        font-size: 0.84rem;
+    }
+
+    .lesson-table th,
+    .lesson-table td {
+        padding: 0.65rem 0.7rem;
+    }
+
+    .lesson-table-title {
+        font-size: 0.92rem;
+    }
 }

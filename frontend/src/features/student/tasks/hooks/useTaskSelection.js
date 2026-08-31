@@ -25,8 +25,9 @@ const useTaskSelection = ({
                 const status = taskStatusMap[task.id];
 
                 return (
-                    status !== "approved" &&
-                    status !== "expired"
+                    status === "unlocked" ||
+                    status === "pending" ||
+                    status === "rejected"
                 );
             }
         );

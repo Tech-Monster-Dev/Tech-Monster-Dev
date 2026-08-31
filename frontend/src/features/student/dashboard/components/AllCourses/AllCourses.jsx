@@ -5,7 +5,7 @@ import EmptyState from '../../../../../components/ui/EmptyState';
 import CourseCard from "../CourseCard";
 
 
-const AllCourses = ({ courses = [], refreshDashboard, setLoading }) => {
+const AllCourses = ({ courses = [], refreshDashboard, setLoading, onPreview }) => {
   const allCount = Array.isArray(courses) ? courses.length : 0;
 
   return (
@@ -36,6 +36,7 @@ const AllCourses = ({ courses = [], refreshDashboard, setLoading }) => {
               internship={course}
               type="course"
               refreshDashboard={refreshDashboard}
+            onPreview={onPreview}
             />
           ))}
 

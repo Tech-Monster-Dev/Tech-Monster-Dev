@@ -23,6 +23,9 @@ import {
 import cloudinary from "../../infrastructure/storage/cloudinary.js";
 import streamifier from "streamifier";
 
+import { readFile as readFileBuffer } from "fs/promises";
+import { generateOfferLetterPDF } from "./services/generateOfferLetterPDF.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -569,100 +572,122 @@ export const getSingleInternship = asyncHandler(async (req, res) => {
 // STUDENT JOIN INTERNSHIP
 // =====================================
 
-export const joinInternship = asyncHandler(async (req, res) => {
 
+export const joinInternship = asyncHandler(async (req, res) => {
 
     const internship =
         await Internship.findById(
             req.params.id
         );
 
-
-
     if (!internship) {
-
         throw new AppError(
             "Internship not found",
             404
         );
-
     }
-
-
-
 
     const alreadyJoined =
         await StudentInternship.findOne({
-
             student: req.user._id,
-
             internship: req.params.id
-
         });
 
-
-
     if (alreadyJoined) {
-
         throw new AppError(
-
             "Already joined this internship",
-
             400
+        );
+    }
 
+    const studentInternship =
+        await StudentInternship.create({
+            student: req.user._id,
+            internship: req.params.id,
+            status: "In Progress",
+            startedAt: new Date()
+        });
+
+    /*
+     * =====================================
+     * GENERATE PERSONALIZED OFFER LETTER
+     * =====================================
+     */
+
+    let offerLetterAttachment = null;
+
+    try {
+
+        const {
+            pdfPath
+        } = await generateOfferLetterPDF({
+            student: req.user,
+            internship,
+            enrollment: studentInternship
+        });
+
+        const pdfBuffer =
+            await readFileBuffer(pdfPath);
+
+        offerLetterAttachment = [
+            {
+                content:
+                    pdfBuffer.toString("base64"),
+
+                name:
+                    "Tech-Monster-Internship-Offer-Letter.pdf"
+            }
+        ];
+
+    } catch (error) {
+
+        console.error(
+            "❌ Offer letter generation failed:",
+            error.message
         );
 
     }
 
-    const studentInternship = await StudentInternship.create({
+    /*
+     * =====================================
+     * MARK EMAIL AS SENT
+     * =====================================
+     */
 
-        student: req.user._id,
+    studentInternship.emailFlags.joinedEmailSent =
+        true;
 
-        internship: req.params.id,
-
-        status: "In Progress",
-
-        startedAt: new Date()
-
-    });
-
-    studentInternship.emailFlags.joinedEmailSent = true;
     await studentInternship.save();
+
+    /*
+     * =====================================
+     * SEND EMAIL WITH OFFER LETTER
+     * =====================================
+     */
 
     safeSendActivityEmail(
         "internship joined email",
-        () => sendInternshipJoinedEmail({
-            student: req.user,
-            internship,
-            enrollment: studentInternship
-        })
+        () =>
+            sendInternshipJoinedEmail({
+                student: req.user,
+                internship,
+                enrollment: studentInternship,
+                attachment: offerLetterAttachment
+            })
     );
 
-
-
-    res.status(201).json({
+    return res.status(201).json({
 
         success: true,
 
-        message: "Internship joined successfully",
+        message:
+            "Internship joined successfully",
 
         studentInternship
 
     });
 
-
-
 });
-
-
-
-
-
-
-
-// =====================================
-// GET MY INTERNSHIP
-// =====================================
 
 
 export const getMyInternships = asyncHandler(async (req, res) => {

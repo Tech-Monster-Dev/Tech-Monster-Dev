@@ -8,7 +8,6 @@ export {sendResetPasswordOTP} from "./services/resetPasswordEmail.service.js";
 export {sendWelcomeEmail} from "./services/welcomeEmail.service.js";
 
 export {sendInternshipJoinedEmail} from "./services/internshipEmail.service.js";
-export {sendCourseJoinedEmail} from "./services/courseEmail.service.js";
 export {sendLessonCompletedEmail, sendAllLessonsCompletedEmail} from "./services/lessonEmail.service.js";
 export {sendTaskCompletedEmail} from "./services/taskEmail.service.js";
 export {sendAllTasksCompletedEmail} from "./services/allTasksCompletedEmail.service.js";

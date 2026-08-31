@@ -59,17 +59,44 @@ export default function Pagination({
                 </span>
 
                 <div id="pagination-dots">
-                    {
-                        [...Array(total)].map((_, index) => (
+                    {(() => {
+                        const visibleCount = Math.min(4, total);
+
+                        if (visibleCount === 0) {
+                            return null;
+                        }
+
+                        const maxStart = Math.max(
+                            0,
+                            total - visibleCount
+                        );
+
+                        const start = Math.min(
+                            current,
+                            maxStart
+                        );
+
+                        const visibleIndexes = Array.from(
+                            { length: visibleCount },
+                            (_, offset) => start + offset
+                        );
+
+                        return visibleIndexes.map((index) => (
                             <motion.div
                                 key={index}
-                                className={`pagination-dot ${index === current ? "active" : ""}`}
+                                className={`pagination-dot ${
+                                    index === current ? "active" : ""
+                                }`}
+                                initial={{ opacity: 0, x: 12 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -12 }}
+                                transition={{ duration: 0.2 }}
                                 whileHover={{
                                     scale: 1.25
                                 }}
                             />
-                        ))
-                    }
+                        ));
+                    })()}
                 </div>
 
             </div>

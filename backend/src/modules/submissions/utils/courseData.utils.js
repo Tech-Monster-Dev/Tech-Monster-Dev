@@ -1,4 +1,4 @@
-import { readFile } from "fs/promises";
+import { readdir, readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -12,44 +12,75 @@ const __filename =
 const __dirname =
     path.dirname(__filename);
 
-const contentDataDirs = [
+const coursesDir =
     path.resolve(
         __dirname,
-        "../../../../data/course"
-    ),
+        "../../../../data/courses"
+    );
+
+const internshipsDir =
     path.resolve(
         __dirname,
-        "../../../../data/internship"
-    ),
-    path.resolve(
-        __dirname,
-        "../../data/courses"
-    ),
-];
+        "../../../../data/internships"
+    );
 
 export const readCourseData =
     async (courseSlug) => {
-        const fileName =
-            `${normalizeSlug(courseSlug)}.json`;
+        if (!courseSlug) {
+            return null;
+        }
 
-        for (
-            const contentDir of
-            contentDataDirs
-        ) {
-            try {
-                const raw =
-                    await readFile(
-                        path.join(
-                            contentDir,
-                            fileName
-                        ),
-                        "utf8"
+        try {
+            const folders =
+                await readdir(
+                    coursesDir,
+                    {
+                        withFileTypes: true,
+                    }
+                );
+
+            const normalizedTarget =
+                normalizeSlug(courseSlug);
+
+            for (const folder of folders) {
+                if (!folder.isDirectory()) {
+                    continue;
+                }
+
+                const filePath =
+                    path.join(
+                        coursesDir,
+                        folder.name,
+                        "course.json"
                     );
 
-                return JSON.parse(raw);
-            } catch {
-                // Try next source.
+                try {
+                    const raw =
+                        await readFile(
+                            filePath,
+                            "utf8"
+                        );
+
+                    const parsed =
+                        JSON.parse(raw);
+
+                    const courseData =
+                        parsed?.course ||
+                        parsed;
+
+                    if (
+                        normalizeSlug(
+                            courseData?.slug
+                        ) === normalizedTarget
+                    ) {
+                        return courseData;
+                    }
+                } catch {
+                    continue;
+                }
             }
+        } catch {
+            return null;
         }
 
         return null;

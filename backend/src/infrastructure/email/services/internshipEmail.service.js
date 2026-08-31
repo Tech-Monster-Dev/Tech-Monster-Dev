@@ -1,6 +1,8 @@
 import { sendMail } from "../mail.js";
 
-import {internshipJoinedTemplate} from "../templates/internshipJoined.template.js";
+import {
+    internshipJoinedTemplate
+} from "../templates/internshipJoined.template.js";
 
 
 const formatDate = (date = new Date()) =>
@@ -29,6 +31,7 @@ export const sendInternshipJoinedEmail = async ({
     student,
     internship,
     enrollment,
+    attachment,
 }) => {
 
     return sendMail({
@@ -51,6 +54,8 @@ export const sendInternshipJoinedEmail = async ({
                 formatDate,
 
             }),
+
+        attachment,
 
     });
 };

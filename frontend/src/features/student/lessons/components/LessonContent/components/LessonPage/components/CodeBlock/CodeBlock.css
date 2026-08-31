@@ -1,24 +1,457 @@
+/* ==========================================
+   LESSON CODE BLOCK
+========================================== */
+
 .lesson-codeblock {
-  background: #0f172a;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 0.75rem;
-  overflow: hidden;
-  margin: 1rem 0;
+    position: relative;
+    width: 100%;
+    margin: 1.6rem 0 1.9rem;
+
+    border: 1px solid rgba(34, 211, 238, 0.18);
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(8, 20, 35, 0.98),
+            rgba(5, 13, 25, 0.98)
+        );
+
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.25),
+        0 0 28px rgba(34, 211, 238, 0.045),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
 }
+
+.lesson-codeblock:hover {
+    border-color: rgba(34, 211, 238, 0.3);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.28),
+        0 0 32px rgba(34, 211, 238, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ==========================================
+   TOP GLOW
+========================================== */
+
+.lesson-codeblock::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34, 211, 238, 0.55),
+        rgba(52, 211, 153, 0.35),
+        transparent
+    );
+
+    pointer-events: none;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
 
 .lesson-codeblock__header {
-  padding: 0.6rem 0.9rem;
-  background: rgba(255,255,255,0.06);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9fb3c8;
+    position: relative;
+    z-index: 1;
+
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    padding: 0.65rem 0.8rem 0.65rem 1rem;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(34, 211, 238, 0.065),
+            rgba(255, 255, 255, 0.018),
+            rgba(16, 185, 129, 0.035)
+        );
 }
 
-.lesson-codeblock pre {
-  margin: 0;
-  padding: 1rem;
-  overflow-x: auto;
-  color: #e2e8f0;
-  font-size: 0.92rem;
+/* ==========================================
+   META
+========================================== */
+
+.lesson-codeblock__meta {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 0.55rem;
+
+    overflow: hidden;
+}
+
+/* ==========================================
+   FILENAME
+========================================== */
+
+.lesson-codeblock__filename {
+    display: inline-flex;
+    align-items: center;
+
+    min-width: 0;
+
+    max-width: min(70%, 420px);
+
+    padding: 0.3rem 0.55rem;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+
+    background: rgba(255, 255, 255, 0.045);
+
+    color: #e2e8f0;
+
+    font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        "Cascadia Code",
+        Consolas,
+        monospace;
+
+    font-size: 0.74rem;
+    font-weight: 650;
+    line-height: 1.2;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================
+   LANGUAGE
+========================================== */
+
+.lesson-codeblock__language {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    padding: 0.28rem 0.55rem;
+
+    border: 1px solid rgba(34, 211, 238, 0.16);
+    border-radius: 7px;
+
+    background: rgba(34, 211, 238, 0.08);
+
+    color: #67e8f9;
+
+    font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        "Cascadia Code",
+        Consolas,
+        monospace;
+
+    font-size: 0.7rem;
+    font-weight: 750;
+
+    line-height: 1.2;
+    letter-spacing: 0.025em;
+
+    text-transform: uppercase;
+}
+
+/* ==========================================
+   COPY BUTTON
+========================================== */
+
+.lesson-codeblock__copy {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 32px;
+
+    padding: 0.42rem 0.72rem;
+
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.045);
+
+    color: #cbd5e1;
+
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 700;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.lesson-codeblock__copy:hover {
+    color: #ffffff;
+
+    border-color: rgba(34, 211, 238, 0.3);
+
+    background: rgba(34, 211, 238, 0.09);
+
+    box-shadow:
+        0 0 14px rgba(34, 211, 238, 0.07);
+
+    transform: translateY(-1px);
+}
+
+.lesson-codeblock__copy:active {
+    transform: translateY(0);
+}
+
+.lesson-codeblock__copy:focus-visible {
+    outline: 2px solid rgba(34, 211, 238, 0.65);
+    outline-offset: 2px;
+}
+
+/* ==========================================
+   CODE BODY
+========================================== */
+
+.lesson-codeblock__body {
+    position: relative;
+
+    width: 100%;
+
+    margin: 0;
+
+    padding: 1.15rem 1.2rem 1.25rem;
+
+    box-sizing: border-box;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(2, 6, 23, 0.3),
+            rgba(2, 6, 23, 0.52)
+        );
+
+    color: #dbeafe;
+
+    font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        "Cascadia Code",
+        Consolas,
+        "Courier New",
+        monospace;
+
+    font-size: 0.84rem;
+    font-weight: 500;
+
+    line-height: 1.75;
+
+    white-space: pre;
+
+    tab-size: 4;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        rgba(34, 211, 238, 0.42)
+        transparent;
+}
+
+.lesson-codeblock__body::-webkit-scrollbar {
+    height: 7px;
+}
+
+.lesson-codeblock__body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.lesson-codeblock__body::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.42);
+}
+
+.lesson-codeblock__body::-webkit-scrollbar-thumb:hover {
+    background: rgba(34, 211, 238, 0.62);
+}
+
+/* ==========================================
+   CODE TEXT
+========================================== */
+
+.lesson-codeblock__body code {
+    display: block;
+
+    min-width: max-content;
+
+    margin: 0;
+    padding: 0;
+
+    color: inherit;
+
+    font: inherit;
+    line-height: inherit;
+
+    background: transparent;
+
+    white-space: inherit;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+    .lesson-codeblock {
+        margin: 1.25rem 0 1.55rem;
+        border-radius: 13px;
+    }
+
+    .lesson-codeblock__header {
+        min-height: 44px;
+        padding: 0.55rem 0.7rem 0.55rem 0.8rem;
+    }
+
+    .lesson-codeblock__filename {
+        max-width: 55%;
+        font-size: 0.7rem;
+    }
+
+    .lesson-codeblock__language {
+        font-size: 0.66rem;
+        padding: 0.26rem 0.48rem;
+    }
+
+    .lesson-codeblock__copy {
+        min-height: 30px;
+        padding: 0.38rem 0.62rem;
+        font-size: 0.72rem;
+    }
+
+    .lesson-codeblock__body {
+        padding: 0.95rem 0.9rem 1rem;
+        font-size: 0.78rem;
+        line-height: 1.7;
+    }
+}
+
+@media (max-width: 480px) {
+    .lesson-codeblock {
+        border-radius: 11px;
+    }
+
+    .lesson-codeblock__header {
+        gap: 0.55rem;
+    }
+
+    .lesson-codeblock__meta {
+        gap: 0.4rem;
+    }
+
+    .lesson-codeblock__filename {
+        max-width: 48%;
+    }
+
+    .lesson-codeblock__body {
+        padding: 0.85rem 0.8rem 0.9rem;
+        font-size: 0.74rem;
+    }
+}
+
+/* ==========================================
+   PRISM SYNTAX HIGHLIGHTING
+========================================== */
+
+.lesson-codeblock__body .token.comment,
+.lesson-codeblock__body .token.prolog,
+.lesson-codeblock__body .token.doctype,
+.lesson-codeblock__body .token.cdata {
+    color: #64748b;
+}
+
+.lesson-codeblock__body .token.punctuation {
+    color: #cbd5e1;
+}
+
+.lesson-codeblock__body .token.property,
+.lesson-codeblock__body .token.tag,
+.lesson-codeblock__body .token.boolean,
+.lesson-codeblock__body .token.number,
+.lesson-codeblock__body .token.constant,
+.lesson-codeblock__body .token.symbol {
+    color: #7dd3fc;
+}
+
+.lesson-codeblock__body .token.selector,
+.lesson-codeblock__body .token.attr-name,
+.lesson-codeblock__body .token.string,
+.lesson-codeblock__body .token.char,
+.lesson-codeblock__body .token.builtin {
+    color: #86efac;
+}
+
+.lesson-codeblock__body .token.operator,
+.lesson-codeblock__body .token.entity,
+.lesson-codeblock__body .token.url,
+.lesson-codeblock__body .language-css .token.string {
+    color: #facc15;
+}
+
+.lesson-codeblock__body .token.atrule,
+.lesson-codeblock__body .token.attr-value,
+.lesson-codeblock__body .token.keyword {
+    color: #c084fc;
+}
+
+.lesson-codeblock__body .token.function,
+.lesson-codeblock__body .token.class-name {
+    color: #67e8f9;
+}
+
+.lesson-codeblock__body .token.regex,
+.lesson-codeblock__body .token.important,
+.lesson-codeblock__body .token.variable {
+    color: #fb923c;
+}
+
+.lesson-codeblock__body .token.important,
+.lesson-codeblock__body .token.bold {
+    font-weight: 700;
+}
+
+.lesson-codeblock__body .token.italic {
+    font-style: italic;
 }

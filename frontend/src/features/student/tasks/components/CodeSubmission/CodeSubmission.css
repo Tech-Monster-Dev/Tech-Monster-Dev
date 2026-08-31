@@ -33,30 +33,203 @@
     width: 100%;
 }
 
-.code-submission-editor {
+/* =========================================
+   EDITOR WRAPPER
+========================================= */
+
+.code-submission-editor-wrapper {
+    position: relative;
     width: 100%;
+    height: 320px;
     min-height: 200px;
+    overflow: hidden;
     background: #010409;
     border: 1px solid rgba(0, 234, 255, 0.2);
     border-radius: 0.8rem;
-    color: var(--text);
-    font-family: "Fira Code", "Courier New", monospace;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    padding: 1rem;
-    resize: vertical;
-    outline: none;
     transition: 0.25s;
 }
 
-.code-submission-editor:focus {
+.code-submission-editor-wrapper:focus-within {
     border-color: var(--neon);
     box-shadow: 0 0 14px rgba(0, 234, 255, 0.2);
 }
 
+/* =========================================
+   PRISM HIGHLIGHT LAYER
+========================================= */
+
+.code-submission-highlight {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    margin: 0;
+    padding: 1rem;
+
+    overflow: hidden;
+    pointer-events: none;
+
+    color: #e5e7eb;
+
+    font-family:
+        "Fira Code",
+        "Cascadia Code",
+        "Consolas",
+        monospace;
+
+    font-size: 0.85rem;
+    line-height: 1.6;
+
+    tab-size: 4;
+    white-space: pre;
+
+    word-wrap: normal;
+}
+
+.code-submission-highlight code {
+    font-family: inherit;
+    white-space: pre;
+}
+
+/* =========================================
+   EDITABLE TEXTAREA
+========================================= */
+
+.code-submission-editor {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 1rem;
+
+    resize: none;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    /*
+     * Text transparent rakhiba.
+     * Prism layer underneath actual colors show kariba.
+     */
+    color: transparent;
+
+    /*
+     * Cursor visible rahiba.
+     */
+    caret-color: var(--neon);
+
+    font-family:
+        "Fira Code",
+        "Cascadia Code",
+        "Consolas",
+        monospace;
+
+    font-size: 0.85rem;
+    line-height: 1.6;
+
+    tab-size: 4;
+    white-space: pre;
+
+    overflow: auto;
+
+    /*
+     * Hide scrollbar but scrolling functional rahiba.
+     */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.code-submission-editor::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.code-submission-editor::selection {
+    background: rgba(0, 234, 255, 0.22);
+    color: transparent;
+}
+
 .code-submission-editor::placeholder {
     color: rgba(203, 213, 225, 0.35);
+    opacity: 1;
 }
+
+/* =========================================
+   PRISM TOKEN COLORS
+   Same style as Lesson CodeBlock
+========================================= */
+
+.code-submission-highlight .token.comment,
+.code-submission-highlight .token.prolog,
+.code-submission-highlight .token.doctype,
+.code-submission-highlight .token.cdata {
+    color: #64748b;
+}
+
+.code-submission-highlight .token.punctuation {
+    color: #cbd5e1;
+}
+
+.code-submission-highlight .token.property,
+.code-submission-highlight .token.tag,
+.code-submission-highlight .token.boolean,
+.code-submission-highlight .token.number,
+.code-submission-highlight .token.constant,
+.code-submission-highlight .token.symbol {
+    color: #7dd3fc;
+}
+
+.code-submission-highlight .token.selector,
+.code-submission-highlight .token.attr-name,
+.code-submission-highlight .token.string,
+.code-submission-highlight .token.char,
+.code-submission-highlight .token.builtin {
+    color: #86efac;
+}
+
+.code-submission-highlight .token.operator,
+.code-submission-highlight .token.entity,
+.code-submission-highlight .token.url,
+.code-submission-highlight .language-css .token.string {
+    color: #facc15;
+}
+
+.code-submission-highlight .token.atrule,
+.code-submission-highlight .token.attr-value,
+.code-submission-highlight .token.keyword {
+    color: #c084fc;
+}
+
+.code-submission-highlight .token.function,
+.code-submission-highlight .token.class-name {
+    color: #67e8f9;
+}
+
+.code-submission-highlight .token.regex,
+.code-submission-highlight .token.important,
+.code-submission-highlight .token.variable {
+    color: #fb923c;
+}
+
+.code-submission-highlight .token.important,
+.code-submission-highlight .token.bold {
+    font-weight: 700;
+}
+
+.code-submission-highlight .token.italic {
+    font-style: italic;
+}
+
+/* =========================================
+   GUIDELINE
+========================================= */
 
 .code-submission-guideline {
     color: var(--muted);
@@ -64,28 +237,85 @@
     margin: 0;
 }
 
+/* =========================================
+   SUBMIT BUTTON
+========================================= */
+
 .code-submission-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(90deg, var(--glow), var(--neon));
+
+    background: linear-gradient(
+        90deg,
+        var(--glow),
+        var(--neon)
+    );
+
     color: var(--dark);
     font-weight: 700;
+
     border: none;
     padding: 0.8rem 1.25rem;
+
     border-radius: 0.7rem;
     cursor: pointer;
+
     transition: 0.3s;
     align-self: flex-start;
 }
 
 .code-submission-btn:hover:not(:disabled) {
     filter: brightness(1.1);
-    box-shadow: 0 0 16px rgba(0, 234, 255, 0.45);
+
+    box-shadow:
+        0 0 16px
+        rgba(0, 234, 255, 0.45);
 }
 
 .code-submission-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+    .code-submission {
+        padding: 1rem;
+    }
+
+    .code-submission-editor-wrapper {
+        height: 280px;
+    }
+
+    .code-submission-editor,
+    .code-submission-highlight {
+        font-size: 0.78rem;
+        padding: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .code-submission {
+        padding: 0.8rem;
+    }
+
+    .code-submission-editor-wrapper {
+        height: 250px;
+    }
+
+    .code-submission-editor,
+    .code-submission-highlight {
+        font-size: 0.72rem;
+        line-height: 1.6;
+        padding: 0.75rem;
+    }
+
+    .code-submission-btn {
+        width: 100%;
+    }
 }
