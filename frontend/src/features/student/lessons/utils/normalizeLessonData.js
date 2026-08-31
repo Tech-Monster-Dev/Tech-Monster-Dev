@@ -3,45 +3,123 @@ export const normalizeLessonData = (learningData) => {
         return {};
     }
 
-    const modules = learningData.modules.map(
+    const sourceModules = Array.isArray(learningData.modules)
+        ? learningData.modules
+        : [];
+
+    const modules = sourceModules.map(
         (module, moduleIndex) => {
-            const sections = (module.lessons || []).map(
+
+            const sourceLessons = Array.isArray(module.lessons)
+                ? module.lessons
+                : [];
+
+            const sections = sourceLessons.map(
                 (lesson, lessonIndex) => {
 
-                    const notes = lesson.notes || {};
+                    const notes = Array.isArray(lesson.notes)
+                        ? lesson.notes
+                        : [];
+
+                    const firstHeading =
+                        notes.find(
+                            (note) =>
+                                note?.type === "heading" &&
+                                note?.text
+                        )?.text ||
+                        lesson.title ||
+                        `Lesson ${lessonIndex + 1}`;
+
+                    const firstParagraph =
+                        notes.find(
+                            (note) =>
+                                note?.type === "paragraph" &&
+                                note?.text
+                        )?.text ||
+                        lesson.description ||
+                        "";
 
                     return {
-                        id: lesson.lessonId || `${moduleIndex + 1}-${lessonIndex + 1}`,
-                        title: lesson.lessonTitle || `Lesson ${lessonIndex + 1}`,
-                        heading: notes.heading || lesson.lessonTitle || `Lesson ${lessonIndex + 1}`,
-                        paragraph: notes.overview || notes.paragraph || "",
+                        id:
+                            lesson.id ||
+                            `${moduleIndex + 1}-${lessonIndex + 1}`,
+
+                        title:
+                            lesson.title ||
+                            `Lesson ${lessonIndex + 1}`,
+
+                        heading: firstHeading,
+
+                        paragraph: firstParagraph,
+
                         completed: false,
+
                         locked: false,
+
                         bookmarked: false,
+
                         lesson,
-                        tasks: lesson.tasks || [],
-                        moduleTitle: module.moduleTitle || `Module ${moduleIndex + 1}`
+
+                        notes,
+
+                        tasks: Array.isArray(lesson.tasks)
+                            ? lesson.tasks
+                            : [],
+
+                        practicals:
+                            Array.isArray(lesson.practicals)
+                                ? lesson.practicals
+                                : [],
+
+                        moduleTitle:
+                            module.title ||
+                            `Module ${moduleIndex + 1}`,
                     };
                 }
             );
 
             return {
-                id: module.moduleId || `module-${moduleIndex + 1}`,
-                title: module.moduleTitle || `Module ${moduleIndex + 1}`,
+                id:
+                    module.id ||
+                    `module-${moduleIndex + 1}`,
+
+                title:
+                    module.title ||
+                    `Module ${moduleIndex + 1}`,
+
+                description:
+                    module.description || "",
+
                 length: sections.length,
-                sections
+
+                sections,
+
+                tasks: Array.isArray(module.tasks)
+                    ? module.tasks
+                    : [],
             };
         }
     );
 
     return {
         ...learningData,
-        title: learningData.title || "Course",
-        category: learningData.category || "",
-        modules,
-        lessons: modules.flatMap(
-            module => module.sections
-        )
-    };
 
+        id:
+            learningData.id || "",
+
+        title:
+            learningData.title || "Course",
+
+        category:
+            learningData.category || "",
+
+        description:
+            learningData.description || "",
+
+        modules,
+
+        lessons: modules.flatMap(
+            (module) => module.sections
+        ),
+    };
 };
