@@ -18,6 +18,8 @@ import LearnMore from "../pages/landing/LearnMore";
 import Contact from "../pages/landing/Contact";
 
 import TermsAndConditions from "../components/common/TermsAndConditions";
+import PrivacyPolicy from "../components/common/PrivacyPolicy";
+import RefundCancellationPolicy from "../components/common/RefundCancellationPolicy";
 
 import Login from '../features/auth/pages/Login';
 import Signup from '../features/auth/pages/Signup';
@@ -89,6 +91,8 @@ function AppRoutes() {
                 <Route path='/reset-password' element={<ResetPassword />} />
                 <Route path="/verify-reset-otp" element={<VerifyResetOTP />} />
                 <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/refund-and-cancellation" element={<RefundCancellationPolicy />} />
 
 
                 {/* Status Pages */}

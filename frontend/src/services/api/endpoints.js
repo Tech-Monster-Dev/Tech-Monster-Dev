@@ -74,6 +74,18 @@ export const API = {
 
       EXTEND: (id) => `/admin/submissions/${id}/extend`
 
+    },
+
+    CERTIFICATE_PAYMENTS: {
+
+      PENDING: "/certificate-payments/admin/pending",
+
+      DETAILS: (id) => `/certificate-payments/admin/${id}`,
+
+      APPROVE: (id) => `/certificate-payments/admin/${id}/approve`,
+
+      REJECT: (id) => `/certificate-payments/admin/${id}/reject`
+
     }
 
   },
@@ -126,6 +138,13 @@ export const API = {
     BASE: "/submissions",
     MY: "/submissions/my",
     COURSE: (courseSlug) => `/submissions/course/${courseSlug}`,
+  },
+
+  CERTIFICATE_PAYMENTS: {
+    CREATE: "/certificate-payments/create",
+    VERIFY: "/certificate-payments/verify",
+    VERIFY_QR: "/certificate-payments/verify-qr",
+    MY: "/certificate-payments/my",
   },
 
   MESSAGE: {
