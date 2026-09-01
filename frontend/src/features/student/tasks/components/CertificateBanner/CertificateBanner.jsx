@@ -8,11 +8,21 @@ export default function CertificateBanner({
     completedCount = 0,
     totalCount = 0,
     allCompleted = false,
+    programId = null,
+    programType = "internship",
 }) {
     const navigate = useNavigate();
 
     const handleClaim = () => {
-        navigate("/student/certificate");
+        navigate(
+            "/student/certificate",
+            {
+                state: {
+                    programId,
+                    programType,
+                },
+            }
+        );
     };
 
     const locked = !allCompleted;

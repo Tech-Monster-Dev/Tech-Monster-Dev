@@ -44,6 +44,7 @@ const useTaskData = ({
 
     const [courseTitle, setCourseTitle] = useState("Internship");
     const [studentName, setStudentName] = useState("Student");
+    const [programId, setProgramId] = useState(null);
 
     const [modules, setModules] = useState([]);
 
@@ -195,8 +196,21 @@ const useTaskData = ({
                 }
 
                 if (!mounted) return;
-                setCourseTitle(contentData.title || contentType || "Content");
-                const builtModules = buildModules(contentData);
+
+                setProgramId(
+                    contentData?._id ||
+                    contentData?.id ||
+                    null
+                );
+
+                setCourseTitle(
+                    contentData.title ||
+                    contentType ||
+                    "Content"
+                );
+
+                const builtModules =
+                    buildModules(contentData);
                 setModules(builtModules);
 
                 // -----------------------------------------
@@ -373,6 +387,7 @@ const useTaskData = ({
         setCourseSlug,
         courseTitle,
         studentName,
+        programId,
         modules,
         initialTaskId,
         loading,

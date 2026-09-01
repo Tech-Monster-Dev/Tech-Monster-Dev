@@ -109,10 +109,10 @@ function TermsAndConditions() {
                         </p>
 
                         <p>
-                            Our programs may include live or recorded learning
-                            sessions, assignments, projects, assessments,
-                            certificates, badges, and other educational
-                            activities.
+                            Our programs may include online lessons, learning
+                            materials, assignments, practical projects,
+                            assessments, certificates, badges, and other
+                            educational activities.
                         </p>
                     </section>
 

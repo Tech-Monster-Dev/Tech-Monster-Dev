@@ -66,6 +66,7 @@ const Task = () => {
         courseSlug,
         courseTitle,
         studentName,
+        programId,
         modules,
         initialTaskId,
 
@@ -471,6 +472,12 @@ const Task = () => {
                 }
                 allCompleted={
                     allCompleted
+                }
+                programId={
+                    programId
+                }
+                programType={
+                    contentType
                 }
             />
         </motion.div>

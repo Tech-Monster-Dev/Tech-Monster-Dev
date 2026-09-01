@@ -47,6 +47,15 @@ function Footer() {
                     <a href="#contact">Contact</a>
                 </div>
 
+                {/* Legal */}
+                <div id="footer-legal">
+                    <h3>Legal</h3>
+                    <a href="/terms-and-conditions">Terms & Conditions</a>
+                    <a href="/privacy-policy">Privacy Policy</a>
+                    <a href="/refund-and-cancellation">Refund & Cancellation</a>
+                    <a href="/contact">Contact Us</a>
+                </div>
+
                 {/* Newsletter */}
                 <div id="footer-news">
                     <h3>Join Us</h3>
