@@ -21,22 +21,14 @@ export default function CertificateView({
 }) {
 
     const [payment, setPayment] = useState(null);
-
     const [qrCode, setQrCode] = useState(null);
-
     const [loading, setLoading] = useState(true);
+    const [creatingPayment, setCreatingPayment] = useState(false);
 
-    const [creatingPayment, setCreatingPayment] =
-        useState(false);
-
-    const [verifyingPayment, setVerifyingPayment] =
-        useState(false);
+    const [verifyingPayment, setVerifyingPayment] = useState(false);
 
 
-    const normalizedProgramType =
-        programType === "course"
-            ? "course"
-            : "internship";
+    const normalizedProgramType = programType === "course" ? "course" : "internship";
 
 
     const programParams = useMemo(() => {
@@ -58,8 +50,6 @@ export default function CertificateView({
     useEffect(() => {
 
         let mounted = true;
-
-
         const loadPayment = async () => {
 
             if (!programParams) {
@@ -432,21 +422,6 @@ export default function CertificateView({
                 duration: 0.5,
             }}
         >
-
-            <div className="congrats-banner">
-
-                <h3>
-                    Congratulations! 🎉
-                </h3>
-
-                <p>
-                    You have successfully completed{" "}
-                    <strong>
-                        {courseType}
-                    </strong>
-                </p>
-
-            </div>
 
 
             {!payment && (

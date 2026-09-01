@@ -10,6 +10,7 @@ export default function CertificateBanner({
     allCompleted = false,
     programId = null,
     programType = "internship",
+    courseTitle = "",
 }) {
     const navigate = useNavigate();
 
@@ -20,6 +21,7 @@ export default function CertificateBanner({
                 state: {
                     programId,
                     programType,
+                    courseTitle,
                 },
             }
         );

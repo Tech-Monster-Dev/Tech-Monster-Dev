@@ -1,9 +1,8 @@
 import "./Dashboard.css";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import DashboardHeader from "./components/DashboardHeader";
 import ContinueLearning from "./components/ContinueLearning";
 import AllInternship from "./components/AllInternship";
 import AllCourses from "./components/AllCourses";
@@ -12,15 +11,20 @@ import Warning from "../../../components/ui/Warning";
 
 import DashboardSkeleton from "./DashboardSkeleton";
 
-import api from "../../../services/api/axios";
-import { API } from "../../../services/api/endpoints";
-import { toast } from "react-toastify";
+import useDashboardData from "./hooks/useDashboardData";
 
 function Dashboard() {
     const navigate = useNavigate();
 
-    const [dashboard, setDashboard] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { 
+        dashboard,
+        loading, 
+        setLoading, 
+        loadDashboard,
+        api,
+        toast,
+        API
+    } = useDashboardData();
 
     const [preview, setPreview] = useState({
         open: false,
@@ -32,63 +36,6 @@ function Dashboard() {
         open: false,
         mode: null,
     });
-
-    const loadDashboard = async () => {
-        try {
-            setLoading(true);
-
-            const { data } = await api.get(
-                API.DASHBOARD.STUDENT
-            );
-
-            const dashboardData = data.dashboard;
-
-            setDashboard(dashboardData);
-
-            const enrolledItems = [
-                ...(dashboardData?.internships || []).map(
-                    (item) => ({
-                        ...item,
-                        type: "internship",
-                    })
-                ),
-
-                ...(dashboardData?.courses || []).map(
-                    (item) => ({
-                        ...item,
-                        type: "course",
-                    })
-                ),
-            ];
-
-            if (enrolledItems.length > 0) {
-                const activeLearning =
-                    enrolledItems[0];
-
-                localStorage.setItem(
-                    "activeLearning",
-                    JSON.stringify({
-                        type: activeLearning.type,
-                        slug: activeLearning.slug,
-                        title: activeLearning.title,
-                    })
-                );
-            }
-        } catch (err) {
-            console.log(err);
-
-            toast.error(
-                err?.response?.data?.message ||
-                "Failed to load dashboard"
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        loadDashboard();
-    }, []);
 
     const openPreview = (item, type) => {
         setPreview({
@@ -139,13 +86,59 @@ function Dashboard() {
         });
     };
 
+    const handleConfirm = async () => {
+        const item = preview.item;
+        const type = preview.type;
+
+        if (!item?._id) {
+            toast.error("Learning item not found.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const endpoint =
+                type === "course"
+                    ? API.COURSES.JOIN(item._id)
+                    : API.INTERNSHIPS.JOIN(item._id);
+
+            await api.post(endpoint);
+
+            setWarning({
+                open: false,
+                mode: null,
+            });
+
+            closePreview();
+
+            toast.success(
+                type === "course"
+                    ? "Course enrolled successfully."
+                    : "Internship enrolled successfully."
+            );
+
+            await loadDashboard();
+
+        } catch (err) {
+            console.error("Enrollment failed:", err);
+
+            toast.error(
+                err?.response?.data?.message ||
+                "Unable to complete enrollment."
+            );
+
+        } finally {
+            setLoading(false);
+        }
+    }
+
     if (loading) {
         return <DashboardSkeleton />;
     }
 
     return (
         <div className="dashboard-page">
-            <DashboardHeader />
 
             <ContinueLearning
                 learningItems={[
@@ -232,52 +225,7 @@ function Dashboard() {
                 }
                 confirmText="Confirm"
                 cancelText="Cancel"
-                onConfirm={async () => {
-                    const item = preview.item;
-                    const type = preview.type;
-
-                    if (!item?._id) {
-                        toast.error("Learning item not found.");
-                        return;
-                    }
-
-                    try {
-                        setLoading(true);
-
-                        const endpoint =
-                            type === "course"
-                                ? API.COURSES.JOIN(item._id)
-                                : API.INTERNSHIPS.JOIN(item._id);
-
-                        await api.post(endpoint);
-
-                        setWarning({
-                            open: false,
-                            mode: null,
-                        });
-
-                        closePreview();
-
-                        toast.success(
-                            type === "course"
-                                ? "Course enrolled successfully."
-                                : "Internship enrolled successfully."
-                        );
-
-                        await loadDashboard();
-
-                    } catch (err) {
-                        console.error("Enrollment failed:", err);
-
-                        toast.error(
-                            err?.response?.data?.message ||
-                            "Unable to complete enrollment."
-                        );
-
-                    } finally {
-                        setLoading(false);
-                    }
-                }}
+                onConfirm={handleConfirm}
                 onCancel={() => {
                     setWarning({
                         open: false,
