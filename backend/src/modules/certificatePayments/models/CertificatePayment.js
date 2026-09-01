@@ -80,7 +80,7 @@ const certificatePaymentSchema = new mongoose.Schema(
 
         gatewayPaymentId: {
             type: String,
-            default: "",
+            default: null,
             trim: true,
         },
 
@@ -92,7 +92,7 @@ const certificatePaymentSchema = new mongoose.Schema(
 
         transactionId: {
             type: String,
-            default: "",
+            default: null,
             trim: true,
         },
 
@@ -185,20 +185,16 @@ const certificatePaymentSchema = new mongoose.Schema(
 
 certificatePaymentSchema.pre(
     "validate",
-    function (next) {
+    function () {
         if (!this.course && !this.internship) {
-            return next(
-                new Error(
-                    "Either course or internship is required"
-                )
+            throw new Error(
+                "Either course or internship is required"
             );
         }
 
         if (this.course && this.internship) {
-            return next(
-                new Error(
-                    "A payment cannot belong to both course and internship"
-                )
+            throw new Error(
+                "A payment cannot belong to both course and internship"
             );
         }
 
@@ -206,10 +202,8 @@ certificatePaymentSchema.pre(
             this.programType === "course" &&
             !this.course
         ) {
-            return next(
-                new Error(
-                    "Course is required for course payment"
-                )
+            throw new Error(
+                "Course is required for course payment"
             );
         }
 
@@ -217,14 +211,10 @@ certificatePaymentSchema.pre(
             this.programType === "internship" &&
             !this.internship
         ) {
-            return next(
-                new Error(
-                    "Internship is required for internship payment"
-                )
+            throw new Error(
+                "Internship is required for internship payment"
             );
         }
-
-        next();
     }
 );
 
