@@ -1,22 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import CertificateView from './components/CertificateView';
+
 import './Certificate.css';
 
+import CertificateView from './components/CertificateView';
+import Congratulations from './components/Congratulations';
+
+import useAttendanceData from '../attendance/hooks/useAttendanceData';
+
+
+
+
 export default function Certificate() {
-  const [courseType] = useState('Full Stack Web Development (React & Node)');
-  const [userName] = useState('Debabrata');
+
   const navigate = useNavigate();
   const location = useLocation();
 
+  const {dashboard} = useAttendanceData();
+  const user = dashboard?.user;
+  const rawUserName = user?.username;
+  const userName = rawUserName ? rawUserName.charAt(0).toUpperCase() + rawUserName.slice(1) : "Username";
+
+  const courseType = location.state?.courseTitle || 'Certificate Program';
+
   const programId = location.state?.programId || null;
   const programType = location.state?.programType || 'internship';
-
-  console.log("=== CERTIFICATE ROUTE DEBUG ===");
-  console.log("location.state:", location.state);
-  console.log("programId:", programId);
-  console.log("programType:", programType);
 
   // Route guard: the certificate is only accessible once ALL internship
   // tasks have been approved. Otherwise redirect to the tasks page.
@@ -30,7 +39,7 @@ export default function Certificate() {
     };
 
     if (!readAllCompleted()) {
-      toast.warning('Complete all internship tasks to unlock your certificate!');
+      toast.warning(`Complete all ${courseType} tasks to unlock your certificate!`);
       navigate('/student/tasks', { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,7 +47,12 @@ export default function Certificate() {
 
   return (
     <div className="certificate-page-wrapper">
-      <h2 className="certificate-main-title">Certificate</h2>
+
+      <Congratulations
+        courseType={courseType}
+        userName={userName}
+      />
+
       <CertificateView
         courseType={courseType}
         userName={userName}

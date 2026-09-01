@@ -1,4 +1,3 @@
-export { default as DashboardHeaderSkeleton } from "./DashboardHeaderSkeleton";
 export { default as ContinueLearningSkeleton } from "./ContinueLearningSkeleton";
 export { default as ContinueCardSkeleton } from "./ContinueCardSkeleton";
 export { default as CourseSectionSkeleton } from "./CourseSectionSkeleton";

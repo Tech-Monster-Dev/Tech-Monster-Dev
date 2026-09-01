@@ -16,23 +16,17 @@ import {
 } from "../utils/attendance.utils";
 
 export default function useAttendanceData() {
-  const [attendanceRecords, setAttendanceRecords] =
-    useState([]);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
 
-  const [dashboard, setDashboard] =
-    useState(null);
+  const [dashboard, setDashboard] = useState(null);
 
-  const [activeTimeData, setActiveTimeData] =
-    useState({});
+  const [activeTimeData, setActiveTimeData] = useState({});
 
-  const [accountCreatedAt, setAccountCreatedAt] =
-    useState(null);
+  const [accountCreatedAt, setAccountCreatedAt] = useState(null);
 
-  const [enrollments, setEnrollments] =
-    useState([]);
+  const [enrollments, setEnrollments] = useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   const loadAttendance =
     useCallback(async () => {

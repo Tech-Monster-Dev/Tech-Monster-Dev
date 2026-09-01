@@ -464,21 +464,12 @@ const Task = () => {
             </div>
 
             <CertificateBanner
-                completedCount={
-                    currentModuleApprovedCount
-                }
-                totalCount={
-                    visibleTasks.length
-                }
-                allCompleted={
-                    allCompleted
-                }
-                programId={
-                    programId
-                }
-                programType={
-                    contentType
-                }
+                completedCount={currentModuleApprovedCount}
+                courseTitle={courseTitle}
+                totalCount={visibleTasks.length}
+                allCompleted={allCompleted}
+                programId={programId}
+                programType={contentType}
             />
         </motion.div>
     );
