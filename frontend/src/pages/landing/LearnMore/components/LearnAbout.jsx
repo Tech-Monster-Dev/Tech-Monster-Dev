@@ -23,7 +23,7 @@ const LearnAbout = () => {
     const checks = [
         "Hands-on learning",
         "Real-world projects",
-        "Career-oriented skills",
+        "Practical technical skills",
         "Modern technologies",
     ];
 

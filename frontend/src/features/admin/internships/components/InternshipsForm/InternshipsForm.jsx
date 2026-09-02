@@ -171,8 +171,8 @@ export default function InternshipsForm() {
                     <input type="text" name='duration' id='duration' value={formData.duration} placeholder='Enter duration (e.g., 3 Months)' onChange={handleInputChange} required />
                 </div>
                 <div id="formGroup">
-                    <label htmlFor="price">Price</label>
-                    <input type="number" name="price" id="price" value={formData.price} placeholder="Enter price" min="0" step="0.01" onChange={handleInputChange} required />
+                    <label htmlFor="price">Certificate Fee</label>
+                    <input type="number" name="price" id="price" value={formData.price} placeholder="Enter certificate fee" min="0" step="0.01" onChange={handleInputChange} required />
                 </div>
                 <div id="formGroup">
                     <label>Slug</label>

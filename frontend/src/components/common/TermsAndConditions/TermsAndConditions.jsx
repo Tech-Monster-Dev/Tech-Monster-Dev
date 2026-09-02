@@ -3,7 +3,6 @@ import "./TermsAndConditions.css";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-    FaArrowLeft,
     FaShieldAlt,
     FaUserGraduate,
     FaBriefcase,
@@ -104,7 +103,7 @@ function TermsAndConditions() {
                             Tech Monster is a technology-focused platform that
                             provides internship programs, learning
                             opportunities, practical projects, mentorship,
-                            and career-oriented resources for students and
+                            and skill-development resources for students and
                             aspiring developers.
                         </p>
 
@@ -265,8 +264,8 @@ function TermsAndConditions() {
 
                         <p>
                             Certificates and badges may be issued to students
-                            who satisfy the applicable requirements of an
-                            internship program.
+                            who satisfy the applicable requirements of a
+                            course or internship program.
                         </p>
 
                         <p>
@@ -287,6 +286,46 @@ function TermsAndConditions() {
                     <section className="terms-section">
                         <div className="section-heading">
                             <span>08</span>
+                            <h2>Certificate Payment &amp; Issuance</h2>
+                        </div>
+
+                        <p>
+                            Course and internship enrollment is provided without
+                            a course or internship enrollment fee. A certificate
+                            fee applies only after a student completes the
+                            applicable program and chooses to request a
+                            certificate.
+                        </p>
+
+                        <p>
+                            A certificate will be issued only after the
+                            applicable certificate fee has been successfully
+                            paid and the certificate request has completed the
+                            required Tech Monster review and approval process.
+                        </p>
+
+                        <p>
+                            Certificate payments are non-refundable and
+                            non-cancellable, subject to applicable law and any
+                            valid rights provided by the payment provider. If a
+                            successful payment does not result in certificate
+                            delivery after the applicable review and approval
+                            process, students should contact Tech Monster
+                            support for assistance.
+                        </p>
+
+                        <p>
+                            Tech Monster provides educational and training
+                            programs. Participation or completion does not
+                            constitute a hiring, recruitment, employment, salary,
+                            or placement service or guarantee.
+                        </p>
+                    </section>
+
+                    {/* 9 */}
+                    <section className="terms-section">
+                        <div className="section-heading">
+                            <span>09</span>
                             <h2>Prohibited Activities</h2>
                         </div>
 
@@ -331,10 +370,10 @@ function TermsAndConditions() {
                         </ul>
                     </section>
 
-                    {/* 9 */}
+                    {/* 10 */}
                     <section className="terms-section">
                         <div className="section-heading">
-                            <span>09</span>
+                            <span>10</span>
                             <h2>Account Suspension & Termination</h2>
                         </div>
 
@@ -351,10 +390,10 @@ function TermsAndConditions() {
                         </p>
                     </section>
 
-                    {/* 10 */}
+                    {/* 11 */}
                     <section className="terms-section">
                         <div className="section-heading">
-                            <span>10</span>
+                            <span>11</span>
                             <h2>Website Availability</h2>
                         </div>
 
@@ -373,10 +412,10 @@ function TermsAndConditions() {
                         </p>
                     </section>
 
-                    {/* 11 */}
+                    {/* 12 */}
                     <section className="terms-section">
                         <div className="section-heading">
-                            <span>11</span>
+                            <span>12</span>
                             <h2>Limitation of Liability</h2>
                         </div>
 
@@ -394,10 +433,10 @@ function TermsAndConditions() {
                         </p>
                     </section>
 
-                    {/* 12 */}
+                    {/* 13 */}
                     <section className="terms-section">
                         <div className="section-heading">
-                            <span>12</span>
+                            <span>13</span>
                             <h2>Changes to These Terms</h2>
                         </div>
 
@@ -414,10 +453,10 @@ function TermsAndConditions() {
                         </p>
                     </section>
 
-                    {/* 13 */}
+                    {/* 14 */}
                     <section className="terms-section">
                         <div className="section-heading">
-                            <span>13</span>
+                            <span>14</span>
                             <h2>Contact Us</h2>
                         </div>
 

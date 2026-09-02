@@ -142,7 +142,7 @@ function Contact() {
 
         <SectionHeader
           badge="CONTACT US"
-          title="Let's Build Your Career Together"
+          title="Let's Build Your Skills Together"
           description="Have questions? Contact our team. We are always happy to help."
         />
 

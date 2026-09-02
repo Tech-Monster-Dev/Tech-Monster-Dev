@@ -79,9 +79,9 @@ const LearnCTA = () => {
 
                 <p>
 
-                    Stop only watching tutorials. Start building,
-                    experimenting and becoming the developer
-                    you want to be.
+                    Go beyond tutorials. Start building,
+                    experimenting and strengthening your
+                    practical technical skills.
 
                 </p>
 

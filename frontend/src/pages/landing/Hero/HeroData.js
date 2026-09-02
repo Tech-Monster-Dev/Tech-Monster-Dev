@@ -1,8 +1,8 @@
 export const heroContent = {
-    badge: 'Internship program 2026',
+    badge: 'Learning & Training Program 2026',
     title: "Build Future With",
     highlight: 'Tech Monster',
-    description: 'Join live internship programs, work on real-world projects, receive mentorship from experienced developers, and build a portfolio that helps you get hired.',
-    primaryButton: 'Apply Internship',
+    description: 'Join practical learning and training programs, work on real-world projects, receive mentorship from experienced developers, and build a portfolio that demonstrates your technical skills.',
+    primaryButton: 'Start Learning',
     secondaryButton: 'Learn More',
 };

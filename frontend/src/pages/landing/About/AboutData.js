@@ -3,11 +3,11 @@ export const aboutData = {
 
     title: "Empowering Students Through Real-World Learning",
 
-    description: "Tech Monster Pvt. Ltd. is an internship platform designed to bridge the gap between academic learning and industry requirements. We provide students with practical experience by working on real projects under expert mentorship.",
+    description: "Tech Monster Pvt. Ltd. is an educational and skill-development platform designed to help students build practical technical skills through structured learning, real-world projects, and expert mentorship.",
 
-    mission: "Our mission is to make every student industry-ready through project-based learning and mentorship.",
+    mission: "Our mission is to help students develop strong technical skills through project-based learning and mentorship.",
 
-    vision: "Our vision is to become one of India's leading internship and skill development platforms.",
+    vision: "Our vision is to become one of India's trusted learning and skill-development platforms.",
 
     values: [
         {
@@ -21,7 +21,7 @@ export const aboutData = {
             id: 2,
             title: "Learning",
             description:
-                "Continuous improvement through real projects."
+                "Continuous improvement through practical projects."
         },
 
         {

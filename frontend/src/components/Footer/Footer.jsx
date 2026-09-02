@@ -24,7 +24,7 @@ function Footer() {
                 {/* Brand Section */}
                 <div id="footer-brand">
                     <h2>Tech <span>Monster</span></h2>
-                    <p>Building future developers through real-world projects, mentorship and internship programs.</p>
+                    <p>Building technical skills through real-world projects, mentorship and practical learning programs.</p>
 
 
                     <div id="social">
@@ -59,7 +59,7 @@ function Footer() {
                 {/* Newsletter */}
                 <div id="footer-news">
                     <h3>Join Us</h3>
-                    <p>Get internship updates</p>
+                    <p>Get learning & training updates</p>
                     <PublicButton
                         variant="primary"
                         size="medium"
