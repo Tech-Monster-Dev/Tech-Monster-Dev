@@ -68,7 +68,7 @@ const LearnHero = () => {
                         {" "}Build Projects.
                     </span>
                     <br />
-                    Build Your Future.
+                    Build Your Technical Skills.
                 </motion.h1>
 
                 {/* Description */}

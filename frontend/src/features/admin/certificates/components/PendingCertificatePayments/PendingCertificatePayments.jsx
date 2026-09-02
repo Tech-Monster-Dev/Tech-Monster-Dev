@@ -196,7 +196,7 @@ export default function PendingCertificatePayments({
                                 <div className="certificate-payment-amount">
 
                                     <span>
-                                        Amount
+                                        Certificate Fee
                                     </span>
 
                                     <strong>

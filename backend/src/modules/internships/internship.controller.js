@@ -1086,7 +1086,7 @@ export const getCompletedLessons = asyncHandler(async (req, res) => {
 // ADMIN UPDATE INTERNSHIP
 // =====================================
 export const updateInternship = asyncHandler(async (req, res) => {
-    const { title, slug, category, level, description, duration, totalTasks, totalNotes } = req.body;
+    const { title, slug, category, level, description, duration, price, totalTasks, totalNotes } = req.body;
 
     let internship = await Internship.findById(req.params.id);
     if (!internship) {

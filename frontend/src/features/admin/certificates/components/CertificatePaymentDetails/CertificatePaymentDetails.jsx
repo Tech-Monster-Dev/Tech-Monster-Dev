@@ -362,7 +362,7 @@ export default function CertificatePaymentDetails({
                                 <div className="certificate-payment-detail-row">
 
                                     <span>
-                                        Amount
+                                        Certificate Fee
                                     </span>
 
                                     <strong>

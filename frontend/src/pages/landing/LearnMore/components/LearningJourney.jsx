@@ -31,7 +31,7 @@ const LearningJourney = () => {
         {
             number: "04",
             title: "Grow",
-            text: "Improve your portfolio, learn advanced concepts and prepare for your career.",
+            text: "Improve your portfolio, learn advanced concepts and continue developing your technical skills.",
         },
     ];
 

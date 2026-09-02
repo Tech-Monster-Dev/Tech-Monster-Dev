@@ -36,9 +36,9 @@ const LearnFeatures = () => {
         },
         {
             icon: FiBriefcase,
-            title: "Career Focused",
+            title: "Practical Skills",
             description:
-                "Build a strong portfolio and develop skills that can help you prepare for internships and jobs.",
+                "Build a strong portfolio and demonstrate the technical skills you develop through practical projects.",
         },
         {
             icon: FiAward,

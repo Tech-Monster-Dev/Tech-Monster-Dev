@@ -156,7 +156,7 @@ const WhyTechMonster = () => {
 
                     <br />
 
-                    Become A Developer.
+                    Build Real Technical Skills.
 
                 </h2>
 

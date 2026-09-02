@@ -108,7 +108,7 @@ function SingleCoursesCard({
                 </span>
 
                 <span>
-                    Price: ₹{item.price ?? 0}
+                    Certificate Fee: ₹{item.price ?? 0}
                 </span>
 
                 {item.duration && (
