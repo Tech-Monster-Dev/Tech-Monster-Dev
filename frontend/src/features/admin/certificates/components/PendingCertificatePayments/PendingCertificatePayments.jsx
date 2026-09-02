@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
     getPendingCertificatePayments,
@@ -21,47 +21,28 @@ export default function PendingCertificatePayments({
     const [error, setError] = useState("");
 
 
-    useEffect(() => {
-
-        fetchPayments();
-
-    }, [refresh]);
-
-
-    const fetchPayments = async () => {
-
+    const fetchPayments = useCallback(async () => {
         setLoading(true);
-
         setError("");
 
         try {
-
-            const response =
-                await getPendingCertificatePayments();
-
-            setPayments(
-                response?.payments || []
-            );
-
+            const response = await getPendingCertificatePayments();
+            setPayments(response?.payments || []);
         } catch (err) {
-
-            console.error(
-                "Failed to load certificate payments:",
-                err
-            );
-
+            console.error("Failed to load certificate payments:", err);
             setError(
                 err?.response?.data?.message ||
                 "Unable to load certificate payments."
             );
-
         } finally {
-
             setLoading(false);
-
         }
+    }, []);
 
-    };
+    useEffect(() => {
+        const timer = setTimeout(fetchPayments, 0);
+        return () => clearTimeout(timer);
+    }, [refresh, fetchPayments]);
 
 
     if (loading) {

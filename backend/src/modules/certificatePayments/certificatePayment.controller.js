@@ -3,6 +3,7 @@ import AppError from "../../core/errors/AppError.js";
 
 import {
     createCertificatePayment,
+    cancelCertificatePayment,
 } from "./certificatePayment.service.js";
 
 import {
@@ -151,6 +152,43 @@ export const createPayment =
 
             reused:
                 Boolean(reused),
+        });
+    });
+
+
+/*
+ * ==========================================
+ * CANCEL CERTIFICATE PAYMENT
+ * ==========================================
+ *
+ * Only an unpaid certificate payment session
+ * can be cancelled by the authenticated student.
+ */
+export const cancelPayment =
+    asyncHandler(async (req, res) => {
+
+        const {
+            paymentId,
+        } = req.body || {};
+
+        if (!paymentId) {
+            throw new AppError(
+                "Payment ID is required.",
+                400
+            );
+        }
+
+        const result =
+            await cancelCertificatePayment(
+                req.user._id,
+                paymentId
+            );
+
+        return res.status(200).json({
+            success: true,
+            message:
+                "Certificate payment session cancelled successfully.",
+            ...result,
         });
     });
 
@@ -426,6 +464,16 @@ export const getMyPayment =
         }
 
 
+        let qrCode = null;
+
+        if (["created", "pending"].includes(payment.status) && payment.qrCodeData) {
+            try {
+                qrCode = JSON.parse(payment.qrCodeData);
+            } catch (error) {
+                console.error("Failed to parse stored certificate QR data:", error);
+            }
+        }
+
         return res.status(200).json({
 
             success: true,
@@ -470,6 +518,8 @@ export const getMyPayment =
                 rejectionReason:
                     payment.rejectionReason,
             },
+
+            qrCode,
 
         });
     });

@@ -19,7 +19,6 @@ export default function Terminal({
     onDragMove,
     onDragEnd,
     onResizeStart,
-    onResizeMove,
     onResizeEnd,
 }) {
     return (

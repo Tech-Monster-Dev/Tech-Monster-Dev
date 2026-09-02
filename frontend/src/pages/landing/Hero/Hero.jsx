@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import api from "../../../services/api/axios";
 import { API } from "../../../services/api/endpoints";
 
-import { Link } from 'react-router-dom';
 
 import { motion } from 'framer-motion';
 import { FaArrowRight, FaPlayCircle, FaShieldAlt } from 'react-icons/fa';

@@ -51,37 +51,18 @@ export default function SupportInbox() {
     const [selectedConversation, setSelectedConversation] =
         useState(null);
 
-    const [currentUser, setCurrentUser] =
-        useState(null);
-
+    const [currentUser] = useState(() => {
+        try {
+            const storedUser = localStorage.getItem("admin") || localStorage.getItem("user");
+            return storedUser ? JSON.parse(storedUser) : null;
+        } catch (err) {
+            console.error("Failed to load current admin:", err);
+            return null;
+        }
+    });
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState("");
-
-    useEffect(() => {
-
-        try {
-
-            const storedUser =
-                localStorage.getItem("admin") ||
-                localStorage.getItem("user");
-
-            if (storedUser) {
-                setCurrentUser(
-                    JSON.parse(storedUser)
-                );
-            }
-
-        } catch (err) {
-
-            console.error(
-                "Failed to load current admin:",
-                err
-            );
-
-        }
-
-    }, []);
 
     const loadInbox = useCallback(
         async (isRefresh = false) => {
@@ -146,7 +127,8 @@ export default function SupportInbox() {
     );
 
     useEffect(() => {
-        loadInbox();
+        const timer = setTimeout(loadInbox, 0);
+        return () => clearTimeout(timer);
     }, [loadInbox]);
 
     useEffect(() => {

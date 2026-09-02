@@ -32,7 +32,6 @@ export default function LessonAccordion({
     const isModuleCompleted = (module || []).length > 0 && (module || []).every((item) => item.completed);
 
     // Whether this module's task submission has been APPROVED by an admin.
-    const isModuleTaskApproved = approvedModuleIds.has(lesson?.id);
 
     const handleLessonClick = (lessonItem) => {
         if (!canStart) {

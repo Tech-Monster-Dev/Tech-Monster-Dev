@@ -108,6 +108,7 @@ const useTaskLifecycle = ({
         currentExpired,
         currentStatus,
         currentTask,
+        currentTaskKey,
         setTaskStatusMap,
     ]);
 
@@ -146,6 +147,7 @@ const useTaskLifecycle = ({
 
     return {
         currentTask,
+        currentTaskKey,
         currentModule,
         currentDeadline,
         currentStatus,

@@ -104,6 +104,12 @@ function DashboardLayout({ role = "student" }) {
 
         loadActiveLearning();
 
+        window.addEventListener("activeLearningChanged", loadActiveLearning);
+
+        return () => {
+            window.removeEventListener("activeLearningChanged", loadActiveLearning);
+        };
+
     }, []);
 
 

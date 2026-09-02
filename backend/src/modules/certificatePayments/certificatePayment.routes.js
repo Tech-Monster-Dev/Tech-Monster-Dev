@@ -9,6 +9,7 @@ import {
     verifyPayment,
     verifyQRPayment,
     getMyPayment,
+    cancelPayment,
 } from "./certificatePayment.controller.js";
 
 
@@ -51,6 +52,18 @@ router.post(
     "/verify-qr",
     protect,
     verifyQRPayment
+);
+
+
+/*
+ * ==========================================
+ * CANCEL CERTIFICATE PAYMENT
+ * ==========================================
+ */
+router.post(
+    "/cancel",
+    protect,
+    cancelPayment
 );
 
 

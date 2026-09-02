@@ -55,7 +55,7 @@ export default function Practical({
             ) : null}
 
             {starterCode ? (
-                <TryItYourself
+                <TryItYourself key={starterCode} 
                     language={language}
                     starterCode={starterCode}
                 />

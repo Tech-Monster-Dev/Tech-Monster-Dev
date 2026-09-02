@@ -6,16 +6,12 @@ import "./CourseCard.css";
 
 const CourseCard = ({
     internship,
-    refreshDashboard,
     index = 0,
     type = "course",
-    setLoading,
     onPreview,
 }) => {
     const navigate = useNavigate();
 
-    const isCourse = type === "course";
-    const label = isCourse ? "Course" : "Internship";
 
     const handleJoin = async () => {
         if (typeof onPreview === "function") {

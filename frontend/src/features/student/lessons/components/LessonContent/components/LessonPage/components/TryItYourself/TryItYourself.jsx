@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./TryItYourself.css";
 
 import TryItTrigger from "./components/TryItTrigger";
@@ -40,9 +40,6 @@ export default function TryItYourself({
         setTerminalSize
     );
 
-    useEffect(() => {
-        setCode(starterCode || "");
-    }, [starterCode]);
 
     const openTerminal = () => {
         setIsOpen(true);

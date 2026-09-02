@@ -231,10 +231,13 @@ function Sidebar({
                                 <Link
                                     to={link.locked ? "#" : link.path}
                                     state={
-                                        link.name === "Daily Task" && enrolledCourse
+                                        (link.name === "Daily Task" || link.name === "Certificate") && enrolledCourse
                                             ? {
-                                                courseSlug: enrolledCourse.slug,
-                                                type: enrolledCourse.type
+                                                programId: enrolledCourse.programId,
+    programType: enrolledCourse.type,
+    courseTitle: enrolledCourse.title,
+    courseSlug: enrolledCourse.slug,
+    type: enrolledCourse.type
                                             }
                                             : undefined
                                     }
