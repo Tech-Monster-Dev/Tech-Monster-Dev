@@ -42,6 +42,7 @@ import {
 
 import "./Task.css";
 
+const EMPTY_TASK_SCOPE = {};
 const Task = () => {
     const {
         type: routeType,
@@ -51,7 +52,7 @@ const Task = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const contentType = routeType === "internship" ? "internship" : "course";
-    const taskScope = location.state || {};
+    const taskScope = location.state || EMPTY_TASK_SCOPE;
 
     const { user } = useAuth();
 
@@ -175,7 +176,7 @@ const Task = () => {
     }, [
         modules,
         taskStatusMap,
-        taskScope.moduleId,
+        taskScope,
     ]);
 
     const visibleTasks = useMemo(() => {

@@ -1,4 +1,5 @@
 import Submission from "../models/Submission.js";
+import StudentInternship from "../../internships/models/StudentInternship.js";
 import Notification from "../../notifications/models/Notification.js";
 
 import AppError from "../../../core/errors/AppError.js";
@@ -168,6 +169,27 @@ export const approveSubmission =
             orderedTasks.length > 0 &&
             approvedCount >=
             orderedTasks.length;
+
+        if (allTasksCompleted) {
+            const enrollmentFilter = {
+                student: submission.student,
+                ...(submission.course
+                    ? { course: submission.course }
+                    : { internship: submission.internship }),
+            };
+
+            const enrollment =
+                await StudentInternship.findOne(
+                    enrollmentFilter
+                );
+
+            if (enrollment) {
+                enrollment.status = "Completed";
+                enrollment.progress = 100;
+                enrollment.completedAt = new Date();
+                await enrollment.save();
+            }
+        }
 
         await qualifyLearningDay({
             studentId:

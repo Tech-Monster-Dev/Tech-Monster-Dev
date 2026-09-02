@@ -188,10 +188,6 @@ export default function CalendarGrid({
     monthEnd.getTime() <
       accountCreatedTime;
 
-  const monthIsAfterAccountCreation =
-    !accountCreatedTime ||
-    monthStart.getTime() >=
-      accountCreatedTime;
 
   const currentMonthStart =
     new Date(

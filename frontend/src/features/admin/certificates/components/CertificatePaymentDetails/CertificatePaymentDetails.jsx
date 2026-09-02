@@ -32,50 +32,28 @@ export default function CertificatePaymentDetails({
 
 
     useEffect(() => {
-
         if (!paymentId) return;
 
-        fetchDetails();
+        const loadDetails = async () => {
+            setLoading(true);
 
-    }, [paymentId]);
-
-
-    const fetchDetails = async () => {
-
-        setLoading(true);
-
-        try {
-
-            const response =
-                await getCertificatePaymentDetails(
-                    paymentId
+            try {
+                const response = await getCertificatePaymentDetails(paymentId);
+                setPayment(response?.payment || null);
+            } catch (err) {
+                console.error("Failed to load certificate payment:", err);
+                toast.error(
+                    err?.response?.data?.message ||
+                    "Unable to load payment details."
                 );
-
-            setPayment(
-                response?.payment || null
-            );
-
-        } catch (err) {
-
-            console.error(
-                "Failed to load certificate payment:",
-                err
-            );
-
-            toast.error(
-                err?.response?.data?.message ||
-                "Unable to load payment details."
-            );
-
-            onClose?.();
-
-        } finally {
-
-            setLoading(false);
-
+                onClose?.();
+            } finally {
+                setLoading(false);
+            }
         }
-
-    };
+        
+        loadDetails();
+    }, [paymentId, onClose]);
 
 
     const handleApprove = async () => {
@@ -462,7 +440,7 @@ export default function CertificatePaymentDetails({
                                     disabled={
                                         actionLoading ||
                                         payment.status !==
-                                            "approval_pending"
+                                        "approval_pending"
                                     }
                                 >
                                     {actionLoading

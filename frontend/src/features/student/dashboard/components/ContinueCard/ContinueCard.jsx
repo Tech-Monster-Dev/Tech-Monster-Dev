@@ -34,7 +34,8 @@ const ContinueCard = ({ learning }) => {
     }
 
     // Save currently selected course/internship
-    localStorage.setItem("activeLearning", JSON.stringify({type, slug, title}));
+    localStorage.setItem("activeLearning", JSON.stringify({programId: isCourse ? learning?.courseId : learning?.internshipId, type, slug, title}));
+    window.dispatchEvent(new CustomEvent("activeLearningChanged"));
 
     navigate(
       `/student/lessons/${type}/${slug}`

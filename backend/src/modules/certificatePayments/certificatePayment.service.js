@@ -9,6 +9,7 @@ import AppError from "../../core/errors/AppError.js";
 import {
     createRazorpayOrder,
     createRazorpayQRCode,
+    closeRazorpayQRCode,
     isRazorpayConfigured,
 } from "./services/razorpay.service.js";
 
@@ -152,6 +153,91 @@ export const getCompletedProgramForStudent =
 
 /*
  * ==========================================
+ * CANCEL CERTIFICATE PAYMENT
+ * ==========================================
+ *
+ * Only an unpaid checkout can be cancelled.
+ * Paid, approval-pending, approved, rejected,
+ * and other completed payment records are never
+ * deleted by this operation.
+ */
+export const cancelCertificatePayment =
+    async (
+        studentId,
+        paymentId
+    ) => {
+
+        if (!studentId || !paymentId) {
+            throw new AppError(
+                "Payment cancellation details are incomplete.",
+                400
+            );
+        }
+
+        const payment =
+            await CertificatePayment.findOne({
+                _id: paymentId,
+                student: studentId,
+            });
+
+        if (!payment) {
+            throw new AppError(
+                "Certificate payment not found.",
+                404
+            );
+        }
+
+        if (
+            ![
+                "created",
+                "pending",
+            ].includes(payment.status)
+        ) {
+            throw new AppError(
+                "Only an unpaid certificate payment can be cancelled.",
+                400
+            );
+        }
+
+        if (
+            payment.expiresAt &&
+            payment.expiresAt <= new Date()
+        ) {
+            payment.status = "expired";
+            await payment.save();
+
+            throw new AppError(
+                "This payment session has already expired.",
+                410
+            );
+        }
+
+        if (payment.qrCodeId) {
+            try {
+                await closeRazorpayQRCode(
+                    payment.qrCodeId
+                );
+            } catch (error) {
+                console.error(
+                    "Failed to close Razorpay QR code:",
+                    error
+                );
+            }
+        }
+
+        await CertificatePayment.findByIdAndDelete(
+            payment._id
+        );
+
+        return {
+            cancelled: true,
+            paymentId: payment._id,
+        };
+    };
+
+
+/*
+ * ==========================================
  * CREATE CERTIFICATE PAYMENT
  * ==========================================
  */
@@ -266,9 +352,24 @@ export const createCertificatePayment =
                 existingPayment.expiresAt >
                 new Date()
             ) {
+                let qrCode = null;
+
+                if (existingPayment.qrCodeData) {
+                    try {
+                        qrCode = JSON.parse(existingPayment.qrCodeData);
+                    } catch (error) {
+                        console.error(
+                            "Failed to parse stored certificate QR data:",
+                            error
+                        );
+                    }
+                }
+
                 return {
                     payment:
                         existingPayment,
+
+                    qrCode,
 
                     reused:
                         true,

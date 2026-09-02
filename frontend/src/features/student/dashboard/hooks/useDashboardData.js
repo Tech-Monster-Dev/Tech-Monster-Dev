@@ -42,11 +42,14 @@ export default function useDashboardData() {
                 localStorage.setItem(
                     "activeLearning",
                     JSON.stringify({
+                        programId: activeLearning.type === "course" ? activeLearning.courseId : activeLearning.internshipId,
                         type: activeLearning.type,
                         slug: activeLearning.slug,
                         title: activeLearning.title,
                     })
                 );
+
+                window.dispatchEvent(new CustomEvent("activeLearningChanged"));
             }
         } catch (err) {
             console.log(err);
@@ -61,7 +64,8 @@ export default function useDashboardData() {
     };
 
     useEffect(() => {
-        loadDashboard();
+        const timer = setTimeout(loadDashboard, 0);
+        return () => clearTimeout(timer);
     }, []);
 
 

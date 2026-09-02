@@ -164,6 +164,37 @@ export const fetchRazorpayQRPayments =
 
 /*
  * ==========================================
+ * CLOSE RAZORPAY QR CODE
+ * ==========================================
+ *
+ * Used when a student cancels an unpaid
+ * certificate payment session.
+ */
+export const closeRazorpayQRCode =
+    async (
+        qrCodeId
+    ) => {
+
+        if (!razorpay) {
+            throw new Error(
+                "Razorpay is not configured."
+            );
+        }
+
+        if (!qrCodeId) {
+            throw new Error(
+                "Razorpay QR code ID is required."
+            );
+        }
+
+        return razorpay.qrCode.close(
+            qrCodeId
+        );
+    };
+
+
+/*
+ * ==========================================
  * CREATE RAZORPAY QR CODE
  * ==========================================
  *

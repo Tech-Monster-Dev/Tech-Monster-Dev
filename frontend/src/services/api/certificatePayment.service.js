@@ -49,6 +49,19 @@ export const verifyCertificateQRPayment = ({
 };
 
 
+export const cancelCertificatePayment = ({
+    paymentId,
+}) => {
+
+    return api.post(
+        API.CERTIFICATE_PAYMENTS.CANCEL,
+        {
+            paymentId,
+        }
+    );
+};
+
+
 export const getMyCertificatePayment = ({
     courseId = null,
     internshipId = null,
