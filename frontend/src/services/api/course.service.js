@@ -22,3 +22,6 @@ export const updateCourse = (id, data) =>
 
 export const deleteCourse = (id) =>
     api.delete(`/courses/${id}`);
+
+export const getCourseBySlug = (slug) =>
+    api.get(`/courses/slug/${slug}`);

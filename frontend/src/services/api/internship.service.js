@@ -22,3 +22,6 @@ export const updateInternship = (id, data) =>
 
 export const deleteInternship = (id) =>
     api.delete(`/internships/${id}`);
+
+export const getInternshipBySlug = (slug) =>
+    api.get(`/internships/slug/${slug}`);
