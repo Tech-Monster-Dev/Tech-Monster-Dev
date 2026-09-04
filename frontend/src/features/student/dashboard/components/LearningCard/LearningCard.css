@@ -1,0 +1,105 @@
+.learning-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 100px;
+    padding: 16px 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background-color 0.25s ease;
+}
+
+.learning-card:hover,
+.learning-card:focus-visible {
+    border-color: var(--neon);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.learning-card:active {
+    transform: translateY(-2px);
+}
+
+.learning-card-badge {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border: 1px solid var(--neon);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.learning-card-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.learning-card-content h3 {
+    margin: 0;
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.learning-card-content p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    opacity: 0.65;
+}
+
+.learning-card-arrow {
+    position: absolute;
+    right: 16px;
+    display: grid;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--neon);
+    color: var(--background);
+    pointer-events: none;
+    transition:
+        right 0.35s ease,
+        opacity 0.2s ease;
+}
+
+.learning-card:hover .learning-card-arrow,
+.learning-card:focus-visible .learning-card-arrow,
+.learning-card:active .learning-card-arrow {
+    right: -44px;
+    opacity: 0;
+}
+
+@media (max-width: 600px) {
+    .learning-card {
+        min-height: 88px;
+        padding: 14px;
+    }
+
+    .learning-card-content h3 {
+        font-size: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .learning-card,
+    .learning-card-arrow {
+        transition: none;
+    }
+}

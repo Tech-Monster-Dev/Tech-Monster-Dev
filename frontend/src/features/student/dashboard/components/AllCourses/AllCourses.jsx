@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import "../AllInternship/AllInternship.css";
 
 import EmptyState from '../../../../../components/ui/EmptyState';
-import CourseCard from "../CourseCard";
+import LearningCard from "../LearningCard";
 
 
-const AllCourses = ({ courses = [], refreshDashboard, setLoading, onPreview }) => {
+const AllCourses = ({ courses = [] }) => {
   const allCount = Array.isArray(courses) ? courses.length : 0;
 
   return (
@@ -29,14 +29,11 @@ const AllCourses = ({ courses = [], refreshDashboard, setLoading, onPreview }) =
         <div id="course-grid">
           {courses.map((course, index) => (
 
-            <CourseCard
-              setLoading={setLoading}
+            <LearningCard
               key={course._id || course.slug}
               index={index}
-              internship={course}
+              item={course}
               type="course"
-              refreshDashboard={refreshDashboard}
-            onPreview={onPreview}
             />
           ))}
 
