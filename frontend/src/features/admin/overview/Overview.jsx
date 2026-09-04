@@ -19,6 +19,7 @@ import RecentActivities from "./components/RecentActivities";
 
 import FadeInSection from "../../dashboard/common/FadeInSection";
 import OverviewSkeleton from "./OverviewSkeleton";
+import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 export default function Overview() {
 
@@ -51,6 +52,8 @@ export default function Overview() {
         }
 
     };
+
+    useSkeletonScrollLock(loading);
 
     if (loading) {
         return <OverviewSkeleton />;

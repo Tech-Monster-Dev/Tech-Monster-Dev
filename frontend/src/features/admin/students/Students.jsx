@@ -12,6 +12,7 @@ import StudentCard from "./components/StudentCard";
 import EditStudentModal from "./components/EditStudentModal";
 import NotificationModal from "./components/NotificationModal";
 import StudentSkeleton from "./components/StudentSkeleton";
+import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 import EmptyState from "../../../components/ui/EmptyState";
 
 export default function Students() {
@@ -51,6 +52,8 @@ export default function Students() {
         }
 
     }
+
+    useSkeletonScrollLock(loading);
 
     if (loading) {
 

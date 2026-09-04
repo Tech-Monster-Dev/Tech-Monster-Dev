@@ -11,6 +11,7 @@ import useAttendanceData from "./hooks/useAttendanceData";
 import AttendanceHeader from "./components/AttendanceHeader";
 import CalendarGrid from "./components/CalendarGrid";
 import AttendanceLoading from "./components/AttendanceLoading";
+import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 import {
   ACTIVE_TIME_EVENT
@@ -26,6 +27,8 @@ export default function AttendancePage() {
     loading,
     setActiveTimeData
   } = useAttendanceData();
+
+  useSkeletonScrollLock(loading);
 
   const [monthlyCounts, setMonthlyCounts] =
     useState({

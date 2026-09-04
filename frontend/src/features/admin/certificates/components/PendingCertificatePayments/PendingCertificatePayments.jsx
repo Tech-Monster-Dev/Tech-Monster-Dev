@@ -5,6 +5,7 @@ import {
 } from "../../../../../services/api/adminCertificatePayment.service";
 
 import EmptyState from "../../../../../components/ui/EmptyState/EmptyState";
+import useSkeletonScrollLock from "../../../../../shared/hooks/useSkeletonScrollLock";
 
 import "./PendingCertificatePayments.css";
 
@@ -19,6 +20,8 @@ export default function PendingCertificatePayments({
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState("");
+
+    useSkeletonScrollLock(loading);
 
 
     const fetchPayments = useCallback(async () => {
