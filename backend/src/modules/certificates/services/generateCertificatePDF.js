@@ -12,7 +12,7 @@ export const generateCertificatePDF = async (
 
         const uploadDir = path.join(
             process.cwd(),
-            "src",
+
             "uploads",
             "certificates"
         );
@@ -25,7 +25,7 @@ export const generateCertificatePDF = async (
 
         const filePath = path.join(
             uploadDir,
-            `Certificate-${student._id}.pdf`
+            `Certificate-${student._id}-${certificate._id}.pdf`
         );
 
         const doc = new PDFDocument({

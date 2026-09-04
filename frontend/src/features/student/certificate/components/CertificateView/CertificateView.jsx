@@ -1,6 +1,4 @@
 import { motion } from "framer-motion";
-import { toast } from "react-toastify";
-
 import CertificatePaymentSection from "./components/CertificatePaymentSection";
 import CertificatePaymentModal from "./components/CertificatePaymentModal";
 import CertificateApprovalStatus from "./components/CertificateApprovalStatus";
@@ -17,6 +15,7 @@ export default function CertificateView({
     userName,
     programId,
     programType,
+    onDownload,
 }) {
     const {
         payment,
@@ -69,12 +68,6 @@ export default function CertificateView({
         );
     }
 
-    const handleDownload = () => {
-        toast.success(
-            "Certificate download will be connected to the issued certificate."
-        );
-    };
-
     return (
         <motion.div
             className="certificate-view-container"
@@ -119,7 +112,7 @@ export default function CertificateView({
                 <CertificateIssued
                     userName={userName}
                     courseType={courseType}
-                    onDownload={handleDownload}
+                    onDownload={onDownload}
                 />
             )}
 

@@ -140,6 +140,11 @@ export const API = {
     COURSE: (courseSlug) => `/submissions/course/${courseSlug}`,
   },
 
+    CERTIFICATES: {
+      MY: "/certificates/my",
+      DOWNLOAD: (id) => `/certificates/download/${id}`,
+    },
+
   CERTIFICATE_PAYMENTS: {
     CREATE: "/certificate-payments/create",
     VERIFY: "/certificate-payments/verify",
