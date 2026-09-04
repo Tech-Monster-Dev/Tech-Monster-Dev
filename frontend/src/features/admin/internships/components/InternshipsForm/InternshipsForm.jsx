@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { createInternship, updateInternship } from "../../../../../services/api/internship.service";
 import InternshipFormSkeleton from "../InternshipFormSkeleton";
+import useSkeletonScrollLock from "../../../../../shared/hooks/useSkeletonScrollLock";
 
 import { toast } from "react-toastify";
 
@@ -123,6 +124,8 @@ export default function InternshipsForm() {
             );
         }
     };
+
+    useSkeletonScrollLock(loading);
 
     if (loading) {
 

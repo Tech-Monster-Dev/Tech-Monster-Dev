@@ -16,11 +16,14 @@ import LearningStreak from "./components/LearningStreak";
 import LearningAnalytics from "./components/LearningAnalytics";
 
 import Skeleton from "../../dashboard/common/LoaderPage/Skeleton";
+import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 
 const Home = () => {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useSkeletonScrollLock(loading);
 
   const loadDashboard = async () => {
     try {

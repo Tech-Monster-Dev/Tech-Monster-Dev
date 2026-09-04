@@ -4,6 +4,7 @@ import BadgeSectionHeader from "./components/BadgeSectionHeader";
 import useBadgesData from "./hooks/useBadgesData";
 import BadgeList from "./components/BadgeList";
 import BadgeLoading from "./components/BadgeLoading";
+import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 import EarnedBadgesModal from "./components/EarnedBadgesModal";
 import {
     ATTENDANCE_BADGES,
@@ -15,6 +16,8 @@ export default function Badges() {
     const [showEarned, setShowEarned] = useState(false);
 
     const { badges, loading } = useBadgesData();
+
+    useSkeletonScrollLock(loading);
 
     const attendanceBadges = useMemo(
         () =>

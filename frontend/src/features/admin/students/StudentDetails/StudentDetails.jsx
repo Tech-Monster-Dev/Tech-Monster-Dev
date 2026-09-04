@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 
 import api from "../../../../services/api/axios";
 import StudentDetailsSkeleton from "./StudentDetailsSkeleton";
+import useSkeletonScrollLock from "../../../../shared/hooks/useSkeletonScrollLock";
 
 export default function StudentDetails() {
 
@@ -80,6 +81,8 @@ export default function StudentDetails() {
         });
 
     }, [fetchStudent]);
+
+    useSkeletonScrollLock(loading);
 
     if (loading) {
 

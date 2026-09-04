@@ -7,6 +7,7 @@ import EmptyState from "../../../../../components/ui/EmptyState";
 
 import CourseCard from "../CourseCard";
 import InternshipSkeleton from "../../../internships/components/InternshipSkeleton";
+import useSkeletonScrollLock from "../../../../../shared/hooks/useSkeletonScrollLock";
 
 import {
     getAllCourses,
@@ -22,6 +23,8 @@ export default function AllCourses() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleteId, setDeleteId] = useState(null);
+
+    useSkeletonScrollLock(loading);
 
     const fetchCourses = async () => {
 

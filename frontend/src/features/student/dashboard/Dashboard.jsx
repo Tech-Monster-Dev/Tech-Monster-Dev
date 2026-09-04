@@ -14,6 +14,7 @@ import Warning from "../../../components/ui/Warning";
 import DashboardSkeleton from "./DashboardSkeleton";
 
 import useDashboardData from "./hooks/useDashboardData";
+import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -27,6 +28,8 @@ function Dashboard() {
         toast,
         API
     } = useDashboardData();
+
+    useSkeletonScrollLock(loading);
 
     const [preview, setPreview] = useState(() => {
         try {

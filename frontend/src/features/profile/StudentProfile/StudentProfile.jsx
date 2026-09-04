@@ -9,6 +9,7 @@ import ProfileHeader from "../../student/profile/ProfileHeader";
 import ProfileActions from "../../student/profile/ProfileActions";
 import ProfileCards from "../../student/profile/ProfileCards";
 import ProfileSkeleton from "../../student/profile/ProfileSkeleton";
+import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 import {
   getUserProfile
@@ -123,6 +124,8 @@ export default function StudentProfile() {
 
     }
   };
+
+  useSkeletonScrollLock(loading);
 
   if (loading) {
 

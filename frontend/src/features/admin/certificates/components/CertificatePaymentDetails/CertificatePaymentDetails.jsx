@@ -1,3 +1,5 @@
+import useSkeletonScrollLock from "../../../../../shared/hooks/useSkeletonScrollLock";
+
 import { useEffect, useState } from "react";
 
 import { toast } from "react-toastify";
@@ -20,6 +22,8 @@ export default function CertificatePaymentDetails({
     const [payment, setPayment] = useState(null);
 
     const [loading, setLoading] = useState(true);
+
+    useSkeletonScrollLock(loading);
 
     const [actionLoading, setActionLoading] =
         useState(false);
