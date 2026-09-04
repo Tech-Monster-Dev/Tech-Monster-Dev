@@ -5,7 +5,7 @@ import EmptyState from "../../../../../components/ui/EmptyState";
 import LearningCard from "../LearningCard";
 
 
-const AllInternship = ({ internships = [] }) => {
+const AllInternship = ({ internships = [], onPreview }) => {
   const allCount = Array.isArray(internships) ? internships.length : 0;
 
   return (
@@ -34,6 +34,7 @@ const AllInternship = ({ internships = [] }) => {
               index={index}
               item={internship}
               type="internship"
+              onClick={onPreview}
             />
           ))}
 

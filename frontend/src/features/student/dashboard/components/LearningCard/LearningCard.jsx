@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 import "./LearningCard.css";
 
@@ -12,11 +11,9 @@ const LearningCard = ({
     title,
     badge,
     hint = "Tap to continue",
-    detailsPath,
     onClick,
     className = "",
 }) => {
-    const navigate = useNavigate();
 
     const data = item || internship;
     const cardTitle = title || data?.title || "Untitled";
@@ -25,17 +22,6 @@ const LearningCard = ({
     const handleClick = () => {
         if (typeof onClick === "function") {
             onClick(data, type);
-            return;
-        }
-
-        const path =
-            detailsPath ||
-            (data?.slug
-                ? `/student/learning/${type}/${data.slug}`
-                : null);
-
-        if (path) {
-            navigate(path);
         }
     };
 
