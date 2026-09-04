@@ -3,10 +3,12 @@ import "./Dashboard.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import ContinueLearning from "./components/ContinueLearning";
 import AllInternship from "./components/AllInternship";
 import AllCourses from "./components/AllCourses";
 import LearningPreviewModal from "./components/LearningPreviewModal";
+import EmptyState from "../../../components/ui/EmptyState";
+import LearningCard from "./components/LearningCard";
+import SectionTabs from "../../../layouts/SectionTabs";
 import Warning from "../../../components/ui/Warning";
 
 import DashboardSkeleton from "./DashboardSkeleton";
@@ -57,6 +59,8 @@ function Dashboard() {
             type: "course",
         };
     });
+
+    const [activeSection, setActiveSection] = useState("enrolled");
 
     const [warning, setWarning] = useState({
         open: false,
@@ -174,40 +178,70 @@ function Dashboard() {
     return (
         <div className="dashboard-page">
 
-            <ContinueLearning
-                learningItems={[
-                    ...(dashboard?.internships || []).map(
-                        (item) => ({
-                            ...item,
-                            type: "internship",
-                        })
-                    ),
-
-                    ...(dashboard?.courses || []).map(
-                        (item) => ({
-                            ...item,
-                            type: "course",
-                        })
-                    ),
+            <SectionTabs
+                tabs={[
+                    { label: "Enrolled", value: "enrolled" },
+                    { label: "Courses", value: "courses" },
+                    { label: "Internships", value: "internships" },
                 ]}
+                activeTab={activeSection}
+                onChange={setActiveSection}
             />
 
-            <AllCourses
-                setLoading={setLoading}
-                courses={
-                    dashboard?.allCourses || []
-                }
-                refreshDashboard={loadDashboard}
-                onPreview={openPreview}
-            />
+            {activeSection === "enrolled" && (
+                <div className="learning-card-grid">
+                    {(dashboard?.courses || []).map((course, index) => (
+                        <LearningCard
+                            key={course._id || course.slug}
+                            item={{ ...course, enrolled: true }}
+                            type="course"
+                            index={index}
+                            badge="Enrolled"
+                            hint="Continue your enrolled course"
+                            showProgress
+                            onClick={openPreview}
+                        />
+                    ))}
 
-            <AllInternship
-                internships={
-                    dashboard?.allInternships || []
-                }
-                refreshDashboard={loadDashboard}
-                onPreview={openPreview}
-            />
+                    {(dashboard?.internships || []).map((internship, index) => (
+                        <LearningCard
+                            key={internship._id || internship.slug}
+                            item={{ ...internship, enrolled: true }}
+                            type="internship"
+                            index={(dashboard?.courses || []).length + index}
+                            badge="Enrolled"
+                            hint="Continue your enrolled internship"
+                            showProgress
+                            onClick={openPreview}
+                        />
+                    ))}
+
+                    {(dashboard?.courses || []).length === 0 &&
+                        (dashboard?.internships || []).length === 0 && (
+                            <EmptyState
+                                heading="No Learning Content Yet"
+                                paragraph="You have not enrolled in any course or internship yet."
+                            />
+                        )}
+                </div>
+            )}
+
+            {activeSection === "courses" && (
+                <AllCourses
+                    setLoading={setLoading}
+                    courses={dashboard?.allCourses || []}
+                    refreshDashboard={loadDashboard}
+                    onPreview={openPreview}
+                />
+            )}
+
+            {activeSection === "internships" && (
+                <AllInternship
+                    internships={dashboard?.allInternships || []}
+                    refreshDashboard={loadDashboard}
+                    onPreview={openPreview}
+                />
+            )}
 
             <LearningPreviewModal
                 open={preview.open}

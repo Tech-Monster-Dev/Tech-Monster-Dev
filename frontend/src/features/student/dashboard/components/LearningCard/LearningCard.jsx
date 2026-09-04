@@ -11,6 +11,7 @@ const LearningCard = ({
     title,
     badge,
     hint = "Tap to continue",
+    showProgress = false,
     onClick,
     className = "",
 }) => {
@@ -51,6 +52,26 @@ const LearningCard = ({
             <div className="learning-card-content">
                 <h3>{cardTitle}</h3>
                 <p>{hint}</p>
+
+                {showProgress && (
+                    <div className="learning-card-progress">
+                        <div className="learning-card-progress-header">
+                            <span>Progress</span>
+                            <span>{data?.progress || 0}%</span>
+                        </div>
+
+                        <div className="learning-card-progress-track">
+                            <motion.div
+                                className="learning-card-progress-fill"
+                                initial={{ width: 0 }}
+                                animate={{
+                                    width: `${Math.min(Math.max(data?.progress || 0, 0), 100)}%`,
+                                }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
 
             <span
