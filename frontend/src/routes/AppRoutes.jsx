@@ -47,7 +47,6 @@ import StudentCertificate from '../features/student/certificate';
 import StudentSetting from '../features/student/settings';
 
 import StudentProfile from '../features/profile/StudentProfile';
-import LearningDetails from "../features/student/learning-details";
 
 
 
@@ -125,7 +124,6 @@ function AppRoutes() {
                         path="dashboard"
                         element={<StudentDashboard />}
                     />
-                    <Route path="learning/:type/:slug" element={<LearningDetails />} />
 
                     {/* Lessons Routes */}
                     <Route

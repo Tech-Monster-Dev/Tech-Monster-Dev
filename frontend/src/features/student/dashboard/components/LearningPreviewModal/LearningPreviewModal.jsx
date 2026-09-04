@@ -146,7 +146,7 @@ const LearningPreviewModal = ({
                                     className="learning-preview-enroll"
                                     onClick={onEnroll}
                                 >
-                                    Enroll Now
+                                    {item.enrolled ? "Continue Learning" : "Enroll Now"}
                                 </button>
                             </div>
                         </div>

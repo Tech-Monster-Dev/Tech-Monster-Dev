@@ -26,10 +26,36 @@ function Dashboard() {
         API
     } = useDashboardData();
 
-    const [preview, setPreview] = useState({
-        open: false,
-        item: null,
-        type: "course",
+    const [preview, setPreview] = useState(() => {
+        try {
+            const savedPreview = localStorage.getItem("tech-monster-learning-preview");
+
+            if (!savedPreview) {
+                return {
+                    open: false,
+                    item: null,
+                    type: "course",
+                };
+            }
+
+            const parsedPreview = JSON.parse(savedPreview);
+
+            if (parsedPreview?.open && parsedPreview?.item) {
+                return {
+                    open: true,
+                    item: parsedPreview.item,
+                    type: parsedPreview.type === "internship" ? "internship" : "course",
+                };
+            }
+        } catch {
+            localStorage.removeItem("tech-monster-learning-preview");
+        }
+
+        return {
+            open: false,
+            item: null,
+            type: "course",
+        };
     });
 
     const [warning, setWarning] = useState({
@@ -38,11 +64,17 @@ function Dashboard() {
     });
 
     const openPreview = (item, type) => {
-        setPreview({
+        const nextPreview = {
             open: true,
             item,
             type,
-        });
+        };
+
+        setPreview(nextPreview);
+        localStorage.setItem(
+            "tech-monster-learning-preview",
+            JSON.stringify(nextPreview)
+        );
     };
 
     const closePreview = () => {
@@ -51,6 +83,8 @@ function Dashboard() {
             item: null,
             type: "course",
         });
+
+        localStorage.removeItem("tech-monster-learning-preview");
     };
 
     const handleEnroll = async () => {
