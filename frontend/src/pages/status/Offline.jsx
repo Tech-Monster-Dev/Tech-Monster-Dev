@@ -8,8 +8,7 @@ export default function Offline() {
       title="You're Offline"
       description="Please check your internet connection and try again."
       Icon={WifiOff}
-      primaryText="Retry"
-      primaryPath="/"
+      showActions={false}
     />
   );
 }

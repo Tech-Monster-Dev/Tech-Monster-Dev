@@ -13,6 +13,7 @@ function StatusPage({
     secondaryText = "Back",
     primaryPath = "/",
     onPrimaryClick,
+    showActions = true,
 }) {
     const { user, isAuthenticated } = useAuth() || {};
 
@@ -55,7 +56,7 @@ function StatusPage({
 
                 <p>{description}</p>
 
-                <div className="status-buttons">
+                {showActions && <div className="status-buttons">
 
                     <button
                         className="primary-btn"
@@ -100,7 +101,7 @@ function StatusPage({
                         {secondaryText}
                     </button>
 
-                </div>
+                </div>} 
 
             </motion.div>
 
