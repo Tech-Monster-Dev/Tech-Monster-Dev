@@ -3,7 +3,8 @@ import {
   useEffect,
   useState
 } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { socket } from "../../../services/socket/socket";
 
 import ProfileHeader from "../../student/profile/ProfileHeader";
 import ProfileActions from "../../student/profile/ProfileActions";
@@ -25,6 +26,7 @@ import "./StudentProfile.css";
 export default function StudentProfile() {
 
   const { userId } = useParams();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -85,6 +87,34 @@ export default function StudentProfile() {
   }, [fetchProfile, userId]);
 
   // =================================
+  // REALTIME FOLLOW COUNT UPDATE
+  // =================================
+
+  useEffect(() => {
+    const handleFollowUpdate = (payload) => {
+      if (payload == null) return;
+
+      const followerId = payload.followerId;
+      const followingId = payload.followingId;
+
+      if (
+        String(followerId) !== String(userId) &&
+        String(followingId) !== String(userId)
+      ) {
+        return;
+      }
+
+      fetchProfile();
+    };
+
+    socket.on("chatUsersUpdated", handleFollowUpdate);
+
+    return () => {
+      socket.off("chatUsersUpdated", handleFollowUpdate);
+    };
+  }, [fetchProfile, userId]);
+
+  // =================================
   // FOLLOW / UNFOLLOW
   // =================================
 
@@ -125,6 +155,18 @@ export default function StudentProfile() {
     }
   };
 
+  const handleMessage = () => {
+    if (!userId) {
+      return;
+    }
+
+    navigate("/student/message", {
+      state: {
+        notificationUserId: String(userId)
+      }
+    });
+  };
+
   useSkeletonScrollLock(loading);
 
   if (loading) {
@@ -158,6 +200,7 @@ export default function StudentProfile() {
       <ProfileActions
         isFollowing={isFollowing}
         onFollowToggle={handleFollowToggle}
+        onMessage={handleMessage}
         actionLoading={actionLoading}
       />
 

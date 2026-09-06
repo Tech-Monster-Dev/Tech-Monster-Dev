@@ -45,6 +45,11 @@ const notificationSchema = new mongoose.Schema(
             default: "system"
         },
 
+        context: {
+            type: mongoose.Schema.Types.Mixed,
+            default: null
+        },
+
         isRead: {
 
             type: Boolean,

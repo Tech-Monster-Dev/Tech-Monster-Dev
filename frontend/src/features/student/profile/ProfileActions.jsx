@@ -6,6 +6,7 @@ import {
 export default function ProfileActions({
   isFollowing,
   onFollowToggle,
+  onMessage,
   actionLoading
 }) {
 
@@ -68,6 +69,8 @@ export default function ProfileActions({
               scale: 0.95
             }}
             className="btn-custom btn-message"
+            onClick={onMessage}
+            disabled={actionLoading}
           >
 
             💬 Message

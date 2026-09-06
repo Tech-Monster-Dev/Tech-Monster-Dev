@@ -15,7 +15,8 @@ import logActivity from "../activity/logActivity.js";
 import {
     getIO,
     getOnlineUsers,
-    getOnlineUserActivity
+    getOnlineUserActivity,
+    getActiveChats
 } from "../../infrastructure/socket/socket.js";
 
 
@@ -251,7 +252,16 @@ export const sendMessage = asyncHandler(async (req, res) => {
 
     let notification = null;
 
-    if (receiver.toString() !== req.user._id.toString() && !(await ChatMute.exists({ user: receiver, mutedUser: req.user._id }))) {
+    const activeChats = getActiveChats();
+    const receiverActiveChat = activeChats.get(receiver.toString());
+    const isReceiverInSenderChat =
+        receiverActiveChat === req.user._id.toString();
+
+    if (
+        receiver.toString() !== req.user._id.toString() &&
+        !isReceiverInSenderChat &&
+        !(await ChatMute.exists({ user: receiver, mutedUser: req.user._id }))
+    ) {
 
         notification = await Notification.create({
 
@@ -261,7 +271,12 @@ export const sendMessage = asyncHandler(async (req, res) => {
 
             message: `${req.user.firstName} sent you a message.`,
 
-            type: "message"
+            type: "message",
+
+            context: {
+                messageId: newMessage._id,
+                senderId: req.user._id
+            }
 
         });
 
@@ -660,6 +675,13 @@ export const getChatUsers = asyncHandler(async (req, res) => {
 
     );
 
+    chatUsers.sort((a, b) => {
+        if (a.lastMessage == null && b.lastMessage == null) return 0;
+        if (a.lastMessage == null) return 1;
+        if (b.lastMessage == null) return -1;
+        return new Date(b.lastMessage.createdAt) - new Date(a.lastMessage.createdAt);
+    });
+
     return res.status(200).json({
 
         success: true,
@@ -679,26 +701,20 @@ export const markAsSeen = asyncHandler(async (req, res) => {
 
     const { userId } = req.params;
 
+    const seenMessages = await Message.find({
+        sender: userId,
+        receiver: req.user._id,
+        seen: false
+    }).select("_id");
+
     await Message.updateMany(
-
         {
-
-            sender: userId,
-
-            receiver: req.user._id,
-
-            seen: false
-
+            _id: { $in: seenMessages.map(message => message._id) }
         },
-
         {
-
             seen: true,
-
             delivered: true
-
         }
-
     );
 
     const senderSocketId = getOnlineUsers().get(
@@ -715,7 +731,9 @@ export const markAsSeen = asyncHandler(async (req, res) => {
 
             {
 
-                by: req.user._id
+                by: req.user._id,
+
+                messageIds: seenMessages.map(message => message._id.toString())
 
             }
 

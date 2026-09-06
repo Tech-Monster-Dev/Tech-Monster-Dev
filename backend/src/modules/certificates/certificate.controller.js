@@ -187,7 +187,13 @@ export const issueCertificate = asyncHandler(async (req, res) => {
         message:
             `Your ${studentInternship.internship.title} internship certificate is ready.`,
 
-        type: "certificate"
+        type: "certificate",
+
+        context: {
+            certificateId: certificate._id,
+            programId: internshipId,
+            programType: "internship"
+        }
 
     });
 

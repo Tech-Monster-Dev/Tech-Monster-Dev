@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
     FiSend,
@@ -64,6 +65,9 @@ const mergeSupportMessages = (
 };
 
 function HelpSupport() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const [conversation, setConversation] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState("");
@@ -98,6 +102,35 @@ function HelpSupport() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    useEffect(() => {
+        const notificationConversationId =
+            location.state?.notificationConversationId;
+
+        if (
+            !notificationConversationId ||
+            !conversation?._id
+        ) {
+            return;
+        }
+
+        if (
+            String(conversation._id) !==
+            String(notificationConversationId)
+        ) {
+            return;
+        }
+
+        navigate(location.pathname, {
+            replace: true,
+            state: {}
+        });
+    }, [
+        conversation?._id,
+        location.pathname,
+        location.state?.notificationConversationId,
+        navigate
+    ]);
 
     // ==========================================
     // LOAD SUPPORT CONVERSATION + MESSAGES

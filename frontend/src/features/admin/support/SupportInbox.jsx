@@ -1,6 +1,7 @@
 import "./SupportInbox.css";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FiMessageCircle, FiRefreshCw, FiUser } from "react-icons/fi";
 
 import {
@@ -46,6 +47,9 @@ const formatDate = (date) => {
 };
 
 export default function SupportInbox() {
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const [conversations, setConversations] = useState([]);
     const [selectedConversation, setSelectedConversation] =
@@ -130,6 +134,42 @@ export default function SupportInbox() {
         const timer = setTimeout(loadInbox, 0);
         return () => clearTimeout(timer);
     }, [loadInbox]);
+
+    useEffect(() => {
+        const notificationConversationId =
+            location.state?.notificationConversationId;
+
+        if (
+            !notificationConversationId ||
+            conversations.length === 0
+        ) {
+            return;
+        }
+
+        const targetConversation = conversations.find(
+            (item) =>
+                String(item._id) ===
+                String(notificationConversationId)
+        );
+
+        if (!targetConversation) {
+            return;
+        }
+
+        queueMicrotask(() => {
+            setSelectedConversation(targetConversation);
+        });
+
+        navigate(location.pathname, {
+            replace: true,
+            state: {}
+        });
+    }, [
+        conversations,
+        location.pathname,
+        location.state?.notificationConversationId,
+        navigate
+    ]);
 
     useEffect(() => {
         const handleConversationUpdated = (updatedConversation) => {

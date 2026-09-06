@@ -21,7 +21,11 @@ export const notifySupportReceiver = async ({
                 title: "Support Message",
                 message:
                     `${sender.firstName} sent you a support message.`,
-                type: "message"
+                type: "message",
+                context: {
+                    conversationId: conversation._id,
+                    senderId: sender._id
+                }
             });
     }
 

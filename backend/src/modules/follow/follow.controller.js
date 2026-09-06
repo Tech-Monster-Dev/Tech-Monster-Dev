@@ -82,7 +82,13 @@ export const followUser = asyncHandler(async (req, res) => {
     emitToUser(
         followerId,
         "chatUsersUpdated",
-        { type: "follow", userId: followingId.toString() }
+        { type: "follow", followerId: followerId.toString(), followingId: followingId.toString() }
+    );
+
+    emitToUser(
+        followingId,
+        "chatUsersUpdated",
+        { type: "follow", followerId: followerId.toString(), followingId: followingId.toString() }
     );
 
     // =====================================
@@ -112,7 +118,11 @@ export const followUser = asyncHandler(async (req, res) => {
 
         message: `${followerName} started following you`,
 
-        type: "follow"
+        type: "follow",
+
+        context: {
+            followerId
+        }
 
     });
 
@@ -175,7 +185,13 @@ export const unfollowUser = asyncHandler(
         emitToUser(
             followerId,
             "chatUsersUpdated",
-            { type: "unfollow", userId: followingId.toString() }
+            { type: "unfollow", followerId: followerId.toString(), followingId: followingId.toString() }
+        );
+
+        emitToUser(
+            followingId,
+            "chatUsersUpdated",
+            { type: "unfollow", followerId: followerId.toString(), followingId: followingId.toString() }
         );
 
         res.status(200).json({
