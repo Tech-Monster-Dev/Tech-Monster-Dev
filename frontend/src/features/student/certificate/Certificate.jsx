@@ -32,7 +32,29 @@ export default function Certificate() {
 
                 const response = await getMyCertificates();
 
-                setCertificates(response?.data?.certificates || []);
+                const loadedCertificates =
+                    response?.data?.certificates || [];
+
+                setCertificates(loadedCertificates);
+
+                const notificationProgramId =
+                    location.state?.programId;
+
+                if (notificationProgramId) {
+                    const matchedCertificate =
+                        loadedCertificates.find(
+                            (certificate) =>
+                                String(certificate.programId) ===
+                                String(notificationProgramId)
+                        );
+
+                    if (matchedCertificate) {
+                        setSelectedCertificate(
+                            matchedCertificate
+                        );
+                        setActiveTab("payment");
+                    }
+                }
             } catch (error) {
                 toast.error(
                     error?.response?.data?.message ||
@@ -44,24 +66,7 @@ export default function Certificate() {
         };
 
         loadCertificates();
-    }, []);
-
-    useEffect(() => {
-        const stateProgramId = location.state?.programId;
-
-        if (!stateProgramId || certificates.length === 0) {
-            return;
-        }
-
-        const matched = certificates.find(
-            (item) => String(item.programId) === String(stateProgramId)
-        );
-
-        if (matched) {
-            setSelectedCertificate(matched);
-            setActiveTab("payment");
-        }
-    }, [certificates, location.state]);
+    }, [location.state?.programId]);
 
     const handleProgramClick = (certificate) => {
         setSelectedCertificate(certificate);

@@ -69,6 +69,8 @@ export default function ChatInput({
 
         <div className="chatInputContainer">
 
+            <div ref={pickerRef} className="emojiPickerWrapper">
+
             <button
 
                 className="chatIconBtn"
@@ -89,10 +91,14 @@ export default function ChatInput({
 
                 showEmoji && (
 
-                    <div ref={pickerRef} className="emojiPicker">
+                    <div className="emojiPicker">
 
                         <EmojiPicker
-
+                            theme="dark"
+                            width={350}
+                            height={400}
+                            searchDisabled={false}
+                            previewConfig={{ showPreview: false }}
                             onEmojiClick={(emoji) =>
 
                                 setText(
@@ -112,6 +118,8 @@ export default function ChatInput({
                 )
 
             }
+
+            </div>
 
             <input
 

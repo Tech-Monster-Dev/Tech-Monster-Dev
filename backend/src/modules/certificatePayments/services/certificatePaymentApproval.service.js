@@ -376,6 +376,13 @@ export const approveCertificatePayment =
             type:
                 "certificate",
 
+            context: {
+                paymentId: payment._id,
+                programId: payment.programType === "course" ? payment.course : payment.internship,
+                programType: payment.programType,
+                certificateId: certificate?._id || payment.certificate || null
+            },
+
         });
 
 
@@ -466,6 +473,13 @@ export const rejectCertificatePayment =
 
             type:
                 "certificate",
+
+            context: {
+                paymentId: payment._id,
+                programId: payment.programType === "course" ? payment.course : payment.internship,
+                programType: payment.programType,
+                certificateId: payment.certificate || null
+            },
 
         });
 

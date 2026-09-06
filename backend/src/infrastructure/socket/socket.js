@@ -4,6 +4,7 @@ let io;
 
 const onlineUsers = new Map();
 const onlineUserActivity = new Map();
+const activeChats = new Map();
 
 const allowedOrigins = [
     "http://localhost:5173",
@@ -95,6 +96,31 @@ export const initSocket = (server) => {
             );
         });
 
+        socket.on("activeChat", ({ withUser }) => {
+            const userId = Array.from(onlineUsers.entries()).find(([, socketId]) => socketId === socket.id)?.[0];
+            if (!userId) return;
+
+            if (withUser) {
+                activeChats.set(String(userId), String(withUser));
+            } else {
+                activeChats.delete(String(userId));
+            }
+        });
+
+        socket.on("typing", ({ receiver }) => {
+            if (!receiver) return;
+            const sender = Array.from(onlineUsers.entries()).find(([, socketId]) => socketId === socket.id)?.[0];
+            if (!sender) return;
+            io.to(String(receiver)).emit("typing", { sender: String(sender) });
+        });
+
+        socket.on("stopTyping", ({ receiver }) => {
+            if (!receiver) return;
+            const sender = Array.from(onlineUsers.entries()).find(([, socketId]) => socketId === socket.id)?.[0];
+            if (!sender) return;
+            io.to(String(receiver)).emit("stopTyping", { sender: String(sender) });
+        });
+
         socket.on("disconnect", () => {
 
             console.log(
@@ -112,6 +138,10 @@ export const initSocket = (server) => {
                 if (socketId === socket.id) {
 
                     onlineUsers.delete(
+                        userId
+                    );
+
+                    activeChats.delete(
                         userId
                     );
 
@@ -164,6 +194,13 @@ export const getOnlineUserActivity = () => {
 export const getOnlineUsers = () => {
 
     return onlineUsers;
+
+};
+
+
+export const getActiveChats = () => {
+
+    return activeChats;
 
 };
 

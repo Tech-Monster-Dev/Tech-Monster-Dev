@@ -1,5 +1,5 @@
 import "./MessageBubble.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import { toggleStarMessage } from "../../../../../services/api/message.service.js";
 
@@ -34,6 +34,17 @@ export default function MessageBubble({
         );
 
     const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef(null);
+
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (menuRef.current == null || menuRef.current.contains(event.target) == false) {
+                setShowMenu(false);
+            }
+        };
+        document.addEventListener("mousedown", handleOutsideClick);
+        return () => document.removeEventListener("mousedown", handleOutsideClick);
+    }, []);
 
     return (
 
@@ -49,31 +60,25 @@ export default function MessageBubble({
 
         >
 
-            <div className="messageBubble">
+            <div className="messageBubble" ref={menuRef}>
 
-                {
 
-                    isMine && (
 
-                        <button
+                <button
 
-                            className="msgMenuBtn"
+                    className={"msgMenuBtn" + (message.replyTo != null ? " replyMsgMenuBtn" : "")}
 
-                            onClick={() =>
+                    onClick={() =>
 
-                                setShowMenu(!showMenu)
+                        setShowMenu(!showMenu)
 
-                            }
+                    }
 
-                        >
+                >
 
-                            <HiDotsVertical />
+                    <HiDotsVertical />
 
-                        </button>
-
-                    )
-
-                }
+                </button>
 
                 {
 
@@ -96,9 +101,6 @@ export default function MessageBubble({
                                 onClick={async () => {
                                     try {
                                         await toggleStarMessage(message._id);
-                                        message.starredBy = message.starredBy?.some(id => String(id) === String(currentUser?._id))
-                                            ? message.starredBy.filter(id => String(id) !== String(currentUser?._id))
-                                            : [...(message.starredBy || []), currentUser?._id];
                                     } catch (err) {
                                         console.error("Failed to toggle star:", err);
                                     }
@@ -118,7 +120,7 @@ export default function MessageBubble({
                             </button>
 
                             {
-                                isMine && !message.isDeleted &&
+                                isMine && message.isDeleted == false && message.replyTo == null &&
                                 <button
                                     onClick={() => {
                                         onDeleteForEveryone(message._id);

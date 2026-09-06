@@ -91,6 +91,18 @@ export default function ChatWindow({
 
 
     const bottomRef = useRef(null);
+    const chatMenuRef = useRef(null);
+
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (chatMenuRef.current == null || chatMenuRef.current.contains(event.target) == false) {
+                setShowChatMenu(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutsideClick);
+        return () => document.removeEventListener("mousedown", handleOutsideClick);
+    }, [setShowChatMenu]);
     const navigate = useNavigate();
 
 
@@ -267,7 +279,7 @@ export default function ChatWindow({
 
 
 
-                                isOnline
+                                typing
 
 
 
@@ -275,7 +287,7 @@ export default function ChatWindow({
 
 
 
-                                    "🟢 Online"
+                                    "Typing…"
 
 
 
@@ -283,7 +295,23 @@ export default function ChatWindow({
 
 
 
-                                    "⚪ Offline"
+                                    isOnline
+
+
+
+                                        ?
+
+
+
+                                        "🟢 Online"
+
+
+
+                                        :
+
+
+
+                                        "⚪ Offline"
 
 
 
@@ -303,7 +331,7 @@ export default function ChatWindow({
 
 
 
-                <div className="chatHeaderMenu">
+                <div className="chatHeaderMenu" ref={chatMenuRef}>
 
                     {selectionMode && (
                         <button
@@ -474,6 +502,16 @@ export default function ChatWindow({
 
                 }
 
+
+
+                {messages.length === 0 && (
+                    <div className="chatStartMessage">
+                        <div className="chatStartIcon">👋</div>
+                        <strong>Say hello to {selectedUser.firstName || "your friend"}</strong>
+                        <span>Start the conversation and send your first message.</span>
+                        <small>💬 Your messages will appear here</small>
+                    </div>
+                )}
 
 
                 {

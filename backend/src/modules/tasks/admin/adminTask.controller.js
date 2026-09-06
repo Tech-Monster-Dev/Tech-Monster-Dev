@@ -160,7 +160,11 @@ export const approveTask = asyncHandler(async (req, res) => {
 
         message: `Your task "${task.title}" has been approved.`,
 
-        type: "system"
+        type: "system",
+        context: {
+            taskId: task._id,
+            internshipId: task.internship
+        }
 
     });
 
@@ -212,7 +216,11 @@ export const rejectTask = asyncHandler(async (req, res) => {
             req.body.comment ||
             "Please improve your task and submit again.",
 
-        type: "system"
+        type: "system",
+        context: {
+            taskId: task._id,
+            internshipId: task.internship
+        }
 
     });
 

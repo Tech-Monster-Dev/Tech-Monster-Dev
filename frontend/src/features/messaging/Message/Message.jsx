@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
     getChatUsers,
-    // getMessages,
     sendMessage,
     markAsSeen,
     deleteForMe,
@@ -27,6 +27,9 @@ import "./Message.css";
 
 export default function Message() {
 
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const [users, setUsers] = useState([]);
 
     const [selectedUser, setSelectedUser] = useState(null);
@@ -39,6 +42,7 @@ export default function Message() {
     const [text, setText] = useState("");
 
     const [typing, setTyping] = useState(false);
+    const typingTimeoutRef = useRef(null);
 
     const [onlineUsers, setOnlineUsers] = useState([]);
 
@@ -103,6 +107,21 @@ export default function Message() {
 
 
     // ===============================
+    // Load Chat Users
+    // ===============================
+
+    const loadUsers = async () => {
+        try {
+            const res = await getChatUsers();
+            const chatUsers = res.users || [];
+            setUsers(chatUsers);
+
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    // ===============================
     // Socket Connect
     // ===============================
 
@@ -119,6 +138,7 @@ export default function Message() {
             currentUser._id
 
         );
+        socket.emit("activeChat", { withUser: selectedUser?._id || null });
 
         socket.on(
 
@@ -182,9 +202,11 @@ export default function Message() {
 
             "typing",
 
-            () => {
+            ({ sender }) => {
 
-                setTyping(true);
+                if (selectedUser && String(sender) === String(selectedUser._id)) {
+                    setTyping(true);
+                }
 
             }
 
@@ -194,9 +216,11 @@ export default function Message() {
 
             "stopTyping",
 
-            () => {
+            ({ sender }) => {
 
-                setTyping(false);
+                if (selectedUser && String(sender) === String(selectedUser._id)) {
+                    setTyping(false);
+                }
 
             }
 
@@ -206,7 +230,7 @@ export default function Message() {
 
             "receiveMessage",
 
-            (message) => {
+            async (message) => {
 
                 if (
 
@@ -224,6 +248,12 @@ export default function Message() {
                             : [...prev, message]
                     );
 
+                    try {
+                        await markAsSeen(message.sender._id);
+                    } catch (error) {
+                        console.error("Failed to mark message as seen:", error);
+                    }
+
                 }
 
             }
@@ -234,17 +264,19 @@ export default function Message() {
 
             "messagesSeen",
 
-            () => {
+            ({ messageIds = [] }) => {
+
+                const seenIds = new Set(
+                    messageIds.map(id => String(id))
+                );
 
                 setMessages(prev =>
 
-                    prev.map(msg => ({
-
-                        ...msg,
-
-                        seen: true
-
-                    }))
+                    prev.map(msg =>
+                        seenIds.has(String(msg._id))
+                            ? { ...msg, seen: true, delivered: true }
+                            : msg
+                    )
 
                 );
 
@@ -288,6 +320,8 @@ export default function Message() {
 
         return () => {
 
+            socket.emit("activeChat", { withUser: null });
+
             socket.off("onlineUsers");
 
             socket.off("chatUsersUpdated");
@@ -308,28 +342,6 @@ export default function Message() {
 
     }, [currentUser, selectedUser]);
 
-    // ===============================
-    // Load Chat Users
-    // ===============================
-
-    const loadUsers = async () => {
-
-        try {
-
-            const res = await getChatUsers();
-
-            setUsers(res.users || []);
-
-        }
-
-        catch (err) {
-
-            console.log(err);
-
-        }
-
-    };
-
     useEffect(() => {
 
         queueMicrotask(() => {
@@ -346,6 +358,11 @@ export default function Message() {
         setMobileChatOpen(true);
 
         setSelectedUser(user);
+        localStorage.setItem("messageSelectedUserId", String(user._id));
+
+        socket.emit("activeChat", {
+            withUser: user._id
+        });
 
         try {
 
@@ -391,9 +408,65 @@ export default function Message() {
 
     };
 
+    useEffect(() => {
+        if (users.length === 0 || selectedUser != null || location.state?.notificationUserId) {
+            return;
+        }
+
+        const savedUserId = localStorage.getItem("messageSelectedUserId");
+        if (savedUserId == null || savedUserId === "") return;
+
+        const savedUser = users.find(
+            (user) => String(user._id) === String(savedUserId)
+        );
+
+        if (savedUser) {
+            queueMicrotask(() => openChat(savedUser));
+        } else {
+            localStorage.removeItem("messageSelectedUserId");
+        }
+    }, [users, selectedUser, location.state?.notificationUserId]);
+
+    useEffect(() => {
+        const notificationUserId =
+            location.state?.notificationUserId;
+
+        if (!notificationUserId || users.length === 0) {
+            return;
+        }
+
+        const targetUser = users.find(
+            (user) =>
+                String(user._id) ===
+                String(notificationUserId)
+        );
+
+        if (!targetUser) {
+            return;
+        }
+
+        queueMicrotask(() => {
+            openChat(targetUser);
+        });
+
+        navigate(location.pathname, {
+            replace: true,
+            state: {}
+        });
+    }, [
+        users,
+        location.pathname,
+        location.state?.notificationUserId,
+        navigate
+    ]);
+
     const closeMobileChat = () => {
+        socket.emit("activeChat", {
+            withUser: null
+        });
         setMobileChatOpen(false);
         setSelectedUser(null);
+        localStorage.removeItem("messageSelectedUserId");
     };
 
     const loadStarredMessages = async () => {
@@ -523,19 +596,22 @@ export default function Message() {
 
         setText(value);
 
-        socket.emit(
+        if (!selectedUser?._id) return;
 
-            "typing",
+        socket.emit("typing", {
+            receiver: selectedUser._id
+        });
 
-            {
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
 
-                receiver:
-
-                    selectedUser?._id
-
-            }
-
-        );
+        typingTimeoutRef.current = setTimeout(() => {
+            socket.emit("stopTyping", {
+                receiver: selectedUser._id
+            });
+            typingTimeoutRef.current = null;
+        }, 800);
 
     };
 

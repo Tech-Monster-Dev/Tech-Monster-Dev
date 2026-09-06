@@ -239,7 +239,12 @@ export const updateTaskStatus = asyncHandler(async (req, res) => {
 
             message: `${req.user.firstName} ${req.user.lastName} submitted "${task.title}" for approval.`,
 
-            type: "system"
+            type: "system",
+
+            context: {
+                taskId: task._id,
+                studentId: req.user._id
+            }
 
         });
 
@@ -316,7 +321,11 @@ export const submitTask = asyncHandler(async (req, res) => {
                     user: admin._id,
                     title: "Task Approval",
                     message: `${req.user.firstName} ${req.user.lastName} submitted "${task.title}" for approval.`,
-                    type: "system"
+                    type: "system",
+                    context: {
+                        taskId: task._id,
+                        studentId: req.user._id
+                    }
                 });
             }
         }
@@ -704,7 +713,12 @@ export const approveTask = asyncHandler(async (req, res) => {
         message:
             `"${task.title}" has been approved by Admin.`,
 
-        type: "system"
+        type: "system",
+
+        context: {
+            taskId: task._id,
+            internshipId: task.internship
+        }
 
     });
 
@@ -774,7 +788,12 @@ export const rejectTask = asyncHandler(async (req, res) => {
             req.body.comment ||
             `"${task.title}" requires correction. Please update and submit again.`,
 
-        type: "system"
+        type: "system",
+
+        context: {
+            taskId: task._id,
+            internshipId: task.internship
+        }
 
     });
 

@@ -247,6 +247,16 @@ export const approveSubmission =
 
             type:
                 "system",
+
+            context: {
+                submissionId: submission._id,
+                courseId: submission.course || null,
+                internshipId: submission.internship || null,
+                courseSlug: submission.courseSlug,
+                moduleId: submission.moduleId,
+                lessonId: submission.lessonId,
+                taskId: submission.taskId
+            },
         });
 
         emitToUser(
