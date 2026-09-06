@@ -12,7 +12,9 @@ export default function ChatSidebar({
 
     openChat,
 
-    onlineUsers = []
+    onlineUsers = [],
+
+    mutedUsers = []
 
 }) {
 
@@ -20,17 +22,18 @@ export default function ChatSidebar({
 
     const filteredUsers = users.filter(user => {
 
-        const fullName =
+        const searchableText = [
+            user._id,
+            user.username,
+            user.firstName,
+            user.lastName,
+            user.email
+        ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
 
-            `${user.firstName} ${user.lastName}`
-
-                .toLowerCase();
-
-        return fullName.includes(
-
-            search.toLowerCase()
-
-        );
+        return searchableText.includes(search.toLowerCase());
 
     });
 
@@ -138,7 +141,7 @@ export default function ChatSidebar({
 
                                             onError={(event) => {
                                                 event.currentTarget.src = defaultProfileImage;
-                                            }}className="chatAvatar"
+                                            }} className="chatAvatar"
 
                                         />
 
@@ -163,6 +166,12 @@ export default function ChatSidebar({
                                             {user.firstName}{" "}
 
                                             {user.lastName}
+
+                                            {mutedUsers.some((id) => String(id) === String(user._id)) && (
+
+                                                <span className="mutedChatIcon" title="Muted" aria-label="Muted">🔇</span>
+
+                                            )}
 
                                         </h4>
 

@@ -1,5 +1,6 @@
 import User from "../user/models/User.js";
 import Internship from "../internships/models/Internship.js";
+import ChatBlock from "../messages/models/ChatBlock.js";
 
 import asyncHandler from "../../core/http/asyncHandler.js";
 
@@ -66,6 +67,9 @@ export const searchUsers = asyncHandler(async (req, res) => {
     }
 
     const regex = new RegExp(keyword.trim(), "i");
+
+    const blockedUsers = await ChatBlock.find({ blocker: req.user._id }).select("blockedUser");
+    const blockedUserIds = blockedUsers.map((block) => block.blockedUser);
 
     const users = await User.find({
         $or: [

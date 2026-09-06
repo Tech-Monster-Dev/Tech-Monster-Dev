@@ -4,13 +4,17 @@ import {
     getChatUsers,
     // getMessages,
     sendMessage,
-    uploadChatFile,
     markAsSeen,
     deleteForMe,
     deleteForEveryone,
+    deleteConversationForMe,
     searchMessages,
-    getSharedFiles,
-    getMessagesPage
+    getMessagesPage,
+    getStarredMessages,
+    toggleChatMute,
+    getMutedChats,
+    toggleChatBlock,
+    exportChat
 } from "../../../services/api/message.service";
 
 import { socket } from "../../../services/socket/socket";
@@ -26,8 +30,11 @@ export default function Message() {
     const [users, setUsers] = useState([]);
 
     const [selectedUser, setSelectedUser] = useState(null);
+    const [mobileChatOpen, setMobileChatOpen] = useState(false);
 
     const [messages, setMessages] = useState([]);
+    const [selectionMode, setSelectionMode] = useState(false);
+    const [selectedMessageIds, setSelectedMessageIds] = useState([]);
 
     const [text, setText] = useState("");
 
@@ -39,9 +46,15 @@ export default function Message() {
 
     const [replyMessage, setReplyMessage] = useState(null);
     const [search, setSearch] = useState("");
-    const [sharedFiles, setSharedFiles] = useState([]);
+    const [showMessageSearch, setShowMessageSearch] = useState(false);
+    const [starredMessages, setStarredMessages] = useState([]);
+    const [showStarredMessages, setShowStarredMessages] = useState(false);
+    const [mutedUsers, setMutedUsers] = useState([]);
+    const [blockedUsers, setBlockedUsers] = useState([]);
+    const [blockedByUsers, setBlockedByUsers] = useState([]);
 
-    const [showMedia, setShowMedia] = useState(false);
+    const [showChatMenu, setShowChatMenu] = useState(false);
+    const [showUserInfo, setShowUserInfo] = useState(false);
     const [page, setPage] = useState(1);
 
     const [hasMore, setHasMore] = useState(true);
@@ -63,12 +76,29 @@ export default function Message() {
         if (user) {
 
             queueMicrotask(() => {
-                setCurrentUser(user);
+                setCurrentUser({ ...user, _id: user._id || user.id, firstName: user.firstName || user.firstname, lastName: user.lastName || user.lastname });
             });
 
         }
 
     }, []);
+
+
+
+    useEffect(() => {
+        if (!currentUser) return;
+
+        const loadMutedChats = async () => {
+            try {
+                const res = await getMutedChats();
+                setMutedUsers(res.mutedUsers || []);
+            } catch (err) {
+                console.error("Failed to load muted chats:", err);
+            }
+        };
+
+        loadMutedChats();
+    }, [currentUser]);
 
 
 
@@ -97,6 +127,52 @@ export default function Message() {
             (users) => {
 
                 setOnlineUsers(users);
+
+                loadUsers();
+
+            }
+
+        );
+
+        socket.on(
+
+            "chatUsersUpdated",
+
+            (payload) => {
+
+                loadUsers();
+
+                if (!payload?.userId) return;
+
+                const userId = payload.userId.toString();
+
+                if (payload.type === "block") {
+
+                    setBlockedUsers(prev =>
+                        [...new Set([...prev, userId])]
+                    );
+
+                }
+
+                if (payload.type === "blockedBy") {
+
+                    setBlockedByUsers(prev =>
+                        [...new Set([...prev, userId])]
+                    );
+
+                }
+
+                if (payload.type === "unblock") {
+
+                    setBlockedUsers(prev =>
+                        prev.filter(id => id.toString() !== userId)
+                    );
+
+                    setBlockedByUsers(prev =>
+                        prev.filter(id => id.toString() !== userId)
+                    );
+
+                }
 
             }
 
@@ -136,17 +212,17 @@ export default function Message() {
 
                     selectedUser &&
 
-                    message.sender._id === selectedUser._id
+                    message.sender._id === selectedUser._id &&
+
+                    String(message.sender._id) !== String(currentUser?._id)
 
                 ) {
 
-                    setMessages(prev => [
-
-                        ...prev,
-
-                        message
-
-                    ]);
+                    setMessages(prev =>
+                        prev.some(item => String(item._id) === String(message._id))
+                            ? prev
+                            : [...prev, message]
+                    );
 
                 }
 
@@ -214,6 +290,8 @@ export default function Message() {
 
             socket.off("onlineUsers");
 
+            socket.off("chatUsersUpdated");
+
             socket.off("typing");
 
             socket.off("stopTyping");
@@ -265,6 +343,7 @@ export default function Message() {
     // ===============================
 
     const openChat = async (user) => {
+        setMobileChatOpen(true);
 
         setSelectedUser(user);
 
@@ -284,6 +363,18 @@ export default function Message() {
 
             setHasMore(res.hasMore);
 
+            setBlockedUsers(prev =>
+                res.blocked
+                    ? [...new Set([...prev, user._id.toString()])]
+                    : prev.filter(id => id !== user._id.toString())
+            );
+
+            setBlockedByUsers(prev =>
+                res.blockedBy
+                    ? [...new Set([...prev, user._id.toString()])]
+                    : prev.filter(id => id !== user._id.toString())
+            );
+
             await markAsSeen(
 
                 user._id
@@ -300,6 +391,21 @@ export default function Message() {
 
     };
 
+    const closeMobileChat = () => {
+        setMobileChatOpen(false);
+        setSelectedUser(null);
+    };
+
+    const loadStarredMessages = async () => {
+        if (!selectedUser?._id) return;
+        try {
+            const res = await getStarredMessages(selectedUser._id);
+            setStarredMessages(res.messages || []);
+            setShowStarredMessages(true);
+        } catch (err) {
+            console.error("Failed to load starred messages:", err);
+        }
+    };
     const handleSearch = async (value) => {
 
         setSearch(value);
@@ -352,6 +458,13 @@ export default function Message() {
 
         ) return;
 
+        if (
+            blockedUsers?.some((id) => String(id) === String(selectedUser?._id)) ||
+            blockedByUsers?.some((id) => String(id) === String(selectedUser?._id))
+        ) {
+            return;
+        }
+
         try {
 
             const res = await sendMessage({
@@ -372,6 +485,8 @@ export default function Message() {
 
             ]);
 
+            await loadUsers();
+
             setText("");
 
             setReplyMessage(null);
@@ -389,56 +504,6 @@ export default function Message() {
                 }
 
             );
-
-        }
-
-        catch (err) {
-
-            console.log(err);
-
-        }
-
-    };
-
-    // ===============================
-    // Upload File
-    // ===============================
-
-    const handleFile = async (file) => {
-
-        const formData = new FormData();
-
-        formData.append(
-
-            "file",
-
-            file
-
-        );
-
-        try {
-
-            const upload = await uploadChatFile(
-
-                formData
-
-            );
-
-            const res = await sendMessage({
-
-                receiver: selectedUser._id,
-
-                file: upload.fileUrl
-
-            });
-
-            setMessages(prev => [
-
-                ...prev,
-
-                res.data
-
-            ]);
 
         }
 
@@ -474,11 +539,92 @@ export default function Message() {
 
     };
 
+    const handleExportChat = async () => {
+        if (!selectedUser?._id) return;
+
+        try {
+            const response = await exportChat(selectedUser._id);
+            const blobUrl = window.URL.createObjectURL(response.data);
+            const link = document.createElement("a");
+
+            link.href = blobUrl;
+            link.download = `Chat-${selectedUser._id}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            console.error("Failed to export chat:", err);
+        }
+    };
+
+    const handleToggleMute = async () => {
+        if (!selectedUser?._id) return;
+
+        setShowChatMenu(false);
+
+        try {
+            const res = await toggleChatMute(selectedUser._id);
+
+            setMutedUsers((prev) =>
+                res.muted
+                    ? [...new Set([...prev, selectedUser._id.toString()])]
+                    : prev.filter((id) => id.toString() !== selectedUser._id.toString())
+            );
+        } catch (err) {
+            console.error("Failed to toggle chat mute:", err);
+        }
+    };
+
+    const handleToggleBlock = async () => {
+        if (!selectedUser?._id) return;
+
+        try {
+            const result = await toggleChatBlock(selectedUser._id);
+            const userId = selectedUser._id.toString();
+
+            setBlockedUsers((prev) =>
+                result.blocked
+                    ? [...new Set([...prev, userId])]
+                    : prev.filter((id) => id.toString() !== userId)
+            );
+
+            setShowChatMenu(false);
+            await loadUsers();
+        } catch (err) {
+            console.error("Block toggle failed:", err);
+        }
+    };
+
+    const handleDeleteConversation = async () => {
+
+        if (!selectedUser) return;
+
+        try {
+
+            await deleteConversationForMe(selectedUser._id);
+
+            setMessages([]);
+            setShowChatMenu(false);
+            await loadUsers();
+
+        } catch (err) {
+
+            console.log(err);
+
+        }
+
+    };
+
+
     const handleDeleteForMe = async (id) => {
 
         try {
 
             await deleteForMe(id);
+
+            await loadUsers();
 
             setMessages(prev =>
 
@@ -507,6 +653,8 @@ export default function Message() {
         try {
 
             await deleteForEveryone(id);
+
+            await loadUsers();
 
             setMessages(prev =>
 
@@ -542,34 +690,6 @@ export default function Message() {
 
     };
 
-
-    const loadSharedFiles = async () => {
-
-        if (!selectedUser) return;
-
-        try {
-
-            const res = await getSharedFiles(
-
-                selectedUser._id
-
-            );
-
-            setSharedFiles(
-
-                res.files
-
-            );
-
-        }
-
-        catch (err) {
-
-            console.log(err);
-
-        }
-
-    };
 
     const loadOlderMessages = async () => {
 
@@ -627,7 +747,7 @@ export default function Message() {
 
     return (
 
-        <div className="chatContainer">
+        <div className={`chatContainer ${mobileChatOpen ? "mobile-chat-open" : ""}`}>
 
             <ChatSidebar
 
@@ -638,6 +758,7 @@ export default function Message() {
                 openChat={openChat}
 
                 onlineUsers={onlineUsers}
+                mutedUsers={mutedUsers}
 
             />
 
@@ -660,15 +781,33 @@ export default function Message() {
                     handleDeleteForMe={handleDeleteForMe}
 
                     handleDeleteForEveryone={handleDeleteForEveryone}
+                    handleDeleteConversation={handleDeleteConversation}
+                    handleToggleMute={handleToggleMute}
+                    handleToggleBlock={handleToggleBlock}
+                    blockedUsers={blockedUsers}
+                    blockedByUsers={blockedByUsers}
+                    handleExportChat={handleExportChat}
+                    mutedUsers={mutedUsers}
+                    showChatMenu={showChatMenu}
+                    setShowChatMenu={setShowChatMenu}
+                    showUserInfo={showUserInfo}
+                    setShowUserInfo={setShowUserInfo}
 
                     search={search}
+                    showMessageSearch={showMessageSearch}
+                    setShowMessageSearch={setShowMessageSearch}
+                    selectionMode={selectionMode}
+                    setSelectionMode={setSelectionMode}
+                    selectedMessageIds={selectedMessageIds}
+                    setSelectedMessageIds={setSelectedMessageIds}
 
                     handleSearch={handleSearch}
-                    loadSharedFiles={loadSharedFiles}
-                    showMedia={showMedia}
-                    setShowMedia={setShowMedia}
-                    sharedFiles={sharedFiles}
+                    loadStarredMessages={loadStarredMessages}
+                    starredMessages={starredMessages}
+                    showStarredMessages={showStarredMessages}
+                    setShowStarredMessages={setShowStarredMessages}
                     loadOlderMessages={loadOlderMessages}
+                    onMobileBack={closeMobileChat}
                     loadingMore={loadingMore}
 
                 />
@@ -724,102 +863,10 @@ export default function Message() {
                 }
 
                 {
-                    showMedia && (
-
-                        <div className="mediaModal">
-
-                            <div className="mediaHeader">
-
-                                <h3>
-
-                                    Shared Media
-
-                                </h3>
-
-                                <button
-
-                                    onClick={() =>
-
-                                        setShowMedia(false)
-
-                                    }
-
-                                >
-
-                                    ✕
-
-                                </button>
-
-                            </div>
-
-                            <div className="mediaGrid">
-
-                                {
-
-                                    sharedFiles.map(file => {
-
-                                        const image =
-
-                                            file.file.endsWith(".jpg") ||
-
-                                            file.file.endsWith(".jpeg") ||
-
-                                            file.file.endsWith(".png") ||
-
-                                            file.file.endsWith(".webp");
-
-                                        return image ?
-
-                                            (
-
-                                                <img
-
-                                                    key={file._id}
-
-                                                    src={file.file}
-
-                                                    alt="media"
-
-                                                />
-
-                                            )
-
-                                            :
-
-                                            (
-
-                                                <a
-
-                                                    key={file._id}
-
-                                                    href={file.file}
-
-                                                    target="_blank"
-
-                                                    rel="noreferrer"
-
-                                                >
-
-                                                    📎 File
-
-                                                </a>
-
-                                            );
-
-                                    })
-
-                                }
-
-                            </div>
-
-                        </div>
-
-                    )
-                }
-
-                {
 
                     selectedUser &&
+                    !blockedUsers.includes(selectedUser._id.toString()) &&
+                    !blockedByUsers.includes(selectedUser._id.toString()) &&
 
                     <ChatInput
 
@@ -829,7 +876,6 @@ export default function Message() {
 
                         handleSend={handleSend}
 
-                        handleFile={handleFile}
 
                     />
 

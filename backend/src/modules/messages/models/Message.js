@@ -40,6 +40,18 @@ const messageSchema = new mongoose.Schema(
 
         ],
 
+        starredBy: [
+
+            {
+
+                type: mongoose.Schema.Types.ObjectId,
+
+                ref: "User"
+
+            }
+
+        ],
+
         isDeleted: {
 
             type: Boolean,

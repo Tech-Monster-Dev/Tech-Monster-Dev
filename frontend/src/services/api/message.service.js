@@ -27,20 +27,19 @@ export const markAsSeen = async (userId) => {
     return data;
 };
 
-// Upload file
-export const uploadChatFile = async (formData) => {
 
-    const { data } = await api.post(
-        `${API.MESSAGE.BASE}/upload`,
-        formData,
-        {
-            headers: {
-                "Content-Type": "multipart/form-data"
-            }
-        }
+
+// Delete Conversation For Me
+export const deleteConversationForMe = async (userId) => {
+
+    const { data } = await api.delete(
+
+        `${API.MESSAGE.BASE}/conversation/${userId}`
+
     );
 
     return data;
+
 };
 
 
@@ -89,17 +88,6 @@ export const searchMessages = async (
 
 };
 
-export const getSharedFiles = async (userId) => {
-
-    const { data } = await api.get(
-
-        `${API.MESSAGE.BASE}/shared/${userId}`
-
-    );
-
-    return data;
-
-};
 
 export const getMessagesPage = async (
 
@@ -117,4 +105,50 @@ export const getMessagesPage = async (
 
     return data;
 
+};
+export const toggleStarMessage = async (messageId) => {
+    const { data } = await api.patch(`${API.MESSAGE.BASE}/star/${messageId}`);
+    return data;
+};
+
+
+export const getStarredMessages = async (userId) => {
+    const { data } = await api.get(`${API.MESSAGE.BASE}/starred/${userId}`);
+    return data;
+};
+
+
+export const toggleChatMute = async (userId) => {
+    const { data } = await api.patch(
+        `${API.MESSAGE.BASE}/mute/${userId}`
+    );
+    return data;
+};
+
+export const toggleChatBlock = async (userId) => {
+    const { data } = await api.patch(
+        `${API.MESSAGE.BASE}/block/${userId}`
+    );
+    return data;
+};
+
+export const getBlockedUsers = async () => {
+    const { data } = await api.get(API.MESSAGE.BASE + "/blocked");
+    return data;
+};
+
+
+export const getMutedChats = async () => {
+    const { data } = await api.get(
+        `${API.MESSAGE.BASE}/muted`
+    );
+    return data;
+};
+
+
+export const exportChat = async (userId) => {
+    const response = await api.get(`${API.MESSAGE.BASE}/export/${userId}`, {
+        responseType: "blob"
+    });
+    return response;
 };

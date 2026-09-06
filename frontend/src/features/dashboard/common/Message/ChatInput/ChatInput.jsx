@@ -3,7 +3,6 @@ import EmojiPicker from "emoji-picker-react";
 
 import {
     HiPaperAirplane,
-    HiPaperClip,
     HiEmojiHappy
 } from "react-icons/hi";
 
@@ -16,36 +15,13 @@ export default function ChatInput({
 
     setText,
 
-    handleSend,
-
-    handleFile
+    handleSend
 
 }) {
 
-    const fileRef = useRef();
     const pickerRef = useRef();
 
-    const chooseFile = () => {
-
-        fileRef.current.click();
-
-    };
-
     const [showEmoji, setShowEmoji] = useState(false);
-
-    const fileChange = (e) => {
-
-        if (!e.target.files[0]) return;
-
-        handleFile(
-
-            e.target.files[0]
-
-        );
-
-        e.target.value = "";
-
-    };
 
     useEffect(() => {
 
@@ -109,20 +85,6 @@ export default function ChatInput({
 
             </button>
 
-            <button
-
-                className="chatIconBtn"
-
-                onClick={chooseFile}
-
-                title="Attach File"
-
-            >
-
-                <HiPaperClip />
-
-            </button>
-
             {
 
                 showEmoji && (
@@ -150,18 +112,6 @@ export default function ChatInput({
                 )
 
             }
-
-            <input
-
-                type="file"
-
-                hidden
-
-                ref={fileRef}
-
-                onChange={fileChange}
-
-            />
 
             <input
 
