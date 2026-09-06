@@ -79,6 +79,12 @@ export const followUser = asyncHandler(async (req, res) => {
         following: followingId
     });
 
+    emitToUser(
+        followerId,
+        "chatUsersUpdated",
+        { type: "follow", userId: followingId.toString() }
+    );
+
     // =====================================
     // GET FOLLOWER DETAILS
     // =====================================
@@ -166,6 +172,11 @@ export const unfollowUser = asyncHandler(
 
         }
 
+        emitToUser(
+            followerId,
+            "chatUsersUpdated",
+            { type: "unfollow", userId: followingId.toString() }
+        );
 
         res.status(200).json({
 

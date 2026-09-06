@@ -1,9 +1,6 @@
 import express from "express";
 
 import { protect } from "../../core/security/auth.middleware.js";
-import chatUpload from "../../infrastructure/storage/chatUpload.middleware.js";
-import { uploadChatFile } from "./chatUpload.controller.js";
-
 import {
     sendMessage,
     getMessages,
@@ -11,9 +8,16 @@ import {
     markAsSeen,
     deleteForMe,
     deleteForEveryone,
+    deleteConversationForMe,
+    toggleStarMessage,
     searchMessages,
-    getSharedFiles,
-    getMessagesPaginated
+    getMessagesPaginated,
+    getStarredMessages,
+    toggleChatMute,
+    toggleChatBlock,
+    getMutedChats,
+    getBlockedUsers,
+    exportChat
 } from "./message.controller.js";
 
 const router = express.Router();
@@ -38,11 +42,6 @@ router.get(
     searchMessages
 );
 
-router.get(
-    "/shared/:userId",
-    protect,
-    getSharedFiles
-);
 
 router.get(
     "/page/:userId",
@@ -50,6 +49,12 @@ router.get(
     getMessagesPaginated
 );
 
+
+router.get(
+    "/blocked",
+    protect,
+    getBlockedUsers
+);
 
 // Get Conversation
 router.get(
@@ -65,12 +70,37 @@ router.patch(
     markAsSeen
 );
 
-// Upload Chat File
-router.post(
-    "/upload",
+
+router.get(
+
+    "/starred/:userId",
+
     protect,
-    chatUpload.single("file"),
-    uploadChatFile
+
+    getStarredMessages
+
+);
+
+
+router.patch(
+
+    "/star/:id",
+
+    protect,
+
+    toggleStarMessage
+
+);
+
+
+router.delete(
+
+    "/conversation/:userId",
+
+    protect,
+
+    deleteConversationForMe
+
 );
 
 router.delete(
@@ -93,5 +123,13 @@ router.delete(
 
 );
 
+
+router.get("/export/:userId", protect, exportChat);
+
+router.get("/muted", protect, getMutedChats);
+router.get("/blocked", protect, getBlockedUsers);
+
+router.patch("/mute/:userId", protect, toggleChatMute);
+router.patch("/block/:userId", protect, toggleChatBlock);
 
 export default router;

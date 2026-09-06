@@ -1,24 +1,27 @@
 import "./MessageBubble.css";
 import { useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
+import { toggleStarMessage } from "../../../../../services/api/message.service.js";
 
 export default function MessageBubble({
 
     message,
 
     currentUser,
+    isSelfChat,
     onDeleteForMe,
 
     onDeleteForEveryone,
-    onReply
+    onReply,
+    selectionMode,
+    isSelected,
+    onSelect
 
 }) {
 
     const isMine =
 
-        message.sender?._id === currentUser?._id ||
-
-        message.sender === currentUser?._id;
+        String(message.sender?._id || message.sender) === String(currentUser?._id);
 
     const isImage =
 
@@ -38,9 +41,11 @@ export default function MessageBubble({
 
             className={
 
-                `messageRow ${isMine ? "mine" : "other"}`
+                `messageRow ${isMine ? "mine" : "other"}${isSelected ? " selected" : ""}`
 
             }
+
+            onClick={selectionMode ? onSelect : undefined}
 
         >
 
@@ -48,7 +53,7 @@ export default function MessageBubble({
 
                 {
 
-                    isMine && !message.isDeleted && (
+                    isMine && (
 
                         <button
 
@@ -76,13 +81,31 @@ export default function MessageBubble({
 
                         <div className="msgMenu">
 
+                            {!isSelfChat && (
+                                <button
+                                    onClick={() => {
+                                        onReply(message);
+                                        setShowMenu(false);
+                                    }}
+                                >
+                                    Reply
+                                </button>
+                            )}
+
                             <button
-                                onClick={() => {
-                                    onReply(message);
+                                onClick={async () => {
+                                    try {
+                                        await toggleStarMessage(message._id);
+                                        message.starredBy = message.starredBy?.some(id => String(id) === String(currentUser?._id))
+                                            ? message.starredBy.filter(id => String(id) !== String(currentUser?._id))
+                                            : [...(message.starredBy || []), currentUser?._id];
+                                    } catch (err) {
+                                        console.error("Failed to toggle star:", err);
+                                    }
                                     setShowMenu(false);
                                 }}
                             >
-                                Reply
+                                {message.starredBy?.some(id => String(id) === String(currentUser?._id)) ? "Unstar message" : "Star message"}
                             </button>
 
                             <button
@@ -95,7 +118,7 @@ export default function MessageBubble({
                             </button>
 
                             {
-                                isMine &&
+                                isMine && !message.isDeleted &&
                                 <button
                                     onClick={() => {
                                         onDeleteForEveryone(message._id);
@@ -111,6 +134,10 @@ export default function MessageBubble({
                     )
 
                 }
+
+                {message.starredBy?.some(id => String(id) === String(currentUser?._id)) && (
+                    <span className="messageStar" aria-label="Starred message" title="Starred message">★</span>
+                )}
 
                 {
                     message.isDeleted ? (

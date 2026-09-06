@@ -1,7 +1,7 @@
 import './Sidebar.css';
 
 import useAuth from '../../../../shared/hooks/useAuth';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
@@ -44,6 +44,14 @@ function Sidebar({
     const location = useLocation();
 
     const [loading, setLoading] = useState(false);
+    const activeLinkRef = useRef(null);
+    useEffect(() => {
+        activeLinkRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+        });
+    }, [location.pathname]);
+
 
     const dailyTaskLocked = role === "student" && (!enrolledCourse || !dailyTaskUnlocked);
 
@@ -222,6 +230,7 @@ function Sidebar({
                         return (
                             <li
                                 key={index}
+                                ref={isActive ? activeLinkRef : null}
                                 className={`
                                 ${isActive ? "active" : ""}
                                 ${link.locked ? "locked-link" : ""}

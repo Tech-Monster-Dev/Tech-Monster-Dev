@@ -3,6 +3,7 @@ import { Server } from "socket.io";
 let io;
 
 const onlineUsers = new Map();
+const onlineUserActivity = new Map();
 
 const allowedOrigins = [
     "http://localhost:5173",
@@ -60,9 +61,16 @@ export const initSocket = (server) => {
 
             const id = String(userId);
 
+            socket.join(id);
+
             onlineUsers.set(
                 id,
                 socket.id
+            );
+
+            onlineUserActivity.set(
+                id,
+                Date.now()
             );
 
             console.log(
@@ -107,6 +115,10 @@ export const initSocket = (server) => {
                         userId
                     );
 
+                    onlineUserActivity.delete(
+                        userId
+                    );
+
                     console.log(
                         "❌ USER REMOVED:",
                         userId
@@ -141,6 +153,13 @@ export const getIO = () => {
 // =====================================
 // GET ONLINE USERS
 // =====================================
+
+export const getOnlineUserActivity = () => {
+
+    return onlineUserActivity;
+
+};
+
 
 export const getOnlineUsers = () => {
 

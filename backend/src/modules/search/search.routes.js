@@ -1,4 +1,5 @@
 import express from "express";
+import { protect } from "../../core/security/auth.middleware.js";
 
 import {
     searchInternships,
@@ -14,6 +15,7 @@ router.get(
 
 router.get(
     "/users",
+    protect,
     searchUsers
 );
 

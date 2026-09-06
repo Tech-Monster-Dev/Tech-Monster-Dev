@@ -43,12 +43,15 @@ function App() {
     checkServer();
 
     const handleOffline = () => {
+      sessionStorage.setItem("preOfflinePath", window.location.pathname + window.location.search + window.location.hash);
       navigate("/offline");
     };
 
     const handleOnline = () => {
       if (window.location.pathname === "/offline") {
-        navigate("/");
+        const previousPath = sessionStorage.getItem("preOfflinePath") || "/";
+        sessionStorage.removeItem("preOfflinePath");
+        navigate(previousPath, { replace: true });
       }
     };
 
