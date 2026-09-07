@@ -42,6 +42,14 @@ export const API = {
 
   },
 
+  FEEDBACK: {
+    WEBSITE: "/feedback/website",
+    MY_COURSE: "/feedback/my/course",
+    MY_INTERNSHIP: "/feedback/my/internship",
+    SUBMIT: "/feedback"
+  },
+
+
   ADMIN: {
 
     USERS: "/admin/users",

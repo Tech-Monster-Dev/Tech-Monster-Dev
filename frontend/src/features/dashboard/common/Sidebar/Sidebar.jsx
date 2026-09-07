@@ -89,6 +89,7 @@ function Sidebar({
         { name: "Badges", path: "/student/badges", icon: <FiAward /> },
         { name: "Account", path: "/student/account", icon: <FiUser /> },
         { name: "Certificate", path: "/student/certificate", icon: <FiAward /> },
+        { name: "Feedback", path: "/student/feedback", icon: <FiHelpCircle /> },
         { name: "Help & Support", path: "/student/help&support", icon: <FiHelpCircle /> },
     ];
 

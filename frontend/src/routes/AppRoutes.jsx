@@ -44,6 +44,7 @@ import StudentAttendance from '../features/student/attendance';
 import StudentBadges from '../features/student/badges';
 import StudentAccount from '../features/student/account';
 import StudentCertificate from '../features/student/certificate';
+import StudentFeedback from '../features/student/feedback';
 import StudentSetting from '../features/student/settings';
 
 import StudentProfile from '../features/profile/StudentProfile';
@@ -151,6 +152,10 @@ function AppRoutes() {
                     <Route
                         path="certificate"
                         element={<StudentCertificate />}
+                    />
+                    <Route
+                        path="feedback"
+                        element={<StudentFeedback />}
                     />
                     <Route
                         path="settings"

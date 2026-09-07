@@ -10,6 +10,11 @@ export const navLinks = [
         path: "#about"
     },
     {
+        id: 3,
+        title: "Feedback",
+        path: "#feedback"
+    },
+    {
         id: 4,
         title: "Contact",
         path: "#contact"
