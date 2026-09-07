@@ -1,0 +1,60 @@
+export const MODERATION_WORDS = {
+    english: [
+        "asshole",
+        "bastard",
+        "bitch",
+        "bullshit",
+        "crap",
+        "dumbass",
+        "fool",
+        "fuck",
+        "fucking",
+        "idiot",
+        "moron",
+        "motherfucker",
+        "nonsense",
+        "shit",
+        "stupid",
+        "suck",
+        "sucks"
+    ],
+    hindi: [
+        "बकवास",
+        "बेवकूफ",
+        "बेवकूफी",
+        "गधा",
+        "गधे",
+        "हरामी",
+        "कमीना",
+        "कमीने",
+        "कुत्ता",
+        "कुत्ते",
+        "चूतिया",
+        "चूतियापा",
+        "भोसड़ी",
+        "भोसड़ीवाला",
+        "मादरचोद",
+        "मूर्ख",
+        "साला",
+        "साली",
+        "हरामखोर"
+    ],
+    odia: [
+        "ବକବାସ",
+        "ବେକାର",
+        "ବେବକୁଫ",
+        "ଗଧ",
+        "ଗାଳି",
+        "ହରାମି",
+        "କମିନା",
+        "କୁକୁର",
+        "ମୁର୍ଖ",
+        "ଚୋଦା",
+        "ଚୋଦିଆ",
+        "ଚୁତିଆ",
+        "ଶାଳା",
+        "ଶାଳୀ"
+    ]
+};
+
+export const ALL_MODERATION_WORDS = Object.values(MODERATION_WORDS).flat();
