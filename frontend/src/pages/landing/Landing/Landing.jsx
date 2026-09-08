@@ -1,6 +1,7 @@
 
 import Navbar from "../../../components/Navbar";
 import Hero from "../Hero";
+import Notice from "../Notice";
 import About from "../About";
 import Contact from "../Contact";
 import Feedback from "../Feedback";
@@ -12,6 +13,7 @@ function Landing() {
     <>
         <Navbar />
         <Hero />
+        <Notice />
         <About />
         <Feedback />
         <Contact />

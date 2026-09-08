@@ -24,6 +24,7 @@ import {
     FiX,
     FiLock,
     FiHelpCircle,
+    FiBell,
     FiChevronLeft,
     FiMenu
 } from "react-icons/fi";
@@ -102,6 +103,7 @@ function Sidebar({
         { name: "Reports", path: "/admin/reports", icon: <FiGrid /> },
         { name: "Certificate Approval", path: "/admin/certificates", icon: <FiCreditCard /> },
         { name: "Support Inbox", path: "/admin/support", icon: <FiHelpCircle /> },
+        { name: "Notice", path: "/admin/notice", icon: <FiBell /> },
     ];
 
     const navLinks = role === 'admin' ? adminLinks : studentLinks;
