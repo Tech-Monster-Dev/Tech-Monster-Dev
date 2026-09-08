@@ -12,17 +12,28 @@ const __filename =
 const __dirname =
     path.dirname(__filename);
 
-const coursesDir =
-    path.resolve(
-        __dirname,
-        "../../../../data/courses"
-    );
-
-const internshipsDir =
-    path.resolve(
-        __dirname,
-        "../../../../data/internships"
-    );
+const dataRoots = [
+    {
+        directory: path.resolve(__dirname, "../../../../data/Courses"),
+        key: "course",
+        file: "course.json",
+    },
+    {
+        directory: path.resolve(__dirname, "../../../../data/courses"),
+        key: "course",
+        file: "course.json",
+    },
+    {
+        directory: path.resolve(__dirname, "../../../../data/Internships"),
+        key: "internship",
+        file: "internship.json",
+    },
+    {
+        directory: path.resolve(__dirname, "../../../../data/internships"),
+        key: "internship",
+        file: "internship.json",
+    },
+];
 
 export const readCourseData =
     async (courseSlug) => {
@@ -31,52 +42,57 @@ export const readCourseData =
         }
 
         try {
-            const folders =
-                await readdir(
-                    coursesDir,
-                    {
-                        withFileTypes: true,
-                    }
-                );
-
             const normalizedTarget =
                 normalizeSlug(courseSlug);
 
-            for (const folder of folders) {
-                if (!folder.isDirectory()) {
+            for (const root of dataRoots) {
+                let folders;
+
+                try {
+                    folders = await readdir(
+                        root.directory,
+                        { withFileTypes: true }
+                    );
+                } catch {
                     continue;
                 }
 
-                const filePath =
-                    path.join(
-                        coursesDir,
-                        folder.name,
-                        "course.json"
-                    );
+                for (const folder of folders) {
+                    if (!folder.isDirectory()) {
+                        continue;
+                    }
 
-                try {
-                    const raw =
-                        await readFile(
-                            filePath,
-                            "utf8"
+                    const filePath =
+                        path.join(
+                            root.directory,
+                            folder.name,
+                            root.file
                         );
 
-                    const parsed =
-                        JSON.parse(raw);
+                    try {
+                        const raw =
+                            await readFile(
+                                filePath,
+                                "utf8"
+                            );
 
-                    const courseData =
-                        parsed?.course ||
-                        parsed;
+                        const parsed =
+                            JSON.parse(raw);
 
-                    if (
-                        normalizeSlug(
-                            courseData?.slug
-                        ) === normalizedTarget
-                    ) {
-                        return courseData;
+                        const courseData =
+                            parsed?.[root.key] ||
+                            parsed;
+
+                        if (
+                            normalizeSlug(
+                                courseData?.slug
+                            ) === normalizedTarget
+                        ) {
+                            return courseData;
+                        }
+                    } catch {
+                        continue;
                     }
-                } catch {
-                    continue;
                 }
             }
         } catch {

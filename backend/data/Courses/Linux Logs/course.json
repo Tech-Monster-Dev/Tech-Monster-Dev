@@ -1,0 +1,2408 @@
+{
+  "course": {
+    "id": "linux-logs",
+    "title": "Linux Logs",
+    "slug": "linux-logs",
+    "description": "A practical, research-based course on Linux logging from event sources through collection, storage, filtering, rotation, security auditing, troubleshooting, analysis, and controlled automation. Students learn systemd-journald and journalctl, kernel messages, syslog and rsyslog, logrotate, Linux Audit, authentication evidence, log integrity, cross-source correlation, shell-based analysis, and evidence collection. The course is designed for learners who want to work confidently with real Linux logs during system administration, troubleshooting, and security investigations without treating one distribution's file layout as universal.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 44,
+    "prerequisites": [
+      "Basic Linux command-line usage: files, permissions, processes, pipes, redirection, and sudo.",
+      "Basic understanding of systemd services and package installation.",
+      "Comfort reading command output and editing text configuration files.",
+      "Access to a disposable Linux VM or authorized Linux host for practical exercises."
+    ],
+    "learningOutcomes": [
+      "Explain the major Linux logging paths and choose an appropriate evidence source for a troubleshooting question.",
+      "Use journalctl to filter Linux logs by boot, service, time, priority, identifier, and structured fields.",
+      "Interpret kernel messages through dmesg and journalctl -k while accounting for kernel-version differences.",
+      "Read and safely modify targeted rsyslog rules, validate them with rsyslogd -N1, and trace controlled test messages.",
+      "Design and test file-based logrotate policies with appropriate retention, compression, permissions, and reopen considerations.",
+      "Inspect Linux Audit configuration and investigate controlled audit events with ausearch and aureport.",
+      "Correlate authentication, service, kernel, journal, and audit evidence into a defensible event timeline.",
+      "Diagnose missing or delayed logs using a source-to-destination troubleshooting workflow.",
+      "Write bounded shell-based log analysis and evidence-collection scripts that avoid unnecessary data exposure.",
+      "Design practical Linux log monitoring and retention approaches that balance security, availability, storage, and operational needs.",
+      "Complete a non-destructive Linux log operations and triage toolkit project and explain its evidence limitations."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Linux Logging Foundations",
+        "description": "Establish the logging mental model, common metadata, locations, and kernel message path needed for every later investigation.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "What Linux Logs Are and Why They Matter",
+            "description": "Build a mental model of Linux logging as event generation, collection, storage, access, analysis, retention, and disposal rather than treating /var/log as a single directory of text files.",
+            "learningObjectives": [
+              "Explain the difference between an event, a log record, a log stream, and a log-management process.",
+              "Identify operational, security, debugging, and compliance uses for Linux logs.",
+              "Distinguish the source of a message from the component that stores or forwards it.",
+              "Choose an appropriate log source before troubleshooting a Linux problem."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A log is an event record, not merely a text line."
+              },
+              {
+                "type": "paragraph",
+                "text": "Linux systems can expose events through the kernel message buffer, systemd-journald, traditional syslog-compatible daemons, application files, and the Linux Audit subsystem. A useful troubleshooting workflow starts by asking what generated the event and which collector or file is expected to contain it."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Kernel events commonly originate in kernel code and can be inspected through dmesg or journalctl -k.",
+                  "systemd services normally have their stdout/stderr connected to the journal.",
+                  "Traditional syslog messages have a facility and severity and may be routed by rsyslog.",
+                  "Audit records are security-audit events handled by auditd and queried with ausearch/aureport."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not assume every Linux distribution has the same files under /var/log. The presence of /var/log/syslog, /var/log/messages, or a separate auth log depends on distribution and configuration."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Inventory local log sources",
+                "description": "Map the logging sources available on a Linux host without modifying configuration.",
+                "steps": [
+                  "Run systemctl status systemd-journald --no-pager and note whether journald is active.",
+                  "Run journalctl --disk-usage and journalctl --list-boots.",
+                  "Inspect /var/log with ls -lah /var/log.",
+                  "Check whether rsyslogd, auditd, or another logger is installed with command -v rsyslogd auditd.",
+                  "Record which sources are present and which are absent."
+                ],
+                "solution": "systemctl status systemd-journald --no-pager\njournalctl --disk-usage\njournalctl --list-boots\nls -lah /var/log\ncommand -v rsyslogd || true\ncommand -v auditd || true",
+                "output": "The observable result is an inventory of journal storage, available boots, file-based logs, and optional logging daemons. The exact files and services vary by distribution."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-01",
+              "question": "Which statement best describes Linux logging?",
+              "options": [
+                "A log is only a text file in /var/log",
+                "A log is a record of an event; it may be stored in a journal, text file, database, or another logging system.",
+                "All Linux logs are generated by rsyslog.",
+                "Kernel logs and audit logs are the same data."
+              ],
+              "answer": "A log is a record of an event; it may be stored in a journal, text file, database, or another logging system.",
+              "explanation": "Linux exposes several logging mechanisms; /var/log is only one possible storage location."
+            },
+            "summary": [
+              "Logging is an operational capability that connects event sources to storage and analysis.",
+              "The first troubleshooting question is which subsystem could have generated the event.",
+              "Distribution defaults differ, so verify the host rather than memorizing one file layout."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Log Records, Severity, Facility, and Metadata",
+            "description": "Learn the common vocabulary used to interpret syslog-compatible messages and structured journal records.",
+            "learningObjectives": [
+              "Interpret syslog severity levels from emerg through debug.",
+              "Explain the purpose of facilities such as auth, daemon, kern, user, and local0-local7.",
+              "Recognize the difference between message content and metadata such as PID, unit, hostname, and identifier.",
+              "Avoid treating severity as a universal statement about business impact."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Syslog severity"
+              },
+              {
+                "type": "paragraph",
+                "text": "The conventional levels are emerg, alert, crit, err, warning, notice, info, and debug, in decreasing importance. A selector such as *.warning normally matches warning and more severe levels. The exact routing behavior is defined by the logging daemon configuration."
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Facility"
+              },
+              {
+                "type": "paragraph",
+                "text": "A facility identifies the subsystem or category associated with a message. Applications can use user, daemon, authpriv, or local facilities; kernel-originated messages use the kern facility in syslog terminology."
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Structured journal metadata"
+              },
+              {
+                "type": "paragraph",
+                "text": "The systemd journal stores fields such as MESSAGE, PRIORITY, SYSLOG_IDENTIFIER, _PID, _SYSTEMD_UNIT, _HOSTNAME, and boot identifiers. Field names beginning with an underscore are generally trusted metadata supplied by journald rather than arbitrary application fields."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Generate messages at multiple priorities",
+                "description": "Use logger to create controlled syslog messages and inspect how priority and facility are represented.",
+                "steps": [
+                  "Send an informational message with logger -p local0.info -t log-course.",
+                  "Send an error message with logger -p local0.err -t log-course.",
+                  "Use journalctl -t log-course -n 20 to inspect the messages.",
+                  "Use journalctl -t log-course -o json-pretty -n 2 to inspect structured fields.",
+                  "Compare PRIORITY, SYSLOG_FACILITY, SYSLOG_IDENTIFIER, and MESSAGE."
+                ],
+                "solution": "logger -p local0.info -t log-course \"training information event\"\nlogger -p local0.err -t log-course \"training error event\"\njournalctl -t log-course -n 20 --no-pager\njournalctl -t log-course -o json-pretty -n 2 --no-pager",
+                "output": "The messages should be visible through the configured logging path. Structured output should expose the identifier and priority fields; the exact surrounding metadata depends on the host."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02",
+              "question": "What does syslog priority primarily represent?",
+              "options": [
+                "The network address of the sender",
+                "The importance/severity of the message",
+                "The filename where the message is stored",
+                "The process's parent PID"
+              ],
+              "answer": "The importance/severity of the message",
+              "explanation": "Syslog levels express message severity; facility expresses the originating subsystem/category."
+            },
+            "summary": [
+              "Facility and severity answer different questions: who/category produced it versus how important it is.",
+              "Structured fields make filtering more precise than grepping an unstructured line.",
+              "A high severity does not automatically mean an incident is malicious; it means the producer classified the event as important."
+            ],
+            "resources": [
+              {
+                "title": "logger(1) — util-linux manual",
+                "url": "https://man7.org/linux/man-pages/man1/logger.1.html"
+              },
+              {
+                "title": "syslog(3) — Linux manual",
+                "url": "https://man7.org/linux/man-pages/man3/syslog.3.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Where Logs Live: Journals, /var/log, and Application Files",
+            "description": "Map common Linux logging locations while learning why paths differ across distributions and software packages.",
+            "learningObjectives": [
+              "Identify common journal locations and classic /var/log locations.",
+              "Explain volatile versus persistent journald storage.",
+              "Recognize authentication, kernel, daemon, boot, package, and application log categories.",
+              "Verify a suspected log source instead of assuming a path."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Common locations"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Persistent systemd journals are commonly under /var/log/journal; runtime journals are commonly under /run/log/journal.",
+                  "Traditional text logs are often under /var/log, but filenames are distribution-specific.",
+                  "Application logs may be under /var/log/application-name, a service-specific directory, or only in the journal.",
+                  "The Linux Audit subsystem commonly stores audit records under /var/log/audit."
+                ]
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Why path assumptions fail"
+              },
+              {
+                "type": "paragraph",
+                "text": "A distribution may use journald only, journald plus rsyslog, or another arrangement. A service may log to stdout/stderr and let journald collect it, while another application writes its own file. Always identify the service and inspect its configured logging destination."
+              },
+              {
+                "type": "warning",
+                "text": "Do not create or edit arbitrary files under /var/log to 'make logging work'. Identify the owning service and its configuration first."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Locate logs for a service",
+                "description": "Find the logging source for a running systemd service.",
+                "steps": [
+                  "Choose a non-critical service that exists on the lab system, such as ssh.service if present.",
+                  "Run systemctl status <service> --no-pager.",
+                  "Run journalctl -u <service> -n 50 --no-pager.",
+                  "Inspect systemctl cat <service> and look for StandardOutput, StandardError, or application-specific logging configuration.",
+                  "Document whether the service primarily uses the journal, a file, or both."
+                ],
+                "solution": "SERVICE=ssh.service\nsystemctl status \"$SERVICE\" --no-pager\njournalctl -u \"$SERVICE\" -n 50 --no-pager\nsystemctl cat \"$SERVICE\" | grep -E '^(StandardOutput|StandardError|ExecStart)=' || true",
+                "output": "The result identifies recent service events and gives clues about the service's output path. Replace ssh.service with a service actually installed on the lab host."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03",
+              "question": "Why should a student verify the actual log path on each distribution?",
+              "options": [
+                "Linux logging paths are intentionally randomized.",
+                "Different distributions and service configurations can use different collectors and files.",
+                "/var/log is not allowed on Linux.",
+                "journalctl cannot read service logs."
+              ],
+              "answer": "Different distributions and service configurations can use different collectors and files.",
+              "explanation": "Linux logging architecture is configurable and distro-dependent."
+            },
+            "summary": [
+              "A pathname is an implementation detail; the source and collection mechanism are the more durable concepts.",
+              "Service unit metadata can reveal whether stdout/stderr are being collected by journald.",
+              "Persistent journal storage must be checked separately from the existence of the journal service."
+            ],
+            "resources": [
+              {
+                "title": "systemd-journald configuration",
+                "url": "https://www.freedesktop.org/software/systemd/man/252/journald.conf.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Kernel Logging: printk, dmesg, and journalctl -k",
+            "description": "Understand the kernel's logging path and use it safely for hardware, driver, boot, and kernel troubleshooting.",
+            "learningObjectives": [
+              "Explain the kernel ring buffer and printk log levels.",
+              "Use dmesg and journalctl -k to inspect kernel messages.",
+              "Filter kernel events by boot and time.",
+              "Recognize that kernel message text can change across kernel versions and is not a stable API."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Kernel message path"
+              },
+              {
+                "type": "paragraph",
+                "text": "The Linux kernel uses printk and related pr_* helpers to write messages to the kernel log buffer. The kernel documentation describes this buffer as a ring buffer exposed to userspace through /dev/kmsg; dmesg is a common reader. On systemd systems, kernel messages can also be queried through journalctl -k."
+              },
+              {
+                "type": "code",
+                "text": "dmesg --level=err,warn\njournalctl -k -b --no-pager\njournalctl -k --since '30 min ago' --no-pager"
+              },
+              {
+                "type": "warning",
+                "text": "Kernel messages are diagnostic evidence, not a stable interface. Kernel versions and vendor backports can change message wording, so scripts should avoid depending on exact human-readable strings when possible."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Investigate kernel warnings",
+                "description": "Collect a focused kernel-log snapshot for troubleshooting.",
+                "steps": [
+                  "Run journalctl -k -b -p warning..emerg --no-pager.",
+                  "Run dmesg --level=warn,err if permitted.",
+                  "If the host has no matching events, use journalctl -k -n 100 instead of manufacturing a failure.",
+                  "Record timestamps, device/driver names, and the first error in a sequence.",
+                  "Write a short hypothesis based on the evidence and state what additional evidence would confirm it."
+                ],
+                "solution": "journalctl -k -b -p warning..emerg --no-pager\ndmesg --level=warn,err 2>/dev/null || true\njournalctl -k -n 100 --no-pager",
+                "output": "The exercise produces a kernel-focused evidence set. On a quiet machine, the absence of warnings is a valid observation; do not fabricate an error."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04",
+              "question": "Where does printk primarily place kernel messages?",
+              "options": [
+                "Only in /var/log/syslog",
+                "In the kernel log buffer, exposed to userspace through /dev/kmsg",
+                "Only in audit.log",
+                "Only in the systemd journal"
+              ],
+              "answer": "In the kernel log buffer, exposed to userspace through /dev/kmsg",
+              "explanation": "The kernel maintains a ring buffer for printk messages; user-space tools can read it."
+            },
+            "summary": [
+              "dmesg reads the kernel message buffer; journald may also collect kernel messages.",
+              "Use -k with journalctl when the question is specifically about kernel-originated events.",
+              "Exact kernel message wording should not be treated as a stable API."
+            ],
+            "resources": [
+              {
+                "title": "Linux kernel documentation — Message logging with printk",
+                "url": "https://docs.kernel.org/core-api/printk-basics.html"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-02",
+        "title": "systemd Journal and journalctl",
+        "description": "Master the modern Linux journal: storage, filtering, structured fields, correlation, and safe maintenance.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "systemd-journald Architecture and Storage",
+            "description": "Understand journald's role, journal files, runtime versus persistent storage, and storage limits.",
+            "learningObjectives": [
+              "Explain what systemd-journald collects.",
+              "Distinguish runtime and persistent journal storage.",
+              "Inspect journal disk usage and boot history.",
+              "Explain how journald storage limits prevent unbounded growth."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "journald in the logging path"
+              },
+              {
+                "type": "paragraph",
+                "text": "systemd-journald collects messages from the kernel, system services, standard output/error of services, and other supported sources. journalctl reads the journal. A host can also forward journal data to another logging system."
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Persistence"
+              },
+              {
+                "type": "paragraph",
+                "text": "journald can operate with volatile storage under /run/log/journal or persistent storage under /var/log/journal. The Storage= setting controls the preferred behavior; the actual choice also depends on whether persistent storage is available."
+              },
+              {
+                "type": "code",
+                "text": "journalctl --disk-usage\njournalctl --list-boots\nsudo journalctl --flush\nsudo journalctl --vacuum-time=7d"
+              },
+              {
+                "type": "warning",
+                "text": "Vacuuming deletes archived journal files that meet the selected retention criteria. Treat cleanup commands as administrative actions and verify retention requirements before using them."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05",
+                "title": "Measure and inspect journal storage",
+                "description": "Determine how much journal data exists and whether older boots are available.",
+                "steps": [
+                  "Run journalctl --disk-usage.",
+                  "Run journalctl --list-boots.",
+                  "Run journalctl -b 0 -n 20 --no-pager.",
+                  "If multiple boots exist, inspect journalctl -b -1 -n 20 --no-pager.",
+                  "Document whether the current host retains previous-boot data."
+                ],
+                "solution": "journalctl --disk-usage\njournalctl --list-boots\njournalctl -b 0 -n 20 --no-pager\njournalctl -b -1 -n 20 --no-pager 2>/dev/null || true",
+                "output": "The output reports journal disk usage, available boot IDs, and recent entries from selected boots. A system with only one retained boot will not have a previous-boot dataset."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05",
+              "question": "Which journald setting controls whether storage is volatile, persistent, automatic, or disabled?",
+              "options": [
+                "Storage= in journald.conf",
+                "Facility= in rsyslog.conf",
+                "Rotate= in logrotate.conf",
+                "Priority= in syslog.conf"
+              ],
+              "answer": "Storage= in journald.conf",
+              "explanation": "Storage= is the journald configuration control for storage mode."
+            },
+            "summary": [
+              "Journal storage and log rotation are related but are controlled by different mechanisms.",
+              "SystemMaxUse and RuntimeMaxUse constrain journal disk consumption.",
+              "Persistent logging is especially important when investigating events from earlier boots."
+            ],
+            "resources": [
+              {
+                "title": "journald.conf — systemd journal configuration",
+                "url": "https://www.freedesktop.org/software/systemd/man/252/journald.conf.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "journalctl Navigation and Time Filtering",
+            "description": "Use journalctl efficiently to narrow a large event stream by time, boot, unit, priority, and identifier.",
+            "learningObjectives": [
+              "Filter logs by relative and absolute time.",
+              "Select current or previous boots.",
+              "Filter by systemd unit and syslog identifier.",
+              "Combine filters without accidentally broadening the search."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "High-value filters"
+              },
+              {
+                "type": "code",
+                "text": "journalctl --since '1 hour ago'\njournalctl --since '2026-09-07 18:00:00' --until '2026-09-07 19:00:00'\njournalctl -u ssh.service\njournalctl -t log-course\njournalctl -p warning..emerg\njournalctl -b -1 -k"
+              },
+              {
+                "type": "paragraph",
+                "text": "Different field matches are combined as an AND condition. Multiple matches for the same field act as alternatives. This lets you express questions such as 'errors from service X during the last hour' rather than grepping everything."
+              },
+              {
+                "type": "warning",
+                "text": "Time-based investigations are sensitive to timezone and clock correctness. When correlating hosts, prefer unambiguous timestamps such as ISO-style output and verify the system clock."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06",
+                "title": "Build a focused service query",
+                "description": "Create a journalctl query that isolates a service's recent errors.",
+                "steps": [
+                  "Choose a service present on the host.",
+                  "Query only the last 60 minutes with --since.",
+                  "Add the service filter with -u.",
+                  "Restrict priority to err and more severe with -p err..emerg.",
+                  "Repeat with --no-pager and compare the result with the unfiltered service log."
+                ],
+                "solution": "SERVICE=ssh.service\njournalctl -u \"$SERVICE\" --since '60 min ago' -p err..emerg --no-pager\njournalctl -u \"$SERVICE\" --since '60 min ago' --no-pager | tail -n 20",
+                "output": "The first query should contain only high-severity entries from the selected service in the time window. If none exist, the correct result is an empty result set."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-06",
+              "question": "Which command shows kernel messages from the previous boot?",
+              "options": [
+                "journalctl -k -b -1",
+                "journalctl -u kernel.service",
+                "dmesg -b -1",
+                "journalctl --previous-kernel"
+              ],
+              "answer": "journalctl -k -b -1",
+              "explanation": "-k selects kernel messages and -b -1 selects the previous boot."
+            },
+            "summary": [
+              "Time and boot filters are among the fastest ways to reduce noise.",
+              "Filtering first is generally preferable to exporting an entire journal and searching it later."
+            ],
+            "resources": [
+              {
+                "title": "journalctl — systemd manual",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Structured Journal Fields and JSON Output",
+            "description": "Move beyond line-oriented text and use journal metadata for precise automation and analysis.",
+            "learningObjectives": [
+              "Inspect journal field names.",
+              "Use verbose and JSON output modes.",
+              "Filter using stable structured fields such as _SYSTEMD_UNIT and PRIORITY.",
+              "Explain why structured records are easier to automate than free-form message text."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Structured records"
+              },
+              {
+                "type": "paragraph",
+                "text": "A journal entry contains named fields rather than only one formatted line. journalctl can display these fields with -o verbose or serialize records as JSON with -o json/json-pretty. Fields such as _SYSTEMD_UNIT, _PID, PRIORITY, and SYSLOG_IDENTIFIER are useful for automation."
+              },
+              {
+                "type": "code",
+                "text": "journalctl -u ssh.service -o json-pretty -n 1\njournalctl -F _SYSTEMD_UNIT\njournalctl _SYSTEMD_UNIT=ssh.service PRIORITY=3 -n 20 --no-pager"
+              },
+              {
+                "type": "paragraph",
+                "text": "When scripting, prefer fields that express the event identity instead of parsing human-oriented formatting. Keep in mind that field availability depends on how the message was produced."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07",
+                "title": "Extract selected JSON fields",
+                "description": "Use journalctl JSON output with a small shell pipeline to inspect selected fields.",
+                "steps": [
+                  "Run journalctl -u ssh.service -o json -n 20 if the service exists.",
+                  "Pipe the output to a JSON parser such as jq if installed.",
+                  "Print MESSAGE, PRIORITY, SYSLOG_IDENTIFIER, and _SYSTEMD_UNIT when present.",
+                  "If jq is unavailable, use journalctl -o json-pretty and inspect fields manually."
+                ],
+                "solution": "journalctl -u ssh.service -o json -n 20 --no-pager 2>/dev/null |\n  jq -r '[.PRIORITY, .SYSLOG_IDENTIFIER, ._SYSTEMD_UNIT, .MESSAGE] | @tsv' 2>/dev/null || journalctl -u ssh.service -o json-pretty -n 5 --no-pager",
+                "output": "When jq is installed, the pipeline emits tab-separated selected fields. Without jq, the fallback shows structured records for manual inspection."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-07",
+              "question": "Why is structured journal output useful for automation?",
+              "options": [
+                "It guarantees every log has the same message text.",
+                "It exposes named fields that can be selected without parsing presentation formatting.",
+                "It disables log rotation.",
+                "It converts all logs into kernel messages."
+              ],
+              "answer": "It exposes named fields that can be selected without parsing presentation formatting.",
+              "explanation": "Named fields are more robust automation inputs than human-oriented output formatting."
+            },
+            "summary": [
+              "Use JSON or verbose output when field-level analysis matters.",
+              "Do not assume every application populates every field.",
+              "A structured record can still contain sensitive data and must be protected appropriately."
+            ],
+            "resources": [
+              {
+                "title": "systemd.journal-fields",
+                "url": "https://www.man7.org/linux/man-pages/man7/systemd.journal-fields.7.html"
+              },
+              {
+                "title": "journalctl output formats",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Boot, Service, Process, and Priority Correlation",
+            "description": "Combine multiple journal dimensions to reconstruct what happened during a service or system failure.",
+            "learningObjectives": [
+              "Correlate events by boot, unit, PID, and timestamp.",
+              "Use journalctl -u and PID-related matches appropriately.",
+              "Build an event timeline from multiple related entries.",
+              "Distinguish symptoms from the first causal error."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Timeline thinking"
+              },
+              {
+                "type": "paragraph",
+                "text": "A useful investigation often starts with a broad time window, then narrows to the affected service and related processes. The first error is not always the root cause; dependencies can fail earlier and cause later service failures."
+              },
+              {
+                "type": "code",
+                "text": "journalctl -u example.service --since '10 min ago' --no-pager\njournalctl _PID=1234 --since '10 min ago' --no-pager\njournalctl -b -1 -u example.service --no-pager"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record exact timestamps before forming a causal hypothesis.",
+                  "Check dependency units when a service reports a generic failure.",
+                  "Use systemctl status and systemctl show alongside logs to correlate state and configuration."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08",
+                "title": "Reconstruct a service incident timeline",
+                "description": "Practice evidence-first reasoning using an existing service's journal.",
+                "steps": [
+                  "Select a service that has meaningful recent events or use a lab service you can restart safely.",
+                  "Collect its recent journal entries and systemctl status output.",
+                  "Sort the observed events chronologically if needed.",
+                  "Identify the first abnormal event, later symptoms, and missing evidence.",
+                  "Write a three-part conclusion: observed facts, likely cause, next verification step."
+                ],
+                "solution": "SERVICE=cron.service\nsystemctl status \"$SERVICE\" --no-pager 2>/dev/null || true\njournalctl -u \"$SERVICE\" --since '2 hours ago' --no-pager 2>/dev/null || true",
+                "output": "The assessment is the quality of the timeline and reasoning, not a predetermined error. A healthy service may yield mostly normal events."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-08",
+              "question": "What is a good first step when a service fails unexpectedly?",
+              "options": [
+                "Delete its logs",
+                "Collect a bounded time window of service and dependency evidence",
+                "Disable journald",
+                "Change the kernel log level"
+              ],
+              "answer": "Collect a bounded time window of service and dependency evidence",
+              "explanation": "Evidence collection should precede configuration changes."
+            },
+            "summary": [
+              "Correlation requires timestamps and the correct scope.",
+              "Avoid making changes before preserving enough evidence to explain the original failure."
+            ],
+            "resources": [
+              {
+                "title": "journalctl — filtering and matching",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09",
+            "title": "journald Configuration, Limits, and Safe Maintenance",
+            "description": "Configure and maintain journald responsibly, with attention to disk capacity, persistence, access, and retention.",
+            "learningObjectives": [
+              "Explain SystemMaxUse, RuntimeMaxUse, SystemKeepFree, and related limits.",
+              "Create a journald drop-in instead of editing generated/vendor defaults unnecessarily.",
+              "Validate configuration changes and observe their effect.",
+              "Use vacuuming and rotation safely."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Capacity controls"
+              },
+              {
+                "type": "paragraph",
+                "text": "journald uses SystemMaxUse and RuntimeMaxUse to cap journal space, while SystemKeepFree and RuntimeKeepFree protect free space. Defaults are distribution/system dependent; inspect the active documentation and configuration rather than assuming a fixed byte value."
+              },
+              {
+                "type": "code",
+                "text": "sudo install -d -m 0755 /etc/systemd/journald.conf.d\nsudo tee /etc/systemd/journald.conf.d/60-course-limits.conf >/dev/null <<'EOF'\n[Journal]\nSystemMaxUse=1G\nRuntimeMaxUse=256M\nEOF\nsudo systemctl restart systemd-journald"
+              },
+              {
+                "type": "warning",
+                "text": "The example is a lab configuration. Production limits must be sized against filesystem capacity, event volume, retention requirements, and operational recovery needs."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09",
+                "title": "Create a controlled journald drop-in",
+                "description": "Practice a reversible journald configuration change in a lab VM.",
+                "steps": [
+                  "Check the current journal usage with journalctl --disk-usage.",
+                  "Create /etc/systemd/journald.conf.d/60-course-limits.conf with conservative limits appropriate to the lab VM.",
+                  "Restart systemd-journald.",
+                  "Run journalctl --disk-usage and systemctl status systemd-journald --no-pager.",
+                  "Remove the drop-in if the lab is not intended to retain the setting."
+                ],
+                "solution": "sudo install -d -m 0755 /etc/systemd/journald.conf.d\nsudo tee /etc/systemd/journald.conf.d/60-course-limits.conf >/dev/null <<'EOF'\n[Journal]\nSystemMaxUse=1G\nRuntimeMaxUse=256M\nEOF\nsudo systemctl restart systemd-journald\nsystemctl status systemd-journald --no-pager\njournalctl --disk-usage",
+                "output": "The service remains active and journal usage is governed by the configured limits. Exact usage varies with the host's workload."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-09",
+              "question": "What is the safest reason to set journal size limits?",
+              "options": [
+                "To prevent logs from ever being written",
+                "To bound disk consumption while preserving a planned amount of evidence",
+                "To disable all service logging",
+                "To make every log message identical"
+              ],
+              "answer": "To bound disk consumption while preserving a planned amount of evidence",
+              "explanation": "Capacity controls protect availability while retention policy determines how much evidence should be kept."
+            },
+            "summary": [
+              "Retention is a policy decision; disk limits are a resource-control mechanism.",
+              "Use drop-in configuration files for local overrides where supported.",
+              "Always verify changes on the actual distribution/version in use."
+            ],
+            "resources": [
+              {
+                "title": "journald.conf — SystemMaxUse and RuntimeMaxUse",
+                "url": "https://www.freedesktop.org/software/systemd/man/252/journald.conf.html"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-03",
+        "title": "Syslog and rsyslog",
+        "description": "Learn traditional syslog semantics and practical rsyslog routing, testing, reliability, and secure remote collection.",
+        "lessons": [
+          {
+            "id": "lesson-10",
+            "title": "Syslog Architecture and Compatibility",
+            "description": "Understand the traditional syslog model and how rsyslog extends it on modern Linux systems.",
+            "learningObjectives": [
+              "Explain facility/severity routing in syslog.",
+              "Distinguish the syslog API, syslog protocol, and rsyslog daemon.",
+              "Recognize why distributions may combine journald and rsyslog.",
+              "Read a basic rsyslog rule without confusing selectors and actions."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Three different meanings of 'syslog'"
+              },
+              {
+                "type": "paragraph",
+                "text": "In Linux discussions, syslog can mean the libc API used by applications, the message format/protocol family, or a daemon that receives and routes messages. rsyslog is a modern logging framework that supports traditional selectors plus richer filters, inputs, outputs, queues, and transports."
+              },
+              {
+                "type": "code",
+                "text": "authpriv.*    /var/log/auth.log\n*.warning     /var/log/warnings\nlocal0.*      /var/log/local0.log"
+              },
+              {
+                "type": "paragraph",
+                "text": "A traditional rule has a selector and an action. The selector describes facilities and priorities; the action describes where matching messages go."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10",
+                "title": "Read an existing rsyslog configuration",
+                "description": "Analyze an installed rsyslog configuration without changing it.",
+                "steps": [
+                  "Open /etc/rsyslog.conf read-only.",
+                  "List snippets under /etc/rsyslog.d/ if the directory exists.",
+                  "Identify at least three rules and label each selector and action.",
+                  "Find any rule using local facilities.",
+                  "Check whether the configuration references imuxsock, imjournal, imklog, or network input modules."
+                ],
+                "solution": "sed -n '1,220p' /etc/rsyslog.conf 2>/dev/null || true\nfind /etc/rsyslog.d -maxdepth 1 -type f -name '*.conf' -print 2>/dev/null || true\ngrep -R -nE '(^[^#].*\\s(/var/log|@@?|omfile)|module\\()' /etc/rsyslog.conf /etc/rsyslog.d 2>/dev/null || true",
+                "output": "The output exposes the local configuration. The exact rules differ by distribution; the goal is to correctly identify inputs, selectors/filters, and actions."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-10",
+              "question": "What is the role of an rsyslog action?",
+              "options": [
+                "It defines the Linux kernel version",
+                "It specifies what to do with a message after a rule matches",
+                "It sets the hostname of the machine",
+                "It rotates systemd journal files"
+              ],
+              "answer": "It specifies what to do with a message after a rule matches",
+              "explanation": "An rsyslog action can write, forward, or otherwise process a matching event."
+            },
+            "summary": [
+              "Selectors are a traditional filtering mechanism; actions define the destination or processing step.",
+              "Modern rsyslog configurations can use RainerScript and richer filters."
+            ],
+            "resources": [
+              {
+                "title": "rsyslog.conf(5)",
+                "url": "https://man7.org/linux/man-pages/man5/rsyslog.conf.5.html"
+              },
+              {
+                "title": "Official rsyslog documentation",
+                "url": "https://docs.rsyslog.com/doc/"
+              },
+              {
+                "title": "IETF RFC 5424 — The Syslog Protocol",
+                "url": "https://datatracker.ietf.org/doc/rfc5424/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "rsyslog Rules, Filters, and RainerScript",
+            "description": "Create targeted rsyslog routing rules using supported configuration patterns.",
+            "learningObjectives": [
+              "Write a simple RainerScript filter and action.",
+              "Route messages by tag and facility without altering unrelated logging.",
+              "Validate configuration with rsyslogd -N1.",
+              "Explain why configuration snippets under /etc/rsyslog.d are safer than modifying packaged defaults."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Modern local rule"
+              },
+              {
+                "type": "code",
+                "text": "if ($programname == \"log-course\") then {\n    action(type=\"omfile\" file=\"/var/log/log-course.log\")\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Rsyslog's current documentation recommends RainerScript for new configurations while acknowledging legacy syntax for compatibility. A tag-based rule can isolate training or application events without changing the system's normal routing."
+              },
+              {
+                "type": "code",
+                "text": "sudo rsyslogd -N1"
+              },
+              {
+                "type": "warning",
+                "text": "Validate syntax before restarting rsyslog. A malformed logging configuration can prevent the logger from starting and make diagnosis harder."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-11",
+                "title": "Route tagged events to a dedicated file",
+                "description": "Create a lab-only rsyslog rule for messages tagged log-course.",
+                "steps": [
+                  "Confirm rsyslog is installed and active.",
+                  "Create /etc/rsyslog.d/30-log-course.conf using the tag-based RainerScript rule.",
+                  "Run sudo rsyslogd -N1 and fix any syntax error before proceeding.",
+                  "Restart rsyslog.",
+                  "Send a message with logger -t log-course and inspect /var/log/log-course.log."
+                ],
+                "solution": "sudo tee /etc/rsyslog.d/30-log-course.conf >/dev/null <<'EOF'\nif ($programname == \"log-course\") then {\n    action(type=\"omfile\" file=\"/var/log/log-course.log\")\n}\nEOF\nsudo rsyslogd -N1\nsudo systemctl restart rsyslog\nlogger -t log-course \"rsyslog routing test\"\nsudo tail -n 20 /var/log/log-course.log",
+                "output": "A matching tagged message should appear in /var/log/log-course.log. Remove the lab rule after the exercise if it is not wanted on the machine."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-11",
+              "question": "Which command checks rsyslog configuration syntax without starting a second daemon?",
+              "options": [
+                "rsyslogd -N1",
+                "rsyslogd --check-kernel",
+                "journalctl --validate",
+                "logrotate --check"
+              ],
+              "answer": "rsyslogd -N1",
+              "explanation": "The rsyslog documentation describes rsyslogd -N1 as a configuration validation check."
+            },
+            "summary": [
+              "Use validation before restart.",
+              "A successful syntax check does not prove that permissions, paths, network reachability, or downstream destinations are correct."
+            ],
+            "resources": [
+              {
+                "title": "rsyslog Basic Configuration",
+                "url": "https://docs.rsyslog.com/doc/getting_started/basic_configuration.html"
+              },
+              {
+                "title": "rsyslog Configuration Reference",
+                "url": "https://docs.rsyslog.com/doc/configuration/index.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Inputs, Outputs, Queues, and Reliability",
+            "description": "Understand the message pipeline inside rsyslog and why queues matter when destinations are slow or unavailable.",
+            "learningObjectives": [
+              "Describe rsyslog inputs, rulesets, and actions.",
+              "Explain why queues decouple message ingestion from destinations.",
+              "Distinguish local file output from remote forwarding.",
+              "Identify operational risks when a destination is unavailable."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Pipeline"
+              },
+              {
+                "type": "paragraph",
+                "text": "Rsyslog processes messages through inputs, rulesets, filters, and actions. Inputs receive events; rulesets determine processing; actions write or forward them. Queues can buffer work so a slow destination does not necessarily block the entire pipeline."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Local socket/journal inputs receive local events depending on configuration.",
+                  "omfile writes to files; network outputs can forward events to remote systems.",
+                  "Queue design affects durability, memory use, latency, and behavior during outages.",
+                  "A remote logging design should explicitly decide what happens when the receiver is unreachable."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-12",
+                "title": "Trace a local message through rsyslog",
+                "description": "Use configuration and a controlled logger event to identify its route.",
+                "steps": [
+                  "Send logger -t trace-course -p local1.info 'pipeline test'.",
+                  "Search rsyslog configuration for rules matching local1 or trace-course.",
+                  "Check rsyslog service logs if the expected destination is unclear.",
+                  "Use journalctl -u rsyslog -n 50 to inspect daemon-level errors.",
+                  "Document input, filter, action, and resulting destination."
+                ],
+                "solution": "logger -t trace-course -p local1.info \"pipeline test\"\ngrep -R -nE 'local1|trace-course' /etc/rsyslog.conf /etc/rsyslog.d 2>/dev/null || true\njournalctl -u rsyslog -n 50 --no-pager 2>/dev/null || true",
+                "output": "The student should be able to explain the configured route. A host may have no explicit local1 rule, in which case the normal default route determines the destination."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-12",
+              "question": "Why can queues be important in remote logging?",
+              "options": [
+                "They change kernel permissions",
+                "They can buffer messages when a destination is slow or temporarily unavailable",
+                "They delete old journal files",
+                "They convert audit records to JSON"
+              ],
+              "answer": "They can buffer messages when a destination is slow or temporarily unavailable",
+              "explanation": "Queues can decouple message reception from downstream processing and provide resilience."
+            },
+            "summary": [
+              "Queue sizing is a capacity/reliability decision, not a magic guarantee of delivery.",
+              "Remote logging needs a defined failure mode and retention strategy."
+            ],
+            "resources": [
+              {
+                "title": "rsyslog configuration and processing architecture",
+                "url": "https://docs.rsyslog.com/doc/configuration/index.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Remote Syslog: UDP, TCP, TLS, and Trust Boundaries",
+            "description": "Learn the security and reliability trade-offs of sending Linux logs to a central collector.",
+            "learningObjectives": [
+              "Compare UDP and TCP for syslog transport.",
+              "Explain why encryption and peer authentication matter for sensitive logs.",
+              "Identify where TLS certificates and trust configuration fit into a logging architecture.",
+              "Design a simple client/collector topology without exposing unnecessary services."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Transport choices"
+              },
+              {
+                "type": "paragraph",
+                "text": "UDP is connectionless and does not provide transport-level delivery guarantees. TCP provides a connection-oriented transport, but an application still needs to define buffering and failure behavior. For sensitive or adversarial environments, encrypted and authenticated transport is preferable to sending logs as cleartext."
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Central collection"
+              },
+              {
+                "type": "paragraph",
+                "text": "A central collector can preserve evidence when an individual host is compromised or its local disk fails, and it can provide consistent access control and analysis. Red Hat documents a model in which journald and rsyslog cooperate for local and remote logging."
+              },
+              {
+                "type": "warning",
+                "text": "Do not expose a syslog listener broadly to the internet. Restrict source networks, firewall the listener, authenticate/encrypt where appropriate, and validate the receiver's capacity."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-13",
+                "title": "Design a remote logging plan",
+                "description": "Produce a transport and trust-boundary design without deploying an internet-facing receiver.",
+                "steps": [
+                  "Draw a two-host lab topology: client and collector.",
+                  "Select TCP or TLS-protected transport and justify the choice.",
+                  "Define which facilities or applications are forwarded.",
+                  "Specify firewall source/destination rules in prose.",
+                  "Define what the client should do during collector outage and how local retention covers the gap."
+                ],
+                "solution": "Client -> encrypted/authenticated syslog transport -> Collector\nClient local journal -> short local retention buffer\nCollector -> protected storage -> analysis/backup",
+                "output": "The expected output is a written design that explicitly addresses transport, authentication, firewalling, outage behavior, and retention. No public exposure is required."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-13",
+              "question": "What is the main security concern with sending sensitive logs over plain UDP?",
+              "options": [
+                "UDP changes timestamps",
+                "The contents can be observed or modified in transit and delivery is not connection-oriented",
+                "UDP prevents log rotation",
+                "UDP cannot carry text"
+              ],
+              "answer": "The contents can be observed or modified in transit and delivery is not connection-oriented",
+              "explanation": "Plain UDP does not provide confidentiality or integrity protection and does not establish a reliable connection."
+            },
+            "summary": [
+              "Choose transport based on threat model and operational requirements.",
+              "Centralization improves resilience but creates a high-value logging infrastructure that must itself be secured."
+            ],
+            "resources": [
+              {
+                "title": "Red Hat Enterprise Linux — Configuring a remote logging solution",
+                "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/assembly_configuring-a-remote-logging-solution_security-hardening"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Testing and Troubleshooting rsyslog",
+            "description": "Diagnose common rsyslog failures using syntax validation, service status, controlled test messages, permissions, and routing analysis.",
+            "learningObjectives": [
+              "Use rsyslogd -N1 before restart.",
+              "Inspect service status and journal output for rsyslog.",
+              "Trace a test event from source to destination.",
+              "Identify permission, path, syntax, and routing failures.",
+              "Recover safely without discarding unrelated configuration."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A disciplined troubleshooting sequence"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "1. Validate configuration syntax.",
+                  "2. Check service status and daemon logs.",
+                  "3. Confirm the test message is actually generated.",
+                  "4. Check whether a rule matches the message.",
+                  "5. Verify destination path and permissions.",
+                  "6. Re-test after one controlled change."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "sudo rsyslogd -N1\nsystemctl status rsyslog --no-pager\njournalctl -u rsyslog -n 100 --no-pager\nlogger -t log-course \"routing test\"\ntail -n 50 /var/log/log-course.log"
+              },
+              {
+                "type": "warning",
+                "text": "Avoid repeatedly restarting a failing logger without reading its error. A syntax error may persist across every restart."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-14",
+                "title": "Troubleshoot a deliberately broken rule",
+                "description": "Diagnose a syntax error in a disposable lab rsyslog snippet.",
+                "steps": [
+                  "Create a temporary .conf file under /etc/rsyslog.d with a known syntax mistake.",
+                  "Run rsyslogd -N1 and capture the error.",
+                  "Correct the file and rerun validation.",
+                  "Restart rsyslog only after validation succeeds.",
+                  "Generate a test event and verify the destination."
+                ],
+                "solution": "sudo rsyslogd -N1\n# After correcting the temporary configuration:\nsudo rsyslogd -N1\nsudo systemctl restart rsyslog\nlogger -t log-course \"post-fix validation\"\n",
+                "output": "The validation command should move from an error to a successful validation, after which the daemon can be restarted and the test message verified."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-14",
+              "question": "What should you do before restarting rsyslog after editing its configuration?",
+              "options": [
+                "Delete all logs",
+                "Run rsyslogd -N1 to validate the configuration",
+                "Reboot the server",
+                "Disable journald"
+              ],
+              "answer": "Run rsyslogd -N1 to validate the configuration",
+              "explanation": "Syntax validation is a low-risk step that catches many configuration errors before service restart."
+            },
+            "summary": [
+              "Use a temporary lab snippet when intentionally learning failure recovery.",
+              "Keep backups or version control for production configuration changes."
+            ],
+            "resources": [
+              {
+                "title": "rsyslog installation and validation",
+                "url": "https://docs.rsyslog.com/doc/getting_started/basic_configuration.html"
+              },
+              {
+                "title": "rsyslog.conf(5)",
+                "url": "https://man7.org/linux/man-pages/man5/rsyslog.conf.5.html"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-04",
+        "title": "Rotation, Retention, and Log Storage",
+        "description": "Manage file-based log lifecycle, capacity, compression, retention, and common disk-space failure modes.",
+        "lessons": [
+          {
+            "id": "lesson-15",
+            "title": "Log Rotation Concepts",
+            "description": "Understand why logs need lifecycle management and how rotation differs from journald vacuuming.",
+            "learningObjectives": [
+              "Explain rotation, retention, compression, and deletion.",
+              "Distinguish text-file rotation from journal rotation/vacuuming.",
+              "Recognize copytruncate versus application-aware reopening as different strategies.",
+              "Assess retention based on operational and security requirements."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Rotation lifecycle"
+              },
+              {
+                "type": "paragraph",
+                "text": "Log rotation typically renames or replaces an active file, keeps a configured number or age of older files, optionally compresses them, and eventually removes them. The logging application may need a signal or reopen operation so it writes to the new file."
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "journald versus logrotate"
+              },
+              {
+                "type": "paragraph",
+                "text": "systemd-journald manages its own journal files and supports rotation/vacuum operations through journalctl. logrotate is primarily for file-based logs and can execute postrotate/firstaction scripts."
+              },
+              {
+                "type": "warning",
+                "text": "Retention should not be chosen solely from available disk space. Security investigations, operational troubleshooting, and legal or organizational requirements may impose different retention periods."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-15",
+                "title": "Inspect rotation policy",
+                "description": "Find the existing logrotate configuration for a service without modifying it.",
+                "steps": [
+                  "Read /etc/logrotate.conf.",
+                  "List /etc/logrotate.d.",
+                  "Pick one service-specific configuration and explain daily/weekly/monthly, rotate, compress, delaycompress, missingok, notifempty, and postrotate directives when present.",
+                  "Run logrotate in debug mode against the system configuration if supported and safe.",
+                  "Document which files are actually controlled by the rule."
+                ],
+                "solution": "sed -n '1,240p' /etc/logrotate.conf\nfind /etc/logrotate.d -maxdepth 1 -type f -print 2>/dev/null | head -n 30\nsudo logrotate -d /etc/logrotate.conf",
+                "output": "The result is a read-only understanding of the configured rotation policy. Debug mode should not perform rotation."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-15",
+              "question": "What is the main purpose of log rotation?",
+              "options": [
+                "To encrypt every log",
+                "To control file growth and manage retention of older log files",
+                "To disable logging",
+                "To replace systemd"
+              ],
+              "answer": "To control file growth and manage retention of older log files",
+              "explanation": "Rotation prevents unbounded file growth and provides a lifecycle for old files."
+            },
+            "summary": [
+              "Rotation and retention are linked but not identical: rotation creates generations; retention determines how long generations remain.",
+              "Applications that keep an open file descriptor may need a reopen mechanism after rotation."
+            ],
+            "resources": [
+              {
+                "title": "logrotate(8)",
+                "url": "https://man7.org/linux/man-pages/man8/logrotate.8.html"
+              },
+              {
+                "title": "logrotate.conf(5)",
+                "url": "https://man7.org/linux/man-pages/man5/logrotate.conf.5.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Writing Safe logrotate Policies",
+            "description": "Create a minimal, application-aware logrotate policy and test it without corrupting an active logging stream.",
+            "learningObjectives": [
+              "Write a logrotate stanza for a dedicated application log.",
+              "Use size/time and retention directives appropriately.",
+              "Use create and postrotate where the application requires them.",
+              "Test a configuration with debug or forced rotation in a lab."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Example policy"
+              },
+              {
+                "type": "code",
+                "text": "/var/log/log-course.log {\n    daily\n    rotate 7\n    compress\n    delaycompress\n    missingok\n    notifempty\n    create 0640 root adm\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "The example manages a file-based application log. Whether create ownership/mode values are correct depends on the service's user/group and local policy."
+              },
+              {
+                "type": "warning",
+                "text": "Do not use copytruncate blindly. If an application can reopen logs on signal, an explicit postrotate/reopen action can preserve semantics better than truncating a file that the process still has open."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-16",
+                "title": "Test a lab rotation rule",
+                "description": "Create and validate a logrotate policy for a disposable file.",
+                "steps": [
+                  "Create /var/log/log-course.log with a few non-sensitive test lines.",
+                  "Create /etc/logrotate.d/log-course with a small retention count and compression settings.",
+                  "Run sudo logrotate -d /etc/logrotate.conf to inspect behavior.",
+                  "For a lab-only test, run sudo logrotate -f /etc/logrotate.conf after confirming the rule targets only the disposable file.",
+                  "List the resulting files and inspect their contents."
+                ],
+                "solution": "sudo sh -c 'printf \"event one\\nevent two\\n\" > /var/log/log-course.log'\nsudo tee /etc/logrotate.d/log-course >/dev/null <<'EOF'\n/var/log/log-course.log {\n    daily\n    rotate 3\n    compress\n    delaycompress\n    missingok\n    notifempty\n    create 0640 root root\n}\nEOF\nsudo logrotate -d /etc/logrotate.conf\n# In a disposable lab only:\nsudo logrotate -f /etc/logrotate.conf\nls -lah /var/log/log-course.log*",
+                "output": "The lab file is rotated into a numbered generation; older generations may be compressed according to the configured directives. Exact filenames depend on logrotate version and state."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-16",
+              "question": "Why is `logrotate -d` useful before a forced rotation?",
+              "options": [
+                "It deletes old logs immediately",
+                "It displays what logrotate would do without performing the rotation",
+                "It restarts journald",
+                "It changes file ownership"
+              ],
+              "answer": "It displays what logrotate would do without performing the rotation",
+              "explanation": "Debug mode is useful for inspecting policy behavior before making changes."
+            },
+            "summary": [
+              "Always ensure the target glob does not accidentally include unrelated files.",
+              "Test in a disposable environment before forcing production rotation."
+            ],
+            "resources": [
+              {
+                "title": "logrotate(8) — rotation, compression, retention",
+                "url": "https://man7.org/linux/man-pages/man8/logrotate.8.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-17",
+            "title": "Compression, Retention, and Disk Capacity",
+            "description": "Design retention policies that balance evidence availability, disk usage, and operational recovery.",
+            "learningObjectives": [
+              "Estimate log storage requirements from event rate and retention.",
+              "Explain compression and delayed compression.",
+              "Use journal disk usage and filesystem tools to identify capacity pressure.",
+              "Recognize why retention policies should distinguish hot, warm, and archived data."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Capacity reasoning"
+              },
+              {
+                "type": "paragraph",
+                "text": "A simple planning model is: average bytes per event × events per second × seconds per day × retention days, then add overhead and a safety margin. Real systems vary because event sizes and rates are not constant."
+              },
+              {
+                "type": "code",
+                "text": "journalctl --disk-usage\ndf -h /var\ndu -sh /var/log 2>/dev/null\nfind /var/log -type f -printf '%s %p\\n' 2>/dev/null | sort -nr | head"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Monitor both journal storage and ordinary file logs.",
+                  "Retention should account for backup/archive copies and incident-preservation requirements.",
+                  "Compression reduces storage but costs CPU and can affect retrieval workflows."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-17",
+                "title": "Perform a log capacity assessment",
+                "description": "Produce a small capacity report for /var and journald.",
+                "steps": [
+                  "Run df -h /var and record available space.",
+                  "Run journalctl --disk-usage.",
+                  "Measure /var/log with du -sh.",
+                  "Identify the five largest regular log files with find/du.",
+                  "Write a retention recommendation that includes a safety margin and explains what data should not be deleted automatically."
+                ],
+                "solution": "df -h /var\njournalctl --disk-usage\ndu -sh /var/log 2>/dev/null || true\nfind /var/log -type f -printf '%s %p\\n' 2>/dev/null | sort -nr | head -n 5",
+                "output": "The output is a host-specific capacity snapshot. The written recommendation should distinguish operational logs from data that must be preserved for an investigation."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-17",
+              "question": "Which input is most important when estimating log storage needs?",
+              "options": [
+                "Only the hostname",
+                "Event rate and average record size over the intended retention period",
+                "The kernel version alone",
+                "The number of shell users only"
+              ],
+              "answer": "Event rate and average record size over the intended retention period",
+              "explanation": "Storage planning is driven primarily by data volume over time, with overhead and safety margin."
+            },
+            "summary": [
+              "Use observed measurements when possible rather than arbitrary quotas.",
+              "Capacity limits and retention policies should be reviewed together."
+            ],
+            "resources": [
+              {
+                "title": "journald disk usage and limits",
+                "url": "https://www.freedesktop.org/software/systemd/man/252/journald.conf.html"
+              },
+              {
+                "title": "logrotate lifecycle",
+                "url": "https://man7.org/linux/man-pages/man8/logrotate.8.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Failure Modes: Disk Full, Deleted-but-Open Logs, and Missing Data",
+            "description": "Diagnose common log lifecycle failures that can affect both system availability and evidence quality.",
+            "learningObjectives": [
+              "Identify disk pressure caused by logs.",
+              "Use lsof to detect deleted-but-open log files when available.",
+              "Explain why a file can appear deleted while disk space remains allocated.",
+              "Differentiate missing logs caused by retention, routing, permissions, time filters, or collector failure."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Deleted but open"
+              },
+              {
+                "type": "paragraph",
+                "text": "A process can keep a file descriptor open after the pathname is unlinked. The directory listing no longer shows the file, but the process can continue consuming disk space until it closes the descriptor."
+              },
+              {
+                "type": "code",
+                "text": "df -h\nsudo lsof +L1 2>/dev/null\nsudo du -xhd1 /var 2>/dev/null | sort -h"
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Missing-log checklist"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Was the event generated?",
+                  "Did the collector receive it?",
+                  "Did a filter route or discard it?",
+                  "Was the destination writable?",
+                  "Did rotation/retention remove it?",
+                  "Are time and timezone assumptions correct?",
+                  "Are access permissions hiding it?"
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-18",
+                "title": "Diagnose a log-space incident",
+                "description": "Use read-only commands to determine whether /var has a log-related capacity issue.",
+                "steps": [
+                  "Run df -h /var.",
+                  "Inspect journalctl --disk-usage.",
+                  "Inspect du -xhd1 /var/log if available.",
+                  "Run sudo lsof +L1 to look for deleted-open files.",
+                  "Summarize the likely source of space pressure and propose a safe remediation."
+                ],
+                "solution": "df -h /var\njournalctl --disk-usage\ndu -xhd1 /var/log 2>/dev/null | sort -h\nsudo lsof +L1 2>/dev/null || true",
+                "output": "The exercise should identify whether space pressure is visible in ordinary files, journal storage, or deleted-open files. If none is present, report that evidence rather than inventing a cause."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-18",
+              "question": "Why can `df` show less free space than expected after deleting a large log?",
+              "options": [
+                "The kernel caches all deleted files forever",
+                "A running process may still have the deleted file open",
+                "logrotate disables df",
+                "journald changes the filesystem UUID"
+              ],
+              "answer": "A running process may still have the deleted file open",
+              "explanation": "Unlinked files remain allocated while an open file descriptor references them."
+            },
+            "summary": [
+              "Use lsof +L1 as a diagnostic technique where lsof is installed.",
+              "Restarting a process may release the descriptor, but do not restart critical services blindly; first identify the owner and operational impact."
+            ],
+            "resources": [
+              {
+                "title": "logrotate(8)",
+                "url": "https://man7.org/linux/man-pages/man8/logrotate.8.html"
+              },
+              {
+                "title": "journalctl disk usage",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-05",
+        "title": "Linux Audit and Security Logging",
+        "description": "Use Linux Audit and authentication evidence for security-focused investigations while protecting log confidentiality and integrity.",
+        "lessons": [
+          {
+            "id": "lesson-19",
+            "title": "Linux Audit Architecture",
+            "description": "Learn why Linux Audit is distinct from ordinary service logs and how auditd, audit rules, and search/report tools fit together.",
+            "learningObjectives": [
+              "Explain the relationship between the kernel audit subsystem, auditd, and audit utilities.",
+              "Distinguish audit records from ordinary syslog/journal messages.",
+              "Identify the main audit configuration and data paths.",
+              "Use auditctl -s and auditctl -l safely to inspect current state."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Audit versus ordinary logging"
+              },
+              {
+                "type": "paragraph",
+                "text": "The Linux Audit subsystem records security-relevant events under configured rules. auditd is the userspace daemon responsible for writing audit records to disk; auditctl manages rules; ausearch and aureport query and summarize the records."
+              },
+              {
+                "type": "code",
+                "text": "sudo auditctl -s\nsudo auditctl -l\nsudo ls -lah /var/log/audit 2>/dev/null"
+              },
+              {
+                "type": "warning",
+                "text": "Audit rules can impose overhead and can generate large volumes. Start with narrowly scoped, justified rules and measure the effect."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-19",
+                "title": "Inventory the audit subsystem",
+                "description": "Inspect audit availability and current rules without changing them.",
+                "steps": [
+                  "Run auditctl -s.",
+                  "Run auditctl -l.",
+                  "Inspect /etc/audit/auditd.conf and rule files if permitted.",
+                  "List /var/log/audit.",
+                  "Record whether auditd is installed, active, and producing data."
+                ],
+                "solution": "sudo auditctl -s\nsudo auditctl -l\nsystemctl status auditd --no-pager 2>/dev/null || true\nsudo ls -lah /var/log/audit 2>/dev/null || true",
+                "output": "The result identifies the audit subsystem state and current rules. Some systems may intentionally have auditing disabled or restricted."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-19",
+              "question": "Which component is responsible for writing Linux Audit records to disk?",
+              "options": [
+                "auditd",
+                "journalctl",
+                "logrotate",
+                "dmesg"
+              ],
+              "answer": "auditd",
+              "explanation": "auditd is the userspace Linux Audit daemon responsible for writing audit records."
+            },
+            "summary": [
+              "auditctl configures or inspects rules; ausearch/aureport query the resulting records.",
+              "Do not confuse the audit trail with ordinary application logs."
+            ],
+            "resources": [
+              {
+                "title": "auditd(8) — Linux Audit daemon",
+                "url": "https://man7.org/linux/man-pages/man8/auditd.8.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Audit Rules and Keys",
+            "description": "Create narrowly targeted audit rules and use keys to make later investigation easier.",
+            "learningObjectives": [
+              "Explain syscall and path-based audit rules at a conceptual level.",
+              "Use a key to label related audit events.",
+              "Inspect rule state before and after a controlled lab change.",
+              "Avoid broad, high-volume rules when a narrower rule answers the question."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Rule design"
+              },
+              {
+                "type": "paragraph",
+                "text": "Audit rules can target system calls, paths, users, architectures, exit codes, and other conditions. Keys provide a searchable label for events generated by a rule."
+              },
+              {
+                "type": "code",
+                "text": "-w /etc/example.conf -p wa -k example_config\n-a always,exit -F arch=b64 -S openat -F path=/etc/example.conf -F perm=wa -k example_config"
+              },
+              {
+                "type": "warning",
+                "text": "Audit rule syntax and available fields depend on the audit userspace/kernel combination. The examples are educational; validate them on the target system and prefer the distribution's rule-management mechanism where one is provided."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-20",
+                "title": "Audit a controlled configuration file",
+                "description": "Monitor changes to a disposable lab configuration file.",
+                "steps": [
+                  "Create /tmp/audit-course.conf with harmless test content.",
+                  "Add a temporary audit rule appropriate to the host to watch writes/attribute changes to the file and assign key audit_course.",
+                  "Verify the rule with auditctl -l.",
+                  "Modify the file once.",
+                  "Use ausearch -k audit_course -i to inspect the event.",
+                  "Remove the temporary rule after testing and verify it is gone."
+                ],
+                "solution": "sudo auditctl -w /tmp/audit-course.conf -p wa -k audit_course\nsudo auditctl -l | grep audit_course\nprintf 'changed\\n' >> /tmp/audit-course.conf\nsudo ausearch -k audit_course -i --start recent\nsudo auditctl -W /tmp/audit-course.conf -p wa -k audit_course",
+                "output": "A matching audit event should show the watched path and operation. Exact event fields depend on the system and audit version. The final command removes the temporary watch."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-20",
+              "question": "Why are audit rule keys useful?",
+              "options": [
+                "They encrypt audit files",
+                "They provide a label that helps locate events produced by a rule",
+                "They change filesystem permissions",
+                "They rotate the journal"
+              ],
+              "answer": "They provide a label that helps locate events produced by a rule",
+              "explanation": "Keys let investigators use ausearch/aureport to isolate events from a specific rule set."
+            },
+            "summary": [
+              "Prefer a narrow rule tied to an explicit investigative or compliance question.",
+              "Always remove temporary lab rules after the exercise."
+            ],
+            "resources": [
+              {
+                "title": "audit.rules(7)",
+                "url": "https://man7.org/linux/man-pages/man7/audit.rules.7.html"
+              },
+              {
+                "title": "auditctl(8)",
+                "url": "https://man7.org/linux/man-pages/man8/auditctl.8.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-21",
+            "title": "ausearch and aureport Investigation",
+            "description": "Query raw audit events and turn them into human-readable evidence summaries.",
+            "learningObjectives": [
+              "Search audit records by key, time, event, user, and path.",
+              "Use aureport for summary views.",
+              "Correlate an audit event ID with its detailed record.",
+              "Explain why one user action can produce multiple related audit records."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Two complementary tools"
+              },
+              {
+                "type": "paragraph",
+                "text": "ausearch locates individual audit events and can interpret numeric values with -i. aureport summarizes audit data into categories such as authentication, users, files, and keys."
+              },
+              {
+                "type": "code",
+                "text": "sudo ausearch -k audit_course -i --start today\nsudo aureport --auth --summary\nsudo aureport --file --summary\nsudo aureport --key --summary"
+              },
+              {
+                "type": "paragraph",
+                "text": "Audit events can contain multiple records associated with one event ID. Investigators should correlate records rather than assuming one line equals one action."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-21",
+                "title": "Investigate an audit event",
+                "description": "Use the audit tools to answer who/what/when for a controlled event.",
+                "steps": [
+                  "Generate a controlled event using the rule from the previous lesson or an existing lab rule.",
+                  "Run ausearch with the appropriate key and time range.",
+                  "Identify the event ID, timestamp, user identifiers, and path if present.",
+                  "Use aureport to summarize the relevant category.",
+                  "Write a short evidence statement that separates observed fields from interpretation."
+                ],
+                "solution": "sudo ausearch -k audit_course -i --start today 2>/dev/null || true\nsudo aureport --key --summary 2>/dev/null || true\nsudo aureport --file --summary 2>/dev/null || true",
+                "output": "The output should contain matching audit records if the rule and event were active. A clean system may have no matching event; report that accurately."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-21",
+              "question": "What is aureport primarily used for?",
+              "options": [
+                "Editing kernel messages",
+                "Producing summary reports from audit logs",
+                "Rotating text files",
+                "Starting rsyslog"
+              ],
+              "answer": "Producing summary reports from audit logs",
+              "explanation": "aureport summarizes Linux Audit records into report categories."
+            },
+            "summary": [
+              "Use ausearch when you need detailed matching records; use aureport when a summary is more useful."
+            ],
+            "resources": [
+              {
+                "title": "aureport(8)",
+                "url": "https://man7.org/linux/man-pages/man8/aureport.8.html"
+              },
+              {
+                "title": "audit rules examples",
+                "url": "https://man7.org/linux/man-pages/man7/audit.rules.7.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Authentication and Privilege-Related Logs",
+            "description": "Investigate login, authentication, and privilege-use evidence while respecting distribution differences and privacy.",
+            "learningObjectives": [
+              "Locate authentication-related events on journal-based and file-based systems.",
+              "Use journalctl and grep/tail appropriately for local evidence.",
+              "Recognize failed authentication patterns without assuming an attack from one event.",
+              "Explain why authentication logs are sensitive."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Where authentication events appear"
+              },
+              {
+                "type": "paragraph",
+                "text": "Depending on the distribution and configuration, authentication events may be visible through the journal and/or traditional files such as /var/log/auth.log or /var/log/secure. sudo and SSH may emit both service-specific and authentication-related records."
+              },
+              {
+                "type": "code",
+                "text": "journalctl _SYSTEMD_UNIT=sshd.service --since '2 hours ago' --no-pager\nsudo grep -Ei 'authentication failure|failed password|sudo' /var/log/auth.log 2>/dev/null | tail -n 50\nsudo grep -Ei 'authentication failure|failed password|sudo' /var/log/secure 2>/dev/null | tail -n 50"
+              },
+              {
+                "type": "warning",
+                "text": "Authentication logs can contain usernames, source addresses, and other sensitive information. Restrict access and avoid copying them into insecure public channels."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-22",
+                "title": "Build an authentication evidence snapshot",
+                "description": "Collect recent authentication-related evidence from whichever source exists on the host.",
+                "steps": [
+                  "Check journalctl for ssh/sshd events.",
+                  "Check /var/log/auth.log and /var/log/secure if present.",
+                  "Limit the collection to a recent window or a small number of lines.",
+                  "Record counts and timestamps rather than copying unnecessary sensitive content.",
+                  "Explain which source is authoritative on the lab host and why."
+                ],
+                "solution": "journalctl -u ssh.service --since '2 hours ago' --no-pager 2>/dev/null || journalctl -u sshd.service --since '2 hours ago' --no-pager 2>/dev/null || true\nsudo tail -n 50 /var/log/auth.log 2>/dev/null || true\nsudo tail -n 50 /var/log/secure 2>/dev/null || true",
+                "output": "The result is host-dependent. The student should identify the active source instead of assuming a specific filename."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-22",
+              "question": "Why should a single failed login not automatically be classified as an intrusion?",
+              "options": [
+                "Authentication logs are never useful",
+                "A failure is evidence of an unsuccessful authentication attempt, but intent and broader context require correlation",
+                "SSH never records failures",
+                "Only auditd can record logins"
+              ],
+              "answer": "A failure is evidence of an unsuccessful authentication attempt, but intent and broader context require correlation",
+              "explanation": "Security conclusions should be based on correlated evidence such as frequency, source, successful logins, account context, and other system events."
+            },
+            "summary": [
+              "Treat logs as evidence and state confidence explicitly.",
+              "Protect authentication logs because they can expose sensitive operational data."
+            ],
+            "resources": [
+              {
+                "title": "journalctl filtering",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              },
+              {
+                "title": "NIST log-management guidance",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Log Integrity, Access Control, and Evidence Handling",
+            "description": "Apply security controls to Linux logs so that logging itself does not become a weak point.",
+            "learningObjectives": [
+              "Explain confidentiality, integrity, and availability requirements for logs.",
+              "Use filesystem permissions and group membership appropriately.",
+              "Describe centralization, append-oriented storage, and forward-secure sealing at a high level.",
+              "Preserve evidence before destructive cleanup during an incident."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Security properties"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Confidentiality: logs may contain usernames, addresses, paths, commands, and application data.",
+                  "Integrity: attackers who can rewrite local logs can hide evidence; remote collection and integrity controls reduce this risk.",
+                  "Availability: logs must remain accessible during incidents and should not consume all disk space.",
+                  "Accountability: access to sensitive logs should itself be controlled and, where required, audited."
+                ]
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "journald sealing"
+              },
+              {
+                "type": "paragraph",
+                "text": "systemd supports Forward Secure Sealing for persistent journal files when configured with a sealing key. This can help detect unnoticed modification; it is not a replacement for access control, backups, or centralized collection."
+              },
+              {
+                "type": "warning",
+                "text": "Never promise that local logs are tamper-proof. A privileged attacker controlling the host may be able to interfere with local evidence and logging infrastructure."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-23",
+                "title": "Audit log permissions",
+                "description": "Inspect permissions and ownership of key log locations without changing them.",
+                "steps": [
+                  "Run stat on /var/log and a few sensitive log files.",
+                  "Inspect /var/log/audit if present.",
+                  "Inspect journal directory permissions if persistent storage exists.",
+                  "Compare access to a regular user versus an administrative account in a lab.",
+                  "Document any overly broad permissions you would investigate, without changing production settings."
+                ],
+                "solution": "stat -c '%A %U:%G %n' /var/log 2>/dev/null\nfind /var/log -maxdepth 1 -type f -printf '%M %u:%g %p\\n' 2>/dev/null | head -n 30\nstat -c '%A %U:%G %n' /var/log/audit 2>/dev/null || true\nstat -c '%A %U:%G %n' /var/log/journal 2>/dev/null || true",
+                "output": "The output shows the local permission model. The exercise is observational; do not weaken or broadly change permissions just to complete it."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-23",
+              "question": "Which is a realistic security goal for Linux logs?",
+              "options": [
+                "Make all logs world-readable",
+                "Protect confidentiality and integrity while maintaining enough availability for investigation",
+                "Delete logs immediately after each event",
+                "Store all logs only in RAM"
+              ],
+              "answer": "Protect confidentiality and integrity while maintaining enough availability for investigation",
+              "explanation": "Logging systems have confidentiality, integrity, and availability requirements that must be balanced."
+            },
+            "summary": [
+              "Centralized collection can improve resilience but introduces a sensitive central target.",
+              "Retention and evidence preservation should be planned before an incident occurs."
+            ],
+            "resources": [
+              {
+                "title": "journald.conf — sealing and storage",
+                "url": "https://www.freedesktop.org/software/systemd/man/252/journald.conf.html"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-06",
+        "title": "Log Analysis, Troubleshooting, and Automation",
+        "description": "Turn Linux logs into evidence through shell analysis, correlation, failure diagnosis, safe collection, and alert design.",
+        "lessons": [
+          {
+            "id": "lesson-24",
+            "title": "Text-Based Log Analysis with grep, awk, sed, sort, and uniq",
+            "description": "Build reliable shell pipelines for extracting counts, patterns, and time-bounded evidence from text logs.",
+            "learningObjectives": [
+              "Use grep for focused matching without changing source data.",
+              "Use awk to extract fields and calculate simple counts.",
+              "Use sort and uniq for frequency analysis.",
+              "Avoid pipelines that accidentally hide errors or mix unrelated time periods."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence pipeline"
+              },
+              {
+                "type": "code",
+                "text": "grep -Ei 'error|failed|timeout' /var/log/example.log\nawk '{print $5}' /var/log/example.log | sort | uniq -c | sort -nr\ngrep -E 'sshd|sudo' /var/log/auth.log | tail -n 100"
+              },
+              {
+                "type": "paragraph",
+                "text": "Shell tools are powerful for text logs, but the format must be understood first. A field position in one application log is not necessarily a field position in another."
+              },
+              {
+                "type": "warning",
+                "text": "Do not use broad regular expressions as proof of an incident. They are candidate-event filters; validate timestamps, source, context, and related records."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-24",
+                "title": "Count repeated log patterns",
+                "description": "Analyze a copy of a non-sensitive text log or a small lab-generated file.",
+                "steps": [
+                  "Create a disposable log file containing several realistic but clearly synthetic service messages.",
+                  "Use grep to select warnings/errors.",
+                  "Use awk to extract a chosen token such as a status word.",
+                  "Count frequencies with sort and uniq -c.",
+                  "Explain which findings are observations and which require more evidence."
+                ],
+                "solution": "cat > /tmp/log-course-sample.log <<'EOF'\nINFO service started\nWARN connection retry\nERR connection timeout\nWARN connection retry\nERR connection timeout\nINFO request completed\nERR connection timeout\nEOF\ngrep -E '^(WARN|ERR)' /tmp/log-course-sample.log\nawk '$1==\"ERR\" {print $2}' /tmp/log-course-sample.log | sort | uniq -c | sort -nr",
+                "output": "The pipeline should show repeated timeout events and their frequency. The sample is explicitly local training data, not real incident evidence."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-24",
+              "question": "Why should you understand a log format before using awk field numbers?",
+              "options": [
+                "awk never works on logs",
+                "Field positions differ between formats and can change with message structure",
+                "awk deletes the source file",
+                "Field numbers are encrypted"
+              ],
+              "answer": "Field positions differ between formats and can change with message structure",
+              "explanation": "Text parsing depends on the structure of the source data."
+            },
+            "summary": [
+              "Prefer structured fields when the source provides them.",
+              "Keep a copy or use read-only analysis; do not modify the source log."
+            ],
+            "resources": [
+              {
+                "title": "logger for generating controlled messages",
+                "url": "https://man7.org/linux/man-pages/man1/logger.1.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-25",
+            "title": "Correlating Events Across Log Sources",
+            "description": "Combine journal, syslog, audit, and application evidence into a single timeline.",
+            "learningObjectives": [
+              "Align timestamps and time zones across sources.",
+              "Correlate a service failure with kernel, authentication, and audit events.",
+              "Distinguish direct evidence from inference.",
+              "Build a minimal incident timeline."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Correlation method"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Define the incident window.",
+                  "Identify the primary affected service or host.",
+                  "Collect adjacent events from at least one independent source.",
+                  "Normalize timestamps to one timezone.",
+                  "Look for precursor events, the triggering event, and downstream symptoms.",
+                  "Record gaps in evidence rather than filling them with assumptions."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "journalctl --since '2026-09-07 18:00:00' --until '2026-09-07 18:15:00' --no-pager\njournalctl -k --since '2026-09-07 18:00:00' --until '2026-09-07 18:15:00' --no-pager\nsudo ausearch --start 18:00 --end 18:15 -i 2>/dev/null || true"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-25",
+                "title": "Create a cross-source timeline",
+                "description": "Use a bounded window to correlate service, kernel, and audit evidence.",
+                "steps": [
+                  "Choose a recent time window with actual activity.",
+                  "Collect journal entries for the service.",
+                  "Collect kernel entries for the same window.",
+                  "If auditd is active, collect relevant audit records.",
+                  "Normalize the times and write a chronological table with source and interpretation."
+                ],
+                "solution": "journalctl --since '30 min ago' --until 'now' --no-pager\njournalctl -k --since '30 min ago' --until 'now' --no-pager\nsudo ausearch --start recent -i 2>/dev/null || true",
+                "output": "The expected result is a multi-source timeline. A good answer notes which sources were unavailable and how that limits confidence."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-25",
+              "question": "What is the main value of correlating multiple log sources?",
+              "options": [
+                "It guarantees the root cause",
+                "It can connect related events and reduce the chance of interpreting an isolated symptom",
+                "It deletes duplicate logs",
+                "It makes timestamps irrelevant"
+              ],
+              "answer": "It can connect related events and reduce the chance of interpreting an isolated symptom",
+              "explanation": "Independent sources provide context and can distinguish cause, trigger, and symptom."
+            },
+            "summary": [
+              "Correlation increases confidence but does not prove causation by itself.",
+              "Missing data should be recorded as an uncertainty."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — log management and analysis",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Troubleshooting Logging Failures",
+            "description": "Diagnose cases where expected log messages are absent, delayed, duplicated, or routed to the wrong destination.",
+            "learningObjectives": [
+              "Build a source-to-destination troubleshooting chain.",
+              "Check service status, configuration, permissions, and disk capacity.",
+              "Distinguish filtering from collection failure.",
+              "Use controlled logger messages to test the path."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Source-to-destination checklist"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Source generated event?",
+                  "Collector running?",
+                  "Correct input enabled?",
+                  "Filter/ruleset matched?",
+                  "Destination writable?",
+                  "Disk has space?",
+                  "Rotation/reopen correct?",
+                  "Remote destination reachable?",
+                  "Retention still contains the event?"
+                ]
+              },
+              {
+                "type": "code",
+                "text": "systemctl status systemd-journald rsyslog --no-pager 2>/dev/null || true\njournalctl -u rsyslog -n 100 --no-pager 2>/dev/null || true\nlogger -t log-course \"controlled diagnostic event\"\ndf -h\njournalctl -t log-course -n 20 --no-pager"
+              },
+              {
+                "type": "warning",
+                "text": "Test one variable at a time. Changing several logging components simultaneously destroys the ability to identify which change fixed or caused the problem."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-26",
+                "title": "Build a logging health checklist",
+                "description": "Create a reusable shell checklist for a Linux host.",
+                "steps": [
+                  "Check journald and rsyslog service state when present.",
+                  "Check filesystem capacity for /var.",
+                  "Check journal disk usage.",
+                  "Generate one controlled logger event.",
+                  "Verify whether the event is visible in the journal.",
+                  "Print a clear PASS/WARN/FAIL summary without changing configuration."
+                ],
+                "solution": "#!/usr/bin/env bash\nset -u\n\nstatus() {\n  local label=\"$1\" value=\"$2\"\n  printf '%-24s %s\\n' \"$label\" \"$value\"\n}\n\nif systemctl is-active --quiet systemd-journald; then status journald PASS; else status journald WARN; fi\nif command -v rsyslogd >/dev/null 2>&1; then\n  if systemctl is-active --quiet rsyslog; then status rsyslog PASS; else status rsyslog WARN; fi\nelse\n  status rsyslog NOT_INSTALLED\nfi\n\ndf -h /var | tail -n 1\njournalctl --disk-usage --no-pager\nTAG=\"log-health-$$\"\nlogger -t \"$TAG\" \"controlled health check\"\nif journalctl -t \"$TAG\" -n 1 --no-pager | grep -q \"controlled health check\"; then\n  status test_message PASS\nelse\n  status test_message FAIL\nfi",
+                "output": "The script performs read-oriented health checks plus one controlled test event. It reports whether the test message is visible to journald; it does not attempt repairs."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-26",
+              "question": "What is the best first test when a logger appears not to be receiving events?",
+              "options": [
+                "Delete the configuration",
+                "Generate a controlled test event and trace it through the logging path",
+                "Reboot immediately",
+                "Disable all filters"
+              ],
+              "answer": "Generate a controlled test event and trace it through the logging path",
+              "explanation": "A controlled event makes the source and routing path observable without relying on an unrelated application event."
+            },
+            "summary": [
+              "A good diagnostic test is reproducible, low-risk, and easy to verify.",
+              "Separate health checking from automated remediation unless remediation is explicitly designed and tested."
+            ],
+            "resources": [
+              {
+                "title": "rsyslog troubleshooting and validation",
+                "url": "https://docs.rsyslog.com/doc/getting_started/basic_configuration.html"
+              },
+              {
+                "title": "journalctl service inspection",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Automating Log Collection with Shell",
+            "description": "Write a safe evidence-collection script that gathers bounded log data without changing the host.",
+            "learningObjectives": [
+              "Create timestamped output directories.",
+              "Use journalctl with explicit time and output controls.",
+              "Collect system metadata alongside logs.",
+              "Handle missing optional sources gracefully.",
+              "Protect collected logs with restrictive permissions."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Collection principles"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Bound the time range and output size.",
+                  "Record the host, kernel, boot, and service state that gives context to the logs.",
+                  "Use a dedicated directory with restrictive permissions.",
+                  "Avoid copying secrets or unrelated user data when the investigative question does not require them.",
+                  "Record command failures rather than silently treating missing data as success."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "OUT=\"/tmp/linux-log-collection-$(date +%Y%m%d-%H%M%S)\"\numask 077\nmkdir -p \"$OUT\"\njournalctl --since '1 hour ago' --until now --no-pager -o short-iso > \"$OUT/journal.txt\"\njournalctl -k --since '1 hour ago' --until now --no-pager -o short-iso > \"$OUT/kernel.txt\"\nuname -a > \"$OUT/uname.txt\"\ndf -h > \"$OUT/df.txt\"\n"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-27",
+                "title": "Build a bounded collection bundle",
+                "description": "Create a script that collects one hour of journal and system context into a permission-restricted directory.",
+                "steps": [
+                  "Set umask 077 before creating files.",
+                  "Create a timestamped output directory.",
+                  "Capture uname, uptime, df, journalctl service-independent logs, and kernel logs.",
+                  "If auditd is available, capture a small recent audit query without dumping the entire audit trail.",
+                  "Write a manifest containing the commands used."
+                ],
+                "solution": "#!/usr/bin/env bash\nset -u\numask 077\n\nOUT=\"${1:-/tmp/linux-log-collection-$(date +%Y%m%d-%H%M%S)}\"\nmkdir -p \"$OUT\"\n\nuname -a > \"$OUT/uname.txt\"\nuptime > \"$OUT/uptime.txt\"\ndf -h > \"$OUT/df.txt\"\njournalctl --since '1 hour ago' --until now --no-pager -o short-iso > \"$OUT/journal.txt\" 2> \"$OUT/journal.err\"\njournalctl -k --since '1 hour ago' --until now --no-pager -o short-iso > \"$OUT/kernel.txt\" 2> \"$OUT/kernel.err\"\n\nif command -v ausearch >/dev/null 2>&1; then\n  ausearch --start recent -i > \"$OUT/audit-recent.txt\" 2> \"$OUT/audit.err\" || true\nfi\n\ncat > \"$OUT/manifest.txt\" <<EOF\ncreated=$(date --iso-8601=seconds)\ncommands=uname,uptime,df,journalctl,kernel journal,audit optional\nwindow=1 hour\nEOF\n\nprintf 'Collection written to %s\\n' \"$OUT\"\n",
+                "output": "The script creates a restricted collection directory and captures a bounded evidence set. Missing optional audit data does not make the whole collection fail."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-27",
+              "question": "Why is `umask 077` useful for a log collection bundle?",
+              "options": [
+                "It compresses logs",
+                "It makes newly created files accessible only to the owner by default",
+                "It disables journald",
+                "It changes timestamps"
+              ],
+              "answer": "It makes newly created files accessible only to the owner by default",
+              "explanation": "A restrictive umask helps prevent accidental disclosure of sensitive log evidence."
+            },
+            "summary": [
+              "Access can be widened deliberately later if required.",
+              "Collection scripts should avoid copying more sensitive information than the investigation needs."
+            ],
+            "resources": [
+              {
+                "title": "journalctl output and time filtering",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              },
+              {
+                "title": "auditd and audit data",
+                "url": "https://man7.org/linux/man-pages/man8/auditd.8.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Operational Log Monitoring and Alert Design",
+            "description": "Turn raw Linux logs into useful operational signals without creating noisy or fragile alerts.",
+            "learningObjectives": [
+              "Define an alert condition using a specific event and context.",
+              "Distinguish threshold alerts from anomaly-style reasoning.",
+              "Avoid alerting on every warning or error.",
+              "Document response, ownership, and evidence requirements for an alert."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Good alert design"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A signal should map to an actionable condition.",
+                  "Include context: host, service, timestamp, severity, and correlation identifiers where available.",
+                  "Use thresholds appropriate to the environment rather than arbitrary universal numbers.",
+                  "Define what the operator should check next.",
+                  "Test the alert against normal and failure scenarios."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "For example, one failed SSH authentication may be routine. A sustained burst combined with a successful login from the same unusual source and privilege-related events is more informative. The lesson is about correlation and actionability, not a fixed attack threshold."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-28",
+                "title": "Design three Linux log alerts",
+                "description": "Write alert specifications without deploying them.",
+                "steps": [
+                  "Create one availability alert for a service failure.",
+                  "Create one capacity alert for journal/filesystem pressure.",
+                  "Create one security-oriented alert based on a combination of authentication events.",
+                  "For each, define source, filter, threshold/context, expected false positives, and operator response.",
+                  "State what evidence should be retained when the alert fires."
+                ],
+                "solution": "Alert 1: service unavailable\nSource: systemd service state + journal\nCondition: service enters failed state\nResponse: inspect journal for the unit and dependencies\n\nAlert 2: log storage pressure\nSource: df + journalctl --disk-usage\nCondition: local policy threshold exceeded\nResponse: inspect largest log consumers and retention policy\n\nAlert 3: authentication correlation\nSource: SSH/authentication logs + optional audit\nCondition: repeated failures followed by a successful authentication in the same investigation window\nResponse: verify account, source, timing, privilege activity, and preserve evidence",
+                "output": "The deliverable is a precise alert design. No fixed threshold is assumed because production thresholds must be derived from environment baselines and requirements."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-28",
+              "question": "What makes a log alert actionable?",
+              "options": [
+                "It triggers on every message",
+                "It maps a meaningful condition to context and a defined response",
+                "It hides the original event",
+                "It has no documented owner"
+              ],
+              "answer": "It maps a meaningful condition to context and a defined response",
+              "explanation": "Actionability connects detection to an operator decision and evidence."
+            },
+            "summary": [
+              "Alert quality is more important than alert count.",
+              "Use testing and baseline data to tune noisy rules."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 Rev. 1 — Cybersecurity Log Management Planning Guide",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/r1/ipd"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Build a journal triage command set",
+            "level": "Easy",
+            "description": "Create a small command set that quickly answers what failed, when it failed, and which service was involved.",
+            "problemStatement": "Given a Linux host where a service has recently failed, produce commands that show the service state, its recent journal, high-severity events in the same time window, and kernel messages around the event.",
+            "objectives": [
+              "Select a target service safely.",
+              "Use systemctl and journalctl with bounded filters.",
+              "Capture the evidence without modifying configuration."
+            ],
+            "requirements": [
+              "Linux systemd and journalctl",
+              "A service that exists on the lab VM"
+            ],
+            "hint": "Start with systemctl status and then narrow journalctl by unit, time, and priority.",
+            "solutionCode": "SERVICE=ssh.service\nsystemctl status \"$SERVICE\" --no-pager\njournalctl -u \"$SERVICE\" --since '30 min ago' --no-pager\njournalctl -u \"$SERVICE\" --since '30 min ago' -p warning..emerg --no-pager\njournalctl -k --since '30 min ago' --until now --no-pager",
+            "solutionExplanation": "The solution uses the service unit as the primary correlation key and adds a bounded time window plus severity and kernel context. It avoids broad log dumps."
+          },
+          {
+            "id": "task-02",
+            "title": "Create a safe rsyslog test route",
+            "level": "Intermediate",
+            "description": "Route only messages tagged log-task to a dedicated lab file and validate the configuration before restart.",
+            "problemStatement": "Build an rsyslog snippet using RainerScript, validate it with rsyslogd -N1, restart rsyslog only after validation, send a logger test message, and verify the file.",
+            "objectives": [
+              "Create a targeted rule.",
+              "Validate syntax.",
+              "Generate a controlled event.",
+              "Verify the destination."
+            ],
+            "requirements": [
+              "rsyslog",
+              "logger",
+              "sudo privileges",
+              "A disposable lab VM"
+            ],
+            "hint": "Filter by the program/tag instead of routing all local messages.",
+            "solutionCode": "sudo tee /etc/rsyslog.d/35-log-task.conf >/dev/null <<'EOF'\nif ($programname == \"log-task\") then {\n    action(type=\"omfile\" file=\"/var/log/log-task.log\")\n}\nEOF\nsudo rsyslogd -N1\nsudo systemctl restart rsyslog\nlogger -t log-task \"controlled rsyslog task event\"\nsudo tail -n 20 /var/log/log-task.log",
+            "solutionExplanation": "The rule is narrowly scoped, and validation precedes restart. The test event confirms end-to-end routing."
+          },
+          {
+            "id": "task-03",
+            "title": "Recover from a logrotate policy mistake",
+            "level": "Intermediate",
+            "description": "Diagnose and safely correct a lab logrotate rule that targets the wrong file pattern.",
+            "problemStatement": "Create a disposable pair of log files, write an overly broad wildcard rule in a lab-only configuration, use logrotate debug output to identify the scope, then replace it with an exact path pattern.",
+            "objectives": [
+              "Recognize dangerous wildcards.",
+              "Use debug mode before forcing rotation.",
+              "Restrict the policy to the intended file.",
+              "Explain why the original pattern was unsafe."
+            ],
+            "requirements": [
+              "logrotate",
+              "A disposable /var/log test file set",
+              "Do not test against production logs."
+            ],
+            "hint": "Inspect the resolved file list before running any forced rotation.",
+            "solutionCode": "sudo tee /etc/logrotate.d/log-task >/dev/null <<'EOF'\n/var/log/log-task.log {\n    daily\n    rotate 3\n    compress\n    missingok\n    notifempty\n    create 0640 root root\n}\nEOF\nsudo logrotate -d /etc/logrotate.conf",
+            "solutionExplanation": "The corrected policy names one exact file rather than a broad wildcard, reducing the risk of rotating unrelated files."
+          },
+          {
+            "id": "task-04",
+            "title": "Investigate a controlled audit event",
+            "level": "Advanced",
+            "description": "Use a temporary audit rule to record changes to a disposable file, then investigate the resulting records with ausearch and aureport.",
+            "problemStatement": "Monitor a lab file, change it, locate the event by key, identify the event ID and user/path information, summarize it, and remove the rule.",
+            "objectives": [
+              "Create a narrow audit rule with a key.",
+              "Generate one controlled event.",
+              "Search and interpret the audit records.",
+              "Remove the temporary rule."
+            ],
+            "requirements": [
+              "auditd/auditctl",
+              "ausearch",
+              "aureport",
+              "sudo privileges"
+            ],
+            "hint": "Use the key as the primary search handle and correlate all records sharing the event ID.",
+            "solutionCode": "sudo auditctl -w /tmp/log-task-audit.conf -p wa -k log_task\nprintf 'audit test\\n' >> /tmp/log-task-audit.conf\nsudo ausearch -k log_task -i --start recent\nsudo aureport --key --summary\nsudo auditctl -W /tmp/log-task-audit.conf -p wa -k log_task",
+            "solutionExplanation": "The rule records a controlled write/attribute event, the key locates it, and the final command removes the temporary watch. Exact audit records vary by host."
+          },
+          {
+            "id": "task-05",
+            "title": "Build a bounded evidence collector",
+            "level": "Advanced",
+            "description": "Write a shell collector that captures one hour of journal, kernel, filesystem, and optional audit evidence with restrictive permissions.",
+            "problemStatement": "Create a timestamped directory, collect the required evidence, record command failures, and produce a manifest. The collector must not alter system configuration.",
+            "objectives": [
+              "Use umask 077.",
+              "Bound journal queries by time.",
+              "Collect system context.",
+              "Handle optional audit tools.",
+              "Write a manifest."
+            ],
+            "requirements": [
+              "Bash",
+              "journalctl",
+              "coreutils",
+              "Optional audit tools"
+            ],
+            "hint": "Use separate stdout/stderr files so a failed collection command is visible rather than silently discarded.",
+            "solutionCode": "#!/usr/bin/env bash\nset -u\numask 077\nOUT=\"/tmp/log-task-$(date +%Y%m%d-%H%M%S)\"\nmkdir -p \"$OUT\"\n\nuname -a > \"$OUT/uname.txt\"\ndf -h > \"$OUT/df.txt\"\njournalctl --since '1 hour ago' --until now --no-pager -o short-iso > \"$OUT/journal.txt\" 2> \"$OUT/journal.err\"\njournalctl -k --since '1 hour ago' --until now --no-pager -o short-iso > \"$OUT/kernel.txt\" 2> \"$OUT/kernel.err\"\n\nif command -v ausearch >/dev/null 2>&1; then\n  ausearch --start recent -i > \"$OUT/audit.txt\" 2> \"$OUT/audit.err\" || true\nfi\n\nprintf 'created=%s\\nwindow=1h\\n' \"$(date --iso-8601=seconds)\" > \"$OUT/manifest.txt\"\nprintf '%s\\n' \"$OUT\"\n",
+            "solutionExplanation": "The collector is bounded and non-destructive. Restrictive permissions reduce accidental disclosure, while separate error files make collection gaps visible."
+          },
+          {
+            "id": "task-06",
+            "title": "Design a Linux logging failure runbook",
+            "level": "Advanced",
+            "description": "Create a production-style runbook for missing or delayed logs that follows the source-to-destination path.",
+            "problemStatement": "Your runbook must cover source generation, journald/rsyslog state, configuration validation, routing, destination permissions, disk capacity, rotation, and remote transport where applicable.",
+            "objectives": [
+              "Order diagnostic checks from low-risk to higher-impact actions.",
+              "Include exact commands for evidence gathering.",
+              "Separate observation from remediation.",
+              "Define escalation evidence."
+            ],
+            "requirements": [
+              "Linux host",
+              "systemd",
+              "rsyslog where used",
+              "logrotate where used"
+            ],
+            "hint": "Do not start with a restart. Start by proving whether the event was generated and where the path breaks.",
+            "solutionCode": "1. Define the missing event and exact time window.\n2. Generate a controlled logger test when appropriate.\n3. Check systemd-journald status and journalctl visibility.\n4. If rsyslog is used, run rsyslogd -N1 and inspect journalctl -u rsyslog.\n5. Trace filters/rulesets and destination paths.\n6. Check df -h and journalctl --disk-usage.\n7. Check rotation configuration and deleted-open files if disk pressure exists.\n8. For remote logging, test reachability and receiver-side evidence.\n9. Preserve relevant configuration and logs before remediation.\n10. Re-test and document the result.",
+            "solutionExplanation": "The runbook follows a causal chain and minimizes unnecessary changes. It is adaptable because not every Linux host uses every component."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Final Real-World Project",
+        "description": "Build and assess a realistic Linux log collection and triage toolkit that combines the course's core mechanisms without performing automatic remediation.",
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Final Project Briefing: Linux Log Operations & Triage Toolkit",
+            "description": "Apply the course as an evidence-first Linux log investigation and operations workflow.",
+            "learningObjectives": [
+              "Assemble a bounded Linux log collection workflow.",
+              "Correlate journal, kernel, service, and optional audit evidence.",
+              "Validate optional rsyslog and logrotate configuration safely.",
+              "Explain evidence gaps and operational limitations.",
+              "Produce a reproducible, non-destructive triage bundle."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Assessment focus"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Correct source identification matters more than collecting every possible file.",
+                  "Commands must be bounded and reproducible.",
+                  "Configuration changes must be validated before activation.",
+                  "Security-sensitive logs must be handled with restrictive permissions.",
+                  "The final report must separate observed evidence, interpretation, and recommended verification."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Run the project on a disposable VM or an authorized system. Do not collect or publish sensitive production logs without appropriate authorization."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "The project integrates the course's major logging mechanisms into one operational workflow.",
+              "The deliverable should be reproducible and should document missing sources instead of hiding them."
+            ],
+            "resources": [
+              {
+                "title": "journalctl",
+                "url": "https://www.freedesktop.org/software/systemd/man/255/journalctl.html"
+              },
+              {
+                "title": "rsyslog configuration",
+                "url": "https://docs.rsyslog.com/doc/configuration/index.html"
+              },
+              {
+                "title": "logrotate",
+                "url": "https://man7.org/linux/man-pages/man8/logrotate.8.html"
+              },
+              {
+                "title": "auditd",
+                "url": "https://man7.org/linux/man-pages/man8/auditd.8.html"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Linux Log Operations & Triage Toolkit",
+          "description": "Build a non-destructive command-line toolkit that collects bounded Linux journal, kernel, service, filesystem, and optional audit evidence; documents the collection; and provides optional rsyslog/logrotate integration for a controlled lab stream. The project emphasizes evidence preservation, least privilege, reproducibility, and diagnosis before remediation.",
+          "conceptsCovered": [
+            "Linux logging architecture",
+            "systemd-journald and journalctl",
+            "kernel logging",
+            "service log correlation",
+            "rsyslog routing",
+            "logrotate lifecycle management",
+            "Linux Audit evidence",
+            "filesystem capacity checks",
+            "bounded evidence collection",
+            "secure file permissions",
+            "operational troubleshooting"
+          ],
+          "steps": [
+            "Prepare a disposable Linux VM or test host and identify a service that is safe to inspect.",
+            "Save logops.sh and make it executable with chmod 0750 logops.sh.",
+            "Run the toolkit with a bounded window, for example sudo ./logops.sh --service ssh.service --hours 2 --output /var/tmp/logops-case.",
+            "Review collection-status.txt first and identify any unavailable sources or permission errors.",
+            "Review manifest.txt to understand the collection context.",
+            "Inspect journal.txt and kernel.txt, then compare the service-specific files with systemctl status output.",
+            "Where auditd is available, inspect audit-recent.txt and correlate timestamps rather than treating each record as an independent user action.",
+            "Optionally enable the rsyslog and logrotate lab snippets, validate rsyslog with rsyslogd -N1, generate a logops-demo event, and verify its routing and rotation policy.",
+            "Write a short incident-style report containing observed facts, likely interpretation, evidence gaps, and next verification steps.",
+            "Remove optional lab configuration when the exercise is complete if it is not part of the host's intended logging policy."
+          ],
+          "code": [
+            {
+              "path": "README.md",
+              "content": "# Linux Log Operations & Triage Toolkit\n\nThis lab project provides a non-destructive command-line toolkit for collecting and triaging Linux logs on a host.\n\nIt intentionally avoids automatic remediation. The operator chooses the service and output directory, and the script captures bounded evidence from journald, kernel logs, filesystem capacity, and optional Linux Audit data.\n\nRun as root when the host requires elevated access to system journals or audit records.\n\nExample:\n    sudo ./logops.sh --service ssh.service --hours 2 --output /var/tmp/logops-case\n\nThe script creates a restrictive output directory and a manifest describing the collection.\n"
+            },
+            {
+              "path": "logops.sh",
+              "content": "#!/usr/bin/env bash\nset -u\n\nusage() {\n  cat <<'EOF'\nUsage:\n  logops.sh [--service UNIT] [--hours N] [--output DIR]\n\nOptions:\n  --service UNIT   systemd service to investigate\n  --hours N        look back N hours (default: 1)\n  --output DIR     evidence directory (default: /var/tmp/logops-TIMESTAMP)\n  -h, --help       show help\n\nThe script is read-oriented except for creating its own output directory and\nwriting one controlled manifest. It does not restart services, change logging\nconfiguration, rotate logs, or delete data.\nEOF\n}\n\nSERVICE=\"\"\nHOURS=1\nOUT=\"\"\n\nwhile [ \"$#\" -gt 0 ]; do\n  case \"$1\" in\n    --service)\n      [ \"$#\" -ge 2 ] || { echo \"Missing service name\" >&2; exit 2; }\n      SERVICE=\"$2\"\n      shift 2\n      ;;\n    --hours)\n      [ \"$#\" -ge 2 ] || { echo \"Missing hour value\" >&2; exit 2; }\n      case \"$2\" in\n        ''|*[!0-9]*) echo \"--hours must be a non-negative integer\" >&2; exit 2 ;;\n      esac\n      HOURS=\"$2\"\n      shift 2\n      ;;\n    --output)\n      [ \"$#\" -ge 2 ] || { echo \"Missing output directory\" >&2; exit 2; }\n      OUT=\"$2\"\n      shift 2\n      ;;\n    -h|--help)\n      usage\n      exit 0\n      ;;\n    *)\n      echo \"Unknown argument: $1\" >&2\n      usage >&2\n      exit 2\n      ;;\n  esac\ndone\n\nif [ -z \"$OUT\" ]; then\n  OUT=\"/var/tmp/logops-$(date +%Y%m%d-%H%M%S)\"\nfi\n\numask 077\nmkdir -p \"$OUT\"\n\nrun_capture() {\n  local name=\"$1\"\n  shift\n  if \"$@\" >\"$OUT/$name.txt\" 2>\"$OUT/$name.err\"; then\n    printf 'PASS %s\\n' \"$name\" >> \"$OUT/collection-status.txt\"\n  else\n    printf 'WARN %s exit=%s\\n' \"$name\" \"$?\" >> \"$OUT/collection-status.txt\"\n  fi\n}\n\nSINCE=\"$HOURS hours ago\"\n\n: > \"$OUT/collection-status.txt\"\n\nrun_capture \"system\" uname -a\nrun_capture \"uptime\" uptime\nrun_capture \"disk\" df -h\nrun_capture \"journal-usage\" journalctl --disk-usage --no-pager\nrun_capture \"boots\" journalctl --list-boots --no-pager\nrun_capture \"recent-journal\" journalctl --since \"$SINCE\" --until now --no-pager -o short-iso\n\nrun_capture \"kernel\" journalctl -k --since \"$SINCE\" --until now --no-pager -o short-iso\n\nif [ -n \"$SERVICE\" ]; then\n  run_capture \"service-status\" systemctl status \"$SERVICE\" --no-pager\n  run_capture \"service-journal\" journalctl -u \"$SERVICE\" --since \"$SINCE\" --until now --no-pager -o short-iso\n  run_capture \"service-errors\" journalctl -u \"$SERVICE\" --since \"$SINCE\" --until now -p warning..emerg --no-pager -o short-iso\nfi\n\nif command -v ausearch >/dev/null 2>&1; then\n  run_capture \"audit-recent\" ausearch --start recent -i\nelse\n  printf 'SKIP audit-recent ausearch-not-installed\\n' >> \"$OUT/collection-status.txt\"\nfi\n\ncat > \"$OUT/manifest.txt\" <<EOF\nproject=Linux Log Operations & Triage Toolkit\ncreated=$(date --iso-8601=seconds)\nhost=$(hostname 2>/dev/null || printf unknown)\nkernel=$(uname -r 2>/dev/null || printf unknown)\nservice=${SERVICE:-none}\nwindow_hours=$HOURS\noutput=$OUT\nEOF\n\nprintf '\\nEvidence directory: %s\\n' \"$OUT\"\nprintf 'Review collection-status.txt before relying on the bundle.\\n'\n"
+            },
+            {
+              "path": "rsyslog.d/30-logops.conf",
+              "content": "# Optional lab routing rule.\n# Enable only when rsyslog is installed and the host policy permits a\n# dedicated training log.\n#\n# Validate with: sudo rsyslogd -N1\n# Then restart rsyslog only after successful validation.\n\nif ($programname == \"logops-demo\") then {\n    action(type=\"omfile\" file=\"/var/log/logops-demo.log\")\n}\n"
+            },
+            {
+              "path": "logrotate.d/logops-demo",
+              "content": "/var/log/logops-demo.log {\n    weekly\n    rotate 4\n    compress\n    delaycompress\n    missingok\n    notifempty\n    create 0640 root root\n}\n"
+            },
+            {
+              "path": "sample-test.sh",
+              "content": "#!/usr/bin/env bash\nset -u\n\n# Generate a controlled, non-sensitive test event.\nlogger -t logops-demo -p local0.info \"Linux Logs course test event\"\n\necho \"Recent matching journal records:\"\njournalctl -t logops-demo -n 10 --no-pager\n\necho\necho \"Journal disk usage:\"\njournalctl --disk-usage --no-pager\n"
+            }
+          ],
+          "explanation": "The project is deliberately evidence-first. logops.sh accepts a service name, a bounded look-back period, and an output directory. It sets umask 077 before creating evidence so newly created files are not broadly readable. Each collection command writes stdout and stderr separately and records PASS, WARN, or SKIP status, which prevents a missing tool from being silently mistaken for an empty dataset. journalctl provides structured, time-bounded service and kernel evidence; df and journalctl --disk-usage provide capacity context; ausearch is used only when installed. The optional rsyslog rule demonstrates a controlled input-to-file route using the program name as a filter. The optional logrotate rule manages that dedicated file with a small retention policy. The project intentionally does not restart services, modify system logging configuration automatically, delete logs, or classify events as attacks. Those decisions require operator review and environment-specific policy. A strong submission demonstrates that the student can collect evidence, identify missing data, correlate sources, explain limitations, and propose a safe next step."
+        }
+      }
+    ]
+  }
+}

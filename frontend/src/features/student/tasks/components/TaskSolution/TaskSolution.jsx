@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
     FiCheckCircle,
@@ -7,23 +7,47 @@ import {
 } from "react-icons/fi";
 
 import highlightCode from "../../../lessons/components/LessonContent/components/LessonPage/components/TryItYourself/utils/highlightCode.js";
+import {
+    formatCodeForDisplay,
+    inferCodeLanguage,
+} from "../../../../../shared/utils/codeFormatting.js";
 
 import "./TaskSolution.css";
 
 export default function TaskSolution({
     solutionCode = "",
     solutionExplanation = "",
-    language = "javascript",
+    language = "",
 }) {
     const [copied, setCopied] = useState(false);
+    const [displayCode, setDisplayCode] = useState(solutionCode);
+
+    const resolvedLanguage = inferCodeLanguage(
+        solutionCode,
+        language
+    );
+
+    useEffect(() => {
+        let active = true;
+
+        formatCodeForDisplay(solutionCode, language).then((formattedCode) => {
+            if (active) {
+                setDisplayCode(formattedCode);
+            }
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [solutionCode, language]);
 
     if (!solutionCode && !solutionExplanation) {
         return null;
     }
 
     const highlightedCode = highlightCode(
-        solutionCode,
-        language
+        displayCode,
+        resolvedLanguage
     );
 
     const handleCopy = async () => {
@@ -40,7 +64,7 @@ export default function TaskSolution({
                     "function"
             ) {
                 await navigator.clipboard.writeText(
-                    solutionCode
+                    displayCode
                 );
 
                 copiedSuccessfully = true;
@@ -54,7 +78,7 @@ export default function TaskSolution({
                 const textarea =
                     document.createElement("textarea");
 
-                textarea.value = solutionCode;
+                textarea.value = displayCode;
 
                 textarea.setAttribute(
                     "readonly",
@@ -160,7 +184,7 @@ export default function TaskSolution({
                             </span>
 
                             <small>
-                                {language}
+                                {resolvedLanguage}
                             </small>
                         </div>
 

@@ -1,0 +1,2471 @@
+{
+  "internship": {
+    "id": "java-web-development-internship",
+    "title": "Java Web Development Internship",
+    "slug": "java-web-development-internship",
+    "description": "An industry-oriented Java web engineering internship that progresses from HTTP, Spring MVC, Maven, and dependency injection into validated web features, PostgreSQL/JPA persistence, transactions, Spring Security, testing, debugging, observability, delivery, performance reasoning, and maintainability. The final assessment is one complete secure issue-tracking web application with file-wise implementation, schema migration, tests, operational health, and deployment guidance.",
+    "domain": "Java Web Development",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 120,
+    "prerequisites": [
+      "Java fundamentals: classes, interfaces, collections, exceptions, and basic OOP.",
+      "Basic SQL and relational-database concepts.",
+      "Basic HTTP methods, status codes, headers, and JSON.",
+      "Command-line and basic Git familiarity.",
+      "Ability to install and run JDK 25 and Maven."
+    ],
+    "objectives": [
+      "Build Spring Boot web applications with Spring MVC.",
+      "Design REST APIs and server-rendered views.",
+      "Persist relational data using PostgreSQL and Spring Data JPA.",
+      "Use transactions, pagination, indexing, and query-plan analysis.",
+      "Implement authentication, authorization, secure password storage, and browser security controls.",
+      "Write and interpret unit/MVC/integration tests.",
+      "Debug failures using evidence and produce regression coverage.",
+      "Apply Maven, Git, documentation, health checks, container, CI/CD, and rollback concepts."
+    ],
+    "competencies": [
+      {
+        "name": "Java web implementation",
+        "evidence": "Controllers, services, persistence, views, and security in the capstone."
+      },
+      {
+        "name": "API design",
+        "evidence": "Methods, statuses, DTOs, validation, pagination and errors."
+      },
+      {
+        "name": "Database engineering",
+        "evidence": "JPA, PostgreSQL constraints, transactions, migration, indexes and query plans."
+      },
+      {
+        "name": "Security",
+        "evidence": "Authentication, authorization, PasswordEncoder, CSRF/session controls, OWASP review."
+      },
+      {
+        "name": "Testing/debugging",
+        "evidence": "JUnit/MVC tests, integration strategy, regression workflow."
+      },
+      {
+        "name": "Engineering practice",
+        "evidence": "Maven lifecycle, Git workflow, documentation, observability, delivery."
+      }
+    ],
+    "technologyStack": [
+      {
+        "name": "Java 25",
+        "role": "Language and runtime"
+      },
+      {
+        "name": "Spring Boot 4.1.1",
+        "role": "Application framework"
+      },
+      {
+        "name": "Spring MVC",
+        "role": "HTTP/web layer"
+      },
+      {
+        "name": "Spring Security",
+        "role": "Authentication and authorization"
+      },
+      {
+        "name": "Spring Data JPA",
+        "role": "Persistence abstraction"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "Relational database"
+      },
+      {
+        "name": "Flyway",
+        "role": "Database migration"
+      },
+      {
+        "name": "Maven",
+        "role": "Build/dependency management"
+      },
+      {
+        "name": "JUnit 5",
+        "role": "Testing"
+      },
+      {
+        "name": "Docker",
+        "role": "Container/integration tooling"
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-01",
+        "title": "Foundation",
+        "outcome": "Runnable MVC service and Maven workflow"
+      },
+      {
+        "id": "phase-02",
+        "title": "Web Features",
+        "outcome": "Validated APIs and views"
+      },
+      {
+        "id": "phase-03",
+        "title": "Persistence",
+        "outcome": "PostgreSQL-backed domain"
+      },
+      {
+        "id": "phase-04",
+        "title": "Security",
+        "outcome": "Authenticated and authorized application"
+      },
+      {
+        "id": "phase-05",
+        "title": "Quality",
+        "outcome": "Tests, debugging and review"
+      },
+      {
+        "id": "phase-06",
+        "title": "Delivery",
+        "outcome": "Health, configuration and deployment reasoning"
+      },
+      {
+        "id": "phase-07",
+        "title": "Capstone",
+        "outcome": "Integrated secure issue tracker"
+      }
+    ],
+    "modules": [
+      {
+        "id": "m01",
+        "title": "Java Web Foundations and Tooling",
+        "description": "Learn HTTP, Spring MVC, Maven, dependency injection, and maintainable boundaries.",
+        "objectives": [
+          "trace HTTP requests",
+          "use Maven lifecycle",
+          "design application layers"
+        ],
+        "lessons": [
+          {
+            "id": "l01",
+            "title": "HTTP and the Java Web Request Lifecycle",
+            "description": "Trace how a browser or API client reaches a Java web application and how Spring MVC dispatches the request.",
+            "learningObjectives": [
+              "explain HTTP request/response structure",
+              "trace a request through the servlet container and DispatcherServlet",
+              "identify the boundaries between transport and application logic"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "The request path"
+              },
+              {
+                "type": "paragraph",
+                "text": "A servlet container accepts HTTP traffic and invokes the application. In Spring MVC, DispatcherServlet acts as the front controller and coordinates handler mapping, argument binding, message conversion, and response handling."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "HTTP is a protocol contract; Java code implements application behavior behind that contract.",
+                  "Controllers should remain focused on translating HTTP concerns.",
+                  "Services should own business operations and repositories should isolate persistence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p01",
+                "title": "Request Trace with curl",
+                "description": "Build and inspect a minimal GET endpoint.",
+                "steps": [
+                  "Create a controller mapped to GET /api/ping.",
+                  "Return a small JSON object.",
+                  "Run the application.",
+                  "Call it with curl and inspect status and body."
+                ],
+                "solution": "@RestController\n@RequestMapping(\"/api\")\nclass PingController {\n    @GetMapping(\"/ping\")\n    Map<String,String> ping() {\n        return Map.of(\"status\",\"ok\");\n    }\n}",
+                "output": "The client receives an HTTP 200 response with a small JSON body."
+              }
+            ],
+            "quiz": {
+              "id": "q01",
+              "question": "Which Spring MVC component acts as the front controller?",
+              "options": [
+                "DispatcherServlet",
+                "EntityManager",
+                "Maven",
+                "PasswordEncoder"
+              ],
+              "answer": "DispatcherServlet",
+              "explanation": "DispatcherServlet coordinates Spring MVC request dispatch."
+            },
+            "summary": [
+              "A web request crosses multiple layers; understanding those layers prevents misplaced logic and makes debugging systematic."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-framework/reference/web/webmvc.html",
+              "https://docs.spring.io/spring-boot/reference/"
+            ]
+          },
+          {
+            "id": "l02",
+            "title": "RESTful Endpoint Design and HTTP Semantics",
+            "description": "Design resource-oriented endpoints using appropriate methods, status codes, and JSON contracts.",
+            "learningObjectives": [
+              "select HTTP methods for common operations",
+              "choose appropriate success and error status codes",
+              "define predictable request and response representations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Contract first"
+              },
+              {
+                "type": "paragraph",
+                "text": "API consumers should not need to infer success from free-form text. Status codes, JSON shape, validation rules, pagination semantics, and authorization expectations form the contract."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "GET is intended to be safe; PUT has idempotent semantics; POST is not inherently idempotent.",
+                  "201 Created communicates successful creation; 204 No Content communicates success without a response body.",
+                  "Do not use 200 for every outcome just because a framework allows it."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02",
+              "question": "Which status normally communicates that POST created a new resource?",
+              "options": [
+                "200 OK",
+                "201 Created",
+                "204 No Content",
+                "304 Not Modified"
+              ],
+              "answer": "201 Created",
+              "explanation": "201 Created explicitly communicates successful resource creation."
+            },
+            "summary": [
+              "HTTP semantics are part of the API design and should be tested like any other interface."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-framework/reference/web/webmvc.html"
+            ]
+          },
+          {
+            "id": "l03",
+            "title": "Maven Build Lifecycle and Dependency Management",
+            "description": "Use Maven to build a reproducible Java application and understand the lifecycle phases that support team development.",
+            "learningObjectives": [
+              "explain pom.xml dependency management",
+              "use clean/test/package/verify correctly",
+              "keep generated artifacts out of source control"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Lifecycle"
+              },
+              {
+                "type": "paragraph",
+                "text": "Maven defines a standard build lifecycle. The validate, compile, test, package, verify, install, and deploy phases provide predictable stages that tooling and CI systems can invoke consistently."
+              },
+              {
+                "type": "code",
+                "text": "mvn clean test\nmvn verify\nmvn spring-boot:run"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q03",
+              "question": "Which Maven phase executes tests before packaging?",
+              "options": [
+                "compile",
+                "test",
+                "package",
+                "deploy"
+              ],
+              "answer": "test",
+              "explanation": "The test phase runs the project tests."
+            },
+            "summary": [
+              "A predictable build is a prerequisite for code review and automated delivery."
+            ],
+            "resources": [
+              "https://maven.apache.org/guides/introduction/introduction-to-lifecycle.html"
+            ]
+          },
+          {
+            "id": "l04",
+            "title": "Dependency Injection and Application Layering",
+            "description": "Design controllers, services, repositories, and DTOs with explicit responsibilities and testable dependencies.",
+            "learningObjectives": [
+              "explain dependency injection",
+              "separate transport, business, and persistence responsibilities",
+              "use constructor injection for required collaborators"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Responsibilities"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Controller: HTTP binding, status codes, request/response translation.",
+                  "Service: business operations and transaction boundaries.",
+                  "Repository: persistence access.",
+                  "DTO: external contract."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "@Service\nclass IssueService {\n    private final IssueRepository repository;\n\n    IssueService(IssueRepository repository) {\n        this.repository = repository;\n    }\n}"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q04",
+              "question": "Where should domain/business rules normally live in a layered Spring application?",
+              "options": [
+                "Controller",
+                "Service",
+                "Template",
+                "Repository"
+              ],
+              "answer": "Service",
+              "explanation": "The service layer is a natural boundary for business operations."
+            },
+            "summary": [
+              "Explicit dependencies make classes easier to reason about and test independently."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-boot/reference/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t01",
+            "title": "Create a Reproducible Spring MVC Skeleton",
+            "level": "Easy",
+            "description": "Build the smallest useful Java web service and document its build workflow.",
+            "problemStatement": "Provide a /api/ping endpoint that builds and runs through Maven.",
+            "objectives": [
+              "create a Maven project",
+              "implement the endpoint",
+              "document test and run commands"
+            ],
+            "requirements": [
+              "JDK 25",
+              "Maven 3.6.3+",
+              "Spring Boot 4.1.1"
+            ],
+            "constraints": [
+              "No database or security configuration is required."
+            ],
+            "hint": "Use the standard Maven layout and spring-boot-starter-webmvc.",
+            "solutionCode": "@SpringBootApplication\npublic class Application {\n    public static void main(String[] args) {\n        SpringApplication.run(Application.class, args);\n    }\n}\n\n@RestController\n@RequestMapping(\"/api\")\nclass PingController {\n    @GetMapping(\"/ping\")\n    Map<String,String> ping() {\n        return Map.of(\"status\",\"ok\");\n    }\n}",
+            "solutionExplanation": "The application entry point starts Spring Boot, while the controller maps the HTTP GET path and serializes the returned map as JSON. In a real project the controller should be a separate file."
+          }
+        ],
+        "deliverables": [
+          "runnable MVC skeleton",
+          "Maven workflow notes"
+        ],
+        "assessment": "Request trace plus design explanation."
+      },
+      {
+        "id": "m02",
+        "title": "Web Features and Validation",
+        "description": "Build validated APIs, predictable errors, and server-rendered views.",
+        "objectives": [
+          "design HTTP contracts",
+          "validate input",
+          "handle errors",
+          "render HTML"
+        ],
+        "lessons": [
+          {
+            "id": "l05",
+            "title": "Externalized Configuration and Profiles",
+            "description": "Separate environment-specific settings from application code and keep secrets out of repositories.",
+            "learningObjectives": [
+              "use configuration properties and environment variables",
+              "explain profiles",
+              "identify unsafe secret-handling patterns"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Runtime configuration"
+              },
+              {
+                "type": "code",
+                "text": "spring:\n  datasource:\n    url: ${DATABASE_URL}\n    username: ${DATABASE_USERNAME}\n    password: ${DATABASE_PASSWORD}"
+              },
+              {
+                "type": "warning",
+                "text": "Do not commit passwords, API keys, or private keys to Git. Configuration belongs in the environment or an appropriate secret-management system."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q05",
+              "question": "Where should production database credentials be supplied?",
+              "options": [
+                "Environment/secret management",
+                "Java source code",
+                "README.md",
+                "Git commit message"
+              ],
+              "answer": "Environment/secret management",
+              "explanation": "Secrets should not be stored in source control."
+            },
+            "summary": [
+              "The same artifact can move between environments when configuration is externalized."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-boot/reference/"
+            ]
+          },
+          {
+            "id": "l06",
+            "title": "DTOs and Bean Validation",
+            "description": "Build explicit request objects and reject malformed input at the web boundary.",
+            "learningObjectives": [
+              "create validated request records",
+              "apply Bean Validation constraints",
+              "distinguish validation failures from business-rule failures"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Boundary validation"
+              },
+              {
+                "type": "code",
+                "text": "public record CreateIssueRequest(\n    @NotBlank @Size(max = 140) String title,\n    @NotBlank @Size(max = 4000) String description,\n    @NotNull Priority priority\n) {}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "DTOs keep API contracts separate from persistence entities.",
+                  "Validation catches malformed input early.",
+                  "Business rules that depend on stored state belong in application logic."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p02",
+                "title": "Validated Issue Creation",
+                "description": "Reject invalid issue input at the web boundary.",
+                "steps": [
+                  "Create CreateIssueRequest with @NotBlank and @Size.",
+                  "Accept it through @Valid.",
+                  "Send an invalid request.",
+                  "Add an MVC test that expects 400."
+                ],
+                "solution": "public record CreateIssueRequest(\n    @NotBlank @Size(max = 140) String title,\n    @NotBlank @Size(max = 4000) String description,\n    @NotNull Priority priority\n) {}",
+                "output": "Invalid requests are rejected before business processing."
+              }
+            ],
+            "quiz": {
+              "id": "q06",
+              "question": "Which constraint rejects an empty or whitespace-only title?",
+              "options": [
+                "@NotBlank",
+                "@Positive",
+                "@Past",
+                "@Email"
+              ],
+              "answer": "@NotBlank",
+              "explanation": "@NotBlank requires non-whitespace content."
+            },
+            "summary": [
+              "Validation is a security and quality boundary because every external request is untrusted."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-boot/reference/"
+            ]
+          },
+          {
+            "id": "l07",
+            "title": "Centralized REST Error Handling",
+            "description": "Return useful, stable error responses without exposing internal implementation details.",
+            "learningObjectives": [
+              "map domain exceptions to status codes",
+              "handle validation failures centrally",
+              "avoid leaking stack traces and infrastructure details"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Error contract"
+              },
+              {
+                "type": "code",
+                "text": "@RestControllerAdvice\nclass ApiExceptionHandler {\n    @ExceptionHandler(IssueNotFoundException.class)\n    ResponseEntity<ProblemDetail> notFound(IssueNotFoundException ex) {\n        var pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);\n        pd.setDetail(ex.getMessage());\n        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(pd);\n    }\n}"
+              },
+              {
+                "type": "warning",
+                "text": "Do not expose SQL, stack traces, file-system paths, framework internals, or secrets in client-facing errors."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q07",
+              "question": "Which annotation is designed for centralized REST exception handling?",
+              "options": [
+                "@RestControllerAdvice",
+                "@Entity",
+                "@Repository",
+                "@Bean"
+              ],
+              "answer": "@RestControllerAdvice",
+              "explanation": "It centralizes controller exception handling and response mapping."
+            },
+            "summary": [
+              "Centralized errors let controllers focus on happy-path orchestration and keep the error contract consistent."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-framework/reference/web/webmvc.html"
+            ]
+          },
+          {
+            "id": "l08",
+            "title": "Server-Side HTML with Thymeleaf",
+            "description": "Render a maintainable server-side web page and understand safe data binding.",
+            "learningObjectives": [
+              "pass model data into templates",
+              "keep business logic out of templates",
+              "render forms and lists safely"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "MVC view flow"
+              },
+              {
+                "type": "code",
+                "text": "@GetMapping(\"/issues\")\nString issues(Model model) {\n    model.addAttribute(\"issues\", service.findOpenIssues());\n    return \"issues/list\";\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Use templates for presentation. Keep authorization decisions, database access, and business calculations in application code."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q08",
+              "question": "What does a controller commonly return to select a Thymeleaf view?",
+              "options": [
+                "A view name",
+                "A JDBC connection",
+                "A Maven phase",
+                "A database row"
+              ],
+              "answer": "A view name",
+              "explanation": "A logical view name is resolved to the configured template."
+            },
+            "summary": [
+              "Server-rendered pages are one valid Java web architecture and can coexist with JSON endpoints."
+            ],
+            "resources": [
+              "https://www.thymeleaf.org/documentation.html",
+              "https://docs.spring.io/spring-framework/reference/web/webmvc.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t02",
+            "title": "Add Validated Issue Input",
+            "level": "Easy",
+            "description": "Protect an issue-creation endpoint from malformed data.",
+            "problemStatement": "Reject a blank title and oversize title before the service is invoked.",
+            "objectives": [
+              "define a request DTO",
+              "add Bean Validation constraints",
+              "create a validation test"
+            ],
+            "requirements": [
+              "Spring Boot Validation",
+              "JUnit 5"
+            ],
+            "constraints": [
+              "Do not rely on browser-only validation."
+            ],
+            "hint": "Put transport constraints directly on the request record.",
+            "solutionCode": "public record CreateIssueRequest(\n    @NotBlank @Size(max = 140) String title,\n    @NotBlank @Size(max = 4000) String description,\n    @NotNull Priority priority\n) {}",
+            "solutionExplanation": "The record is the transport contract. Bean Validation rejects malformed values before the service write path."
+          }
+        ],
+        "deliverables": [
+          "validated endpoint",
+          "error handler",
+          "Thymeleaf view"
+        ],
+        "assessment": "Demonstrate invalid input handling."
+      },
+      {
+        "id": "m03",
+        "title": "Persistence and Database Engineering",
+        "description": "Map relational state with JPA and reason about transaction and query performance.",
+        "objectives": [
+          "map entities",
+          "write repository queries",
+          "use transactions",
+          "bound query work"
+        ],
+        "lessons": [
+          {
+            "id": "l09",
+            "title": "JPA Entities and Relational Modeling",
+            "description": "Map a small issue-tracking domain to PostgreSQL using explicit relational constraints.",
+            "learningObjectives": [
+              "map entities with Jakarta Persistence",
+              "model relationships explicitly",
+              "align application and database invariants"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Persistence model"
+              },
+              {
+                "type": "code",
+                "text": "@Entity\n@Table(name = \"issues\")\npublic class Issue {\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(nullable = false, length = 140)\n    private String title;\n}"
+              },
+              {
+                "type": "warning",
+                "text": "Do not use entity objects as public API contracts when their shape or relationships can disclose internal details."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q09",
+              "question": "Which annotation identifies a JPA persistence entity?",
+              "options": [
+                "@Entity",
+                "@Service",
+                "@Controller",
+                "@RestController"
+              ],
+              "answer": "@Entity",
+              "explanation": "@Entity marks a class as a persistent entity."
+            },
+            "summary": [
+              "Entity mapping connects object state to a relational model; the schema remains the source of database integrity."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-data/jpa/reference/",
+              "https://www.postgresql.org/docs/current/"
+            ]
+          },
+          {
+            "id": "l10",
+            "title": "Spring Data JPA Repositories",
+            "description": "Use repository abstractions for common access patterns and keep query intent explicit.",
+            "learningObjectives": [
+              "define repository interfaces",
+              "use derived query methods",
+              "recognize when explicit queries or projections are better"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "public interface IssueRepository extends JpaRepository<Issue, Long> {\n    Page<Issue> findByStatus(IssueStatus status, Pageable pageable);\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Repository abstractions reduce repetitive data-access code.",
+                  "Pagination belongs close to the data-access boundary for large collections.",
+                  "Measure before adding indexes or complex query rewrites."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q10",
+              "question": "Which interface provides JPA repository CRUD operations?",
+              "options": [
+                "JpaRepository<Entity, Long>",
+                "Model",
+                "HttpServletRequest",
+                "PasswordEncoder"
+              ],
+              "answer": "JpaRepository<Entity, Long>",
+              "explanation": "JpaRepository provides Spring Data JPA repository operations."
+            },
+            "summary": [
+              "Spring Data JPA provides a consistent repository programming model while retaining JPA semantics."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-data/jpa/reference/"
+            ]
+          },
+          {
+            "id": "l11",
+            "title": "Transactions and Consistency",
+            "description": "Choose transaction boundaries around business operations that must be consistent.",
+            "learningObjectives": [
+              "explain transaction atomicity",
+              "use @Transactional appropriately",
+              "distinguish database transactions from distributed operations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Transaction boundary"
+              },
+              {
+                "type": "code",
+                "text": "@Transactional\npublic IssueResponse assignIssue(long issueId, long userId) {\n    Issue issue = repository.findById(issueId)\n        .orElseThrow(() -> new IssueNotFoundException(issueId));\n    issue.assignTo(userRepository.getReferenceById(userId));\n    return mapper.toResponse(issue);\n}"
+              },
+              {
+                "type": "warning",
+                "text": "A database transaction does not make a remote HTTP call atomic with the database."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q11",
+              "question": "Which annotation declares a Spring transaction boundary?",
+              "options": [
+                "@Transactional",
+                "@Async",
+                "@GetMapping",
+                "@PathVariable"
+              ],
+              "answer": "@Transactional",
+              "explanation": "@Transactional defines transaction semantics for a Spring-managed operation."
+            },
+            "summary": [
+              "Use transactions to protect data consistency without holding them open across unrelated slow operations."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-data/jpa/reference/"
+            ]
+          },
+          {
+            "id": "l12",
+            "title": "Pagination, Indexes, and EXPLAIN",
+            "description": "Bound database work and use PostgreSQL query plans for evidence-based optimization.",
+            "learningObjectives": [
+              "implement paginated queries",
+              "explain index trade-offs",
+              "read EXPLAIN ANALYZE results"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Bounded reads"
+              },
+              {
+                "type": "code",
+                "text": "CREATE INDEX idx_issues_status_created_at\nON issues (status, created_at DESC);\n\nEXPLAIN ANALYZE\nSELECT id, title, created_at\nFROM issues\nWHERE status = 'OPEN'\nORDER BY created_at DESC\nLIMIT 20;"
+              },
+              {
+                "type": "paragraph",
+                "text": "Indexes can accelerate reads when they match query patterns but have storage and write-maintenance costs. Query plans provide evidence for decisions."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p03",
+                "title": "Index a Query Pattern",
+                "description": "Create an index aligned with status filtering and created_at ordering.",
+                "steps": [
+                  "Add the index to a Flyway migration.",
+                  "Run the query with EXPLAIN ANALYZE.",
+                  "Compare plan behavior before and after on representative data.",
+                  "Document the trade-off."
+                ],
+                "solution": "CREATE INDEX idx_issues_status_created_at\nON issues (status, created_at DESC);",
+                "output": "The index exists; actual speedup must be measured on the target dataset."
+              }
+            ],
+            "quiz": {
+              "id": "q12",
+              "question": "Why should a list endpoint paginate potentially large data sets?",
+              "options": [
+                "To bound resource usage",
+                "To disable indexes",
+                "To remove authentication",
+                "To make SQL invalid"
+              ],
+              "answer": "To bound resource usage",
+              "explanation": "Pagination bounds database, memory, and network work per request."
+            },
+            "summary": [
+              "Performance work should start from bounded operations and measured evidence."
+            ],
+            "resources": [
+              "https://www.postgresql.org/docs/current/",
+              "https://docs.spring.io/spring-data/jpa/reference/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t03",
+            "title": "Model PostgreSQL Persistence",
+            "level": "Intermediate",
+            "description": "Create a relational issue model and repository.",
+            "problemStatement": "Persist an Issue with explicit status, priority, timestamps, and a creator relationship.",
+            "objectives": [
+              "map JPA fields",
+              "define repository methods",
+              "add database constraints"
+            ],
+            "requirements": [
+              "Spring Data JPA",
+              "PostgreSQL"
+            ],
+            "constraints": [
+              "Keep DTOs separate from entity JSON."
+            ],
+            "hint": "Write down database invariants before mapping them.",
+            "solutionCode": "@Entity\n@Table(name = \"issues\")\npublic class Issue {\n    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(nullable = false, length = 140)\n    private String title;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private IssueStatus status;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private Priority priority;\n\n    @Column(nullable = false)\n    private Instant createdAt;\n}",
+            "solutionExplanation": "The entity maps durable issue state. Database constraints should enforce required fields, while repositories supply access patterns."
+          }
+        ],
+        "deliverables": [
+          "entities",
+          "repositories",
+          "migration",
+          "paginated query"
+        ],
+        "assessment": "Defend schema and index decisions."
+      },
+      {
+        "id": "m04",
+        "title": "Spring Security and Secure Web Design",
+        "description": "Implement authentication, authorization, password protection, session security, and risk review.",
+        "objectives": [
+          "authenticate users",
+          "authorize operations",
+          "protect credentials",
+          "review common web risks"
+        ],
+        "lessons": [
+          {
+            "id": "l13",
+            "title": "Authentication and Authorization",
+            "description": "Implement identity verification and server-side permission checks with Spring Security.",
+            "learningObjectives": [
+              "distinguish authentication from authorization",
+              "configure request authorization",
+              "protect destructive operations at the server"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Two questions"
+              },
+              {
+                "type": "paragraph",
+                "text": "Authentication verifies who a user is. Authorization determines what that identity may do. Hiding buttons in a browser does not enforce access control; the server must enforce it."
+              },
+              {
+                "type": "code",
+                "text": "@PreAuthorize(\"hasRole('ADMIN')\")\n@DeleteMapping(\"/api/issues/{id}\")\nvoid delete(@PathVariable long id) {\n    service.delete(id);\n}"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04",
+                "title": "Protect Administrative Delete",
+                "description": "Enforce ADMIN-only deletion on the server.",
+                "steps": [
+                  "Enable method security.",
+                  "Add @PreAuthorize(\"hasRole('ADMIN')\").",
+                  "Test an ordinary USER.",
+                  "Test an ADMIN."
+                ],
+                "solution": "@PreAuthorize(\"hasRole('ADMIN')\")\n@DeleteMapping(\"/api/issues/{id}\")\nResponseEntity<Void> delete(@PathVariable long id) {\n    service.delete(id);\n    return ResponseEntity.noContent().build();\n}",
+                "output": "A USER is denied while an authorized ADMIN may delete."
+              }
+            ],
+            "quiz": {
+              "id": "q13",
+              "question": "Which statement is correct?",
+              "options": [
+                "Authentication verifies identity; authorization checks permissions",
+                "Authentication checks permissions; authorization verifies identity",
+                "They are identical",
+                "Authorization only applies to HTML"
+              ],
+              "answer": "Authentication verifies identity; authorization checks permissions",
+              "explanation": "The mechanisms solve different security questions."
+            },
+            "summary": [
+              "Authorization must be enforced at the operation boundary, not just in UI code."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-security/reference/"
+            ]
+          },
+          {
+            "id": "l14",
+            "title": "Password Storage",
+            "description": "Handle user passwords using framework-supported password hashing rather than plaintext or fast hashes.",
+            "learningObjectives": [
+              "configure PasswordEncoder",
+              "explain password hashing",
+              "avoid exposing or logging credential material"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@Bean\nPasswordEncoder passwordEncoder() {\n    return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();\n}"
+              },
+              {
+                "type": "warning",
+                "text": "Never store plaintext passwords. A password storage function should be deliberately slow and salted; do not substitute a fast general-purpose hash such as SHA-256 alone."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q14",
+              "question": "What should an application persist for a password?",
+              "options": [
+                "A dedicated password hash",
+                "Plaintext",
+                "Base64 text",
+                "A hardcoded reversible ciphertext"
+              ],
+              "answer": "A dedicated password hash",
+              "explanation": "Password verification should use a password-hashing strategy."
+            },
+            "summary": [
+              "Credential storage is a specialized security problem; use established framework primitives rather than inventing a scheme."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-security/reference/",
+              "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html"
+            ]
+          },
+          {
+            "id": "l15",
+            "title": "CSRF, Sessions, and Cookies",
+            "description": "Understand browser credential behavior and use secure session practices for server-rendered applications.",
+            "learningObjectives": [
+              "explain CSRF",
+              "understand HttpOnly, Secure, and SameSite",
+              "distinguish stateful browser sessions from stateless APIs"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Browser threat model"
+              },
+              {
+                "type": "paragraph",
+                "text": "CSRF abuses a user's browser sending ambient credentials to a trusted site. Spring Security provides CSRF protection for common servlet applications by default. Cookie attributes can reduce exposure: HttpOnly blocks ordinary script access, Secure limits sending to HTTPS, and SameSite constrains cross-site sending."
+              },
+              {
+                "type": "warning",
+                "text": "Do not store session IDs or long-lived authentication credentials in localStorage simply because JavaScript can access them."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q15",
+              "question": "Which cookie attribute prevents normal JavaScript from reading its value?",
+              "options": [
+                "HttpOnly",
+                "SameSite",
+                "Secure",
+                "Path"
+              ],
+              "answer": "HttpOnly",
+              "explanation": "HttpOnly limits access through the browser's script-facing cookie APIs."
+            },
+            "summary": [
+              "Browser authentication security includes both server-side session policy and browser-enforced cookie behavior."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-security/reference/",
+              "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+            ]
+          },
+          {
+            "id": "l16",
+            "title": "OWASP-Oriented Secure Design Review",
+            "description": "Use the current OWASP Top 10 as a lens for reviewing a Java web application's common risk categories.",
+            "learningObjectives": [
+              "map common risks to concrete controls",
+              "identify injection and access-control weaknesses",
+              "review configuration and logging risks"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "OWASP Top 10:2025"
+              },
+              {
+                "type": "paragraph",
+                "text": "The 2025 OWASP Top 10 lists Broken Access Control, Security Misconfiguration, Software Supply Chain Failures, Cryptographic Failures, Injection, Insecure Design, Authentication Failures, Software or Data Integrity Failures, Security Logging & Alerting Failures, and Mishandling of Exceptional Conditions."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer parameterized access patterns instead of building SQL from request strings.",
+                  "Treat authorization as a server-side invariant.",
+                  "Review dependencies and build inputs as part of the software supply chain."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q16",
+              "question": "Which OWASP 2025 category covers missing or bypassable permission checks?",
+              "options": [
+                "A01 Broken Access Control",
+                "A04 Cryptographic Failures",
+                "A09 Security Logging & Alerting Failures",
+                "A10 Mishandling of Exceptional Conditions"
+              ],
+              "answer": "A01 Broken Access Control",
+              "explanation": "A01 focuses on broken authorization and access boundaries."
+            },
+            "summary": [
+              "Security review should connect risks to specific controls and tests rather than stopping at a checklist."
+            ],
+            "resources": [
+              "https://owasp.org/Top10/",
+              "https://docs.spring.io/spring-security/reference/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t04",
+            "title": "Enforce ADMIN Authorization",
+            "level": "Intermediate",
+            "description": "Protect destructive operations with server-side authorization.",
+            "problemStatement": "A USER must receive an authorization failure while an ADMIN is allowed to delete.",
+            "objectives": [
+              "configure authentication",
+              "add role enforcement",
+              "write a security test"
+            ],
+            "requirements": [
+              "Spring Security",
+              "Spring Security Test"
+            ],
+            "constraints": [
+              "Do not enforce permissions only in the UI."
+            ],
+            "hint": "Use method security at the operation boundary.",
+            "solutionCode": "@EnableMethodSecurity\n@Configuration\nclass SecurityConfig {\n    @Bean\n    SecurityFilterChain security(HttpSecurity http) throws Exception {\n        return http\n            .authorizeHttpRequests(a -> a.anyRequest().authenticated())\n            .formLogin(Customizer.withDefaults())\n            .build();\n    }\n\n    @Bean\n    PasswordEncoder passwordEncoder() {\n        return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();\n    }\n}\n\n@PreAuthorize(\"hasRole('ADMIN')\")\n@DeleteMapping(\"/api/issues/{id}\")\nResponseEntity<Void> delete(@PathVariable long id) {\n    service.delete(id);\n    return ResponseEntity.noContent().build();\n}",
+            "solutionExplanation": "Request authorization requires identity while method authorization adds a business-operation permission check. PasswordEncoder protects stored credentials."
+          }
+        ],
+        "deliverables": [
+          "secured application routes",
+          "ADMIN control",
+          "security review"
+        ],
+        "assessment": "Show that unauthorized deletion is denied."
+      },
+      {
+        "id": "m05",
+        "title": "Testing, Integration, and Debugging",
+        "description": "Develop reliable software with unit tests, MVC tests, realistic integration testing, and regression analysis.",
+        "objectives": [
+          "write unit tests",
+          "test web contracts",
+          "use database integration strategies",
+          "debug from evidence"
+        ],
+        "lessons": [
+          {
+            "id": "l17",
+            "title": "JUnit 5 Unit Testing",
+            "description": "Write focused unit tests for service behavior with JUnit Jupiter and Mockito.",
+            "learningObjectives": [
+              "write behavior-focused unit tests",
+              "mock infrastructure boundaries appropriately",
+              "cover success and failure cases"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@Test\nvoid missingIssueIsReported() {\n    IssueRepository issues = mock(IssueRepository.class);\n    when(issues.existsById(42L)).thenReturn(false);\n\n    IssueService service = new IssueService(issues, userRepository);\n    assertThrows(IssueNotFoundException.class, () -> service.delete(42L));\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Fast unit tests form the inner feedback loop. Do not mock every object indiscriminately; mock infrastructure boundaries when the test is intended to isolate application logic."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q17",
+              "question": "What is the primary goal of a unit test?",
+              "options": [
+                "Verify one behavior in isolation",
+                "Deploy the application",
+                "Create production tables",
+                "Replace integration tests"
+              ],
+              "answer": "Verify one behavior in isolation",
+              "explanation": "Unit tests focus on small behavior without requiring the full system."
+            },
+            "summary": [
+              "A useful unit test names the behavior and fails for a meaningful reason."
+            ],
+            "resources": [
+              "https://junit.org/junit5/docs/current/user-guide/"
+            ]
+          },
+          {
+            "id": "l18",
+            "title": "MVC Testing, Integration Testing, and Debugging",
+            "description": "Combine web-layer tests, real-database integration testing, and evidence-driven debugging.",
+            "learningObjectives": [
+              "test controller contracts with MVC support",
+              "use Testcontainers when database fidelity matters",
+              "turn reproducible bugs into regression tests"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Test layers"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Unit: isolated application behavior.",
+                  "MVC/API: binding, validation, authorization and response contracts.",
+                  "Integration: real persistence or infrastructure behavior."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "mockMvc.perform(post(\"/api/issues\")\n    .contentType(MediaType.APPLICATION_JSON)\n    .content(\"{\"title\":\"\",\"description\":\"Details\",\"priority\":\"MEDIUM\"}\"))\n    .andExpect(status().isBadRequest());"
+              },
+              {
+                "type": "paragraph",
+                "text": "Testcontainers can supply disposable PostgreSQL instances for database integration tests, reducing the mismatch between an in-memory test database and production PostgreSQL."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p05",
+                "title": "Write an MVC Regression Test",
+                "description": "Create an HTTP-level regression test for blank issue titles.",
+                "steps": [
+                  "Use Spring Boot MVC test support.",
+                  "POST invalid JSON.",
+                  "Assert 400 Bad Request.",
+                  "Verify the creation service is not called."
+                ],
+                "solution": "mockMvc.perform(post(\"/api/issues\")\n    .contentType(MediaType.APPLICATION_JSON)\n    .content(\"{\"title\":\"\",\"description\":\"x\",\"priority\":\"MEDIUM\"}\"))\n    .andExpect(status().isBadRequest());",
+                "output": "The test proves the validation contract at the controller boundary."
+              }
+            ],
+            "quiz": {
+              "id": "q18",
+              "question": "What does Testcontainers provide for a database integration test?",
+              "options": [
+                "A disposable real database container",
+                "A replacement Java compiler",
+                "Automatic password rotation",
+                "A browser authentication token"
+              ],
+              "answer": "A disposable real database container",
+              "explanation": "Testcontainers can start containerized infrastructure for tests."
+            },
+            "summary": [
+              "Debugging should follow reproduce → observe → hypothesize → test → fix → regress."
+            ],
+            "resources": [
+              "https://junit.org/junit5/docs/current/user-guide/",
+              "https://java.testcontainers.org/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t05",
+            "title": "Diagnose a Database-Fidelity Failure",
+            "level": "Advanced",
+            "description": "Repair a test that passes against an in-memory database but fails against PostgreSQL.",
+            "problemStatement": "Move the database-dependent verification to a disposable PostgreSQL integration environment.",
+            "objectives": [
+              "identify the environment mismatch",
+              "use Testcontainers conceptually",
+              "document why database fidelity matters"
+            ],
+            "requirements": [
+              "Docker",
+              "Testcontainers for Java",
+              "JUnit 5"
+            ],
+            "constraints": [
+              "Do not weaken the production query just to satisfy a fake database."
+            ],
+            "hint": "When SQL behavior is database-specific, test the same database family.",
+            "solutionCode": "@Testcontainers\nclass PostgresSmokeTest {\n    @Container\n    static PostgreSQLContainer<?> postgres =\n        new PostgreSQLContainer<>(\"postgres:18\");\n\n    @Test\n    void databaseIsAvailableForIntegrationTests() {\n        assertTrue(postgres.isRunning());\n    }\n}",
+            "solutionExplanation": "The test moves infrastructure-dependent verification onto a disposable PostgreSQL instance instead of assuming that an in-memory database behaves identically."
+          }
+        ],
+        "deliverables": [
+          "unit/MVC tests",
+          "integration-test design",
+          "regression record"
+        ],
+        "assessment": "Diagnose database-fidelity failure."
+      },
+      {
+        "id": "m06",
+        "title": "Operations and Delivery",
+        "description": "Apply health monitoring, runtime configuration, container thinking, CI/CD, and deployment recovery practices.",
+        "objectives": [
+          "configure health",
+          "externalize runtime settings",
+          "design CI quality gates",
+          "plan rollback"
+        ],
+        "lessons": [
+          {
+            "id": "l19",
+            "title": "Actuator Health and Operational Boundaries",
+            "description": "Expose operational health without creating a broad information disclosure surface.",
+            "learningObjectives": [
+              "configure a health endpoint",
+              "explain why management exposure is constrained",
+              "document operational contracts"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Health surface"
+              },
+              {
+                "type": "paragraph",
+                "text": "Actuator provides production-oriented monitoring endpoints. Expose only the endpoints required by the environment and protect management interfaces appropriately."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p06",
+                "title": "Expose a Narrow Health Surface",
+                "description": "Expose only the health endpoint in the learning configuration.",
+                "steps": [
+                  "Add Actuator.",
+                  "Configure HTTP exposure to health.",
+                  "Request /actuator/health.",
+                  "Document why unrelated management endpoints remain closed."
+                ],
+                "solution": "management:\n  endpoints:\n    web:\n      exposure:\n        include: health\n",
+                "output": "The health endpoint is exposed while other actuator endpoints remain unexposed through this setting."
+              }
+            ],
+            "quiz": {
+              "id": "q19",
+              "question": "What does /actuator/health communicate?",
+              "options": [
+                "Application health information",
+                "A full database dump",
+                "A user's password",
+                "The Maven dependency graph"
+              ],
+              "answer": "Application health information",
+              "explanation": "The health endpoint reports application health state."
+            },
+            "summary": [
+              "Operational endpoints should be useful to operators and narrow enough to reduce information exposure."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-boot/reference/actuator/"
+            ]
+          },
+          {
+            "id": "l20",
+            "title": "Containers, CI/CD, and Rollback",
+            "description": "Package the application as a deployable artifact and design a reproducible delivery path.",
+            "learningObjectives": [
+              "describe container/runtime separation",
+              "define CI quality gates",
+              "explain rollback"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Delivery"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Build and test in CI.",
+                  "Produce a versioned artifact only when quality gates pass.",
+                  "Inject runtime configuration outside the artifact.",
+                  "Keep a known-good artifact for rollback."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "mvn clean verify\ndocker build -t issue-tracker:1.0.0 ."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q20",
+              "question": "Why should CI commands be reproducible locally?",
+              "options": [
+                "To make failures diagnosable",
+                "To avoid testing",
+                "To hide compiler output",
+                "To bypass dependencies"
+              ],
+              "answer": "To make failures diagnosable",
+              "explanation": "Reproducibility shortens the path from failure to diagnosis."
+            },
+            "summary": [
+              "Deployment quality is part of web engineering because a correct source tree must become a correctly configured running service."
+            ],
+            "resources": [
+              "https://maven.apache.org/guides/introduction/introduction-to-lifecycle.html",
+              "https://docs.spring.io/spring-boot/reference/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t06",
+            "title": "Create an Operational Health Gate",
+            "level": "Easy",
+            "description": "Expose a narrow Actuator health endpoint and define a CI check for it.",
+            "problemStatement": "Make /actuator/health available while avoiding broad management exposure.",
+            "objectives": [
+              "add Actuator",
+              "configure exposure",
+              "document the operational contract"
+            ],
+            "requirements": [
+              "Spring Boot Actuator"
+            ],
+            "constraints": [
+              "Do not expose every management endpoint by default."
+            ],
+            "hint": "Use the smallest management surface needed.",
+            "solutionCode": "management:\n  endpoints:\n    web:\n      exposure:\n        include: health\n",
+            "solutionExplanation": "The configuration limits the HTTP management surface to health for the learning environment. Production access control should still be designed at the deployment boundary."
+          }
+        ],
+        "deliverables": [
+          "health endpoint",
+          "delivery plan",
+          "rollback plan"
+        ],
+        "assessment": "Explain the path from source commit to monitored deployment."
+      },
+      {
+        "id": "m07",
+        "title": "Performance, Maintainability, and API Documentation",
+        "description": "Strengthen engineering judgment around concurrency, bounded work, and maintainable contracts.",
+        "objectives": [
+          "reason about shared state",
+          "avoid unbounded work",
+          "document API behavior",
+          "review maintainability"
+        ],
+        "lessons": [
+          {
+            "id": "l21",
+            "title": "Concurrency and Shared State",
+            "description": "Recognize concurrency hazards in singleton Spring beans and reason about safe state.",
+            "learningObjectives": [
+              "identify unsafe mutable singleton state",
+              "prefer request-local or immutable data",
+              "recognize resource exhaustion risks"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Concurrency model"
+              },
+              {
+                "type": "paragraph",
+                "text": "Servlet applications may handle concurrent requests. Singleton beans are shared, so mutable instance fields can become race-prone or leak state across users. Keep request-specific state local to the request and use synchronization or concurrency-safe structures only when justified."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q21",
+              "question": "Why is mutable per-request state in a singleton bean dangerous?",
+              "options": [
+                "Concurrent requests can share it",
+                "It disables HTTP",
+                "It prevents dependency injection",
+                "It automatically encrypts data"
+              ],
+              "answer": "Concurrent requests can share it",
+              "explanation": "Singleton beans are shared between concurrent requests."
+            },
+            "summary": [
+              "Concurrency safety is mostly about controlling shared mutable state and bounding resource use."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-boot/reference/"
+            ]
+          },
+          {
+            "id": "l22",
+            "title": "API Documentation and Maintainability",
+            "description": "Document contracts and review code for clarity, boundaries, and safe change.",
+            "learningObjectives": [
+              "document validation and authorization requirements",
+              "record pagination semantics",
+              "refactor without changing public behavior"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Maintainability"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Document the endpoint contract.",
+                  "Document which roles can perform sensitive actions.",
+                  "Prefer cohesive classes.",
+                  "Keep security and validation expectations discoverable."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p07",
+                "title": "Document a Protected API",
+                "description": "Write a contract for issue listing and creation.",
+                "steps": [
+                  "Document pagination and supported status filtering.",
+                  "Document validation constraints.",
+                  "Document 201, 400, 401, and 403 behavior.",
+                  "State authorization requirements."
+                ],
+                "solution": "GET /api/issues?page=0&size=20\nPOST /api/issues\nSuccess: 201 Created\nInvalid input: 400 Bad Request\nUnauthenticated: 401 Unauthorized\nForbidden operation: 403 Forbidden\n",
+                "output": "The contract becomes a reference for clients and tests."
+              }
+            ],
+            "quiz": {
+              "id": "q22",
+              "question": "What should protected API documentation state?",
+              "options": [
+                "Authentication/authorization requirements",
+                "IDE theme",
+                "CPU brand",
+                "Developer phone number"
+              ],
+              "answer": "Authentication/authorization requirements",
+              "explanation": "Security requirements are part of the API contract."
+            },
+            "summary": [
+              "Clear contracts, focused classes, and regression tests make future changes safer."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-framework/reference/web/webmvc.html",
+              "https://docs.spring.io/spring-security/reference/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t07",
+            "title": "Refactor a Mixed-Responsibility Controller",
+            "level": "Advanced",
+            "description": "Review a controller that handles HTTP, business logic, SQL, and logging in one class.",
+            "problemStatement": "Separate responsibilities without changing the public endpoint contract.",
+            "objectives": [
+              "identify boundary violations",
+              "move business logic into a service",
+              "add regression coverage"
+            ],
+            "requirements": [
+              "Java 25",
+              "Spring Boot",
+              "JUnit 5"
+            ],
+            "constraints": [
+              "Preserve status codes and response semantics."
+            ],
+            "hint": "Ask which lines would still exist if HTTP were replaced.",
+            "solutionCode": "@RestController\n@RequestMapping(\"/api/issues\")\nclass IssueController {\n    private final IssueService service;\n\n    IssueController(IssueService service) {\n        this.service = service;\n    }\n\n    @PostMapping\n    ResponseEntity<IssueResponse> create(\n        @Valid @RequestBody CreateIssueRequest request,\n        Authentication authentication\n    ) {\n        IssueResponse created = service.create(request, authentication);\n        return ResponseEntity.status(HttpStatus.CREATED).body(created);\n    }\n}",
+            "solutionExplanation": "The refactored controller is responsible for transport concerns only. Service logic and persistence are injected behind explicit boundaries, improving reviewability and testability."
+          }
+        ],
+        "deliverables": [
+          "API contract",
+          "performance review",
+          "refactoring change"
+        ],
+        "assessment": "Review an implementation for shared-state and contract risks."
+      },
+      {
+        "id": "m08",
+        "title": "Final Project: Secure Issue Tracker",
+        "description": "Deliver the one integrated capstone and no separate module tasks.",
+        "objectives": [
+          "integrate the internship competencies",
+          "explain architecture and data flow",
+          "demonstrate security and testing evidence"
+        ],
+        "lessons": [
+          {
+            "id": "l23",
+            "title": "Capstone Delivery and Engineering Walkthrough",
+            "description": "Deliver the capstone and explain its technical and security decisions.",
+            "learningObjectives": [
+              "demonstrate the system",
+              "explain architecture and data flow",
+              "defend security and testing decisions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Final walkthrough"
+              },
+              {
+                "type": "paragraph",
+                "text": "A strong capstone is an integrated engineering system. The intern should demonstrate the application, run its tests, show validation and authorization behavior, explain the PostgreSQL schema, and describe deployment and rollback."
+              },
+              {
+                "type": "warning",
+                "text": "The capstone is training material and a practical assessment. It is not a guarantee of production readiness, employment, or accreditation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q23",
+              "question": "What distinguishes a capstone from isolated exercises?",
+              "options": [
+                "One coherent system integrating the taught competencies",
+                "The highest number of frameworks",
+                "The most lines of code",
+                "Avoiding tests"
+              ],
+              "answer": "One coherent system integrating the taught competencies",
+              "explanation": "The capstone demonstrates integrated engineering ability."
+            },
+            "summary": [
+              "The capstone is evaluated by implementation evidence and technical reasoning, not file count."
+            ],
+            "resources": [
+              "https://docs.spring.io/spring-boot/reference/",
+              "https://docs.spring.io/spring-security/reference/",
+              "https://www.postgresql.org/docs/current/"
+            ]
+          }
+        ],
+        "tasks": [],
+        "deliverables": [
+          "one integrated application",
+          "test evidence",
+          "deployment documentation"
+        ],
+        "assessment": "Final capstone evaluation with engineering walkthrough.",
+        "project": {
+          "heading": "Build a Secure Production-Style Issue Tracking Web Application",
+          "description": "Build one modular Java web application for a small engineering team to record and track software issues. The system combines Spring MVC, PostgreSQL persistence, Flyway migrations, Spring Data JPA, validation, Spring Security, server-rendered HTML, automated tests, operational health checks, and externalized configuration. It is intentionally a modular monolith so the intern can demonstrate the complete web-to-database path without unnecessary distributed-system infrastructure.",
+          "problemStatement": "The team needs a central issue tracker where authenticated users can browse and create issues, while administrators can perform destructive actions. The application must reject malformed input, keep credentials protected, provide predictable error responses, and remain testable and deployable with external configuration.",
+          "requirements": {
+            "functional": [
+              "Authenticated users can list issues with pagination and optional status filtering.",
+              "Authenticated users can create issues with validated title, description, and priority.",
+              "Authenticated users can change issue status.",
+              "Only ADMIN users can delete issues.",
+              "The browser page renders issue data safely."
+            ],
+            "technical": [
+              "Java 25 and Maven 3.6.3 or later.",
+              "Spring Boot 4.1.1, Spring MVC, Spring Data JPA, Spring Security, Thymeleaf, Validation, Actuator.",
+              "PostgreSQL with Flyway migrations.",
+              "JUnit 5/Spring test support and an optional Testcontainers integration layer."
+            ],
+            "security": [
+              "Passwords use PasswordEncoder.",
+              "Secrets are supplied at runtime.",
+              "Authorization is enforced server-side.",
+              "Validation protects input boundaries.",
+              "Actuator exposure is limited to health in the sample configuration.",
+              "The browser uses DOM text insertion rather than raw HTML injection."
+            ],
+            "testing": [
+              "Unit tests for service behavior.",
+              "MVC validation test.",
+              "Security authorization test.",
+              "Additional PostgreSQL integration tests using Testcontainers are recommended for the intern to add."
+            ],
+            "deployment": [
+              "Package with Maven.",
+              "Run against external PostgreSQL.",
+              "Inject secrets and configuration through deployment environment.",
+              "Expose only intended management endpoints.",
+              "Retain a known-good build for rollback."
+            ]
+          },
+          "features": [
+            "Paginated authenticated issue listing with optional OPEN/IN_PROGRESS/RESOLVED status filter.",
+            "Validated issue creation endpoint returning 201 Created on successful creation.",
+            "Status transition endpoint using a closed enum of allowed states.",
+            "ADMIN-only deletion enforced with @PreAuthorize at the server method boundary.",
+            "Centralized validation and not-found errors using ProblemDetail.",
+            "Server-rendered login and issue-list pages.",
+            "PostgreSQL schema with uniqueness, foreign-key, CHECK constraints, and status/created_at index.",
+            "Actuator health endpoint with narrow exposure."
+          ],
+          "technologyStack": [
+            {
+              "name": "Java 25",
+              "purpose": "Language/runtime",
+              "role": "Compiles and runs the service",
+              "why": "Current LTS Java release verified in Oracle's support roadmap."
+            },
+            {
+              "name": "Spring Boot 4.1.1",
+              "purpose": "Application framework",
+              "role": "Bootstraps and auto-configures the web service",
+              "why": "Current stable Boot release verified from Spring documentation."
+            },
+            {
+              "name": "Spring MVC",
+              "purpose": "Web layer",
+              "role": "Controllers and HTTP request mapping",
+              "why": "Spring's servlet-stack web framework."
+            },
+            {
+              "name": "Spring Security",
+              "purpose": "Application security",
+              "role": "Authentication, authorization, password handling",
+              "why": "Official security framework for Spring applications."
+            },
+            {
+              "name": "Spring Data JPA",
+              "purpose": "Data access",
+              "role": "Repositories and JPA integration",
+              "why": "Provides repository abstractions for Jakarta Persistence."
+            },
+            {
+              "name": "PostgreSQL",
+              "purpose": "Relational database",
+              "role": "Durable storage",
+              "why": "Mature relational database with strong constraints and query planning."
+            },
+            {
+              "name": "Flyway",
+              "purpose": "Schema migrations",
+              "role": "Versioned database evolution",
+              "why": "Keeps schema changes repeatable and reviewable."
+            },
+            {
+              "name": "Maven",
+              "purpose": "Build",
+              "role": "Dependency and lifecycle management",
+              "why": "Standardized Java build lifecycle."
+            },
+            {
+              "name": "JUnit 5",
+              "purpose": "Testing",
+              "role": "Automated unit and MVC testing",
+              "why": "Modern Jupiter test support in the Spring Boot test stack."
+            }
+          ],
+          "architecture": "Browser/API client → Spring Security filters → DispatcherServlet → Controller → Service → Spring Data JPA repository → PostgreSQL. Flyway controls schema evolution. DTOs form HTTP contracts. Actuator provides a narrow health surface.",
+          "dataFlow": "User → HTTPS/HTTP request at deployment edge → authentication/authorization → request validation → controller → transactional service → repository → PostgreSQL → DTO mapping → HTTP response → browser/API client.",
+          "fileStructure": "issue-tracker/\n├── pom.xml\n├── Dockerfile\n├── src/main/java/org/example/issuetracker/IssueTrackerApplication.java\n├── src/main/java/org/example/issuetracker/issue/{Issue,IssueController,IssueRepository,IssueService,CreateIssueRequest,IssueResponse,IssueStatus,Priority,IssueNotFoundException}.java\n├── src/main/java/org/example/issuetracker/user/{AppUser,AppUserRepository,CustomUserDetailsService,UserRole}.java\n├── src/main/java/org/example/issuetracker/security/SecurityConfig.java\n├── src/main/java/org/example/issuetracker/config/DataInitializer.java\n├── src/main/java/org/example/issuetracker/web/{PageController,LoginController,ApiExceptionHandler}.java\n├── src/main/resources/application.yml\n├── src/main/resources/db/migration/V1__create_schema.sql\n├── src/main/resources/templates/{login.html,issues/list.html}\n├── src/main/resources/static/css/app.css\n└── src/test/java/org/example/issuetracker/{issue/IssueServiceTest.java,issue/IssueControllerTest.java,security/SecurityTest.java}",
+          "implementationSteps": [
+            "Install JDK 25, Maven, PostgreSQL, and Docker if you plan to run Testcontainers or containerize the application.",
+            "Create the Maven project and add the dependencies from pom.xml.",
+            "Create the Java package structure and main application class.",
+            "Create user and issue entities with explicit constraints and a creator foreign key.",
+            "Add the Flyway migration and keep Hibernate ddl-auto=validate so schema drift fails fast.",
+            "Create repositories for user lookup and paginated issue access.",
+            "Implement CustomUserDetailsService and PasswordEncoder-based credentials.",
+            "Configure Spring Security form login, request authentication, method authorization, and leave CSRF protection enabled.",
+            "Create request/response DTOs with validation.",
+            "Implement IssueService transaction boundaries and issue operations.",
+            "Implement REST endpoints for listing, creating, changing status, and deleting.",
+            "Add centralized ProblemDetail error handling.",
+            "Add the Thymeleaf login and issue-list views and safe client-side DOM rendering.",
+            "Set DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, APP_ADMIN_PASSWORD, and APP_USER_PASSWORD at runtime.",
+            "Run mvn clean verify and add more PostgreSQL integration coverage with Testcontainers where Docker is available.",
+            "Run the application against PostgreSQL and verify login, create, list, status change, and admin delete.",
+            "Request /actuator/health and confirm only the intended management surface is exposed.",
+            "Build and document the deployable artifact, runtime configuration, monitoring, and rollback plan."
+          ],
+          "setupInstructions": {
+            "software": [
+              "JDK 25",
+              "Maven 3.6.3+",
+              "PostgreSQL 18 (or a supported PostgreSQL release)",
+              "Docker optional for integration testing and container packaging"
+            ],
+            "commands": [
+              "mvn clean verify",
+              "mvn spring-boot:run"
+            ],
+            "environmentVariables": [
+              "DATABASE_URL=jdbc:postgresql://localhost:5432/issue_tracker",
+              "DATABASE_USERNAME=issue_tracker",
+              "DATABASE_PASSWORD=<runtime secret>",
+              "APP_ADMIN_PASSWORD=<runtime secret>",
+              "APP_USER_PASSWORD=<runtime secret>"
+            ],
+            "database": "Create an issue_tracker database and a database principal with only the permissions needed by the application. Do not use a PostgreSQL superuser credential in production."
+          },
+          "howItWorks": {
+            "startup": "Spring Boot creates the servlet application context, Flyway applies V1, Hibernate validates the schema, and the initializer creates local users using runtime passwords.",
+            "authentication": "Spring Security uses CustomUserDetailsService to load an encoded password and role from PostgreSQL. PasswordEncoder verifies the submitted password.",
+            "authorization": "Authenticated application routes require identity; the DELETE operation additionally requires ADMIN via @PreAuthorize.",
+            "request": "A controller accepts validated JSON, invokes a transactional service, the repository reads/writes PostgreSQL, and the service maps the entity to an IssueResponse DTO.",
+            "browser": "The login page posts to Spring Security. The issue-list page fetches JSON and writes values with textContent, avoiding direct HTML injection.",
+            "testing": "Unit tests isolate service behavior; MVC tests validate request contracts; security tests validate role enforcement. A full project extension should add Testcontainers-based PostgreSQL integration tests.",
+            "deployment": "Maven produces the JAR. Deployment supplies database settings and secrets separately, exposes the application port, restricts management endpoints, and retains a known-good artifact for rollback."
+          },
+          "securityReview": [
+            "PasswordEncoder hashes passwords instead of persisting plaintext.",
+            "No credentials are stored in source code; runtime environment variables supply local passwords.",
+            "ADMIN-only deletion is enforced server-side.",
+            "Bean Validation constrains request size/content.",
+            "Database access uses JPA repository binding rather than string-built SQL from user input.",
+            "ProblemDetail error responses avoid stack traces.",
+            "Browser rendering uses textContent instead of innerHTML for API data.",
+            "Actuator exposes health only in the sample configuration.",
+            "CSRF remains enabled for the stateful browser security model."
+          ],
+          "performanceReview": [
+            "Issue list is paginated.",
+            "The schema contains an index aligned with status filtering and created_at ordering.",
+            "Open EntityManager in View is disabled.",
+            "Query performance decisions should use EXPLAIN ANALYZE on representative data.",
+            "No unbounded application cache is introduced."
+          ],
+          "deploymentReview": [
+            "Terminate HTTPS at the deployment edge or configure TLS according to the hosting platform.",
+            "Use external PostgreSQL and protect database connectivity.",
+            "Inject secrets through deployment secret management.",
+            "Restrict actuator endpoints and network access.",
+            "Monitor application health and database availability.",
+            "Retain immutable artifacts for rollback.",
+            "Test database backup and restore separately from application rollback."
+          ],
+          "troubleshooting": [
+            {
+              "symptom": "APP_ADMIN_PASSWORD or APP_USER_PASSWORD is missing.",
+              "cause": "The initializer intentionally refuses to create local users without runtime credentials.",
+              "action": "Set the required environment variables before startup."
+            },
+            {
+              "symptom": "Flyway fails.",
+              "cause": "The database migration history or target schema is inconsistent.",
+              "action": "Inspect Flyway state and fix migration/history deliberately rather than enabling Hibernate update."
+            },
+            {
+              "symptom": "DELETE returns 403 for user.",
+              "cause": "The endpoint is intentionally ADMIN-only.",
+              "action": "Use an authorized administrator account when testing the destructive operation."
+            },
+            {
+              "symptom": "Status parameter returns 400.",
+              "cause": "The request value cannot be converted to the IssueStatus enum.",
+              "action": "Use OPEN, IN_PROGRESS, or RESOLVED."
+            }
+          ],
+          "fileWiseSolution": [
+            {
+              "path": "pom.xml",
+              "purpose": "Maven build and dependency definition",
+              "explanation": "Uses Spring Boot 4.1.1, Java 25, MVC, Thymeleaf, JPA, validation, Security, Actuator, PostgreSQL, Flyway, and test support.",
+              "code": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n  <modelVersion>4.0.0</modelVersion>\n  <parent>\n    <groupId>org.springframework.boot</groupId>\n    <artifactId>spring-boot-starter-parent</artifactId>\n    <version>4.1.1</version>\n    <relativePath/>\n  </parent>\n  <groupId>org.example</groupId>\n  <artifactId>issue-tracker</artifactId>\n  <version>1.0.0</version>\n  <properties>\n    <java.version>25</java.version>\n  </properties>\n  <dependencies>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-webmvc</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-thymeleaf</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-data-jpa</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-validation</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-security</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-actuator</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.postgresql</groupId>\n      <artifactId>postgresql</artifactId>\n      <scope>runtime</scope>\n    </dependency>\n    <dependency>\n      <groupId>org.flywaydb</groupId>\n      <artifactId>flyway-core</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.flywaydb</groupId>\n      <artifactId>flyway-database-postgresql</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-test</artifactId>\n      <scope>test</scope>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.security</groupId>\n      <artifactId>spring-security-test</artifactId>\n      <scope>test</scope>\n    </dependency>\n  </dependencies>\n  <build>\n    <plugins>\n      <plugin>\n        <groupId>org.springframework.boot</groupId>\n        <artifactId>spring-boot-maven-plugin</artifactId>\n      </plugin>\n    </plugins>\n  </build>\n</project>"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/IssueTrackerApplication.java",
+              "purpose": "Spring Boot entry point",
+              "explanation": "Starts the application and component scanning.",
+              "code": "package org.example.issuetracker;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\n\n@SpringBootApplication\npublic class IssueTrackerApplication {\n    public static void main(String[] args) {\n        SpringApplication.run(IssueTrackerApplication.class, args);\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/IssueStatus.java",
+              "purpose": "Issue status enum",
+              "explanation": "Constrains status to an explicit domain set.",
+              "code": "package org.example.issuetracker.issue;\npublic enum IssueStatus { OPEN, IN_PROGRESS, RESOLVED }"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/Priority.java",
+              "purpose": "Issue priority enum",
+              "explanation": "Constrains priority to an explicit domain set.",
+              "code": "package org.example.issuetracker.issue;\npublic enum Priority { LOW, MEDIUM, HIGH }"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/user/UserRole.java",
+              "purpose": "User role enum",
+              "explanation": "Defines the USER/ADMIN roles used for authorization.",
+              "code": "package org.example.issuetracker.user;\npublic enum UserRole { USER, ADMIN }"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/user/AppUser.java",
+              "purpose": "User entity",
+              "explanation": "Persists username, encoded password, and role.",
+              "code": "package org.example.issuetracker.user;\n\nimport jakarta.persistence.*;\n\n@Entity\n@Table(name = \"app_users\")\npublic class AppUser {\n    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(nullable = false, unique = true, length = 120)\n    private String username;\n\n    @Column(nullable = false, length = 255)\n    private String passwordHash;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private UserRole role;\n\n    protected AppUser() {}\n\n    public AppUser(String username, String passwordHash, UserRole role) {\n        this.username = username;\n        this.passwordHash = passwordHash;\n        this.role = role;\n    }\n\n    public Long getId() { return id; }\n    public String getUsername() { return username; }\n    public String getPasswordHash() { return passwordHash; }\n    public UserRole getRole() { return role; }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/Issue.java",
+              "purpose": "Issue entity",
+              "explanation": "Maps the issue domain to PostgreSQL with a creator foreign key.",
+              "code": "package org.example.issuetracker.issue;\n\nimport jakarta.persistence.*;\nimport org.example.issuetracker.user.AppUser;\nimport java.time.Instant;\n\n@Entity\n@Table(name = \"issues\")\npublic class Issue {\n    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(nullable = false, length = 140)\n    private String title;\n\n    @Column(nullable = false, length = 4000)\n    private String description;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private Priority priority;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private IssueStatus status;\n\n    @Column(nullable = false)\n    private Instant createdAt;\n\n    @ManyToOne(fetch = FetchType.LAZY, optional = false)\n    @JoinColumn(name = \"created_by\", nullable = false)\n    private AppUser createdBy;\n\n    protected Issue() {}\n\n    public Issue(String title, String description, Priority priority, AppUser createdBy) {\n        this.title = title;\n        this.description = description;\n        this.priority = priority;\n        this.status = IssueStatus.OPEN;\n        this.createdAt = Instant.now();\n        this.createdBy = createdBy;\n    }\n\n    public Long getId() { return id; }\n    public String getTitle() { return title; }\n    public String getDescription() { return description; }\n    public Priority getPriority() { return priority; }\n    public IssueStatus getStatus() { return status; }\n    public Instant getCreatedAt() { return createdAt; }\n    public AppUser getCreatedBy() { return createdBy; }\n\n    public void changeStatus(IssueStatus status) { this.status = status; }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/user/AppUserRepository.java",
+              "purpose": "User repository",
+              "explanation": "Loads users by username for authentication.",
+              "code": "package org.example.issuetracker.user;\n\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport java.util.Optional;\n\npublic interface AppUserRepository extends JpaRepository<AppUser, Long> {\n    Optional<AppUser> findByUsername(String username);\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/IssueRepository.java",
+              "purpose": "Issue repository",
+              "explanation": "Provides CRUD and paginated status filtering.",
+              "code": "package org.example.issuetracker.issue;\n\nimport org.springframework.data.domain.*;\nimport org.springframework.data.jpa.repository.JpaRepository;\n\npublic interface IssueRepository extends JpaRepository<Issue, Long> {\n    Page<Issue> findByStatus(IssueStatus status, Pageable pageable);\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/CreateIssueRequest.java",
+              "purpose": "Issue input DTO",
+              "explanation": "Validates client-provided issue data.",
+              "code": "package org.example.issuetracker.issue;\n\nimport jakarta.validation.constraints.*;\n\npublic record CreateIssueRequest(\n    @NotBlank @Size(max = 140) String title,\n    @NotBlank @Size(max = 4000) String description,\n    @NotNull Priority priority\n) {}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/IssueResponse.java",
+              "purpose": "Issue response DTO",
+              "explanation": "Defines a safe API representation without exposing password or entity internals.",
+              "code": "package org.example.issuetracker.issue;\n\nimport java.time.Instant;\n\npublic record IssueResponse(\n    Long id,\n    String title,\n    String description,\n    Priority priority,\n    IssueStatus status,\n    Instant createdAt,\n    String createdBy\n) {}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/user/CustomUserDetailsService.java",
+              "purpose": "Database-backed authentication",
+              "explanation": "Loads a persisted user's encoded password and role into Spring Security's UserDetails model.",
+              "code": "package org.example.issuetracker.user;\n\nimport org.springframework.security.core.userdetails.*;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class CustomUserDetailsService implements UserDetailsService {\n    private final AppUserRepository repository;\n\n    public CustomUserDetailsService(AppUserRepository repository) {\n        this.repository = repository;\n    }\n\n    @Override\n    public UserDetails loadUserByUsername(String username) {\n        AppUser user = repository.findByUsername(username)\n            .orElseThrow(() -> new UsernameNotFoundException(\"User not found\"));\n        return User.withUsername(user.getUsername())\n            .password(user.getPasswordHash())\n            .roles(user.getRole().name())\n            .build();\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/IssueNotFoundException.java",
+              "purpose": "Missing issue exception",
+              "explanation": "Marks a not-found condition for centralized web handling.",
+              "code": "package org.example.issuetracker.issue;\n\npublic class IssueNotFoundException extends RuntimeException {\n    public IssueNotFoundException(long id) {\n        super(\"Issue \" + id + \" was not found\");\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/IssueService.java",
+              "purpose": "Issue business service",
+              "explanation": "Owns issue creation, listing, status changes, and deletion with transactions.",
+              "code": "package org.example.issuetracker.issue;\n\nimport org.example.issuetracker.user.*;\nimport org.springframework.data.domain.*;\nimport org.springframework.security.core.Authentication;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\n@Service\npublic class IssueService {\n    private final IssueRepository issues;\n    private final AppUserRepository users;\n\n    public IssueService(IssueRepository issues, AppUserRepository users) {\n        this.issues = issues;\n        this.users = users;\n    }\n\n    @Transactional\n    public IssueResponse create(CreateIssueRequest request, Authentication authentication) {\n        AppUser creator = users.findByUsername(authentication.getName()).orElseThrow();\n        Issue issue = new Issue(request.title().trim(), request.description().trim(), request.priority(), creator);\n        return toResponse(issues.save(issue));\n    }\n\n    @Transactional(readOnly = true)\n    public Page<IssueResponse> list(IssueStatus status, Pageable pageable) {\n        Page<Issue> page = status == null\n            ? issues.findAll(pageable)\n            : issues.findByStatus(status, pageable);\n        return page.map(this::toResponse);\n    }\n\n    @Transactional\n    public IssueResponse changeStatus(long id, IssueStatus status) {\n        Issue issue = issues.findById(id).orElseThrow(() -> new IssueNotFoundException(id));\n        issue.changeStatus(status);\n        return toResponse(issue);\n    }\n\n    @Transactional\n    public void delete(long id) {\n        if (!issues.existsById(id)) {\n            throw new IssueNotFoundException(id);\n        }\n        issues.deleteById(id);\n    }\n\n    private IssueResponse toResponse(Issue issue) {\n        return new IssueResponse(\n            issue.getId(), issue.getTitle(), issue.getDescription(),\n            issue.getPriority(), issue.getStatus(), issue.getCreatedAt(),\n            issue.getCreatedBy().getUsername()\n        );\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/issue/IssueController.java",
+              "purpose": "REST API",
+              "explanation": "Exposes authenticated issue operations and protects deletion.",
+              "code": "package org.example.issuetracker.issue;\n\nimport jakarta.validation.Valid;\nimport org.springframework.data.domain.*;\nimport org.springframework.http.*;\nimport org.springframework.security.access.prepost.PreAuthorize;\nimport org.springframework.security.core.Authentication;\nimport org.springframework.web.bind.annotation.*;\n\n@RestController\n@RequestMapping(\"/api/issues\")\npublic class IssueController {\n    private final IssueService service;\n\n    public IssueController(IssueService service) {\n        this.service = service;\n    }\n\n    @GetMapping\n    public Page<IssueResponse> list(\n        @RequestParam(required = false) IssueStatus status,\n        Pageable pageable\n    ) {\n        return service.list(status, pageable);\n    }\n\n    @PostMapping\n    public ResponseEntity<IssueResponse> create(\n        @Valid @RequestBody CreateIssueRequest request,\n        Authentication authentication\n    ) {\n        return ResponseEntity.status(HttpStatus.CREATED)\n            .body(service.create(request, authentication));\n    }\n\n    @PatchMapping(\"/{id}/status\")\n    public IssueResponse changeStatus(\n        @PathVariable long id,\n        @RequestParam IssueStatus status\n    ) {\n        return service.changeStatus(id, status);\n    }\n\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    @DeleteMapping(\"/{id}\")\n    public ResponseEntity<Void> delete(@PathVariable long id) {\n        service.delete(id);\n        return ResponseEntity.noContent().build();\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/web/PageController.java",
+              "purpose": "HTML view controller",
+              "explanation": "Provides the server-rendered issue list page.",
+              "code": "package org.example.issuetracker.web;\n\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.GetMapping;\n\n@Controller\npublic class PageController {\n    @GetMapping(\"/\")\n    String home() { return \"redirect:/issues\"; }\n\n    @GetMapping(\"/issues\")\n    String issues() { return \"issues/list\"; }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/web/ApiExceptionHandler.java",
+              "purpose": "REST error handler",
+              "explanation": "Maps domain and validation errors to safe ProblemDetail responses.",
+              "code": "package org.example.issuetracker.web;\n\nimport org.example.issuetracker.issue.IssueNotFoundException;\nimport org.springframework.http.*;\nimport org.springframework.web.bind.MethodArgumentNotValidException;\nimport org.springframework.web.bind.annotation.*;\nimport java.util.stream.Collectors;\n\n@RestControllerAdvice\npublic class ApiExceptionHandler {\n    @ExceptionHandler(IssueNotFoundException.class)\n    ResponseEntity<ProblemDetail> notFound(IssueNotFoundException ex) {\n        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);\n        pd.setDetail(ex.getMessage());\n        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(pd);\n    }\n\n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    ResponseEntity<ProblemDetail> validation(MethodArgumentNotValidException ex) {\n        String detail = ex.getBindingResult().getFieldErrors().stream()\n            .map(e -> e.getField() + \": \" + e.getDefaultMessage())\n            .collect(Collectors.joining(\"; \"));\n        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);\n        pd.setDetail(detail);\n        return ResponseEntity.badRequest().body(pd);\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/security/SecurityConfig.java",
+              "purpose": "Authentication and authorization configuration",
+              "explanation": "Configures form login, route authorization, method security, and PasswordEncoder.",
+              "code": "package org.example.issuetracker.security;\n\nimport org.springframework.context.annotation.*;\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\nimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\nimport org.springframework.security.crypto.argon2.Argon2PasswordEncoder;\nimport org.springframework.security.crypto.password.PasswordEncoder;\nimport org.springframework.security.web.SecurityFilterChain;\n\n@Configuration\n@EnableWebSecurity\n@EnableMethodSecurity\npublic class SecurityConfig {\n    @Bean\n    PasswordEncoder passwordEncoder() {\n        return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();\n    }\n\n    @Bean\n    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {\n        http\n            .authorizeHttpRequests(a -> a\n                .requestMatchers(\"/css/**\", \"/login\", \"/actuator/health\").permitAll()\n                .anyRequest().authenticated()\n            )\n            .formLogin(f -> f.loginPage(\"/login\").defaultSuccessUrl(\"/issues\", true))\n            .logout(l -> l.logoutSuccessUrl(\"/login?logout\"));\n        return http.build();\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/config/DataInitializer.java",
+              "purpose": "Local user initializer",
+              "explanation": "Creates neutral local accounts from runtime-provided passwords.",
+              "code": "package org.example.issuetracker.config;\n\nimport org.example.issuetracker.user.*;\nimport org.springframework.boot.CommandLineRunner;\nimport org.springframework.context.annotation.*;\nimport org.springframework.security.crypto.password.PasswordEncoder;\n\n@Configuration\npublic class DataInitializer {\n    @Bean\n    CommandLineRunner seedUsers(AppUserRepository users, PasswordEncoder encoder) {\n        return args -> {\n            createIfAbsent(users, encoder, \"admin\", UserRole.ADMIN, \"APP_ADMIN_PASSWORD\");\n            createIfAbsent(users, encoder, \"user\", UserRole.USER, \"APP_USER_PASSWORD\");\n        };\n    }\n\n    private void createIfAbsent(\n        AppUserRepository users,\n        PasswordEncoder encoder,\n        String username,\n        UserRole role,\n        String envName\n    ) {\n        if (users.findByUsername(username).isPresent()) return;\n        String password = System.getenv(envName);\n        if (password == null || password.isBlank()) {\n            throw new IllegalStateException(envName + \" is required\");\n        }\n        users.save(new AppUser(username, encoder.encode(password), role));\n    }\n}"
+            },
+            {
+              "path": "src/main/resources/application.yml",
+              "purpose": "Runtime configuration",
+              "explanation": "Uses environment variables, validation for the database schema, disables Open EntityManager in View, and exposes only health via Actuator.",
+              "code": "spring:\n  datasource:\n    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/issue_tracker}\n    username: ${DATABASE_USERNAME:issue_tracker}\n    password: ${DATABASE_PASSWORD:change-me}\n  jpa:\n    hibernate:\n      ddl-auto: validate\n    open-in-view: false\n\nmanagement:\n  endpoints:\n    web:\n      exposure:\n        include: health\n"
+            },
+            {
+              "path": "src/main/resources/db/migration/V1__create_schema.sql",
+              "purpose": "Flyway V1 schema",
+              "explanation": "Creates relational tables and the query-aligned index.",
+              "code": "CREATE TABLE app_users (\n  id BIGSERIAL PRIMARY KEY,\n  username VARCHAR(120) NOT NULL UNIQUE,\n  password_hash VARCHAR(255) NOT NULL,\n  role VARCHAR(20) NOT NULL CHECK (role IN ('USER','ADMIN'))\n);\n\nCREATE TABLE issues (\n  id BIGSERIAL PRIMARY KEY,\n  title VARCHAR(140) NOT NULL,\n  description VARCHAR(4000) NOT NULL,\n  priority VARCHAR(20) NOT NULL CHECK (priority IN ('LOW','MEDIUM','HIGH')),\n  status VARCHAR(20) NOT NULL CHECK (status IN ('OPEN','IN_PROGRESS','RESOLVED')),\n  created_at TIMESTAMPTZ NOT NULL,\n  created_by BIGINT NOT NULL REFERENCES app_users(id)\n);\n\nCREATE INDEX idx_issues_status_created_at\n  ON issues (status, created_at DESC);"
+            },
+            {
+              "path": "src/main/resources/templates/login.html",
+              "purpose": "Login view",
+              "explanation": "Provides a simple server-rendered login form. Spring Security supplies CSRF protection and handles POST /login.",
+              "code": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Sign in</title>\n  <link rel=\"stylesheet\" href=\"/css/app.css\">\n</head>\n<body>\n<main class=\"container\">\n  <h1>Sign in</h1>\n  <form method=\"post\" action=\"/login\">\n    <label for=\"username\">Username</label>\n    <input id=\"username\" name=\"username\" required>\n    <label for=\"password\">Password</label>\n    <input id=\"password\" name=\"password\" type=\"password\" required>\n    <button type=\"submit\">Sign in</button>\n  </form>\n</main>\n</body>\n</html>"
+            },
+            {
+              "path": "src/main/resources/templates/issues/list.html",
+              "purpose": "Issue list view",
+              "explanation": "Fetches paginated JSON and uses textContent to render data without injecting raw HTML.",
+              "code": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Issue Tracker</title>\n  <link rel=\"stylesheet\" href=\"/css/app.css\">\n</head>\n<body>\n<main class=\"container\">\n  <h1>Issue Tracker</h1>\n  <p id=\"message\" role=\"status\">Loading issues…</p>\n  <table>\n    <thead>\n      <tr><th>Title</th><th>Priority</th><th>Status</th><th>Created by</th></tr>\n    </thead>\n    <tbody id=\"issues\"></tbody>\n  </table>\n</main>\n<script>\nasync function loadIssues() {\n  const response = await fetch(\"/api/issues?page=0&size=20\");\n  const message = document.getElementById(\"message\");\n  if (!response.ok) {\n    message.textContent = \"Unable to load issues (\" + response.status + \").\";\n    return;\n  }\n  const page = await response.json();\n  const body = document.getElementById(\"issues\");\n  body.replaceChildren();\n  for (const issue of page.content) {\n    const row = document.createElement(\"tr\");\n    for (const value of [issue.title, issue.priority, issue.status, issue.createdBy]) {\n      const cell = document.createElement(\"td\");\n      cell.textContent = value;\n      row.appendChild(cell);\n    }\n    body.appendChild(row);\n  }\n  message.textContent = page.totalElements + \" issue(s).\";\n}\nloadIssues().catch(() => {\n  document.getElementById(\"message\").textContent = \"Network error while loading issues.\";\n});\n</script>\n</body>\n</html>"
+            },
+            {
+              "path": "src/main/resources/static/css/app.css",
+              "purpose": "Responsive styling",
+              "explanation": "Provides simple accessible table and form layout for narrow and wide screens.",
+              "code": "body { font-family: system-ui, sans-serif; margin: 0; background: #f5f5f5; }\n.container { max-width: 960px; margin: 0 auto; padding: 2rem; }\nlabel, input, button { display: block; margin: .5rem 0; }\ninput { width: min(28rem, 100%); padding: .5rem; box-sizing: border-box; }\ntable { width: 100%; border-collapse: collapse; background: white; }\nth, td { text-align: left; padding: .75rem; border-bottom: 1px solid #ddd; }\n@media (max-width: 640px) {\n  .container { padding: 1rem; overflow-x: auto; }\n  table { min-width: 640px; }\n}"
+            },
+            {
+              "path": "src/test/java/org/example/issuetracker/issue/IssueServiceTest.java",
+              "purpose": "Unit test",
+              "explanation": "Verifies a missing issue produces a domain exception and no delete call.",
+              "code": "package org.example.issuetracker.issue;\n\nimport org.example.issuetracker.user.AppUserRepository;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\n\nclass IssueServiceTest {\n    @Test\n    void missingIssueIsNotDeleted() {\n        IssueRepository issues = mock(IssueRepository.class);\n        AppUserRepository users = mock(AppUserRepository.class);\n        IssueService service = new IssueService(issues, users);\n\n        when(issues.existsById(42L)).thenReturn(false);\n\n        assertThrows(IssueNotFoundException.class, () -> service.delete(42L));\n        verify(issues, never()).deleteById(42L);\n    }\n}"
+            },
+            {
+              "path": "src/test/java/org/example/issuetracker/issue/IssueControllerTest.java",
+              "purpose": "MVC validation test",
+              "explanation": "Checks that blank input returns 400 at the MVC boundary.",
+              "code": "package org.example.issuetracker.issue;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;\nimport org.springframework.test.context.bean.override.mockito.MockitoBean;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.http.MediaType;\nimport org.springframework.test.web.servlet.MockMvc;\n\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\n@WebMvcTest(IssueController.class)\nclass IssueControllerTest {\n    @Autowired MockMvc mockMvc;\n    @MockitoBean IssueService issueService;\n\n    @Test\n    void blankTitleIsRejected() throws Exception {\n        String json = \"{\"title\":\"\",\"description\":\"Details\",\"priority\":\"MEDIUM\"}\";\n        mockMvc.perform(post(\"/api/issues\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(json))\n            .andExpect(status().isBadRequest());\n    }\n}"
+            },
+            {
+              "path": "src/test/java/org/example/issuetracker/security/SecurityTest.java",
+              "purpose": "Authorization test",
+              "explanation": "Checks that a USER role cannot invoke the ADMIN-only deletion endpoint.",
+              "code": "package org.example.issuetracker.security;\n\nimport org.example.issuetracker.issue.IssueController;\nimport org.example.issuetracker.issue.IssueService;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;\nimport org.springframework.context.annotation.Import;\nimport org.springframework.test.context.bean.override.mockito.MockitoBean;\nimport org.springframework.test.web.servlet.MockMvc;\n\nimport static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\n@WebMvcTest(IssueController.class)\n@Import(SecurityConfig.class)\nclass SecurityTest {\n    @Autowired MockMvc mockMvc;\n    @MockitoBean IssueService issueService;\n\n    @Test\n    void userCannotDelete() throws Exception {\n        mockMvc.perform(delete(\"/api/issues/1\")\n                .with(user(\"reader\").roles(\"USER\")))\n            .andExpect(status().isForbidden());\n    }\n}"
+            },
+            {
+              "path": "src/main/java/org/example/issuetracker/web/LoginController.java",
+              "purpose": "Custom login page mapping",
+              "explanation": "Because SecurityConfig selects /login as a custom login page, this controller maps GET /login to the login.html template.",
+              "code": "package org.example.issuetracker.web;\n\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.GetMapping;\n\n@Controller\npublic class LoginController {\n    @GetMapping(\"/login\")\n    String login() {\n        return \"login\";\n    }\n}"
+            },
+            {
+              "path": "Dockerfile",
+              "purpose": "Container packaging",
+              "explanation": "Builds a small runtime image from the Maven-produced JAR. Database settings and passwords remain runtime configuration rather than image contents.",
+              "code": "FROM eclipse-temurin:25-jre\nWORKDIR /app\nCOPY target/issue-tracker-1.0.0.jar app.jar\nEXPOSE 8080\nENTRYPOINT [\"java\",\"-jar\",\"app.jar\"]"
+            }
+          ],
+          "explanation": "The capstone integrates the internship as an engineering system rather than a set of isolated exercises. It has clear transport, business, and persistence boundaries; explicit relational constraints; versioned schema migration; browser authentication; server-side authorization; automated tests; and operational health. The architecture is deliberately a modular monolith to keep the web-to-database path understandable while still requiring real engineering judgment.",
+          "testingInstructions": "Run `mvn clean verify`. If Docker is available, extend the suite with a Testcontainers PostgreSQL integration test and run it in CI. A passing local unit suite does not prove deployment correctness.",
+          "deploymentNotes": "The supplied project is a training capstone, not a claim of production readiness for any specific organization. Production deployment must adapt authentication policy, TLS termination, database backup, availability, secrets management, network controls, logging, monitoring, and rollback to the actual environment."
+        }
+      }
+    ],
+    "finalProject": {
+      "heading": "Build a Secure Production-Style Issue Tracking Web Application",
+      "description": "Build one modular Java web application for a small engineering team to record and track software issues. The system combines Spring MVC, PostgreSQL persistence, Flyway migrations, Spring Data JPA, validation, Spring Security, server-rendered HTML, automated tests, operational health checks, and externalized configuration. It is intentionally a modular monolith so the intern can demonstrate the complete web-to-database path without unnecessary distributed-system infrastructure.",
+      "problemStatement": "The team needs a central issue tracker where authenticated users can browse and create issues, while administrators can perform destructive actions. The application must reject malformed input, keep credentials protected, provide predictable error responses, and remain testable and deployable with external configuration.",
+      "requirements": {
+        "functional": [
+          "Authenticated users can list issues with pagination and optional status filtering.",
+          "Authenticated users can create issues with validated title, description, and priority.",
+          "Authenticated users can change issue status.",
+          "Only ADMIN users can delete issues.",
+          "The browser page renders issue data safely."
+        ],
+        "technical": [
+          "Java 25 and Maven 3.6.3 or later.",
+          "Spring Boot 4.1.1, Spring MVC, Spring Data JPA, Spring Security, Thymeleaf, Validation, Actuator.",
+          "PostgreSQL with Flyway migrations.",
+          "JUnit 5/Spring test support and an optional Testcontainers integration layer."
+        ],
+        "security": [
+          "Passwords use PasswordEncoder.",
+          "Secrets are supplied at runtime.",
+          "Authorization is enforced server-side.",
+          "Validation protects input boundaries.",
+          "Actuator exposure is limited to health in the sample configuration.",
+          "The browser uses DOM text insertion rather than raw HTML injection."
+        ],
+        "testing": [
+          "Unit tests for service behavior.",
+          "MVC validation test.",
+          "Security authorization test.",
+          "Additional PostgreSQL integration tests using Testcontainers are recommended for the intern to add."
+        ],
+        "deployment": [
+          "Package with Maven.",
+          "Run against external PostgreSQL.",
+          "Inject secrets and configuration through deployment environment.",
+          "Expose only intended management endpoints.",
+          "Retain a known-good build for rollback."
+        ]
+      },
+      "features": [
+        "Paginated authenticated issue listing with optional OPEN/IN_PROGRESS/RESOLVED status filter.",
+        "Validated issue creation endpoint returning 201 Created on successful creation.",
+        "Status transition endpoint using a closed enum of allowed states.",
+        "ADMIN-only deletion enforced with @PreAuthorize at the server method boundary.",
+        "Centralized validation and not-found errors using ProblemDetail.",
+        "Server-rendered login and issue-list pages.",
+        "PostgreSQL schema with uniqueness, foreign-key, CHECK constraints, and status/created_at index.",
+        "Actuator health endpoint with narrow exposure."
+      ],
+      "technologyStack": [
+        {
+          "name": "Java 25",
+          "purpose": "Language/runtime",
+          "role": "Compiles and runs the service",
+          "why": "Current LTS Java release verified in Oracle's support roadmap."
+        },
+        {
+          "name": "Spring Boot 4.1.1",
+          "purpose": "Application framework",
+          "role": "Bootstraps and auto-configures the web service",
+          "why": "Current stable Boot release verified from Spring documentation."
+        },
+        {
+          "name": "Spring MVC",
+          "purpose": "Web layer",
+          "role": "Controllers and HTTP request mapping",
+          "why": "Spring's servlet-stack web framework."
+        },
+        {
+          "name": "Spring Security",
+          "purpose": "Application security",
+          "role": "Authentication, authorization, password handling",
+          "why": "Official security framework for Spring applications."
+        },
+        {
+          "name": "Spring Data JPA",
+          "purpose": "Data access",
+          "role": "Repositories and JPA integration",
+          "why": "Provides repository abstractions for Jakarta Persistence."
+        },
+        {
+          "name": "PostgreSQL",
+          "purpose": "Relational database",
+          "role": "Durable storage",
+          "why": "Mature relational database with strong constraints and query planning."
+        },
+        {
+          "name": "Flyway",
+          "purpose": "Schema migrations",
+          "role": "Versioned database evolution",
+          "why": "Keeps schema changes repeatable and reviewable."
+        },
+        {
+          "name": "Maven",
+          "purpose": "Build",
+          "role": "Dependency and lifecycle management",
+          "why": "Standardized Java build lifecycle."
+        },
+        {
+          "name": "JUnit 5",
+          "purpose": "Testing",
+          "role": "Automated unit and MVC testing",
+          "why": "Modern Jupiter test support in the Spring Boot test stack."
+        }
+      ],
+      "architecture": "Browser/API client → Spring Security filters → DispatcherServlet → Controller → Service → Spring Data JPA repository → PostgreSQL. Flyway controls schema evolution. DTOs form HTTP contracts. Actuator provides a narrow health surface.",
+      "dataFlow": "User → HTTPS/HTTP request at deployment edge → authentication/authorization → request validation → controller → transactional service → repository → PostgreSQL → DTO mapping → HTTP response → browser/API client.",
+      "fileStructure": "issue-tracker/\n├── pom.xml\n├── Dockerfile\n├── src/main/java/org/example/issuetracker/IssueTrackerApplication.java\n├── src/main/java/org/example/issuetracker/issue/{Issue,IssueController,IssueRepository,IssueService,CreateIssueRequest,IssueResponse,IssueStatus,Priority,IssueNotFoundException}.java\n├── src/main/java/org/example/issuetracker/user/{AppUser,AppUserRepository,CustomUserDetailsService,UserRole}.java\n├── src/main/java/org/example/issuetracker/security/SecurityConfig.java\n├── src/main/java/org/example/issuetracker/config/DataInitializer.java\n├── src/main/java/org/example/issuetracker/web/{PageController,LoginController,ApiExceptionHandler}.java\n├── src/main/resources/application.yml\n├── src/main/resources/db/migration/V1__create_schema.sql\n├── src/main/resources/templates/{login.html,issues/list.html}\n├── src/main/resources/static/css/app.css\n└── src/test/java/org/example/issuetracker/{issue/IssueServiceTest.java,issue/IssueControllerTest.java,security/SecurityTest.java}",
+      "implementationSteps": [
+        "Install JDK 25, Maven, PostgreSQL, and Docker if you plan to run Testcontainers or containerize the application.",
+        "Create the Maven project and add the dependencies from pom.xml.",
+        "Create the Java package structure and main application class.",
+        "Create user and issue entities with explicit constraints and a creator foreign key.",
+        "Add the Flyway migration and keep Hibernate ddl-auto=validate so schema drift fails fast.",
+        "Create repositories for user lookup and paginated issue access.",
+        "Implement CustomUserDetailsService and PasswordEncoder-based credentials.",
+        "Configure Spring Security form login, request authentication, method authorization, and leave CSRF protection enabled.",
+        "Create request/response DTOs with validation.",
+        "Implement IssueService transaction boundaries and issue operations.",
+        "Implement REST endpoints for listing, creating, changing status, and deleting.",
+        "Add centralized ProblemDetail error handling.",
+        "Add the Thymeleaf login and issue-list views and safe client-side DOM rendering.",
+        "Set DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, APP_ADMIN_PASSWORD, and APP_USER_PASSWORD at runtime.",
+        "Run mvn clean verify and add more PostgreSQL integration coverage with Testcontainers where Docker is available.",
+        "Run the application against PostgreSQL and verify login, create, list, status change, and admin delete.",
+        "Request /actuator/health and confirm only the intended management surface is exposed.",
+        "Build and document the deployable artifact, runtime configuration, monitoring, and rollback plan."
+      ],
+      "setupInstructions": {
+        "software": [
+          "JDK 25",
+          "Maven 3.6.3+",
+          "PostgreSQL 18 (or a supported PostgreSQL release)",
+          "Docker optional for integration testing and container packaging"
+        ],
+        "commands": [
+          "mvn clean verify",
+          "mvn spring-boot:run"
+        ],
+        "environmentVariables": [
+          "DATABASE_URL=jdbc:postgresql://localhost:5432/issue_tracker",
+          "DATABASE_USERNAME=issue_tracker",
+          "DATABASE_PASSWORD=<runtime secret>",
+          "APP_ADMIN_PASSWORD=<runtime secret>",
+          "APP_USER_PASSWORD=<runtime secret>"
+        ],
+        "database": "Create an issue_tracker database and a database principal with only the permissions needed by the application. Do not use a PostgreSQL superuser credential in production."
+      },
+      "howItWorks": {
+        "startup": "Spring Boot creates the servlet application context, Flyway applies V1, Hibernate validates the schema, and the initializer creates local users using runtime passwords.",
+        "authentication": "Spring Security uses CustomUserDetailsService to load an encoded password and role from PostgreSQL. PasswordEncoder verifies the submitted password.",
+        "authorization": "Authenticated application routes require identity; the DELETE operation additionally requires ADMIN via @PreAuthorize.",
+        "request": "A controller accepts validated JSON, invokes a transactional service, the repository reads/writes PostgreSQL, and the service maps the entity to an IssueResponse DTO.",
+        "browser": "The login page posts to Spring Security. The issue-list page fetches JSON and writes values with textContent, avoiding direct HTML injection.",
+        "testing": "Unit tests isolate service behavior; MVC tests validate request contracts; security tests validate role enforcement. A full project extension should add Testcontainers-based PostgreSQL integration tests.",
+        "deployment": "Maven produces the JAR. Deployment supplies database settings and secrets separately, exposes the application port, restricts management endpoints, and retains a known-good artifact for rollback."
+      },
+      "securityReview": [
+        "PasswordEncoder hashes passwords instead of persisting plaintext.",
+        "No credentials are stored in source code; runtime environment variables supply local passwords.",
+        "ADMIN-only deletion is enforced server-side.",
+        "Bean Validation constrains request size/content.",
+        "Database access uses JPA repository binding rather than string-built SQL from user input.",
+        "ProblemDetail error responses avoid stack traces.",
+        "Browser rendering uses textContent instead of innerHTML for API data.",
+        "Actuator exposes health only in the sample configuration.",
+        "CSRF remains enabled for the stateful browser security model."
+      ],
+      "performanceReview": [
+        "Issue list is paginated.",
+        "The schema contains an index aligned with status filtering and created_at ordering.",
+        "Open EntityManager in View is disabled.",
+        "Query performance decisions should use EXPLAIN ANALYZE on representative data.",
+        "No unbounded application cache is introduced."
+      ],
+      "deploymentReview": [
+        "Terminate HTTPS at the deployment edge or configure TLS according to the hosting platform.",
+        "Use external PostgreSQL and protect database connectivity.",
+        "Inject secrets through deployment secret management.",
+        "Restrict actuator endpoints and network access.",
+        "Monitor application health and database availability.",
+        "Retain immutable artifacts for rollback.",
+        "Test database backup and restore separately from application rollback."
+      ],
+      "troubleshooting": [
+        {
+          "symptom": "APP_ADMIN_PASSWORD or APP_USER_PASSWORD is missing.",
+          "cause": "The initializer intentionally refuses to create local users without runtime credentials.",
+          "action": "Set the required environment variables before startup."
+        },
+        {
+          "symptom": "Flyway fails.",
+          "cause": "The database migration history or target schema is inconsistent.",
+          "action": "Inspect Flyway state and fix migration/history deliberately rather than enabling Hibernate update."
+        },
+        {
+          "symptom": "DELETE returns 403 for user.",
+          "cause": "The endpoint is intentionally ADMIN-only.",
+          "action": "Use an authorized administrator account when testing the destructive operation."
+        },
+        {
+          "symptom": "Status parameter returns 400.",
+          "cause": "The request value cannot be converted to the IssueStatus enum.",
+          "action": "Use OPEN, IN_PROGRESS, or RESOLVED."
+        }
+      ],
+      "fileWiseSolution": [
+        {
+          "path": "pom.xml",
+          "purpose": "Maven build and dependency definition",
+          "explanation": "Uses Spring Boot 4.1.1, Java 25, MVC, Thymeleaf, JPA, validation, Security, Actuator, PostgreSQL, Flyway, and test support.",
+          "code": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n  <modelVersion>4.0.0</modelVersion>\n  <parent>\n    <groupId>org.springframework.boot</groupId>\n    <artifactId>spring-boot-starter-parent</artifactId>\n    <version>4.1.1</version>\n    <relativePath/>\n  </parent>\n  <groupId>org.example</groupId>\n  <artifactId>issue-tracker</artifactId>\n  <version>1.0.0</version>\n  <properties>\n    <java.version>25</java.version>\n  </properties>\n  <dependencies>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-webmvc</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-thymeleaf</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-data-jpa</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-validation</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-security</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-actuator</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.postgresql</groupId>\n      <artifactId>postgresql</artifactId>\n      <scope>runtime</scope>\n    </dependency>\n    <dependency>\n      <groupId>org.flywaydb</groupId>\n      <artifactId>flyway-core</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.flywaydb</groupId>\n      <artifactId>flyway-database-postgresql</artifactId>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.boot</groupId>\n      <artifactId>spring-boot-starter-test</artifactId>\n      <scope>test</scope>\n    </dependency>\n    <dependency>\n      <groupId>org.springframework.security</groupId>\n      <artifactId>spring-security-test</artifactId>\n      <scope>test</scope>\n    </dependency>\n  </dependencies>\n  <build>\n    <plugins>\n      <plugin>\n        <groupId>org.springframework.boot</groupId>\n        <artifactId>spring-boot-maven-plugin</artifactId>\n      </plugin>\n    </plugins>\n  </build>\n</project>"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/IssueTrackerApplication.java",
+          "purpose": "Spring Boot entry point",
+          "explanation": "Starts the application and component scanning.",
+          "code": "package org.example.issuetracker;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\n\n@SpringBootApplication\npublic class IssueTrackerApplication {\n    public static void main(String[] args) {\n        SpringApplication.run(IssueTrackerApplication.class, args);\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/IssueStatus.java",
+          "purpose": "Issue status enum",
+          "explanation": "Constrains status to an explicit domain set.",
+          "code": "package org.example.issuetracker.issue;\npublic enum IssueStatus { OPEN, IN_PROGRESS, RESOLVED }"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/Priority.java",
+          "purpose": "Issue priority enum",
+          "explanation": "Constrains priority to an explicit domain set.",
+          "code": "package org.example.issuetracker.issue;\npublic enum Priority { LOW, MEDIUM, HIGH }"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/user/UserRole.java",
+          "purpose": "User role enum",
+          "explanation": "Defines the USER/ADMIN roles used for authorization.",
+          "code": "package org.example.issuetracker.user;\npublic enum UserRole { USER, ADMIN }"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/user/AppUser.java",
+          "purpose": "User entity",
+          "explanation": "Persists username, encoded password, and role.",
+          "code": "package org.example.issuetracker.user;\n\nimport jakarta.persistence.*;\n\n@Entity\n@Table(name = \"app_users\")\npublic class AppUser {\n    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(nullable = false, unique = true, length = 120)\n    private String username;\n\n    @Column(nullable = false, length = 255)\n    private String passwordHash;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private UserRole role;\n\n    protected AppUser() {}\n\n    public AppUser(String username, String passwordHash, UserRole role) {\n        this.username = username;\n        this.passwordHash = passwordHash;\n        this.role = role;\n    }\n\n    public Long getId() { return id; }\n    public String getUsername() { return username; }\n    public String getPasswordHash() { return passwordHash; }\n    public UserRole getRole() { return role; }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/Issue.java",
+          "purpose": "Issue entity",
+          "explanation": "Maps the issue domain to PostgreSQL with a creator foreign key.",
+          "code": "package org.example.issuetracker.issue;\n\nimport jakarta.persistence.*;\nimport org.example.issuetracker.user.AppUser;\nimport java.time.Instant;\n\n@Entity\n@Table(name = \"issues\")\npublic class Issue {\n    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(nullable = false, length = 140)\n    private String title;\n\n    @Column(nullable = false, length = 4000)\n    private String description;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private Priority priority;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false, length = 20)\n    private IssueStatus status;\n\n    @Column(nullable = false)\n    private Instant createdAt;\n\n    @ManyToOne(fetch = FetchType.LAZY, optional = false)\n    @JoinColumn(name = \"created_by\", nullable = false)\n    private AppUser createdBy;\n\n    protected Issue() {}\n\n    public Issue(String title, String description, Priority priority, AppUser createdBy) {\n        this.title = title;\n        this.description = description;\n        this.priority = priority;\n        this.status = IssueStatus.OPEN;\n        this.createdAt = Instant.now();\n        this.createdBy = createdBy;\n    }\n\n    public Long getId() { return id; }\n    public String getTitle() { return title; }\n    public String getDescription() { return description; }\n    public Priority getPriority() { return priority; }\n    public IssueStatus getStatus() { return status; }\n    public Instant getCreatedAt() { return createdAt; }\n    public AppUser getCreatedBy() { return createdBy; }\n\n    public void changeStatus(IssueStatus status) { this.status = status; }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/user/AppUserRepository.java",
+          "purpose": "User repository",
+          "explanation": "Loads users by username for authentication.",
+          "code": "package org.example.issuetracker.user;\n\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport java.util.Optional;\n\npublic interface AppUserRepository extends JpaRepository<AppUser, Long> {\n    Optional<AppUser> findByUsername(String username);\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/IssueRepository.java",
+          "purpose": "Issue repository",
+          "explanation": "Provides CRUD and paginated status filtering.",
+          "code": "package org.example.issuetracker.issue;\n\nimport org.springframework.data.domain.*;\nimport org.springframework.data.jpa.repository.JpaRepository;\n\npublic interface IssueRepository extends JpaRepository<Issue, Long> {\n    Page<Issue> findByStatus(IssueStatus status, Pageable pageable);\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/CreateIssueRequest.java",
+          "purpose": "Issue input DTO",
+          "explanation": "Validates client-provided issue data.",
+          "code": "package org.example.issuetracker.issue;\n\nimport jakarta.validation.constraints.*;\n\npublic record CreateIssueRequest(\n    @NotBlank @Size(max = 140) String title,\n    @NotBlank @Size(max = 4000) String description,\n    @NotNull Priority priority\n) {}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/IssueResponse.java",
+          "purpose": "Issue response DTO",
+          "explanation": "Defines a safe API representation without exposing password or entity internals.",
+          "code": "package org.example.issuetracker.issue;\n\nimport java.time.Instant;\n\npublic record IssueResponse(\n    Long id,\n    String title,\n    String description,\n    Priority priority,\n    IssueStatus status,\n    Instant createdAt,\n    String createdBy\n) {}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/user/CustomUserDetailsService.java",
+          "purpose": "Database-backed authentication",
+          "explanation": "Loads a persisted user's encoded password and role into Spring Security's UserDetails model.",
+          "code": "package org.example.issuetracker.user;\n\nimport org.springframework.security.core.userdetails.*;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class CustomUserDetailsService implements UserDetailsService {\n    private final AppUserRepository repository;\n\n    public CustomUserDetailsService(AppUserRepository repository) {\n        this.repository = repository;\n    }\n\n    @Override\n    public UserDetails loadUserByUsername(String username) {\n        AppUser user = repository.findByUsername(username)\n            .orElseThrow(() -> new UsernameNotFoundException(\"User not found\"));\n        return User.withUsername(user.getUsername())\n            .password(user.getPasswordHash())\n            .roles(user.getRole().name())\n            .build();\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/IssueNotFoundException.java",
+          "purpose": "Missing issue exception",
+          "explanation": "Marks a not-found condition for centralized web handling.",
+          "code": "package org.example.issuetracker.issue;\n\npublic class IssueNotFoundException extends RuntimeException {\n    public IssueNotFoundException(long id) {\n        super(\"Issue \" + id + \" was not found\");\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/IssueService.java",
+          "purpose": "Issue business service",
+          "explanation": "Owns issue creation, listing, status changes, and deletion with transactions.",
+          "code": "package org.example.issuetracker.issue;\n\nimport org.example.issuetracker.user.*;\nimport org.springframework.data.domain.*;\nimport org.springframework.security.core.Authentication;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\n@Service\npublic class IssueService {\n    private final IssueRepository issues;\n    private final AppUserRepository users;\n\n    public IssueService(IssueRepository issues, AppUserRepository users) {\n        this.issues = issues;\n        this.users = users;\n    }\n\n    @Transactional\n    public IssueResponse create(CreateIssueRequest request, Authentication authentication) {\n        AppUser creator = users.findByUsername(authentication.getName()).orElseThrow();\n        Issue issue = new Issue(request.title().trim(), request.description().trim(), request.priority(), creator);\n        return toResponse(issues.save(issue));\n    }\n\n    @Transactional(readOnly = true)\n    public Page<IssueResponse> list(IssueStatus status, Pageable pageable) {\n        Page<Issue> page = status == null\n            ? issues.findAll(pageable)\n            : issues.findByStatus(status, pageable);\n        return page.map(this::toResponse);\n    }\n\n    @Transactional\n    public IssueResponse changeStatus(long id, IssueStatus status) {\n        Issue issue = issues.findById(id).orElseThrow(() -> new IssueNotFoundException(id));\n        issue.changeStatus(status);\n        return toResponse(issue);\n    }\n\n    @Transactional\n    public void delete(long id) {\n        if (!issues.existsById(id)) {\n            throw new IssueNotFoundException(id);\n        }\n        issues.deleteById(id);\n    }\n\n    private IssueResponse toResponse(Issue issue) {\n        return new IssueResponse(\n            issue.getId(), issue.getTitle(), issue.getDescription(),\n            issue.getPriority(), issue.getStatus(), issue.getCreatedAt(),\n            issue.getCreatedBy().getUsername()\n        );\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/issue/IssueController.java",
+          "purpose": "REST API",
+          "explanation": "Exposes authenticated issue operations and protects deletion.",
+          "code": "package org.example.issuetracker.issue;\n\nimport jakarta.validation.Valid;\nimport org.springframework.data.domain.*;\nimport org.springframework.http.*;\nimport org.springframework.security.access.prepost.PreAuthorize;\nimport org.springframework.security.core.Authentication;\nimport org.springframework.web.bind.annotation.*;\n\n@RestController\n@RequestMapping(\"/api/issues\")\npublic class IssueController {\n    private final IssueService service;\n\n    public IssueController(IssueService service) {\n        this.service = service;\n    }\n\n    @GetMapping\n    public Page<IssueResponse> list(\n        @RequestParam(required = false) IssueStatus status,\n        Pageable pageable\n    ) {\n        return service.list(status, pageable);\n    }\n\n    @PostMapping\n    public ResponseEntity<IssueResponse> create(\n        @Valid @RequestBody CreateIssueRequest request,\n        Authentication authentication\n    ) {\n        return ResponseEntity.status(HttpStatus.CREATED)\n            .body(service.create(request, authentication));\n    }\n\n    @PatchMapping(\"/{id}/status\")\n    public IssueResponse changeStatus(\n        @PathVariable long id,\n        @RequestParam IssueStatus status\n    ) {\n        return service.changeStatus(id, status);\n    }\n\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    @DeleteMapping(\"/{id}\")\n    public ResponseEntity<Void> delete(@PathVariable long id) {\n        service.delete(id);\n        return ResponseEntity.noContent().build();\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/web/PageController.java",
+          "purpose": "HTML view controller",
+          "explanation": "Provides the server-rendered issue list page.",
+          "code": "package org.example.issuetracker.web;\n\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.GetMapping;\n\n@Controller\npublic class PageController {\n    @GetMapping(\"/\")\n    String home() { return \"redirect:/issues\"; }\n\n    @GetMapping(\"/issues\")\n    String issues() { return \"issues/list\"; }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/web/ApiExceptionHandler.java",
+          "purpose": "REST error handler",
+          "explanation": "Maps domain and validation errors to safe ProblemDetail responses.",
+          "code": "package org.example.issuetracker.web;\n\nimport org.example.issuetracker.issue.IssueNotFoundException;\nimport org.springframework.http.*;\nimport org.springframework.web.bind.MethodArgumentNotValidException;\nimport org.springframework.web.bind.annotation.*;\nimport java.util.stream.Collectors;\n\n@RestControllerAdvice\npublic class ApiExceptionHandler {\n    @ExceptionHandler(IssueNotFoundException.class)\n    ResponseEntity<ProblemDetail> notFound(IssueNotFoundException ex) {\n        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);\n        pd.setDetail(ex.getMessage());\n        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(pd);\n    }\n\n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    ResponseEntity<ProblemDetail> validation(MethodArgumentNotValidException ex) {\n        String detail = ex.getBindingResult().getFieldErrors().stream()\n            .map(e -> e.getField() + \": \" + e.getDefaultMessage())\n            .collect(Collectors.joining(\"; \"));\n        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);\n        pd.setDetail(detail);\n        return ResponseEntity.badRequest().body(pd);\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/security/SecurityConfig.java",
+          "purpose": "Authentication and authorization configuration",
+          "explanation": "Configures form login, route authorization, method security, and PasswordEncoder.",
+          "code": "package org.example.issuetracker.security;\n\nimport org.springframework.context.annotation.*;\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\nimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\nimport org.springframework.security.crypto.argon2.Argon2PasswordEncoder;\nimport org.springframework.security.crypto.password.PasswordEncoder;\nimport org.springframework.security.web.SecurityFilterChain;\n\n@Configuration\n@EnableWebSecurity\n@EnableMethodSecurity\npublic class SecurityConfig {\n    @Bean\n    PasswordEncoder passwordEncoder() {\n        return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();\n    }\n\n    @Bean\n    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {\n        http\n            .authorizeHttpRequests(a -> a\n                .requestMatchers(\"/css/**\", \"/login\", \"/actuator/health\").permitAll()\n                .anyRequest().authenticated()\n            )\n            .formLogin(f -> f.loginPage(\"/login\").defaultSuccessUrl(\"/issues\", true))\n            .logout(l -> l.logoutSuccessUrl(\"/login?logout\"));\n        return http.build();\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/config/DataInitializer.java",
+          "purpose": "Local user initializer",
+          "explanation": "Creates neutral local accounts from runtime-provided passwords.",
+          "code": "package org.example.issuetracker.config;\n\nimport org.example.issuetracker.user.*;\nimport org.springframework.boot.CommandLineRunner;\nimport org.springframework.context.annotation.*;\nimport org.springframework.security.crypto.password.PasswordEncoder;\n\n@Configuration\npublic class DataInitializer {\n    @Bean\n    CommandLineRunner seedUsers(AppUserRepository users, PasswordEncoder encoder) {\n        return args -> {\n            createIfAbsent(users, encoder, \"admin\", UserRole.ADMIN, \"APP_ADMIN_PASSWORD\");\n            createIfAbsent(users, encoder, \"user\", UserRole.USER, \"APP_USER_PASSWORD\");\n        };\n    }\n\n    private void createIfAbsent(\n        AppUserRepository users,\n        PasswordEncoder encoder,\n        String username,\n        UserRole role,\n        String envName\n    ) {\n        if (users.findByUsername(username).isPresent()) return;\n        String password = System.getenv(envName);\n        if (password == null || password.isBlank()) {\n            throw new IllegalStateException(envName + \" is required\");\n        }\n        users.save(new AppUser(username, encoder.encode(password), role));\n    }\n}"
+        },
+        {
+          "path": "src/main/resources/application.yml",
+          "purpose": "Runtime configuration",
+          "explanation": "Uses environment variables, validation for the database schema, disables Open EntityManager in View, and exposes only health via Actuator.",
+          "code": "spring:\n  datasource:\n    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/issue_tracker}\n    username: ${DATABASE_USERNAME:issue_tracker}\n    password: ${DATABASE_PASSWORD:change-me}\n  jpa:\n    hibernate:\n      ddl-auto: validate\n    open-in-view: false\n\nmanagement:\n  endpoints:\n    web:\n      exposure:\n        include: health\n"
+        },
+        {
+          "path": "src/main/resources/db/migration/V1__create_schema.sql",
+          "purpose": "Flyway V1 schema",
+          "explanation": "Creates relational tables and the query-aligned index.",
+          "code": "CREATE TABLE app_users (\n  id BIGSERIAL PRIMARY KEY,\n  username VARCHAR(120) NOT NULL UNIQUE,\n  password_hash VARCHAR(255) NOT NULL,\n  role VARCHAR(20) NOT NULL CHECK (role IN ('USER','ADMIN'))\n);\n\nCREATE TABLE issues (\n  id BIGSERIAL PRIMARY KEY,\n  title VARCHAR(140) NOT NULL,\n  description VARCHAR(4000) NOT NULL,\n  priority VARCHAR(20) NOT NULL CHECK (priority IN ('LOW','MEDIUM','HIGH')),\n  status VARCHAR(20) NOT NULL CHECK (status IN ('OPEN','IN_PROGRESS','RESOLVED')),\n  created_at TIMESTAMPTZ NOT NULL,\n  created_by BIGINT NOT NULL REFERENCES app_users(id)\n);\n\nCREATE INDEX idx_issues_status_created_at\n  ON issues (status, created_at DESC);"
+        },
+        {
+          "path": "src/main/resources/templates/login.html",
+          "purpose": "Login view",
+          "explanation": "Provides a simple server-rendered login form. Spring Security supplies CSRF protection and handles POST /login.",
+          "code": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Sign in</title>\n  <link rel=\"stylesheet\" href=\"/css/app.css\">\n</head>\n<body>\n<main class=\"container\">\n  <h1>Sign in</h1>\n  <form method=\"post\" action=\"/login\">\n    <label for=\"username\">Username</label>\n    <input id=\"username\" name=\"username\" required>\n    <label for=\"password\">Password</label>\n    <input id=\"password\" name=\"password\" type=\"password\" required>\n    <button type=\"submit\">Sign in</button>\n  </form>\n</main>\n</body>\n</html>"
+        },
+        {
+          "path": "src/main/resources/templates/issues/list.html",
+          "purpose": "Issue list view",
+          "explanation": "Fetches paginated JSON and uses textContent to render data without injecting raw HTML.",
+          "code": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Issue Tracker</title>\n  <link rel=\"stylesheet\" href=\"/css/app.css\">\n</head>\n<body>\n<main class=\"container\">\n  <h1>Issue Tracker</h1>\n  <p id=\"message\" role=\"status\">Loading issues…</p>\n  <table>\n    <thead>\n      <tr><th>Title</th><th>Priority</th><th>Status</th><th>Created by</th></tr>\n    </thead>\n    <tbody id=\"issues\"></tbody>\n  </table>\n</main>\n<script>\nasync function loadIssues() {\n  const response = await fetch(\"/api/issues?page=0&size=20\");\n  const message = document.getElementById(\"message\");\n  if (!response.ok) {\n    message.textContent = \"Unable to load issues (\" + response.status + \").\";\n    return;\n  }\n  const page = await response.json();\n  const body = document.getElementById(\"issues\");\n  body.replaceChildren();\n  for (const issue of page.content) {\n    const row = document.createElement(\"tr\");\n    for (const value of [issue.title, issue.priority, issue.status, issue.createdBy]) {\n      const cell = document.createElement(\"td\");\n      cell.textContent = value;\n      row.appendChild(cell);\n    }\n    body.appendChild(row);\n  }\n  message.textContent = page.totalElements + \" issue(s).\";\n}\nloadIssues().catch(() => {\n  document.getElementById(\"message\").textContent = \"Network error while loading issues.\";\n});\n</script>\n</body>\n</html>"
+        },
+        {
+          "path": "src/main/resources/static/css/app.css",
+          "purpose": "Responsive styling",
+          "explanation": "Provides simple accessible table and form layout for narrow and wide screens.",
+          "code": "body { font-family: system-ui, sans-serif; margin: 0; background: #f5f5f5; }\n.container { max-width: 960px; margin: 0 auto; padding: 2rem; }\nlabel, input, button { display: block; margin: .5rem 0; }\ninput { width: min(28rem, 100%); padding: .5rem; box-sizing: border-box; }\ntable { width: 100%; border-collapse: collapse; background: white; }\nth, td { text-align: left; padding: .75rem; border-bottom: 1px solid #ddd; }\n@media (max-width: 640px) {\n  .container { padding: 1rem; overflow-x: auto; }\n  table { min-width: 640px; }\n}"
+        },
+        {
+          "path": "src/test/java/org/example/issuetracker/issue/IssueServiceTest.java",
+          "purpose": "Unit test",
+          "explanation": "Verifies a missing issue produces a domain exception and no delete call.",
+          "code": "package org.example.issuetracker.issue;\n\nimport org.example.issuetracker.user.AppUserRepository;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\n\nclass IssueServiceTest {\n    @Test\n    void missingIssueIsNotDeleted() {\n        IssueRepository issues = mock(IssueRepository.class);\n        AppUserRepository users = mock(AppUserRepository.class);\n        IssueService service = new IssueService(issues, users);\n\n        when(issues.existsById(42L)).thenReturn(false);\n\n        assertThrows(IssueNotFoundException.class, () -> service.delete(42L));\n        verify(issues, never()).deleteById(42L);\n    }\n}"
+        },
+        {
+          "path": "src/test/java/org/example/issuetracker/issue/IssueControllerTest.java",
+          "purpose": "MVC validation test",
+          "explanation": "Checks that blank input returns 400 at the MVC boundary.",
+          "code": "package org.example.issuetracker.issue;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;\nimport org.springframework.test.context.bean.override.mockito.MockitoBean;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.http.MediaType;\nimport org.springframework.test.web.servlet.MockMvc;\n\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\n@WebMvcTest(IssueController.class)\nclass IssueControllerTest {\n    @Autowired MockMvc mockMvc;\n    @MockitoBean IssueService issueService;\n\n    @Test\n    void blankTitleIsRejected() throws Exception {\n        String json = \"{\"title\":\"\",\"description\":\"Details\",\"priority\":\"MEDIUM\"}\";\n        mockMvc.perform(post(\"/api/issues\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(json))\n            .andExpect(status().isBadRequest());\n    }\n}"
+        },
+        {
+          "path": "src/test/java/org/example/issuetracker/security/SecurityTest.java",
+          "purpose": "Authorization test",
+          "explanation": "Checks that a USER role cannot invoke the ADMIN-only deletion endpoint.",
+          "code": "package org.example.issuetracker.security;\n\nimport org.example.issuetracker.issue.IssueController;\nimport org.example.issuetracker.issue.IssueService;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;\nimport org.springframework.context.annotation.Import;\nimport org.springframework.test.context.bean.override.mockito.MockitoBean;\nimport org.springframework.test.web.servlet.MockMvc;\n\nimport static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\n@WebMvcTest(IssueController.class)\n@Import(SecurityConfig.class)\nclass SecurityTest {\n    @Autowired MockMvc mockMvc;\n    @MockitoBean IssueService issueService;\n\n    @Test\n    void userCannotDelete() throws Exception {\n        mockMvc.perform(delete(\"/api/issues/1\")\n                .with(user(\"reader\").roles(\"USER\")))\n            .andExpect(status().isForbidden());\n    }\n}"
+        },
+        {
+          "path": "src/main/java/org/example/issuetracker/web/LoginController.java",
+          "purpose": "Custom login page mapping",
+          "explanation": "Because SecurityConfig selects /login as a custom login page, this controller maps GET /login to the login.html template.",
+          "code": "package org.example.issuetracker.web;\n\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.GetMapping;\n\n@Controller\npublic class LoginController {\n    @GetMapping(\"/login\")\n    String login() {\n        return \"login\";\n    }\n}"
+        },
+        {
+          "path": "Dockerfile",
+          "purpose": "Container packaging",
+          "explanation": "Builds a small runtime image from the Maven-produced JAR. Database settings and passwords remain runtime configuration rather than image contents.",
+          "code": "FROM eclipse-temurin:25-jre\nWORKDIR /app\nCOPY target/issue-tracker-1.0.0.jar app.jar\nEXPOSE 8080\nENTRYPOINT [\"java\",\"-jar\",\"app.jar\"]"
+        }
+      ],
+      "explanation": "The capstone integrates the internship as an engineering system rather than a set of isolated exercises. It has clear transport, business, and persistence boundaries; explicit relational constraints; versioned schema migration; browser authentication; server-side authorization; automated tests; and operational health. The architecture is deliberately a modular monolith to keep the web-to-database path understandable while still requiring real engineering judgment.",
+      "testingInstructions": "Run `mvn clean verify`. If Docker is available, extend the suite with a Testcontainers PostgreSQL integration test and run it in CI. A passing local unit suite does not prove deployment correctness.",
+      "deploymentNotes": "The supplied project is a training capstone, not a claim of production readiness for any specific organization. Production deployment must adapt authentication policy, TLS termination, database backup, availability, secrets management, network controls, logging, monitoring, and rollback to the actual environment."
+    },
+    "evaluation": {
+      "method": "Evidence-based engineering evaluation",
+      "criteria": [
+        {
+          "name": "Implementation",
+          "weight": 25,
+          "evidence": "Working features and coherent code structure."
+        },
+        {
+          "name": "Security",
+          "weight": 20,
+          "evidence": "Authentication, authorization, credential handling, validation and session protections."
+        },
+        {
+          "name": "Testing/debugging",
+          "weight": 15,
+          "evidence": "Automated tests and regression reasoning."
+        },
+        {
+          "name": "Database/performance",
+          "weight": 15,
+          "evidence": "Schema, transactions, pagination and query-plan reasoning."
+        },
+        {
+          "name": "Engineering practice",
+          "weight": 10,
+          "evidence": "Maven, Git, documentation and code review."
+        },
+        {
+          "name": "Operations",
+          "weight": 10,
+          "evidence": "Health, runtime configuration and delivery plan."
+        },
+        {
+          "name": "Technical explanation",
+          "weight": 5,
+          "evidence": "Can explain architecture, data flow, trade-offs and limitations."
+        }
+      ],
+      "finalEvaluation": [
+        "Demonstrate login and authenticated issue listing.",
+        "Create a valid issue and show invalid input rejection.",
+        "Show that an ordinary user cannot delete an issue.",
+        "Run the automated test suite.",
+        "Explain the PostgreSQL schema and index.",
+        "Explain runtime secret handling.",
+        "Describe deployment, monitoring, and rollback.",
+        "Walk through the most important code paths."
+      ]
+    },
+    "resources": [
+      {
+        "title": "Java SE 25 Documentation",
+        "url": "https://docs.oracle.com/en/java/javase/25/",
+        "type": "official"
+      },
+      {
+        "title": "Spring Boot Reference",
+        "url": "https://docs.spring.io/spring-boot/reference/",
+        "type": "official"
+      },
+      {
+        "title": "Spring MVC Reference",
+        "url": "https://docs.spring.io/spring-framework/reference/web/webmvc.html",
+        "type": "official"
+      },
+      {
+        "title": "Spring Security Reference",
+        "url": "https://docs.spring.io/spring-security/reference/",
+        "type": "official"
+      },
+      {
+        "title": "Spring Data JPA Reference",
+        "url": "https://docs.spring.io/spring-data/jpa/reference/",
+        "type": "official"
+      },
+      {
+        "title": "Maven Lifecycle Guide",
+        "url": "https://maven.apache.org/guides/introduction/introduction-to-lifecycle.html",
+        "type": "official"
+      },
+      {
+        "title": "JUnit 5 User Guide",
+        "url": "https://junit.org/junit5/docs/current/user-guide/",
+        "type": "official"
+      },
+      {
+        "title": "Testcontainers for Java",
+        "url": "https://java.testcontainers.org/",
+        "type": "official"
+      },
+      {
+        "title": "PostgreSQL Documentation",
+        "url": "https://www.postgresql.org/docs/current/",
+        "type": "official"
+      },
+      {
+        "title": "OWASP Top 10:2025",
+        "url": "https://owasp.org/Top10/",
+        "type": "security"
+      }
+    ]
+  }
+}

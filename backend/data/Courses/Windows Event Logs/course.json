@@ -1,0 +1,2207 @@
+{
+  "course": {
+    "id": "windows-event-logs",
+    "title": "Windows Event Logs",
+    "slug": "windows-event-logs",
+    "description": "A practical, analyst-focused course on Windows Event Logs: event architecture, Event Viewer, wevtutil, Get-WinEvent, audit policy, Security event families, XML and structured queries, EVTX preservation, Sysmon enrichment, Windows Event Forwarding, correlation, detection logic, troubleshooting and evidence-based incident investigations. The course develops the ability to collect, parse, correlate and communicate Windows event evidence without treating isolated event IDs as definitive proof of malicious activity.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 58,
+    "prerequisites": [
+      "Basic familiarity with Windows administration and file systems",
+      "Basic PowerShell command-line skills",
+      "Basic networking and authentication terminology",
+      "A Windows 10/11 or Windows Server lab environment, preferably isolated from production systems",
+      "Python 3.11+ for the final offline analysis project"
+    ],
+    "learningOutcomes": [
+      "Explain Windows Event Log architecture, providers, channels, event metadata and XML structure.",
+      "Use Event Viewer, wevtutil and Get-WinEvent to retrieve and inspect bounded event sets.",
+      "Explain how Windows audit policy controls the availability of important security events.",
+      "Analyze authentication, account-management, group-change, process-creation, scheduled-task and lockout events using contextual pivots.",
+      "Parse event XML and archived EVTX files without relying on localized display text.",
+      "Design and validate a Windows Event Forwarding collection plan.",
+      "Build repeatable correlation and detection logic while documenting false-positive controls.",
+      "Preserve event-log evidence with provenance and integrity considerations.",
+      "Troubleshoot missing or unexpected telemetry across audit, storage, forwarding and time synchronization layers.",
+      "Complete an evidence-based Windows event investigation and communicate observations, inferences, confidence and gaps."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Windows Event Log Foundations",
+        "description": "Understand how Windows records, stores, exposes and ages events, and learn the vocabulary needed for analyst-grade review.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Windows Event Log Architecture",
+            "description": "Learn the Windows Event Log model: logs, providers, channels, records and consumers.",
+            "learningObjectives": [
+              "Explain the relationship between providers, channels, event records and the Windows Event Log service.",
+              "Distinguish classic logs from newer provider/channel-based logs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows Event Log is the platform used by applications and the operating system to publish structured events. An event has a provider, channel/log, identifier, level, task/opcode/keywords metadata and a payload. Consumers such as Event Viewer and Get-WinEvent query those records."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Common logs include Application, System and Security.",
+                  "The Security log is populated by security auditing and is governed by audit policy.",
+                  "ETW produces trace data that can also be accessed through Get-WinEvent, but ETW traces and event logs are not interchangeable storage concepts."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "which-component-identifies-the-software-source-that-emitted-",
+              "question": "Which component identifies the software source that emitted a Windows event?",
+              "options": [
+                "Channel",
+                "Provider",
+                "Record ID",
+                "Log size"
+              ],
+              "answer": "Provider",
+              "explanation": "The provider identifies the event source; the channel identifies where the event is recorded or surfaced."
+            },
+            "summary": [
+              "Providers emit events into named channels; consumers query the resulting records."
+            ],
+            "resources": [
+              {
+                "title": "Eventlog",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Event Records, IDs and XML",
+            "description": "Read the common fields that form an event record and learn why XML is often the most reliable analytical representation.",
+            "learningObjectives": [
+              "Identify System metadata versus EventData/UserData payloads.",
+              "Explain why event ID alone is insufficient for attribution."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An event ID is meaningful only in the context of its provider, channel and version. The XML representation exposes structured fields such as Provider, EventID, Version, Level, Task, Opcode, Keywords and TimeCreated, followed by event-specific payload data."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -LogName Security -MaxEvents 1 | Format-List Id,ProviderName,LogName,TimeCreated,LevelDisplayName,Message\n# Structured XML is available from the EventLogRecord object's ToXml() method."
+              },
+              {
+                "type": "warning",
+                "text": "Do not build detections solely from rendered message text. Message formatting can vary; structured event fields are preferable when available."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-should-an-analyst-inspect-provider-and-channel-along-wit",
+              "question": "Why should an analyst inspect provider and channel along with Event ID?",
+              "options": [
+                "Because IDs are globally unique across Windows",
+                "Because the same numeric ID can have different meanings across providers/channels",
+                "Because XML is disabled otherwise",
+                "Because channel names change the timestamp"
+              ],
+              "answer": "Because the same numeric ID can have different meanings across providers/channels",
+              "explanation": "Event IDs are interpreted within the emitting provider and channel context."
+            },
+            "summary": [
+              "Use provider + channel + ID + structured payload as the minimum analytical context."
+            ],
+            "resources": [
+              {
+                "title": "Eventlog",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Retention, Overwrite and Evidence Boundaries",
+            "description": "Understand how event-log size, retention mode and collection strategy affect what an analyst can recover.",
+            "learningObjectives": [
+              "Explain why local logs are not guaranteed to contain a complete historical record.",
+              "Differentiate retention planning from forensic preservation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event logs are operational telemetry, not automatically permanent evidence. Log size limits, overwrite behavior, clearing, time drift and outages can create gaps. Investigators should preserve relevant source material before it ages out and record chain-of-custody decisions separately from ordinary operational collection."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Check record coverage before assuming absence means an action did not occur.",
+                  "Archived EVTX files are useful for offline analysis.",
+                  "Centralized collection reduces dependence on a single endpoint's local retention window."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-a-safe-inference-when-an-expected-event-is-missing-f",
+              "question": "What is a safe inference when an expected event is missing from a local log?",
+              "options": [
+                "The action definitely did not occur",
+                "The host is clean",
+                "Telemetry is incomplete or the event was not captured, so further evidence is needed",
+                "The event was automatically deleted by Windows Defender"
+              ],
+              "answer": "Telemetry is incomplete or the event was not captured, so further evidence is needed",
+              "explanation": "Event absence is not equivalent to proof of absence; retention and audit configuration matter."
+            },
+            "summary": [
+              "Retention and collection design determine evidentiary coverage; missing events require cautious interpretation."
+            ],
+            "resources": [
+              {
+                "title": "Nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Map Event Metadata to Analyst Questions",
+            "level": "Easy",
+            "description": "Create a one-page mapping between event-record fields and investigation questions.",
+            "problemStatement": "For five sample events, map provider, channel, ID, time, level and payload fields to the questions an analyst should ask.",
+            "objectives": [
+              "Identify the field that supports each question.",
+              "Explain which fields are context versus payload."
+            ],
+            "requirements": [
+              "Windows 10/11 or Windows Server",
+              "Sample Windows event records"
+            ],
+            "hint": "Start with “who, what, where, when, how” and map each answer to a field.",
+            "solutionCode": "Provider + Channel + EventID + TimeCreated + selected EventData fields",
+            "solutionExplanation": "Metadata establishes provenance and timing; payload fields support attribution and action analysis."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Event Viewer and Built-in Tooling",
+        "description": "Build practical fluency with Event Viewer, wevtutil and PowerShell without treating screenshots or message text as the only source of truth.",
+        "lessons": [
+          {
+            "id": "lesson-04",
+            "title": "Event Viewer Navigation",
+            "description": "Use Event Viewer efficiently for filtering, custom views and event details.",
+            "learningObjectives": [
+              "Navigate by log and channel.",
+              "Filter by ID, level, provider and time window."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event Viewer is a useful interactive client for exploration and validation. The General tab is analyst-friendly, while the Details tab and XML View expose structured event data. Custom Views can preserve recurring investigation filters."
+              },
+              {
+                "type": "code",
+                "text": "Event Viewer → Windows Logs → Security → Filter Current Log → Event IDs: 4624,4625,4688"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use narrow time windows first.",
+                  "Inspect XML when a message is ambiguous.",
+                  "Capture the exact filter criteria in notes for repeatability."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Trace a Security Logon in Event Viewer",
+                "description": "Use Event Viewer to inspect a recent 4624 event and document its account, logon type, source context and structured XML fields.",
+                "steps": [
+                  "Open Event Viewer and navigate to Windows Logs > Security.",
+                  "Filter for Event ID 4624 within a narrow time range.",
+                  "Open a record and inspect both General and Details > XML View.",
+                  "Record subject and target accounts, Logon Type, time and source fields where present.",
+                  "Compare two events and explain which fields changed."
+                ],
+                "solution": "Manual Event Viewer exercise using a controlled Windows host; no log clearing or configuration changes are required.",
+                "output": "A short analyst worksheet linking the 4624 event to its structured fields and limitations."
+              }
+            ],
+            "quiz": {
+              "id": "which-event-viewer-view-best-exposes-the-structured-event-fi",
+              "question": "Which Event Viewer view best exposes the structured event fields?",
+              "options": [
+                "General only",
+                "Details → XML View",
+                "Favorites",
+                "Applications and Services Summary"
+              ],
+              "answer": "Details → XML View",
+              "explanation": "The XML view exposes the structured System and event-specific payload data."
+            },
+            "summary": [
+              "Event Viewer is best used for interactive exploration, validation and teaching; scripted retrieval is better for repeatable analysis."
+            ],
+            "resources": [
+              {
+                "title": "Eventviewer",
+                "url": "https://learn.microsoft.com/en-us/shows/inside/event-viewer"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05",
+            "title": "wevtutil for Log Administration",
+            "description": "Learn the command-line tool for querying and administering event logs and understand the difference between viewing and changing configuration.",
+            "learningObjectives": [
+              "Use wevtutil to list logs and inspect log configuration.",
+              "Differentiate read operations from administrative changes."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "wevtutil el\nwevtutil gl Security\nwevtutil qe Security /q:\"*[System[(EventID=4624)]]\" /c:5 /f:xml"
+              },
+              {
+                "type": "paragraph",
+                "text": "wevtutil can enumerate logs, retrieve events, inspect configuration and perform administrative operations. Administrative commands should be treated carefully because exporting, clearing or changing a log is materially different from querying it."
+              },
+              {
+                "type": "warning",
+                "text": "Do not clear, disable or resize production logs during an investigation without approved change and evidence-preservation procedures."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "which-command-pattern-is-appropriate-for-querying-security-e",
+              "question": "Which command pattern is appropriate for querying Security events in XML?",
+              "options": [
+                "wevtutil el",
+                "wevtutil gl Security",
+                "wevtutil qe Security /f:xml",
+                "wevtutil cl Security"
+              ],
+              "answer": "wevtutil qe Security /f:xml",
+              "explanation": "The qe operation queries events; /f:xml requests XML output."
+            },
+            "summary": [
+              "wevtutil supports scriptable event retrieval and log administration; separate read-only collection from state-changing operations."
+            ],
+            "resources": [
+              {
+                "title": "Wevtutil",
+                "url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/wevtutil"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Get-WinEvent Query Patterns",
+            "description": "Use PowerShell for bounded, filter-first event retrieval and repeatable analysis.",
+            "learningObjectives": [
+              "Use FilterHashtable for bounded queries.",
+              "Explain when XPath/XML filtering is useful."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4624,4625; StartTime=(Get-Date).AddHours(-4); EndTime=Get-Date} -MaxEvents 200"
+              },
+              {
+                "type": "paragraph",
+                "text": "Get-WinEvent retrieves events from classic and newer Windows event logs and ETW trace log files. FilterHashtable, FilterXPath and FilterXml allow filtering closer to the event source instead of pulling an entire log into the pipeline."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Bound the time range and IDs where possible.",
+                  "Use Select-Object for a stable analyst-facing schema.",
+                  "Export objects rather than only formatted console text when downstream processing is required."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Query Security Events with Get-WinEvent",
+                "description": "Use bounded PowerShell queries to retrieve selected Security events and export stable fields for analysis.",
+                "steps": [
+                  "Open an elevated PowerShell session with Security-log access.",
+                  "Run a FilterHashtable query for 4624 and 4625 within a two-hour window.",
+                  "Select TimeCreated, Id, ProviderName, MachineName and Message.",
+                  "Export the result to CSV.",
+                  "Repeat for 4688 and compare context richness."
+                ],
+                "solution": "Get-WinEvent -FilterHashtable @{LogName='Security';Id=4624,4625;StartTime=(Get-Date).AddHours(-2);EndTime=Get-Date} -MaxEvents 200 | Select-Object TimeCreated,Id,ProviderName,MachineName,Message | Export-Csv .\\security_events.csv -NoTypeInformation",
+                "output": "A bounded CSV export suitable for offline analysis."
+              }
+            ],
+            "quiz": {
+              "id": "why-is-a-bounded-filterhashtable-query-preferred-for-routine",
+              "question": "Why is a bounded FilterHashtable query preferred for routine analysis?",
+              "options": [
+                "It changes the audit policy",
+                "It limits retrieval to relevant event data before later pipeline processing",
+                "It disables XML fields",
+                "It guarantees every event has a message"
+              ],
+              "answer": "It limits retrieval to relevant event data before later pipeline processing",
+              "explanation": "Filtering at retrieval time reduces irrelevant data and makes analysis more repeatable and efficient."
+            },
+            "summary": [
+              "Use filter-first PowerShell queries, then project and export only the fields needed for analysis."
+            ],
+            "resources": [
+              {
+                "title": "Getwinevent",
+                "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build a Reusable Log Query",
+            "level": "Easy",
+            "description": "Create a PowerShell function that accepts a log name, event IDs and time range and returns analyst-friendly fields.",
+            "problemStatement": "A junior analyst repeatedly runs ad-hoc Get-WinEvent commands. Replace them with a parameterized function.",
+            "objectives": [
+              "Parameterize log, IDs and time range.",
+              "Return stable fields.",
+              "Avoid unbounded queries."
+            ],
+            "requirements": [
+              "Windows PowerShell 5.1+ or PowerShell 7 on Windows",
+              "Access to the Security log"
+            ],
+            "hint": "Use -FilterHashtable and Select-Object rather than filtering after retrieving thousands of events.",
+            "solutionCode": "param([string]$LogName=\"Security\", [int[]]$Id=4624,4625, [datetime]$StartTime=(Get-Date).AddHours(-1), [datetime]$EndTime=(Get-Date))\nGet-WinEvent -FilterHashtable @{LogName=$LogName;Id=$Id;StartTime=$StartTime;EndTime=$EndTime} | Select-Object TimeCreated,Id,ProviderName,MachineName,LevelDisplayName,Message",
+            "solutionExplanation": "The function-style pattern makes the query bounded, repeatable and easy to extend."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Security Audit Policy",
+        "description": "Learn how Windows audit policy determines which security events exist in the first place, and why tuning affects both visibility and volume.",
+        "lessons": [
+          {
+            "id": "lesson-07",
+            "title": "Advanced Audit Policy Concepts",
+            "description": "Understand audit categories, subcategories and success/failure semantics.",
+            "learningObjectives": [
+              "Explain how audit policy enables specific security telemetry.",
+              "Differentiate success, failure and Success+Failure settings."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Advanced Audit Policy Configuration organizes security auditing into policy subcategories. The setting determines whether successful and/or failed actions are recorded. This is a telemetry design decision: enabling useful auditing improves visibility but can increase event volume."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Audit policy is applied through local policy, domain policy or management configuration depending on the environment.",
+                  "Some security events appear only when the relevant audit subcategory is enabled.",
+                  "Policy changes should be documented because they alter interpretation of later gaps."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-does-an-audit-policy-setting-control?",
+              "question": "What does an audit policy setting control?",
+              "options": [
+                "Only Event Viewer colors",
+                "Whether specified security activities generate success/failure audit records",
+                "The Windows hostname",
+                "The retention of Application logs"
+              ],
+              "answer": "Whether specified security activities generate success/failure audit records",
+              "explanation": "Audit policy governs which audited activities create security events and for which outcomes."
+            },
+            "summary": [
+              "Audit policy is the upstream control that determines security-log visibility."
+            ],
+            "resources": [
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Logon and Logoff Auditing",
+            "description": "Interpret the distinction between logon events on a target computer and credential-validation/account-logon events on an authoritative system.",
+            "learningObjectives": [
+              "Explain the difference between Audit Logon and Account Logon contexts.",
+              "Identify the importance of the machine on which the event is generated."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft distinguishes Logon/Logoff auditing from Account Logon auditing. A successful 4624 is generated when a logon session is created on the destination machine. Credential validation and domain-account authentication can instead be authoritative on a domain controller, so analysts must understand where each event is generated."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName=\"Security\"; Id=4624,4625} -MaxEvents 50 | Select-Object TimeCreated,Id,Message"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "For domain investigations, the destination host and domain controller can each contain complementary evidence.",
+                  "Never assume the event host is the same thing as the authentication authority."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "where-does-a-4624-event-occur?",
+              "question": "Where does a 4624 event occur?",
+              "options": [
+                "Always on the domain controller",
+                "On the computer where the logon session is created",
+                "Only on the client that typed the password",
+                "Only in Application log"
+              ],
+              "answer": "On the computer where the logon session is created",
+              "explanation": "Microsoft documents 4624 as an event generated on the destination computer when a logon session is created."
+            },
+            "summary": [
+              "Location matters: correlate destination-host logons with domain-controller credential-validation evidence when appropriate."
+            ],
+            "resources": [
+              {
+                "title": "4624",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624"
+              },
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09",
+            "title": "Privilege, Process and Object Access Auditing",
+            "description": "Understand how additional audit subcategories create telemetry for process creation and sensitive changes.",
+            "learningObjectives": [
+              "Identify audit categories relevant to process creation and account/object changes.",
+              "Explain why not every possible audit category should be enabled indiscriminately."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A practical Windows security-monitoring baseline often includes process creation, account management, group management and selected object-access auditing. Each telemetry source has cost and context implications, so collection should be driven by detection and investigation requirements rather than by enabling everything."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "4688 provides process-creation telemetry when Audit Process Creation is enabled.",
+                  "Object-access auditing can be high volume and often needs scoped SACLs or targeted auditing.",
+                  "Audit configuration should be tested after deployment rather than assumed from policy state alone."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-can-object-access-auditing-require-careful-scoping?",
+              "question": "Why can object-access auditing require careful scoping?",
+              "options": [
+                "It cannot be logged",
+                "It may be high-volume and noisy without targeted scope",
+                "It deletes files",
+                "It is only available on Linux"
+              ],
+              "answer": "It may be high-volume and noisy without targeted scope",
+              "explanation": "Object access can generate many events; targeted auditing helps control volume and preserve analytical value."
+            },
+            "summary": [
+              "Audit policy must be purpose-driven: collect what supports detection and investigation while managing volume."
+            ],
+            "resources": [
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              },
+              {
+                "title": "4688",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Create an Audit Visibility Matrix",
+            "level": "Intermediate",
+            "description": "Design a matrix mapping investigation goals to Windows audit subcategories and expected event IDs.",
+            "problemStatement": "Build a lab monitoring matrix for authentication, process creation, account creation, group changes and lockouts.",
+            "objectives": [
+              "Select relevant audit subcategories.",
+              "Name representative event IDs.",
+              "Describe expected evidence and volume considerations."
+            ],
+            "requirements": [
+              "Windows auditing documentation",
+              "Spreadsheet or Markdown editor"
+            ],
+            "hint": "Start with the analyst question, then choose the smallest audit scope that produces adequate evidence.",
+            "solutionCode": "Goal -> Audit Subcategory -> Representative Event IDs -> Primary Host -> Expected Volume -> Use Case\nAuthentication -> Audit Logon -> 4624/4625 -> Destination host -> Medium\nProcess creation -> Audit Process Creation -> 4688 -> Host -> High",
+            "solutionExplanation": "The matrix links telemetry policy to analytical outcomes and makes missing visibility explicit."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Authentication and Account Events",
+        "description": "Develop analyst-level skill with high-value Security event IDs for authentication, account management, group changes and lockouts.",
+        "lessons": [
+          {
+            "id": "lesson-10",
+            "title": "4624 Successful Logon",
+            "description": "Read 4624 as a logon-session event and use logon type plus account context for triage.",
+            "learningObjectives": [
+              "Interpret the core 4624 fields.",
+              "Explain why logon type is a high-value pivot."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event 4624 indicates that an account was successfully logged on. The event contains subject and target-account context plus a Logon Type field. The exact meaning of other fields varies with version and authentication path, so analysts should consult the event schema for their environment."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName=\"Security\"; Id=4624} -MaxEvents 1 | Format-List TimeCreated,Message"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use Logon Type to distinguish interactive, network, service, batch and other patterns.",
+                  "Correlate the target account with source computer/IP fields when present.",
+                  "Treat a successful logon as an observation, not proof of maliciousness."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-is-logon-type-useful-in-4624-analysis?",
+              "question": "Why is Logon Type useful in 4624 analysis?",
+              "options": [
+                "It identifies the Windows version",
+                "It helps characterize how the logon session was created",
+                "It identifies the antivirus",
+                "It proves the password was correct on the first attempt"
+              ],
+              "answer": "It helps characterize how the logon session was created",
+              "explanation": "Logon Type provides context about the mechanism and session class used by the successful logon."
+            },
+            "summary": [
+              "4624 is most useful when combined with logon type, account, source and surrounding events."
+            ],
+            "resources": [
+              {
+                "title": "4624",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "4625 Failed Logon",
+            "description": "Use failed-logon telemetry to distinguish isolated mistakes from bursts, spray-like patterns and account-specific issues.",
+            "learningObjectives": [
+              "Interpret failed-logon events and failure reasons.",
+              "Build a time-windowed view of repeated failures without declaring an attack from count alone."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "4625 records failed logon attempts when the relevant auditing is enabled. The event includes account, source and failure information that can be used for triage. Repeated failures become more informative when normalized by host, account, source and time window."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName=\"Security\"; Id=4625; StartTime=(Get-Date).AddMinutes(-30)} | Group-Object -Property @{Expression={$_.Properties[5].Value}}"
+              },
+              {
+                "type": "warning",
+                "text": "High failed-logon counts can also be caused by misconfigured services, stale credentials, mapped drives or legitimate administrative activity. Validate context before escalation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-should-increase-confidence-that-repeated-4625-events-re",
+              "question": "What should increase confidence that repeated 4625 events represent suspicious activity?",
+              "options": [
+                "Only the count",
+                "A consistent source/account/time pattern plus corroborating context",
+                "Any single failure",
+                "The presence of Application log warnings"
+              ],
+              "answer": "A consistent source/account/time pattern plus corroborating context",
+              "explanation": "Count is useful, but pattern and corroborating evidence make the assessment stronger."
+            },
+            "summary": [
+              "Treat 4625 as pattern telemetry; correlate source, account, timing and adjacent events."
+            ],
+            "resources": [
+              {
+                "title": "4625",
+                "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4625"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "4740 Account Lockout",
+            "description": "Investigate lockouts by linking the locked account to the caller computer and preceding failed authentications.",
+            "learningObjectives": [
+              "Explain what a 4740 means.",
+              "Use the caller computer field to identify the system generating lockouts."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event 4740 indicates that a user account was locked out. Microsoft notes that the event includes an Additional Information field such as Caller Computer Name. That field can help locate a source of repeated bad credentials, but it should be interpreted with the surrounding authentication evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Start with the locked account and timestamp.",
+                  "Pivot to the caller computer and nearby 4625/credential-validation events.",
+                  "Check for stale services, scheduled tasks or mapped resources before concluding compromise."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "which-field-is-especially-useful-when-tracing-the-source-of-",
+              "question": "Which field is especially useful when tracing the source of a lockout?",
+              "options": [
+                "Application Name",
+                "Caller Computer Name",
+                "Task Category only",
+                "Keywords alone"
+              ],
+              "answer": "Caller Computer Name",
+              "explanation": "The Caller Computer Name can help identify which computer triggered the lockout condition."
+            },
+            "summary": [
+              "4740 is a pivot event; use it with preceding authentication evidence to distinguish user error from malicious activity."
+            ],
+            "resources": [
+              {
+                "title": "4740",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4740"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "4720 User Account Creation",
+            "description": "Interpret a new-account event and identify the actor who created the account.",
+            "learningObjectives": [
+              "Explain what 4720 records.",
+              "Separate the newly created account from the subject that performed the creation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event 4720 is generated when a new user object is created. The event contains information about the subject performing the operation and the newly created account. This distinction is essential when determining whether an account was created by a legitimate administrator or unexpectedly."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the subject account and newly created account separately.",
+                  "Check domain controller versus member-server context.",
+                  "Correlate with group-membership and subsequent logon events."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-does-event-4720-indicate?",
+              "question": "What does Event 4720 indicate?",
+              "options": [
+                "A successful logon",
+                "A new user object was created",
+                "A scheduled task was executed",
+                "A local group was deleted"
+              ],
+              "answer": "A new user object was created",
+              "explanation": "Microsoft documents 4720 as the event generated when a new user object is created."
+            },
+            "summary": [
+              "Account creation should be followed into group membership, logon activity and administrative context."
+            ],
+            "resources": [
+              {
+                "title": "4720",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4720"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "4728 and 4732 Group Membership Changes",
+            "description": "Analyze additions to security-enabled domain and local groups and distinguish the target group context.",
+            "learningObjectives": [
+              "Explain the security significance of group membership changes.",
+              "Differentiate domain-group and local-group addition events at a high level."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Security group changes are often high-value audit points because they can change effective access. Event 4732 covers a member being added to a security-enabled local group; related domain security-group events include 4728 for a member added to a global security-enabled group. Analysts should inspect subject, target group and member identity."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName=\"Security\"; Id=4728,4732} -MaxEvents 50 | Select-Object TimeCreated,Id,Message"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Ask whether the actor had authorization.",
+                  "Determine whether the target group is privileged or controls access to sensitive resources.",
+                  "Correlate the membership change with later logon and process activity."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-are-group-membership-events-useful-for-investigations?",
+              "question": "Why are group-membership events useful for investigations?",
+              "options": [
+                "They always prove malware",
+                "They can show privilege or access changes performed by an account",
+                "They contain packet payloads",
+                "They replace all other evidence"
+              ],
+              "answer": "They can show privilege or access changes performed by an account",
+              "explanation": "Group membership changes can materially alter permissions and are therefore useful pivots when appropriately scoped."
+            },
+            "summary": [
+              "Treat membership changes as access-control telemetry and correlate them with authorization and subsequent activity."
+            ],
+            "resources": [
+              {
+                "title": "4732",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4732"
+              },
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Triage an Authentication Burst",
+            "level": "Intermediate",
+            "description": "Analyze a burst of failed and successful authentication events and determine whether the pattern warrants escalation.",
+            "problemStatement": "Given exported 4625/4624 data, identify source/account concentration and explain at least two benign alternatives before concluding the activity is suspicious.",
+            "objectives": [
+              "Group events by source and account.",
+              "Compare failure-to-success transitions.",
+              "Document competing hypotheses."
+            ],
+            "requirements": [
+              "CSV export of 4624/4625 events",
+              "PowerShell or Python"
+            ],
+            "hint": "Do not use count alone. Look for concentrated sources, timing, successful transitions and account criticality.",
+            "solutionCode": "Import-Csv .\\auth.csv | Group-Object Source,TargetUserName | Sort-Object Count -Descending",
+            "solutionExplanation": "The solution emphasizes pattern analysis and explicit alternative hypotheses rather than a single threshold."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Process Creation and Persistence Telemetry",
+        "description": "Analyze process creation and common persistence-relevant Windows events using event context rather than isolated IDs.",
+        "lessons": [
+          {
+            "id": "lesson-15",
+            "title": "4688 Process Creation",
+            "description": "Interpret process-creation telemetry, including the distinction between creator and created process context.",
+            "learningObjectives": [
+              "Explain what 4688 records.",
+              "Use process lineage fields and command-line context when available."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event 4688 is generated when a new process is created. It can contain the creator process identifier/name and the new process identifier/name. Command-line auditing can add valuable context when configured, and process-creation telemetry becomes more useful when linked into parent-child chains."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName=\"Security\"; Id=4688; StartTime=(Get-Date).AddHours(-1)} -MaxEvents 100 | Select-Object TimeCreated,Message"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A process name alone is weak evidence.",
+                  "Look at parent process, command line, user context, integrity level where available, and temporal relationships.",
+                  "Do not assume every scripting engine launch is malicious; context determines significance."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-does-event-4688-represent?",
+              "question": "What does Event 4688 represent?",
+              "options": [
+                "A user account creation",
+                "A new process being created",
+                "A service stopping",
+                "A network packet"
+              ],
+              "answer": "A new process being created",
+              "explanation": "Microsoft documents 4688 as the event generated every time a new process starts."
+            },
+            "summary": [
+              "4688 is foundational endpoint telemetry; use process lineage and context rather than binary name matching alone."
+            ],
+            "resources": [
+              {
+                "title": "4688",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Command-Line and Script-Execution Context",
+            "description": "Use command-line information carefully when investigating process creation and script execution.",
+            "learningObjectives": [
+              "Explain why command-line auditing improves 4688 context.",
+              "Identify risks of naive substring-based detections."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Process command lines can reveal interpreters, encoded content, remote locations, suspicious parameters and parent-child relationships. However, command-line strings are user-controlled inputs and can contain quoting, case and escaping variations. Detection logic should normalize safely and avoid treating a single substring as definitive proof."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName=\"Security\"; Id=4688} -MaxEvents 20 | Select-Object TimeCreated,Message"
+              },
+              {
+                "type": "warning",
+                "text": "Never treat an obfuscated or encoded-looking argument as malicious by itself. Decode or enrich only when the investigation context justifies it and preserve the original observed value."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-can-substring-only-detection-on-command-lines-be-brittle",
+              "question": "Why can substring-only detection on command lines be brittle?",
+              "options": [
+                "Command lines never change",
+                "Quoting, escaping and legitimate software arguments vary",
+                "Windows removes parent process data",
+                "Event IDs are random"
+              ],
+              "answer": "Quoting, escaping and legitimate software arguments vary",
+              "explanation": "String-level detection can miss equivalent forms and create false positives because command-line syntax varies."
+            },
+            "summary": [
+              "Command lines are rich context, but detection should account for normalization, quoting and benign software behavior."
+            ],
+            "resources": [
+              {
+                "title": "4688",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688"
+              }
+            ]
+          },
+          {
+            "id": "lesson-17",
+            "title": "4698 Scheduled Task Creation",
+            "description": "Investigate scheduled-task creation as a persistence or administration event and pivot to the creator and task details.",
+            "learningObjectives": [
+              "Explain what 4698 indicates.",
+              "Identify the fields needed to assess whether a scheduled task is legitimate."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event 4698 is generated when a new scheduled task is created. The event can expose the task name, creator context and task content depending on version and configuration. The correct analytic question is whether the task creation is expected and whether its action establishes an execution path."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Inspect task author, name/path and action/command where available.",
+                  "Correlate creation time with process and logon activity.",
+                  "Check whether the creator account and destination host are expected for task administration."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-a-primary-investigative-reason-to-examine-event-4698",
+              "question": "What is a primary investigative reason to examine Event 4698?",
+              "options": [
+                "It proves a user logged in",
+                "It identifies a new scheduled task creation",
+                "It contains full network packet data",
+                "It disables UAC"
+              ],
+              "answer": "It identifies a new scheduled task creation",
+              "explanation": "4698 is the Windows security audit event for creation of a new scheduled task."
+            },
+            "summary": [
+              "Persistence analysis should link task creation to its creator, command/action and later executions."
+            ],
+            "resources": [
+              {
+                "title": "4698",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4698"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Service and Startup Context",
+            "description": "Use Windows service and startup events as supporting evidence for persistence and system change investigations.",
+            "learningObjectives": [
+              "Identify common sources of service-start/stop evidence.",
+              "Correlate service changes with process creation and account context."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows services are another execution and persistence mechanism. Service-related events can appear under System and service-specific provider logs, while process creation in Security can provide additional context. Exact event IDs depend on the provider/channel, so investigations should use the provider and event schema rather than memorizing one number."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Correlate service changes with 4688 where available.",
+                  "Check service binary path, account and startup type during deeper host triage.",
+                  "Provider-specific logs under Applications and Services Logs may provide more detailed context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-should-service-investigations-consider-provider/channel-",
+              "question": "Why should service investigations consider provider/channel context?",
+              "options": [
+                "Because all service events share one universal ID",
+                "Because different providers and channels expose different service-related telemetry",
+                "Because services only log to Security",
+                "Because service names are event IDs"
+              ],
+              "answer": "Because different providers and channels expose different service-related telemetry",
+              "explanation": "Service telemetry is distributed across provider-specific channels and does not reduce to one universal event ID."
+            },
+            "summary": [
+              "Service persistence is best investigated by joining provider-specific service telemetry with Security and System events."
+            ],
+            "resources": [
+              {
+                "title": "Eventlog",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Build a Process-Lineage Triage Rule",
+            "level": "Intermediate",
+            "description": "Create a rule that flags unexpected parent/child process relationships and requires corroboration before alerting.",
+            "problemStatement": "Use 4688-derived data to identify unusual interpreter chains such as a script host launched by an unexpected parent.",
+            "objectives": [
+              "Define a parent-child rule.",
+              "Add user and command-line context.",
+              "State at least two false-positive controls."
+            ],
+            "requirements": [
+              "Exported 4688 event data",
+              "PowerShell or Python"
+            ],
+            "hint": "Start with process lineage, then add signer/path/user or known-parent allowlisting rather than keyword-only matching.",
+            "solutionCode": "Select-Object TimeCreated,SubjectUserName,NewProcessName,ParentProcessName,CommandLine",
+            "solutionExplanation": "A good triage rule combines lineage with context and explicitly controls false positives."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Event XML, Structured Queries and Parsing",
+        "description": "Move from interactive reading to structured extraction and repeatable normalization.",
+        "lessons": [
+          {
+            "id": "lesson-19",
+            "title": "Event XML Structure",
+            "description": "Read Event/System and EventData nodes and extract named fields reliably.",
+            "learningObjectives": [
+              "Navigate event XML namespaces and nodes.",
+              "Extract EventData values by name."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The XML representation is the authoritative structured form exposed by Windows Event Log. The System section contains metadata common to event records; EventData or UserData carries event-specific fields. Parsing by field name is safer than parsing the localized message string."
+              },
+              {
+                "type": "code",
+                "text": "$e = Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4688} -MaxEvents 1\n[xml]$x = $e.ToXml()\n$x.Event.System.EventID\n$x.Event.EventData.Data | ForEach-Object { $_.Name + '=' + $_.'#text' }"
+              },
+              {
+                "type": "warning",
+                "text": "XML schemas can vary by event version. Test parsing against the exact event versions you collect."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Extract Fields from Event XML",
+                "description": "Use ToXml() and PowerShell XML parsing to extract named event fields instead of relying on rendered message text.",
+                "steps": [
+                  "Retrieve a recent Security event with Get-WinEvent.",
+                  "Convert it with ToXml().",
+                  "Inspect Event/System and EventData/UserData.",
+                  "Print EventData names and values.",
+                  "Compare the parsed output with Event Viewer XML View."
+                ],
+                "solution": "$e = Get-WinEvent -FilterHashtable @{LogName='Security';Id=4624} -MaxEvents 1\n[xml]$x = $e.ToXml()\n$x.Event.EventData.Data | ForEach-Object { '{0}={1}' -f $_.Name, $_.'#text' }",
+                "output": "A structured list of event fields extracted from XML."
+              }
+            ],
+            "quiz": {
+              "id": "which-section-commonly-contains-event-specific-key/value-pay",
+              "question": "Which section commonly contains event-specific key/value payloads?",
+              "options": [
+                "Event/System/EventID only",
+                "Event/EventData or Event/UserData",
+                "The log filename extension",
+                "The provider GUID only"
+              ],
+              "answer": "Event/EventData or Event/UserData",
+              "explanation": "Windows events commonly place event-specific fields under EventData or UserData."
+            },
+            "summary": [
+              "Structured XML makes event extraction more robust than parsing display messages."
+            ],
+            "resources": [
+              {
+                "title": "Eventlog",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+              },
+              {
+                "title": "Getwinevent",
+                "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "XPath and Structured Event Filtering",
+            "description": "Use XPath-style filters to retrieve only the events that match a precise condition.",
+            "learningObjectives": [
+              "Construct simple XPath filters for IDs and time or field conditions.",
+              "Explain why server-side filtering improves repeatability."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterXPath \"*[System[(EventID=4625)]]\" -LogName Security -MaxEvents 50"
+              },
+              {
+                "type": "paragraph",
+                "text": "Get-WinEvent supports FilterXPath and FilterXml query forms. XPath filters operate against the structured event representation and can select by System metadata and some event fields. Precise filters should be tested on representative data because XML schemas differ between event types."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer simpler filters first, then add field constraints.",
+                  "Keep the exact query text in investigation notes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-does--filterxpath-operate-on-conceptually?",
+              "question": "What does -FilterXPath operate on conceptually?",
+              "options": [
+                "The Windows Registry",
+                "The structured event XML",
+                "The file system ACLs",
+                "The screen contents"
+              ],
+              "answer": "The structured event XML",
+              "explanation": "FilterXPath evaluates the structured XML representation of the event data."
+            },
+            "summary": [
+              "XPath gives repeatable, structured selection criteria and is useful when hash-table filtering is insufficient."
+            ],
+            "resources": [
+              {
+                "title": "Getwinevent",
+                "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent"
+              }
+            ]
+          },
+          {
+            "id": "lesson-21",
+            "title": "Parsing EVTX Offline",
+            "description": "Work with archived .evtx files without changing the source system.",
+            "learningObjectives": [
+              "Use Get-WinEvent -Path to inspect archived EVTX data.",
+              "Preserve source file identity and timestamps during offline analysis."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Get-WinEvent -Path .\\Security.evtx -MaxEvents 20 | Select-Object TimeCreated,Id,ProviderName,LevelDisplayName"
+              },
+              {
+                "type": "paragraph",
+                "text": "Get-WinEvent supports .evtx, .evt and .etl file paths. Offline analysis helps reduce the risk of altering a source host and supports repeatable investigation workflows. Keep the original file preserved and analyze a copy when appropriate."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record file hash before analysis when evidence handling requires it.",
+                  "Document the collection source and acquisition time.",
+                  "Use a working copy for transformations or exports."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "which-get-winevent-parameter-reads-events-from-an-archived-l",
+              "question": "Which Get-WinEvent parameter reads events from an archived log file?",
+              "options": [
+                "-Path",
+                "-ProviderName",
+                "-Credential",
+                "-ListProvider"
+              ],
+              "answer": "-Path",
+              "explanation": "The -Path parameter reads events from specified event log/trace files such as .evtx."
+            },
+            "summary": [
+              "Archived EVTX files are useful for controlled, repeatable analysis and evidence preservation."
+            ],
+            "resources": [
+              {
+                "title": "Getwinevent",
+                "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Normalization and Time Handling",
+            "description": "Create an analysis-ready representation that preserves the original event timestamp and source context.",
+            "learningObjectives": [
+              "Normalize timestamps to a common analysis timezone while retaining original values.",
+              "Separate event occurrence time from collection/ingestion time."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows event timestamps are recorded with a time zone/offset context in the underlying data, while analysts often need a common timeline across hosts. Preserve the original timestamp and derive a normalized analysis timestamp; do not overwrite source values."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record host identity and collector identity separately.",
+                  "Watch for clock skew and daylight-saving transitions.",
+                  "Use UTC as a common comparison basis when the investigation spans systems."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-the-safest-timestamp-practice-for-cross-host-timelin",
+              "question": "What is the safest timestamp practice for cross-host timelines?",
+              "options": [
+                "Overwrite all times with local time",
+                "Preserve original time and derive a normalized comparison time",
+                "Ignore timezone data",
+                "Use file creation time instead"
+              ],
+              "answer": "Preserve original time and derive a normalized comparison time",
+              "explanation": "Keeping the original event time maintains evidence fidelity while a derived normalized time supports correlation."
+            },
+            "summary": [
+              "Normalization should add analysis fields without destroying original event metadata."
+            ],
+            "resources": [
+              {
+                "title": "Eventlog",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+              },
+              {
+                "title": "Nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Normalize an EVTX Export",
+            "level": "Intermediate",
+            "description": "Transform selected event records into a stable CSV/JSON schema while preserving the original event XML for auditability.",
+            "problemStatement": "Define a normalized schema with timestamp, host, provider, channel, ID, record ID and selected payload fields.",
+            "objectives": [
+              "Preserve source metadata.",
+              "Add normalized UTC timestamp.",
+              "Export a machine-readable format."
+            ],
+            "requirements": [
+              "Windows with Get-WinEvent or normalized EVTX-derived data",
+              "CSV/JSON-capable analysis environment"
+            ],
+            "hint": "Keep an immutable source column or archive reference so every normalized row can be traced back.",
+            "solutionCode": "Get-WinEvent -Path .\\Security.evtx | Select-Object TimeCreated,MachineName,LogName,ProviderName,Id,RecordId | Export-Csv .\\normalized.csv -NoTypeInformation",
+            "solutionExplanation": "Normalization creates a stable analytical view without discarding provenance."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Advanced Security Telemetry",
+        "description": "Investigate common Windows security signals: account changes, privilege changes, policy changes and suspicious configuration activity.",
+        "lessons": [
+          {
+            "id": "lesson-23",
+            "title": "Account Management Event Families",
+            "description": "Understand how account creation, deletion, enabling/disabling and password changes form a broader evidence family.",
+            "learningObjectives": [
+              "Group account-management events into investigation themes.",
+              "Correlate account lifecycle changes with authentication."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Security auditing exposes multiple account-management events beyond 4720. An analyst should treat creation, modification, deletion, enabling/disabling and password changes as a lifecycle sequence, not as isolated alerts."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identify the subject account performing the change.",
+                  "Capture the target account and time.",
+                  "Look for subsequent 4624 activity or group changes involving the target."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-analyze-account-management-events-as-a-lifecycle?",
+              "question": "Why analyze account-management events as a lifecycle?",
+              "options": [
+                "Because one event proves the entire lifecycle",
+                "Because related changes can reveal how access was established, modified and used",
+                "Because logs cannot be correlated",
+                "Because all events share identical fields"
+              ],
+              "answer": "Because related changes can reveal how access was established, modified and used",
+              "explanation": "Lifecycle correlation provides stronger context than treating individual account events independently."
+            },
+            "summary": [
+              "Account telemetry becomes more useful when creation, modification and usage are correlated."
+            ],
+            "resources": [
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Privilege Use and Special Logons",
+            "description": "Recognize telemetry associated with elevated or special security contexts and understand the limits of event-only conclusions.",
+            "learningObjectives": [
+              "Explain what special logon telemetry can contribute to an investigation.",
+              "Use privilege context as an enrichment signal rather than proof of abuse."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows can audit special logons and privilege use. These records can highlight sessions with elevated rights or use of sensitive privileges. Because legitimate administration also produces such events, analysts should correlate them with account role, host role, process activity and change-management context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Privileged access is a high-value context field.",
+                  "Unexpected privilege use should be corroborated with process, logon and configuration events."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-the-correct-interpretation-of-a-special-logon-event?",
+              "question": "What is the correct interpretation of a special-logon event?",
+              "options": [
+                "It always indicates compromise",
+                "It indicates a security-relevant logon context that needs contextual analysis",
+                "It proves malware execution",
+                "It is equivalent to a failed logon"
+              ],
+              "answer": "It indicates a security-relevant logon context that needs contextual analysis",
+              "explanation": "Special logons are meaningful context but can be legitimate administrative behavior."
+            },
+            "summary": [
+              "Privilege-related events should increase investigative attention without replacing contextual analysis."
+            ],
+            "resources": [
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              }
+            ]
+          },
+          {
+            "id": "lesson-25",
+            "title": "Policy Change and Audit Tampering Signals",
+            "description": "Monitor security-policy and audit-policy changes that can affect future visibility.",
+            "learningObjectives": [
+              "Explain why policy-change telemetry matters for defenders.",
+              "Correlate audit-policy changes with subsequent telemetry gaps."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Changes to audit policy, security policy and logging configuration can affect what defenders can observe. A suspicious investigation therefore considers not only the activity events, but also whether visibility changed before or during the activity."
+              },
+              {
+                "type": "warning",
+                "text": "Do not infer tampering from a single policy-change event. Validate whether the change was approved, who made it, and whether it aligns with maintenance or domain policy deployment."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the actor, policy area, host and timestamp.",
+                  "Compare expected baselines with observed configuration changes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-are-audit-policy-change-events-important-during-investig",
+              "question": "Why are audit-policy change events important during investigations?",
+              "options": [
+                "They increase CPU speed",
+                "They can explain why later expected events are absent",
+                "They contain passwords",
+                "They stop Windows logging permanently"
+              ],
+              "answer": "They can explain why later expected events are absent",
+              "explanation": "A change to audit policy can directly change future telemetry coverage."
+            },
+            "summary": [
+              "Visibility changes are part of incident context and can explain gaps or altered event volume."
+            ],
+            "resources": [
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Sysmon as Complementary Telemetry",
+            "description": "Understand when Sysmon can enrich Windows Event Logs with process, network and file-related telemetry.",
+            "learningObjectives": [
+              "Explain how Sysmon complements native Windows auditing.",
+              "Differentiate Sysmon telemetry from native Security events."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Sysmon is an optional Windows system service from Microsoft Sysinternals that logs detailed system activity such as process creation, network connections and other events depending on its configuration. It writes events under the Microsoft-Windows-Sysmon provider/channel. It complements, rather than replaces, native Windows security auditing."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Sysmon configuration determines which event types are emitted.",
+                  "Treat the exact deployed Sysmon version and configuration as part of the evidence context.",
+                  "Correlate Sysmon and Security events by time, process identifiers and user context where possible."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-sysmon-primarily-used-for?",
+              "question": "What is Sysmon primarily used for?",
+              "options": [
+                "Replacing Event Viewer",
+                "Providing detailed system telemetry through a Sysmon provider/channel",
+                "Managing domain users",
+                "Encrypting EVTX files"
+              ],
+              "answer": "Providing detailed system telemetry through a Sysmon provider/channel",
+              "explanation": "Sysmon adds detailed endpoint telemetry that can complement native Windows logs."
+            },
+            "summary": [
+              "Sysmon is an enrichment source; its value depends on a tested configuration and known deployment context."
+            ],
+            "resources": [
+              {
+                "title": "Sysmon",
+                "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Explain a Visibility Gap",
+            "level": "Advanced",
+            "description": "Analyze a hypothetical investigation where audit policy changed before suspicious activity and explain how that affects confidence.",
+            "problemStatement": "Given policy-change and activity timelines, identify what telemetry may no longer be trustworthy and what alternate sources should be sought.",
+            "objectives": [
+              "Identify likely gaps.",
+              "Separate observed facts from assumptions.",
+              "Recommend corroborating evidence."
+            ],
+            "requirements": [
+              "Security audit/policy documentation",
+              "Investigation timeline"
+            ],
+            "hint": "Ask “what changed in telemetry generation or retention immediately before the gap?”",
+            "solutionCode": "Timeline review: policy change -> event volume change -> missing expected telemetry -> corroborating source request.",
+            "solutionExplanation": "The key outcome is disciplined uncertainty: explain exactly what the missing telemetry prevents you from concluding."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Windows Event Forwarding and Centralization",
+        "description": "Design and validate Windows Event Forwarding (WEF) collection with source-initiated and collector-initiated subscriptions.",
+        "lessons": [
+          {
+            "id": "lesson-27",
+            "title": "Windows Event Collector Architecture",
+            "description": "Understand event source, collector, subscriptions and destination logs.",
+            "learningObjectives": [
+              "Explain how WEC receives forwarded events.",
+              "Differentiate source-initiated and collector-initiated subscriptions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows Event Collector (WEC) allows a collector computer to receive events forwarded from remote event sources. Microsoft documents two main subscription models: source-initiated, where the subscription can be defined without listing every source, and collector-initiated, where the collector specifies the sources."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Forwarded events are stored in the collector event log selected by the subscription.",
+                  "WS-Management/WinRM is part of the Windows event-collection transport path.",
+                  "Centralization improves retention and cross-host correlation but introduces collector capacity and time-synchronization requirements."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Design a Windows Event Forwarding Collection Plan",
+                "description": "Design a lab WEF topology and validation plan for centrally collecting high-value Windows security events.",
+                "steps": [
+                  "Choose a collector and one or more lab sources.",
+                  "Select the event IDs to forward and justify them.",
+                  "Choose source-initiated or collector-initiated subscriptions.",
+                  "Document prerequisites and the destination log.",
+                  "Define an end-to-end validation test and collector health checks."
+                ],
+                "solution": "Architecture/design exercise based on Microsoft's Windows Event Collector documentation; implement only in a controlled lab.",
+                "output": "A WEF topology description and test checklist."
+              }
+            ],
+            "quiz": {
+              "id": "what-is-a-defining-feature-of-a-source-initiated-subscriptio",
+              "question": "What is a defining feature of a source-initiated subscription?",
+              "options": [
+                "The collector must list every source computer",
+                "Sources are configured to forward based on a subscription defined at the collector",
+                "It only works with Application logs",
+                "It disables WinRM"
+              ],
+              "answer": "Sources are configured to forward based on a subscription defined at the collector",
+              "explanation": "Source-initiated subscriptions allow multiple sources to be configured to forward to a defined collector subscription."
+            },
+            "summary": [
+              "WEF centralizes Windows events using subscriptions; the chosen model should match administration and scale."
+            ],
+            "resources": [
+              {
+                "title": "Wec",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/wec/windows-event-collector"
+              },
+              {
+                "title": "Wec Source",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/wec/creating-a-source-initiated-subscription"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Source-Initiated Subscriptions",
+            "description": "Plan a domain/lab deployment where clients are configured to forward selected events centrally.",
+            "learningObjectives": [
+              "Describe the prerequisites for source-initiated subscriptions.",
+              "Select event classes and document source scope."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Source-initiated subscriptions are useful when many endpoints should follow a common forwarding policy. Microsoft documents configuring the collector and sources, with Group Policy often used to define the forwarding policy for domain-joined systems."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Define source computers by security group or organizational scope.",
+                  "Filter events at the subscription to avoid forwarding unnecessary volume.",
+                  "Test on a small set of hosts before broad deployment."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-is-source-initiated-forwarding-useful-at-larger-scale?",
+              "question": "Why is source-initiated forwarding useful at larger scale?",
+              "options": [
+                "It removes the need for any policy",
+                "It allows a collector subscription to apply to multiple sources without individually enumerating each source",
+                "It stores no events",
+                "It only forwards Application log errors"
+              ],
+              "answer": "It allows a collector subscription to apply to multiple sources without individually enumerating each source",
+              "explanation": "Source-initiated subscriptions scale the source configuration through centralized policy."
+            },
+            "summary": [
+              "Source-initiated WEF is a scalable design for centrally defined event collection."
+            ],
+            "resources": [
+              {
+                "title": "Wec Source",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/wec/creating-a-source-initiated-subscription"
+              }
+            ]
+          },
+          {
+            "id": "lesson-29",
+            "title": "Collector-Initiated Subscriptions",
+            "description": "Understand the collector-initiated model and when explicit source lists are appropriate.",
+            "learningObjectives": [
+              "Explain how a collector-initiated subscription names its event sources.",
+              "Identify the operational tradeoff versus source-initiated forwarding."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "In a collector-initiated subscription, the collector knows and lists the source computers that should forward events. This can be convenient for small, tightly controlled environments or when the source set is intentionally explicit."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Source enumeration becomes part of subscription maintenance.",
+                  "Explicit scope can simplify small lab setups.",
+                  "For larger environments, source-initiated subscriptions can reduce manual source management."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-the-main-distinction-of-collector-initiated-subscrip",
+              "question": "What is the main distinction of collector-initiated subscriptions?",
+              "options": [
+                "Sources configure themselves without a collector",
+                "The collector subscription contains the event source list",
+                "They do not use Windows Event Collector",
+                "They only collect System events"
+              ],
+              "answer": "The collector subscription contains the event source list",
+              "explanation": "Collector-initiated subscriptions explicitly specify the sources in the subscription."
+            },
+            "summary": [
+              "Choose subscription mode based on scale, control and how source membership changes."
+            ],
+            "resources": [
+              {
+                "title": "Wec Collector",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/wec/creating-an-event-collector-subscription"
+              }
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "Validation, Health and Collector Capacity",
+            "description": "Verify forwarded event arrival, subscription status and collector-side retention.",
+            "learningObjectives": [
+              "Create a WEF validation checklist.",
+              "Identify collector-side failure modes and telemetry health signals."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Confirm WinRM/WEC prerequisites and subscription state.",
+                  "Generate a known test event on a source and verify arrival on the collector.",
+                  "Check collector log size, retention and system health.",
+                  "Compare event timestamps between source and collector."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Centralized logging creates a second system whose health must be monitored. A subscription can exist while forwarding is unhealthy, and a collector can receive events while its local retention is too short."
+              },
+              {
+                "type": "warning",
+                "text": "A healthy subscription configuration is not proof of complete collection. Validate by generating known events and checking arrival over time."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-the-strongest-basic-test-of-a-wef-subscription?",
+              "question": "What is the strongest basic test of a WEF subscription?",
+              "options": [
+                "The subscription XML exists",
+                "A known test event is generated at the source and observed at the collector",
+                "Event Viewer opens",
+                "The collector has a hostname"
+              ],
+              "answer": "A known test event is generated at the source and observed at the collector",
+              "explanation": "End-to-end testing validates both forwarding and collector-side receipt."
+            },
+            "summary": [
+              "WEF needs end-to-end monitoring: source generation, transport, collector receipt and retention."
+            ],
+            "resources": [
+              {
+                "title": "Wec",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/wec/windows-event-collector"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Design a WEF Pilot",
+            "level": "Advanced",
+            "description": "Create a pilot plan for forwarding high-value Security events from a small endpoint group.",
+            "problemStatement": "The organization wants centralized 4624/4625/4688/4698/4720/4740 coverage without overwhelming the collector. Design the pilot.",
+            "objectives": [
+              "Choose subscription model.",
+              "Define filters and source scope.",
+              "Define health tests and rollback criteria."
+            ],
+            "requirements": [
+              "Windows Event Collector lab",
+              "At least one source and collector"
+            ],
+            "hint": "Treat event selection and collector capacity as coupled design decisions.",
+            "solutionCode": "Pilot plan fields: Source Scope | Subscription Model | Event IDs | Destination Log | Validation Test | Retention | Failure Signal | Rollback",
+            "solutionExplanation": "A pilot reduces deployment risk and creates measurable acceptance criteria before scale-out."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Analysis and Detection Engineering",
+        "description": "Turn raw events into repeatable investigation logic, correlation patterns and careful detections.",
+        "lessons": [
+          {
+            "id": "lesson-31",
+            "title": "Event Correlation Across Hosts",
+            "description": "Join event streams by time, account, host, process and activity sequence.",
+            "learningObjectives": [
+              "Identify useful correlation keys.",
+              "Build a simple multi-event timeline."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows-event analysis rarely succeeds through a single event. Useful pivots include user/account, host, process ID, logon ID, source network address, task name and time proximity. Correlation should retain uncertainty when keys are absent or reused."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Start with a high-value pivot such as a locked account or new privileged-group member.",
+                  "Expand backward to identify the cause and forward to identify impact.",
+                  "Document which joins are exact and which are heuristic."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "which-is-a-strong-correlation-key-when-available-across-rela",
+              "question": "Which is a strong correlation key when available across related security events?",
+              "options": [
+                "Screen resolution",
+                "Logon ID or account context",
+                "Desktop wallpaper",
+                "Event Viewer theme"
+              ],
+              "answer": "Logon ID or account context",
+              "explanation": "Security events can expose shared account/session identifiers that support stronger correlation."
+            },
+            "summary": [
+              "Correlation builds a narrative from related events; distinguish deterministic joins from approximate time proximity."
+            ],
+            "resources": [
+              {
+                "title": "Attack",
+                "url": "https://attack.mitre.org/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-32",
+            "title": "Detection Logic and False Positives",
+            "description": "Write detections that describe behavior and context rather than one noisy event.",
+            "learningObjectives": [
+              "Turn investigation patterns into explicit detection logic.",
+              "Document false-positive controls and exclusions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A detection should state what behavior is considered suspicious, what fields are required, what context increases or decreases confidence, and how benign use is handled. For example, “privileged group member added outside approved change windows” is more useful than “alert on all group changes.”"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record required telemetry dependencies.",
+                  "Define allowlists by identity/role/environment carefully.",
+                  "Review false positives and update logic from evidence rather than arbitrary suppression."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-makes-a-security-detection-more-useful-than-an-isolated",
+              "question": "What makes a security detection more useful than an isolated event-ID alert?",
+              "options": [
+                "It is always shorter",
+                "It expresses behavioral context and false-positive controls",
+                "It ignores account identity",
+                "It does not need telemetry dependencies"
+              ],
+              "answer": "It expresses behavioral context and false-positive controls",
+              "explanation": "Contextual detections combine event fields and environmental assumptions to improve signal quality."
+            },
+            "summary": [
+              "Good detections encode behavior, context, dependencies and false-positive management."
+            ],
+            "resources": [
+              {
+                "title": "Attack",
+                "url": "https://attack.mitre.org/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-33",
+            "title": "ATT&CK Mapping for Windows Events",
+            "description": "Map observed Windows event behaviors to MITRE ATT&CK techniques without claiming technique coverage from an event ID alone.",
+            "learningObjectives": [
+              "Use ATT&CK as an analytical vocabulary.",
+              "Explain the difference between telemetry evidence and technique inference."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK provides a behavior-focused taxonomy. Windows events can provide evidence relevant to techniques such as account manipulation, process execution, scheduled-task/job activity and remote access, but the presence of an event ID alone does not prove a technique was used maliciously."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Describe the observed behavior first.",
+                  "Then map to an applicable technique when the behavior and context support it.",
+                  "Record confidence and supporting fields in the investigation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-the-safest-att&ck-mapping-practice?",
+              "question": "What is the safest ATT&CK mapping practice?",
+              "options": [
+                "Map every 4688 directly to one technique",
+                "Map the observed behavior and supporting context to the technique",
+                "Ignore event fields",
+                "Treat technique IDs as event IDs"
+              ],
+              "answer": "Map the observed behavior and supporting context to the technique",
+              "explanation": "ATT&CK is behavioral; technique mapping should be based on observed behavior and context, not event ID alone."
+            },
+            "summary": [
+              "ATT&CK enriches the analyst narrative but does not replace evidence evaluation."
+            ],
+            "resources": [
+              {
+                "title": "Attack",
+                "url": "https://attack.mitre.org/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-34",
+            "title": "Triage Playbooks",
+            "description": "Create repeatable analyst playbooks for common Windows-event investigations.",
+            "learningObjectives": [
+              "Turn common event families into stepwise triage procedures.",
+              "Include escalation and evidence-preservation decisions."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authentication burst: identify source/account, correlate success/failure, inspect lockouts.",
+                  "New account/group change: identify actor, target, privilege implications, subsequent use.",
+                  "Process/persistence event: inspect lineage, path, command line, user and subsequent execution.",
+                  "Visibility change: verify audit-policy change, affected telemetry and change-management context."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A playbook should produce consistent analyst behavior while leaving room for judgement. It should specify what to collect, what to correlate, what constitutes escalation, and what evidence must be preserved."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-is-the-purpose-of-a-playbook?",
+              "question": "What is the purpose of a playbook?",
+              "options": [
+                "To eliminate judgement",
+                "To make repeatable investigation steps explicit",
+                "To replace logging",
+                "To automatically declare incidents"
+              ],
+              "answer": "To make repeatable investigation steps explicit",
+              "explanation": "Playbooks create consistent, auditable workflows without pretending every case is identical."
+            },
+            "summary": [
+              "Playbooks turn event knowledge into repeatable operational practice."
+            ],
+            "resources": [
+              {
+                "title": "Nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09",
+            "title": "Write a Windows Event Triage Playbook",
+            "level": "Advanced",
+            "description": "Create a detailed triage playbook for one high-value event family.",
+            "problemStatement": "Choose authentication, account changes, process creation or persistence. Define collection, pivots, confidence, escalation and evidence-preservation steps.",
+            "objectives": [
+              "Specify inputs and dependencies.",
+              "Define at least three correlation pivots.",
+              "State false-positive checks and escalation criteria."
+            ],
+            "requirements": [
+              "Windows event documentation",
+              "Text editor"
+            ],
+            "hint": "A strong playbook answers: what happened, who/what caused it, what happened next, and what evidence is still needed.",
+            "solutionCode": "Playbook sections: Trigger -> Required Telemetry -> Initial Query -> Pivots -> Benign Checks -> Escalation -> Preservation -> Close Criteria",
+            "solutionExplanation": "The structure makes analyst decisions reproducible and easier to audit or improve."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Evidence Handling, Troubleshooting and Capstone",
+        "description": "Preserve event evidence, troubleshoot missing telemetry, and complete a realistic Windows Event Logs investigation project.",
+        "lessons": [
+          {
+            "id": "lesson-35",
+            "title": "Evidence Preservation for EVTX",
+            "description": "Preserve event-log artifacts with provenance and integrity controls appropriate to the investigation.",
+            "learningObjectives": [
+              "Explain why source preservation matters.",
+              "Record hashes and collection metadata when required."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Event logs used in investigations should be treated as evidence with provenance. The original EVTX file, acquisition source, acquisition time, responsible process and hash can be recorded so later analysis can be distinguished from the original artifact."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer collection methods that minimize changes to the source.",
+                  "Hash files after acquisition and before transformation.",
+                  "Keep an immutable original and analyze a working copy."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "why-hash-an-acquired-evtx-file?",
+              "question": "Why hash an acquired EVTX file?",
+              "options": [
+                "To speed up Event Viewer",
+                "To support integrity verification of the acquired artifact",
+                "To change its timestamp",
+                "To make it smaller"
+              ],
+              "answer": "To support integrity verification of the acquired artifact",
+              "explanation": "A hash provides an integrity reference for detecting later changes to the acquired file."
+            },
+            "summary": [
+              "Evidence handling adds provenance and integrity checks to ordinary log analysis."
+            ],
+            "resources": [
+              {
+                "title": "Nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "Nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-36",
+            "title": "Troubleshooting Missing or Unexpected Events",
+            "description": "Diagnose why expected Windows events are absent, duplicated, delayed or unexpectedly high-volume.",
+            "learningObjectives": [
+              "Use an evidence-driven troubleshooting sequence.",
+              "Differentiate audit-policy issues from transport, retention and time problems."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Check whether the relevant audit policy/subcategory is enabled.",
+                  "Check provider/channel state and service health.",
+                  "Check log size, overwrite/retention and time coverage.",
+                  "Check clock synchronization and host identity.",
+                  "For forwarded logs, test source generation and collector receipt independently."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A missing event is a troubleshooting problem before it is an investigative conclusion. Validate upstream generation, local storage, forwarding, collector retention and time alignment in that order."
+              },
+              {
+                "type": "warning",
+                "text": "Do not “fix” a production logging problem by clearing or changing logs during an investigation without approved procedures and preservation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-should-you-check-before-concluding-that-a-host-simply-“",
+              "question": "What should you check before concluding that a host simply “did not generate” an event?",
+              "options": [
+                "Only Event Viewer theme",
+                "Audit policy, provider/channel, retention and collection health",
+                "The desktop background",
+                "User wallpaper"
+              ],
+              "answer": "Audit policy, provider/channel, retention and collection health",
+              "explanation": "Several upstream conditions can prevent an event from appearing where expected."
+            },
+            "summary": [
+              "Troubleshooting follows the telemetry path from generation to storage and collection."
+            ],
+            "resources": [
+              {
+                "title": "Audit",
+                "url": "https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-audit"
+              },
+              {
+                "title": "Wec",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/wec/windows-event-collector"
+              },
+              {
+                "title": "Getwinevent",
+                "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent"
+              }
+            ]
+          },
+          {
+            "id": "lesson-37",
+            "title": "Capstone Investigation Workflow",
+            "description": "Apply the full workflow: preserve, scope, query, correlate, assess, document and communicate findings.",
+            "learningObjectives": [
+              "Execute a complete Windows-event investigation workflow.",
+              "Distinguish observations, inferences and unresolved questions."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "1. Preserve source artifacts and record provenance.",
+                  "2. Define the investigation question and time window.",
+                  "3. Query relevant event IDs and providers.",
+                  "4. Normalize timestamps and sort into a timeline.",
+                  "5. Correlate authentication, process, persistence and account-management evidence.",
+                  "6. Test benign alternatives.",
+                  "7. State findings with confidence and evidence references.",
+                  "8. Identify telemetry gaps and recommended follow-up collection."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The capstone should read like a professional analyst case note: concise, evidence-backed, explicit about uncertainty and reproducible by another analyst."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "what-distinguishes-a-strong-event-log-investigation-report?",
+              "question": "What distinguishes a strong event-log investigation report?",
+              "options": [
+                "It contains the most event IDs",
+                "It links conclusions to evidence and states uncertainty explicitly",
+                "It avoids timestamps",
+                "It copies the Event Viewer message verbatim"
+              ],
+              "answer": "It links conclusions to evidence and states uncertainty explicitly",
+              "explanation": "A professional report connects claims to evidence and clearly identifies what remains unknown."
+            },
+            "summary": [
+              "The final workflow integrates collection, structured analysis, correlation, evidence handling and communication."
+            ],
+            "resources": [
+              {
+                "title": "Nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "Attack",
+                "url": "https://attack.mitre.org/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-38",
+            "title": "Final Real-World Project: Windows Event Investigation Lab",
+            "description": "Complete the end-to-end project using preserved Windows event data and the supplied analyzer.",
+            "learningObjectives": [
+              "Preserve a Windows event artifact with provenance.",
+              "Normalize and correlate Windows events.",
+              "Produce an evidence-backed investigation report with explicit uncertainty."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "This is the final assessment. Students should be able to explain not only what the data appears to show, but also how the data was collected, what telemetry was required, what alternative explanations were considered, and what remains unknown."
+              },
+              {
+                "type": "code",
+                "text": "# windows_event_investigator.py\n# Full project code is included in the project section of course.json."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use a lab host or supplied EVTX data only.",
+                  "Do not clear, disable or tamper with Windows logs as part of the exercise.",
+                  "Preserve the source artifact and analyze a working copy."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05",
+                "title": "Investigate a Suspicious Windows Activity Timeline",
+                "description": "Correlate preserved event data into a chronological investigation timeline and evidence-based assessment.",
+                "steps": [
+                  "Acquire or use a bounded EVTX-derived dataset from a lab.",
+                  "Normalize timestamps to a common analysis basis.",
+                  "Correlate 4624/4625 with 4688 and selected account/persistence events.",
+                  "Record observations, hypotheses and telemetry gaps.",
+                  "Write a concise case note with confidence and follow-up evidence requests."
+                ],
+                "solution": "Use the final project analyzer and validate every lead against the original event XML and surrounding context.",
+                "output": "An evidence-backed timeline and analyst assessment."
+              }
+            ],
+            "quiz": {
+              "id": "what-should-be-the-final-basis-for-a-capstone-conclusion?",
+              "question": "What should be the final basis for a capstone conclusion?",
+              "options": [
+                "Only an alert threshold",
+                "Correlated event evidence with documented limitations",
+                "A single Event ID",
+                "A screenshot without source context"
+              ],
+              "answer": "Correlated event evidence with documented limitations",
+              "explanation": "Professional conclusions rely on multiple evidence points and clearly state what the telemetry cannot establish."
+            },
+            "summary": [
+              "The capstone integrates the entire course into a reproducible investigation workflow."
+            ],
+            "resources": [
+              {
+                "title": "Nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "Nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Windows Event Investigation Lab",
+          "description": "A controlled, offline investigation workflow for preserved Windows Event Logs. The learner works from a derived CSV rather than changing source logs, identifies high-value authentication patterns, correlates account changes with later logons, and produces an evidence-based report.",
+          "conceptsCovered": [
+            "Windows Event Log architecture",
+            "Security auditing",
+            "4624/4625 authentication",
+            "4688 process creation",
+            "4698 scheduled tasks",
+            "4720 account creation",
+            "4728/4732 group changes",
+            "4740 lockouts",
+            "EVTX preservation",
+            "Get-WinEvent",
+            "XML parsing",
+            "event correlation",
+            "false-positive analysis",
+            "investigation reporting"
+          ],
+          "steps": [
+            "Acquire a bounded Security-log dataset from a Windows lab or supplied EVTX archive without clearing or modifying the source.",
+            "Record provenance and an integrity hash when required.",
+            "Normalize a working CSV with TimeCreated, Id, MachineName, ProviderName, Message and relevant named fields.",
+            "Run the offline analyzer to summarize IDs, identify 4625 bursts and correlate account changes with 4624 logons.",
+            "Validate findings against source XML and surrounding timeline context.",
+            "Document benign explanations, gaps and confidence.",
+            "Produce a case note describing scope, evidence, assessment and recommended follow-up."
+          ],
+          "code": {
+            "windows_event_investigator.py": "# windows_event_investigator.py\n# Python 3.11+\n# Purpose: analyze a normalized CSV export of Windows Event Logs.\n# The script never changes the source EVTX; it works on exported data.\n\nfrom __future__ import annotations\n\nimport argparse\nimport csv\nfrom collections import Counter, defaultdict\nfrom dataclasses import dataclass\nfrom datetime import datetime, timedelta, timezone\nfrom pathlib import Path\n\n\n@dataclass(frozen=True)\nclass Event:\n    time: datetime\n    event_id: int\n    host: str\n    provider: str\n    message: str\n    subject: str = \"\"\n    target: str = \"\"\n    source: str = \"\"\n    process: str = \"\"\n    parent: str = \"\"\n\n\ndef parse_time(value: str) -> datetime:\n    text = value.strip().replace(\"Z\", \"+00:00\")\n    dt = datetime.fromisoformat(text)\n    if dt.tzinfo is None:\n        dt = dt.replace(tzinfo=timezone.utc)\n    return dt.astimezone(timezone.utc)\n\n\ndef load_csv(path: Path) -> list[Event]:\n    events: list[Event] = []\n    with path.open(\"r\", encoding=\"utf-8-sig\", newline=\"\") as fh:\n        reader = csv.DictReader(fh)\n        required = {\"TimeCreated\", \"Id\", \"MachineName\", \"ProviderName\", \"Message\"}\n        missing = required - set(reader.fieldnames or [])\n        if missing:\n            raise ValueError(f\"Missing required columns: {sorted(missing)}\")\n\n        for row in reader:\n            events.append(\n                Event(\n                    time=parse_time(row[\"TimeCreated\"]),\n                    event_id=int(row[\"Id\"]),\n                    host=row.get(\"MachineName\", \"\"),\n                    provider=row.get(\"ProviderName\", \"\"),\n                    message=row.get(\"Message\", \"\"),\n                    subject=row.get(\"SubjectUserName\", \"\"),\n                    target=row.get(\"TargetUserName\", \"\"),\n                    source=row.get(\"IpAddress\", row.get(\"SourceNetworkAddress\", \"\")),\n                    process=row.get(\"NewProcessName\", \"\"),\n                    parent=row.get(\"ParentProcessName\", \"\"),\n                )\n            )\n    return sorted(events, key=lambda e: e.time)\n\n\ndef summarize(events: list[Event]) -> dict:\n    by_id = Counter(e.event_id for e in events)\n    by_host = Counter(e.host for e in events)\n    by_user = Counter(e.target for e in events if e.target)\n    return {\n        \"events\": len(events),\n        \"event_ids\": dict(by_id),\n        \"hosts\": dict(by_host),\n        \"top_targets\": by_user.most_common(10),\n    }\n\n\ndef auth_bursts(events: list[Event], window_minutes: int = 10, failures: int = 5):\n    failures_by_key: dict[tuple[str, str], list[datetime]] = defaultdict(list)\n    findings = []\n\n    for event in events:\n        if event.event_id != 4625:\n            continue\n        key = (event.source or \"unknown\", event.target or \"unknown\")\n        failures_by_key[key].append(event.time)\n\n    window = timedelta(minutes=window_minutes)\n    for key, times in failures_by_key.items():\n        left = 0\n        for right, current in enumerate(times):\n            while current - times[left] > window:\n                left += 1\n            count = right - left + 1\n            if count >= failures:\n                findings.append(\n                    {\n                        \"type\": \"auth_failure_burst\",\n                        \"source\": key[0],\n                        \"target\": key[1],\n                        \"start\": times[left].isoformat(),\n                        \"end\": current.isoformat(),\n                        \"count\": count,\n                    }\n                )\n                break\n    return findings\n\n\ndef suspicious_sequence(events: list[Event]):\n    # Example correlation: account creation/group change followed by a logon.\n    creations = [e for e in events if e.event_id == 4720]\n    group_changes = [e for e in events if e.event_id in {4728, 4732}]\n    logons = [e for e in events if e.event_id == 4624]\n    findings = []\n\n    for change in creations + group_changes:\n        candidate_users = {x.target for x in [change] if x.target}\n        if not candidate_users:\n            continue\n        target = next(iter(candidate_users))\n        for logon in logons:\n            if logon.host == change.host and 0 <= (logon.time - change.time).total_seconds() <= 3600:\n                if logon.target == target:\n                    findings.append(\n                        {\n                            \"type\": \"account_change_then_logon\",\n                            \"host\": change.host,\n                            \"target\": target,\n                            \"change_event\": change.event_id,\n                            \"change_time\": change.time.isoformat(),\n                            \"logon_time\": logon.time.isoformat(),\n                        }\n                    )\n                    break\n    return findings\n\n\ndef write_report(path: Path, summary: dict, bursts: list[dict], sequences: list[dict]):\n    with path.open(\"w\", encoding=\"utf-8\") as fh:\n        fh.write(\"Windows Event Logs Investigation Report\\n\")\n        fh.write(\"========================================\\n\\n\")\n        fh.write(f\"Total events: {summary['events']}\\n\\n\")\n        fh.write(\"Event IDs:\\n\")\n        for event_id, count in sorted(summary[\"event_ids\"].items()):\n            fh.write(f\"  {event_id}: {count}\\n\")\n        fh.write(\"\\nAuthentication bursts:\\n\")\n        for item in bursts:\n            fh.write(f\"  {item}\\n\")\n        fh.write(\"\\nAccount-change -> logon correlations:\\n\")\n        for item in sequences:\n            fh.write(f\"  {item}\\n\")\n        fh.write(\"\\nAnalyst note: findings are leads for investigation, not proof of malicious activity.\\n\")\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser(description=\"Analyze a normalized Windows Event Log CSV\")\n    parser.add_argument(\"csv\", type=Path)\n    parser.add_argument(\"--report\", type=Path, default=Path(\"investigation_report.txt\"))\n    args = parser.parse_args()\n\n    events = load_csv(args.csv)\n    summary = summarize(events)\n    bursts = auth_bursts(events)\n    sequences = suspicious_sequence(events)\n    write_report(args.report, summary, bursts, sequences)\n    print(f\"Loaded {len(events)} events\")\n    print(f\"Authentication bursts: {len(bursts)}\")\n    print(f\"Account-change/logon correlations: {len(sequences)}\")\n    print(f\"Report: {args.report}\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+          },
+          "explanation": "The analyzer is intentionally non-destructive. It consumes normalized event data, converts timestamps to UTC, summarizes event IDs and hosts, detects repeated 4625 failures within a bounded interval, and correlates selected account-management events with subsequent 4624 logons on the same host. Outputs are investigative leads rather than proof of malicious activity. Analysts must validate the underlying event XML, authorization context, time synchronization and other evidence, and preserve the original artifact separately from derived analysis files."
+        }
+      }
+    ]
+  }
+}

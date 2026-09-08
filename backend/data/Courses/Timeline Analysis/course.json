@@ -1,0 +1,2082 @@
+{
+  "course": {
+    "id": "timeline-analysis",
+    "title": "Timeline Analysis",
+    "slug": "timeline-analysis",
+    "description": "A practical, research-driven course in digital forensic timeline analysis. It teaches time semantics, filesystem and operating-system timestamps, application and network artifacts, Plaso and Sleuth Kit workflows, Autopsy and Timesketch analysis, temporal correlation, clock-skew reasoning, filtering, performance, anomaly investigation, provenance, reproducibility, and defensible reporting. The final project integrates these skills into an auditable Python timeline-analysis workbench.",
+    "level": "Intermediate to Advanced",
+    "language": "English",
+    "duration": 48,
+    "prerequisites": [
+      "Basic operating-system and filesystem knowledge",
+      "Basic Linux command-line skills",
+      "Basic Windows administration/Event Viewer familiarity",
+      "Basic Python programming with CSV, functions, and exceptions",
+      "Foundational digital-forensics concepts such as evidence preservation and hashing",
+      "An authorized forensic lab or legally obtained training dataset"
+    ],
+    "learningOutcomes": [
+      "Explain timeline analysis and super timelines while separating evidence observations from interpretations.",
+      "Normalize offset-aware timestamps to UTC while preserving original representations.",
+      "Construct and interpret filesystem timelines using Sleuth Kit body files and mactime.",
+      "Interpret Windows FILETIME and Windows Event Log evidence in context.",
+      "Use Plaso log2timeline, pinfo, psort, and psteal workflows.",
+      "Design targeted collection and event filters while documenting their blind spots.",
+      "Correlate filesystem, OS, application, registry, browser, and network observations.",
+      "Estimate candidate clock skew from multiple reference events.",
+      "Use Autopsy and Timesketch concepts to navigate large timelines.",
+      "Investigate missing data, duplicates, anomalies, and parser limitations.",
+      "Create reproducibility records with commands, filters, hashes, and time assumptions.",
+      "Write source-linked findings that state uncertainty and limitations.",
+      "Build and explain an auditable Python timeline-analysis workbench."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Foundations of Timeline Analysis",
+        "description": "Time semantics, evidence workflow, provenance, and forensic reasoning.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Scope and Purpose of Timeline Analysis",
+            "description": "Learn what a forensic timeline is, what questions it can answer, and why a timeline is a derived analytical view rather than a replacement for source evidence.",
+            "learningObjectives": [
+              "explain timeline analysis in forensic terms",
+              "separate observations from interpretations",
+              "identify questions that timelines answer well"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Timeline analysis as evidence correlation"
+              },
+              {
+                "type": "paragraph",
+                "text": "Timeline analysis orders timestamped observations from one or more evidence sources so an analyst can reconstruct sequence, identify activity windows, and compare independent records. A super timeline aggregates many source types into one chronological dataset."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A timeline event is an observation tied to a source; an inference is an analyst conclusion based on one or more observations.",
+                  "Useful questions include what occurred before or after a known event, which sources corroborate a window, and where activity is unusually dense.",
+                  "A single timestamp rarely establishes who performed an action or why it happened.",
+                  "Preserve source, parser, path/record identifier, and original timestamp information for important events."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never describe temporal proximity alone as proof of causality or user intent."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q1",
+              "question": "What is a timeline event most safely treated as?",
+              "options": [
+                "Proof of a human action",
+                "A timestamped observation from an evidence source",
+                "A guaranteed accurate clock reading",
+                "A causal explanation"
+              ],
+              "answer": "A timestamped observation from an evidence source",
+              "explanation": "The event must be interpreted using source semantics and corroborating evidence."
+            },
+            "summary": [
+              "Timelines are derived chronological views of timestamped observations.",
+              "Strong conclusions require provenance and corroboration."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              },
+              {
+                "title": "plaso",
+                "url": "https://plaso.readthedocs.io/en/latest/"
+              },
+              {
+                "title": "autopsy",
+                "url": "https://www.sleuthkit.org/autopsy/timeline.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "UTC, Offsets, and Time Zones",
+            "description": "Build the time-normalization skills required to compare timestamps produced by systems in different zones.",
+            "learningObjectives": [
+              "interpret RFC 3339 timestamps",
+              "normalize offset-aware timestamps to UTC",
+              "explain why local time without an offset is ambiguous"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "RFC 3339 defines a profile of ISO 8601 for Internet timestamps. A numeric offset such as +05:30 identifies the relationship between local time and UTC. A trailing Z denotes UTC."
+              },
+              {
+                "type": "code",
+                "text": "from datetime import datetime, timezone\nraw = \"2026-01-15T10:30:00+05:30\"\ndt = datetime.fromisoformat(raw)\nprint(dt.astimezone(timezone.utc).isoformat())"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve the original representation and create a separate normalized field.",
+                  "Daylight-saving transitions change local offsets and can create confusing local displays.",
+                  "Do not infer a timezone from a filename, IP address, or analyst expectation when the evidence can provide a more direct basis.",
+                  "For forensic correlation, UTC is a useful common representation, but original source semantics must remain available."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q2",
+              "question": "What does +05:30 indicate?",
+              "options": [
+                "5:30 behind UTC",
+                "5:30 ahead of UTC",
+                "An unknown timezone",
+                "A timestamp without timezone"
+              ],
+              "answer": "5:30 ahead of UTC",
+              "explanation": "The numeric offset states the local clock is five hours and thirty minutes ahead of UTC."
+            },
+            "summary": [
+              "Use explicit offsets when normalizing time.",
+              "Keep original timestamps alongside normalized values."
+            ],
+            "resources": [
+              {
+                "title": "rfc3339",
+                "url": "https://datatracker.ietf.org/doc/html/rfc3339"
+              },
+              {
+                "title": "pydt",
+                "url": "https://docs.python.org/3/library/datetime.html"
+              },
+              {
+                "title": "pyzone",
+                "url": "https://docs.python.org/3/library/zoneinfo.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Clock Skew and Synchronization",
+            "description": "Understand clock skew, NTP, drift, and why a timeline may contain inconsistent clock readings.",
+            "learningObjectives": [
+              "define clock skew",
+              "explain how NTP supports synchronization",
+              "identify evidence needed before applying a clock correction"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Clock skew is the difference between a system clock and a reference or another system. NTP is widely used to synchronize clocks, but an analyst should not assume synchronization simply because NTP is configured."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use multiple independent reference events when estimating skew.",
+                  "Clock drift can make a single offset invalid over a long interval.",
+                  "A manual clock change can create a discontinuity rather than a stable offset.",
+                  "Preserve original timestamps and store any adjusted time as a derived value."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not globally shift a timeline from one timestamp pair without testing additional anchors."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q3",
+              "question": "Why use multiple reference events for skew estimation?",
+              "options": [
+                "To make more rows",
+                "To test whether an offset is stable",
+                "To eliminate UTC",
+                "Because timestamps cannot be compared"
+              ],
+              "answer": "To test whether an offset is stable",
+              "explanation": "Multiple anchors help distinguish stable skew from bad references or clock changes."
+            },
+            "summary": [
+              "Clock correction is an inference that needs evidence.",
+              "NTP configuration is not by itself proof of correct historical time."
+            ],
+            "resources": [
+              {
+                "title": "rfc5905",
+                "url": "https://datatracker.ietf.org/doc/html/rfc5905.html"
+              },
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Forensic Workflow, Integrity, and Provenance",
+            "description": "Place timeline analysis inside a defensible evidence workflow from scope through reporting.",
+            "learningObjectives": [
+              "outline a reproducible timeline workflow",
+              "explain the role of evidence integrity",
+              "create a provenance checklist"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Define the investigative question and scope.",
+                  "Preserve or acquire evidence according to authorized procedures.",
+                  "Record evidence identifiers and integrity values.",
+                  "Parse evidence into derived timeline data.",
+                  "Normalize and correlate events without discarding provenance.",
+                  "Validate key findings against independent sources.",
+                  "Report observations, interpretations, and limitations."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-86 provides practical guidance for integrating forensic techniques into incident response and emphasizes the need to consider organizational and legal requirements."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record tool names, versions, command lines, filters, time assumptions, and output hashes.",
+                  "Keep derived timelines distinguishable from source evidence.",
+                  "A file hash checks byte-level integrity of that file; it does not prove semantic correctness or completeness."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q4",
+              "question": "What does provenance primarily enable?",
+              "options": [
+                "Automatic attribution",
+                "Tracing a derived event back to its source and processing steps",
+                "Clock synchronization",
+                "Malware detection"
+              ],
+              "answer": "Tracing a derived event back to its source and processing steps",
+              "explanation": "Provenance supports review and reproducibility."
+            },
+            "summary": [
+              "Timeline work is part of a broader forensic workflow.",
+              "Integrity and provenance make derived analysis reviewable."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-02",
+        "title": "Filesystem and Operating-System Timelines",
+        "description": "Filesystem activity, Sleuth Kit timelines, Windows FILETIME, and Event Log evidence.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Filesystem Timeline Concepts",
+            "description": "Interpret filesystem metadata timelines and understand their limits.",
+            "learningObjectives": [
+              "identify common filesystem timestamp categories",
+              "explain MACB-style activity representations",
+              "distinguish metadata evidence from user attribution"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Filesystem timelines represent temporal metadata associated with files and filesystem structures. The Sleuth Kit documents a workflow in which temporal data is gathered and then sorted into a timeline."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Modification, metadata/status change, access, and creation/birth timestamps have different semantics and availability.",
+                  "Filesystem timestamps can be changed by normal system operations, copying, restoration, software behavior, and filesystem-specific rules.",
+                  "MACB is a compact activity representation; analysts should inspect the underlying timestamps when precision matters."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A file modification timestamp does not prove that a person manually edited the file."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q5",
+              "question": "What does a filesystem timestamp most directly describe?",
+              "options": [
+                "The human actor",
+                "A filesystem-recorded temporal property",
+                "The intent of a user",
+                "The network source"
+              ],
+              "answer": "A filesystem-recorded temporal property",
+              "explanation": "The timestamp is metadata whose semantics depend on the filesystem and artifact."
+            },
+            "summary": [
+              "Filesystem timelines are valuable but source-specific.",
+              "Interpret timestamps according to filesystem semantics."
+            ],
+            "resources": [
+              {
+                "title": "tskdocs",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              },
+              {
+                "title": "tsktimeline",
+                "url": "https://wiki.sleuthkit.org/Timelines/"
+              },
+              {
+                "title": "mactime",
+                "url": "https://wiki.sleuthkit.org/Mactime-output/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Sleuth Kit Body Files and mactime",
+            "description": "Construct a classic filesystem activity timeline using body-file data.",
+            "learningObjectives": [
+              "explain body-file fields",
+              "use fls and mactime conceptually",
+              "trace timeline rows back to filesystem metadata"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The Sleuth Kit body file is a pipe-delimited intermediate representation. Its documented TSK 3.x form includes fields such as name, inode, size, atime, mtime, ctime, and crtime. mactime reads body-file data and sorts it into a timeline."
+              },
+              {
+                "type": "code",
+                "text": "fls -m C:/ -r image.dd > body.txt\nmactime -b body.txt > timeline.txt"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The exact partition offset and filesystem type must be determined from the evidence, not copied blindly.",
+                  "The body file is derived data; preserve the source image and record the collection command.",
+                  "Time-skew adjustment options exist, but adjustments must be documented and justified."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p6",
+                "title": "Build a basic TSK timeline",
+                "description": "Generate a body file from a permitted lab image and convert it to a sorted activity timeline.",
+                "steps": [
+                  "Work from an authorized forensic image or copy.",
+                  "Determine the relevant filesystem and partition offset.",
+                  "Run fls recursively with a mount point label.",
+                  "Run mactime against the resulting body file.",
+                  "Inspect several entries and record their source paths."
+                ],
+                "solution": "fls -m C:/ -r -o <partition_offset> lab-image.dd > body.txt\nmactime -b body.txt > timeline.txt",
+                "output": "The result is a chronologically ordered text timeline derived from filesystem metadata. Exact entries depend on the image."
+              }
+            ],
+            "quiz": {
+              "id": "q6",
+              "question": "What does mactime do in the classic TSK workflow?",
+              "options": [
+                "Acquire the image",
+                "Sort body-file temporal data into a timeline",
+                "Recover RAM",
+                "Decrypt files"
+              ],
+              "answer": "Sort body-file temporal data into a timeline",
+              "explanation": "TSK describes timeline creation as data gathering followed by sorting/merging with mactime."
+            },
+            "summary": [
+              "Body files provide an intermediate temporal representation.",
+              "mactime sorts and presents that representation."
+            ],
+            "resources": [
+              {
+                "title": "body",
+                "url": "https://wiki.sleuthkit.org/Body-file/"
+              },
+              {
+                "title": "tsktimeline",
+                "url": "https://wiki.sleuthkit.org/Timelines/"
+              },
+              {
+                "title": "mactime",
+                "url": "https://wiki.sleuthkit.org/Mactime-output/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Windows FILETIME and NTFS Semantics",
+            "description": "Decode Windows FILETIME and understand the difference between stored UTC values and displayed local time.",
+            "learningObjectives": [
+              "explain the FILETIME epoch and unit",
+              "convert FILETIME to UTC",
+              "describe important filesystem-specific caveats"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents FILETIME as a 64-bit value containing 100-nanosecond intervals since 1601-01-01 UTC. Microsoft also documents different timestamp behavior across filesystems; NTFS stores file times in UTC, while FAT uses local-time semantics."
+              },
+              {
+                "type": "code",
+                "text": "from datetime import datetime, timezone, timedelta\nFILETIME_EPOCH = datetime(1601, 1, 1, tzinfo=timezone.utc)\nvalue = 133801248000000000\nseconds = value / 10_000_000\nprint((FILETIME_EPOCH + timedelta(seconds=seconds)).isoformat())"
+              },
+              {
+                "type": "warning",
+                "text": "High numeric precision does not imply high real-world accuracy. Timestamp update rules and filesystem semantics still matter."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p7",
+                "title": "Convert FILETIME to UTC",
+                "description": "Convert a Windows FILETIME integer using only Python's standard library.",
+                "steps": [
+                  "Define the 1601-01-01 UTC epoch.",
+                  "Divide the FILETIME count by 10,000,000 to obtain seconds.",
+                  "Add the duration to the epoch.",
+                  "Print an ISO UTC timestamp."
+                ],
+                "solution": "from datetime import datetime, timezone, timedelta\nFILETIME_EPOCH = datetime(1601, 1, 1, tzinfo=timezone.utc)\nvalue = 133801248000000000\nseconds = value / 10_000_000\nprint((FILETIME_EPOCH + timedelta(seconds=seconds)).isoformat())",
+                "output": "A timezone-aware UTC datetime is produced; the exact value follows from the supplied integer."
+              }
+            ],
+            "quiz": {
+              "id": "q7",
+              "question": "What is the FILETIME epoch?",
+              "options": [
+                "1970-01-01 UTC",
+                "1601-01-01 UTC",
+                "1904-01-01 UTC",
+                "2001-01-01 UTC"
+              ],
+              "answer": "1601-01-01 UTC",
+              "explanation": "Microsoft defines FILETIME relative to January 1, 1601 UTC."
+            },
+            "summary": [
+              "FILETIME is a numeric representation, not a statement about user behavior.",
+              "Filesystem documentation is essential for interpreting timestamp semantics."
+            ],
+            "resources": [
+              {
+                "title": "filetime",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime"
+              },
+              {
+                "title": "winfile",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Windows Event Log as a Timeline Source",
+            "description": "Use structured Windows event records as corroborating timeline evidence.",
+            "learningObjectives": [
+              "identify event-log channels and providers",
+              "filter events by time and metadata",
+              "explain why event IDs require context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows Event Log provides structured records associated with event providers and channels. PowerShell Get-WinEvent supports filtering by log name, provider, event ID, time range, user ID, data, and XML queries."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName='System'; StartTime=(Get-Date).AddHours(-1); EndTime=Get-Date} |\n  Select-Object TimeCreated,Id,ProviderName,Message"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "An event ID should be interpreted with its provider, channel, and event data.",
+                  "Keep the original event log where required; rendered CSV is a derived view.",
+                  "TimeCreated is one part of an event's meaning; message/data fields may contain the context needed for correlation."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p8",
+                "title": "Extract a bounded Windows event window",
+                "description": "Export a small, reproducible set of Windows events from an authorized lab host.",
+                "steps": [
+                  "Choose a specific time window.",
+                  "Use Get-WinEvent with FilterHashtable or FilterXml.",
+                  "Select time, ID, provider, and relevant data.",
+                  "Export to CSV.",
+                  "Record the exact query."
+                ],
+                "solution": "Get-WinEvent -FilterHashtable @{LogName='System'; StartTime=(Get-Date).AddHours(-1); EndTime=Get-Date} | Select-Object TimeCreated,Id,ProviderName,Message | Export-Csv -NoTypeInformation system-window.csv",
+                "output": "The CSV contains events matching the selected filter. Exact rows depend on the host and time window."
+              }
+            ],
+            "quiz": {
+              "id": "q8",
+              "question": "Why interpret an event ID with its provider?",
+              "options": [
+                "IDs are random",
+                "The provider supplies the event source/schema context",
+                "Providers set the system clock",
+                "The provider is only decoration"
+              ],
+              "answer": "The provider supplies the event source/schema context",
+              "explanation": "Windows Event Log associates event definitions with providers and schemas."
+            },
+            "summary": [
+              "Structured event logs add semantic context beyond a timestamp.",
+              "Bounded queries make extraction reproducible."
+            ],
+            "resources": [
+              {
+                "title": "winevent",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/wes/windows-event-log"
+              },
+              {
+                "title": "getwinevent",
+                "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent?view=powershell-7.6"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-1",
+            "title": "Correlate a File Change with an OS Event",
+            "level": "Intermediate",
+            "description": "Correlate a filesystem event with nearby Windows log records while separating temporal proximity from causality.",
+            "problemStatement": "Given a permitted lab CSV containing file events and Windows events, identify plausible corroborating events within a stated window.",
+            "objectives": [
+              "normalize both datasets to UTC",
+              "sort by time",
+              "preserve source identifiers",
+              "write an observation-versus-inference conclusion"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "CSV exports from a lab dataset"
+            ],
+            "hint": "Normalize timestamps before comparing them; never compare local strings directly.",
+            "solutionCode": "import csv\nfrom datetime import datetime, timezone\n\ndef parse(value):\n    return datetime.fromisoformat(value.replace(\"Z\",\"+00:00\")).astimezone(timezone.utc)\n\ntarget=parse(\"2026-01-15T10:30:00+00:00\")\nwith open(\"events.csv\", newline=\"\", encoding=\"utf-8\") as f:\n    rows=list(csv.DictReader(f))\nfor row in sorted(rows, key=lambda r: parse(r[\"timestamp\"])):\n    delta=abs((parse(row[\"timestamp\"])-target).total_seconds())\n    if delta <= 300:\n        print(row[\"timestamp\"], row[\"source\"], row[\"event_id\"], row[\"message\"])",
+            "solutionExplanation": "The script identifies records within five minutes of an evidence-backed anchor. The result is corroboration candidates, not a causal proof."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Artifact-Centered Timeline Construction",
+        "description": "Application artifacts, Plaso extraction, parser coverage, and filtering.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Application and User-Activity Artifacts",
+            "description": "Use browser, shell, document, and application artifacts as contextual timeline sources.",
+            "learningObjectives": [
+              "identify application artifact classes",
+              "explain retention and semantic limitations",
+              "correlate application artifacts with OS evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Application artifacts can add semantic context that filesystem metadata lacks. Browser records may contain visit times and URLs; shell history may contain commands; document metadata may contain application-specific times; application logs can record domain-specific events."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Artifact retention varies by application and configuration.",
+                  "A browser history record is not necessarily proof of a successful network transaction or direct user interaction.",
+                  "Shell history may be incomplete, edited, disabled, or affected by shell behavior.",
+                  "Use independent OS and application sources when the conclusion matters."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q9",
+              "question": "Why combine application and filesystem evidence?",
+              "options": [
+                "They always have identical times",
+                "They can provide different context and corroboration",
+                "Filesystem data becomes unnecessary",
+                "Application logs are always accurate"
+              ],
+              "answer": "They can provide different context and corroboration",
+              "explanation": "Different sources can constrain the interpretation of an event."
+            },
+            "summary": [
+              "Application artifacts add semantics but have source-specific limitations.",
+              "Corroborate important activity with independent sources."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              },
+              {
+                "title": "plaso",
+                "url": "https://plaso.readthedocs.io/en/latest/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Plaso Architecture and Workflow",
+            "description": "Learn the practical Plaso pipeline for extracting, inspecting, filtering, and exporting timeline events.",
+            "learningObjectives": [
+              "describe log2timeline, pinfo, psort, and psteal",
+              "run a basic Plaso workflow",
+              "explain why packaged releases are preferred for normal use"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Plaso is a Python-based engine for automated timeline creation. Its user documentation describes log2timeline for extracting events, pinfo for inspecting storage files, psort for post-processing and analysis, and psteal as a shortcut combining extraction and post-processing."
+              },
+              {
+                "type": "code",
+                "text": "log2timeline.py --storage-file case.plaso evidence.E01\npinfo.py --sections sources case.plaso\npsort.py -o dynamic -w timeline.csv case.plaso"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The Plaso storage file contains extracted events and metadata about collection and sources.",
+                  "Use a packaged release for routine use; development releases can change frequently.",
+                  "The exact parsers selected depend on the source and Plaso configuration."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p10",
+                "title": "Generate and inspect a Plaso timeline",
+                "description": "Create a Plaso storage file and inspect its sources before exporting a timeline.",
+                "steps": [
+                  "Use a permitted forensic image.",
+                  "Run log2timeline with a storage-file output.",
+                  "Inspect sources using pinfo.",
+                  "Export a dynamic timeline with psort.",
+                  "Record commands and output hashes."
+                ],
+                "solution": "log2timeline.py --storage-file case.plaso evidence.E01\npinfo.py --sections sources case.plaso\npsort.py -o dynamic -w timeline.csv case.plaso",
+                "output": "The output includes a Plaso storage file and a CSV timeline. Exact events depend on the evidence."
+              }
+            ],
+            "quiz": {
+              "id": "q10",
+              "question": "Which tool post-processes Plaso storage files?",
+              "options": [
+                "pinfo",
+                "psort",
+                "fls",
+                "mactime"
+              ],
+              "answer": "psort",
+              "explanation": "Plaso documents psort as the post-processing tool."
+            },
+            "summary": [
+              "Plaso separates extraction from post-processing.",
+              "The workflow should be recorded for reproducibility."
+            ],
+            "resources": [
+              {
+                "title": "plaso",
+                "url": "https://plaso.readthedocs.io/en/latest/"
+              },
+              {
+                "title": "create",
+                "url": "https://plaso.readthedocs.io/en/latest/sources/user/Creating-a-timeline.html"
+              },
+              {
+                "title": "log",
+                "url": "https://plaso.readthedocs.io/en/stable/sources/user/Using-log2timeline.html"
+              },
+              {
+                "title": "psort",
+                "url": "https://github.com/log2timeline/plaso/blob/main/docs/sources/user/Using-psort.md"
+              },
+              {
+                "title": "psteal",
+                "url": "https://plaso.readthedocs.io/en/latest/sources/user/Using-psteal.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Parser Coverage and Provenance",
+            "description": "Assess parser/source coverage instead of treating a generated timeline as complete.",
+            "learningObjectives": [
+              "inspect source and parser fields",
+              "identify unsupported or missing evidence",
+              "explain why parser success is not completeness"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A parser extracts supported structures from a source. A successful parse does not establish that all relevant information was present, collected, or supported."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Inspect source, parser, and extraction-error information for high-value events.",
+                  "Document unsupported artifacts or parser limitations that could change the conclusion.",
+                  "Keep targeted collections explicitly labeled as targeted.",
+                  "Trace important events from exported rows back to their source representation."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p11",
+                "title": "Audit parser coverage",
+                "description": "Use pinfo and an exported timeline to create a source/parser inventory.",
+                "steps": [
+                  "Inspect the Plaso source section.",
+                  "Choose important timeline events.",
+                  "Record their source and parser fields.",
+                  "Identify at least two possible coverage gaps.",
+                  "Document how the gaps affect the investigative question."
+                ],
+                "solution": "pinfo.py --sections sources case.plaso\npsort.py -o dynamic --fields datetime,timestamp_desc,source,source_long,message,parser -w audited.csv case.plaso",
+                "output": "The deliverable is a coverage note identifying source/parser provenance and limitations."
+              }
+            ],
+            "quiz": {
+              "id": "q11",
+              "question": "Does successful parsing prove completeness?",
+              "options": [
+                "Yes",
+                "No; parser and source coverage have limits",
+                "Only with millions of events",
+                "Only on Windows"
+              ],
+              "answer": "No; parser and source coverage have limits",
+              "explanation": "Parsing support is not evidence that all relevant data exists or was collected."
+            },
+            "summary": [
+              "Parser coverage is part of analytical validity.",
+              "Document limitations that affect the conclusion."
+            ],
+            "resources": [
+              {
+                "title": "internals",
+                "url": "https://plaso.readthedocs.io/en/stable/sources/developer/Internals.html"
+              },
+              {
+                "title": "plaso",
+                "url": "https://plaso.readthedocs.io/en/latest/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Collection Filters and Event Filters",
+            "description": "Reduce noise using Plaso's documented collection and event-filter mechanisms.",
+            "learningObjectives": [
+              "distinguish collection filters from event filters",
+              "write a basic event-filter expression",
+              "describe risks of over-filtering"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Collection filters restrict which source files are collected and parsed. Event filters operate on extracted events for selective export, analysis, or tagging. Plaso documents both mechanisms separately."
+              },
+              {
+                "type": "code",
+                "text": "# Example documented-style Plaso event filter\ndata_type is 'syslog:line' and message_body contains 'root'"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use collection filters when source scope is intentionally narrow.",
+                  "Use event filters when the broader dataset is already available but analysis needs a subset.",
+                  "Record filters verbatim.",
+                  "Retain the broader derived dataset when practical so a reviewer can reproduce a different selection."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p12",
+                "title": "Create a targeted Plaso workflow",
+                "description": "Build a targeted collection and then filter extracted events.",
+                "steps": [
+                  "Create a YAML path filter for the relevant lab source.",
+                  "Run log2timeline with the filter.",
+                  "Inspect collected sources with pinfo.",
+                  "Apply an event filter with psort.",
+                  "Export the filtered results while retaining the storage file."
+                ],
+                "solution": "log2timeline.py --file-filter windows.yaml --storage-file targeted.plaso evidence.raw\npinfo.py --sections sources targeted.plaso\npsort.py -o dynamic -w selected.csv targeted.plaso \"data_type is 'syslog:line'\"",
+                "output": "The selected CSV contains only events matching the event filter. The storage file preserves the collected context."
+              }
+            ],
+            "quiz": {
+              "id": "q12",
+              "question": "What is the main danger of over-filtering?",
+              "options": [
+                "More evidence",
+                "Loss of contextual events",
+                "Changing the source image",
+                "Guaranteed accuracy"
+              ],
+              "answer": "Loss of contextual events",
+              "explanation": "Filtering can remove observations needed to interpret or corroborate a finding."
+            },
+            "summary": [
+              "Filtering is an analytical choice and should be documented.",
+              "Keep broader derived data when feasible."
+            ],
+            "resources": [
+              {
+                "title": "collect",
+                "url": "https://plaso.readthedocs.io/en/stable/sources/user/Collection-Filters.html"
+              },
+              {
+                "title": "filters",
+                "url": "https://plaso.readthedocs.io/en/latest/sources/user/Event-filters.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-1",
+            "title": "Design a Targeted Collection Plan",
+            "level": "Intermediate",
+            "description": "Translate a Windows interactive-use question into a documented Plaso collection plan.",
+            "problemStatement": "Design a targeted collection for a two-hour investigation window and explain included sources, exclusions, and blind spots.",
+            "objectives": [
+              "state the investigative question",
+              "choose relevant artifacts",
+              "write a reproducible filter",
+              "document limitations"
+            ],
+            "requirements": [
+              "Plaso packaged release or Docker",
+              "Authorized Windows forensic image"
+            ],
+            "hint": "Start from the question, not from a favorite tool.",
+            "solutionCode": "description: Windows event logs for targeted timeline collection\ntype: include\npath_separator: '\\\\'\npaths:\n  - '%SystemRoot%\\\\System32\\\\winevt\\\\Logs\\\\.+[.]evtx'\n",
+            "solutionExplanation": "The filter demonstrates source-level selection. A real case should add other artifacts based on the actual question and document every inclusion/exclusion."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Correlation, Visualization, and Investigation Views",
+        "description": "Super timelines, deduplication, event density, and Timesketch.",
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "Super Timelines and Normalized Schemas",
+            "description": "Combine heterogeneous events while preserving source-specific context.",
+            "learningObjectives": [
+              "define a super timeline",
+              "select a practical normalized schema",
+              "preserve original timestamp and provenance fields"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A super timeline combines timestamped observations from many source types into a common chronology. Plaso is explicitly designed for this use, while Autopsy and Timesketch provide analytical views over timeline data."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Useful fields include normalized datetime, original timestamp, source, source type, event type, message, user, host, parser, and source identifier.",
+                  "Normalization should make events sortable without erasing original representation.",
+                  "Do not assume every parser provides the same fields.",
+                  "Correlation should be question-driven, not simply 'everything within one minute'."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q13",
+              "question": "What should a normalized timeline preserve?",
+              "options": [
+                "Only the formatted date",
+                "Normalized time plus provenance and event context",
+                "Only event IDs",
+                "Only file names"
+              ],
+              "answer": "Normalized time plus provenance and event context",
+              "explanation": "Sorting requires normalized time, while interpretation requires context and provenance."
+            },
+            "summary": [
+              "Super timelines make cross-source comparison possible.",
+              "A common schema should not erase source-specific meaning."
+            ],
+            "resources": [
+              {
+                "title": "plaso",
+                "url": "https://plaso.readthedocs.io/en/latest/"
+              },
+              {
+                "title": "autopsy",
+                "url": "https://www.sleuthkit.org/autopsy/timeline.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Deduplication and Event Identity",
+            "description": "Remove exact duplicates safely and understand why timestamp-only deduplication is unsafe.",
+            "learningObjectives": [
+              "define an exact duplicate key",
+              "implement provenance-aware deduplication",
+              "explain why same-time events can be distinct"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Multi-source timelines can contain repeated records due to multiple parsers, exports, or derived representations. Deduplication is a transformation that should be auditable."
+              },
+              {
+                "type": "code",
+                "text": "def event_key(event):\n    return (event['timestamp'], event['source'],\n            event.get('event_type',''), event.get('source_id',''),\n            event.get('message',''))"
+              },
+              {
+                "type": "warning",
+                "text": "Do not deduplicate on timestamp alone. Two independent events can legitimately share an instant."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p14",
+                "title": "Implement exact deduplication",
+                "description": "Remove only exact duplicate records from a CSV and report counts by source.",
+                "steps": [
+                  "Read the CSV with csv.DictReader.",
+                  "Build a key from timestamp, source, event type, source ID, and message.",
+                  "Keep the first occurrence.",
+                  "Count duplicates by source.",
+                  "Write a cleaned CSV and report."
+                ],
+                "solution": "import csv\nfrom collections import Counter\nseen=set(); kept=[]; duplicates=Counter()\nwith open(\"timeline.csv\", newline=\"\", encoding=\"utf-8\") as f:\n    for row in csv.DictReader(f):\n        key=(row[\"timestamp\"],row[\"source\"],row.get(\"event_type\",\"\"),row.get(\"source_id\",\"\"),row.get(\"message\",\"\"))\n        if key in seen: duplicates[row[\"source\"]] += 1\n        else: seen.add(key); kept.append(row)\nwith open(\"timeline_dedup.csv\",\"w\",newline=\"\",encoding=\"utf-8\") as f:\n    if kept:\n        w=csv.DictWriter(f, fieldnames=kept[0].keys()); w.writeheader(); w.writerows(kept)\nprint(dict(duplicates))",
+                "output": "Only exact duplicate records are removed; distinct same-time events remain."
+              }
+            ],
+            "quiz": {
+              "id": "q14",
+              "question": "Why is timestamp-only deduplication unsafe?",
+              "options": [
+                "Timestamps cannot be sorted",
+                "Different events can share a timestamp",
+                "CSV has no timestamps",
+                "UTC is not sortable"
+              ],
+              "answer": "Different events can share a timestamp",
+              "explanation": "A multi-source timeline can contain multiple legitimate observations at the same instant."
+            },
+            "summary": [
+              "Deduplication should preserve event identity.",
+              "Heuristic merging requires stronger evidence than identical timestamps."
+            ],
+            "resources": [
+              {
+                "title": "psort",
+                "url": "https://github.com/log2timeline/plaso/blob/main/docs/sources/user/Using-psort.md"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Visualization and Event Density",
+            "description": "Use visual and statistical views to identify candidate activity windows without equating volume with maliciousness.",
+            "learningObjectives": [
+              "choose a visualization for an investigative question",
+              "calculate event density",
+              "use density as a triage signal"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Autopsy provides timeline views that show both activity volume and detailed events, while clustering reduces overload. Timesketch provides search, filters, charts, views, annotations, and stories."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A spike can represent normal updates, backups, indexing, or workload.",
+                  "Use density to select windows for deeper source-level inspection.",
+                  "The report should cite concrete events rather than merely a chart pattern.",
+                  "Exploratory views are derived analytical aids, not replacements for source evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p15",
+                "title": "Create an hourly density report",
+                "description": "Count normalized events by UTC hour and identify candidate review windows.",
+                "steps": [
+                  "Parse offset-aware timestamps.",
+                  "Convert to UTC.",
+                  "Group by hour.",
+                  "Write hour/count output.",
+                  "Select candidate windows using a transparent top-N or threshold rule."
+                ],
+                "solution": "from collections import Counter\nfrom datetime import datetime, timezone\nimport csv\ncounts=Counter()\nwith open(\"timeline.csv\", newline=\"\", encoding=\"utf-8\") as f:\n    for row in csv.DictReader(f):\n        dt=datetime.fromisoformat(row[\"timestamp\"].replace(\"Z\",\"+00:00\")).astimezone(timezone.utc)\n        counts[dt.replace(minute=0,second=0,microsecond=0)] += 1\nfor hour,count in sorted(counts.items()):\n    print(hour.isoformat(), count)",
+                "output": "The output highlights dense periods for manual investigation; it does not establish maliciousness."
+              }
+            ],
+            "quiz": {
+              "id": "q15",
+              "question": "What does an activity spike prove?",
+              "options": [
+                "Compromise",
+                "Nothing by itself; it identifies a review window",
+                "User presence",
+                "Correct clock"
+              ],
+              "answer": "Nothing by itself; it identifies a review window",
+              "explanation": "Volume alone does not explain the cause of activity."
+            },
+            "summary": [
+              "Visualization helps navigate large timelines.",
+              "Density is a triage signal, not a conclusion."
+            ],
+            "resources": [
+              {
+                "title": "autopsy",
+                "url": "https://www.sleuthkit.org/autopsy/timeline.php"
+              },
+              {
+                "title": "tsconcepts",
+                "url": "https://github.com/google/timesketch/blob/master/docs/guides/user/basic-concepts.md"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Timesketch Case Organization",
+            "description": "Use Timesketch sketches, timelines, searches, views, tags, and stories to organize collaborative analysis.",
+            "learningObjectives": [
+              "explain the sketch/timeline model",
+              "describe how timelines are imported and explored",
+              "separate analyst annotations from source evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Timesketch is an open-source collaborative forensic timeline analysis tool. Its documentation describes sketches as case-oriented containers that can include multiple timelines and views. Explore supports searches, time ranges, filters, saved views, and event annotations."
+              },
+              {
+                "type": "code",
+                "text": "# Conceptual advanced-search structure documented by Timesketch\n{\n  \"query\": {\"bool\": {\"must\": [{\"query_string\": {\"query\": \"*\"}}]}},\n  \"sort\": {\"datetime\": \"asc\"}\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Tags, comments, stars, and stories are derived analyst context.",
+                  "Timesketch documentation describes importing Plaso, CSV, and JSONL timelines.",
+                  "Collaborative deployments require access control and secure handling because forensic timelines can contain sensitive evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p16",
+                "title": "Create a Timesketch analysis workspace",
+                "description": "Import a permitted timeline and create a reproducible investigative view.",
+                "steps": [
+                  "Deploy Timesketch using its documented lab method.",
+                  "Create a sketch for the case.",
+                  "Import a Plaso/CSV/JSONL timeline.",
+                  "Set a focused time range.",
+                  "Save a search/view and annotate a small set of events.",
+                  "Record the search and filter parameters."
+                ],
+                "solution": "Use the documented Timesketch web interface or API to create a sketch, import a supported timeline, apply a time range/filter, and save the resulting view.",
+                "output": "The workspace contains a case sketch, imported timeline, reproducible view, and annotations. Exact UI labels can vary by release."
+              }
+            ],
+            "quiz": {
+              "id": "q16",
+              "question": "What is a Timesketch sketch used for?",
+              "options": [
+                "Disk imaging",
+                "Organizing case timelines and analysis context",
+                "Replacing acquisition",
+                "A Windows event channel"
+              ],
+              "answer": "Organizing case timelines and analysis context",
+              "explanation": "Timesketch documents sketches as case-oriented containers for timelines and analysis."
+            },
+            "summary": [
+              "Collaborative tools improve organization and reviewability.",
+              "Annotations are derived context, not original evidence."
+            ],
+            "resources": [
+              {
+                "title": "timesketch",
+                "url": "https://github.com/google/timesketch"
+              },
+              {
+                "title": "tsconcepts",
+                "url": "https://github.com/google/timesketch/blob/master/docs/guides/user/basic-concepts.md"
+              },
+              {
+                "title": "tssketch",
+                "url": "https://github.com/google/timesketch/blob/master/docs/guides/user/sketch-overview.md"
+              },
+              {
+                "title": "tsinstall",
+                "url": "https://github.com/google/timesketch/blob/master/docs/guides/admin/install.md"
+              },
+              {
+                "title": "tsapi",
+                "url": "https://github.com/google/timesketch/blob/master/docs/developers/api-client.md"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-1",
+            "title": "Build an Auditable Timeline Normalizer",
+            "level": "Intermediate",
+            "description": "Create a Python utility that converts offset-aware timestamps to UTC while retaining the original values.",
+            "problemStatement": "Given heterogeneous RFC 3339 timestamps, produce a normalized CSV and reject ambiguous timestamps.",
+            "objectives": [
+              "parse offset-aware timestamps",
+              "retain original strings",
+              "emit UTC timestamps",
+              "flag malformed values"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Standard library"
+            ],
+            "hint": "Use datetime.fromisoformat and astimezone(timezone.utc). Do not silently assume a timezone for naive input.",
+            "solutionCode": "import csv\nfrom datetime import datetime, timezone\n\nwith open(\"input.csv\", newline=\"\", encoding=\"utf-8\") as src, open(\"normalized.csv\",\"w\",newline=\"\",encoding=\"utf-8\") as dst:\n    r=csv.DictReader(src); fields=r.fieldnames+[\"normalized_utc\"]; w=csv.DictWriter(dst,fieldnames=fields); w.writeheader()\n    for row in r:\n        raw=row[\"timestamp\"]\n        dt=datetime.fromisoformat(raw.replace(\"Z\",\"+00:00\"))\n        if dt.tzinfo is None: raise ValueError(\"ambiguous timestamp: \"+raw)\n        row[\"normalized_utc\"]=dt.astimezone(timezone.utc).isoformat().replace(\"+00:00\",\"Z\")\n        w.writerow(row)",
+            "solutionExplanation": "The utility refuses naive timestamps, preserving the analyst from silent timezone assumptions."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Correlation, Skew, and Evidentiary Reasoning",
+        "description": "Temporal correlation, missing data, clock skew, and event sequencing.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Temporal Correlation and Context",
+            "description": "Use time windows with host, user, process, and artifact context.",
+            "learningObjectives": [
+              "construct justified time windows",
+              "combine temporal and contextual constraints",
+              "write cautious correlation statements"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Temporal correlation is most useful when the window is justified by the investigative question and expected event latency. A wider window is not automatically better."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Add host, user, process, path, network peer, or artifact identifiers where available.",
+                  "Classify relationships as direct observation, temporal proximity, or corroborated inference.",
+                  "Consider missing events and clock uncertainty before treating an ordering as meaningful."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q17",
+              "question": "What strengthens temporal correlation?",
+              "options": [
+                "A larger window",
+                "Independent contextual evidence",
+                "Removing provenance",
+                "Choosing the window after seeing the answer"
+              ],
+              "answer": "Independent contextual evidence",
+              "explanation": "Independent constraints reduce the chance of treating coincidence as causation."
+            },
+            "summary": [
+              "Temporal windows generate candidate relationships.",
+              "Context and source independence determine evidentiary strength."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              },
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Gaps, Missing Data, and Negative Evidence",
+            "description": "Reason correctly about logging gaps, parser failures, retention, and absent records.",
+            "learningObjectives": [
+              "distinguish absence of evidence from evidence of absence",
+              "identify common causes of timeline gaps",
+              "write bounded conclusions about missing data"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A timeline gap may reflect disabled logging, retention limits, parser failures, filtering, acquisition problems, clock errors, or simply the absence of an event. Silence in a dataset is not automatically proof that an action did not occur."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Check acquisition completeness and parser errors.",
+                  "Check logging configuration and retention where available.",
+                  "Look for independent sources covering the same interval.",
+                  "Use language such as 'no supporting event was identified in the examined sources' when appropriate."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p18",
+                "title": "Write a missing-data assessment",
+                "description": "Analyze an intentional logging gap and produce a defensible limitation statement.",
+                "steps": [
+                  "Identify the missing interval.",
+                  "Identify which source is absent.",
+                  "List plausible causes.",
+                  "Check whether another source covers the interval.",
+                  "Write a bounded conclusion and identify what additional evidence would help."
+                ],
+                "solution": "A strong statement identifies the observable interval, missing source, plausible explanations, and remaining uncertainty.",
+                "output": "The output is a limitation note, not a claim that the event definitely did or did not happen."
+              }
+            ],
+            "quiz": {
+              "id": "q18",
+              "question": "What does a known logging gap justify?",
+              "options": [
+                "Proof the action did not happen",
+                "Proof the action happened",
+                "A statement that the source cannot support a conclusion for that interval",
+                "Discarding the whole case"
+              ],
+              "answer": "A statement that the source cannot support a conclusion for that interval",
+              "explanation": "The missing source creates uncertainty."
+            },
+            "summary": [
+              "Missingness is part of evidence interpretation.",
+              "Good analysts explicitly state observable boundaries."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              },
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Clock-Skew Estimation",
+            "description": "Estimate candidate clock offsets from multiple reference events.",
+            "learningObjectives": [
+              "calculate pairwise offsets",
+              "compare multiple offset estimates",
+              "preserve original timestamps"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "from datetime import datetime\npairs=[\n(\"2026-01-15T10:00:00+00:00\",\"2026-01-15T10:02:00+00:00\"),\n(\"2026-01-15T11:00:00+00:00\",\"2026-01-15T11:01:50+00:00\")]\nfor trusted, observed in pairs:\n    print(datetime.fromisoformat(observed)-datetime.fromisoformat(trusted))"
+              },
+              {
+                "type": "warning",
+                "text": "A single reference pair is insufficient to justify a global correction."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A stable offset should be supported by multiple reliable reference events.",
+                  "Outliers may indicate weak anchors, drift, clock changes, or differing event semantics.",
+                  "Keep any corrected timestamp as a derived field."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p19",
+                "title": "Estimate a candidate offset",
+                "description": "Compare three paired timestamps and determine whether a stable skew is supported.",
+                "steps": [
+                  "Calculate observed minus trusted for each pair.",
+                  "Compare the offsets.",
+                  "Investigate outliers.",
+                  "If justified, report an estimated offset and uncertainty."
+                ],
+                "solution": "from datetime import datetime\npairs=[('2026-01-15T10:00:00+00:00','2026-01-15T10:02:00+00:00'),('2026-01-15T11:00:00+00:00','2026-01-15T11:01:50+00:00'),('2026-01-15T12:00:00+00:00','2026-01-15T12:02:10+00:00')]\noffsets=[datetime.fromisoformat(o)-datetime.fromisoformat(t) for t,o in pairs]\nprint([x.total_seconds() for x in offsets])",
+                "output": "The output exposes the spread of candidate offsets. The analyst decides whether a stable correction is justified."
+              }
+            ],
+            "quiz": {
+              "id": "q19",
+              "question": "Why compare several offset estimates?",
+              "options": [
+                "To create more events",
+                "To test consistency and detect drift/outliers",
+                "To avoid UTC",
+                "Because subtraction is impossible"
+              ],
+              "answer": "To test consistency and detect drift/outliers",
+              "explanation": "Multiple anchors test whether the apparent skew is stable."
+            },
+            "summary": [
+              "Clock correction is an analytical inference.",
+              "Preserve original values after normalization or adjustment."
+            ],
+            "resources": [
+              {
+                "title": "rfc5905",
+                "url": "https://datatracker.ietf.org/doc/html/rfc5905.html"
+              },
+              {
+                "title": "rfc3339",
+                "url": "https://datatracker.ietf.org/doc/html/rfc3339"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Event Sequencing and Causal Reasoning",
+            "description": "Construct an evidence-backed sequence while distinguishing chronological order from causation.",
+            "learningObjectives": [
+              "build a source-linked event sequence",
+              "separate observation from interpretation",
+              "state alternative explanations"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Collect candidate events around the question window.",
+                  "Normalize times while preserving originals.",
+                  "Group by useful context such as host/user/process.",
+                  "Order events with timestamp uncertainty in mind.",
+                  "Identify independent corroboration.",
+                  "Write observations first, then interpretations.",
+                  "List credible alternatives when evidence is ambiguous."
+                ]
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Chronology is not causality.",
+                  "Background processes can generate events unrelated to a preceding user action.",
+                  "The strength of a sequence comes from source diversity and semantic context, not row count."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p20",
+                "title": "Produce an evidence-backed sequence",
+                "description": "Turn a mixed event CSV into a concise six-step sequence.",
+                "steps": [
+                  "Sort by normalized time.",
+                  "Select events that materially change the narrative.",
+                  "Record source and event identifier for each.",
+                  "Write an observation for each event.",
+                  "Add a separate interpretation column.",
+                  "Document one uncertainty or alternative explanation."
+                ],
+                "solution": "The deliverable separates evidence observations from analytical interpretation.",
+                "output": "The result is a reviewable chronology with source identifiers and explicit uncertainty."
+              }
+            ],
+            "quiz": {
+              "id": "q20",
+              "question": "What is the key distinction in a defensible sequence?",
+              "options": [
+                "Chronology equals causality",
+                "Observations are distinct from causal interpretations",
+                "Only the first event matters",
+                "Timestamps should be removed"
+              ],
+              "answer": "Observations are distinct from causal interpretations",
+              "explanation": "A sequence can be chronological without proving causality."
+            },
+            "summary": [
+              "Good timeline analysis is disciplined evidence reasoning.",
+              "Report observations before conclusions."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-1",
+            "title": "Resolve a Cross-Host Time Discrepancy",
+            "level": "Advanced",
+            "description": "Analyze overlapping events from two hosts and determine whether a stable clock offset is supported.",
+            "problemStatement": "One host appears two minutes ahead, but one reference pair differs by five minutes. Evaluate the evidence and write a bounded conclusion.",
+            "objectives": [
+              "calculate pairwise offsets",
+              "identify outliers",
+              "evaluate reference quality",
+              "preserve originals"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "CSV of paired reference events"
+            ],
+            "hint": "Do not discard the outlier without explaining why its semantics or reliability differ.",
+            "solutionCode": "from datetime import datetime\nimport csv\n\ndef parse(v): return datetime.fromisoformat(v.replace(\"Z\",\"+00:00\"))\nwith open(\"paired.csv\", newline=\"\", encoding=\"utf-8\") as f:\n    for row in csv.DictReader(f):\n        print((parse(row[\"observed\"])-parse(row[\"trusted\"])).total_seconds())",
+            "solutionExplanation": "The code calculates each offset. The analyst must decide whether a correction is supported by multiple reliable anchors."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Advanced Analysis, Performance, and Reporting",
+        "description": "Performance, query design, quality control, reproducibility, and reporting.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "Performance and Triage",
+            "description": "Scale analysis using bounded collection, filtering, search, and focused exports.",
+            "learningObjectives": [
+              "choose an appropriate reduction strategy",
+              "preserve reproducibility during triage",
+              "explain performance/evidence tradeoffs"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Large timelines can contain millions of events. Targeted collection, event filtering, indexed search, and time-window triage reduce analysis cost. These are safe only when the reduction is documented and the broader dataset remains available when practical."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Start from the investigative question and time window.",
+                  "Do not manually delete events without recording what was removed and why.",
+                  "Use documented filters rather than undocumented spreadsheet editing for important findings.",
+                  "Retain the unfiltered derived dataset where storage and policy permit."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q21",
+              "question": "What is a defensible performance optimization?",
+              "options": [
+                "Delete events permanently",
+                "Use documented filters and preserve the broader dataset",
+                "Take screenshots",
+                "Alter timestamps"
+              ],
+              "answer": "Use documented filters and preserve the broader dataset",
+              "explanation": "Reproducible reduction lowers workload without silently destroying context."
+            },
+            "summary": [
+              "Performance should not come at the cost of traceability.",
+              "Document every reduction step."
+            ],
+            "resources": [
+              {
+                "title": "collect",
+                "url": "https://plaso.readthedocs.io/en/stable/sources/user/Collection-Filters.html"
+              },
+              {
+                "title": "filters",
+                "url": "https://plaso.readthedocs.io/en/latest/sources/user/Event-filters.html"
+              },
+              {
+                "title": "tsconcepts",
+                "url": "https://github.com/google/timesketch/blob/master/docs/guides/user/basic-concepts.md"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Timeline Searching and Query Design",
+            "description": "Write bounded searches using fields, time ranges, and Boolean conditions.",
+            "learningObjectives": [
+              "construct field-based filters",
+              "combine time and content conditions",
+              "test queries against expected matches and non-matches"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Plaso event filters support Boolean logic, comparisons, regular expressions, and date/time helpers. Timesketch provides search and filtering over its indexed timeline data."
+              },
+              {
+                "type": "code",
+                "text": "data_type contains 'firefox' and message_body contains 'example.com'"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use actual fields exposed by the parser/dataset.",
+                  "Test filters against known-positive and known-negative records.",
+                  "A broad first search can be useful for discovery, followed by a narrower reproducible filter."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p22",
+                "title": "Design and test an event filter",
+                "description": "Create a filter for a specific artifact family and content value.",
+                "steps": [
+                  "Choose a field documented for the dataset.",
+                  "Combine two conditions with AND.",
+                  "Test against known-positive and negative records.",
+                  "Record the final expression and its purpose."
+                ],
+                "solution": "data_type contains 'firefox' and message_body contains 'example.com'",
+                "output": "The filter should select events satisfying both conditions; exact matches depend on the dataset."
+              }
+            ],
+            "quiz": {
+              "id": "q22",
+              "question": "Why test both positive and negative examples?",
+              "options": [
+                "To make the filter longer",
+                "To verify that the filter expresses the intended condition",
+                "To change the image",
+                "To avoid UTC"
+              ],
+              "answer": "To verify that the filter expresses the intended condition",
+              "explanation": "Testing catches silent over-selection and under-selection."
+            },
+            "summary": [
+              "Query design affects evidence selection.",
+              "Version and document important filters."
+            ],
+            "resources": [
+              {
+                "title": "filters",
+                "url": "https://plaso.readthedocs.io/en/latest/sources/user/Event-filters.html"
+              },
+              {
+                "title": "tsconcepts",
+                "url": "https://github.com/google/timesketch/blob/master/docs/guides/user/basic-concepts.md"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Quality Control and Reproducibility",
+            "description": "Create a technical record that allows another analyst to reproduce a timeline result.",
+            "learningObjectives": [
+              "create a reproducibility manifest",
+              "hash derived files",
+              "trace a finding from source to timeline to report"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Evidence identifier and integrity reference.",
+                  "Tool and version information.",
+                  "Source scope and paths.",
+                  "Exact commands and filters.",
+                  "Derived output hashes.",
+                  "Timezone and normalization policy.",
+                  "Known errors and limitations.",
+                  "Important queries and conclusions."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "sha256sum timeline.csv\nsha256sum case.plaso"
+              },
+              {
+                "type": "warning",
+                "text": "A hash verifies the bytes of the named file; it does not prove completeness or correct interpretation."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p23",
+                "title": "Create a reproducibility manifest",
+                "description": "Write a JSON manifest for a timeline export.",
+                "steps": [
+                  "Hash the derived timeline.",
+                  "Record commands and filter files.",
+                  "Record timezone policy.",
+                  "Write JSON.",
+                  "Validate the JSON syntax."
+                ],
+                "solution": "import hashlib, json\ndef sha256(path):\n    h=hashlib.sha256()\n    with open(path,'rb') as f:\n        for b in iter(lambda:f.read(1024*1024),b''): h.update(b)\n    return h.hexdigest()\nmanifest={'timeline':'timeline.csv','sha256':sha256('timeline.csv'),'timezone_policy':'Preserve original; normalize offset-aware values to UTC','commands':['psort.py -o dynamic -w timeline.csv case.plaso']}\nwith open('manifest.json','w') as f: json.dump(manifest,f,indent=2)",
+                "output": "The manifest records integrity and analytical context for the derived timeline."
+              }
+            ],
+            "quiz": {
+              "id": "q23",
+              "question": "What does a SHA-256 hash establish?",
+              "options": [
+                "Semantic correctness",
+                "Byte-level integrity of the hashed file",
+                "Evidence completeness",
+                "Analyst correctness"
+              ],
+              "answer": "Byte-level integrity of the hashed file",
+              "explanation": "The hash lets later users verify whether those file bytes changed."
+            },
+            "summary": [
+              "Reproducibility requires integrity plus provenance and procedure.",
+              "A hash is not a semantic correctness guarantee."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              },
+              {
+                "title": "psort",
+                "url": "https://github.com/log2timeline/plaso/blob/main/docs/sources/user/Using-psort.md"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Reporting Defensible Findings",
+            "description": "Write source-linked findings that distinguish observation, interpretation, confidence, and limitations.",
+            "learningObjectives": [
+              "write observation-focused findings",
+              "link claims to source records",
+              "state uncertainty and limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A strong timeline finding identifies the question, relevant window, observed records, source provenance, interpretation, and limitations. It avoids unsupported claims about intent, identity, or causality."
+              },
+              {
+                "type": "code",
+                "text": "Observation: [timestamp] [source] recorded [event].\nCorrelation: [independent source] recorded [related event] within [window].\nInterpretation: These observations are consistent with [bounded conclusion].\nLimitations: [missing/uncertain evidence]."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Observation answers what the source shows.",
+                  "Interpretation explains what those observations may indicate.",
+                  "Limitations identify uncertainty, gaps, parser coverage, and competing explanations."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p24",
+                "title": "Write one defensible finding",
+                "description": "Select three related events and write a concise source-linked finding.",
+                "steps": [
+                  "Record original and normalized timestamps.",
+                  "Identify source and event IDs.",
+                  "Explain the correlation window.",
+                  "Separate observations from interpretation.",
+                  "List at least one limitation."
+                ],
+                "solution": "A complete finding has Observation, Correlation, Interpretation, and Limitations sections.",
+                "output": "The finding is reviewable because claims are tied to concrete event records."
+              }
+            ],
+            "quiz": {
+              "id": "q24",
+              "question": "Which statement is most defensible?",
+              "options": [
+                "The user definitely attacked the system",
+                "The timeline proves intent",
+                "The records are consistent with X, subject to stated limitations",
+                "No explanation is needed"
+              ],
+              "answer": "The records are consistent with X, subject to stated limitations",
+              "explanation": "This language separates evidence from inference and communicates uncertainty."
+            },
+            "summary": [
+              "Reporting is part of technical analysis.",
+              "Every important conclusion should be traceable to evidence."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              },
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-1",
+            "title": "Create a Timeline QA Package",
+            "level": "Advanced",
+            "description": "Validate a timeline CSV, report malformed timestamps, check ordering, and create a SHA-256 manifest.",
+            "problemStatement": "Build a small Python QA utility for a normalized timeline.",
+            "objectives": [
+              "validate required columns",
+              "parse timestamps",
+              "report malformed rows",
+              "check chronological order",
+              "hash the file"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Standard library"
+            ],
+            "hint": "Report malformed rows rather than silently dropping them.",
+            "solutionCode": "import csv, json, hashlib\nfrom datetime import datetime\nrequired={'timestamp','source','message'}\nerrors=[]; parsed=[]\nwith open('timeline.csv',newline='',encoding='utf-8') as f:\n    r=csv.DictReader(f)\n    missing=required-set(r.fieldnames or [])\n    if missing: errors.append({'type':'missing_columns','columns':sorted(missing)})\n    for n,row in enumerate(r,start=2):\n        try: parsed.append((n,datetime.fromisoformat(row['timestamp'].replace('Z','+00:00'))))\n        except Exception as e: errors.append({'type':'bad_timestamp','row':n,'error':str(e)})\nordered=all(parsed[i][1] <= parsed[i+1][1] for i in range(len(parsed)-1))\nh=hashlib.sha256(open('timeline.csv','rb').read()).hexdigest()\njson.dump({'rows':len(parsed),'ordered':ordered,'errors':errors,'sha256':h},open('qa.json','w'),indent=2)",
+            "solutionExplanation": "The QA package separates structural/data-quality errors from analytical findings and preserves a hash of the input."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Advanced Artifact Correlation and Anomaly Analysis",
+        "description": "Registry, browser/network correlation, anomalies, and derived enrichment.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Registry Artifacts and System Context",
+            "description": "Use registry-derived events as contextual evidence without overclaiming.",
+            "learningObjectives": [
+              "explain registry last-write semantics",
+              "distinguish user and system hive context",
+              "correlate registry observations with other sources"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Registry artifacts can provide information about users, configuration, applications, devices, and system state. Their usefulness depends on the specific key, hive, parser, and timestamp semantics."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A registry key last-write time is not direct proof of a human action.",
+                  "User hives and system hives answer different questions.",
+                  "Correlate registry observations with filesystem and event-log records.",
+                  "Record hive/key paths and parser provenance for important events."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q25",
+              "question": "What does a registry key last-write time most safely establish?",
+              "options": [
+                "The exact human actor",
+                "A registry state-change timestamp subject to source semantics",
+                "Malware caused it",
+                "A file was executed"
+              ],
+              "answer": "A registry state-change timestamp subject to source semantics",
+              "explanation": "It is evidence of registry state change, not direct attribution."
+            },
+            "summary": [
+              "Registry artifacts provide system context.",
+              "Metadata timestamps should not be translated into unsupported human actions."
+            ],
+            "resources": [
+              {
+                "title": "plaso",
+                "url": "https://plaso.readthedocs.io/en/latest/"
+              },
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Browser and Network Correlation",
+            "description": "Correlate browser records with DNS, proxy, firewall, and application evidence while respecting visibility limits.",
+            "learningObjectives": [
+              "identify complementary browser/network evidence",
+              "correlate by hostname and time",
+              "explain why a browser event may lack a matching network record"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Browser artifacts and network logs observe different layers. Browser history may reflect stored application state, while DNS/proxy/firewall logs depend on network architecture, caching, retention, and visibility."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Background requests and caching can produce activity without direct user interaction.",
+                  "A browser URL may not generate a visible DNS event in the examined resolver logs.",
+                  "Use host, user, process, URL, hostname, and source identifiers when available.",
+                  "Absence in one network source is a visibility limitation, not proof of no traffic."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p26",
+                "title": "Correlate browser and DNS records",
+                "description": "Build a correlation table from browser and DNS CSV files.",
+                "steps": [
+                  "Normalize both datasets to UTC.",
+                  "Match hostname plus a justified time window.",
+                  "Keep both source identifiers.",
+                  "Classify browser-only, DNS-only, and matched observations.",
+                  "Write one limitation."
+                ],
+                "solution": "Normalize timestamps, then correlate by hostname and time; keep unmatched records rather than discarding them.",
+                "output": "The table distinguishes matched observations from one-source-only observations."
+              }
+            ],
+            "quiz": {
+              "id": "q26",
+              "question": "Why might a browser event have no DNS record?",
+              "options": [
+                "DNS is irrelevant",
+                "Caching, resolver visibility, retention, or architecture",
+                "The URL must be fake",
+                "Browsers do not use DNS"
+              ],
+              "answer": "Caching, resolver visibility, retention, or architecture",
+              "explanation": "Network visibility depends on how the environment resolves and logs DNS."
+            },
+            "summary": [
+              "Browser and network evidence complement each other.",
+              "Interpret missing network records in the context of architecture and retention."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              },
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Timeline Anomalies and Anti-Forensics",
+            "description": "Investigate inconsistent timestamps without treating anomalies as proof of manipulation.",
+            "learningObjectives": [
+              "identify timestamp anomalies",
+              "compare independent sources",
+              "form and test competing explanations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Anomalies can include impossible ordering, sudden clock jumps, inconsistent offsets, or conflicts between sources. They may result from clock changes, parser interpretation, copying, application behavior, or deliberate manipulation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Compare independent time sources before asserting manipulation.",
+                  "Preserve original timestamp representations.",
+                  "Look for repeated patterns rather than one suspicious value.",
+                  "State alternative benign explanations when evidence does not discriminate."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p27",
+                "title": "Investigate a timestamp anomaly",
+                "description": "Determine whether a controlled anomaly is better explained by timezone conversion, clock skew, parser behavior, or source inconsistency.",
+                "steps": [
+                  "List events around the anomaly.",
+                  "Normalize without overwriting originals.",
+                  "Compare at least two independent sources.",
+                  "Check parser/source semantics.",
+                  "Write competing hypotheses and supporting/contradicting evidence."
+                ],
+                "solution": "The correct result may be unresolved. The exercise evaluates the quality of evidence reasoning, not forced attribution.",
+                "output": "Deliver a hypothesis table with evidence, contradiction, and confidence."
+              }
+            ],
+            "quiz": {
+              "id": "q27",
+              "question": "What does an anomalous timestamp prove?",
+              "options": [
+                "Anti-forensics",
+                "Nothing by itself; it is an indicator for investigation",
+                "Malware",
+                "Clock failure"
+              ],
+              "answer": "Nothing by itself; it is an indicator for investigation",
+              "explanation": "Multiple explanations can produce the same anomaly."
+            },
+            "summary": [
+              "Anomaly analysis requires corroboration.",
+              "Preserve originals and test competing explanations."
+            ],
+            "resources": [
+              {
+                "title": "nist86",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Derived Enrichment and Plaso Analysis Plugins",
+            "description": "Use analysis plugins and tags as derived analytical aids.",
+            "learningObjectives": [
+              "explain derived event tagging",
+              "run a documented sessionization workflow",
+              "distinguish enrichment from original evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Plaso analysis plugins can enrich events with derived information. Its documentation includes sessionization and external hash/intelligence enrichment examples. Derived tags are useful for triage but should remain distinct from source records."
+              },
+              {
+                "type": "code",
+                "text": "log2timeline.py --storage-file timeline.plaso image.raw\npsort.py --analysis sessionize -o null timeline.plaso\npsort.py -o dynamic --fields datetime,timestamp_desc,source,source_long,message,parser,tag -w timeline.csv timeline.plaso"
+              },
+              {
+                "type": "warning",
+                "text": "External enrichment may have privacy, legal, and network-access implications. Use it only with appropriate authorization."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p28",
+                "title": "Sessionize a lab timeline",
+                "description": "Apply Plaso's documented sessionize analysis plugin to a permitted lab timeline.",
+                "steps": [
+                  "Create or use a Plaso storage file.",
+                  "Run the sessionize analysis.",
+                  "Export tag fields.",
+                  "Inspect how events are grouped.",
+                  "Record the commands and outputs."
+                ],
+                "solution": "log2timeline.py --storage-file timeline.plaso image.raw\npsort.py --analysis sessionize -o null timeline.plaso\npsort.py -o dynamic --fields datetime,timestamp_desc,source,source_long,message,parser,tag -w timeline.csv timeline.plaso",
+                "output": "The exported timeline contains derived session tags. Exact grouping depends on the dataset and plugin behavior."
+              }
+            ],
+            "quiz": {
+              "id": "q28",
+              "question": "What is a Plaso analysis tag?",
+              "options": [
+                "Original evidence",
+                "Derived analytical information",
+                "A filesystem timestamp",
+                "A hash"
+              ],
+              "answer": "Derived analytical information",
+              "explanation": "Analysis plugins add derived context to events."
+            },
+            "summary": [
+              "Enrichment helps triage but does not replace source evidence.",
+              "External lookups must respect evidence-handling policy."
+            ],
+            "resources": [
+              {
+                "title": "plaso",
+                "url": "https://plaso.readthedocs.io/en/latest/"
+              },
+              {
+                "title": "psort",
+                "url": "https://github.com/log2timeline/plaso/blob/main/docs/sources/user/Using-psort.md"
+              },
+              {
+                "title": "filters",
+                "url": "https://plaso.readthedocs.io/en/latest/sources/user/Event-filters.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-1",
+            "title": "Investigate a Multi-Source Timeline Anomaly",
+            "level": "Advanced",
+            "description": "Analyze filesystem, event-log, and network timestamps that disagree and determine which explanation is best supported.",
+            "problemStatement": "Compare original and normalized values, test candidate explanations, and write a source-linked conclusion.",
+            "objectives": [
+              "normalize all sources",
+              "compare original representations",
+              "test timezone/skew/parser hypotheses",
+              "state unresolved uncertainty"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Three controlled CSV datasets"
+            ],
+            "hint": "Preserve every original timestamp before deriving corrected values.",
+            "solutionCode": "import csv\nfrom datetime import datetime\ndef parse(v):\n    d=datetime.fromisoformat(v.replace('Z','+00:00'))\n    if d.tzinfo is None: raise ValueError('naive timestamp')\n    return d.astimezone(__import__('datetime').timezone.utc)\nfor fn in ('filesystem.csv','eventlog.csv','network.csv'):\n    with open(fn,newline='',encoding='utf-8') as f:\n        for row in csv.DictReader(f):\n            print(fn,row['timestamp'],parse(row['timestamp']).isoformat())",
+            "solutionExplanation": "The utility normalizes each source independently. The analyst then tests competing explanations instead of blindly correcting one source."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Final Real-World Project: Forensic Timeline Correlation Workbench",
+        "description": "Final integrated practical assessment; no separate module tasks.",
+        "lessons": [],
+        "tasks": [],
+        "project": {
+          "name": "Forensic Timeline Correlation Workbench",
+          "description": "Build a small, auditable Python CLI for authorized forensic lab datasets. It validates a normalized timeline CSV, parses offset-aware timestamps, reports data-quality errors, summarizes hourly activity density, performs bounded correlation around an analyst-selected anchor, and emits a JSON report containing an input hash and analytical metadata.",
+          "conceptsCovered": [
+            "timestamp normalization",
+            "UTC and offsets",
+            "schema validation",
+            "provenance",
+            "event density",
+            "temporal correlation",
+            "data-quality reporting",
+            "SHA-256 integrity",
+            "reproducibility",
+            "evidence versus inference"
+          ],
+          "steps": [
+            "Prepare a timeline CSV with timestamp, source, event_type, and message fields; preserve original source identifiers in additional columns.",
+            "Validate the input schema and reject timestamps without an explicit UTC offset.",
+            "Run the workbench and inspect parse errors before interpreting results.",
+            "Review the time range and hourly density to select candidate windows.",
+            "Use --target and --window-minutes to inspect events around a specific evidence-backed anchor.",
+            "Compare correlated events by source and event type; do not infer causality from proximity alone.",
+            "Retain the generated JSON report and its input SHA-256 as derived analytical artifacts.",
+            "Write a final finding that cites underlying source records and states clock, logging, parser, or collection limitations."
+          ],
+          "code": {
+            "README.md": "# Forensic Timeline Correlation Workbench\n\nAuthorized-lab timeline analysis utility. Requires Python 3.11+ and only the standard library.\n",
+            "timeline_workbench.py": "#!/usr/bin/env python3\nimport argparse\nimport csv\nimport hashlib\nimport json\nfrom collections import Counter\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nREQUIRED = {\"timestamp\", \"source\", \"event_type\", \"message\"}\n\ndef parse_timestamp(value):\n    dt = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n    if dt.tzinfo is None:\n        raise ValueError(\"timestamp has no UTC offset\")\n    return dt.astimezone(timezone.utc)\n\ndef sha256_file(path):\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as handle:\n        for block in iter(lambda: handle.read(1024 * 1024), b\"\"):\n            digest.update(block)\n    return digest.hexdigest()\n\ndef load_events(path):\n    events, errors = [], []\n    with path.open(newline=\"\", encoding=\"utf-8\") as handle:\n        reader = csv.DictReader(handle)\n        missing = REQUIRED - set(reader.fieldnames or [])\n        if missing:\n            raise ValueError(f\"Missing required columns: {sorted(missing)}\")\n        for row_number, row in enumerate(reader, start=2):\n            try:\n                row[\"_dt\"] = parse_timestamp(row[\"timestamp\"])\n                events.append(row)\n            except (TypeError, ValueError) as exc:\n                errors.append({\"row\": row_number, \"error\": str(exc),\n                                \"timestamp\": row.get(\"timestamp\", \"\")})\n    events.sort(key=lambda row: row[\"_dt\"])\n    return events, errors\n\ndef hourly_density(events):\n    counts = Counter()\n    for event in events:\n        hour = event[\"_dt\"].replace(minute=0, second=0, microsecond=0)\n        counts[hour.isoformat().replace(\"+00:00\", \"Z\")] += 1\n    return dict(sorted(counts.items()))\n\ndef correlate(events, target, window_seconds):\n    matches = []\n    for event in events:\n        delta = abs((event[\"_dt\"] - target).total_seconds())\n        if delta <= window_seconds:\n            matches.append({\n                \"timestamp\": event[\"timestamp\"],\n                \"source\": event[\"source\"],\n                \"event_type\": event[\"event_type\"],\n                \"message\": event[\"message\"],\n                \"delta_seconds\": delta\n            })\n    return matches\n\ndef main():\n    parser = argparse.ArgumentParser(\n        description=\"Auditable forensic timeline analysis workbench\")\n    parser.add_argument(\"timeline\", type=Path)\n    parser.add_argument(\"--output\", type=Path, default=Path(\"timeline_report.json\"))\n    parser.add_argument(\"--target\")\n    parser.add_argument(\"--window-minutes\", type=int, default=5)\n    args = parser.parse_args()\n\n    events, errors = load_events(args.timeline)\n    report = {\n        \"input\": str(args.timeline),\n        \"input_sha256\": sha256_file(args.timeline),\n        \"event_count\": len(events),\n        \"parse_errors\": errors,\n        \"time_range\": {\n            \"start\": events[0][\"_dt\"].isoformat() if events else None,\n            \"end\": events[-1][\"_dt\"].isoformat() if events else None\n        },\n        \"hourly_density\": hourly_density(events)\n    }\n\n    if args.target:\n        target = parse_timestamp(args.target)\n        report[\"correlation\"] = {\n            \"target_utc\": target.isoformat(),\n            \"window_seconds\": args.window_minutes * 60,\n            \"matches\": correlate(events, target, args.window_minutes * 60)\n        }\n\n    args.output.write_text(json.dumps(report, indent=2, sort_keys=True), encoding=\"utf-8\")\n    print(json.dumps(report, indent=2, sort_keys=True))\n\nif __name__ == \"__main__\":\n    main()\n",
+            "sample_timeline.csv": "timestamp,source,event_type,message\n2026-01-15T10:00:00Z,windows-security,logon,Interactive logon observed\n2026-01-15T10:02:00Z,filesystem,mtime,Report.docx modified\n2026-01-15T10:03:30Z,browser,history,Visited https://example.invalid/report\n2026-01-15T10:04:00Z,network,dns,Query for example.invalid\n2026-01-15T10:10:00Z,windows-system,service,Service state changed\n"
+          },
+          "explanation": "The loader requires timezone-aware timestamps, preserves the original string, and normalizes each event to UTC. The density function identifies activity windows without declaring them malicious. The correlation function returns observations inside an explicitly stated window around a chosen anchor. The report includes the input SHA-256, parse errors, event count, time range, density, and optional correlation results. It intentionally does not infer causality, identify a human actor, or silently correct clock skew. Those conclusions require source-specific forensic reasoning."
+        }
+      }
+    ]
+  }
+}

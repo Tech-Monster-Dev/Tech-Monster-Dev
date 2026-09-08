@@ -149,6 +149,7 @@ export default function useApprovedModules(
                             getModuleTasks(module);
 
                         if (!tasks.length) {
+                            fullyApprovedModules.add(moduleId);
                             return;
                         }
 

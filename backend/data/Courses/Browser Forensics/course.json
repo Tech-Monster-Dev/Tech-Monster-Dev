@@ -1,0 +1,1283 @@
+{
+  "course": {
+    "id": "browser-forensics",
+    "title": "Browser Forensics",
+    "slug": "browser-forensics",
+    "description": "A browser-focused forensic course covering evidence scope, Chromium and Firefox profiles, history and downloads, cookies and session state, cache, bookmarks, Local Storage, IndexedDB, service workers, extensions, SQLite/WAL acquisition consistency, timestamp normalization, browser/filesystem correlation, online-content preservation, parser validation, privacy, reporting, and a complete synthetic-data final project. It is designed for students with basic operating-system, filesystem, command-line, web, and SQLite knowledge who want disciplined browser-forensics skills without using real credentials or private browsing data.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 64,
+    "prerequisites": [
+      "Basic Windows or Linux filesystem concepts",
+      "Basic command-line usage",
+      "Basic SQL/SQLite knowledge",
+      "Basic web and networking concepts",
+      "Controlled laboratory environment"
+    ],
+    "learningOutcomes": [
+      "Define a defensible browser-forensics collection scope.",
+      "Identify and contextualize Chromium and Firefox profile artifacts.",
+      "Analyze synthetic history, downloads, cookies, bookmarks, cache, Local Storage, IndexedDB, service-worker, and extension evidence.",
+      "Preserve SQLite database families and interpret WAL/journal implications.",
+      "Analyze browser databases read-only and preserve integrity metadata.",
+      "Normalize browser timestamps while retaining source values and conversion context.",
+      "Correlate browser, filesystem, and other evidence without overclaiming attribution.",
+      "Plan live-browser and online-content preservation.",
+      "Validate parser functions against known synthetic artifacts.",
+      "Write evidence-grounded browser-forensic findings and closure records.",
+      "Complete the final Browser Evidence Acquisition, Correlation & Reporting Workbench."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Browser Forensics Foundations",
+        "description": "Evidence model, profile boundaries, provenance, privacy, and collection scope.",
+        "lessons": [
+          {
+            "id": "l01-01",
+            "title": "Browser Forensics Scope and Evidence Types",
+            "description": "Understand the browser evidence surface and its limits.",
+            "learningObjectives": [
+              "identify major browser artifact classes",
+              "distinguish application state from direct user action",
+              "map investigative questions to browser and corroborating evidence"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "text": "Evidence classes",
+                "level": 2
+              },
+              {
+                "type": "paragraph",
+                "text": "Browser evidence can include history, downloads, cookies, cache, bookmarks, form/search data, Local Storage, IndexedDB, service-worker data, extensions, and profile metadata. Availability varies by browser, version, platform, settings, synchronization, and retention."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "No single browser artifact is a complete record of user behavior.",
+                  "Browser artifacts are application-generated records whose semantics must be understood before interpretation.",
+                  "Filesystem, operating-system, network, and provider records can corroborate browser findings."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not infer intent, authorship, or complete page consumption from one browser record."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q01-01",
+              "question": "Which statement best describes browser history?",
+              "options": [
+                "It is one artifact class among several browser evidence sources.",
+                "It proves human intent.",
+                "It is a complete audit trail.",
+                "It identifies the person at the keyboard."
+              ],
+              "answer": "It is one artifact class among several browser evidence sources.",
+              "explanation": "History is useful evidence but does not by itself prove intent or complete viewing."
+            },
+            "summary": [
+              "Browser forensics is application- and profile-dependent.",
+              "Corroboration is central to defensible interpretation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.swgde.org/documents/published-complete-listing/21-f-001-best-practices-for-acquiring-online-content/"
+            ]
+          },
+          {
+            "id": "l01-02",
+            "title": "Profiles, Scope, and Privacy",
+            "description": "Define browser profile boundaries and minimize collection of unrelated data.",
+            "learningObjectives": [
+              "identify a browser profile and its context",
+              "define a narrow forensic collection scope",
+              "explain why cookies and saved data require strict protection"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A browser profile groups persistent user data and configuration. A forensic examiner should record browser/version, operating system, profile, acquisition time, and collection method."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Collection scope should follow authorization and investigative questions.",
+                  "Browser profiles may contain passwords, cookies, history, personal data, and application state.",
+                  "Derived reports should minimize unnecessary personal content."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not publish or replay live authentication/session material."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q01-02",
+              "question": "Why should browser collection be narrowly scoped?",
+              "options": [
+                "Browser profiles can contain extensive unrelated personal and authentication data.",
+                "It proves human intent.",
+                "It is a complete audit trail.",
+                "It identifies the person at the keyboard."
+              ],
+              "answer": "Browser profiles can contain extensive unrelated personal and authentication data.",
+              "explanation": "Narrow scope reduces unnecessary exposure and preserves relevance."
+            },
+            "summary": [
+              "Profile identification prevents mixing data from different browser users or profiles.",
+              "Privacy is part of forensic quality."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md",
+              "https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data"
+            ]
+          },
+          {
+            "id": "l01-03",
+            "title": "Evidence Integrity and Provenance",
+            "description": "Build an evidence intake record that links browser artifacts to acquisition context.",
+            "learningObjectives": [
+              "record evidence identifiers and source paths",
+              "record acquisition and hash information",
+              "differentiate original evidence from derived outputs"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "text": "Minimum intake fields",
+                "level": 2
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence ID and description",
+                  "Browser, version, OS, and profile",
+                  "Acquisition method/date/time/timezone",
+                  "File list and SHA-256",
+                  "Working-copy location",
+                  "Tool/version and relevant limitations"
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Evidence ID → Source → Acquisition → Hash → Working copy → Analysis → Report"
+              },
+              {
+                "type": "warning",
+                "text": "A matching hash supports byte integrity; it does not prove authorship or intent."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p01-03",
+                "title": "Hash a Synthetic Browser Profile",
+                "description": "Demonstrate integrity verification with synthetic browser files.",
+                "steps": [
+                  "Create synthetic History and Cookies files.",
+                  "Calculate SHA-256 values.",
+                  "Copy the files to a working directory.",
+                  "Calculate the working-copy values.",
+                  "Modify one working copy and calculate its new digest."
+                ],
+                "solution": "```python\nfrom pathlib import Path\nimport hashlib, shutil\n\ndef sha256(path):\n    h = hashlib.sha256()\n    with open(path, \"rb\") as f:\n        for chunk in iter(lambda: f.read(1024 * 1024), b\"\"):\n            h.update(chunk)\n    return h.hexdigest()\n\nsource = Path(\"profile\")\nworking = Path(\"working\")\nworking.mkdir(exist_ok=True)\nfor p in source.iterdir():\n    if p.is_file():\n        shutil.copy2(p, working / p.name)\n        print(p.name, sha256(p), sha256(working / p.name))\n```",
+                "output": "Untouched source and working-copy digests should match; modifying the working copy changes its digest."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Provenance connects derived findings back to source evidence.",
+              "Integrity and provenance are complementary controls."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://docs.python.org/3/library/hashlib.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t01-01",
+            "title": "Create a Browser Evidence Question Matrix",
+            "level": "Easy",
+            "description": "Map browser questions to artifacts and corroboration.",
+            "problemStatement": "A case asks whether a workstation visited a service, downloaded a file, and retained related site state. Build a matrix mapping five questions to browser and non-browser evidence.",
+            "objectives": [
+              "define five questions",
+              "map each to two sources",
+              "state one limitation"
+            ],
+            "requirements": [
+              "Browser concepts",
+              "Markdown or spreadsheet"
+            ],
+            "hint": "Start with history, downloads, cookies, filesystem, and service/network evidence.",
+            "solutionCode": "Example mappings should distinguish navigation, file acquisition, session state, timing, and attribution.",
+            "solutionExplanation": "The task demonstrates question-driven collection planning."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Chromium and Chrome Family Artifacts",
+        "description": "Profile structure, history/download data, cookies, cache, bookmarks, and Local Storage.",
+        "lessons": [
+          {
+            "id": "l02-01",
+            "title": "Chromium User Data and Profiles",
+            "description": "Understand Chromium user-data directory and profile concepts.",
+            "learningObjectives": [
+              "identify user-data/profile boundaries",
+              "record browser/profile version context",
+              "explain why profile selection matters"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Chromium maintains user data in a user-data directory containing one or more profiles. The path depends on operating system and installation."
+              },
+              {
+                "type": "warning",
+                "text": "Never assume the first or default profile is the relevant user profile."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02-01",
+              "question": "Why record the exact Chromium profile?",
+              "options": [
+                "Different profiles can contain different browser state and users.",
+                "It proves human intent.",
+                "It is a complete audit trail.",
+                "It identifies the person at the keyboard."
+              ],
+              "answer": "Different profiles can contain different browser state and users.",
+              "explanation": "Profile-specific analysis prevents cross-user contamination."
+            },
+            "summary": [
+              "Profile paths are contextual metadata."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md"
+            ]
+          },
+          {
+            "id": "l02-02",
+            "title": "Chromium History and Downloads",
+            "description": "Analyze synthetic history/download records and correlate them with files.",
+            "learningObjectives": [
+              "inspect SQLite schema",
+              "query history/download records",
+              "correlate download metadata with filesystem evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Chromium browser databases are SQLite-based. Exact schemas can vary by version, so schema inspection should precede hard-coded queries."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A download record and the downloaded file are separate evidence objects.",
+                  "Corroborate target path/name, timing, and content hash when available."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A URL visit/download record does not automatically prove a human manually initiated the action."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p02-02",
+                "title": "Query a Synthetic Chromium Database",
+                "description": "Inspect a synthetic browser database read-only.",
+                "steps": [
+                  "Create synthetic `urls` and `downloads` tables.",
+                  "Open the DB with a read-only connection.",
+                  "Inspect the schema.",
+                  "Query navigation records.",
+                  "Query download records.",
+                  "Export selected rows to CSV."
+                ],
+                "solution": "```python\nimport sqlite3, csv\ncon = sqlite3.connect(\"file:History?mode=ro\", uri=True)\nprint(con.execute(\"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name\").fetchall())\nrows = con.execute(\"SELECT url, title, visit_time FROM urls ORDER BY visit_time DESC\").fetchall()\nwith open(\"history_export.csv\", \"w\", newline=\"\", encoding=\"utf-8\") as f:\n    w = csv.writer(f)\n    w.writerow([\"url\", \"title\", \"visit_time\"])\n    w.writerows(rows)\ncon.close()\n```",
+                "output": "The output contains schema information and synthetic rows without changing the source DB."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Download findings become stronger when browser and filesystem observations agree."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md",
+              "https://www.sqlite.org/fileformat.html"
+            ]
+          },
+          {
+            "id": "l02-03",
+            "title": "Chromium Cookies and Session State",
+            "description": "Interpret cookies and protect credential-like browser state.",
+            "learningObjectives": [
+              "identify cookie-store evidence",
+              "explain session-sensitive data",
+              "apply privacy controls"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Browser cookies can preserve site preferences and session state. Some may be usable as authentication material, making them sensitive forensic data."
+              },
+              {
+                "type": "warning",
+                "text": "Do not replay, publish, or test live cookies. Use synthetic records in training."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02-03",
+              "question": "Why are cookies especially sensitive?",
+              "options": [
+                "Some cookies can contain authentication or session-related material.",
+                "It proves human intent.",
+                "It is a complete audit trail.",
+                "It identifies the person at the keyboard."
+              ],
+              "answer": "Some cookies can contain authentication or session-related material.",
+              "explanation": "Session-related state can function like a credential."
+            },
+            "summary": [
+              "Cookies require both forensic and security controls."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md"
+            ]
+          },
+          {
+            "id": "l02-04",
+            "title": "Chromium Cache, Bookmarks, and Local Storage",
+            "description": "Use secondary artifacts as contextual evidence.",
+            "learningObjectives": [
+              "differentiate cache and saved state",
+              "interpret bookmarks conservatively",
+              "recognize Local Storage as application state"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Cache may be evicted, replaced, or incomplete.",
+                  "Bookmarks represent saved browser state, not necessarily recent use.",
+                  "Local Storage can preserve origin-associated application data."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not claim complete page content or recent viewing from a bookmark/cache entry alone."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02-04",
+              "question": "What does a bookmark establish?",
+              "options": [
+                "That the browser profile recorded a saved bookmark state.",
+                "It proves human intent.",
+                "It is a complete audit trail.",
+                "It identifies the person at the keyboard."
+              ],
+              "answer": "That the browser profile recorded a saved bookmark state.",
+              "explanation": "A bookmark alone does not establish recent viewing or authorship."
+            },
+            "summary": [
+              "Secondary artifacts are valuable context, but their lifecycle and semantics differ."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t02-01",
+            "title": "Correlate a Chromium Download",
+            "level": "Intermediate",
+            "description": "Correlate synthetic browser and filesystem evidence.",
+            "problemStatement": "Determine whether a browser download record is consistent with a file found on disk.",
+            "objectives": [
+              "match stable fields",
+              "compare time/path",
+              "state attribution limits"
+            ],
+            "requirements": [
+              "Synthetic SQLite",
+              "Synthetic filesystem records"
+            ],
+            "hint": "Use more than the URL: compare target metadata and content hash where available.",
+            "solutionCode": "The evidence should support a browser-recorded download plus a matching file, while leaving human intent unresolved.",
+            "solutionExplanation": "The task tests multi-source correlation."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Firefox Artifacts",
+        "description": "Firefox profiles, Places, cookies, form history, and session data.",
+        "lessons": [
+          {
+            "id": "l03-01",
+            "title": "Firefox Profiles and Core Files",
+            "description": "Identify important Firefox profile files.",
+            "learningObjectives": [
+              "locate profile context",
+              "identify Places and cookie stores",
+              "distinguish stored passwords from ordinary browser evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Mozilla documents profile directories as the location for browser data such as bookmarks, downloads, browsing history, form history, cookies, session data, extensions, and preferences."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "`places.sqlite` contains bookmarks and browsing history/download-related data.",
+                  "`cookies.sqlite` contains cookie data.",
+                  "`formhistory.sqlite` stores search/form autocomplete data.",
+                  "`sessionstore.jsonlz4` stores current tab/window session state."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Password files such as `key4.db` and `logins.json` can contain credential material; do not expose them in training outputs."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Firefox evidence is organized by profile and artifact family."
+            ],
+            "resources": [
+              "https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data"
+            ]
+          },
+          {
+            "id": "l03-02",
+            "title": "Firefox Places Database",
+            "description": "Analyze synthetic Places data using schema-aware queries.",
+            "learningObjectives": [
+              "inspect Places schema",
+              "query history/bookmark records",
+              "record version/schema assumptions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Firefox Places stores bookmarks and browsing history in a SQLite-backed database. Mozilla current profile documentation identifies `places.sqlite` as a key source."
+              },
+              {
+                "type": "warning",
+                "text": "Schemas can evolve; report the browser version and query assumptions."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p03-02",
+                "title": "Inspect a Firefox Places-like Database",
+                "description": "Query synthetic Places data without modifying it.",
+                "steps": [
+                  "Open the database with `mode=ro`.",
+                  "List tables/indices.",
+                  "Inspect columns.",
+                  "Query synthetic URLs.",
+                  "Query synthetic bookmarks.",
+                  "Record the schema and source values."
+                ],
+                "solution": "```python\nimport sqlite3\ncon = sqlite3.connect(\"file:places.sqlite?mode=ro\", uri=True)\nprint(con.execute(\"SELECT name, type FROM sqlite_master WHERE type IN ('table','index') ORDER BY type,name\").fetchall())\nfor row in con.execute(\"SELECT url, title FROM moz_places ORDER BY id DESC LIMIT 20\"):\n    print(row)\ncon.close()\n```",
+                "output": "Exact output depends on the synthetic schema; the exercise focuses on read-only, schema-aware analysis."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Schema-first analysis reduces false interpretations."
+            ],
+            "resources": [
+              "https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data",
+              "https://www.sqlite.org/fileformat.html"
+            ]
+          },
+          {
+            "id": "l03-03",
+            "title": "Firefox Cookies, Form History, and Session Data",
+            "description": "Interpret Firefox stored user-state artifacts while protecting sensitive content.",
+            "learningObjectives": [
+              "identify cookie/form/session sources",
+              "differentiate stored state from action",
+              "apply data minimization"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Cookie data can include site and login state.",
+                  "Form history can preserve searches or entered form values.",
+                  "Session data can preserve currently open tabs/windows at the time it was written."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not reproduce private searches, form values, or credentials unnecessarily in a report."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Firefox artifacts answer different questions and should not be flattened into one event type."
+            ],
+            "resources": [
+              "https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t03-01",
+            "title": "Create a Firefox Artifact Note",
+            "level": "Intermediate",
+            "description": "Produce a source-linked note for synthetic Firefox artifacts.",
+            "problemStatement": "Document the profile/version, source files, schema/fields used, findings, and three limitations.",
+            "objectives": [
+              "document source paths",
+              "cite fields/tables",
+              "state limitations"
+            ],
+            "requirements": [
+              "Synthetic Firefox profile",
+              "Text editor"
+            ],
+            "hint": "Keep original source values and distinguish storage state from user action.",
+            "solutionCode": "A correct note identifies `places.sqlite`, `cookies.sqlite`, and relevant session/form artifacts with explicit limitations.",
+            "solutionExplanation": "The task tests artifact-aware reporting."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "SQLite, WAL, and Acquisition Consistency",
+        "description": "Read-only analysis, browser database families, WAL, journals, and live acquisition context.",
+        "lessons": [
+          {
+            "id": "l04-01",
+            "title": "SQLite Main Database, Journal, and WAL",
+            "description": "Understand SQLite file relationships relevant to browser acquisition.",
+            "learningObjectives": [
+              "identify main DB, journal, WAL, and SHM files",
+              "explain why auxiliary files matter",
+              "preserve the database family together when relevant"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SQLite documents the main database format and describes rollback journals and WAL mode. In WAL mode, the on-disk state can involve a main DB, `-wal`, and `-shm` files."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The WAL can contain committed transactions not yet checkpointed into the main database.",
+                  "Separating a DB from its WAL can lose relevant state or produce an inconsistent view.",
+                  "The acquisition state and whether the browser was running should be documented."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q04-01",
+              "question": "Why can an SQLite WAL matter to browser forensics?",
+              "options": [
+                "The WAL can contain committed transactions not yet checkpointed into the main database.",
+                "It proves human intent.",
+                "It is a complete audit trail.",
+                "It identifies the person at the keyboard."
+              ],
+              "answer": "The WAL can contain committed transactions not yet checkpointed into the main database.",
+              "explanation": "The WAL is part of the database state while WAL mode is active."
+            },
+            "summary": [
+              "SQLite acquisition is a consistency problem as well as a querying problem."
+            ],
+            "resources": [
+              "https://www.sqlite.org/fileformat.html",
+              "https://www.sqlite.org/wal.html"
+            ]
+          },
+          {
+            "id": "l04-02",
+            "title": "Read-Only SQLite Analysis",
+            "description": "Use read-only SQLite access and parameterized queries.",
+            "learningObjectives": [
+              "open databases read-only",
+              "inspect schema before querying",
+              "use parameterized values",
+              "verify the file hash remains unchanged"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "sqlite3.connect(\"file:History?mode=ro\", uri=True)"
+              },
+              {
+                "type": "paragraph",
+                "text": "Python sqlite3 supports URI filenames, allowing a forensic working copy to be opened in read-only mode. Parameterized queries separate SQL logic from values."
+              },
+              {
+                "type": "warning",
+                "text": "Read-only querying does not replace acquisition/preservation controls."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04-02",
+                "title": "Hash, Query, and Re-hash a Browser DB",
+                "description": "Verify that read-only analysis leaves a synthetic working database unchanged.",
+                "steps": [
+                  "Hash the DB.",
+                  "Open it with `mode=ro`.",
+                  "Query a table.",
+                  "Close the connection.",
+                  "Hash it again.",
+                  "Compare the digests."
+                ],
+                "solution": "```python\nimport sqlite3, hashlib\nfrom pathlib import Path\n\ndef sha256(path):\n    h=hashlib.sha256()\n    with open(path,'rb') as f:\n        for b in iter(lambda:f.read(1024*1024),b''):\n            h.update(b)\n    return h.hexdigest()\n\ndb=Path('working/History')\nbefore=sha256(db)\ncon=sqlite3.connect(f'file:{db}?mode=ro',uri=True)\nprint(con.execute('SELECT COUNT(*) FROM urls').fetchone())\ncon.close()\nafter=sha256(db)\nprint('UNCHANGED' if before==after else 'CHANGED')\n```",
+                "output": "A correct run should report an unchanged hash after read-only querying."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Read-only access is a safety property of the analysis program, not a substitute for evidence preservation."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/sqlite3.html",
+              "https://www.sqlite.org/fileformat.html"
+            ]
+          },
+          {
+            "id": "l04-03",
+            "title": "Acquisition Timing and Consistency",
+            "description": "Evaluate live-browser acquisition risks for open SQLite databases.",
+            "learningObjectives": [
+              "explain live DB risks",
+              "identify missing auxiliary files",
+              "document acquisition conditions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "An active browser may keep SQLite databases open and continue writing transactions.",
+                  "Copying only the main DB can omit WAL state.",
+                  "Browser process state, locks, and synchronization can affect the acquisition snapshot."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never improvise destructive cleanup or force-close actions on real evidence just to obtain a cleaner database."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Acquisition state must be part of the evidence record."
+            ],
+            "resources": [
+              "https://www.sqlite.org/wal.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t04-01",
+            "title": "Assess a Browser Database Acquisition",
+            "level": "Advanced",
+            "description": "Evaluate whether a main DB-only acquisition is sufficient.",
+            "problemStatement": "Compare synthetic acquisitions containing a main DB alone versus a DB with matching WAL/SHM and write a defensible assessment.",
+            "objectives": [
+              "identify missing components",
+              "explain impact",
+              "state limitations"
+            ],
+            "requirements": [
+              "Synthetic acquisition notes",
+              "SQLite documentation"
+            ],
+            "hint": "Ask whether the browser was running and whether auxiliary transaction files were preserved.",
+            "solutionCode": "A complete assessment identifies the DB family, acquisition state, hashes, and resulting consistency limits.",
+            "solutionExplanation": "The task tests acquisition reasoning rather than SQL syntax."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Time, Correlation, and User Activity",
+        "description": "Browser timestamps, download correlation, search/form data, and source-preserving timelines.",
+        "lessons": [
+          {
+            "id": "l05-01",
+            "title": "Browser Timestamps and Normalization",
+            "description": "Handle browser-specific time fields without losing source semantics.",
+            "learningObjectives": [
+              "preserve raw time values",
+              "document conversion rules",
+              "recognize browser/version differences"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Browser time fields are application-specific. Different browsers and artifacts can use different epochs, units, and precisions. Verify the relevant implementation/version or parser documentation before conversion."
+              },
+              {
+                "type": "code",
+                "text": "source_timestamp | normalized_utc | artifact | meaning | conversion_basis"
+              },
+              {
+                "type": "warning",
+                "text": "Never overwrite the original browser timestamp with a converted local-time value."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Time normalization is a derivation and should be auditable."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md",
+              "https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data"
+            ]
+          },
+          {
+            "id": "l05-02",
+            "title": "Downloads, File Metadata, and Corroboration",
+            "description": "Correlate browser downloads with filesystem objects.",
+            "learningObjectives": [
+              "match browser and file evidence",
+              "compare timestamps and paths",
+              "use file hashes as content identifiers"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Browser download records may identify a target filename/path or source URL depending on artifact/version.",
+                  "Filesystem metadata describes file state on the local system.",
+                  "A content hash can corroborate that two byte sequences match."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Correlation does not automatically prove who initiated the download or why."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p05-02",
+                "title": "Correlate Synthetic Download Evidence",
+                "description": "Produce a source-preserving timeline for a browser download and resulting file.",
+                "steps": [
+                  "Create synthetic browser and filesystem CSV records.",
+                  "Preserve source timestamp values.",
+                  "Normalize them without overwriting source fields.",
+                  "Match download target to file path/name.",
+                  "Record matching hash if present.",
+                  "Write a finding and limitation."
+                ],
+                "solution": "```python\nimport csv\n\nevents=[]\nfor filename,source in [('browser.csv','browser'),('filesystem.csv','filesystem')]:\n    with open(filename,newline='',encoding='utf-8') as f:\n        for r in csv.DictReader(f):\n            events.append({'source':source,'source_time':r['timestamp'],'event':r['event'],'subject':r.get('subject',''),'details':r.get('details','')})\nevents.sort(key=lambda x:x['source_time'])\nwith open('timeline.csv','w',newline='',encoding='utf-8') as f:\n    w=csv.DictWriter(f,fieldnames=['source','source_time','event','subject','details']); w.writeheader(); w.writerows(events)\n```",
+                "output": "The result is a derived timeline that preserves the source of each event."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Browser and filesystem evidence answer different parts of the same question."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l05-03",
+            "title": "Search, Form, and Autofill Artifacts",
+            "description": "Interpret stored user-input artifacts cautiously.",
+            "learningObjectives": [
+              "identify search/form data",
+              "distinguish stored state from submission",
+              "minimize sensitive reporting"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Firefox documentation identifies `formhistory.sqlite` as a store for search-bar and form-entry information. Browser-managed form/search data can persist beyond the action that created it."
+              },
+              {
+                "type": "warning",
+                "text": "Stored data does not by itself prove a form was submitted to a site or that a person entered it at the represented time."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Stored state and observed action are different forensic claims."
+            ],
+            "resources": [
+              "https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t05-01",
+            "title": "Write a Correlated Browser Finding",
+            "level": "Intermediate",
+            "description": "Turn synthetic browser/file data into a defensible finding.",
+            "problemStatement": "Determine what is supported by a browser download record, matching file, timestamp relationship, and hash.",
+            "objectives": [
+              "correlate sources",
+              "preserve source values",
+              "state attribution limitations"
+            ],
+            "requirements": [
+              "Synthetic CSV",
+              "Browser and filesystem concepts"
+            ],
+            "hint": "Use Observation → Corroboration → Interpretation → Limitation.",
+            "solutionCode": "The finding should support the recorded download/file relationship while explicitly leaving human intent or physical operator identity unresolved.",
+            "solutionExplanation": "The task assesses evidence-grounded reasoning."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Advanced Browser Artifacts",
+        "description": "Cache, Local Storage, IndexedDB, service workers, extensions, and policy context.",
+        "lessons": [
+          {
+            "id": "l06-01",
+            "title": "Cache Evidence and Limitations",
+            "description": "Use cache data as supporting context rather than a complete page record.",
+            "learningObjectives": [
+              "explain cache lifecycle",
+              "identify partial/evicted data",
+              "correlate cache with history"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Browser cache is implementation-specific and managed for performance. Entries may be evicted, replaced, validated, or stored in structures that do not reconstruct an entire page."
+              },
+              {
+                "type": "warning",
+                "text": "Do not claim complete page content solely from cache artifacts."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Cache evidence must be interpreted according to browser implementation and retention behavior."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md"
+            ]
+          },
+          {
+            "id": "l06-02",
+            "title": "Local Storage and IndexedDB",
+            "description": "Understand origin-scoped application state.",
+            "learningObjectives": [
+              "identify origin-scoped storage",
+              "inspect synthetic application data",
+              "interpret schema and storage context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Web applications may store structured state in IndexedDB and key/value data in Local Storage. Such data can persist beyond a single page visit and may be more informative than history alone."
+              },
+              {
+                "type": "warning",
+                "text": "Stored application state is not proof that a user saw or submitted the data."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Origin and schema context are essential."
+            ],
+            "resources": [
+              "https://www.sqlite.org/fileformat.html"
+            ]
+          },
+          {
+            "id": "l06-03",
+            "title": "Service Workers and Offline State",
+            "description": "Recognize service-worker-controlled browser state.",
+            "learningObjectives": [
+              "explain service-worker role",
+              "identify related storage",
+              "distinguish application behavior from human action"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Service workers can intercept requests and support offline application behavior. Their registrations, caches, and associated storage can preserve application state outside the traditional history database."
+              },
+              {
+                "type": "warning",
+                "text": "Do not assign a specific action to a service worker without corroborating evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Modern browser behavior produces evidence outside history/download tables."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md"
+            ]
+          },
+          {
+            "id": "l06-04",
+            "title": "Extensions and Browser Policy",
+            "description": "Interpret extension and configuration state.",
+            "learningObjectives": [
+              "identify extension configuration",
+              "distinguish installed state from activity",
+              "consider managed browser policy"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Browser extensions can add storage and behavior. Browser policy can also affect settings and data collection. These artifacts are contextual and version-specific."
+              },
+              {
+                "type": "warning",
+                "text": "Extension presence alone does not prove that the extension performed a particular action."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Configuration evidence requires activity corroboration."
+            ],
+            "resources": [
+              "https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t06-01",
+            "title": "Analyze a Complex Browser Storage Set",
+            "level": "Advanced",
+            "description": "Correlate multiple secondary browser artifacts.",
+            "problemStatement": "A synthetic profile contains history, cache, Local Storage, and extension evidence. Explain what the combined evidence supports and what remains uncertain.",
+            "objectives": [
+              "classify artifact semantics",
+              "correlate records",
+              "state limitations"
+            ],
+            "requirements": [
+              "Synthetic browser profile",
+              "Artifact concepts"
+            ],
+            "hint": "Analyze each artifact separately before making a combined statement.",
+            "solutionCode": "The conclusion should describe recorded browser/application state and explicitly avoid unsupported claims about user intent.",
+            "solutionExplanation": "The task tests advanced browser-artifact reasoning."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Acquisition, Validation, Reporting, and Closure",
+        "description": "Live-browser collection context, online evidence, parser validation, and professional reporting.",
+        "lessons": [
+          {
+            "id": "l07-01",
+            "title": "Live Browser Acquisition Considerations",
+            "description": "Plan acquisition when the browser is running.",
+            "learningObjectives": [
+              "identify active-database risks",
+              "record browser/session state",
+              "choose minimally invasive actions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A running browser may continue writing databases/WAL files during acquisition.",
+                  "Live collection can itself change artifacts or timing.",
+                  "Record whether the browser was open, logged in, syncing, or downloading."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not terminate or alter a real browser session outside the documented acquisition procedure."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Browser state is part of acquisition provenance."
+            ],
+            "resources": [
+              "https://www.sqlite.org/fileformat.html",
+              "https://www.sqlite.org/wal.html"
+            ]
+          },
+          {
+            "id": "l07-02",
+            "title": "Online Content Preservation",
+            "description": "Preserve changing public web content when browser records are insufficient.",
+            "learningObjectives": [
+              "record URL/time/method",
+              "preserve captured representation",
+              "separate annotations from preserved content"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SWGDE guidance addresses acquiring online content because public content can change or disappear. A defensible capture records source, acquisition time, method, and supporting context."
+              },
+              {
+                "type": "warning",
+                "text": "Public availability does not remove legal, privacy, or policy constraints."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Online evidence requires temporal and source provenance."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/21-f-001-best-practices-for-acquiring-online-content/"
+            ]
+          },
+          {
+            "id": "l07-03",
+            "title": "Browser Parser Validation",
+            "description": "Validate browser parsing with known synthetic artifacts.",
+            "learningObjectives": [
+              "design a known-data test",
+              "compare parser output to expected values",
+              "document tool/version limits"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Build synthetic databases containing known events.",
+                  "Record expected results independently.",
+                  "Run the parser under the relevant browser/version conditions.",
+                  "Retain expected data, tool version, output, and procedure."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Validation is function- and version-specific."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l07-04",
+            "title": "Reporting and Case Closure",
+            "description": "Produce professional browser-forensic findings and preserve reproducibility information.",
+            "learningObjectives": [
+              "structure a report",
+              "link findings to source artifacts",
+              "state limitations",
+              "prepare closure materials"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "text": "Finding pattern",
+                "level": 2
+              },
+              {
+                "type": "code",
+                "text": "Observation → Corroboration → Interpretation → Limitation → Conclusion"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Scope/authority",
+                  "Evidence inventory and hashes",
+                  "Browser/profile/version",
+                  "Methods/tools",
+                  "Artifact findings",
+                  "Timeline/correlation",
+                  "Limitations",
+                  "Conclusion/exhibits"
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not include live authentication tokens or unnecessary personal browsing data in ordinary reports."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "A good report is traceable, cautious, and reproducible."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t07-01",
+            "title": "Produce a Browser Forensic Findings Report",
+            "level": "Advanced",
+            "description": "Write a concise report from synthetic Chromium and Firefox evidence.",
+            "problemStatement": "Include scope, evidence inventory, acquisition context, three findings, limitations, and conclusions without unsupported user attribution.",
+            "objectives": [
+              "cite source artifacts",
+              "preserve time semantics",
+              "state limitations"
+            ],
+            "requirements": [
+              "Synthetic browser data",
+              "Text editor"
+            ],
+            "hint": "For each finding identify browser, profile, source file/table, artifact meaning, and corroboration.",
+            "solutionCode": "A strong report distinguishes direct observations from correlated interpretations and explicitly identifies attribution gaps.",
+            "solutionExplanation": "The task measures forensic communication."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Final Real-World Project — Browser Evidence Acquisition, Correlation & Reporting Workbench",
+        "description": "Complete a realistic browser-forensics assessment using synthetic, privacy-safe evidence. This final module contains the project itself and no separate module tasks.",
+        "lessons": [
+          {
+            "id": "l08-01",
+            "title": "Project Architecture and Evidence Boundary",
+            "description": "Design the final workbench around safe input/output separation.",
+            "learningObjectives": [
+              "define evidence and report boundaries",
+              "identify read-only design requirements",
+              "explain why synthetic browser data is used"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence input is treated as read-only.",
+                  "Derived reports are written outside the evidence directory.",
+                  "SQLite inspection is read-only.",
+                  "Synthetic data avoids handling real credentials or private browsing data."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Safe automation makes accidental evidence modification less likely."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l08-02",
+            "title": "Project Testing and Reproducibility",
+            "description": "Run tests and evaluate the workbench against controlled data.",
+            "learningObjectives": [
+              "run automated tests",
+              "verify hashes and schema behavior",
+              "test unsafe output paths",
+              "document expected versus observed behavior"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use a duplicate/synthetic SQLite dataset.",
+                  "Run unit tests.",
+                  "Repeat an unchanged analysis and compare hashes.",
+                  "Attempt an output path inside the evidence root."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Passing tests validate the tested behaviors, not every browser or forensic scenario."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/sqlite3.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Browser Evidence Acquisition, Correlation & Reporting Workbench",
+          "description": "Build a controlled-lab, read-only Python workbench that inventories synthetic browser evidence, computes SHA-256, inspects SQLite schemas, preserves source timestamps, builds timelines, and produces reproducible reports.",
+          "conceptsCovered": [
+            "browser profiles",
+            "Chromium/Firefox evidence",
+            "SQLite and WAL preservation",
+            "SHA-256 integrity",
+            "read-only analysis",
+            "timestamp provenance",
+            "timeline construction",
+            "cross-artifact correlation",
+            "privacy minimization",
+            "validation",
+            "forensic reporting"
+          ],
+          "steps": [
+            "Create synthetic Chromium History/download and Firefox Places data.",
+            "Record baseline SHA-256 hashes.",
+            "Run the embedded unit tests.",
+            "Inspect browser databases read-only and record schemas.",
+            "Export synthetic browser records.",
+            "Create browser/filesystem timeline CSV inputs and build a source-preserving timeline.",
+            "Generate a separate evidence inventory.",
+            "Repeat analysis and compare hashes.",
+            "Attempt unsafe output inside the evidence root and verify refusal.",
+            "Write a final findings note with observations, corroboration, limitations, and conclusion."
+          ],
+          "code": {
+            "README.md": "Browser Evidence Acquisition, Correlation & Reporting Workbench. Controlled laboratory use only; synthetic browser artifacts; no credential extraction or session replay.",
+            "forensic_core.py": "from __future__ import annotations\nimport csv, hashlib, json, sqlite3\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\ndef sha256_file(path: Path) -> str:\n    h=hashlib.sha256()\n    with path.open(\"rb\") as f:\n        for block in iter(lambda:f.read(1024*1024), b\"\"):\n            h.update(block)\n    return h.hexdigest()\n\ndef list_schema(path: Path):\n    con=sqlite3.connect(f\"file:{path}?mode=ro\", uri=True)\n    try:\n        return con.execute(\"SELECT name,type FROM sqlite_master WHERE type IN ('table','index') ORDER BY type,name\").fetchall()\n    finally:\n        con.close()\n\ndef inventory(root: Path, out: Path):\n    records=[]\n    for p in sorted(root.rglob(\"*\")):\n        if p.is_symlink() or not p.is_file():\n            continue\n        st=p.stat()\n        records.append({\"path\":str(p.relative_to(root)),\"size\":st.st_size,\"sha256\":sha256_file(p),\"mtime_utc\":datetime.fromtimestamp(st.st_mtime,timezone.utc).isoformat()})\n    out.write_text(json.dumps({\"files\":records},indent=2),encoding=\"utf-8\")\n\ndef timeline(csv_files, out):\n    events=[]\n    for fn,source in csv_files.items():\n        with open(fn,newline='',encoding='utf-8') as f:\n            for row in csv.DictReader(f):\n                events.append({\"source\":source,\"source_time\":row[\"timestamp\"],\"event\":row[\"event\"],\"subject\":row.get(\"subject\",\"\")})\n    events.sort(key=lambda e:e[\"source_time\"])\n    with open(out,'w',newline='',encoding='utf-8') as f:\n        w=csv.DictWriter(f,fieldnames=[\"source\",\"source_time\",\"event\",\"subject\"])\n        w.writeheader(); w.writerows(events)\n",
+            "main.py": "from __future__ import annotations\nimport argparse, sys\nfrom pathlib import Path\nfrom forensic_core import inventory\n\ndef main():\n    ap=argparse.ArgumentParser(description=\"Read-only browser evidence inventory\")\n    ap.add_argument(\"evidence_dir\",type=Path)\n    ap.add_argument(\"--output\",type=Path,default=Path(\"browser_report\"))\n    a=ap.parse_args(); root=a.evidence_dir.resolve(); out=a.output.resolve()\n    if not root.is_dir():\n        print(\"Evidence directory does not exist.\",file=sys.stderr); return 2\n    if out==root or root in out.parents:\n        print(\"Refusing to write reports inside evidence directory.\",file=sys.stderr); return 2\n    out.mkdir(parents=True,exist_ok=True)\n    inventory(root,out/\"file_inventory.json\")\n    print(\"Inventory written:\", out / \"file_inventory.json\")\n    return 0\nif __name__==\"__main__\": raise SystemExit(main())\n",
+            "test_forensic_core.py": "import tempfile, unittest, sqlite3\nfrom pathlib import Path\nfrom forensic_core import sha256_file, list_schema\n\nclass TestCore(unittest.TestCase):\n    def test_hash_and_schema(self):\n        with tempfile.TemporaryDirectory() as td:\n            p=Path(td)/\"History\"\n            con=sqlite3.connect(p); con.execute(\"create table urls(url text,title text)\"); con.commit(); con.close()\n            self.assertEqual(len(sha256_file(p)),64)\n            self.assertIn((\"urls\",\"table\"),list_schema(p))\n\nif __name__==\"__main__\": unittest.main()\n"
+          },
+          "explanation": "The workbench separates evidence input from derived output, uses SHA-256 for integrity, read-only SQLite access for database inspection, source-preserving timeline fields, and a strict output boundary. It is intentionally not a full forensic acquisition/parser suite and does not decrypt or replay credentials.",
+          "validationPlan": [
+            "Run unit tests.",
+            "Test SQLite schema inspection.",
+            "Test SHA-256 determinism.",
+            "Test a synthetic timeline.",
+            "Test unsafe output refusal.",
+            "Review source to confirm evidence is not written by the tool."
+          ],
+          "limitations": [
+            "It does not acquire live browser profiles.",
+            "It does not decrypt/replay cookies or passwords.",
+            "It does not parse every browser/cache format.",
+            "Generic filesystem timestamps are not browser-native timestamps.",
+            "Real cases require authorization, privacy controls, and validated forensic tooling."
+          ]
+        }
+      }
+    ]
+  }
+}

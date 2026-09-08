@@ -1,0 +1,1668 @@
+{
+  "internship": {
+    "id": "backend-web-development-internship",
+    "title": "Backend Web Development Internship",
+    "slug": "backend-web-development-internship",
+    "description": "A research-grounded, engineering-oriented internship focused on building, testing, securing, documenting and operating backend web services and REST APIs.",
+    "domain": "Backend Web Development",
+    "level": "Intermediate to Advanced",
+    "language": "English",
+    "duration": {
+      "type": "workload-based",
+      "guidance": "Progress at a pace that allows each module task and the final project to be completed and reviewed; no fixed duration is imposed."
+    },
+    "prerequisites": [
+      "Programming fundamentals including variables, functions, control flow and basic data structures.",
+      "Basic JavaScript knowledge.",
+      "Basic command-line and Git usage.",
+      "Basic SQL concepts are helpful but are taught and reinforced during the program."
+    ],
+    "objectives": [
+      "Build backend services with a clear architecture.",
+      "Design and implement REST APIs.",
+      "Use TypeScript for maintainable backend code.",
+      "Persist data safely in PostgreSQL.",
+      "Implement authentication and authorization.",
+      "Validate input and handle errors safely.",
+      "Write automated tests and API documentation.",
+      "Apply security, performance and operational practices.",
+      "Use Git and Docker in a professional backend workflow."
+    ],
+    "competencies": [
+      "Backend conceptual knowledge",
+      "HTTP and REST API design",
+      "TypeScript implementation",
+      "Express routing and middleware",
+      "Relational data modeling",
+      "SQL and transactions",
+      "Authentication",
+      "Authorization and object-level access control",
+      "Validation and error handling",
+      "Automated testing",
+      "API documentation",
+      "Security review",
+      "Performance reasoning",
+      "Git workflow",
+      "Docker and operational readiness",
+      "Debugging and problem solving",
+      "Technical documentation"
+    ],
+    "technologyStack": [
+      {
+        "name": "Node.js",
+        "purpose": "JavaScript runtime for the backend service.",
+        "role": "Runs the HTTP API and application code.",
+        "why": "It is a widely used server-side JavaScript runtime with official documentation covering HTTP servers, tests, streams and tooling."
+      },
+      {
+        "name": "TypeScript",
+        "purpose": "Static type checking for JavaScript code.",
+        "role": "Defines application and API types and catches many errors before runtime.",
+        "why": "It improves maintainability of a multi-module backend without changing the runtime model."
+      },
+      {
+        "name": "Express 5",
+        "purpose": "HTTP routing and middleware framework.",
+        "role": "Maps HTTP requests to route handlers and middleware and centralizes error handling.",
+        "why": "Its routing and middleware model is compact enough for interns to learn while still supporting realistic APIs."
+      },
+      {
+        "name": "PostgreSQL",
+        "purpose": "Relational database.",
+        "role": "Persists users, projects, issues and audit records with constraints and indexes.",
+        "why": "It teaches relational modeling, transactions, constraints and query planning in a production-relevant database."
+      },
+      {
+        "name": "node-postgres (pg)",
+        "purpose": "PostgreSQL client for Node.js.",
+        "role": "Executes parameterized SQL and transactions from the service layer.",
+        "why": "It exposes SQL directly, making database behavior visible rather than hiding it behind an ORM."
+      },
+      {
+        "name": "Zod",
+        "purpose": "Runtime schema validation.",
+        "role": "Validates request bodies, query parameters and environment configuration.",
+        "why": "Backend APIs must treat external input as untrusted; schema validation makes that boundary explicit."
+      },
+      {
+        "name": "JSON Web Tokens (JWT)",
+        "purpose": "Signed access-token format.",
+        "role": "Carries authenticated user identity between requests.",
+        "why": "It is useful for teaching stateless API authentication, while the internship also teaches token lifetime and secret management."
+      },
+      {
+        "name": "bcryptjs",
+        "purpose": "Password hashing library.",
+        "role": "Hashes and verifies passwords without storing plaintext credentials.",
+        "why": "Password storage is a core backend security responsibility."
+      },
+      {
+        "name": "Vitest + Supertest",
+        "purpose": "Unit and HTTP integration testing.",
+        "role": "Tests services, middleware and API endpoints.",
+        "why": "The internship must teach repeatable automated verification, not only manual requests."
+      },
+      {
+        "name": "Docker",
+        "purpose": "Container runtime and packaging workflow.",
+        "role": "Packages the API and runs PostgreSQL locally as a reproducible development stack.",
+        "why": "Containerized backend development is directly supported by current Docker guidance."
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-01",
+        "title": "Foundations",
+        "focus": "HTTP, Express, TypeScript and Git"
+      },
+      {
+        "id": "phase-02",
+        "title": "Data and Security",
+        "focus": "PostgreSQL, validation, authentication and authorization"
+      },
+      {
+        "id": "phase-03",
+        "title": "Quality and Operations",
+        "focus": "Testing, documentation, containers and operational engineering"
+      },
+      {
+        "id": "phase-04",
+        "title": "Final Engineering Project",
+        "focus": "Independent end-to-end backend delivery"
+      }
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Backend Foundations and HTTP",
+        "description": "Build the mental model for a backend process, HTTP requests, responses, routing, middleware and API contracts before introducing persistence.",
+        "objectives": [
+          "Explain the role of a backend runtime and HTTP server.",
+          "Read HTTP requests and responses including methods, status codes, headers and JSON bodies.",
+          "Design resource-oriented endpoints and middleware order.",
+          "Use Git for small, reviewable changes."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Backend responsibilities and request lifecycle",
+            "description": "Understand what a backend service owns and how a request moves through an application.",
+            "learningObjectives": [
+              "Distinguish transport, application and persistence responsibilities.",
+              "Trace a request from socket to response."
+            ],
+            "notes": [
+              "A backend should have explicit boundaries: transport handling, validation, business logic and persistence. Keep framework-specific code at the edges."
+            ],
+            "resources": [
+              {
+                "title": "Node.js documentation",
+                "url": "https://nodejs.org/en/docs"
+              },
+              {
+                "title": "Express.js error handling guide",
+                "url": "https://expressjs.com/en/guide/error-handling.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "HTTP methods, status codes and headers",
+            "description": "Learn the HTTP semantics needed to design predictable APIs.",
+            "learningObjectives": [
+              "Choose appropriate methods for common resource operations.",
+              "Choose meaningful success and failure status codes."
+            ],
+            "notes": [
+              "HTTP status codes communicate outcome; response bodies should not be the only source of truth. Headers carry metadata such as content type and caching directives."
+            ],
+            "examples": [
+              {
+                "request": "POST /api/v1/projects",
+                "response": "201 Created"
+              },
+              {
+                "request": "GET /api/v1/projects/does-not-exist",
+                "response": "404 Not Found"
+              }
+            ],
+            "quiz": [
+              {
+                "id": "q-1",
+                "question": "Which status best represents successful creation of a resource?",
+                "options": [
+                  "200 OK",
+                  "201 Created",
+                  "204 No Content",
+                  "304 Not Modified"
+                ],
+                "answer": "201 Created",
+                "explanation": "201 explicitly indicates that a resource was created."
+              }
+            ],
+            "resources": [
+              {
+                "title": "Express.js error handling guide",
+                "url": "https://expressjs.com/en/guide/error-handling.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Express routing and middleware",
+            "description": "Build an Express application using explicit routes and middleware.",
+            "learningObjectives": [
+              "Define route handlers with Express.",
+              "Explain why middleware order matters."
+            ],
+            "notes": [
+              "Express routing associates HTTP methods and paths with handlers. Middleware can modify requests/responses, terminate a request, or call next()."
+            ],
+            "code": "import express from \"express\";\n\nconst app = express();\napp.use(express.json());\napp.get(\"/health\", (_req, res) => res.json({ status: \"ok\" }));\napp.listen(3000);",
+            "resources": [
+              {
+                "title": "Express.js middleware guide",
+                "url": "https://expressjs.com/en/guide/using-middleware.html"
+              },
+              {
+                "title": "Express.js routing guide",
+                "url": "https://expressjs.com/en/guide/routing.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Git workflow for backend changes",
+            "description": "Practice small commits, branches and reviewable changes.",
+            "learningObjectives": [
+              "Create a feature branch.",
+              "Write focused commits and inspect diffs before sharing work."
+            ],
+            "notes": [
+              "A useful backend workflow separates requirement, implementation, verification and review. Never commit secrets or generated dependency directories."
+            ],
+            "practicals": [
+              {
+                "title": "Create and review a health endpoint",
+                "instructions": [
+                  "Create a feature branch.",
+                  "Add GET /health returning JSON.",
+                  "Run the server and request the endpoint.",
+                  "Inspect git diff and commit the change."
+                ],
+                "expectedOutcome": "A reviewable commit containing a working health endpoint."
+              }
+            ],
+            "resources": [
+              {
+                "title": "Git documentation",
+                "url": "https://git-scm.com/docs"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Implement a health and readiness API",
+            "level": "Easy",
+            "description": "Add two operational endpoints to a small Express service.",
+            "problemStatement": "The service has no machine-readable way to distinguish a live process from a process that can reach its database.",
+            "objectives": [
+              "Implement GET /health.",
+              "Implement GET /ready using an injected readiness check."
+            ],
+            "requirements": [
+              "Use Express routing.",
+              "Return JSON and meaningful status codes."
+            ],
+            "constraints": [
+              "Do not expose database credentials.",
+              "Keep readiness logic outside the route handler."
+            ],
+            "hint": "Keep the route thin; call a service that performs the readiness check.",
+            "solutionCode": "import { Router } from \"express\";\n\nexport function createHealthRouter(isReady: () => Promise<boolean>) {\n  const router = Router();\n  router.get(\"/health\", (_req, res) => res.status(200).json({ status: \"ok\" }));\n  router.get(\"/ready\", async (_req, res) => {\n    const ready = await isReady();\n    res.status(ready ? 200 : 503).json({ status: ready ? \"ready\" : \"not_ready\" });\n  });\n  return router;\n}",
+            "solutionExplanation": "The dependency is injected so the route can be tested without a real database. 503 communicates temporary unavailability for readiness."
+          }
+        ],
+        "deliverables": [
+          "Health and readiness endpoints",
+          "Focused Git commit"
+        ],
+        "assessment": {
+          "focus": [
+            "HTTP semantics",
+            "routing",
+            "middleware order",
+            "Git hygiene"
+          ]
+        }
+      },
+      {
+        "id": "module-02",
+        "title": "TypeScript, Configuration and Validation",
+        "description": "Turn a JavaScript-style service into a typed backend with explicit configuration and untrusted-input boundaries.",
+        "objectives": [
+          "Use TypeScript types at module boundaries.",
+          "Validate environment configuration at startup.",
+          "Validate HTTP input before business logic.",
+          "Return consistent validation errors."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "TypeScript for service boundaries",
+            "description": "Use interfaces, type aliases and narrow types where data crosses modules.",
+            "learningObjectives": [
+              "Type request and service contracts.",
+              "Avoid unsafe any at application boundaries."
+            ],
+            "notes": [
+              "Types disappear at runtime, so runtime validation remains necessary for HTTP and environment input. TypeScript complements rather than replaces validation."
+            ],
+            "resources": [
+              {
+                "title": "Node.js documentation",
+                "url": "https://nodejs.org/en/docs"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Environment configuration",
+            "description": "Design startup configuration that fails early when required settings are absent.",
+            "learningObjectives": [
+              "Separate configuration from application logic.",
+              "Keep secrets out of source control."
+            ],
+            "notes": [
+              "Configuration should be read once, validated and passed into the application. Do not silently invent defaults for security-sensitive values."
+            ],
+            "code": "const port = Number(process.env.PORT ?? \"3000\");\nif (!Number.isInteger(port) || port <= 0) throw new Error(\"PORT must be a positive integer\");"
+          },
+          {
+            "id": "lesson-07",
+            "title": "Runtime validation with Zod",
+            "description": "Validate JSON bodies and query parameters at the HTTP boundary.",
+            "learningObjectives": [
+              "Build Zod schemas.",
+              "Translate validation failures into stable API errors."
+            ],
+            "notes": [
+              "Reject unexpected or malformed input before it reaches SQL or business logic. Set reasonable request-size limits as part of the boundary."
+            ],
+            "resources": [
+              {
+                "title": "OWASP REST Security Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Error taxonomy",
+            "description": "Model validation, authentication, authorization, not-found, conflict and server failures distinctly.",
+            "learningObjectives": [
+              "Map known failures to appropriate status codes.",
+              "Avoid leaking stack traces or secrets."
+            ],
+            "notes": [
+              "Error handling belongs at the edge. Business code can throw typed application errors; one final error middleware maps them to safe responses."
+            ],
+            "resources": [
+              {
+                "title": "Express.js error handling guide",
+                "url": "https://expressjs.com/en/guide/error-handling.html"
+              },
+              {
+                "title": "OWASP REST Security Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build a validated project-creation endpoint",
+            "level": "Intermediate",
+            "description": "Implement a typed endpoint that validates a project payload and returns a stable error shape.",
+            "problemStatement": "Clients currently receive inconsistent failures when project names are missing or malformed.",
+            "objectives": [
+              "Create a Zod schema.",
+              "Return 201 on success and 400 on invalid input.",
+              "Keep route, validation and service responsibilities separate."
+            ],
+            "requirements": [
+              "Use TypeScript.",
+              "Do not trust request.body."
+            ],
+            "constraints": [
+              "Validate before calling the service."
+            ],
+            "hint": "Define the input schema first, then write a small route adapter around the service.",
+            "solutionCode": "import { z } from \"zod\";\n\nexport const createProjectSchema = z.object({\n  name: z.string().trim().min(1).max(120),\n  key: z.string().trim().regex(/^[A-Z][A-Z0-9_-]{1,9}$/)\n});\n\nexport function parseCreateProject(input: unknown) {\n  return createProjectSchema.parse(input);\n}",
+            "solutionExplanation": "The schema constrains type, length and project-key format before business logic executes. The route can catch ZodError and map it to the API error contract."
+          }
+        ],
+        "deliverables": [
+          "Typed configuration module",
+          "Validation schemas",
+          "Consistent error response contract"
+        ],
+        "assessment": {
+          "focus": [
+            "type safety",
+            "runtime validation",
+            "configuration",
+            "error taxonomy"
+          ]
+        }
+      },
+      {
+        "id": "module-03",
+        "title": "PostgreSQL and Data Access",
+        "description": "Model relational data, write parameterized SQL, use transactions, constraints and indexes, and keep database access behind a clear service boundary.",
+        "objectives": [
+          "Design relational tables and relationships.",
+          "Use parameterized SQL safely.",
+          "Apply constraints, indexes and transactions appropriately.",
+          "Diagnose common database failures."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Relational modeling",
+            "description": "Translate backend entities into tables, keys, constraints and relationships.",
+            "learningObjectives": [
+              "Design primary and foreign keys.",
+              "Explain one-to-many relationships."
+            ],
+            "notes": [
+              "Database constraints are part of correctness. Application validation improves user feedback but should not be the only line of defense."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Parameterized SQL and pg",
+            "description": "Execute SQL through node-postgres without string-concatenating untrusted input.",
+            "learningObjectives": [
+              "Use pool.query with parameters.",
+              "Map database rows to domain objects."
+            ],
+            "notes": [
+              "Parameter placeholders prevent user input from becoming SQL syntax. Connection pooling prevents opening a new database connection for every request."
+            ],
+            "code": "const result = await pool.query(\n  \"SELECT id, name FROM projects WHERE owner_id = $1 ORDER BY created_at DESC\",\n  [ownerId]\n);"
+          },
+          {
+            "id": "lesson-11",
+            "title": "Transactions and consistency",
+            "description": "Use transactions for operations that must succeed or fail together.",
+            "learningObjectives": [
+              "Explain BEGIN, COMMIT and ROLLBACK.",
+              "Identify when a transaction is required."
+            ],
+            "notes": [
+              "A transaction groups multiple database steps into one all-or-nothing operation. Keep transactions short and avoid unrelated network calls inside them."
+            ],
+            "resources": [
+              {
+                "title": "Git documentation",
+                "url": "https://git-scm.com/docs"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Indexes and query performance",
+            "description": "Understand why indexes help selective lookups and why indexes also have costs.",
+            "learningObjectives": [
+              "Choose indexes from access patterns.",
+              "Use EXPLAIN when investigating a query."
+            ],
+            "notes": [
+              "Do not add indexes blindly. Measure the actual query shape and data distribution before optimizing."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Implement transactional issue creation",
+            "level": "Advanced",
+            "description": "Create an issue and an audit record atomically.",
+            "problemStatement": "An issue must never exist without its corresponding creation audit record.",
+            "objectives": [
+              "Use a PostgreSQL transaction.",
+              "Insert the issue and audit record.",
+              "Rollback both writes on failure."
+            ],
+            "requirements": [
+              "Use parameterized SQL.",
+              "Commit only after both inserts succeed."
+            ],
+            "constraints": [
+              "Use one client connection for the entire transaction."
+            ],
+            "hint": "Acquire a client, BEGIN, perform both inserts, COMMIT, and ROLLBACK in catch/finally.",
+            "solutionCode": "const client = await pool.connect();\ntry {\n  await client.query(\"BEGIN\");\n  const issue = await client.query(\n    \"INSERT INTO issues(project_id, title, description, created_by) VALUES ($1,$2,$3,$4) RETURNING id, title\",\n    [projectId, title, description, userId]\n  );\n  await client.query(\n    \"INSERT INTO audit_events(actor_id, action, entity_type, entity_id) VALUES ($1,$2,$3,$4)\",\n    [userId, \"issue.created\", \"issue\", issue.rows[0].id]\n  );\n  await client.query(\"COMMIT\");\n  return issue.rows[0];\n} catch (error) {\n  await client.query(\"ROLLBACK\");\n  throw error;\n} finally {\n  client.release();\n}",
+            "solutionExplanation": "Both writes use the same database client and transaction. A failure in either statement causes rollback, preserving the invariant."
+          }
+        ],
+        "deliverables": [
+          "Relational schema",
+          "Parameterized repository functions",
+          "Transactional service operation",
+          "Index rationale"
+        ],
+        "assessment": {
+          "focus": [
+            "data modeling",
+            "SQL safety",
+            "transactions",
+            "performance reasoning"
+          ]
+        }
+      },
+      {
+        "id": "module-04",
+        "title": "Authentication and Authorization",
+        "description": "Implement secure account handling, authentication, authorization and ownership checks for an API.",
+        "objectives": [
+          "Hash and verify passwords safely.",
+          "Issue and validate access tokens.",
+          "Distinguish authentication from authorization.",
+          "Prevent object-level authorization failures."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "Password storage",
+            "description": "Understand why passwords must be hashed and how verification works.",
+            "learningObjectives": [
+              "Hash passwords before persistence.",
+              "Never log or return password material."
+            ],
+            "notes": [
+              "Password hashes are not reversible encryption. Use a password-hashing algorithm/library and keep the cost appropriate for the environment."
+            ],
+            "resources": [
+              {
+                "title": "OpenAPI Specification",
+                "url": "https://spec.openapis.org/oas/latest.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "JWT authentication",
+            "description": "Trace login, token issuance and authenticated request handling.",
+            "learningObjectives": [
+              "Create short-lived access tokens.",
+              "Verify token signature and claims."
+            ],
+            "notes": [
+              "JWT verification establishes that a token was signed by the trusted issuer; authorization is still a separate decision. Secrets belong in environment configuration."
+            ],
+            "resources": [
+              {
+                "title": "OpenAPI Specification",
+                "url": "https://spec.openapis.org/oas/latest.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Authorization and object ownership",
+            "description": "Enforce permissions on both action and resource.",
+            "learningObjectives": [
+              "Implement role checks.",
+              "Prevent users from reading or modifying another user’s object."
+            ],
+            "notes": [
+              "A valid identity does not automatically grant access to every object. Every resource access must be evaluated against the authenticated principal and resource policy."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Authentication failure handling",
+            "description": "Design safe responses and avoid account-enumeration and token leakage patterns.",
+            "learningObjectives": [
+              "Return stable authentication failures.",
+              "Avoid sensitive logging."
+            ],
+            "notes": [
+              "Do not put passwords, raw tokens or secrets in logs. Keep error messages useful without revealing protected implementation details."
+            ],
+            "resources": [
+              {
+                "title": "OWASP REST Security Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Add authenticated issue ownership checks",
+            "level": "Advanced",
+            "description": "Protect issue endpoints so a user can only mutate issues in projects they are allowed to manage.",
+            "problemStatement": "A token currently proves identity but does not prevent cross-project access.",
+            "objectives": [
+              "Authenticate the request.",
+              "Load the target project and check membership/role.",
+              "Return 403 for authenticated users without permission."
+            ],
+            "requirements": [
+              "Do not rely on a project ID supplied by the client as proof of access.",
+              "Keep authorization near the business operation."
+            ],
+            "constraints": [
+              "Authorization must query trusted server-side data."
+            ],
+            "hint": "Resolve the issue, its project and the user’s role before allowing mutation.",
+            "solutionCode": "async function assertCanEditIssue(userId: string, issueId: string) {\n  const result = await pool.query(\n    `SELECT m.role\n       FROM issues i\n       JOIN project_members m ON m.project_id = i.project_id\n      WHERE i.id = $1 AND m.user_id = $2`,\n    [issueId, userId]\n  );\n  if (result.rowCount === 0) throw new ForbiddenError(\"Not allowed to edit this issue\");\n  if (!['OWNER','MAINTAINER'].includes(result.rows[0].role)) {\n    throw new ForbiddenError(\"Not allowed to edit this issue\");\n  }\n}",
+            "solutionExplanation": "The check derives authorization from the stored project relationship rather than trusting a client-provided role or project identifier."
+          }
+        ],
+        "deliverables": [
+          "Authentication middleware",
+          "Authorization policy",
+          "Ownership checks",
+          "Security-focused tests"
+        ],
+        "assessment": {
+          "focus": [
+            "credential handling",
+            "token verification",
+            "authorization",
+            "object-level access control"
+          ]
+        }
+      },
+      {
+        "id": "module-05",
+        "title": "API Design, Testing and Documentation",
+        "description": "Turn the service into a predictable API with pagination, filtering, automated tests and OpenAPI documentation.",
+        "objectives": [
+          "Design stable resource endpoints.",
+          "Implement pagination and filtering safely.",
+          "Write unit and HTTP integration tests.",
+          "Document the API contract."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Resource-oriented API design",
+            "description": "Organize endpoints around resources and consistent response semantics.",
+            "learningObjectives": [
+              "Design route hierarchies.",
+              "Keep response shapes stable."
+            ],
+            "notes": [
+              "API design is a contract. Avoid exposing database implementation details as the public contract unless intentionally chosen."
+            ],
+            "resources": [
+              {
+                "title": "Express.js routing guide",
+                "url": "https://expressjs.com/en/guide/routing.html"
+              },
+              {
+                "title": "OpenAPI Specification",
+                "url": "https://spec.openapis.org/oas/latest.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Pagination, filtering and sorting",
+            "description": "Implement bounded list queries with deterministic ordering.",
+            "learningObjectives": [
+              "Use limit/offset or cursor concepts appropriately.",
+              "Whitelist sortable fields."
+            ],
+            "notes": [
+              "Never interpolate an arbitrary column name from user input. Validate page sizes and define deterministic ordering to make pagination repeatable."
+            ],
+            "resources": [
+              {
+                "title": "OWASP REST Security Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Automated testing strategy",
+            "description": "Separate unit tests from integration tests and define meaningful assertions.",
+            "learningObjectives": [
+              "Test business rules without a database when possible.",
+              "Test critical HTTP paths against the real application boundary."
+            ],
+            "notes": [
+              "Tests should verify observable behavior and security invariants, not internal implementation details."
+            ],
+            "resources": [
+              {
+                "title": "Node.js documentation",
+                "url": "https://nodejs.org/en/docs"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "OpenAPI and operational documentation",
+            "description": "Document endpoints, schemas, authentication and failure responses.",
+            "learningObjectives": [
+              "Describe request and response schemas.",
+              "Document authentication requirements and common errors."
+            ],
+            "notes": [
+              "OpenAPI provides a machine-readable description of an HTTP API. Documentation should stay aligned with implementation."
+            ],
+            "resources": [
+              {
+                "title": "OpenAPI Specification",
+                "url": "https://spec.openapis.org/oas/latest.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Implement paginated issue listing with tests",
+            "level": "Intermediate",
+            "description": "Add a bounded issue-list endpoint with filters and automated HTTP tests.",
+            "problemStatement": "The issue list can return unbounded data and accepts unsafe sort parameters.",
+            "objectives": [
+              "Add validated page and pageSize.",
+              "Support status filtering.",
+              "Whitelist sort fields.",
+              "Write success and invalid-input tests."
+            ],
+            "requirements": [
+              "Do not concatenate raw user input into SQL.",
+              "Enforce a maximum page size."
+            ],
+            "constraints": [
+              "Represent sort fields as a server-side mapping."
+            ],
+            "hint": "Map public sort names to fixed SQL fragments and parameterize values.",
+            "solutionCode": "const sortColumns = { createdAt: 'created_at', priority: 'priority' } as const;\nconst sortColumn = sortColumns[input.sortBy ?? 'createdAt'];\nconst direction = input.direction === 'asc' ? 'ASC' : 'DESC';\nconst sql = `SELECT id, title, status, priority FROM issues WHERE project_id = $1 ORDER BY ${sortColumn} ${direction} LIMIT $2 OFFSET $3`;\nconst result = await pool.query(sql, [projectId, input.pageSize, (input.page - 1) * input.pageSize]);",
+            "solutionExplanation": "Only the values are parameterized; the dynamic SQL fragments come from fixed server-side maps, preventing arbitrary SQL identifiers from entering the query."
+          }
+        ],
+        "deliverables": [
+          "Paginated API endpoint",
+          "Unit tests",
+          "HTTP integration tests",
+          "OpenAPI document"
+        ],
+        "assessment": {
+          "focus": [
+            "API contracts",
+            "query safety",
+            "test design",
+            "documentation"
+          ]
+        }
+      },
+      {
+        "id": "module-06",
+        "title": "Production Engineering, Security and Operations",
+        "description": "Prepare a backend service for realistic deployment by addressing configuration, containers, logging, health checks, dependency security and operational failure modes.",
+        "objectives": [
+          "Containerize the service safely.",
+          "Design structured logs and health checks.",
+          "Review dependency vulnerabilities.",
+          "Reason about graceful shutdown and production configuration."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "Structured logging and request correlation",
+            "description": "Make logs useful for debugging without exposing secrets.",
+            "learningObjectives": [
+              "Include request identifiers.",
+              "Avoid sensitive values in logs."
+            ],
+            "notes": [
+              "Logs should answer what happened, where, when and with which request context. Passwords, bearer tokens and secrets must never be logged."
+            ],
+            "resources": [
+              {
+                "title": "OWASP REST Security Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Graceful shutdown and health checks",
+            "description": "Close listeners and database pools predictably during termination.",
+            "learningObjectives": [
+              "Handle termination signals.",
+              "Expose health and readiness endpoints."
+            ],
+            "notes": [
+              "A production process should stop accepting new work, allow in-flight work to finish within a bound, and release resources."
+            ],
+            "resources": [
+              {
+                "title": "Node.js documentation",
+                "url": "https://nodejs.org/en/docs"
+              },
+              {
+                "title": "Docker Node.js guide",
+                "url": "https://docs.docker.com/guides/nodejs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Containerizing a Node API",
+            "description": "Build and run the API in Docker with a separate database service.",
+            "learningObjectives": [
+              "Write a Dockerfile.",
+              "Use Compose for local dependencies."
+            ],
+            "notes": [
+              "A container packages application dependencies and runtime. Do not bake secrets into an image."
+            ],
+            "resources": [
+              {
+                "title": "Docker Node.js guide",
+                "url": "https://docs.docker.com/guides/nodejs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Dependency and security review",
+            "description": "Use dependency audit tooling and review API-specific threats.",
+            "learningObjectives": [
+              "Run npm audit and interpret findings.",
+              "Map API controls to common OWASP risks."
+            ],
+            "notes": [
+              "Dependency audit results are time-sensitive; remediate appropriately rather than blindly forcing major upgrades. API security includes authentication, authorization, input validation and resource controls."
+            ],
+            "resources": [
+              {
+                "title": "npm audit documentation",
+                "url": "https://docs.npmjs.com/cli/v11/commands/npm-audit/"
+              },
+              {
+                "title": "OWASP API Security Top 10",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Containerize and harden the service",
+            "level": "Advanced",
+            "description": "Create a production-oriented container setup and document operational checks.",
+            "problemStatement": "The service works locally but cannot be reproduced consistently and has no clear operational contract.",
+            "objectives": [
+              "Add Dockerfile and Compose configuration.",
+              "Add health/readiness checks.",
+              "Document environment variables.",
+              "Run dependency audit."
+            ],
+            "requirements": [
+              "Do not put secrets in images or committed Compose files.",
+              "Use a non-root application user where practical."
+            ],
+            "constraints": [
+              "Build the image, run it, then exercise the health endpoint from the container boundary."
+            ],
+            "hint": "Use a multi-stage build: install dependencies, compile TypeScript, then copy only runtime artifacts into the final image.",
+            "solutionCode": "FROM node:22-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY tsconfig.json ./\nCOPY src ./src\nRUN npm run build\n\nFROM node:22-alpine\nENV NODE_ENV=production\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev && npm cache clean --force\nCOPY --from=build /app/dist ./dist\nUSER node\nEXPOSE 3000\nCMD [\"node\", \"dist/server.js\"]",
+            "solutionExplanation": "The build stage compiles TypeScript while the runtime stage contains only production dependencies and compiled output. Secrets remain runtime configuration."
+          }
+        ],
+        "deliverables": [
+          "Dockerfile",
+          "Compose stack",
+          "Operational README section",
+          "Dependency audit record"
+        ],
+        "assessment": {
+          "focus": [
+            "containerization",
+            "observability",
+            "security hygiene",
+            "production reasoning"
+          ]
+        }
+      },
+      {
+        "id": "module-07",
+        "title": "Independent Engineering Sprint",
+        "description": "Work from a realistic backlog, choose implementation order, verify behavior, review security and document decisions before the final project.",
+        "objectives": [
+          "Break a backend requirement into implementation slices.",
+          "Debug an integration failure systematically.",
+          "Review code for correctness, security and maintainability.",
+          "Produce concise engineering documentation."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Requirement decomposition",
+            "description": "Convert a backend requirement into acceptance criteria, data changes, API changes and tests.",
+            "learningObjectives": [
+              "Write acceptance criteria.",
+              "Identify dependencies and risks."
+            ],
+            "notes": [
+              "A good slice is independently verifiable and leaves the repository in a coherent state."
+            ],
+            "practicals": [
+              {
+                "title": "Decompose a change request",
+                "instructions": [
+                  "Choose one issue-tracking feature.",
+                  "Write acceptance criteria.",
+                  "List schema, API, service and test changes.",
+                  "Identify one security risk and one operational risk."
+                ],
+                "expectedOutcome": "A small implementation plan that another engineer can review."
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Debugging methodology",
+            "description": "Use reproduction, instrumentation, hypothesis and regression testing instead of random edits.",
+            "learningObjectives": [
+              "Reproduce a failure.",
+              "Use logs and targeted tests to isolate the cause."
+            ],
+            "notes": [
+              "A useful debugging loop is reproduce → narrow → hypothesize → change → verify → regression-test."
+            ],
+            "resources": [
+              {
+                "title": "Node.js documentation",
+                "url": "https://nodejs.org/en/docs"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Code review and technical documentation",
+            "description": "Review a backend change for correctness and explain the important decisions.",
+            "learningObjectives": [
+              "Identify correctness, security and performance issues.",
+              "Write a focused technical decision note."
+            ],
+            "notes": [
+              "Review should prioritize user-visible correctness and risk. Documentation should explain decisions that are not obvious from code."
+            ],
+            "resources": [
+              {
+                "title": "Git documentation",
+                "url": "https://git-scm.com/docs"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Perform a security and maintainability review",
+            "level": "Advanced",
+            "description": "Review an API change for authorization, validation, SQL safety, error handling and test coverage.",
+            "problemStatement": "A teammate submits a project-membership endpoint that trusts a role in the request body and concatenates a user-provided sort field.",
+            "objectives": [
+              "Identify at least four concrete risks.",
+              "Propose corrected implementation patterns.",
+              "Add regression tests for the authorization boundary."
+            ],
+            "requirements": [
+              "Base findings on actual API behavior and code.",
+              "Do not invent vulnerabilities unrelated to the code."
+            ],
+            "constraints": [
+              "Trace every untrusted value from HTTP boundary to database or authorization decision."
+            ],
+            "hint": "Trace each value from the request boundary to its authorization decision and SQL construction before deciding whether the change is safe.",
+            "solutionCode": "// Corrected patterns\nconst allowedSort = { createdAt: 'created_at', priority: 'priority' } as const;\nconst sortColumn = allowedSort[input.sortBy ?? 'createdAt'];\n\nconst membership = await pool.query(\n  'SELECT role FROM project_members WHERE project_id = $1 AND user_id = $2',\n  [projectId, userId]\n);\nif (membership.rowCount === 0) throw new ForbiddenError();",
+            "solutionExplanation": "The corrected version derives authorization from stored membership and maps dynamic SQL identifiers from a fixed allow-list. These controls address common API authorization and injection risks."
+          }
+        ],
+        "deliverables": [
+          "Review report",
+          "Regression tests",
+          "Technical decision note"
+        ],
+        "assessment": {
+          "focus": [
+            "problem solving",
+            "security review",
+            "maintainability",
+            "communication"
+          ]
+        }
+      },
+      {
+        "id": "module-final",
+        "title": "Final Backend Engineering Project",
+        "description": "Demonstrate the complete backend engineering workflow by building, testing, securing, documenting and packaging the issue-tracking API.",
+        "objectives": [
+          "Deliver one coherent backend system.",
+          "Explain architectural and security decisions.",
+          "Demonstrate automated verification and operational readiness."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-28",
+            "title": "Final project execution and evaluation",
+            "description": "Use the final project specification as the authoritative assessment brief and prepare a reviewable repository.",
+            "learningObjectives": [
+              "Execute the project plan in slices.",
+              "Prepare evidence for testing, security and design decisions."
+            ],
+            "notes": [
+              "The final project is assessed as an engineering artifact: correctness, security, maintainability, tests, documentation and operational behavior all matter."
+            ],
+            "resources": [
+              {
+                "title": "Node.js documentation",
+                "url": "https://nodejs.org/en/docs"
+              },
+              {
+                "title": "Express.js middleware guide",
+                "url": "https://expressjs.com/en/guide/using-middleware.html"
+              },
+              {
+                "title": "Express.js error handling guide",
+                "url": "https://expressjs.com/en/guide/error-handling.html"
+              },
+              {
+                "title": "Express.js routing guide",
+                "url": "https://expressjs.com/en/guide/routing.html"
+              },
+              {
+                "title": "PostgreSQL 18 documentation",
+                "url": "https://www.postgresql.org/docs/current/"
+              },
+              {
+                "title": "PostgreSQL tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial.html"
+              },
+              {
+                "title": "OWASP API Security Top 10",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              },
+              {
+                "title": "OWASP REST Security Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html"
+              },
+              {
+                "title": "OpenAPI Specification",
+                "url": "https://spec.openapis.org/oas/latest.html"
+              },
+              {
+                "title": "Docker Node.js guide",
+                "url": "https://docs.docker.com/guides/nodejs/"
+              },
+              {
+                "title": "npm audit documentation",
+                "url": "https://docs.npmjs.com/cli/v11/commands/npm-audit/"
+              },
+              {
+                "title": "Git documentation",
+                "url": "https://git-scm.com/docs"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "heading": "Build a Production-Ready Issue Tracking REST API",
+          "description": "Build a backend-only issue tracking service for small engineering teams. Authenticated users can belong to projects, create and manage issues according to project roles, search and paginate issues, and inspect an audit trail. The project consolidates HTTP API design, TypeScript, PostgreSQL, authentication, authorization, validation, testing, documentation, security and containerized operations.",
+          "problemStatement": "A small engineering team needs a reliable API for tracking work without giving users access to projects or issues they do not control. The existing manual process provides no consistent validation, audit history, authorization boundary, or repeatable deployment. Build the service that would sit behind a web or mobile client.",
+          "objectives": [
+            "Design a maintainable backend architecture.",
+            "Implement secure authentication and object-level authorization.",
+            "Persist relational data with constraints, indexes and transactions.",
+            "Expose a documented REST API with pagination and filtering.",
+            "Create automated unit and HTTP integration tests.",
+            "Package the service for reproducible local execution with Docker."
+          ],
+          "requirements": {
+            "functional": [
+              "Register a user with a unique email and securely hashed password.",
+              "Authenticate a user and issue a short-lived access token.",
+              "Create projects and manage project membership according to role.",
+              "Create, read, update and archive issues within authorized projects.",
+              "Support issue status and priority values enforced by application and database rules.",
+              "List issues with bounded pagination, status filtering and whitelisted sorting.",
+              "Record audit events for security-relevant project and issue mutations.",
+              "Expose health and readiness endpoints."
+            ],
+            "technical": [
+              "Node.js with TypeScript.",
+              "Express 5 for HTTP routing and middleware.",
+              "PostgreSQL for persistence.",
+              "node-postgres for parameterized SQL and transactions.",
+              "Zod for runtime validation.",
+              "bcryptjs for password hashing.",
+              "JWT access tokens with a server-side signing secret.",
+              "Vitest and Supertest for automated tests.",
+              "OpenAPI documentation for the HTTP contract.",
+              "Docker and Docker Compose for local reproducibility."
+            ],
+            "database": [
+              "Users, projects, project_members, issues and audit_events tables.",
+              "Primary and foreign keys with appropriate uniqueness and check constraints.",
+              "Indexes supporting project issue lists and audit lookups.",
+              "Transactional issue creation with its audit event."
+            ],
+            "security": [
+              "Never store plaintext passwords.",
+              "Never trust client-supplied roles or ownership claims.",
+              "Validate request bodies and query parameters.",
+              "Use parameterized SQL for values and fixed server-side mappings for dynamic SQL fragments.",
+              "Do not log passwords, bearer tokens or secrets.",
+              "Use secure environment configuration and a strong production JWT secret.",
+              "Return safe error responses without stack traces in production.",
+              "Review dependencies with npm audit."
+            ],
+            "testing": [
+              "Unit-test validation and authorization rules.",
+              "Integration-test authentication, authorization, CRUD paths and error responses.",
+              "Test transaction failure behavior where practical.",
+              "Verify health and readiness behavior."
+            ],
+            "deployment": [
+              "Build a production image from a multi-stage Dockerfile.",
+              "Provide runtime environment variables separately from source control.",
+              "Run the API and PostgreSQL as separate services in Compose for local deployment.",
+              "Document migration and rollback considerations."
+            ]
+          },
+          "features": [
+            {
+              "name": "Account registration",
+              "behavior": "Accept a validated email and password, hash the password, and create a user while enforcing email uniqueness."
+            },
+            {
+              "name": "Login",
+              "behavior": "Verify credentials and issue a short-lived signed access token without returning password material."
+            },
+            {
+              "name": "Project management",
+              "behavior": "Create projects and maintain project membership with OWNER, MAINTAINER and MEMBER roles."
+            },
+            {
+              "name": "Issue lifecycle",
+              "behavior": "Create, update and archive issues only when the authenticated user has permission in the containing project."
+            },
+            {
+              "name": "Issue search",
+              "behavior": "Return bounded pages of issues with status filtering and a server-side whitelist for sort fields and direction."
+            },
+            {
+              "name": "Audit trail",
+              "behavior": "Record important mutations with actor, action, entity type, entity ID and timestamp."
+            },
+            {
+              "name": "Operational endpoints",
+              "behavior": "Provide liveness and database readiness endpoints with safe status responses."
+            }
+          ],
+          "technologyStack": [
+            {
+              "name": "Node.js",
+              "purpose": "JavaScript runtime for the backend service.",
+              "role": "Runs the HTTP API and application code.",
+              "why": "It is a widely used server-side JavaScript runtime with official documentation covering HTTP servers, tests, streams and tooling."
+            },
+            {
+              "name": "TypeScript",
+              "purpose": "Static type checking for JavaScript code.",
+              "role": "Defines application and API types and catches many errors before runtime.",
+              "why": "It improves maintainability of a multi-module backend without changing the runtime model."
+            },
+            {
+              "name": "Express 5",
+              "purpose": "HTTP routing and middleware framework.",
+              "role": "Maps HTTP requests to route handlers and middleware and centralizes error handling.",
+              "why": "Its routing and middleware model is compact enough for interns to learn while still supporting realistic APIs."
+            },
+            {
+              "name": "PostgreSQL",
+              "purpose": "Relational database.",
+              "role": "Persists users, projects, issues and audit records with constraints and indexes.",
+              "why": "It teaches relational modeling, transactions, constraints and query planning in a production-relevant database."
+            },
+            {
+              "name": "node-postgres (pg)",
+              "purpose": "PostgreSQL client for Node.js.",
+              "role": "Executes parameterized SQL and transactions from the service layer.",
+              "why": "It exposes SQL directly, making database behavior visible rather than hiding it behind an ORM."
+            },
+            {
+              "name": "Zod",
+              "purpose": "Runtime schema validation.",
+              "role": "Validates request bodies, query parameters and environment configuration.",
+              "why": "Backend APIs must treat external input as untrusted; schema validation makes that boundary explicit."
+            },
+            {
+              "name": "JSON Web Tokens (JWT)",
+              "purpose": "Signed access-token format.",
+              "role": "Carries authenticated user identity between requests.",
+              "why": "It is useful for teaching stateless API authentication, while the internship also teaches token lifetime and secret management."
+            },
+            {
+              "name": "bcryptjs",
+              "purpose": "Password hashing library.",
+              "role": "Hashes and verifies passwords without storing plaintext credentials.",
+              "why": "Password storage is a core backend security responsibility."
+            },
+            {
+              "name": "Vitest + Supertest",
+              "purpose": "Unit and HTTP integration testing.",
+              "role": "Tests services, middleware and API endpoints.",
+              "why": "The internship must teach repeatable automated verification, not only manual requests."
+            },
+            {
+              "name": "Docker",
+              "purpose": "Container runtime and packaging workflow.",
+              "role": "Packages the API and runs PostgreSQL locally as a reproducible development stack.",
+              "why": "Containerized backend development is directly supported by current Docker guidance."
+            }
+          ],
+          "architecture": {
+            "style": "Layered modular REST API",
+            "components": [
+              "HTTP routes/controllers",
+              "Validation schemas",
+              "Authentication middleware",
+              "Authorization policies",
+              "Application services",
+              "PostgreSQL repositories",
+              "Configuration and logging",
+              "Operational endpoints"
+            ],
+            "dataFlow": "Client → Express middleware → authentication/validation → route handler → application service → parameterized PostgreSQL query/transaction → mapped response → client",
+            "securityBoundaries": [
+              "HTTP input is untrusted until validated.",
+              "Authentication establishes identity; authorization establishes permission.",
+              "Repository functions are the only layer that constructs SQL.",
+              "Configuration loads secrets at process startup and does not expose them to responses."
+            ]
+          },
+          "projectStructure": [
+            "issue-tracker-api/",
+            "src/app.ts",
+            "src/server.ts",
+            "src/config/env.ts",
+            "src/db/pool.ts",
+            "src/db/migrations/001_init.sql",
+            "src/middleware/authenticate.ts",
+            "src/middleware/error-handler.ts",
+            "src/middleware/request-id.ts",
+            "src/modules/auth/auth.routes.ts",
+            "src/modules/auth/auth.service.ts",
+            "src/modules/projects/project.routes.ts",
+            "src/modules/projects/project.service.ts",
+            "src/modules/issues/issue.routes.ts",
+            "src/modules/issues/issue.service.ts",
+            "src/modules/issues/issue.repository.ts",
+            "src/shared/errors.ts",
+            "src/shared/validation.ts",
+            "tests/auth.test.ts",
+            "tests/issues.test.ts",
+            "Dockerfile",
+            "compose.yaml",
+            "openapi.yaml",
+            "package.json",
+            "tsconfig.json",
+            ".env.example",
+            "README.md"
+          ],
+          "setupRequirements": [
+            "Node.js supported by the current Node.js release line used for the internship project.",
+            "npm",
+            "Docker Desktop or Docker Engine with Compose",
+            "Git",
+            "A PostgreSQL client is optional because the database runs in the container."
+          ],
+          "implementationSteps": [
+            "Initialize the TypeScript project and install runtime/development dependencies.",
+            "Create and validate environment configuration.",
+            "Create the PostgreSQL schema and indexes.",
+            "Implement a shared database pool and transaction helper.",
+            "Implement application error types and final error middleware.",
+            "Implement registration and login with password hashing and JWT verification.",
+            "Implement project membership and authorization policies.",
+            "Implement issue CRUD, filtering, pagination and transactional audit logging.",
+            "Add request-ID logging and health/readiness endpoints.",
+            "Write unit and HTTP integration tests for happy paths and security failures.",
+            "Write the OpenAPI contract and compare it with the running routes.",
+            "Build the Docker image and run API plus PostgreSQL through Compose.",
+            "Run tests, type-checking and npm audit; fix findings that apply.",
+            "Perform a manual security and consistency review.",
+            "Document startup, migrations, configuration, troubleshooting and rollback considerations."
+          ],
+          "setupCommands": [
+            "npm install",
+            "npm run typecheck",
+            "npm test",
+            "npm run build",
+            "docker compose up --build",
+            "npm audit"
+          ],
+          "environmentVariables": [
+            "PORT",
+            "DATABASE_URL",
+            "JWT_SECRET",
+            "JWT_EXPIRES_IN",
+            "NODE_ENV"
+          ],
+          "testingPlan": [
+            "Run unit tests for validation, error mapping and authorization policy.",
+            "Run integration tests against an isolated PostgreSQL database.",
+            "Verify 401 for missing/invalid credentials and 403 for authenticated but unauthorized users.",
+            "Verify 400 for malformed input and 409 for uniqueness conflicts.",
+            "Verify transaction rollback by forcing the audit insert to fail in a controlled test.",
+            "Verify health returns 200 and readiness changes when database connectivity is unavailable."
+          ],
+          "securityReview": [
+            "Authentication and authorization are separate controls.",
+            "Object-level authorization is checked using trusted database relationships.",
+            "Passwords are hashed and never returned.",
+            "SQL values are parameterized.",
+            "Dynamic SQL identifiers are selected from fixed server-side maps.",
+            "Request body size and schema validation are enforced.",
+            "Secrets are environment configuration, not source code.",
+            "Production errors do not expose stack traces.",
+            "Dependencies are checked with npm audit."
+          ],
+          "performanceReview": [
+            "Use a connection pool rather than opening a connection per query.",
+            "Index issue lookups by project and common filter/order combinations after observing query patterns.",
+            "Bound page size to prevent unbounded result sets.",
+            "Use EXPLAIN ANALYZE on representative queries before changing indexes.",
+            "Measure latency and database time rather than claiming a benchmark without measurement."
+          ],
+          "deploymentGuidance": [
+            "Build the multi-stage Docker image.",
+            "Provide production environment variables through the deployment environment or secret manager.",
+            "Run database migrations as a controlled release step.",
+            "Expose only the API port publicly; keep PostgreSQL on an internal network in real deployments.",
+            "Configure health/readiness checks with the deployment platform.",
+            "Keep a rollback plan for both application and database changes; prefer backward-compatible migrations when rolling deployments are used."
+          ],
+          "troubleshooting": [
+            {
+              "symptom": "API cannot connect to PostgreSQL",
+              "checks": [
+                "Verify DATABASE_URL points to the Compose service hostname from inside the API container.",
+                "Check container health and logs.",
+                "Confirm migrations ran against the expected database."
+              ]
+            },
+            {
+              "symptom": "401 on a valid-looking token",
+              "checks": [
+                "Confirm the same JWT secret is used for signing and verification.",
+                "Check expiration and token format.",
+                "Check Authorization header format."
+              ]
+            },
+            {
+              "symptom": "403 for project mutation",
+              "checks": [
+                "Verify project membership exists.",
+                "Verify the stored role permits the action.",
+                "Do not trust a role supplied by the client."
+              ]
+            }
+          ],
+          "fileWiseSolution": [
+            {
+              "path": "package.json",
+              "purpose": "Defines runtime/development dependencies and repeatable scripts.",
+              "explanation": "The scripts make type-checking, tests and production builds explicit.",
+              "code": "{\n  \"name\": \"issue-tracker-api\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"tsx watch src/server.ts\",\n    \"build\": \"tsc -p tsconfig.json\",\n    \"start\": \"node dist/server.js\",\n    \"typecheck\": \"tsc -p tsconfig.json --noEmit\",\n    \"test\": \"vitest run\"\n  },\n  \"dependencies\": {\n    \"bcryptjs\": \"^3.0.2\",\n    \"express\": \"^5.1.0\",\n    \"jsonwebtoken\": \"^9.0.2\",\n    \"pg\": \"^8.16.3\",\n    \"zod\": \"^4.1.5\"\n  },\n  \"devDependencies\": {\n    \"@types/bcryptjs\": \"^2.4.6\",\n    \"@types/express\": \"^5.0.3\",\n    \"@types/jsonwebtoken\": \"^9.0.10\",\n    \"@types/node\": \"^24.3.0\",\n    \"@types/pg\": \"^8.15.5\",\n    \"supertest\": \"^7.1.4\",\n    \"tsx\": \"^4.20.5\",\n    \"typescript\": \"^5.9.2\",\n    \"vitest\": \"^3.2.4\"\n  }\n}"
+            },
+            {
+              "path": "tsconfig.json",
+              "purpose": "Enables strict TypeScript compilation and emits runnable ESM JavaScript.",
+              "explanation": "Strict mode exposes unsafe assumptions early and the output directory is deterministic.",
+              "code": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2022\",\n    \"module\": \"NodeNext\",\n    \"moduleResolution\": \"NodeNext\",\n    \"rootDir\": \"src\",\n    \"outDir\": \"dist\",\n    \"strict\": true,\n    \"esModuleInterop\": true,\n    \"skipLibCheck\": true\n  },\n  \"include\": [\"src/**/*.ts\"]\n}"
+            },
+            {
+              "path": ".env.example",
+              "purpose": "Documents required runtime configuration without committing secrets.",
+              "explanation": "The example contains placeholders only; real values belong in the deployment environment.",
+              "code": "PORT=3000\nDATABASE_URL=postgres://app:change-me@localhost:5432/issue_tracker\nJWT_SECRET=replace-with-a-long-random-secret\nJWT_EXPIRES_IN=15m\nNODE_ENV=development"
+            },
+            {
+              "path": "src/config/env.ts",
+              "purpose": "Loads and validates environment variables once at startup.",
+              "explanation": "Configuration failures should stop startup rather than become mysterious runtime failures.",
+              "code": "import { z } from \"zod\";\n\nconst schema = z.object({\n  PORT: z.coerce.number().int().positive().default(3000),\n  DATABASE_URL: z.string().min(1),\n  JWT_SECRET: z.string().min(32),\n  JWT_EXPIRES_IN: z.string().default(\"15m\"),\n  NODE_ENV: z.enum([\"development\", \"test\", \"production\"]).default(\"development\")\n});\n\nexport const env = schema.parse(process.env);"
+            },
+            {
+              "path": "src/db/pool.ts",
+              "purpose": "Creates the PostgreSQL connection pool and exposes a readiness check.",
+              "explanation": "The pool reuses database connections and centralizes database connectivity.",
+              "code": "import pg from \"pg\";\nimport { env } from \"../config/env.js\";\n\nconst { Pool } = pg;\nexport const pool = new Pool({ connectionString: env.DATABASE_URL, max: 10 });\n\nexport async function isDatabaseReady(): Promise<boolean> {\n  try {\n    await pool.query(\"SELECT 1\");\n    return true;\n  } catch {\n    return false;\n  }\n}"
+            },
+            {
+              "path": "src/shared/errors.ts",
+              "purpose": "Defines application errors with safe HTTP status mapping.",
+              "explanation": "Services throw typed errors and the final middleware decides how they are exposed to clients.",
+              "code": "export class AppError extends Error {\n  constructor(public readonly status: number, message: string, public readonly code: string) {\n    super(message);\n  }\n}\n\nexport class UnauthorizedError extends AppError {\n  constructor(message = \"Authentication required\") { super(401, message, \"UNAUTHORIZED\"); }\n}\nexport class ForbiddenError extends AppError {\n  constructor(message = \"Forbidden\") { super(403, message, \"FORBIDDEN\"); }\n}\nexport class NotFoundError extends AppError {\n  constructor(message = \"Resource not found\") { super(404, message, \"NOT_FOUND\"); }\n}\nexport class ConflictError extends AppError {\n  constructor(message = \"Conflict\") { super(409, message, \"CONFLICT\"); }\n}"
+            },
+            {
+              "path": "src/middleware/error-handler.ts",
+              "purpose": "Converts application and unknown errors into safe JSON responses.",
+              "explanation": "It is registered last so it can observe errors from earlier middleware and routes.",
+              "code": "import type { ErrorRequestHandler } from \"express\";\nimport { AppError } from \"../shared/errors.js\";\nimport { env } from \"../config/env.js\";\n\nexport const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {\n  if (res.headersSent) return next(err);\n  if (err instanceof AppError) {\n    return res.status(err.status).json({ error: { code: err.code, message: err.message } });\n  }\n  if (env.NODE_ENV !== \"production\") console.error(err);\n  return res.status(500).json({ error: { code: \"INTERNAL_ERROR\", message: \"Internal server error\" } });\n};"
+            },
+            {
+              "path": "src/middleware/authenticate.ts",
+              "purpose": "Verifies bearer access tokens and attaches the authenticated user identity.",
+              "explanation": "Authentication is a middleware concern; authorization remains a service/policy concern.",
+              "code": "import type { RequestHandler } from \"express\";\nimport jwt from \"jsonwebtoken\";\nimport { env } from \"../config/env.js\";\nimport { UnauthorizedError } from \"../shared/errors.js\";\n\ndeclare global {\n  namespace Express { interface Request { user?: { id: string; email: string }; } }\n}\n\nexport const authenticate: RequestHandler = (req, _res, next) => {\n  const header = req.header(\"authorization\");\n  if (!header?.startsWith(\"Bearer \")) return next(new UnauthorizedError());\n  try {\n    const payload = jwt.verify(header.slice(7), env.JWT_SECRET);\n    if (typeof payload !== \"object\" || typeof payload.sub !== \"string\" || typeof payload.email !== \"string\") {\n      return next(new UnauthorizedError(\"Invalid access token\"));\n    }\n    req.user = { id: payload.sub, email: payload.email };\n    return next();\n  } catch { return next(new UnauthorizedError(\"Invalid access token\")); }\n};"
+            },
+            {
+              "path": "src/middleware/request-id.ts",
+              "purpose": "Adds a request identifier for correlation in logs and responses.",
+              "explanation": "The identifier is operational metadata and contains no secret material.",
+              "code": "import { randomUUID } from \"node:crypto\";\nimport type { RequestHandler } from \"express\";\n\nexport const requestId: RequestHandler = (req, res, next) => {\n  const id = req.header(\"x-request-id\") ?? randomUUID();\n  res.setHeader(\"x-request-id\", id);\n  next();\n};"
+            },
+            {
+              "path": "src/app.ts",
+              "purpose": "Builds the Express application and registers middleware and routes.",
+              "explanation": "Keeping app construction separate from server startup makes HTTP integration tests easier.",
+              "code": "import express from \"express\";\nimport { requestId } from \"./middleware/request-id.js\";\nimport { errorHandler } from \"./middleware/error-handler.js\";\nimport { isDatabaseReady } from \"./db/pool.js\";\nimport { authRouter } from \"./modules/auth/auth.routes.js\";\nimport { projectRouter } from \"./modules/projects/project.routes.js\";\nimport { issueRouter } from \"./modules/issues/issue.routes.js\";\n\nexport function createApp() {\n  const app = express();\n  app.disable(\"x-powered-by\");\n  app.use(requestId);\n  app.use(express.json({ limit: \"32kb\" }));\n  app.get(\"/health\", (_req, res) => res.json({ status: \"ok\" }));\n  app.get(\"/ready\", async (_req, res) => {\n    const ready = await isDatabaseReady();\n    return res.status(ready ? 200 : 503).json({ status: ready ? \"ready\" : \"not_ready\" });\n  });\n  app.use(\"/api/v1/auth\", authRouter);\n  app.use(\"/api/v1/projects\", projectRouter);\n  app.use(\"/api/v1\", issueRouter);\n  app.use(errorHandler);\n  return app;\n}"
+            },
+            {
+              "path": "src/server.ts",
+              "purpose": "Starts the HTTP server and handles graceful shutdown.",
+              "explanation": "The process owns startup and termination; the app module remains testable without binding a port.",
+              "code": "import { createServer } from \"node:http\";\nimport { createApp } from \"./app.js\";\nimport { env } from \"./config/env.js\";\nimport { pool } from \"./db/pool.js\";\n\nconst server = createServer(createApp());\nserver.listen(env.PORT, () => console.log(`API listening on ${env.PORT}`));\n\nasync function shutdown() {\n  server.close(async () => {\n    await pool.end();\n    process.exit(0);\n  });\n}\n\nprocess.on(\"SIGTERM\", shutdown);\nprocess.on(\"SIGINT\", shutdown);"
+            },
+            {
+              "path": "src/db/migrations/001_init.sql",
+              "purpose": "Creates the relational schema, constraints and indexes required by the project.",
+              "explanation": "The database enforces important invariants even if another client bypasses the API.",
+              "code": "CREATE EXTENSION IF NOT EXISTS pgcrypto;\n\nCREATE TABLE users (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  email text NOT NULL UNIQUE,\n  password_hash text NOT NULL,\n  created_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE TABLE projects (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  name text NOT NULL,\n  key text NOT NULL UNIQUE,\n  created_by uuid NOT NULL REFERENCES users(id),\n  created_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE TABLE project_members (\n  project_id uuid NOT NULL REFERENCES projects(id) ON DELETE CASCADE,\n  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  role text NOT NULL CHECK (role IN ('OWNER','MAINTAINER','MEMBER')),\n  PRIMARY KEY (project_id, user_id)\n);\n\nCREATE TABLE issues (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  project_id uuid NOT NULL REFERENCES projects(id) ON DELETE CASCADE,\n  title text NOT NULL CHECK (length(title) BETWEEN 1 AND 200),\n  description text NOT NULL DEFAULT '',\n  status text NOT NULL DEFAULT 'OPEN' CHECK (status IN ('OPEN','IN_PROGRESS','DONE','ARCHIVED')),\n  priority text NOT NULL DEFAULT 'MEDIUM' CHECK (priority IN ('LOW','MEDIUM','HIGH','URGENT')),\n  created_by uuid NOT NULL REFERENCES users(id),\n  created_at timestamptz NOT NULL DEFAULT now(),\n  updated_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE INDEX issues_project_created_idx ON issues(project_id, created_at DESC);\nCREATE INDEX issues_project_status_idx ON issues(project_id, status);\n\nCREATE TABLE audit_events (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  actor_id uuid NOT NULL REFERENCES users(id),\n  action text NOT NULL,\n  entity_type text NOT NULL,\n  entity_id uuid NOT NULL,\n  created_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE INDEX audit_entity_idx ON audit_events(entity_type, entity_id, created_at DESC);"
+            },
+            {
+              "path": "src/shared/validation.ts",
+              "purpose": "Centralizes reusable Zod schemas for authentication, projects and issues.",
+              "explanation": "These schemas define runtime input contracts before values reach services or SQL.",
+              "code": "import { z } from \"zod\";\n\nexport const registerSchema = z.object({\n  email: z.string().email().max(320).transform(v => v.trim().toLowerCase()),\n  password: z.string().min(12).max(128)\n});\n\nexport const loginSchema = registerSchema;\nexport const projectSchema = z.object({\n  name: z.string().trim().min(1).max(120),\n  key: z.string().trim().regex(/^[A-Z][A-Z0-9_-]{1,9}$/)\n});\nexport const issueSchema = z.object({\n  title: z.string().trim().min(1).max(200),\n  description: z.string().max(10000).default(\"\"),\n  status: z.enum([\"OPEN\",\"IN_PROGRESS\",\"DONE\",\"ARCHIVED\"]).default(\"OPEN\"),\n  priority: z.enum([\"LOW\",\"MEDIUM\",\"HIGH\",\"URGENT\"]).default(\"MEDIUM\")\n});\nexport const issueListSchema = z.object({\n  page: z.coerce.number().int().min(1).default(1),\n  pageSize: z.coerce.number().int().min(1).max(100).default(25),\n  status: z.enum([\"OPEN\",\"IN_PROGRESS\",\"DONE\",\"ARCHIVED\"]).optional(),\n  sortBy: z.enum([\"createdAt\",\"priority\"]).default(\"createdAt\"),\n  direction: z.enum([\"asc\",\"desc\"]).default(\"desc\")\n});"
+            },
+            {
+              "path": "src/modules/auth/auth.service.ts",
+              "purpose": "Implements registration and login using bcrypt and signed access tokens.",
+              "explanation": "The service owns credential handling and does not return password hashes. Database uniqueness conflicts are mapped to a safe application error.",
+              "code": "import bcrypt from \"bcryptjs\";\nimport jwt from \"jsonwebtoken\";\nimport { pool } from \"../../db/pool.js\";\nimport { env } from \"../../config/env.js\";\nimport { ConflictError, UnauthorizedError } from \"../../shared/errors.js\";\n\nexport async function register(email: string, password: string) {\n  const hash = await bcrypt.hash(password, 12);\n  try {\n    const result = await pool.query(\n      \"INSERT INTO users(email, password_hash) VALUES ($1,$2) RETURNING id, email, created_at\",\n      [email, hash]\n    );\n    return result.rows[0];\n  } catch (error: any) {\n    if (error?.code === \"23505\") throw new ConflictError(\"Email is already registered\");\n    throw error;\n  }\n}\n\nexport async function login(email: string, password: string) {\n  const result = await pool.query(\"SELECT id, email, password_hash FROM users WHERE email = $1\", [email]);\n  if (result.rowCount !== 1) throw new UnauthorizedError(\"Invalid credentials\");\n  const user = result.rows[0];\n  const valid = await bcrypt.compare(password, user.password_hash);\n  if (!valid) throw new UnauthorizedError(\"Invalid credentials\");\n  const token = jwt.sign({ email: user.email }, env.JWT_SECRET, { subject: user.id, expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions[\"expiresIn\"] });\n  return { accessToken: token, user: { id: user.id, email: user.email } };\n}"
+            },
+            {
+              "path": "src/modules/auth/auth.routes.ts",
+              "purpose": "Defines registration and login HTTP endpoints with runtime validation.",
+              "explanation": "Routes remain thin: parse input, call the service, and return the HTTP contract.",
+              "code": "import { Router } from \"express\";\nimport { login, register } from \"./auth.service.js\";\nimport { loginSchema, registerSchema } from \"../../shared/validation.js\";\n\nexport const authRouter = Router();\n\nauthRouter.post(\"/register\", async (req, res, next) => {\n  try {\n    const input = registerSchema.parse(req.body);\n    const user = await register(input.email, input.password);\n    return res.status(201).json({ user });\n  } catch (error) { next(error); }\n});\n\nauthRouter.post(\"/login\", async (req, res, next) => {\n  try {\n    const input = loginSchema.parse(req.body);\n    const result = await login(input.email, input.password);\n    return res.status(200).json(result);\n  } catch (error) { next(error); }\n});"
+            },
+            {
+              "path": "src/modules/projects/project.service.ts",
+              "purpose": "Implements project creation and membership-aware project reads.",
+              "explanation": "The creator is inserted as OWNER in the same transaction as the project to avoid an ownerless project.",
+              "code": "import { pool } from \"../../db/pool.js\";\nimport { ConflictError } from \"../../shared/errors.js\";\n\nexport async function createProject(userId: string, name: string, key: string) {\n  const client = await pool.connect();\n  try {\n    await client.query(\"BEGIN\");\n    const project = await client.query(\n      \"INSERT INTO projects(name, key, created_by) VALUES ($1,$2,$3) RETURNING id, name, key, created_at\",\n      [name, key, userId]\n    );\n    await client.query(\n      \"INSERT INTO project_members(project_id, user_id, role) VALUES ($1,$2,'OWNER')\",\n      [project.rows[0].id, userId]\n    );\n    await client.query(\"COMMIT\");\n    return project.rows[0];\n  } catch (error: any) {\n    await client.query(\"ROLLBACK\");\n    if (error?.code === \"23505\") throw new ConflictError(\"Project key already exists\");\n    throw error;\n  } finally { client.release(); }\n}\n\nexport async function getMembership(projectId: string, userId: string) {\n  const result = await pool.query(\n    \"SELECT role FROM project_members WHERE project_id = $1 AND user_id = $2\",\n    [projectId, userId]\n  );\n  return result.rows[0] as { role: string } | undefined;\n}"
+            },
+            {
+              "path": "src/modules/projects/project.routes.ts",
+              "purpose": "Defines authenticated project creation.",
+              "explanation": "Project creation uses the authenticated identity rather than accepting an owner ID from the request body.",
+              "code": "import { Router } from \"express\";\nimport { authenticate } from \"../../middleware/authenticate.js\";\nimport { projectSchema } from \"../../shared/validation.js\";\nimport { createProject } from \"./project.service.js\";\nimport { UnauthorizedError } from \"../../shared/errors.js\";\n\nexport const projectRouter = Router();\nprojectRouter.use(authenticate);\n\nprojectRouter.post(\"/\", async (req, res, next) => {\n  try {\n    if (!req.user) throw new UnauthorizedError();\n    const input = projectSchema.parse(req.body);\n    const project = await createProject(req.user.id, input.name, input.key);\n    return res.status(201).json({ project });\n  } catch (error) { next(error); }\n});"
+            },
+            {
+              "path": "src/modules/issues/issue.repository.ts",
+              "purpose": "Contains parameterized SQL for issue reads and writes.",
+              "explanation": "The repository owns SQL and uses fixed SQL fragments for the small set of dynamic sort choices.",
+              "code": "import { pool } from \"../../db/pool.js\";\n\nconst sortColumns = { createdAt: \"created_at\", priority: \"priority\" } as const;\n\nexport async function createIssue(projectId: string, userId: string, input: { title: string; description: string; status: string; priority: string }) {\n  const client = await pool.connect();\n  try {\n    await client.query(\"BEGIN\");\n    const issue = await client.query(\n      \"INSERT INTO issues(project_id,title,description,status,priority,created_by) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, project_id, title, description, status, priority, created_at, updated_at\",\n      [projectId, input.title, input.description, input.status, input.priority, userId]\n    );\n    await client.query(\n      \"INSERT INTO audit_events(actor_id,action,entity_type,entity_id) VALUES ($1,'issue.created','issue',$2)\",\n      [userId, issue.rows[0].id]\n    );\n    await client.query(\"COMMIT\");\n    return issue.rows[0];\n  } catch (error) {\n    await client.query(\"ROLLBACK\");\n    throw error;\n  } finally { client.release(); }\n}\n\nexport async function listIssues(projectId: string, input: { page: number; pageSize: number; status?: string; sortBy: keyof typeof sortColumns; direction: \"asc\"|\"desc\" }) {\n  const column = sortColumns[input.sortBy];\n  const direction = input.direction === \"asc\" ? \"ASC\" : \"DESC\";\n  const offset = (input.page - 1) * input.pageSize;\n  const values: unknown[] = [projectId];\n  let where = \"WHERE project_id = $1\";\n  if (input.status) { values.push(input.status); where += ` AND status = $${values.length}`; }\n  values.push(input.pageSize, offset);\n  const result = await pool.query(\n    `SELECT id, project_id, title, description, status, priority, created_at, updated_at FROM issues ${where} ORDER BY ${column} ${direction}, id ASC LIMIT $${values.length - 1} OFFSET $${values.length}` ,\n    values\n  );\n  return result.rows;\n}"
+            },
+            {
+              "path": "src/modules/issues/issue.service.ts",
+              "purpose": "Applies authorization before issue creation/listing.",
+              "explanation": "The service checks stored project membership and role rather than trusting request claims.",
+              "code": "import { ForbiddenError } from \"../../shared/errors.js\";\nimport { getMembership } from \"../projects/project.service.js\";\nimport { createIssue, listIssues } from \"./issue.repository.js\";\n\nasync function assertMember(userId: string, projectId: string, write = false) {\n  const membership = await getMembership(projectId, userId);\n  if (!membership) throw new ForbiddenError(\"You are not a member of this project\");\n  if (write && ![\"OWNER\", \"MAINTAINER\"].includes(membership.role)) {\n    throw new ForbiddenError(\"You are not allowed to modify this project\");\n  }\n}\n\nexport async function createProjectIssue(userId: string, projectId: string, input: { title: string; description: string; status: string; priority: string }) {\n  await assertMember(userId, projectId, true);\n  return createIssue(projectId, userId, input);\n}\n\nexport async function getProjectIssues(userId: string, projectId: string, input: { page: number; pageSize: number; status?: string; sortBy: \"createdAt\"|\"priority\"; direction: \"asc\"|\"desc\" }) {\n  await assertMember(userId, projectId);\n  return listIssues(projectId, input);\n}"
+            },
+            {
+              "path": "src/modules/issues/issue.routes.ts",
+              "purpose": "Defines authenticated issue creation and listing endpoints.",
+              "explanation": "Both endpoints derive the user identity from the verified access token and validate all client input.",
+              "code": "import { Router } from \"express\";\nimport { authenticate } from \"../../middleware/authenticate.js\";\nimport { issueListSchema, issueSchema } from \"../../shared/validation.js\";\nimport { UnauthorizedError } from \"../../shared/errors.js\";\nimport { createProjectIssue, getProjectIssues } from \"./issue.service.js\";\n\nexport const issueRouter = Router();\nissueRouter.use(authenticate);\n\nissueRouter.post(\"/projects/:projectId/issues\", async (req, res, next) => {\n  try {\n    if (!req.user) throw new UnauthorizedError();\n    const input = issueSchema.parse(req.body);\n    const issue = await createProjectIssue(req.user.id, req.params.projectId, input);\n    return res.status(201).json({ issue });\n  } catch (error) { next(error); }\n});\n\nissueRouter.get(\"/projects/:projectId/issues\", async (req, res, next) => {\n  try {\n    if (!req.user) throw new UnauthorizedError();\n    const input = issueListSchema.parse(req.query);\n    const issues = await getProjectIssues(req.user.id, req.params.projectId, input);\n    return res.status(200).json({ issues, page: input.page, pageSize: input.pageSize });\n  } catch (error) { next(error); }\n});"
+            },
+            {
+              "path": "Dockerfile",
+              "purpose": "Builds a small production image using separate build and runtime stages.",
+              "explanation": "The runtime stage installs only production dependencies and runs as the built-in node user.",
+              "code": "FROM node:22-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY tsconfig.json ./\nCOPY src ./src\nRUN npm run build\n\nFROM node:22-alpine\nENV NODE_ENV=production\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev && npm cache clean --force\nCOPY --from=build /app/dist ./dist\nUSER node\nEXPOSE 3000\nCMD [\"node\", \"dist/server.js\"]"
+            },
+            {
+              "path": "compose.yaml",
+              "purpose": "Runs the API and PostgreSQL together for reproducible local development.",
+              "explanation": "The database is reachable by service name from the API container; credentials are development-only example values.",
+              "code": "services:\n  db:\n    image: postgres:18-alpine\n    environment:\n      POSTGRES_USER: app\n      POSTGRES_PASSWORD: app_password\n      POSTGRES_DB: issue_tracker\n    ports:\n      - \"5432:5432\"\n    volumes:\n      - postgres_data:/var/lib/postgresql\n  api:\n    build: .\n    environment:\n      PORT: 3000\n      DATABASE_URL: postgres://app:app_password@db:5432/issue_tracker\n      JWT_SECRET: change-this-development-secret-to-at-least-32-characters\n      JWT_EXPIRES_IN: 15m\n      NODE_ENV: development\n    ports:\n      - \"3000:3000\"\n    depends_on:\n      - db\nvolumes:\n  postgres_data:\n"
+            },
+            {
+              "path": "openapi.yaml",
+              "purpose": "Documents the public HTTP contract for the implemented endpoints.",
+              "explanation": "The document describes authentication, project creation, issue creation/listing and operational endpoints; it should be checked against the running service as routes evolve.",
+              "code": "openapi: 3.1.0\ninfo:\n  title: Issue Tracker API\n  version: 1.0.0\nservers:\n  - url: http://localhost:3000\npaths:\n  /health:\n    get:\n      responses:\n        \"200\":\n          description: Service is alive\n  /ready:\n    get:\n      responses:\n        \"200\":\n          description: Database is reachable\n        \"503\":\n          description: Database is unavailable\n  /api/v1/auth/register:\n    post:\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              $ref: '#/components/schemas/Credentials'\n      responses:\n        \"201\": {description: User created}\n        \"400\": {description: Invalid input}\n        \"409\": {description: Email already registered}\n  /api/v1/auth/login:\n    post:\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              $ref: '#/components/schemas/Credentials'\n      responses:\n        \"200\": {description: Token issued}\n        \"401\": {description: Invalid credentials}\n  /api/v1/projects:\n    post:\n      security: [{bearerAuth: []}]\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              $ref: '#/components/schemas/ProjectInput'\n      responses:\n        \"201\": {description: Project created}\n        \"401\": {description: Authentication required}\n        \"409\": {description: Project key already exists}\n  /api/v1/projects/{projectId}/issues:\n    post:\n      security: [{bearerAuth: []}]\n      parameters:\n        - {$ref: '#/components/parameters/ProjectId'}\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              $ref: '#/components/schemas/IssueInput'\n      responses:\n        \"201\": {description: Issue created}\n        \"403\": {description: Not authorized}\n    get:\n      security: [{bearerAuth: []}]\n      parameters:\n        - {$ref: '#/components/parameters/ProjectId'}\n        - {name: page, in: query, schema: {type: integer, minimum: 1, default: 1}}\n        - {name: pageSize, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 25}}\n        - {name: status, in: query, schema: {type: string, enum: [OPEN, IN_PROGRESS, DONE, ARCHIVED]}}\n        - {name: sortBy, in: query, schema: {type: string, enum: [createdAt, priority], default: createdAt}}\n        - {name: direction, in: query, schema: {type: string, enum: [asc, desc], default: desc}}\n      responses:\n        \"200\": {description: Issue page}\n        \"403\": {description: Not a project member}\ncomponents:\n  securitySchemes:\n    bearerAuth:\n      type: http\n      scheme: bearer\n      bearerFormat: JWT\n  parameters:\n    ProjectId:\n      name: projectId\n      in: path\n      required: true\n      schema: {type: string, format: uuid}\n  schemas:\n    Credentials:\n      type: object\n      required: [email, password]\n      properties:\n        email: {type: string, format: email}\n        password: {type: string, minLength: 12}\n    ProjectInput:\n      type: object\n      required: [name, key]\n      properties:\n        name: {type: string}\n        key: {type: string}\n    IssueInput:\n      type: object\n      required: [title]\n      properties:\n        title: {type: string}\n        description: {type: string}\n        status: {type: string}\n        priority: {type: string}\n"
+            },
+            {
+              "path": "tests/auth.test.ts",
+              "purpose": "Tests the public authentication boundary.",
+              "explanation": "These tests demonstrate HTTP-level assertions; a real run requires the test database and environment to be configured.",
+              "code": "import request from \"supertest\";\nimport { describe, expect, it } from \"vitest\";\nimport { createApp } from \"../src/app.js\";\n\ndescribe(\"authentication API\", () => {\n  it(\"rejects malformed registration input\", async () => {\n    const response = await request(createApp()).post(\"/api/v1/auth/register\").send({ email: \"bad\", password: \"short\" });\n    expect(response.status).toBe(400);\n  });\n});"
+            },
+            {
+              "path": "tests/issues.test.ts",
+              "purpose": "Tests an authorization boundary for issue creation.",
+              "explanation": "The test shape focuses on the important 403 invariant; a complete project run should add database-backed fixtures and happy-path cases.",
+              "code": "import request from \"supertest\";\nimport { describe, expect, it } from \"vitest\";\nimport { createApp } from \"../src/app.js\";\n\ndescribe(\"issue authorization\", () => {\n  it(\"rejects unauthenticated issue creation\", async () => {\n    const response = await request(createApp()).post(\"/api/v1/projects/00000000-0000-0000-0000-000000000000/issues\").send({ title: \"Test\" });\n    expect(response.status).toBe(401);\n  });\n});"
+            },
+            {
+              "path": "README.md",
+              "purpose": "Provides setup, configuration, testing and operational instructions for the project.",
+              "explanation": "The README is intentionally project-specific and points the intern to the migration and API contract rather than generic tutorials.",
+              "code": "# Issue Tracker API\n\n## Setup\n\n1. Copy `.env.example` to `.env` for local non-container execution.\n2. Install dependencies with `npm install`.\n3. Apply `src/db/migrations/001_init.sql` to the PostgreSQL database.\n4. Run `npm run typecheck`.\n5. Run `npm test`.\n6. Build with `npm run build` and start with `npm start`.\n\nFor the containerized workflow, run `docker compose up --build`. Apply the SQL migration to the `db` service before exercising protected endpoints.\n\n## API\n\nSee `openapi.yaml` for the documented HTTP contract.\n\n## Security\n\nDo not commit `.env`, production JWT secrets, passwords or bearer tokens. Review `npm audit` findings before release.\n\n## Operations\n\n`GET /health` checks process liveness. `GET /ready` checks PostgreSQL connectivity.\n"
+            }
+          ]
+        },
+        "deliverables": [
+          "Completed final project repository",
+          "Automated test suite",
+          "OpenAPI documentation",
+          "Operational documentation",
+          "Security review notes"
+        ]
+      }
+    ],
+    "evaluation": {
+      "principles": [
+        "Evaluate observable engineering ability rather than memorization.",
+        "Require explanation of implementation and tradeoffs.",
+        "Do not treat passing tests as proof of security by itself.",
+        "Use the final project as the strongest evidence of integrated skill."
+      ],
+      "areas": [
+        "Conceptual understanding",
+        "Implementation quality",
+        "Debugging",
+        "Testing",
+        "Security",
+        "API design",
+        "Database design",
+        "Code quality",
+        "Git and documentation",
+        "Operational readiness",
+        "Final project completeness"
+      ],
+      "finalEvaluation": [
+        "Explain the request lifecycle and architecture.",
+        "Implement or modify an authenticated API feature.",
+        "Diagnose a failing integration test.",
+        "Explain and defend an authorization rule.",
+        "Identify SQL and input-validation risks.",
+        "Run the automated test suite and interpret failures.",
+        "Explain the database transaction and indexing decisions.",
+        "Demonstrate the final project and explain its data flow."
+      ]
+    },
+    "resources": [
+      {
+        "title": "Node.js documentation",
+        "url": "https://nodejs.org/en/docs"
+      },
+      {
+        "title": "Express.js middleware guide",
+        "url": "https://expressjs.com/en/guide/using-middleware.html"
+      },
+      {
+        "title": "Express.js error handling guide",
+        "url": "https://expressjs.com/en/guide/error-handling.html"
+      },
+      {
+        "title": "Express.js routing guide",
+        "url": "https://expressjs.com/en/guide/routing.html"
+      },
+      {
+        "title": "PostgreSQL 18 documentation",
+        "url": "https://www.postgresql.org/docs/current/"
+      },
+      {
+        "title": "PostgreSQL tutorial",
+        "url": "https://www.postgresql.org/docs/current/tutorial.html"
+      },
+      {
+        "title": "OWASP API Security Top 10",
+        "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+      },
+      {
+        "title": "OWASP REST Security Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html"
+      },
+      {
+        "title": "OpenAPI Specification",
+        "url": "https://spec.openapis.org/oas/latest.html"
+      },
+      {
+        "title": "Docker Node.js guide",
+        "url": "https://docs.docker.com/guides/nodejs/"
+      },
+      {
+        "title": "npm audit documentation",
+        "url": "https://docs.npmjs.com/cli/v11/commands/npm-audit/"
+      },
+      {
+        "title": "Git documentation",
+        "url": "https://git-scm.com/docs"
+      }
+    ],
+    "researchNotes": [
+      "The curriculum uses current official Node.js, Express, PostgreSQL and Docker documentation as primary technical references.",
+      "OWASP API Security guidance is used for API-specific security topics such as broken object-level authorization and input validation.",
+      "OpenAPI is included for machine-readable API documentation.",
+      "npm audit is included as a dependency-security workflow rather than as a guarantee that a project is vulnerability-free."
+    ],
+    "qualityPolicy": "No fabricated APIs, packages, benchmarks, test results, deployment results or company claims. Version-sensitive values must be verified against current official documentation before a production implementation is pinned."
+  }
+}

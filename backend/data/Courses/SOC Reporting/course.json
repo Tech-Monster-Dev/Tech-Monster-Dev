@@ -1,0 +1,2163 @@
+{
+  "course": {
+    "id": "soc-reporting",
+    "title": "SOC Reporting",
+    "slug": "soc-reporting",
+    "description": "A practical, evidence-centered course for learning how a Security Operations Center turns alerts, telemetry, analyst findings, response actions, and metrics into clear, defensible, audience-appropriate reports. The course covers report types, evidence and provenance, timeline construction, factual language and uncertainty, technical and executive reporting, detection-quality metrics, threat-intelligence sharing, structured automation, validation, review, recovery reporting, and continuous improvement. It is vendor-neutral and designed for learners who want to produce professional SOC reports that support investigation, handoff, escalation, management decisions, and lessons learned.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 48,
+    "prerequisites": [
+      "Basic cybersecurity concepts such as authentication, logs, alerts, and incidents.",
+      "Basic networking and operating-system terminology.",
+      "Comfort reading structured text such as JSON or CSV.",
+      "Basic Python 3 knowledge is helpful for the automation lessons, but the reporting concepts do not depend on Python."
+    ],
+    "learningOutcomes": [
+      "Explain the purpose and lifecycle of SOC reporting and select an appropriate report type for the audience.",
+      "Assess whether telemetry is sufficiently reliable to support a report claim and preserve source provenance.",
+      "Build normalized incident timelines and clearly separate facts, assessments, hypotheses, and unknowns.",
+      "Write technical incident reports, analyst handoffs, executive summaries, and shift reports.",
+      "Connect detections and ATT&CK context to report metadata without treating mappings as proof of attribution.",
+      "Design balanced SOC metrics with explicit denominators, time windows, and operational context.",
+      "Create threat-intelligence and IOC reporting with provenance, context, confidence, and handling constraints.",
+      "Automate structured report generation and validation using Python standard-library techniques.",
+      "Perform quality assurance on evidence traceability, chronology, sensitive-data handling, and action ownership.",
+      "Produce a complete evidence-backed SOC incident report pipeline suitable for a controlled synthetic lab environment."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "SOC Reporting Foundations",
+        "description": "Build the mental model for SOC reporting: why reports exist, who consumes them, how incident facts differ from conclusions, and how reporting fits into incident response and operational decision-making.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "What SOC Reporting Is and Why It Matters",
+            "description": "Understand SOC reporting as the disciplined conversion of security telemetry and analyst observations into decision-ready records for operators, incident responders, management, and other stakeholders.",
+            "learningObjectives": [
+              "Explain the purpose of SOC reporting across detection, response, recovery, and governance workflows.",
+              "Differentiate an event, alert, incident, finding, observation, and conclusion.",
+              "Identify the decisions a report should enable for technical and non-technical audiences."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Reporting is a control, not a writing exercise"
+              },
+              {
+                "type": "paragraph",
+                "text": "A useful SOC report preserves what was observed, what was inferred, what was done, what remains uncertain, and what action is expected next. The report is therefore part of the operational control loop: detection produces facts; analysis produces interpretations; reporting communicates those results so people can decide, coordinate, remediate, escalate, or close the case."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Event: an observable occurrence.",
+                  "Alert: a signal raised by a detection or monitoring mechanism.",
+                  "Incident: a confirmed or suspected security event requiring coordinated handling under the organization’s criteria.",
+                  "Finding: a documented analytical result.",
+                  "Conclusion: an evidence-backed judgment about what the evidence means."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-61 Rev. 3 places incident response within broader cybersecurity risk management, while FIRST describes incident-response services as coordinated organizational capabilities. A SOC report should therefore connect technical evidence to response decisions rather than merely restating raw logs."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which statement best describes a high-quality SOC report?",
+              "options": [
+                "It copies all available logs into one document.",
+                "It records evidence, interpretation, actions, uncertainty, and required next steps for the intended audience.",
+                "It only states whether malware was found.",
+                "It contains only management-level metrics."
+              ],
+              "answer": "It records evidence, interpretation, actions, uncertainty, and required next steps for the intended audience.",
+              "explanation": "SOC reporting must support operational and governance decisions. Raw volume without context does not provide enough decision value."
+            },
+            "summary": [
+              "SOC reporting translates telemetry and analysis into accountable decisions.",
+              "A report should separate observation, interpretation, and action.",
+              "Report quality is measured by whether the intended reader can make the correct next decision."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Stakeholders, Report Types, and Information Needs",
+            "description": "Map report outputs to the people who consume them and learn when a technical narrative, executive summary, handoff, ticket update, or metrics report is appropriate.",
+            "learningObjectives": [
+              "Classify common SOC report types by audience and purpose.",
+              "Select the minimum information needed for a given stakeholder.",
+              "Explain why a single incident should often have multiple reporting views."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Common SOC reporting views"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Analyst handoff: concise state of investigation, evidence collected, hypotheses, and next actions.",
+                  "Incident report: factual narrative of what happened, impact, response, and current status.",
+                  "Executive report: business impact, risk, decisions, and trends with minimal implementation detail.",
+                  "Shift summary: what is open, what changed, blockers, and priority follow-up.",
+                  "Operational metrics report: counts, rates, service levels, backlog, and quality indicators.",
+                  "Post-incident report: root causes or contributing factors, lessons learned, corrective actions, and ownership."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The same underlying evidence may need different presentation layers. The transformation must preserve meaning while changing emphasis. For example, an analyst may need exact event IDs and query details, while an executive may only need the affected service, material impact, current containment state, and decision required."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "What should drive the level of technical detail in a SOC report?",
+              "options": [
+                "The number of pages available.",
+                "The analyst’s preferred writing style.",
+                "The intended audience and decision the report must support.",
+                "The amount of raw log data collected."
+              ],
+              "answer": "The intended audience and decision the report must support.",
+              "explanation": "Reporting should be purpose- and audience-driven. More data is not automatically more useful."
+            },
+            "summary": [
+              "Audience determines emphasis, granularity, and vocabulary.",
+              "Operational reports and executive reports are views over the same evidence base, not competing stories.",
+              "The writer should know the decision the reader must make before choosing report structure."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Factual Language, Confidence, and Uncertainty",
+            "description": "Learn to write reports that distinguish verified facts from analyst interpretation and clearly express incomplete evidence.",
+            "learningObjectives": [
+              "Rewrite ambiguous security statements into evidence-based language.",
+              "Use confidence statements without turning assumptions into facts.",
+              "Identify missing evidence and explain its effect on conclusions."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Observation versus inference"
+              },
+              {
+                "type": "paragraph",
+                "text": "A strong report can say: “The identity provider recorded 17 failed sign-ins for account A from two source networks between 02:11 and 02:19 UTC.” It should not silently convert that observation into “An attacker attempted credential stuffing” unless the available evidence justifies that conclusion. The second statement is an interpretation and should be identified as such."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Fact: directly supported by a source record or reproducible observation.",
+                  "Inference: an interpretation derived from one or more facts.",
+                  "Hypothesis: a plausible explanation that still requires testing.",
+                  "Unknown: a material question that the available evidence cannot currently answer.",
+                  "Confidence: an explicit assessment of how strongly the evidence supports the conclusion."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Avoid false precision. Do not assign a numerical confidence score simply because a template has a field for one unless the organization has defined a defensible scoring method."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "Which wording best separates fact from interpretation?",
+              "options": [
+                "The attacker definitely used account X.",
+                "Account X had a successful login from the observed source, which is inconsistent with its recent activity pattern; unauthorized use is suspected.",
+                "The login was malicious because it looked strange.",
+                "The user was hacked."
+              ],
+              "answer": "Account X had a successful login from the observed source, which is inconsistent with its recent activity pattern; unauthorized use is suspected.",
+              "explanation": "The statement records an observable login, describes the anomaly, and clearly labels the unauthorized-use conclusion as a suspicion."
+            },
+            "summary": [
+              "Good reports are explicit about evidence boundaries.",
+              "Confidence is meaningful only when the basis for the confidence is explainable.",
+              "Unknowns should be documented so that follow-up work is actionable."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-04",
+            "title": "Report Lifecycle and Case State",
+            "description": "Establish a repeatable lifecycle from detection through closure so that reports remain synchronized with case state.",
+            "learningObjectives": [
+              "Define report states that correspond to an investigation lifecycle.",
+              "Identify when a report must be updated versus when a new report should be issued.",
+              "Design a minimum case timeline that remains useful during shift handoffs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A practical lifecycle is: intake → triage → investigation → containment/response → recovery → closure → lessons learned. Report versions should be traceable. Updating a report should not erase earlier facts; instead, material changes should be timestamped and attributable to the person or process that made them."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Record initial alert time and report creation time separately.",
+                  "Capture major investigative actions with timestamps.",
+                  "Mark material state changes such as escalation, containment, or closure.",
+                  "Record unresolved items and owners before shift handoff.",
+                  "Preserve the final report and its evidence references as a stable record."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-04",
+              "question": "Why should a report retain material state changes rather than only the final conclusion?",
+              "options": [
+                "To make reports longer.",
+                "To preserve the reasoning and chronology needed for accountability and handoff.",
+                "Because raw alerts are never useful.",
+                "Because every case must have exactly ten versions."
+              ],
+              "answer": "To preserve the reasoning and chronology needed for accountability and handoff.",
+              "explanation": "State history shows how evidence and decisions evolved and helps another analyst reconstruct what happened."
+            },
+            "summary": [
+              "A SOC report is a living artifact during response and a durable record after closure.",
+              "State changes and handoffs require timestamps and attribution.",
+              "Version history improves accountability and reduces narrative drift."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Rewrite an Ambiguous Incident Summary",
+            "level": "Easy",
+            "description": "Convert a vague incident note into a factual, decision-ready summary.",
+            "problemStatement": "The source note says: “User account was hacked and attacker moved around the network.” Rewrite it as a short report entry that distinguishes observed events, assessment, and next action.",
+            "objectives": [
+              "Separate facts from interpretation.",
+              "State the evidence boundary.",
+              "Provide one actionable next step."
+            ],
+            "requirements": [
+              "No special software required.",
+              "Use the terminology taught in this module."
+            ],
+            "hint": "Replace absolute claims with observable evidence and a clearly labeled assessment.",
+            "solutionCode": "Account A recorded successful authentication from source 198.51.100.20 at 02:14 UTC, followed by administrative activity on host H1 at 02:17 UTC. The source and timing are inconsistent with the account’s expected activity pattern; unauthorized use is suspected. Validate the authentication context and review H1 for related activity before closure.",
+            "solutionExplanation": "The rewrite turns an unsupported claim into two observed facts, one qualified assessment, and a concrete follow-up action."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Evidence, Telemetry, and Reporting Inputs",
+        "description": "Learn what SOC reports should draw from: normalized telemetry, identity records, endpoint events, network observations, cloud audit logs, detection metadata, and analyst notes.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Log Sources and Evidence Quality",
+            "description": "Understand common log sources and how source quality affects reporting confidence.",
+            "learningObjectives": [
+              "Identify the reporting value of identity, endpoint, network, application, email, cloud, and security-control telemetry.",
+              "Explain why time, source identity, completeness, and retention matter to report quality.",
+              "Recognize common evidence gaps and their reporting implications."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-92 treats log management as an enterprise process involving infrastructure and robust operational practices. For SOC reporting, the key question is not “Do we have logs?” but “Can these records reliably support the statement we want to make?”"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Source provenance: which system produced the record?",
+                  "Timestamp semantics: when did the event occur versus when was it observed or ingested?",
+                  "Completeness: are there gaps, dropped events, or missing fields?",
+                  "Clock alignment: can events from different systems be placed on one timeline?",
+                  "Retention: will the underlying records still be available when the report is reviewed?"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "Which factor most directly limits whether a log can support a precise incident timeline?",
+              "options": [
+                "The log file extension.",
+                "Reliable timestamps and known timestamp semantics.",
+                "The dashboard color.",
+                "The number of analysts viewing the log."
+              ],
+              "answer": "Reliable timestamps and known timestamp semantics.",
+              "explanation": "Timeline reconstruction depends on understanding when events occurred and how system timestamps were produced and transported."
+            },
+            "summary": [
+              "Different sources provide different views of the same activity.",
+              "Missing or unreliable telemetry should lower confidence rather than be silently ignored.",
+              "Report writers should reference source systems explicitly."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              },
+              {
+                "title": "RFC 5424 — The Syslog Protocol",
+                "url": "https://www.rfc-editor.org/info/rfc5424"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Structured Logs and Normalization",
+            "description": "Learn why structured fields and common data models make SOC reporting more consistent and scalable.",
+            "learningObjectives": [
+              "Identify fields that are useful for security reporting across heterogeneous logs.",
+              "Explain the distinction between raw records and normalized fields.",
+              "Use structured event concepts such as timestamp, severity, resource, and attributes when designing report evidence tables."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "OpenTelemetry defines a stable log data model with fields such as Timestamp, ObservedTimestamp, Severity, Body, Resource, Attributes, and EventName. The point is semantic consistency: different physical log formats can be represented in a common model without losing their meaning."
+              },
+              {
+                "type": "code",
+                "text": "{\n  \"timestamp\": \"2026-09-08T02:14:00Z\",\n  \"observed_timestamp\": \"2026-09-08T02:14:01Z\",\n  \"event_name\": \"authentication.success\",\n  \"severity\": \"INFO\",\n  \"resource\": {\"host.name\": \"idp-01\"},\n  \"attributes\": {\"user.name\": \"acct-a\", \"source.ip\": \"198.51.100.20\"}\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "A report should preserve the raw source reference in addition to any normalized representation. Normalization improves correlation; it does not replace provenance."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "Why should raw source references be retained after normalization?",
+              "options": [
+                "Normalization makes raw evidence invalid.",
+                "To preserve provenance and allow reviewers to trace the normalized fact back to the source.",
+                "Because reports should only contain raw logs.",
+                "To avoid defining field names."
+              ],
+              "answer": "To preserve provenance and allow reviewers to trace the normalized fact back to the source.",
+              "explanation": "Normalization provides consistent semantics, while provenance enables verification."
+            },
+            "summary": [
+              "Normalization improves cross-source correlation.",
+              "Raw evidence and normalized reporting fields serve different purposes.",
+              "Timestamp, actor, source, destination, action, and outcome are common building blocks for security event reporting."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/"
+              },
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Time, Time Zones, and Timeline Normalization",
+            "description": "Build reliable incident timelines across systems that use different time zones, formats, and ingestion delays.",
+            "learningObjectives": [
+              "Normalize timestamps to a reporting standard while retaining source semantics.",
+              "Distinguish event time from observation or ingestion time.",
+              "Identify clock-skew and missing-time evidence that can invalidate a timeline."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A timeline is an analytical product"
+              },
+              {
+                "type": "paragraph",
+                "text": "A security timeline should normally use an unambiguous time representation such as UTC while preserving source timestamps when they are relevant to troubleshooting. OpenTelemetry explicitly distinguishes Timestamp from ObservedTimestamp, illustrating why the time an event happened and the time it was observed or processed are not always the same."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Capture the source timestamp exactly as received.",
+                  "Parse it using the source format and timezone rules.",
+                  "Convert to UTC for cross-source ordering when appropriate.",
+                  "Record any known clock offset or uncertainty.",
+                  "Use ingestion time only as a separate field, never as a substitute for event time without qualification."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-03",
+                "title": "Normalize Mixed Timestamps to UTC",
+                "description": "Parse source timestamps with explicit offsets and produce a single UTC-sorted representation while preserving the original value.",
+                "steps": [
+                  "Create a list containing events with ISO-8601 timestamps carrying different offsets.",
+                  "Parse each timestamp with datetime.fromisoformat().",
+                  "Convert each value to UTC with astimezone(timezone.utc).",
+                  "Sort the events by normalized UTC time and print the normalized value plus source event."
+                ],
+                "solution": "from datetime import datetime, timezone\n\nevents = [\n    {\"event\": \"login\", \"timestamp\": \"2026-09-08T07:44:00+05:30\"},\n    {\"event\": \"process\", \"timestamp\": \"2026-09-08T02:18:00Z\"},\n    {\"event\": \"network\", \"timestamp\": \"2026-09-08T04:21:00+02:00\"},\n]\n\nfor event in events:\n    source_dt = datetime.fromisoformat(event[\"timestamp\"].replace(\"Z\", \"+00:00\"))\n    event[\"utc\"] = source_dt.astimezone(timezone.utc)\n\nfor event in sorted(events, key=lambda item: item[\"utc\"]):\n    print(event[\"utc\"].isoformat(), event[\"event\"], event[\"timestamp\"])",
+                "output": "The console shows all events in one UTC ordering while the original source timestamp remains visible for traceability."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "Which approach is safest when an event log has both occurrence time and ingestion time?",
+              "options": [
+                "Delete the occurrence time and use ingestion time.",
+                "Use occurrence time for event sequencing and retain ingestion time as a separate field.",
+                "Use whichever looks later.",
+                "Average the two values."
+              ],
+              "answer": "Use occurrence time for event sequencing and retain ingestion time as a separate field.",
+              "explanation": "The two timestamps answer different questions and should not be conflated."
+            },
+            "summary": [
+              "Event time and observation time can differ.",
+              "A normalized timeline should be explicit about time basis.",
+              "Clock skew is an evidence limitation, not merely a formatting issue."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              },
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Detection Context, MITRE ATT&CK, and Rule Metadata",
+            "description": "Learn how detection context makes a report more useful by linking alerts to the behavior being detected and the analytic that produced the signal.",
+            "learningObjectives": [
+              "Explain the difference between a detection rule and the behavior it is intended to identify.",
+              "Use ATT&CK technique references as contextual metadata without treating them as proof of adversary identity.",
+              "Record detection source, rule version, and tuning state in a report."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK detection strategies describe high-level approaches for detecting adversary techniques and organize platform-specific analytics. This makes ATT&CK useful as reporting context: a report can say that an analytic is designed to detect suspicious valid-account behavior without claiming that technique mapping proves attacker intent."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Detection name and identifier",
+                  "Source/log types queried",
+                  "Analytic or rule version",
+                  "ATT&CK technique or sub-technique, if mapped",
+                  "Known false-positive patterns",
+                  "Thresholds and tuning state"
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Technique mapping is contextual evidence. It is not proof that a particular threat actor or technique was used."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "What is the safest way to use an ATT&CK technique mapping in a report?",
+              "options": [
+                "As proof of attacker identity.",
+                "As contextual information about the behavior a detection is designed to identify.",
+                "As a replacement for evidence.",
+                "As a legal finding by itself."
+              ],
+              "answer": "As contextual information about the behavior a detection is designed to identify.",
+              "explanation": "ATT&CK organizes adversary behaviors and detection knowledge; the mapping does not replace case evidence or establish attribution."
+            },
+            "summary": [
+              "Detection metadata explains why an alert fired and how it should be interpreted.",
+              "ATT&CK mappings add behavioral context but do not establish attribution.",
+              "Version and tuning details are essential when explaining why a detection was or was not reliable."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK — Detection Strategies",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              },
+              {
+                "title": "MITRE ATT&CK — Valid Accounts (T1078)",
+                "url": "https://attack.mitre.org/techniques/T1078/"
+              },
+              {
+                "title": "Sigma Specification — Generic Signature Format for SIEM Systems",
+                "url": "https://sigmahq.io/sigma-specification/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Build an Evidence Reference Table",
+            "level": "Easy",
+            "description": "Create a compact evidence table from mixed log records so a reviewer can trace each key fact to a source.",
+            "problemStatement": "Given five event records from identity, endpoint, and network sources, select the fields required to support a suspicious-login finding and preserve source provenance.",
+            "objectives": [
+              "Choose relevant fields.",
+              "Normalize timestamps.",
+              "Preserve source and event identifiers."
+            ],
+            "requirements": [
+              "Plain-text or spreadsheet editor.",
+              "Use synthetic records only."
+            ],
+            "hint": "Keep one row per significant event and include a source reference column.",
+            "solutionCode": "Evidence table columns: event_time_utc, observed_time_utc, source_system, event_id, actor, source_ip, action, outcome, raw_reference. Include only rows that materially support the finding.",
+            "solutionExplanation": "The solution is a reporting representation rather than a replacement for the underlying records; each row can be traced back to its originating event."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Incident Narrative and Timeline Construction",
+        "description": "Turn scattered telemetry and analyst observations into a chronological, evidence-backed incident narrative.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Building an Incident Timeline",
+            "description": "Construct timelines that answer what happened, when, where, and in what order.",
+            "learningObjectives": [
+              "Create a normalized chronological event sequence.",
+              "Mark gaps and uncertain ordering explicitly.",
+              "Separate observed events from inferred transitions."
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Collect only events relevant to the incident question.",
+                  "Normalize time and preserve source timestamps.",
+                  "Sort by event time while retaining a source-order tie-breaker when needed.",
+                  "Group closely related events into meaningful phases.",
+                  "Annotate evidence gaps and uncertain ordering."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A good timeline is selective. Including every unrelated heartbeat, DNS lookup, or application message can hide the sequence that matters. The report should show the decisive events and provide references to broader evidence when necessary."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-01",
+                "title": "Build a Selective Incident Timeline",
+                "description": "Create a concise incident timeline that keeps only decision-relevant events and preserves source references.",
+                "steps": [
+                  "Create synthetic events with UTC timestamps, sources, descriptions, and evidence references.",
+                  "Sort by occurrence time.",
+                  "Print the event time, source, event, and evidence reference.",
+                  "Review the result and remove unrelated events from the report dataset."
+                ],
+                "solution": "events = [\n    {\"time\":\"2026-09-08T02:14:00Z\",\"source\":\"identity\",\"event\":\"Successful authentication from unexpected source\",\"ref\":\"E01\"},\n    {\"time\":\"2026-09-08T02:16:30Z\",\"source\":\"endpoint\",\"event\":\"Administrative process execution\",\"ref\":\"E02\"},\n    {\"time\":\"2026-09-08T02:17:10Z\",\"source\":\"network\",\"event\":\"Outbound connection observed\",\"ref\":\"E03\"},\n]\n\nfor item in sorted(events, key=lambda x: x[\"time\"]):\n    print(f\"{item['time']} | {item['source']} | {item['event']} | {item['ref']}\")",
+                "output": "A compact chronological timeline is printed with each material observation traceable to an evidence reference."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "What should a report do when two events cannot be confidently ordered because of clock uncertainty?",
+              "options": [
+                "Invent an order based on intuition.",
+                "Hide both events.",
+                "Mark the ordering as uncertain and describe the evidence limitation.",
+                "Use file names as timestamps."
+              ],
+              "answer": "Mark the ordering as uncertain and describe the evidence limitation.",
+              "explanation": "A defensible report preserves uncertainty rather than manufacturing precision."
+            },
+            "summary": [
+              "Timelines should be concise enough to read but detailed enough to reproduce the investigation path.",
+              "Gaps and uncertainty belong in the timeline.",
+              "Relevance is more important than raw event count."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "Narrative Writing from Evidence",
+            "description": "Write the narrative that connects telemetry to a security story without overstating what the evidence proves.",
+            "learningObjectives": [
+              "Convert a timeline into a concise incident narrative.",
+              "Use causal language only when supported by evidence.",
+              "Maintain traceability from narrative claims to evidence references."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful narrative answers four questions: what was observed, what assessment was made, what action occurred, and what remains unresolved. The narrative should not read like a tool console. It should synthesize the investigative record into an intelligible sequence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Observed: “The endpoint recorded process P at time T.”",
+                  "Linked observation: “The same host initiated a network connection to destination D within the next minute.”",
+                  "Assessment: “The sequence is consistent with the behavior under investigation.”",
+                  "Action: “The account was disabled at time T2 under the incident response procedure.”",
+                  "Open issue: “Cloud audit data for the prior 24 hours was unavailable.”"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "Which statement is most defensible?",
+              "options": [
+                "The script caused data loss because it looked suspicious.",
+                "A script execution was observed before the data-access alert; whether it caused the access remains unconfirmed.",
+                "The attacker stole data.",
+                "The SIEM proved exfiltration."
+              ],
+              "answer": "A script execution was observed before the data-access alert; whether it caused the access remains unconfirmed.",
+              "explanation": "It preserves chronology while separating observation from causality."
+            },
+            "summary": [
+              "Narrative is synthesis, not transcription.",
+              "Every major conclusion should be traceable to one or more evidence items.",
+              "The report should explicitly distinguish action from observed effect."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Root Cause, Contributing Factors, and Confidence",
+            "description": "Distinguish immediate trigger, root cause, and contributing conditions in post-incident reporting.",
+            "learningObjectives": [
+              "Differentiate trigger, root cause, and contributing factor.",
+              "Explain why root cause should not be declared before the investigation supports it.",
+              "Write a bounded root-cause statement and identify remediation ownership."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Root cause analysis is often broader than “what alert fired.” A valid root-cause statement can include process, control, architecture, or configuration conditions. A contributing factor may explain why the incident was possible or difficult to detect without being the sole root cause."
+              },
+              {
+                "type": "warning",
+                "text": "Avoid using “root cause” as a synonym for “first thing we noticed.” A technical symptom, detection gap, and underlying process failure may all be distinct."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "Which statement best describes a contributing factor?",
+              "options": [
+                "Any event in the log.",
+                "A condition that increased likelihood, impact, or difficulty of detection without necessarily being the sole underlying cause.",
+                "The same thing as the alert name.",
+                "A legal conclusion."
+              ],
+              "answer": "A condition that increased likelihood, impact, or difficulty of detection without necessarily being the sole underlying cause.",
+              "explanation": "Contributing factors help explain how conditions combined to enable or worsen an incident."
+            },
+            "summary": [
+              "Trigger, cause, and contributing factor answer different questions.",
+              "Root cause statements should be tied to evidence and ownership.",
+              "Unknown root cause is preferable to unsupported certainty."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-184 — Guide for Cybersecurity Event Recovery",
+                "url": "https://csrc.nist.gov/pubs/sp/800/184/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Reconstruct a Multi-Source Timeline",
+            "level": "Intermediate",
+            "description": "Combine identity, endpoint, and network events into one defensible incident timeline.",
+            "problemStatement": "Produce a timeline covering a 25-minute simulated investigation window with at least one known ingestion delay and one clock-skew warning.",
+            "objectives": [
+              "Normalize timestamps to UTC.",
+              "Distinguish event time from observed time.",
+              "Annotate uncertainty.",
+              "Write a three-paragraph narrative."
+            ],
+            "requirements": [
+              "Python 3.11+ or a text editor.",
+              "Use only synthetic data supplied in the task."
+            ],
+            "hint": "Sort by event time, but keep the original source and observed timestamps visible when they explain ordering.",
+            "solutionCode": "events = [\n    {\"event\":\"login\",\"event_time\":\"2026-09-08T02:14:00Z\",\"observed_time\":\"2026-09-08T02:14:01Z\",\"source\":\"idp\"},\n    {\"event\":\"process\",\"event_time\":\"2026-09-08T02:16:30Z\",\"observed_time\":\"2026-09-08T02:16:31Z\",\"source\":\"endpoint\"},\n    {\"event\":\"connection\",\"event_time\":\"2026-09-08T02:17:10Z\",\"observed_time\":\"2026-09-08T02:20:10Z\",\"source\":\"network\"}\n]\n\nfor e in sorted(events, key=lambda x: x[\"event_time\"]):\n    delay = e[\"observed_time\"] != e[\"event_time\"]\n    print(e[\"event_time\"], e[\"source\"], e[\"event\"], \"[ingestion delay]\" if delay else \"\")",
+            "solutionExplanation": "Sort on occurrence time, preserve ingestion delay metadata, then narrate only the relationships supported by the sequence. The endpoint and network events can be described as subsequent observations; causality should remain qualified."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Report Structure and Technical-to-Executive Communication",
+        "description": "Design professional reports that work for SOC operators, incident responders, managers, and executives without losing factual precision.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Technical Incident Report Structure",
+            "description": "Design a repeatable technical incident report structure.",
+            "learningObjectives": [
+              "Build a technical incident report with consistent sections.",
+              "Decide which evidence belongs in the main body versus an appendix or linked case record.",
+              "Write status, impact, actions, and open items clearly."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Recommended technical structure"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Incident identification and current status",
+                  "Executive-level impact statement",
+                  "Detection and trigger",
+                  "Scope and affected assets",
+                  "Timeline",
+                  "Evidence and analytical findings",
+                  "Actions taken",
+                  "Current containment/recovery state",
+                  "Open questions and evidence gaps",
+                  "Recommendations and owners",
+                  "References to source records"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "This structure is intentionally evidence-centered. The main report should answer the operational questions; raw evidence may remain in the case system, SIEM, forensic repository, or other controlled source rather than being duplicated wholesale."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "Which section most directly prevents a report from becoming a static historical narrative?",
+              "options": [
+                "Incident title",
+                "Open questions and current actions/owners",
+                "Document color",
+                "Raw log appendix only"
+              ],
+              "answer": "Open questions and current actions/owners",
+              "explanation": "A report remains operationally useful when unresolved questions and accountable next steps are visible."
+            },
+            "summary": [
+              "A technical report should make scope, state, and next action obvious.",
+              "Appendices and source references preserve depth without overwhelming the main narrative.",
+              "Owners and due dates turn recommendations into accountable actions."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Executive Summaries That Preserve Meaning",
+            "description": "Learn to summarize technical incidents for leaders without deleting the information needed for sound risk decisions.",
+            "learningObjectives": [
+              "Write a concise executive summary from a technical case.",
+              "Translate technical indicators into business impact and decision relevance.",
+              "Avoid jargon, unsupported attribution, and false certainty."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An executive summary should normally answer: what happened, what is affected, what the organization did, what the current risk is, and whether any decision or escalation is required. A technical indicator such as “4624 plus PowerShell telemetry” is usually supporting evidence, not the headline."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Business/mission impact: what service, process, or information was affected?",
+                  "Current state: contained, monitoring, recovering, or unresolved?",
+                  "Material risk: what remains possible?",
+                  "Decision request: what leader action is needed, if any?",
+                  "Confidence/limitation: what important uncertainty remains?"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "What should appear first in an executive summary?",
+              "options": [
+                "The longest SIEM query used.",
+                "The business effect, current status, and key decision context.",
+                "All raw indicators.",
+                "Every analyst comment."
+              ],
+              "answer": "The business effect, current status, and key decision context.",
+              "explanation": "Executive readers need decision-relevant meaning before technical implementation detail."
+            },
+            "summary": [
+              "Executives need impact and decisions before implementation detail.",
+              "Technical precision is preserved by retaining evidence references outside the summary.",
+              "The summary should remain true if a reader never opens the technical appendix."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Handoffs, Shift Reports, and Escalation Notes",
+            "description": "Create concise operational reports that keep investigations moving across analyst shifts.",
+            "learningObjectives": [
+              "Produce a shift handoff with current state, evidence, hypothesis, and next action.",
+              "Identify escalation triggers that should be explicit in a handoff.",
+              "Avoid leaving successor analysts to rediscover prior work."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful handoff is written for the next analyst, not for the author’s memory. It should state what is known, what was already checked, what was not checked, why the current hypothesis exists, and what must happen next."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Status and severity",
+                  "Last confirmed evidence",
+                  "Actions already taken",
+                  "Queries or sources already reviewed",
+                  "Current hypothesis and confidence",
+                  "Blocked investigations or missing telemetry",
+                  "Explicit next steps",
+                  "Escalation or notification requirements"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "What is the most important handoff field for preventing repeated work?",
+              "options": [
+                "Analyst favorite tool.",
+                "Actions already taken and sources already reviewed.",
+                "The report’s font.",
+                "Total number of emails received."
+              ],
+              "answer": "Actions already taken and sources already reviewed.",
+              "explanation": "Knowing what has already been examined helps the next analyst continue from the current state."
+            },
+            "summary": [
+              "Handoffs reduce duplicated investigation and missed deadlines.",
+              "A good handoff makes prior work reproducible enough for a new analyst to continue.",
+              "Escalation criteria should be stated rather than implied."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Information Classification, Redaction, and Distribution",
+            "description": "Handle sensitive incident details appropriately while keeping reports useful.",
+            "learningObjectives": [
+              "Identify report content that may require restricted distribution.",
+              "Apply data minimization and redaction principles to SOC reports.",
+              "Explain why access controls and report distribution lists are part of reporting security."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Incident reports can contain credentials-related artifacts, internal hostnames, personal information, security-control details, and threat intelligence. The report should include what the recipient needs, but it should not replicate sensitive data merely because it is available."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Minimize: include only data required for the report purpose.",
+                  "Redact: remove or mask sensitive values where full disclosure is unnecessary.",
+                  "Restrict: use approved distribution channels and access controls.",
+                  "Preserve: retain full evidence in the controlled system of record when required."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not paste secrets, live credentials, session tokens, or private keys into general-purpose reports. Refer to the controlled evidence location instead."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "What is the best general practice for sensitive raw evidence in a widely distributed report?",
+              "options": [
+                "Copy all raw values into the report.",
+                "Store the full evidence in a controlled system and include only the necessary summary/reference.",
+                "Delete the evidence.",
+                "Send it through personal messaging."
+              ],
+              "answer": "Store the full evidence in a controlled system and include only the necessary summary/reference.",
+              "explanation": "Controlled evidence repositories provide a safer location for detailed or sensitive records while the report communicates necessary findings."
+            },
+            "summary": [
+              "Report security is part of SOC security.",
+              "Data minimization reduces unnecessary exposure.",
+              "Restricted evidence belongs in controlled systems, with reports carrying only the needed reference or summary."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              },
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Write a Technical Incident Report",
+            "level": "Intermediate",
+            "description": "Transform a synthetic analyst case into a structured technical report.",
+            "problemStatement": "Produce a report containing status, impact, timeline, findings, actions, gaps, and recommendations for a suspected account-compromise incident.",
+            "objectives": [
+              "Use evidence-backed language.",
+              "Include a timeline.",
+              "Separate confirmed facts from assessment.",
+              "Assign owners to recommendations."
+            ],
+            "requirements": [
+              "Markdown editor.",
+              "Use synthetic event data."
+            ],
+            "hint": "Start with the current state and scope, then support the narrative with a compact timeline and evidence table.",
+            "solutionCode": "### Incident status\nInvestigating. Account access is contained; endpoint scope is still being validated.\n\n### Impact\nNo confirmed data loss. The account accessed two internal services outside its expected activity pattern.\n\n### Findings\nIdentity logs show a successful login from an unexpected source at 02:14 UTC. Endpoint telemetry records administrative activity on H1 three minutes later. The relationship is suspicious but causality is not yet proven.\n\n### Actions\nAccount disabled at 02:21 UTC. Source IP blocked at the perimeter control at 02:24 UTC.\n\n### Gaps\nCloud audit data from 01:30–02:00 UTC is unavailable.\n\n### Recommendations\nValidate token/session revocation; review H1 process ancestry; determine whether the telemetry gap is expected. Owners: IAM, Endpoint, Cloud Logging.",
+            "solutionExplanation": "The report structure keeps current status, impact, evidence, actions, and gaps visible. Recommendations are tied to owners so the document can drive follow-up work."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Detection Reporting, Alert Context, and Analyst Metrics",
+        "description": "Report on SOC detections and analyst work without confusing alert volume with security value.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "Alert-to-Incident Traceability",
+            "description": "Connect an alert to the analytical work and eventual disposition.",
+            "learningObjectives": [
+              "Trace an alert from initial signal to final disposition.",
+              "Record disposition reasons and supporting evidence.",
+              "Identify fields that enable later quality review."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A SOC should be able to answer what happened to a notable alert: why it fired, who reviewed it, what evidence was examined, whether it became an incident, what actions followed, and why it was closed or escalated."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Detection identifier and version",
+                  "Alert creation time",
+                  "Triage start time",
+                  "Disposition",
+                  "Reason code",
+                  "Evidence references",
+                  "Escalation status",
+                  "Related incident/case ID"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Which field most directly supports retrospective analysis of why alerts were closed?",
+              "options": [
+                "Analyst screen size.",
+                "Disposition reason.",
+                "Desk location.",
+                "Dashboard background."
+              ],
+              "answer": "Disposition reason.",
+              "explanation": "Disposition reasons make outcomes interpretable and measurable across time."
+            },
+            "summary": [
+              "Traceability makes detection quality auditable.",
+              "Disposition reasons are more useful than a bare “closed” status.",
+              "Stable identifiers enable trend analysis over time."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK — Detection Strategies",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              },
+              {
+                "title": "Sigma Specification — Generic Signature Format for SIEM Systems",
+                "url": "https://sigmahq.io/sigma-specification/"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "False Positives, Tuning, and Reporting Detection Quality",
+            "description": "Explain how false positives affect analyst workload and how tuning changes should appear in reports.",
+            "learningObjectives": [
+              "Distinguish detection noise from true missed detections.",
+              "Document tuning changes and their expected effects.",
+              "Report detection-quality trends without manipulating denominators."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Sigma rules explicitly support metadata such as status, references, false positives, and level. In SOC reporting, these concepts map to detection governance: analysts should be able to explain why a rule produces expected noise, what tuning changed, and what coverage assumptions may have been introduced."
+              },
+              {
+                "type": "warning",
+                "text": "A lower alert count is not automatically a better outcome. Tuning that suppresses useful signals can improve a superficial metric while reducing detection coverage."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "Why is a drop in alert volume alone insufficient evidence that a detection improved?",
+              "options": [
+                "Alert volume is never measurable.",
+                "The drop could be caused by suppressing useful detections rather than reducing noise.",
+                "All detections should increase.",
+                "Metrics are unrelated to SOC work."
+              ],
+              "answer": "The drop could be caused by suppressing useful detections rather than reducing noise.",
+              "explanation": "Detection quality requires balanced measures of noise, coverage, outcomes, and changes in telemetry or logic."
+            },
+            "summary": [
+              "Detection tuning should be recorded as a controlled change.",
+              "False-positive rate must be interpreted together with coverage and missed-detection risk.",
+              "Metrics should not reward suppression of useful alerts."
+            ],
+            "resources": [
+              {
+                "title": "Sigma Specification — Generic Signature Format for SIEM Systems",
+                "url": "https://sigmahq.io/sigma-specification/"
+              },
+              {
+                "title": "Sigma Detection Rules Documentation",
+                "url": "https://sigmahq.io/docs/basics/rules.html"
+              },
+              {
+                "title": "MITRE ATT&CK — Detection Strategies",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "SOC Metrics: Throughput, Service Levels, and Quality",
+            "description": "Choose metrics that reflect operational performance without encouraging harmful behavior.",
+            "learningObjectives": [
+              "Define useful SOC reporting metrics and their denominators.",
+              "Distinguish volume, timeliness, quality, and outcome metrics.",
+              "Recognize metric gaming and confounding factors."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Four metric families"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Volume: alerts received, incidents opened, cases closed.",
+                  "Timeliness: time to acknowledge, time to triage, time to contain.",
+                  "Quality: escalation accuracy, false-positive proportion, reopened-case rate, quality-review findings.",
+                  "Outcome: containment success, recurrence, detection coverage, control improvements completed."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Every rate needs a denominator and time window. “Average response time improved” is weak unless the report states which population was measured, the interval, and any material scope changes. Changes in telemetry, staffing, severity mix, or alerting logic can shift the metric without reflecting a change in underlying security performance."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-03",
+                "title": "Calculate a Defensible KPI Snapshot",
+                "description": "Calculate a small SOC KPI set with explicit denominators and interpret the results without equating volume with effectiveness.",
+                "steps": [
+                  "Represent synthetic cases as dictionaries.",
+                  "Calculate median triage time.",
+                  "Calculate closure and escalation rates using the full case population as the denominator.",
+                  "Calculate reopened-case rate using closed cases as the denominator.",
+                  "Print the metrics with counts so the denominator is visible."
+                ],
+                "solution": "from statistics import median\n\ncases = [\n    {\"triage\": 11, \"closed\": True, \"escalated\": False, \"reopened\": False},\n    {\"triage\": 19, \"closed\": True, \"escalated\": True, \"reopened\": False},\n    {\"triage\": 31, \"closed\": False, \"escalated\": True, \"reopened\": False},\n    {\"triage\": 14, \"closed\": True, \"escalated\": False, \"reopened\": True},\n    {\"triage\": 22, \"closed\": True, \"escalated\": False, \"reopened\": False},\n]\n\nclosed = sum(c[\"closed\"] for c in cases)\nmetrics = {\n    \"case_count\": len(cases),\n    \"median_triage_minutes\": median(c[\"triage\"] for c in cases),\n    \"closure_rate\": closed / len(cases),\n    \"escalation_rate\": sum(c[\"escalated\"] for c in cases) / len(cases),\n    \"reopened_closed_case_rate\": sum(c[\"reopened\"] for c in cases if c[\"closed\"]) / closed,\n}\nprint(metrics)",
+                "output": "The output contains the metric values plus case counts that make the denominators explicit. Interpretation should note the small synthetic sample and avoid broad performance claims."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "Which metric statement is most defensible?",
+              "options": [
+                "Response improved because fewer alerts were closed.",
+                "Median triage time for Priority 1 alerts decreased from 18 to 12 minutes during Q2, based on 146 alerts; staffing and severity mix were unchanged.",
+                "The SOC is 20% better.",
+                "Alerts were down so risk is down."
+              ],
+              "answer": "Median triage time for Priority 1 alerts decreased from 18 to 12 minutes during Q2, based on 146 alerts; staffing and severity mix were unchanged.",
+              "explanation": "It states the metric, population, period, sample size, and relevant context."
+            },
+            "summary": [
+              "Metrics need context, denominator, and timeframe.",
+              "No single metric captures SOC effectiveness.",
+              "Quality and outcome metrics should balance speed and volume measures."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "Trend Reporting and Management Dashboards",
+            "description": "Turn recurring SOC metrics into trend narratives that explain movement rather than merely displaying numbers.",
+            "learningObjectives": [
+              "Create a monthly SOC trend narrative.",
+              "Explain metric changes using operational context.",
+              "Identify when a trend needs investigation rather than celebration."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A dashboard answers “what changed?” A management report should also answer “why?” and “what should we do?” For example, increased incident count can represent higher attack activity, better detection coverage, a newly onboarded log source, or a change in case classification."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "State the trend.",
+                  "State the likely drivers and evidence.",
+                  "State confidence in the explanation.",
+                  "State the operational response or monitoring plan."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "What should a SOC manager ask when incident volume rises sharply?",
+              "options": [
+                "How can we make the number look smaller?",
+                "Which changes in telemetry, detection, threat activity, or classification could explain the increase?",
+                "Can we delete old cases?",
+                "Should all alerts be suppressed?"
+              ],
+              "answer": "Which changes in telemetry, detection, threat activity, or classification could explain the increase?",
+              "explanation": "Volume changes can have many causes; the report should investigate drivers before drawing conclusions."
+            },
+            "summary": [
+              "Trend reports need causal context and uncertainty.",
+              "Operational changes can alter metrics independently of threat activity.",
+              "Good dashboards support investigation rather than replace it."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "NIST SP 800-184 — Guide for Cybersecurity Event Recovery",
+                "url": "https://csrc.nist.gov/pubs/sp/800/184/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Build a Balanced SOC KPI Report",
+            "level": "Intermediate",
+            "description": "Calculate and interpret a compact KPI set that combines timeliness, quality, and workload context.",
+            "problemStatement": "Given synthetic case records, calculate median triage time, closure rate, escalation rate, and reopened-case rate, then write a five-sentence management interpretation.",
+            "objectives": [
+              "Calculate defensible denominators.",
+              "Use median for skewed time data.",
+              "Interpret metrics in context."
+            ],
+            "requirements": [
+              "Python 3.11+ standard library.",
+              "Synthetic case records."
+            ],
+            "hint": "Do not equate higher closure rate with better performance without checking severity and reopened cases.",
+            "solutionCode": "from statistics import median\n\ncases = [\n    {\"triage_min\": 12, \"closed\": True, \"escalated\": True, \"reopened\": False},\n    {\"triage_min\": 18, \"closed\": True, \"escalated\": False, \"reopened\": False},\n    {\"triage_min\": 45, \"closed\": False, \"escalated\": True, \"reopened\": False},\n    {\"triage_min\": 22, \"closed\": True, \"escalated\": False, \"reopened\": True},\n]\n\ntriage = [c[\"triage_min\"] for c in cases]\nclosure_rate = sum(c[\"closed\"] for c in cases) / len(cases)\nescalation_rate = sum(c[\"escalated\"] for c in cases) / len(cases)\nreopen_rate = sum(c[\"reopened\"] for c in cases if c[\"closed\"]) / sum(c[\"closed\"] for c in cases)\n\nprint({\"median_triage_min\": median(triage), \"closure_rate\": closure_rate, \"escalation_rate\": escalation_rate, \"reopen_rate\": reopen_rate})",
+            "solutionExplanation": "The solution explicitly defines denominators and uses median for a small skew-prone time sample. The management narrative should note that a reopened case may indicate closure-quality issues and that a 50% escalation rate in a tiny sample is not evidence of a systemic trend by itself."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Threat Intelligence and External/Shared Reporting",
+        "description": "Produce threat-informed reports and sharing packages using disciplined context, provenance, and handling expectations.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "IOC and TTP Reporting",
+            "description": "Report indicators and tactics in a way that preserves context and prevents indicator-only conclusions.",
+            "learningObjectives": [
+              "Differentiate indicator types from behavioral context.",
+              "Record indicator provenance, confidence, first/last observed times, and relevance.",
+              "Avoid treating an indicator match as proof of compromise without contextual evidence."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-150 describes cyber threat information as including indicators, adversary tactics and techniques, recommended actions, and findings from incident analysis. A useful SOC report combines these layers instead of publishing an isolated IP, hash, or domain with no context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Indicator value and type",
+                  "Source/provenance",
+                  "Observed time window",
+                  "Internal relevance",
+                  "Confidence or validation status",
+                  "Related detection or incident",
+                  "Recommended action"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Why should an IOC report include observation context?",
+              "options": [
+                "Because IOCs are always malicious.",
+                "To allow recipients to judge relevance, freshness, and relationship to the observed activity.",
+                "To make the report longer.",
+                "So the IOC can replace investigation."
+              ],
+              "answer": "To allow recipients to judge relevance, freshness, and relationship to the observed activity.",
+              "explanation": "Indicators require context for correct interpretation and operational use."
+            },
+            "summary": [
+              "An indicator is evidence, not automatically an incident verdict.",
+              "Context determines whether an IOC is actionable.",
+              "Provenance and observation time are essential for reuse."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "OASIS STIX Version 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "STIX/TAXII Concepts for SOC Reporters",
+            "description": "Understand how structured threat-intelligence objects support sharing and how SOC reports differ from machine-readable intelligence packages.",
+            "learningObjectives": [
+              "Explain the roles of STIX and TAXII at a conceptual level.",
+              "Identify information that should remain human-readable in an incident report.",
+              "Preserve references and context when translating between analyst reports and CTI objects."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "STIX 2.1 defines a structured language for expressing cyber threat intelligence and observable information. TAXII 2.1 provides a protocol for exchanging CTI. SOC reporters should understand both because an investigation summary may feed a machine-readable intelligence package, but the human incident report still needs narrative context, uncertainty, operational actions, and audience-specific interpretation."
+              },
+              {
+                "type": "warning",
+                "text": "Do not manufacture STIX/TAXII objects from memory when exact object properties, schemas, or identifiers matter. Use the current specification and implementation documentation when producing machine-readable intelligence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "Which statement is correct?",
+              "options": [
+                "TAXII is the language used to define STIX objects.",
+                "STIX structures threat-intelligence content; TAXII supports exchange of that content.",
+                "STIX is only for raw system logs.",
+                "TAXII replaces incident reports."
+              ],
+              "answer": "STIX structures threat-intelligence content; TAXII supports exchange of that content.",
+              "explanation": "STIX and TAXII are complementary standards with different roles."
+            },
+            "summary": [
+              "STIX structures intelligence; TAXII supports exchange.",
+              "Human incident reports and machine-readable intelligence packages serve different purposes.",
+              "Provenance and relationship context must survive the translation between formats."
+            ],
+            "resources": [
+              {
+                "title": "OASIS STIX Version 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              },
+              {
+                "title": "OASIS TAXII Version 2.1",
+                "url": "https://www.oasis-open.org/standard/taxii2-1/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Sharing, Audience, and Handling Constraints",
+            "description": "Design sharing-ready SOC outputs that respect internal policy, contractual boundaries, and information-sharing handling rules.",
+            "learningObjectives": [
+              "Identify when an incident report needs a different distribution level from a detection rule or IOC list.",
+              "Document sharing restrictions and recipient scope.",
+              "Explain why legal and regulatory reporting obligations must be checked against current organizational and jurisdictional requirements."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Information sharing is governed by more than technical usefulness. NIST SP 800-150 emphasizes setting sharing goals, identifying sources, scoping activities, and developing rules for publication and distribution. In practice, SOC teams also need to consult current legal, contractual, regulatory, insurance, and organizational requirements before making external notifications."
+              },
+              {
+                "type": "warning",
+                "text": "Reporting deadlines and notification duties vary by sector, contract, jurisdiction, and incident type. A SOC course should teach the reporting workflow, not assert one universal deadline."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "What is the safest training principle for legal or regulatory notification deadlines?",
+              "options": [
+                "There is one global deadline for every incident.",
+                "Use a fixed deadline from a generic template.",
+                "Verify the current requirement for the applicable jurisdiction, sector, contract, and incident type.",
+                "Ignore deadlines until incident closure."
+              ],
+              "answer": "Verify the current requirement for the applicable jurisdiction, sector, contract, and incident type.",
+              "explanation": "Notification rules vary materially; generic training should teach verification and escalation rather than a false universal deadline."
+            },
+            "summary": [
+              "Sharing must be deliberate and policy-aware.",
+              "External notification is a governance action, not merely a SOC formatting task.",
+              "Current obligations must be verified for the actual organization and jurisdiction."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Create a Context-Rich IOC Bulletin",
+            "level": "Advanced",
+            "description": "Prepare an internal threat bulletin that includes indicators, context, confidence, recommended detections, and handling notes.",
+            "problemStatement": "Produce a one-page bulletin for three synthetic indicators associated with a suspicious authentication incident.",
+            "objectives": [
+              "Document indicator provenance.",
+              "Link indicators to internal observations.",
+              "Separate confirmed matches from hypotheses.",
+              "Specify sharing restrictions."
+            ],
+            "requirements": [
+              "Markdown editor.",
+              "Synthetic indicators only."
+            ],
+            "hint": "An IOC list without context is a shopping list. Explain why each indicator matters and what action it enables.",
+            "solutionCode": "## Detection Bulletin\n\n**Handling:** Internal SOC and incident-response teams only.\n\n**Indicator 1:** 198.51.100.20 (IPv4)\n**Context:** Observed in a successful authentication event for account A at 02:14 UTC.\n**Assessment:** Suspicious; not independently malicious.\n**Action:** Correlate with other account activity before blocking broadly.\n\n**Indicator 2:** `example-suspicious.test` (domain)\n**Context:** Referenced by a DNS query from H1 during the investigation window.\n**Assessment:** Needs validation against enterprise DNS context.\n\n**Indicator 3:** `sha256:<redacted>` (file hash placeholder for controlled case reference)\n**Context:** Endpoint detection recorded a matching file object.\n**Assessment:** Treat as an investigation pivot; retrieve the controlled evidence record for exact hash value and file metadata.",
+            "solutionExplanation": "The bulletin adds provenance, context, confidence, and action. The third indicator is deliberately represented by a controlled reference rather than exposing a sensitive value in a broad report."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Automation and Quality Controls for Reporting",
+        "description": "Use lightweight automation to make SOC reports consistent, testable, and less error-prone without hiding analyst judgment.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Report Data Models and Templates",
+            "description": "Design a structured report schema that separates machine-generated facts from analyst-authored assessment.",
+            "learningObjectives": [
+              "Define a report data model for incident metadata, evidence, actions, and conclusions.",
+              "Identify fields that should be mandatory versus optional.",
+              "Explain why templates should enforce completeness without forcing meaningless content."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "report = {\n    \"case_id\": \"IR-2026-0042\",\n    \"status\": \"investigating\",\n    \"severity\": \"high\",\n    \"summary\": \"Suspicious account use under investigation.\",\n    \"facts\": [],\n    \"assessments\": [],\n    \"actions\": [],\n    \"gaps\": [],\n    \"references\": []\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "A useful schema makes required operational fields explicit while leaving room for case-specific analysis. “Facts” and “assessments” are intentionally separate collections because automation can reliably validate structure more easily than it can validate analytical truth."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Why separate facts and assessments in a report data model?",
+              "options": [
+                "Because assessments are never useful.",
+                "To make the evidence boundary explicit and allow structure validation without treating interpretation as raw fact.",
+                "To double the report length.",
+                "Because JSON requires two arrays."
+              ],
+              "answer": "To make the evidence boundary explicit and allow structure validation without treating interpretation as raw fact.",
+              "explanation": "The separation makes the analytical boundary visible and reduces the risk of accidental certainty."
+            },
+            "summary": [
+              "Structured templates improve consistency and automation.",
+              "Mandatory fields should correspond to real operational needs.",
+              "Automation can enforce structure but cannot replace analytical judgment."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Python-Based Report Generation",
+            "description": "Generate a Markdown SOC report from structured case data using only the Python standard library.",
+            "learningObjectives": [
+              "Load structured case data and generate a consistent report.",
+              "Format evidence and metrics programmatically.",
+              "Handle missing optional fields without crashing the report pipeline."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "\nfrom pathlib import Path\nimport json\n\ndef render_report(case):\n    lines = [f\"# {case['case_id']}\", \"\", f\"**Status:** {case['status']}\", f\"**Severity:** {case['severity']}\", \"\"]\n    lines += [\"## Summary\", case.get(\"summary\", \"No summary provided.\"), \"\"]\n    lines += [\"## Timeline\", \"| Time | Source | Event |\", \"|---|---|---|\"]\n    for item in case.get(\"timeline\", []):\n        lines.append(f\"| {item['time']} | {item['source']} | {item['event']} |\")\n    lines += [\"\", \"## Open Gaps\"]\n    for gap in case.get(\"gaps\", []):\n        lines.append(f\"- {gap}\")\n    return \"\\n\".join(lines) + \"\\n\"\n\ncase = json.loads(Path(\"case.json\").read_text(encoding=\"utf-8\"))\nPath(\"incident-report.md\").write_text(render_report(case), encoding=\"utf-8\")\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "This pattern deliberately uses a simple deterministic renderer. In production, teams may add schema validation, tests, controlled templates, approval states, and integrations with a case-management or document system."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-02",
+                "title": "Generate a Markdown SOC Report",
+                "description": "Generate a small deterministic Markdown report from structured case data and preserve a human-review gate.",
+                "steps": [
+                  "Create a synthetic case object containing status, summary, timeline, findings, and actions.",
+                  "Render the sections using a Python function.",
+                  "Write the result to incident-report.md.",
+                  "Open the file and verify that the generated content matches the structured input."
+                ],
+                "solution": "from pathlib import Path\n\ncase = {\n    \"case_id\": \"IR-2026-0042\",\n    \"status\": \"investigating\",\n    \"summary\": \"Suspicious account use remains under investigation.\",\n    \"timeline\": [\n        {\"time\":\"2026-09-08T02:14:00Z\",\"event\":\"Unexpected successful authentication\",\"source\":\"identity\"},\n        {\"time\":\"2026-09-08T02:16:30Z\",\"event\":\"Administrative process execution\",\"source\":\"endpoint\"},\n    ],\n    \"findings\": [\n        {\"claim\":\"Account activity was inconsistent with the expected pattern.\",\"support\":\"E01\",\"limitation\":\"User confirmation pending\"}\n    ],\n    \"actions\": [\n        {\"action\":\"Disable the account pending validation\",\"owner\":\"Identity Operations\",\"status\":\"completed\"}\n    ]\n}\n\nlines = [f\"# SOC Incident Report — {case['case_id']}\", \"\", f\"**Status:** {case['status']}\", \"\", \"## Summary\", case['summary'], \"\", \"## Timeline\", \"| Time | Source | Event |\", \"|---|---|---|\"]\nlines += [f\"| {x['time']} | {x['source']} | {x['event']} |\" for x in case['timeline']]\nlines += [\"\", \"## Findings\", \"\"]\nlines += [f\"- {x['claim']} Support: {x['support']}. Limitation: {x['limitation']}.\" for x in case['findings']]\nlines += [\"\", \"## Actions\", \"\"]\nlines += [f\"- {x['status']}: {x['action']} (owner: {x['owner']})\" for x in case['actions']]\nlines += [\"\", \"## QA\", \"\", \"Human review is required before operational or external distribution.\", \"\"]\n\nPath(\"incident-report.md\").write_text(\"\\n\".join(lines), encoding=\"utf-8\")",
+                "output": "The file incident-report.md contains the structured case as a readable report. The final QA section explicitly preserves the human-review gate."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "What remains necessary after automated report generation?",
+              "options": [
+                "Nothing; automation proves correctness.",
+                "Human review of analytical accuracy, evidence interpretation, and required distribution.",
+                "Deletion of source data.",
+                "Replacing timestamps with local time."
+              ],
+              "answer": "Human review of analytical accuracy, evidence interpretation, and required distribution.",
+              "explanation": "Automation can generate structure and derived fields but cannot reliably decide whether the incident interpretation is correct."
+            },
+            "summary": [
+              "Simple generation can remove formatting drift and transcription errors.",
+              "Generated reports still need review for analytical accuracy.",
+              "A deterministic output pipeline is easier to test than ad-hoc copy/paste."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Validation, Testing, and Change Control",
+            "description": "Apply quality checks to reporting pipelines and detect broken templates or inconsistent data before publication.",
+            "learningObjectives": [
+              "Write validation checks for required fields and identifier formats.",
+              "Test report generation with normal and edge-case inputs.",
+              "Use change control for report templates and metric definitions."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "\ndef validate_case(case):\n    required = [\"case_id\", \"status\", \"severity\", \"summary\"]\n    missing = [key for key in required if not case.get(key)]\n    if missing:\n        raise ValueError(f\"Missing required fields: {', '.join(missing)}\")\n    if not case[\"case_id\"].startswith(\"IR-\"):\n        raise ValueError(\"case_id must use the approved IR- prefix\")\n    return True\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "Testing should include empty lists, missing optional sections, unusual characters, large evidence sets, and partially completed cases. Metric definitions also need versioning: changing the denominator or classification logic can make trend lines incomparable unless the change is documented."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "Why should metric definitions be versioned?",
+              "options": [
+                "To make dashboards colorful.",
+                "Because changes to definitions can break comparability across reporting periods.",
+                "Because statistics require UUIDs.",
+                "Because every value must increase."
+              ],
+              "answer": "Because changes to definitions can break comparability across reporting periods.",
+              "explanation": "A trend is only meaningful when the measurement method remains stable or changes are explicitly explained."
+            },
+            "summary": [
+              "Validation catches structural problems before publication.",
+              "Tests should cover both typical and boundary cases.",
+              "Changing a metric definition is itself a reporting event that should be documented."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Build a Report Linter",
+            "level": "Advanced",
+            "description": "Implement a small validator that rejects incomplete SOC cases before report generation.",
+            "problemStatement": "Create a Python validator that checks required metadata, validates ISO-8601 UTC timestamps in timeline entries, and reports all errors together.",
+            "objectives": [
+              "Validate multiple constraints.",
+              "Return actionable error messages.",
+              "Keep validation separate from rendering."
+            ],
+            "requirements": [
+              "Python 3.11+ standard library.",
+              "No third-party dependencies."
+            ],
+            "hint": "Collect all validation errors instead of failing on the first one so the analyst can fix the case in one pass.",
+            "solutionCode": "from datetime import datetime, timezone\n\ndef validate(case):\n    errors = []\n    for key in (\"case_id\", \"status\", \"severity\", \"summary\"):\n        if not case.get(key):\n            errors.append(f\"missing required field: {key}\")\n\n    for index, item in enumerate(case.get(\"timeline\", []), 1):\n        value = item.get(\"time\", \"\")\n        try:\n            dt = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n            if dt.tzinfo is None or dt.utcoffset() != timezone.utc.utcoffset(dt):\n                errors.append(f\"timeline[{index}].time must include UTC offset\")\n        except ValueError:\n            errors.append(f\"timeline[{index}].time is not valid ISO-8601\")\n\n    return errors\n\ncase = {\"case_id\":\"IR-1\",\"status\":\"investigating\",\"severity\":\"high\",\"summary\":\"Test\",\"timeline\":[{\"time\":\"2026-09-08T02:14:00Z\"}]}\nprint(validate(case))",
+            "solutionExplanation": "The validator accumulates errors, checks required fields, and parses timestamps using Python’s standard datetime library. The example accepts explicit UTC timestamps and leaves rendering separate from quality control."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Operational Reporting, Recovery, and Continuous Improvement",
+        "description": "Use reporting to drive containment, recovery, lessons learned, and measurable improvement after incidents.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Response and Recovery Reporting",
+            "description": "Document response actions and recovery state so leadership and responders can understand current risk.",
+            "learningObjectives": [
+              "Report containment, eradication, recovery, and monitoring states accurately.",
+              "Differentiate an action being performed from an action being verified as effective.",
+              "Document residual risk during recovery."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-61 Rev. 3 integrates incident response with risk management, while NIST SP 800-184 focuses on recovery planning, testing, and improvement. Reporting should therefore show not only what responders did but whether the action achieved the intended control objective."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Action: what was executed?",
+                  "Owner: who performed or owns it?",
+                  "Time: when was it executed?",
+                  "Verification: how was effectiveness checked?",
+                  "Residual risk: what remains possible?"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Why should a report include verification after a containment action?",
+              "options": [
+                "To fill space.",
+                "Because performing an action does not prove that the intended control effect occurred.",
+                "Because containment is always permanent.",
+                "Because logs are optional."
+              ],
+              "answer": "Because performing an action does not prove that the intended control effect occurred.",
+              "explanation": "Verification demonstrates whether the containment or recovery action achieved its intended effect."
+            },
+            "summary": [
+              "Response reports should distinguish execution from verification.",
+              "Recovery status includes residual risk and validation evidence.",
+              "A closed technical action does not automatically mean the incident is fully recovered."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-184 — Guide for Cybersecurity Event Recovery",
+                "url": "https://csrc.nist.gov/pubs/sp/800/184/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Lessons Learned and Corrective Actions",
+            "description": "Turn incident findings into tracked improvements instead of generic recommendations.",
+            "learningObjectives": [
+              "Translate lessons into specific corrective actions.",
+              "Assign ownership, priority, and evidence of completion.",
+              "Distinguish remediation from broader resilience improvements."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-184 emphasizes learning from events to improve resilience. A useful lesson-learned section identifies the condition that should change, the measurable action, who owns it, and how completion will be verified."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Finding: what the incident revealed.",
+                  "Risk: why it matters.",
+                  "Corrective action: what should change.",
+                  "Owner: accountable team or role.",
+                  "Due date: expected completion.",
+                  "Verification: evidence that the change works."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "Which corrective action is strongest?",
+              "options": [
+                "Improve security.",
+                "Review logs sometime.",
+                "Implement and test MFA for privileged remote access, with IAM owning completion and evidence retained in the change record.",
+                "Train everyone better."
+              ],
+              "answer": "Implement and test MFA for privileged remote access, with IAM owning completion and evidence retained in the change record.",
+              "explanation": "It identifies a concrete control, scope, owner, verification, and evidence."
+            },
+            "summary": [
+              "Lessons learned become useful when translated into owned, testable actions.",
+              "Verification should demonstrate control improvement, not just task completion.",
+              "Repeated findings should be visible across incidents and trend reports."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-184 — Guide for Cybersecurity Event Recovery",
+                "url": "https://csrc.nist.gov/pubs/sp/800/184/final"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Quality Assurance and Report Review",
+            "description": "Create a peer-review process for checking factual accuracy, completeness, and audience fit before high-impact reports are distributed.",
+            "learningObjectives": [
+              "Apply a structured report review checklist.",
+              "Identify contradictions between timeline, summary, and evidence table.",
+              "Check that distribution and handling match the report’s sensitivity."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Facts trace to sources.",
+                  "Timeline order is explainable.",
+                  "Summary matches detailed findings.",
+                  "Actions have timestamps and owners.",
+                  "Uncertainty is visible.",
+                  "Sensitive information is minimized.",
+                  "Distribution list is appropriate.",
+                  "Current status matches case state."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Peer review is especially valuable for reports that trigger executive decisions, external notification, major containment, or regulatory/legal engagement. Review should focus on correctness and decision usefulness, not merely grammar."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Which review check has the highest value for factual integrity?",
+              "options": [
+                "Does the title use a large font?",
+                "Can major claims be traced to evidence and do they agree with the timeline?",
+                "Are there exactly five bullet points?",
+                "Is every sentence the same length?"
+              ],
+              "answer": "Can major claims be traced to evidence and do they agree with the timeline?",
+              "explanation": "Traceability and internal consistency are central to defensible reporting."
+            },
+            "summary": [
+              "Quality review should verify the substance of the report, not just formatting.",
+              "Contradictions across sections are a high-value review target.",
+              "Distribution is part of report correctness when handling constraints apply."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-04",
+            "title": "Reporting Program Maturity and Improvement",
+            "description": "Assess a reporting program using repeatability, data quality, automation, review, and learning rather than document volume alone.",
+            "learningObjectives": [
+              "Define characteristics of immature versus disciplined SOC reporting.",
+              "Identify improvement priorities based on observed reporting failures.",
+              "Design a continuous-improvement loop for report quality."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A mature reporting program is not defined by how many pages it produces. It is defined by whether reports are timely, traceable, consistent, appropriately protected, decision-useful, and connected to corrective action. FIRST frameworks describe service capabilities and outcomes; CIS Control 17 emphasizes personnel, contact information, and incident-handling processes."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Measure recurring reporting defects.",
+                  "Prioritize changes with operational impact.",
+                  "Test template, data, and workflow changes.",
+                  "Measure whether defect rates or delays improve.",
+                  "Review and update the reporting standard periodically."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-04",
+              "question": "What is a meaningful maturity indicator?",
+              "options": [
+                "Number of report pages produced.",
+                "Reduction in repeated factual/reporting defects after controlled process improvements.",
+                "Number of headings in templates.",
+                "Number of screenshots attached."
+              ],
+              "answer": "Reduction in repeated factual/reporting defects after controlled process improvements.",
+              "explanation": "Maturity should be demonstrated through improved capability and outcomes, not output volume alone."
+            },
+            "summary": [
+              "Reporting maturity is about capability and outcomes.",
+              "Defect trends can guide improvement better than document counts.",
+              "A reporting standard should evolve with operational needs and validated lessons."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              },
+              {
+                "title": "CIS Critical Security Control 17 — Incident Response Management",
+                "url": "https://www.cisecurity.org/controls/incident-response-management"
+              },
+              {
+                "title": "NIST SP 800-184 — Guide for Cybersecurity Event Recovery",
+                "url": "https://csrc.nist.gov/pubs/sp/800/184/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Design a Corrective-Action Register",
+            "level": "Intermediate",
+            "description": "Create an action register that connects incident findings to accountable remediation and verification.",
+            "problemStatement": "Build a register with five corrective actions derived from a simulated incident and include finding, risk, owner, due date, status, and verification evidence.",
+            "objectives": [
+              "Translate findings into concrete actions.",
+              "Assign ownership and verification.",
+              "Identify overdue or blocked actions."
+            ],
+            "requirements": [
+              "Spreadsheet, JSON, or Markdown."
+            ],
+            "hint": "Every action should answer “what changes, who owns it, and how will we know it worked?”",
+            "solutionCode": "actions = [\n    {\"id\":\"CA-001\",\"finding\":\"Privileged remote access lacked consistent MFA enforcement\",\"risk\":\"Credential compromise could enable remote access\",\"owner\":\"IAM\",\"due\":\"2026-10-01\",\"status\":\"open\",\"verification\":\"Review policy and successful MFA test evidence\"},\n    {\"id\":\"CA-002\",\"finding\":\"Cloud audit gap during investigation window\",\"risk\":\"Reduced visibility for incident reconstruction\",\"owner\":\"Cloud Operations\",\"due\":\"2026-09-20\",\"status\":\"in_progress\",\"verification\":\"Generate test events and confirm end-to-end ingestion\"}\n]\n\nfor a in actions:\n    print(a[\"id\"], a[\"owner\"], a[\"status\"], \"->\", a[\"verification\"])",
+            "solutionExplanation": "The register is designed as an operational artifact. It connects the finding to risk and then to a measurable remediation and verification step."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Capstone Preparation: End-to-End SOC Reporting Workflow",
+        "description": "Integrate evidence, timeline, narrative, metrics, threat context, automation, and review into a complete reporting workflow before the final project.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "End-to-End Reporting Workflow",
+            "description": "Practice the complete flow from alert intake to final report publication.",
+            "learningObjectives": [
+              "Sequence the full SOC reporting workflow.",
+              "Choose which artifacts should be generated automatically and which require analyst judgment.",
+              "Identify quality gates before final publication."
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Ingest case metadata and alert context.",
+                  "Collect and reference supporting evidence.",
+                  "Normalize relevant timestamps and entities.",
+                  "Build the timeline.",
+                  "Write findings and confidence statements.",
+                  "Record response actions and current state.",
+                  "Produce audience-specific views.",
+                  "Run validation and peer review.",
+                  "Publish through the approved channel.",
+                  "Track corrective actions and lessons learned."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The capstone workflow should remain SIEM-neutral. The source system can vary, but the reporting discipline remains the same: traceability, clear state, evidence-backed reasoning, protected distribution, and actionable follow-up."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "Which step should occur before final publication of a high-impact report?",
+              "options": [
+                "Delete source references.",
+                "Run validation and review against evidence and handling requirements.",
+                "Replace UTC timestamps with guesses.",
+                "Remove uncertainty statements."
+              ],
+              "answer": "Run validation and review against evidence and handling requirements.",
+              "explanation": "Final publication should be a controlled quality gate."
+            },
+            "summary": [
+              "End-to-end reporting is a workflow with quality gates, not a single document-writing step.",
+              "Automation is strongest for repeatable transformations and validation.",
+              "Analyst judgment remains central to interpretation and confidence."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Capstone Data Preparation and Evidence Matrix",
+            "description": "Build an evidence matrix that connects every major report claim to one or more supporting records.",
+            "learningObjectives": [
+              "Construct a claim-to-evidence matrix.",
+              "Identify unsupported or weakly supported statements.",
+              "Prepare evidence references for the final project report."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A claim-to-evidence matrix is a useful final QA tool. Each important claim is mapped to the evidence items that support it, the strength of that support, and any limitation. This helps reviewers find narrative statements that have no clear basis."
+              },
+              {
+                "type": "paragraph",
+                "text": "Example evidence matrix:\n| Claim | Evidence | Support | Limitation |\n|---|---|---|---|\n| Account A had suspicious remote access | E01, E03 | Strong | User confirmation pending |\n| H1 executed the investigated process | E04 | Strong | Parent process telemetry incomplete |\n| Data exfiltration occurred | None | Unsupported | Network egress evidence unavailable |"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What should happen to a material claim with no supporting evidence?",
+              "options": [
+                "State it as fact anyway.",
+                "Label it unsupported or unresolved and describe the evidence gap.",
+                "Delete the gap from the report.",
+                "Assign a random confidence score."
+              ],
+              "answer": "Label it unsupported or unresolved and describe the evidence gap.",
+              "explanation": "An unsupported material claim should not be presented as established fact."
+            },
+            "summary": [
+              "A claim-to-evidence matrix exposes unsupported conclusions before publication.",
+              "The absence of evidence is itself a reportable limitation.",
+              "Strong reporting does not force every question to have a positive finding."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Perform a Pre-Publication Report Audit",
+            "level": "Advanced",
+            "description": "Audit a synthetic incident report against a quality checklist and produce actionable corrections.",
+            "problemStatement": "Given a report containing timeline contradictions, one unsupported conclusion, an unnecessary sensitive value, and a missing owner, identify every defect and rewrite the affected sections.",
+            "objectives": [
+              "Check factual consistency.",
+              "Identify unsupported claims.",
+              "Apply data minimization.",
+              "Add accountable next steps."
+            ],
+            "requirements": [
+              "Markdown editor.",
+              "Synthetic report only."
+            ],
+            "hint": "Audit the report claim by claim rather than reading only for grammar.",
+            "solutionCode": "defects = [\n    \"Timeline: event 04 is listed before event 03 although event_time_utc is later.\",\n    \"Evidence: the exfiltration conclusion has no supporting record.\",\n    \"Sensitive data: a live token appears in the executive section and should be removed.\",\n    \"Action: credential review has no owner.\"\n]\n\nfor defect in defects:\n    print(\"FIX:\", defect)",
+            "solutionExplanation": "The audit focuses on four high-value error classes: chronology, evidence support, information exposure, and accountability. The corrected report should make each issue explicit and traceable."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Final Project — Evidence-Backed SOC Reporting Pipeline",
+        "description": "Complete the end-to-end capstone in a controlled synthetic environment. This final module contains the project only and intentionally has no additional module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-10-01",
+            "title": "Capstone Execution and Final Review",
+            "description": "Run the complete reporting pipeline, perform evidence and handling QA, and package the final operational report.",
+            "learningObjectives": [
+              "Execute the capstone workflow from structured case data to validated report.",
+              "Perform a final claim-to-evidence, chronology, handling, and accountability review.",
+              "Explain which parts are automated and which require analyst judgment."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone is assessed as an end-to-end reporting workflow rather than as a programming exercise alone. The final review should verify that claims are evidence-backed, timelines are internally consistent, actions have owners, sensitive values are minimized, and the generated document is not distributed without the required human approval."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use synthetic data only.",
+                  "Preserve evidence references rather than copying sensitive raw values into broad reports.",
+                  "Treat validation errors as blockers until corrected.",
+                  "Review the generated report against the underlying case data before distribution."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "The capstone demonstrates the full reporting lifecycle in one controlled workflow.",
+              "Automation improves repeatability; human review remains the final quality gate.",
+              "The deliverable is a defensible report and traceable reporting process, not merely a formatted document."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "FIRST CSIRT Services Framework v2.1",
+                "url": "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Evidence-Backed SOC Incident Reporting Pipeline",
+          "description": "Build a vendor-neutral reporting pipeline that ingests a structured synthetic SOC case, validates required fields and timestamps, generates an evidence-backed Markdown incident report, and exposes a clear human-review gate. The project integrates evidence provenance, timeline construction, findings, response actions, open gaps, references, and report QA concepts taught throughout the course.",
+          "conceptsCovered": [
+            "SOC reporting purpose and audiences",
+            "Evidence provenance and log quality",
+            "UTC timeline normalization",
+            "Fact-versus-assessment language",
+            "Incident report structure",
+            "Detection and evidence traceability",
+            "Metrics and quality controls",
+            "Sensitive-data minimization",
+            "Structured report generation",
+            "Validation and human review"
+          ],
+          "steps": [
+            "Create a working directory and save the supplied soc_report.py source from the course JSON.",
+            "Create case.json using the schema required by the validator: case metadata, timeline, findings, actions, references, and optional gaps.",
+            "Populate the case with synthetic records only. Do not use real credentials, live tokens, personal data, or production incident details.",
+            "Run the validator. Correct every structural or timestamp error before generating the report.",
+            "Generate incident-report.md and inspect the timeline, findings, actions, gaps, and references.",
+            "Perform a human evidence audit: trace every material conclusion to supporting records and mark unsupported conclusions as unresolved.",
+            "Perform a handling audit: minimize sensitive values, verify the audience, and confirm the approved distribution channel.",
+            "Archive the source case data, generated report, review outcome, and any corrective-action record according to the organization’s retention policy."
+          ],
+          "code": "#!/usr/bin/env python3\n\"\"\"SOC Reporting Capstone: evidence-backed incident report generator.\n\nStandard-library only. Input: case.json\nOutput: incident-report.md\n\"\"\"\nfrom __future__ import annotations\n\nimport json\nimport sys\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nREQUIRED = (\"case_id\", \"status\", \"severity\", \"summary\", \"timeline\", \"findings\", \"actions\", \"references\")\n\n\ndef parse_utc(value: str) -> datetime:\n    dt = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n    if dt.tzinfo is None:\n        raise ValueError(f\"timestamp has no timezone: {value}\")\n    return dt.astimezone(timezone.utc)\n\n\ndef validate_case(case: dict) -> list[str]:\n    errors: list[str] = []\n    for field in REQUIRED:\n        if field not in case:\n            errors.append(f\"missing required field: {field}\")\n    if errors:\n        return errors\n\n    for index, item in enumerate(case[\"timeline\"], 1):\n        try:\n            parse_utc(item[\"time\"])\n        except (KeyError, ValueError) as exc:\n            errors.append(f\"timeline[{index}] invalid time: {exc}\")\n        if not item.get(\"source\") or not item.get(\"event\"):\n            errors.append(f\"timeline[{index}] requires source and event\")\n\n    for index, finding in enumerate(case[\"findings\"], 1):\n        if not finding.get(\"claim\") or not finding.get(\"support\"):\n            errors.append(f\"finding[{index}] requires claim and support\")\n\n    for index, action in enumerate(case[\"actions\"], 1):\n        for field in (\"action\", \"owner\", \"status\"):\n            if not action.get(field):\n                errors.append(f\"action[{index}] missing {field}\")\n\n    return errors\n\n\ndef render_case(case: dict) -> str:\n    timeline = sorted(case[\"timeline\"], key=lambda x: parse_utc(x[\"time\"]))\n    lines = [\n        f\"# SOC Incident Report — {case['case_id']}\",\n        \"\",\n        f\"**Status:** {case['status']}\",\n        f\"**Severity:** {case['severity']}\",\n        \"\",\n        \"## Summary\",\n        case[\"summary\"],\n        \"\",\n        \"## Timeline\",\n        \"| Time (UTC) | Source | Event | Reference |\",\n        \"|---|---|---|---|\",\n    ]\n    for item in timeline:\n        ref = item.get(\"reference\", \"\")\n        lines.append(f\"| {parse_utc(item['time']).isoformat()} | {item['source']} | {item['event']} | {ref} |\")\n\n    lines += [\"\", \"## Findings\", \"\", \"| Claim | Support | Limitation |\", \"|---|---|---|\"]\n    for finding in case[\"findings\"]:\n        lines.append(f\"| {finding['claim']} | {finding['support']} | {finding.get('limitation', '')} |\")\n\n    lines += [\"\", \"## Response Actions\", \"\"]\n    for action in case[\"actions\"]:\n        lines.append(f\"- **{action['status']}** — {action['action']} — owner: {action['owner']}\")\n\n    lines += [\"\", \"## Open Gaps\", \"\"]\n    gaps = case.get(\"gaps\", [])\n    if gaps:\n        lines.extend(f\"- {gap}\" for gap in gaps)\n    else:\n        lines.append(\"- None documented.\")\n\n    lines += [\"\", \"## References\", \"\"]\n    for ref in case[\"references\"]:\n        lines.append(f\"- {ref}\")\n\n    lines += [\"\", \"## Report QA Note\", \"\", \"This document was generated from structured case data. Human review is required before operational or external distribution.\", \"\"]\n    return \"\\n\".join(lines)\n\n\ndef main() -> int:\n    if len(sys.argv) != 2:\n        print(\"Usage: python soc_report.py case.json\", file=sys.stderr)\n        return 2\n\n    source = Path(sys.argv[1])\n    case = json.loads(source.read_text(encoding=\"utf-8\"))\n    errors = validate_case(case)\n    if errors:\n        for error in errors:\n            print(f\"ERROR: {error}\", file=sys.stderr)\n        return 1\n\n    output = source.with_name(\"incident-report.md\")\n    output.write_text(render_case(case), encoding=\"utf-8\")\n    print(f\"Wrote {output}\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+          "explanation": "Architecture: case.json is the structured source of truth for the capstone demonstration; soc_report.py validates the structure, normalizes timeline timestamps to UTC for ordering, renders findings and actions, and writes a Markdown report. Data flow is input case → validation → timeline normalization → deterministic rendering → human QA → controlled publication. The design intentionally does not claim that automation can determine whether a finding is true. Instead, the code validates structure and traceability fields while the analyst remains responsible for interpretation, evidence sufficiency, and distribution decisions. The final report also states that human review is required before distribution, reflecting the distinction between automation and analytical judgment.",
+          "files": [
+            {
+              "path": "soc_report.py",
+              "content": "#!/usr/bin/env python3\n\"\"\"SOC Reporting Capstone: evidence-backed incident report generator.\n\nStandard-library only. Input: case.json\nOutput: incident-report.md\n\"\"\"\nfrom __future__ import annotations\n\nimport json\nimport sys\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nREQUIRED = (\"case_id\", \"status\", \"severity\", \"summary\", \"timeline\", \"findings\", \"actions\", \"references\")\n\n\ndef parse_utc(value: str) -> datetime:\n    dt = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n    if dt.tzinfo is None:\n        raise ValueError(f\"timestamp has no timezone: {value}\")\n    return dt.astimezone(timezone.utc)\n\n\ndef validate_case(case: dict) -> list[str]:\n    errors: list[str] = []\n    for field in REQUIRED:\n        if field not in case:\n            errors.append(f\"missing required field: {field}\")\n    if errors:\n        return errors\n\n    for index, item in enumerate(case[\"timeline\"], 1):\n        try:\n            parse_utc(item[\"time\"])\n        except (KeyError, ValueError) as exc:\n            errors.append(f\"timeline[{index}] invalid time: {exc}\")\n        if not item.get(\"source\") or not item.get(\"event\"):\n            errors.append(f\"timeline[{index}] requires source and event\")\n\n    for index, finding in enumerate(case[\"findings\"], 1):\n        if not finding.get(\"claim\") or not finding.get(\"support\"):\n            errors.append(f\"finding[{index}] requires claim and support\")\n\n    for index, action in enumerate(case[\"actions\"], 1):\n        for field in (\"action\", \"owner\", \"status\"):\n            if not action.get(field):\n                errors.append(f\"action[{index}] missing {field}\")\n\n    return errors\n\n\ndef render_case(case: dict) -> str:\n    timeline = sorted(case[\"timeline\"], key=lambda x: parse_utc(x[\"time\"]))\n    lines = [\n        f\"# SOC Incident Report — {case['case_id']}\",\n        \"\",\n        f\"**Status:** {case['status']}\",\n        f\"**Severity:** {case['severity']}\",\n        \"\",\n        \"## Summary\",\n        case[\"summary\"],\n        \"\",\n        \"## Timeline\",\n        \"| Time (UTC) | Source | Event | Reference |\",\n        \"|---|---|---|---|\",\n    ]\n    for item in timeline:\n        ref = item.get(\"reference\", \"\")\n        lines.append(f\"| {parse_utc(item['time']).isoformat()} | {item['source']} | {item['event']} | {ref} |\")\n\n    lines += [\"\", \"## Findings\", \"\", \"| Claim | Support | Limitation |\", \"|---|---|---|\"]\n    for finding in case[\"findings\"]:\n        lines.append(f\"| {finding['claim']} | {finding['support']} | {finding.get('limitation', '')} |\")\n\n    lines += [\"\", \"## Response Actions\", \"\"]\n    for action in case[\"actions\"]:\n        lines.append(f\"- **{action['status']}** — {action['action']} — owner: {action['owner']}\")\n\n    lines += [\"\", \"## Open Gaps\", \"\"]\n    gaps = case.get(\"gaps\", [])\n    if gaps:\n        lines.extend(f\"- {gap}\" for gap in gaps)\n    else:\n        lines.append(\"- None documented.\")\n\n    lines += [\"\", \"## References\", \"\"]\n    for ref in case[\"references\"]:\n        lines.append(f\"- {ref}\")\n\n    lines += [\"\", \"## Report QA Note\", \"\", \"This document was generated from structured case data. Human review is required before operational or external distribution.\", \"\"]\n    return \"\\n\".join(lines)\n\n\ndef main() -> int:\n    if len(sys.argv) != 2:\n        print(\"Usage: python soc_report.py case.json\", file=sys.stderr)\n        return 2\n\n    source = Path(sys.argv[1])\n    case = json.loads(source.read_text(encoding=\"utf-8\"))\n    errors = validate_case(case)\n    if errors:\n        for error in errors:\n            print(f\"ERROR: {error}\", file=sys.stderr)\n        return 1\n\n    output = source.with_name(\"incident-report.md\")\n    output.write_text(render_case(case), encoding=\"utf-8\")\n    print(f\"Wrote {output}\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+            },
+            {
+              "path": "case.json",
+              "content": "{\n  \"case_id\": \"IR-2026-0042\",\n  \"status\": \"investigating\",\n  \"severity\": \"high\",\n  \"summary\": \"Suspicious account use is under investigation; containment is in place while endpoint scope is validated.\",\n  \"timeline\": [\n    {\n      \"time\": \"2026-09-08T02:14:00Z\",\n      \"source\": \"identity\",\n      \"event\": \"Successful authentication for account A from an unexpected source\",\n      \"reference\": \"E01\"\n    },\n    {\n      \"time\": \"2026-09-08T02:16:30Z\",\n      \"source\": \"endpoint\",\n      \"event\": \"Administrative process execution on H1\",\n      \"reference\": \"E02\"\n    },\n    {\n      \"time\": \"2026-09-08T02:17:10Z\",\n      \"source\": \"network\",\n      \"event\": \"Outbound connection from H1 to investigation destination\",\n      \"reference\": \"E03\"\n    }\n  ],\n  \"findings\": [\n    {\n      \"claim\": \"Account A was used outside its expected activity pattern\",\n      \"support\": \"E01 plus historical identity context\",\n      \"limitation\": \"User confirmation pending\"\n    },\n    {\n      \"claim\": \"H1 performed the investigated administrative action\",\n      \"support\": \"E02\",\n      \"limitation\": \"Parent-process telemetry is incomplete\"\n    },\n    {\n      \"claim\": \"Confirmed data exfiltration occurred\",\n      \"support\": \"None\",\n      \"limitation\": \"Network evidence is insufficient to establish exfiltration\"\n    }\n  ],\n  \"actions\": [\n    {\n      \"action\": \"Disable account A pending validation\",\n      \"owner\": \"Identity Operations\",\n      \"status\": \"completed\"\n    },\n    {\n      \"action\": \"Validate H1 process ancestry and related activity\",\n      \"owner\": \"Endpoint Operations\",\n      \"status\": \"in_progress\"\n    }\n  ],\n  \"gaps\": [\n    \"Cloud audit records for part of the investigation window are unavailable.\"\n  ],\n  \"references\": [\n    \"E01\",\n    \"E02\",\n    \"E03\"\n  ]\n}"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,1263 @@
+{
+  "internship": {
+    "id": "application-security-internship",
+    "title": "Application Security Internship",
+    "slug": "application-security-internship",
+    "domain": "Application Security",
+    "level": "Intermediate to Advanced",
+    "language": "English",
+    "duration": {
+      "recommendedEffort": "120–160 focused hours",
+      "basis": "Derived from the breadth of threat modeling, web testing, code review, remediation, regression testing, and capstone work rather than a fixed calendar duration."
+    },
+    "prerequisites": [
+      "Basic Linux command-line usage.",
+      "Basic HTTP/HTTPS, cookies, sessions, DNS, and TCP/IP knowledge.",
+      "Basic Python and Git familiarity.",
+      "Ability to run isolated VMs or containers.",
+      "Understanding that all testing in the internship must be authorized and scope-bounded."
+    ],
+    "objectives": [
+      "Integrate application security into the SDLC.",
+      "Threat-model web applications and APIs.",
+      "Assess authentication, sessions, and authorization.",
+      "Validate injection and output-handling weaknesses.",
+      "Test business logic and API security.",
+      "Review dependencies, secrets, configuration, and supply-chain controls.",
+      "Perform secure code review and remediation.",
+      "Write regression tests and conduct evidence-backed retesting.",
+      "Produce a professional application-security assessment."
+    ],
+    "competencies": [
+      "Threat modeling",
+      "Secure requirements",
+      "Authentication and session review",
+      "Authorization testing",
+      "Input validation and injection analysis",
+      "XSS/output security",
+      "API and business-logic testing",
+      "Dependency and secret hygiene",
+      "Secure code review",
+      "Security regression testing",
+      "Evidence management",
+      "Technical reporting",
+      "Risk reasoning",
+      "Security automation"
+    ],
+    "technologyStack": [
+      {
+        "name": "Burp Suite",
+        "purpose": "Manual HTTP interception and request analysis",
+        "role": "Web application security testing workstation."
+      },
+      {
+        "name": "OWASP ZAP",
+        "purpose": "Proxying and scanner-assisted coverage",
+        "role": "Web security testing aid."
+      },
+      {
+        "name": "Python 3",
+        "purpose": "Security helpers and test automation",
+        "role": "Automation language."
+      },
+      {
+        "name": "Git",
+        "purpose": "Version control",
+        "role": "Reviewable remediation workflow."
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-1",
+        "name": "Foundations and secure SDLC",
+        "outcomes": [
+          "Threat modeling",
+          "Security requirements",
+          "OWASP Top 10/ASVS orientation"
+        ]
+      },
+      {
+        "id": "phase-2",
+        "name": "Identity and input security",
+        "outcomes": [
+          "Auth/session review",
+          "Authorization testing",
+          "Injection/XSS analysis"
+        ]
+      },
+      {
+        "id": "phase-3",
+        "name": "Application testing",
+        "outcomes": [
+          "WSTG-driven testing",
+          "Scanner-assisted triage",
+          "Business-logic/API testing"
+        ]
+      },
+      {
+        "id": "phase-4",
+        "name": "Engineering security",
+        "outcomes": [
+          "Supply-chain review",
+          "Secure code review",
+          "Remediation and regression testing"
+        ]
+      },
+      {
+        "id": "phase-5",
+        "name": "Capstone",
+        "outcomes": [
+          "End-to-end local assessment",
+          "Remediation branch",
+          "Retest and report"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Application Security Foundations and Secure SDLC",
+        "description": "Establish the application-security mindset: threat boundaries, assets, trust assumptions, secure development lifecycle integration, and the 2025 OWASP Top 10 as an awareness taxonomy.",
+        "objectives": [
+          "Explain application security as a lifecycle discipline rather than a final-stage scan.",
+          "Identify assets, trust boundaries, attackers, abuse cases, and security assumptions.",
+          "Use OWASP Top 10 and ASVS as organizing references without treating them as exhaustive checklists.",
+          "Connect security requirements to design, implementation, review, testing, and release."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "What application security work actually is",
+            "description": "Application security combines architecture decisions, secure coding, verification, testing, and operational feedback. Testing finds evidence; engineering fixes root causes.",
+            "learningObjectives": [
+              "Differentiate application security from penetration testing and vulnerability scanning.",
+              "Identify where security controls belong in the SDLC.",
+              "Explain why security defects should be addressed at root cause."
+            ],
+            "summary": "Key outcome: Explain why security defects should be addressed at root cause."
+          },
+          {
+            "id": "lesson-02",
+            "title": "Threat modeling and trust boundaries",
+            "description": "Build a simple threat model around a web application by identifying assets, entry points, privileged operations, trust boundaries, and abuse cases.",
+            "learningObjectives": [
+              "Draw a data-flow view of an application.",
+              "Identify high-risk trust boundaries.",
+              "Translate abuse cases into security requirements."
+            ],
+            "summary": "Key outcome: Translate abuse cases into security requirements."
+          },
+          {
+            "id": "lesson-03",
+            "title": "OWASP Top 10:2025 and ASVS",
+            "description": "Use the current OWASP Top 10:2025 as awareness guidance and ASVS 5.0.0 as a verification-oriented standard for technical controls.",
+            "learningObjectives": [
+              "Recognize the 2025 Top 10 categories.",
+              "Explain the purpose of ASVS.",
+              "Map a concrete application control to an ASVS-style verification question."
+            ],
+            "quiz": {
+              "id": "q1",
+              "question": "Which source is intended as a basis for testing technical security controls in web applications?",
+              "options": [
+                "OWASP ASVS",
+                "A generic network inventory",
+                "A CPU benchmark",
+                "A style guide"
+              ],
+              "answer": "OWASP ASVS",
+              "explanation": "ASVS is explicitly intended as a basis for testing web-application technical security controls."
+            },
+            "summary": "Key outcome: Map a concrete application control to an ASVS-style verification question."
+          },
+          {
+            "id": "lesson-04",
+            "title": "Security requirements and abuse cases",
+            "description": "Turn threats into testable requirements: authorization decisions, validation, secure defaults, secrets handling, logging, and failure behavior.",
+            "learningObjectives": [
+              "Write a security requirement in testable form.",
+              "Distinguish preventive, detective, and corrective controls.",
+              "Prioritize requirements using risk context."
+            ],
+            "summary": "Key outcome: Prioritize requirements using risk context."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Convert a user story into security acceptance criteria",
+            "level": "Easy",
+            "description": "Add security acceptance criteria to a normal web feature request.",
+            "problemStatement": "A transfer feature allows an authenticated user to send value to another account. The feature has functional requirements but no security acceptance criteria.",
+            "objectives": [
+              "Identify security-relevant trust decisions.",
+              "Write negative and positive acceptance criteria.",
+              "Make each criterion testable."
+            ],
+            "requirements": [
+              "Cover authentication, authorization, input validation, CSRF/session behavior, audit logging, and error handling.",
+              "Keep criteria implementation-neutral where possible."
+            ],
+            "constraints": [
+              "Use a local fictional application context.",
+              "Do not assume a specific framework."
+            ],
+            "hint": "Start with what the server must prove before the sensitive state change occurs.",
+            "solutionCode": "criteria = [\n    \"Unauthenticated requests to the transfer endpoint are rejected.\",\n    \"An authenticated user may transfer only from accounts they are authorized to use.\",\n    \"Amount is validated for type, range, and business constraints on the server.\",\n    \"State-changing requests use the application's documented CSRF defense when cookie-based sessions are used.\",\n    \"Failed authorization attempts are logged without secrets or tokens.\",\n    \"The API returns an error that does not disclose internal implementation details.\"\n]\nfor item in criteria:\n    assert item and item.endswith(\".\")\nprint(\"Security acceptance criteria:\")\nfor item in criteria:\n    print(\"-\", item)\n",
+            "solutionExplanation": "The solution turns a functional story into testable security expectations. It does not lock the design to a specific framework or authentication mechanism.",
+            "regressionTesting": [
+              "Test every negative criterion explicitly.",
+              "Keep authorization checks server-side."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Threat model",
+          "Security acceptance criteria",
+          "ASVS/Top-10 mapping notes"
+        ],
+        "assessment": "The intern can turn application requirements and threats into testable security controls."
+      },
+      {
+        "id": "module-02",
+        "title": "Identity, Authentication, Sessions and Authorization",
+        "description": "Analyze identity and access control, including session lifecycle, password storage, authentication factors, authorization models, object-level access, and privilege boundaries.",
+        "objectives": [
+          "Distinguish authentication from authorization.",
+          "Review session and credential-handling controls.",
+          "Test horizontal and vertical authorization boundaries.",
+          "Design regression tests for access-control logic."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Authentication fundamentals",
+            "description": "Authentication establishes identity; it does not grant every permission the application exposes.",
+            "learningObjectives": [
+              "Explain authentication versus authorization.",
+              "Identify common authentication attack surfaces.",
+              "List security properties expected from a login flow."
+            ],
+            "summary": "Key outcome: List security properties expected from a login flow."
+          },
+          {
+            "id": "lesson-06",
+            "title": "Session management",
+            "description": "Study session identifiers, expiration, logout invalidation, cookie security attributes, and state transitions.",
+            "learningObjectives": [
+              "Trace session creation and invalidation.",
+              "Identify secure cookie attributes and lifecycle concerns.",
+              "Design session regression tests."
+            ],
+            "summary": "Key outcome: Design session regression tests."
+          },
+          {
+            "id": "lesson-07",
+            "title": "Password storage and account protection",
+            "description": "Review password hashing, credential handling, recovery flows, rate controls, and protection of authentication endpoints.",
+            "learningObjectives": [
+              "Explain why passwords should not be stored reversibly.",
+              "Identify credential-recovery risks.",
+              "Review authentication controls for abuse resistance."
+            ],
+            "summary": "Key outcome: Review authentication controls for abuse resistance."
+          },
+          {
+            "id": "lesson-08",
+            "title": "Authorization models and object-level access",
+            "description": "Analyze RBAC, relationship-based decisions, resource ownership, deny-by-default, and per-request enforcement.",
+            "learningObjectives": [
+              "Test horizontal and vertical access boundaries.",
+              "Recognize IDOR/BOLA-style failures.",
+              "Design authorization regression cases."
+            ],
+            "practicals": [
+              {
+                "id": "p2",
+                "title": "Compare two identities against one protected resource",
+                "objective": "Validate object-level authorization in a local lab application.",
+                "steps": [
+                  "Log in as two test users supplied by the lab.",
+                  "Access a resource owned by user A.",
+                  "Attempt the same operation using user B.",
+                  "Record expected and actual authorization behavior without modifying data."
+                ],
+                "expectedEvidence": "Request/response evidence and a pass/fail authorization matrix.",
+                "safetyBoundary": "Perform only against deliberately authorized local training applications or explicitly approved assessment targets."
+              }
+            ],
+            "summary": "Key outcome: Design authorization regression cases."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Repair an object-level authorization regression",
+            "level": "Intermediate",
+            "description": "Review an intentionally flawed authorization helper and produce a corrected implementation plus tests.",
+            "problemStatement": "A service checks that the user is authenticated but does not verify whether the user is authorized for the requested object.",
+            "objectives": [
+              "Implement a resource-ownership authorization check.",
+              "Cover allowed and denied cases.",
+              "Keep authorization independent from client-controlled object IDs."
+            ],
+            "requirements": [
+              "The function receives authenticated user identity and resource owner identity.",
+              "Tests must cover same-owner and different-owner cases."
+            ],
+            "constraints": [
+              "Do not trust a client-provided object ID as proof of ownership."
+            ],
+            "hint": "Ask what identity the server already knows that cannot be chosen by the caller.",
+            "solutionCode": "def can_access_resource(authenticated_user_id: int, resource_owner_id: int) -> bool:\n    if authenticated_user_id <= 0 or resource_owner_id <= 0:\n        return False\n    return authenticated_user_id == resource_owner_id\n\nassert can_access_resource(10, 10) is True\nassert can_access_resource(10, 11) is False\nassert can_access_resource(0, 10) is False\nassert can_access_resource(10, 0) is False\nprint(\"Authorization regression checks passed.\")\n",
+            "solutionExplanation": "The corrected decision is made from server-known identity and resource ownership, with explicit invalid-identity behavior.",
+            "regressionTesting": [
+              "Test cross-user access after every authorization change.",
+              "Verify authorized access remains functional."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Authorization test matrix",
+          "Session review notes",
+          "Corrected authorization logic"
+        ],
+        "assessment": "The intern can reason about identity and enforce resource-level authorization boundaries."
+      },
+      {
+        "id": "module-03",
+        "title": "Input Handling, Injection and Output Security",
+        "description": "Investigate how untrusted input crosses interpreter and browser boundaries, covering validation, SQL injection, command injection, XSS, template contexts, and secure output handling.",
+        "objectives": [
+          "Identify interpreter boundaries and dangerous data flows.",
+          "Design safe validation and parameterization strategies.",
+          "Recognize reflected/stored/DOM XSS patterns.",
+          "Connect findings to root-cause remediation."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Input validation and canonicalization",
+            "description": "Use allowlist-oriented validation for structured values while understanding that validation alone is not a substitute for context-specific defenses.",
+            "learningObjectives": [
+              "Differentiate syntactic and semantic validation.",
+              "Explain allowlists versus denylists.",
+              "Identify where validation should occur."
+            ],
+            "summary": "Key outcome: Identify where validation should occur."
+          },
+          {
+            "id": "lesson-10",
+            "title": "SQL injection and parameterized queries",
+            "description": "Understand why string-built SQL is dangerous and why parameterized queries are the preferred defense for data values.",
+            "learningObjectives": [
+              "Recognize injection-prone query construction.",
+              "Explain parameterized queries.",
+              "Design SQL-injection regression tests."
+            ],
+            "quiz": {
+              "id": "q2",
+              "question": "Which control is the preferred primary defense when SQL values come from users?",
+              "options": [
+                "Parameterized queries",
+                "String concatenation",
+                "Client-side filtering only",
+                "Hiding database errors"
+              ],
+              "answer": "Parameterized queries",
+              "explanation": "Parameterized interfaces keep data separate from executable SQL syntax."
+            },
+            "summary": "Key outcome: Design SQL-injection regression tests."
+          },
+          {
+            "id": "lesson-11",
+            "title": "Command injection and interpreter boundaries",
+            "description": "Identify when application data reaches an operating-system interpreter and learn safer alternatives to shell composition.",
+            "learningObjectives": [
+              "Recognize OS command injection risk.",
+              "Prefer library APIs that avoid shells where possible.",
+              "Review process execution code for unsafe interpolation."
+            ],
+            "summary": "Key outcome: Review process execution code for unsafe interpolation."
+          },
+          {
+            "id": "lesson-12",
+            "title": "Cross-site scripting and output contexts",
+            "description": "Study reflected, stored, and DOM XSS as context-specific output handling failures.",
+            "learningObjectives": [
+              "Differentiate XSS categories.",
+              "Choose context-appropriate output encoding or safe DOM APIs.",
+              "Explain the role and limits of CSP."
+            ],
+            "summary": "Key outcome: Explain the role and limits of CSP."
+          },
+          {
+            "id": "lesson-13",
+            "title": "Template injection, SSRF and file-path handling",
+            "description": "Expand data-flow thinking to server-side template contexts, URL fetchers, filesystem paths, and canonicalization.",
+            "learningObjectives": [
+              "Identify dangerous server-side trust boundaries.",
+              "Propose allowlist and isolation controls.",
+              "Design non-destructive validation cases."
+            ],
+            "summary": "Key outcome: Design non-destructive validation cases."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Fix unsafe query construction and add regression tests",
+            "level": "Advanced",
+            "description": "Repair a query-builder helper that concatenates a user-controlled search term.",
+            "problemStatement": "A search endpoint directly inserts a user-provided term into SQL text. Replace the unsafe construction with a parameterized query interface and add tests that preserve legitimate search behavior.",
+            "objectives": [
+              "Remove string concatenation of user data into SQL.",
+              "Preserve normal search semantics.",
+              "Add regression tests for ordinary and adversarial-looking input."
+            ],
+            "requirements": [
+              "Use Python DB-API style parameter binding in the solution abstraction.",
+              "Do not execute against a real external database."
+            ],
+            "constraints": [
+              "The test should prove data remains a parameter rather than part of SQL syntax.",
+              "Do not rely on escaping as the primary defense."
+            ],
+            "hint": "Keep the SQL statement static and pass the search term separately.",
+            "solutionCode": "def build_search_query(term: str):\n    sql = \"SELECT id, name FROM accounts WHERE name LIKE ?\"\n    params = [f\"%{term}%\"]\n    return sql, params\n\nsql, params = build_search_query(\"O'Reilly\")\nassert sql == \"SELECT id, name FROM accounts WHERE name LIKE ?\"\nassert params == [\"%O'Reilly%\"]\nassert \"O'Reilly\" not in sql\nprint(sql)\nprint(params)\n",
+            "solutionExplanation": "The user value is kept out of the SQL statement and bound as data by the database API. The example is deliberately framework-neutral and does not pretend to execute a DB.",
+            "regressionTesting": [
+              "Add tests for quotes, wildcard characters, empty search, and long input.",
+              "Confirm the final SQL text never contains raw user data."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Input validation matrix",
+          "Injection review",
+          "XSS output-context notes",
+          "Parameterized query fix"
+        ],
+        "assessment": "The intern can trace untrusted input into interpreters and browser output contexts and select appropriate defenses."
+      },
+      {
+        "id": "module-04",
+        "title": "Web Security Testing Workflow and Tool-Assisted Verification",
+        "description": "Build a disciplined testing process using HTTP evidence, Burp Suite or ZAP for proxying, structured WSTG scenarios, and scanner-assisted triage.",
+        "objectives": [
+          "Map application attack surfaces from observed behavior.",
+          "Use intercepting proxies safely.",
+          "Design test cases from WSTG categories and ASVS requirements.",
+          "Verify automated findings manually before reporting."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-14",
+            "title": "HTTP request/response analysis",
+            "description": "Treat headers, methods, cookies, bodies, status codes, redirects, and content types as security evidence.",
+            "learningObjectives": [
+              "Read an HTTP transaction precisely.",
+              "Identify security-relevant response behavior.",
+              "Trace user-controlled data through requests."
+            ],
+            "summary": "Key outcome: Trace user-controlled data through requests."
+          },
+          {
+            "id": "lesson-15",
+            "title": "Proxy workflows with Burp Suite and ZAP",
+            "description": "Use an intercepting proxy to capture, modify, replay, and compare requests in a local lab.",
+            "learningObjectives": [
+              "Configure a local proxy safely.",
+              "Capture a request and replay it.",
+              "Keep proxy scope aligned with authorization."
+            ],
+            "summary": "Key outcome: Keep proxy scope aligned with authorization."
+          },
+          {
+            "id": "lesson-16",
+            "title": "WSTG-driven application mapping",
+            "description": "Use WSTG categories to structure information gathering, configuration review, identity testing, input validation, business logic testing, and reporting.",
+            "learningObjectives": [
+              "Select relevant WSTG scenarios.",
+              "Build an endpoint and role inventory.",
+              "Record untested scenarios explicitly."
+            ],
+            "summary": "Key outcome: Record untested scenarios explicitly."
+          },
+          {
+            "id": "lesson-17",
+            "title": "Scanner-assisted verification",
+            "description": "Use automated tools for coverage and triage, while preserving human verification and uncertainty.",
+            "learningObjectives": [
+              "Interpret a scanner alert as a hypothesis.",
+              "Validate evidence manually.",
+              "Track false positives and unresolved issues."
+            ],
+            "summary": "Key outcome: Track false positives and unresolved issues."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Create a WSTG-aligned attack-surface inventory",
+            "level": "Intermediate",
+            "description": "Build a structured inventory from captured application traffic.",
+            "problemStatement": "A local application exposes public, authenticated, and admin routes. Produce an inventory of endpoints, methods, parameters, roles, and proposed WSTG-style test areas.",
+            "objectives": [
+              "Classify endpoints by trust boundary.",
+              "Map roles and authentication state.",
+              "Assign relevant test hypotheses."
+            ],
+            "requirements": [
+              "Use only supplied local lab traffic.",
+              "No brute-force activity.",
+              "Every inventory row must have evidence or a stated assumption."
+            ],
+            "constraints": [
+              "Do not start from a vulnerability list; start from application behavior."
+            ],
+            "hint": "Group endpoints by function and security decision rather than URL alphabetically.",
+            "solutionCode": "endpoints = [\n    {\"method\":\"GET\",\"path\":\"/public\",\"role\":\"anonymous\",\"test\":\"configuration\"},\n    {\"method\":\"GET\",\"path\":\"/profile\",\"role\":\"user\",\"test\":\"authorization\"},\n    {\"method\":\"POST\",\"path\":\"/admin/users\",\"role\":\"admin\",\"test\":\"function authorization\"},\n]\n\nrequired = {\"method\",\"path\",\"role\",\"test\"}\nassert all(required.issubset(row) for row in endpoints)\nassert len({row['path'] for row in endpoints}) == len(endpoints)\nfor row in endpoints:\n    print(row)\n",
+            "solutionExplanation": "The inventory captures testable security decisions rather than copying raw proxy history. It provides a basis for choosing concrete WSTG scenarios.",
+            "regressionTesting": [
+              "Compare authenticated and unauthenticated traces.",
+              "Add negative authorization cases for privileged routes."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Endpoint inventory",
+          "Role matrix",
+          "WSTG test map",
+          "Scanner triage record"
+        ],
+        "assessment": "The intern can organize web testing around evidence, roles, and repeatable test scenarios."
+      },
+      {
+        "id": "module-05",
+        "title": "Business Logic, API Security and Secure Error Handling",
+        "description": "Move beyond classic injection to business-rule abuse, API-specific authorization, mass assignment, rate controls, replay behavior, and safe error handling.",
+        "objectives": [
+          "Identify business-logic trust assumptions.",
+          "Test APIs for object, function, and property-level authorization.",
+          "Assess error behavior and information disclosure.",
+          "Design abuse-case and regression coverage."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-18",
+            "title": "Business logic security",
+            "description": "Business logic flaws occur when valid functions can be combined or sequenced in ways the designers did not intend.",
+            "learningObjectives": [
+              "Identify security-sensitive business invariants.",
+              "Construct abuse cases without destructive actions.",
+              "Design state-transition tests."
+            ],
+            "summary": "Key outcome: Design state-transition tests."
+          },
+          {
+            "id": "lesson-19",
+            "title": "API authorization and object/property boundaries",
+            "description": "Review BOLA, function-level authorization, mass assignment, and overbroad response data.",
+            "learningObjectives": [
+              "Test object and function boundaries.",
+              "Identify unauthorized property updates.",
+              "Minimize returned sensitive data."
+            ],
+            "summary": "Key outcome: Minimize returned sensitive data."
+          },
+          {
+            "id": "lesson-20",
+            "title": "Rate limits, replay and idempotency",
+            "description": "Study abuse resistance for high-impact operations, replay of requests, and idempotency where state-changing actions must be unique.",
+            "learningObjectives": [
+              "Identify endpoints that need abuse controls.",
+              "Design replay tests.",
+              "Explain idempotency for sensitive operations."
+            ],
+            "summary": "Key outcome: Explain idempotency for sensitive operations."
+          },
+          {
+            "id": "lesson-21",
+            "title": "Errors, logging and information disclosure",
+            "description": "Review error messages, logs, audit trails, and monitoring signals without exposing secrets or implementation details.",
+            "learningObjectives": [
+              "Distinguish user-safe errors from internal diagnostics.",
+              "Design security-relevant logging.",
+              "Avoid logging credentials, tokens, and unnecessary sensitive data."
+            ],
+            "summary": "Key outcome: Avoid logging credentials, tokens, and unnecessary sensitive data."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Design and test an idempotent payment-like API operation",
+            "level": "Advanced",
+            "description": "Define safe server-side behavior for a state-changing operation that may be retried by clients.",
+            "problemStatement": "A client may retry the same request because of a network timeout. The API must not perform the same logical operation twice when the request is retried with the same idempotency key.",
+            "objectives": [
+              "Define the state transition invariant.",
+              "Design idempotency-key handling.",
+              "Create positive, replay, and conflict tests."
+            ],
+            "requirements": [
+              "Use a small in-memory model only.",
+              "Do not connect to a payment system.",
+              "Treat idempotency key as client input, not proof of authorization."
+            ],
+            "constraints": [
+              "Store the outcome of a completed key and reject conflicting reuse safely."
+            ],
+            "hint": "The key identifies a logical request; authentication and authorization remain separate controls.",
+            "solutionCode": "class IdempotencyStore:\n    def __init__(self):\n        self._records = {}\n\n    def execute(self, key, fingerprint, operation):\n        if not key:\n            raise ValueError(\"missing idempotency key\")\n        if key in self._records:\n            saved_fp, saved_result = self._records[key]\n            if saved_fp != fingerprint:\n                raise ValueError(\"idempotency key reused with different request\")\n            return saved_result, False\n        result = operation()\n        self._records[key] = (fingerprint, result)\n        return result, True\n\nstore = IdempotencyStore()\ncount = {\"n\": 0}\ndef operation():\n    count[\"n\"] += 1\n    return {\"transaction\":\"tx-1\"}\n\nfirst, created1 = store.execute(\"k1\", \"amount=10\", operation)\nsecond, created2 = store.execute(\"k1\", \"amount=10\", operation)\nassert first == second\nassert created1 is True and created2 is False\nassert count[\"n\"] == 1\ntry:\n    store.execute(\"k1\", \"amount=999\", operation)\nexcept ValueError:\n    pass\nelse:\n    raise AssertionError(\"conflicting reuse was not rejected\")\nprint(\"Idempotency behavior verified.\")\n",
+            "solutionExplanation": "The store ties a key to a request fingerprint and preserves the original result. Authentication, authorization, and transaction durability would still require application-specific controls.",
+            "regressionTesting": [
+              "Test concurrent duplicate requests in the real implementation.",
+              "Verify a conflicting fingerprint cannot overwrite the original result."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Business-rule abuse cases",
+          "API authorization matrix",
+          "Error/logging review",
+          "Idempotency test design"
+        ],
+        "assessment": "The intern can reason about stateful API abuse and security-sensitive business invariants."
+      },
+      {
+        "id": "module-06",
+        "title": "Dependencies, Secrets, Configuration and Supply-Chain Security",
+        "description": "Assess application dependencies and deployment configuration, including vulnerable components, secret exposure, insecure defaults, CI/CD controls, and software supply-chain risk.",
+        "objectives": [
+          "Inventory dependencies and their security role.",
+          "Review secret and configuration handling.",
+          "Identify dependency-risk and supply-chain weaknesses.",
+          "Build security checks into development and CI workflows."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-22",
+            "title": "Dependency inventory and vulnerability management",
+            "description": "Build a dependency inventory, identify direct versus transitive dependencies, and decide how vulnerability advisories should be triaged.",
+            "learningObjectives": [
+              "Generate a dependency inventory.",
+              "Distinguish direct and transitive risk.",
+              "Document remediation decisions."
+            ],
+            "summary": "Key outcome: Document remediation decisions."
+          },
+          {
+            "id": "lesson-23",
+            "title": "Secrets and credential hygiene",
+            "description": "Review environment configuration, secret managers, repository hygiene, logs, crash dumps, and build artifacts for credential exposure.",
+            "learningObjectives": [
+              "Identify common secret-leak paths.",
+              "Prevent secrets from entering source control.",
+              "Design secret rotation and incident-response checks."
+            ],
+            "summary": "Key outcome: Design secret rotation and incident-response checks."
+          },
+          {
+            "id": "lesson-24",
+            "title": "Security configuration and secure defaults",
+            "description": "Review debug modes, exposed admin interfaces, permissive CORS, insecure headers, verbose errors, and unsafe default settings.",
+            "learningObjectives": [
+              "Identify high-impact misconfiguration.",
+              "Connect configuration to threat impact.",
+              "Define secure deployment baselines."
+            ],
+            "summary": "Key outcome: Define secure deployment baselines."
+          },
+          {
+            "id": "lesson-25",
+            "title": "Supply-chain and CI/CD controls",
+            "description": "Use NIST SSDF ideas to add security controls across source, dependencies, build, test, release, and provenance.",
+            "learningObjectives": [
+              "Place security controls in the SDLC.",
+              "Identify trust boundaries in CI/CD.",
+              "Design repeatable security checks."
+            ],
+            "summary": "Key outcome: Design repeatable security checks."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Add a dependency and secret-hygiene gate",
+            "level": "Intermediate",
+            "description": "Create a small CI policy checker for a Python repository.",
+            "problemStatement": "A repository must reject accidental committed secret-like files and record a dependency inventory artifact without storing credentials.",
+            "objectives": [
+              "Detect forbidden artifact paths.",
+              "Validate that environment-example files contain placeholders rather than secrets.",
+              "Emit deterministic JSON suitable for CI artifacts."
+            ],
+            "requirements": [
+              "Use local files only.",
+              "No network access is required for the task.",
+              "Do not attempt to identify real credentials by calling external services."
+            ],
+            "constraints": [
+              "Treat policy violations as a failed check rather than a warning."
+            ],
+            "hint": "Start with explicit policy patterns for common local-secret filenames and real-looking secret assignments.",
+            "solutionCode": "from pathlib import Path\nimport json\nimport re\n\ndef inspect_repo(root: Path):\n    findings=[]\n    forbidden_names={'.env', 'id_rsa', 'credentials.json'}\n    assignment=re.compile(r'^[A-Z0-9_]*(SECRET|TOKEN|PASSWORD|API_KEY)[A-Z0-9_]* *= *[^$]+$')\n    for path in root.rglob('*'):\n        if not path.is_file() or '.git' in path.parts:\n            continue\n        if path.name in forbidden_names:\n            findings.append({\"path\":str(path.relative_to(root)),\"rule\":\"forbidden-secret-file\"})\n        if path.suffix in {'.env', '.ini', '.cfg'} or path.name.endswith('.env.example'):\n            text=path.read_text(encoding='utf-8', errors='ignore')\n            for line_no,line in enumerate(text.splitlines(), 1):\n                if assignment.match(line) and not re.search(r'\\$\\{|<|CHANGE_ME|EXAMPLE', line):\n                    findings.append({\"path\":str(path.relative_to(root)),\"line\":line_no,\"rule\":\"secret-like-assignment\"})\n    return findings\n\nprint(\"Policy checker logic is deterministic and filesystem-scoped.\")\n",
+            "solutionExplanation": "The task demonstrates a deterministic CI policy check. It intentionally does not attempt to validate whether a token is genuine or contact external services.",
+            "regressionTesting": [
+              "Add tests for false positives such as placeholder values.",
+              "Ensure CI fails on policy violations."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Dependency inventory format",
+          "Secret-hygiene policy",
+          "Configuration review",
+          "CI security gate"
+        ],
+        "assessment": "The intern can identify supply-chain and configuration risks and place security controls into the development workflow."
+      },
+      {
+        "id": "module-07",
+        "title": "Secure Code Review, Verification, Remediation and Retesting",
+        "description": "Practice security-focused code review and remediation using ASVS-style verification questions, diff-based review, regression testing, and evidence-backed closure.",
+        "objectives": [
+          "Perform structured security code review.",
+          "Prioritize root causes over symptoms.",
+          "Write remediation that developers can implement.",
+          "Retest fixes and identify regressions."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-26",
+            "title": "Security code review workflow",
+            "description": "Review changed trust boundaries first, then input validation, authorization, output handling, dependencies, error paths, logging, and configuration.",
+            "learningObjectives": [
+              "Perform a diff-based security review.",
+              "Identify security-sensitive code paths.",
+              "Record evidence and remediation."
+            ],
+            "quiz": {
+              "id": "q3",
+              "question": "Which review approach is especially useful for a security-sensitive code change?",
+              "options": [
+                "Inspect modified trust boundaries and new attack vectors",
+                "Only check formatting",
+                "Only run unit tests",
+                "Ignore integrations"
+              ],
+              "answer": "Inspect modified trust boundaries and new attack vectors",
+              "explanation": "OWASP's secure code-review guidance emphasizes impact on controls, new attack vectors, and changed trust boundaries."
+            },
+            "summary": "Key outcome: Record evidence and remediation."
+          },
+          {
+            "id": "lesson-27",
+            "title": "ASVS-style verification",
+            "description": "Turn application requirements into concrete verification questions and evidence requests.",
+            "learningObjectives": [
+              "Create verification checks from requirements.",
+              "Link checks to code and runtime evidence.",
+              "Record unverified controls honestly."
+            ],
+            "summary": "Key outcome: Record unverified controls honestly."
+          },
+          {
+            "id": "lesson-28",
+            "title": "Remediation engineering",
+            "description": "Prefer fixes that remove the root cause rather than filters or one-off patches that attackers can bypass.",
+            "learningObjectives": [
+              "Explain why the fix works.",
+              "Add regression coverage.",
+              "Consider compatibility and operational impact."
+            ],
+            "summary": "Key outcome: Consider compatibility and operational impact."
+          },
+          {
+            "id": "lesson-29",
+            "title": "Retesting and closure",
+            "description": "Retesting is a new evidence-gathering activity. A finding should close only when the original behavior is no longer reproducible and required regression checks pass.",
+            "learningObjectives": [
+              "Design deterministic retests.",
+              "Separate retest evidence from original evidence.",
+              "Close findings based on evidence, not assumptions."
+            ],
+            "summary": "Key outcome: Close findings based on evidence, not assumptions."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Review a security-sensitive pull request",
+            "level": "Advanced",
+            "description": "Perform a structured review of a deliberately vulnerable change set and produce corrected code plus a security checklist.",
+            "problemStatement": "A pull request adds profile editing, file upload metadata, and an admin-only export endpoint. The change contains unsafe assumptions about input, authorization, and error handling.",
+            "objectives": [
+              "Identify authorization and validation weaknesses.",
+              "Recommend root-cause fixes.",
+              "Add focused regression tests."
+            ],
+            "requirements": [
+              "Use the supplied review scenario only.",
+              "Do not claim the change is safe without evidence.",
+              "Cover modified trust boundaries and new integrations."
+            ],
+            "constraints": [
+              "Review data ownership before reviewing UI behavior."
+            ],
+            "hint": "Ask: what can the caller choose, and what must the server independently verify?",
+            "solutionCode": "review = {\n    \"authorization\": [\n        \"Verify every profile update targets the authenticated user's own record unless an admin policy explicitly allows otherwise.\",\n        \"Verify the export endpoint performs a server-side admin authorization check on every request.\"\n    ],\n    \"input_validation\": [\n        \"Validate file metadata length and format server-side.\",\n        \"Do not trust a client-provided MIME type as the only control.\"\n    ],\n    \"error_handling\": [\n        \"Return stable user-facing errors without stack traces or secret material.\",\n        \"Log internal diagnostics separately without credentials or tokens.\"\n    ]\n}\nassert set(review) == {\"authorization\",\"input_validation\",\"error_handling\"}\nfor area, checks in review.items():\n    print(area)\n    for item in checks:\n        print(\"-\", item)\n",
+            "solutionExplanation": "The review is organized around changed trust boundaries and root-cause controls rather than stylistic observations. It deliberately avoids claiming a real pull request or production incident.",
+            "regressionTesting": [
+              "Convert each review item into a regression test.",
+              "Retest the authorization boundary after remediation."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Security code-review report",
+          "Corrective recommendations",
+          "Regression checklist",
+          "Retest plan"
+        ],
+        "assessment": "The intern can conduct a security-focused review and close findings based on evidence."
+      },
+      {
+        "id": "module-08",
+        "title": "Final Capstone — Security Assessment and Remediation of a Deliberately Vulnerable Web Application",
+        "description": "Conduct an end-to-end application security assessment of a deliberately vulnerable local web application, then implement and verify a secure baseline. The capstone combines threat modeling, manual web testing, scanner-assisted triage, code review, remediation, regression testing, and professional reporting.",
+        "objectives": [
+          "Plan a scoped application-security assessment.",
+          "Map the application's attack surface and trust boundaries.",
+          "Validate security weaknesses with minimal, reproducible evidence.",
+          "Review code and configuration to identify root causes.",
+          "Implement remediation and regression tests in a controlled lab.",
+          "Produce a technical report that distinguishes confirmed findings from unverified hypotheses."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-30",
+            "title": "Capstone scope, evidence and test plan",
+            "description": "Translate the local lab authorization into testable scope, evidence requirements, and stop conditions.",
+            "learningObjectives": [
+              "Write a capstone test plan.",
+              "Define evidence and exclusions.",
+              "Establish stop conditions."
+            ],
+            "summary": "Key outcome: Establish stop conditions."
+          },
+          {
+            "id": "lesson-31",
+            "title": "Capstone execution and triage",
+            "description": "Run discovery, application mapping, manual tests, and scanner-assisted checks while preserving raw evidence and uncertainty.",
+            "learningObjectives": [
+              "Execute a phase-gated assessment.",
+              "Triage scanner results.",
+              "Validate selected findings manually."
+            ],
+            "summary": "Key outcome: Validate selected findings manually."
+          },
+          {
+            "id": "lesson-32",
+            "title": "Capstone remediation and verification",
+            "description": "Implement root-cause fixes and regression tests, then repeat the original tests to determine closure.",
+            "learningObjectives": [
+              "Map finding to root cause.",
+              "Implement remediation.",
+              "Retest original and adjacent behaviors."
+            ],
+            "summary": "Key outcome: Retest original and adjacent behaviors."
+          },
+          {
+            "id": "lesson-33",
+            "title": "Capstone report and technical defense",
+            "description": "Assemble the final report and prepare to explain scope, methodology, evidence, limitations, severity rationale, remediation, and retest results.",
+            "learningObjectives": [
+              "Write a reproducible report.",
+              "State limitations honestly.",
+              "Defend the assessment conclusions."
+            ],
+            "summary": "Key outcome: Defend the assessment conclusions."
+          }
+        ],
+        "tasks": [],
+        "deliverables": [
+          "Threat model",
+          "Test plan",
+          "Attack-surface inventory",
+          "Validated findings",
+          "Remediated code/configuration",
+          "Regression tests",
+          "Technical report",
+          "Retest evidence"
+        ],
+        "assessment": "The capstone is evaluated on safe scope discipline, technical evidence, root-cause reasoning, remediation quality, regression testing, and report clarity.",
+        "project": {
+          "heading": "Assess and Secure a Deliberately Vulnerable Web Application in a Local Lab",
+          "description": "Build a complete application-security assessment package around a deliberately vulnerable local web application. The intern will first create or start the isolated lab application, define scope, map the attack surface, test authentication and authorization, validate injection and XSS hypotheses, inspect API and business-logic behavior, review security configuration and dependencies, and use Burp Suite or OWASP ZAP to capture evidence. The intern then performs a secure-code review, implements root-cause remediations in a local source tree, writes regression tests, retests the original findings, and delivers a technical assessment report. The capstone is intentionally bounded to a local training target and does not claim a real client engagement.",
+          "problemStatement": "A development team has an intentionally vulnerable training application that models realistic web-security failures. The team needs a defensible security assessment and a remediation branch that demonstrates whether the most important issues were actually fixed. The intern must prove vulnerabilities with evidence, identify root causes, implement fixes, and demonstrate closure without expanding beyond the authorized lab.",
+          "requirements": [
+            {
+              "category": "Scope and authorization",
+              "items": [
+                "Use only a deliberately vulnerable local application or an explicitly authorized training target.",
+                "Keep browser proxy, scanner, and testing scope restricted to the local lab.",
+                "Do not test public sites or production systems.",
+                "Stop on unexpected non-lab impact or loss of target identity."
+              ]
+            },
+            {
+              "category": "Assessment",
+              "items": [
+                "Create a threat model and attack-surface inventory.",
+                "Test authentication, authorization, input validation, injection, output handling, business logic, API security, configuration, and error handling as applicable to the application.",
+                "Map meaningful tests to OWASP WSTG and/or ASVS references."
+              ]
+            },
+            {
+              "category": "Remediation",
+              "items": [
+                "Fix confirmed vulnerabilities at root cause.",
+                "Add regression tests for each remediated weakness.",
+                "Preserve secure behavior of existing features."
+              ]
+            },
+            {
+              "category": "Evidence and reporting",
+              "items": [
+                "Preserve raw requests/responses and relevant screenshots or logs without unnecessary sensitive data.",
+                "Write reproducible findings with affected asset, evidence, impact, remediation, and retest criteria.",
+                "Clearly label unverified hypotheses and untested areas."
+              ]
+            }
+          ],
+          "features": [
+            {
+              "name": "Scoped application assessment",
+              "behavior": "A documented local target and test scope govern every assessment action."
+            },
+            {
+              "name": "Attack-surface inventory",
+              "behavior": "The intern records routes, methods, parameters, identities, roles, state transitions, and security-relevant components."
+            },
+            {
+              "name": "Manual verification",
+              "behavior": "Potential weaknesses discovered through tools or code review are manually validated before being reported as confirmed."
+            },
+            {
+              "name": "Secure-code remediation",
+              "behavior": "Confirmed issues are fixed at root cause and accompanied by regression tests."
+            },
+            {
+              "name": "Evidence-backed report",
+              "behavior": "A final report links each confirmed finding to reproducible technical evidence and a retest criterion."
+            }
+          ],
+          "technologyStack": [
+            {
+              "name": "Python 3",
+              "purpose": "Optional helper scripts and regression-test utilities.",
+              "role": "Automation and test scripting.",
+              "whyAppropriate": "Easy to audit and useful for small deterministic security helpers."
+            },
+            {
+              "name": "Burp Suite",
+              "purpose": "Intercepting proxy and manual HTTP analysis.",
+              "role": "Primary optional manual web-testing workstation.",
+              "whyAppropriate": "Widely used for controlled request inspection and replay in web-security labs."
+            },
+            {
+              "name": "OWASP ZAP",
+              "purpose": "Proxying and scanner-assisted web testing.",
+              "role": "Coverage and triage aid.",
+              "whyAppropriate": "Provides official documentation and automation support for web security testing."
+            },
+            {
+              "name": "Git",
+              "purpose": "Track assessment tooling and remediation changes.",
+              "role": "Version control and review.",
+              "whyAppropriate": "Makes security fixes, regression tests, and review history auditable."
+            }
+          ],
+          "architecture": {
+            "overview": "The capstone uses an isolated vulnerable web application as the system under test. The intern works from a documented scope, captures browser/proxy traffic, performs manual verification, inspects source/configuration, records findings, implements fixes, runs regression tests, and retests the application. Tools are aids; human judgment determines whether a vulnerability is confirmed.",
+            "components": [
+              {
+                "name": "Training web application",
+                "role": "Deliberately vulnerable system under test."
+              },
+              {
+                "name": "Browser",
+                "role": "Generates normal user flows and supports developer-tool inspection."
+              },
+              {
+                "name": "Burp Suite or ZAP",
+                "role": "Captures and replays authorized application traffic."
+              },
+              {
+                "name": "Source repository",
+                "role": "Stores vulnerable and remediated application code for code review and regression testing."
+              },
+              {
+                "name": "Assessment evidence",
+                "role": "Stores requests, responses, logs, screenshots, code references, and retest evidence."
+              },
+              {
+                "name": "Final report",
+                "role": "Communicates findings, remediation, limitations, and closure evidence."
+              }
+            ],
+            "dataFlow": [
+              "User action",
+              "→ browser",
+              "→ local proxy",
+              "→ vulnerable application",
+              "→ application logic/data layer",
+              "→ HTTP response",
+              "→ evidence capture",
+              "→ manual validation",
+              "→ finding",
+              "→ remediation branch",
+              "→ regression test",
+              "→ retest",
+              "→ final report"
+            ],
+            "securityBoundaries": [
+              "Local lab scope is mandatory.",
+              "No credentials are hardcoded into tooling.",
+              "Evidence is minimized and treated as sensitive.",
+              "Scanner output is not accepted as proof without human verification.",
+              "Remediation is validated against the original behavior and nearby regressions."
+            ]
+          },
+          "projectStructure": "appsec-capstone/\n├── scope/\n│   └── scope.json\n├── assessment/\n│   ├── attack-surface.md\n│   ├── test-plan.md\n│   ├── findings.md\n│   └── retest.md\n├── evidence/\n│   └── README.md\n├── remediation/\n│   ├── tests/\n│   └── source/\n├── scripts/\n│   └── scope_check.py\n└── README.md",
+          "setupRequirements": [
+            "A deliberately vulnerable local web application or isolated training target.",
+            "Python 3.11+ recommended for helper scripts.",
+            "Burp Suite or OWASP ZAP installed if browser interception is used.",
+            "Git repository for the remediation work.",
+            "A browser and an isolated lab network where applicable.",
+            "No real production credentials or secrets."
+          ],
+          "setupCommands": [
+            "python3 -m venv .venv",
+            "source .venv/bin/activate",
+            "python scripts/scope_check.py scope/scope.json",
+            "git init",
+            "python -m unittest discover -s remediation/tests -v"
+          ],
+          "implementationSteps": [
+            "1. Create the isolated lab and confirm the target identity.",
+            "2. Write scope/scope.json with only the local target and explicit exclusions.",
+            "3. Run the scope-check script before using any testing tool.",
+            "4. Build an attack-surface inventory from application navigation, proxy history, API definitions, and source/configuration.",
+            "5. Create a test matrix mapped to relevant OWASP WSTG scenarios and ASVS verification questions.",
+            "6. Test authentication and authorization using dedicated lab identities.",
+            "7. Test input handling, injection, output encoding, business logic, API authorization, and configuration using non-destructive techniques.",
+            "8. Run scanner-assisted checks only within the local lab; treat alerts as hypotheses.",
+            "9. Record confirmed findings with minimal reproducible evidence and a root-cause hypothesis.",
+            "10. Review relevant source code and configuration for each finding.",
+            "11. Implement root-cause remediations in remediation/source/.",
+            "12. Add focused regression tests under remediation/tests/.",
+            "13. Run the regression suite and document observed results.",
+            "14. Retest each original finding manually and record closure evidence.",
+            "15. Complete findings.md, retest.md, and a final technical report.",
+            "16. Perform a final scope/evidence/report-quality review before submission."
+          ],
+          "testing": {
+            "strategy": "Use deterministic unit tests for helper scripts and application-specific regression tests for security fixes, followed by manual security retesting against the original reproduction steps.",
+            "testCases": [
+              "Scope checker accepts only the intended local target.",
+              "Unauthorized object access is denied while authorized access remains functional.",
+              "Injection regression inputs are treated as data.",
+              "XSS regression payloads are rendered safely or rejected as designed.",
+              "Sensitive error paths do not expose stack traces or secrets.",
+              "Remediated findings cannot be reproduced using the original evidence and steps."
+            ],
+            "commands": [
+              "python -m unittest discover -s remediation/tests -v",
+              "python scripts/scope_check.py scope/scope.json"
+            ],
+            "honestyNote": "The capstone package contains no fabricated vulnerability results or claimed deployment/test outcomes. The intern records actual observed results from the local lab."
+          },
+          "securityReview": {
+            "controls": [
+              "Server-side authorization for protected actions.",
+              "Server-side input validation and safe interpreter APIs.",
+              "Context-appropriate output encoding or safe rendering APIs.",
+              "Secure session handling and password storage appropriate to the selected app stack.",
+              "Secrets excluded from source control and logs.",
+              "Security headers and secure configuration reviewed.",
+              "Dependencies reviewed for known risks using authoritative project/package data.",
+              "Regression tests added for confirmed vulnerabilities."
+            ],
+            "limitations": [
+              "The capstone is not a production certification.",
+              "Risk depends on the application and evidence actually assessed.",
+              "Automated scanners do not establish exploitability or business impact on their own."
+            ]
+          },
+          "performance": {
+            "guidance": [
+              "Keep automated scans narrowly scoped.",
+              "Avoid unnecessary repeated requests during manual testing.",
+              "Measure any performance impact introduced by security fixes where relevant.",
+              "Use standard profiling/timing tools when a security control affects latency; do not invent benchmarks."
+            ]
+          },
+          "deployment": {
+            "mode": "Local training environment",
+            "steps": [
+              "Keep the vulnerable target isolated from production and unrelated networks.",
+              "Use source control for remediation changes.",
+              "Do not publish evidence containing credentials or sensitive training data.",
+              "If the lab target is containerized, document the exact image or build used rather than assuming a specific provider."
+            ]
+          },
+          "troubleshooting": [
+            {
+              "problem": "Proxy captures no traffic",
+              "diagnosis": "Browser proxy settings or certificate configuration are incorrect.",
+              "action": "Verify the proxy host/port and follow the selected proxy's official local-certificate instructions; keep the browser scoped to the lab."
+            },
+            {
+              "problem": "Scanner reports an alert that cannot be reproduced",
+              "diagnosis": "The alert may be a false positive, stale observation, or environmental condition.",
+              "action": "Mark it needs-verification or false-positive and preserve the evidence; do not report it as confirmed."
+            },
+            {
+              "problem": "A remediation breaks a normal user flow",
+              "diagnosis": "The fix may be overly restrictive or missing a required legitimate case.",
+              "action": "Add a regression test for the legitimate flow and refine the control without weakening the security requirement."
+            }
+          ],
+          "finalDeliverables": [
+            "Scope file",
+            "Threat model",
+            "Attack-surface inventory",
+            "Test matrix",
+            "Evidence index",
+            "Confirmed findings",
+            "Remediated source changes",
+            "Security regression tests",
+            "Retest matrix",
+            "Final technical report"
+          ]
+        }
+      }
+    ],
+    "evaluation": {
+      "model": "Evidence-based application-security internship assessment",
+      "criteria": [
+        {
+          "criterion": "Scope and safety",
+          "weight": 15,
+          "evidence": "Explicit local scope, exclusions, safe tool usage, and stop conditions."
+        },
+        {
+          "criterion": "Technical assessment",
+          "weight": 25,
+          "evidence": "Attack-surface map, test matrix, validated findings, and evidence."
+        },
+        {
+          "criterion": "Security reasoning",
+          "weight": 15,
+          "evidence": "Threat models, root-cause analysis, authorization and data-flow reasoning."
+        },
+        {
+          "criterion": "Remediation and regression testing",
+          "weight": 20,
+          "evidence": "Secure fixes and tests tied to confirmed findings."
+        },
+        {
+          "criterion": "Code-review and engineering quality",
+          "weight": 10,
+          "evidence": "Structured review, Git hygiene, configuration/secret controls."
+        },
+        {
+          "criterion": "Reporting",
+          "weight": 15,
+          "evidence": "Reproducible technical report, limitations, and retest evidence."
+        }
+      ],
+      "passingStandard": "The intern must demonstrate scope discipline, technically defensible evidence, and the ability to implement and verify security improvements. A polished report cannot compensate for unsafe or unsupported claims.",
+      "finalReviewQuestions": [
+        "Can the intern explain every trust boundary they tested?",
+        "Can the intern distinguish a tool alert from a confirmed weakness?",
+        "Can the intern reproduce the strongest finding from evidence alone?",
+        "Can the intern explain why each remediation addresses root cause?",
+        "Can the intern show regression coverage?",
+        "Can the intern state what was not tested and why?"
+      ]
+    },
+    "resources": [
+      {
+        "title": "OWASP Top 10:2025",
+        "url": "https://owasp.org/Top10/",
+        "why": "Current OWASP awareness baseline for major web application security risks."
+      },
+      {
+        "title": "OWASP ASVS 5.0.0",
+        "url": "https://owasp.org/www-project-application-security-verification-standard/",
+        "why": "Open standard for application security verification and secure-development requirements."
+      },
+      {
+        "title": "OWASP Web Security Testing Guide",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/",
+        "why": "Comprehensive web-security testing framework and versioned test scenarios."
+      },
+      {
+        "title": "NIST SP 800-115",
+        "url": "https://csrc.nist.gov/pubs/sp/800/115/final",
+        "why": "Guidance for planning, conducting, analyzing, and reporting technical security tests."
+      },
+      {
+        "title": "NIST SP 800-218 SSDF",
+        "url": "https://csrc.nist.gov/pubs/sp/800/218/final",
+        "why": "Secure software development practices that complement application security testing."
+      },
+      {
+        "title": "OWASP Input Validation Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html",
+        "why": "Guidance for server-side validation, allowlists, and safe handling of untrusted input."
+      },
+      {
+        "title": "OWASP Authorization Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html",
+        "why": "Guidance for least privilege, deny-by-default, and request-level authorization checks."
+      },
+      {
+        "title": "OWASP SQL Injection Prevention Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+        "why": "Primary guidance for parameterized queries and injection prevention."
+      },
+      {
+        "title": "OWASP Content Security Policy Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html",
+        "why": "Defense-in-depth browser controls for XSS and related client-side risks."
+      },
+      {
+        "title": "OWASP Secure Code Review Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Code_Review_Cheat_Sheet.html",
+        "why": "Practical security-focused code-review workflow and common vulnerability patterns."
+      },
+      {
+        "title": "PortSwigger Web Security Academy",
+        "url": "https://portswigger.net/web-security",
+        "why": "Interactive, continuously updated web-security labs for authorized practice."
+      },
+      {
+        "title": "OWASP ZAP Documentation",
+        "url": "https://www.zaproxy.org/docs/",
+        "why": "Official documentation for proxying and automated web-security testing."
+      },
+      {
+        "title": "Python subprocess",
+        "url": "https://docs.python.org/3/library/subprocess.html",
+        "why": "Official Python documentation for controlled child-process execution."
+      }
+    ]
+  }
+}

@@ -1,0 +1,2614 @@
+{
+  "course": {
+    "id": "security-operations-fundamentals-v1",
+    "title": "Security Operations Fundamentals",
+    "slug": "security-operations-fundamentals",
+    "description": "A comprehensive, defensive Security Operations Fundamentals course that develops the practical skills used to operate and improve a SOC: security telemetry and SIEM workflows, networking and endpoint investigation, identity monitoring, detection engineering, alert triage, threat intelligence, vulnerability prioritization, incident response, evidence handling, operational metrics, automation guardrails, and cloud/SaaS monitoring. The course emphasizes evidence-driven analysis, current NIST/CISA/CIS/MITRE guidance, authorized laboratory work, and realistic operational decision-making.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 88,
+    "prerequisites": [
+      "Basic computer and operating-system familiarity.",
+      "Basic networking concepts such as IP addresses, ports, DNS, and HTTP are helpful but are taught in the course.",
+      "A local lab or fictional datasets for exercises; all investigative/testing actions must remain within authorized scope."
+    ],
+    "learningOutcomes": [
+      "Explain the mission, roles, workflows, and escalation boundaries of a security operations function.",
+      "Assess the quality and investigative value of identity, endpoint, network, application, cloud, and security-control telemetry.",
+      "Use SIEM concepts and structured search workflows to correlate events and scope suspicious activity.",
+      "Interpret network, endpoint, authentication, and privileged-activity evidence without confusing anomalies with proof of compromise.",
+      "Design, test, tune, and document explainable security detections.",
+      "Use MITRE ATT&CK and threat-intelligence concepts to enrich investigations without overclaiming attribution.",
+      "Prioritize vulnerabilities using CVSS, EPSS, exposure, asset criticality, and compensating controls.",
+      "Apply incident-response principles for classification, evidence preservation, containment, recovery, and lessons learned.",
+      "Select meaningful SOC metrics, identify detection gaps, and automate low-risk enrichment with appropriate guardrails.",
+      "Investigate cloud and SaaS control-plane, identity, and configuration telemetry.",
+      "Build and validate a defensive SOC alert-triage application against fictional telemetry."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "SOC Mission, Roles, and Operating Model",
+        "description": "Establish what a Security Operations Center does, how analysts organize work, and how operational security connects to business risk. The module emphasizes repeatability, ownership, escalation, and safe use of authorization.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "What a SOC Is and What It Is Not",
+            "description": "A SOC is an operational capability for monitoring, detection, analysis, response coordination, and continuous improvement. It is not simply a room with dashboards or a list of security products.",
+            "learningObjectives": [
+              "Explain the purpose and boundaries of a SOC.",
+              "Distinguish monitoring, detection, investigation, response, and recovery activities.",
+              "Relate SOC outcomes to business and security risk."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Operational outcomes"
+              },
+              {
+                "type": "paragraph",
+                "text": "A mature SOC turns telemetry into decisions: validate events, scope impact, coordinate response, preserve evidence, and improve defenses. Different organizations centralize or distribute these capabilities differently."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "SOC design depends on mission, risk tolerance, staffing, technology, regulatory requirements, and operating hours.",
+                  "A SOC can be internal, outsourced, co-managed, or hybrid.",
+                  "Detection quality and response coordination matter more than dashboard count."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-01",
+              "question": "Which is a primary SOC outcome?",
+              "options": [
+                "Collecting the maximum possible logs",
+                "Turning security telemetry into informed detection and response decisions",
+                "Replacing all IT operations",
+                "Guaranteeing zero incidents"
+              ],
+              "answer": "Turning security telemetry into informed detection and response decisions",
+              "explanation": "SOC value comes from detecting, analyzing, coordinating, and improving—not simply collecting data."
+            },
+            "summary": [
+              "A SOC is an operational capability, not a product.",
+              "The goal is useful decisions under uncertainty."
+            ],
+            "resources": [
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "SOC Roles, Shift Handoffs, and Escalation",
+            "description": "Map common SOC responsibilities and learn why handoffs and escalation criteria must be explicit.",
+            "learningObjectives": [
+              "Describe analyst responsibilities at different levels.",
+              "Design a useful shift handoff.",
+              "Define escalation conditions for high-impact events."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Organizations commonly separate alert monitoring, deeper investigation, detection engineering, threat intelligence, incident response, and SOC leadership. Titles vary, but ownership must be explicit."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A good handoff contains current status, evidence, hypotheses, actions taken, pending questions, and time-sensitive next steps.",
+                  "Escalation should be based on impact, scope, confidence, and business criteria—not analyst anxiety alone.",
+                  "Preserve a clear decision log for major actions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-02",
+              "question": "What makes a shift handoff actionable?",
+              "options": [
+                "Only the incident title",
+                "Status, evidence, actions taken, open questions, and next steps",
+                "A screenshot of the dashboard",
+                "A list of all log sources"
+              ],
+              "answer": "Status, evidence, actions taken, open questions, and next steps",
+              "explanation": "Handoffs transfer operational context, not merely labels."
+            },
+            "summary": [
+              "Role names differ across organizations.",
+              "Explicit ownership and evidence-driven escalation are the common requirements."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CISA Use Logging on Business Systems",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/use-logging-on-business-systems"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Authorization, Rules of Engagement, and Safe Operations",
+            "description": "Define the operational boundaries that keep monitoring and investigative activity lawful, safe, and auditable.",
+            "learningObjectives": [
+              "Explain why scope and authorization matter in security operations.",
+              "Differentiate defensive monitoring from unauthorized testing.",
+              "Document permitted systems, data, and actions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Security operations frequently touches sensitive systems and data. Monitoring and testing must be tied to organizational authorization, policy, contracts, and applicable law."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Define in-scope systems and data sources before collection.",
+                  "Use least-privileged access for analyst tools and service accounts.",
+                  "Record approvals and exceptions for unusual investigative actions."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A tool being technically capable of an action does not mean the action is authorized."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-03",
+              "question": "What should define whether an analyst may perform an intrusive security test?",
+              "options": [
+                "Personal curiosity",
+                "The analyst’s toolset",
+                "Explicit authorization and the approved scope",
+                "The public availability of the target"
+              ],
+              "answer": "Explicit authorization and the approved scope",
+              "explanation": "Security testing requires documented authorization and boundaries."
+            },
+            "summary": [
+              "Operational safety begins with authorization and scope.",
+              "Least privilege applies to analysts and automation."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115 Security Testing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Design a SOC Escalation Matrix",
+            "level": "Easy",
+            "description": "Create an escalation matrix for common security events.",
+            "problemStatement": "Define thresholds for escalation based on severity, confidence, scope, asset criticality, and business impact.",
+            "objectives": [
+              "Create at least four severity levels.",
+              "Define an owner and response target for each level.",
+              "Include an explicit evidence requirement before escalation."
+            ],
+            "requirements": [
+              "A table or CSV is sufficient.",
+              "Use fictional assets and scenarios."
+            ],
+            "hint": "Start with impact and scope, then add confidence and urgency.",
+            "solutionCode": "Example matrix: Critical=confirmed high-impact compromise or major availability loss -> incident commander; High=credible compromise of privileged or critical asset -> IR lead; Medium=suspicious activity requiring investigation -> senior analyst; Low=benign or low-impact signal -> tune/close with evidence.",
+            "solutionExplanation": "The matrix makes escalation consistent and reduces subjective handoffs."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Telemetry, Logging, and SIEM Fundamentals",
+        "description": "Understand how security telemetry is produced, transported, normalized, retained, protected, and queried.",
+        "lessons": [
+          {
+            "id": "lesson-04",
+            "title": "Telemetry Sources and Event Quality",
+            "description": "Compare endpoint, identity, network, application, cloud, and security-control telemetry and learn how to judge event quality.",
+            "learningObjectives": [
+              "Identify major telemetry categories.",
+              "Assess event completeness, context, and reliability.",
+              "Explain why source timestamps and identifiers matter."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identity logs show authentication and access decisions.",
+                  "Endpoint telemetry can expose process, file, service, and network behavior.",
+                  "Network telemetry provides communication context but may not reveal payloads."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Useful events carry enough fields to answer who, what, when, where, and outcome. High-volume telemetry is only helpful when analysts can interpret it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-02-01",
+              "question": "Which event source is most directly useful for investigating suspicious account access?",
+              "options": [
+                "Identity authentication logs",
+                "Screen brightness logs",
+                "Printer toner logs",
+                "Keyboard layout settings"
+              ],
+              "answer": "Identity authentication logs",
+              "explanation": "Authentication events directly expose account access outcomes and context."
+            },
+            "summary": [
+              "Telemetry should answer investigation questions.",
+              "Context and data quality determine analytic value."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "CISA Use Logging on Business Systems",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/use-logging-on-business-systems"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05",
+            "title": "Log Collection, Normalization, and Time",
+            "description": "Learn the pipeline from source events to searchable records.",
+            "learningObjectives": [
+              "Explain collection and normalization.",
+              "Describe why time synchronization is important.",
+              "Identify fields that support correlation."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Useful correlation fields:\ntimestamp\nhost_id\nuser_id\nsource_ip\nevent_type\noutcome\nrecord_id"
+              },
+              {
+                "type": "paragraph",
+                "text": "Normalization converts diverse source schemas into a common analytical model. Timezone and clock-drift assumptions must be documented when building timelines."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-02-02",
+              "question": "Why is a canonical event time useful in a SIEM?",
+              "options": [
+                "It makes passwords stronger",
+                "It allows events from different sources to be ordered and correlated",
+                "It removes all false positives",
+                "It replaces asset inventory"
+              ],
+              "answer": "It allows events from different sources to be ordered and correlated",
+              "explanation": "Consistent time representation supports reliable correlation."
+            },
+            "summary": [
+              "Record original source time when possible.",
+              "Correlation depends on stable identifiers and time."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "SIEM Architecture and Search Workflow",
+            "description": "Learn the functional layers of a SIEM and a disciplined search process.",
+            "learningObjectives": [
+              "Describe ingestion, parsing, storage, search, correlation, and alerting.",
+              "Build a simple investigative query plan.",
+              "Explain why query scope should be narrow before expanding."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Ingestion receives events; parsing extracts fields; storage retains them; search and correlation turn data into evidence; alerting operationalizes selected conditions.",
+                  "Analysts should start with a hypothesis and narrow time window, then expand scope as evidence warrants."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Run a Local SIEM Search Exercise",
+                "description": "Use a small fictional event file to answer a SOC investigation question with a structured search and correlation workflow.",
+                "steps": [
+                  "Create a JSON file containing authentication, endpoint, and network events with timestamps, host, user, source IP, event type, and outcome.",
+                  "Write down a hypothesis before searching, such as whether one account shows repeated failures followed by a success.",
+                  "Filter to a narrow time window, then correlate by account and source.",
+                  "Document the observations, supporting events, missing evidence, and next investigative step."
+                ],
+                "solution": "The solution should begin with a clear hypothesis, narrow the time window, correlate events on stable identifiers, and record observed facts separately from inference. The final note should identify whether the evidence supports escalation and what additional telemetry is required.",
+                "output": "A short analyst note containing the hypothesis, correlated event sequence, confidence, evidence gaps, and recommended next step."
+              }
+            ],
+            "quiz": {
+              "id": "q-02-03",
+              "question": "What should an analyst do before writing a large exploratory SIEM query?",
+              "options": [
+                "Define the investigative hypothesis and scope",
+                "Delete older logs",
+                "Disable alerts",
+                "Assume the user is malicious"
+              ],
+              "answer": "Define the investigative hypothesis and scope",
+              "explanation": "A bounded hypothesis reduces noise and makes query results interpretable."
+            },
+            "summary": [
+              "Search should be hypothesis-driven.",
+              "Wide queries are useful after the initial evidence is understood."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "CISA Use Logging on Business Systems",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/use-logging-on-business-systems"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Log Retention, Protection, and Evidence Value",
+            "description": "Learn how retention and access controls affect investigations.",
+            "learningObjectives": [
+              "Explain retention as a risk and cost decision.",
+              "Describe protections against unauthorized log deletion or alteration.",
+              "Identify evidence-preservation needs during an incident."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Retention should align with business, legal, regulatory, and investigative requirements.",
+                  "Protect logs from unauthorized access and deletion.",
+                  "During incidents, preserve relevant evidence before routine retention or rotation removes it."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never claim a retention period is universally correct; requirements depend on the organization and jurisdiction."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-02-04",
+              "question": "Why protect logs from deletion or alteration?",
+              "options": [
+                "Because logs are never sensitive",
+                "Because they may be needed for detection, investigation, and accountability",
+                "Because logs replace backups",
+                "Because deletion improves monitoring"
+              ],
+              "answer": "Because they may be needed for detection, investigation, and accountability",
+              "explanation": "Integrity and availability of logs directly affect investigative capability."
+            },
+            "summary": [
+              "Retention is contextual.",
+              "Evidence preservation is part of incident readiness."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "CISA Use Logging on Business Systems",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/use-logging-on-business-systems"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Write a SIEM Data Onboarding Checklist",
+            "level": "Intermediate",
+            "description": "Design a checklist for onboarding a new security log source.",
+            "problemStatement": "The checklist must cover source ownership, event types, time, transport, parsing, field mapping, retention, access control, health monitoring, and validation.",
+            "objectives": [
+              "Specify required metadata.",
+              "Define test events and acceptance criteria.",
+              "Include failure monitoring."
+            ],
+            "requirements": [
+              "Use a markdown document.",
+              "Assume one new identity-provider source."
+            ],
+            "hint": "Ask what an analyst needs to investigate a failed or suspicious login.",
+            "solutionCode": "The checklist includes owner, source, event taxonomy, time sync, transport, schema, sample records, parsing tests, retention, access permissions, health checks, and change management.",
+            "solutionExplanation": "The task converts log-management guidance into operational onboarding steps."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Networking for SOC Analysts",
+        "description": "Build the networking knowledge needed to interpret traffic, DNS, HTTP, TLS, and common network-control signals.",
+        "lessons": [
+          {
+            "id": "lesson-08",
+            "title": "IP Addressing, Ports, and Flow Records",
+            "description": "Understand addresses, ports, and flow telemetry from a SOC perspective.",
+            "learningObjectives": [
+              "Read IPv4/CIDR concepts at a practical level.",
+              "Explain source/destination/port fields.",
+              "Interpret a basic network flow record."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Example flow:\nsrc=10.10.4.20 dst=198.51.100.20 proto=tcp sport=53122 dport=443 action=allow bytes=1842"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Flow records summarize communications; they may not contain application payloads.",
+                  "A port is an endpoint identifier, not proof of application identity."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-01",
+              "question": "What does a flow record source port identify?",
+              "options": [
+                "The transport-layer source endpoint",
+                "The physical cable",
+                "The user password",
+                "The DNS zone owner"
+              ],
+              "answer": "The transport-layer source endpoint",
+              "explanation": "Ports identify transport endpoints for TCP/UDP communications."
+            },
+            "summary": [
+              "Flow data provides context, not complete application semantics.",
+              "Always interpret fields in the context of the source sensor."
+            ],
+            "resources": [
+              {
+                "title": "CISA Cybersecurity Performance Goals",
+                "url": "https://www.cisa.gov/cybersecurity-performance-goals"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09",
+            "title": "DNS Investigation",
+            "description": "Use DNS telemetry to support detection and scoping.",
+            "learningObjectives": [
+              "Explain common DNS record concepts.",
+              "Recognize why domain queries are useful investigation artifacts.",
+              "Identify limitations of DNS-only conclusions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "DNS telemetry can link hosts and identities to queried names. Analysts should consider resolver architecture, caching, split-horizon DNS, and legitimate software behavior."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Look for unusual query volume, rare domains, suspicious resolution patterns, and temporal correlation with endpoint events.",
+                  "A domain lookup alone is not proof of malicious behavior."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Correlate DNS and Network Telemetry",
+                "description": "Build a small timeline connecting fictional DNS queries to network flows and identify which host deserves deeper endpoint investigation.",
+                "steps": [
+                  "Prepare fictional DNS and flow records for three hosts.",
+                  "Normalize timestamps into one timezone.",
+                  "Join records by host and time window.",
+                  "Flag unusual destination rarity or timing patterns while explicitly noting legitimate alternatives.",
+                  "Recommend the endpoint evidence to collect next."
+                ],
+                "solution": "A correct solution preserves source fields, performs time-aware correlation, and avoids treating rare domains or destinations as proof of maliciousness. The recommendation should request endpoint process/network evidence for the highest-priority host.",
+                "output": "A correlated timeline and one evidence-based triage recommendation."
+              }
+            ],
+            "quiz": {
+              "id": "q-03-02",
+              "question": "Why is DNS useful during an investigation?",
+              "options": [
+                "It can connect hosts to queried names and timing",
+                "It encrypts all traffic",
+                "It proves attribution",
+                "It replaces endpoint telemetry"
+              ],
+              "answer": "It can connect hosts to queried names and timing",
+              "explanation": "DNS can supply valuable contextual evidence when correlated with other sources."
+            },
+            "summary": [
+              "DNS is contextual evidence.",
+              "Combine DNS with endpoint, identity, and network information."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "HTTP and Web Traffic Analysis",
+            "description": "Interpret common HTTP request/response fields and web-facing indicators.",
+            "learningObjectives": [
+              "Identify request method, host, path, status code, and user agent.",
+              "Recognize unusual request patterns.",
+              "Distinguish transport protection from application security."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "GET /api/orders HTTP/1.1\nHost: portal.example.test\nUser-Agent: ExampleClient/1.0"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A 401/403 response is an authorization/authentication signal, not automatically an attack.",
+                  "Repeated requests, odd parameters, unusual user agents, or unexpected status sequences can support detection."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-03",
+              "question": "Which HTTP field identifies the requested virtual host in HTTP/1.1?",
+              "options": [
+                "Host",
+                "Cookie",
+                "ETag",
+                "Accept-Encoding"
+              ],
+              "answer": "Host",
+              "explanation": "The Host field identifies the target host name in an HTTP/1.1 request."
+            },
+            "summary": [
+              "Web telemetry needs application context.",
+              "Treat status codes as evidence to correlate, not as verdicts."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Top 10:2025",
+                "url": "https://owasp.org/Top10/"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "TLS and Encrypted Traffic Visibility",
+            "description": "Understand TLS at the level needed for SOC analysis without assuming payload access.",
+            "learningObjectives": [
+              "Explain the purpose of TLS.",
+              "Identify metadata that may remain visible at different points in the network.",
+              "Recognize the trade-offs of decryption and inspection."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "TLS protects application data in transit between endpoints or inspection points.",
+                  "Depending on architecture, analysts may still have IPs, ports, certificate metadata, DNS, timing, and flow characteristics.",
+                  "Decryption can improve visibility but increases privacy, performance, key-management, and architecture considerations."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not treat encrypted traffic as invisible: metadata can still be valuable, but conclusions must match the available evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-04",
+              "question": "What is a key SOC consideration when inspecting TLS traffic?",
+              "options": [
+                "Whether the available telemetry and inspection point actually expose useful evidence",
+                "Whether TLS means the host is malicious",
+                "Whether certificates can be ignored",
+                "Whether encryption removes metadata"
+              ],
+              "answer": "Whether the available telemetry and inspection point actually expose useful evidence",
+              "explanation": "Visibility depends on where and how traffic is observed."
+            },
+            "summary": [
+              "TLS protects data but does not eliminate all observable metadata.",
+              "Inspection design is a governance and architecture decision."
+            ],
+            "resources": [
+              {
+                "title": "RFC 8446 TLS 1.3",
+                "url": "https://www.rfc-editor.org/rfc/rfc8446"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Investigate a Suspicious Network Flow",
+            "level": "Intermediate",
+            "description": "Analyze a fictional flow dataset and write an evidence-based triage note.",
+            "problemStatement": "Identify whether a host is exhibiting suspicious communication based on timing, destination rarity, ports, DNS context, and endpoint events.",
+            "objectives": [
+              "Separate observations from inferences.",
+              "Identify missing evidence.",
+              "Recommend the next two data sources to collect."
+            ],
+            "requirements": [
+              "Use only the supplied fictional records.",
+              "No internet scanning or real-world targeting."
+            ],
+            "hint": "Correlate network, DNS, and endpoint context before concluding.",
+            "solutionCode": "A strong answer lists observed flows, supporting DNS/endpoint events, a confidence statement, missing evidence, and next investigative steps.",
+            "solutionExplanation": "The task develops disciplined network triage without requiring exploit activity."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Endpoint Detection and Host Visibility",
+        "description": "Learn the host-level evidence SOC analysts use for process, persistence, account, and execution investigations.",
+        "lessons": [
+          {
+            "id": "lesson-12",
+            "title": "Processes, Services, and Parent-Child Relationships",
+            "description": "Build process-tree reasoning.",
+            "learningObjectives": [
+              "Explain process trees and parent-child relationships.",
+              "Identify why execution context matters.",
+              "Distinguish normal administration from suspicious execution patterns."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Example process tree:\nservices.exe\n  -> w3wp.exe\n      -> app_worker.exe"
+              },
+              {
+                "type": "paragraph",
+                "text": "Process relationships provide context. An unexpected child process, unusual command line, or execution by an unexpected account may warrant investigation, but single indicators should not be treated as definitive proof."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-01",
+              "question": "Why is a process parent-child relationship useful?",
+              "options": [
+                "It provides execution context",
+                "It proves malware attribution",
+                "It replaces file integrity checking",
+                "It identifies every user in the company"
+              ],
+              "answer": "It provides execution context",
+              "explanation": "Process lineage helps analysts understand how an execution event occurred."
+            },
+            "summary": [
+              "Process trees are contextual.",
+              "Baseline expected process relationships before alerting aggressively."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Windows and Linux Host Logging",
+            "description": "Map major host logs to investigation questions.",
+            "learningObjectives": [
+              "Identify useful Windows and Linux host log categories.",
+              "Choose log sources for account, process, and service questions.",
+              "Explain local logging limitations."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Windows Security and System channels can support account and service investigations.",
+                  "Linux systems may expose authentication and service logs through journaling and distribution-specific files.",
+                  "Centralization reduces the chance that a compromised host can erase the only copy of important evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-02",
+              "question": "What is a major limitation of host-only logs during an incident?",
+              "options": [
+                "A compromised host may alter or erase local evidence",
+                "Host logs always contain network payloads",
+                "Host logs prove attribution",
+                "Host logs never contain sensitive data"
+              ],
+              "answer": "A compromised host may alter or erase local evidence",
+              "explanation": "Local evidence can be compromised with the host itself."
+            },
+            "summary": [
+              "Use multiple telemetry layers.",
+              "Protect centralized copies from unauthorized modification."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "CISA Use Logging on Business Systems",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/use-logging-on-business-systems"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Persistence and Execution Awareness",
+            "description": "Recognize persistence concepts without turning the course into an exploitation manual.",
+            "learningObjectives": [
+              "Explain persistence at a high level.",
+              "Identify evidence sources for common persistence areas.",
+              "Map observed behavior to ATT&CK concepts."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Persistence means maintaining access across restarts or other disruptive events. Defenders should inspect approved startup locations, scheduled execution, services, accounts, and other platform-specific mechanisms according to their environment."
+              },
+              {
+                "type": "warning",
+                "text": "Investigative examples should be performed only on systems you own or are explicitly authorized to examine."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-03",
+              "question": "What does persistence describe?",
+              "options": [
+                "Maintaining access or execution across disruptive events",
+                "Encrypting every file",
+                "Improving bandwidth",
+                "Reducing log retention"
+              ],
+              "answer": "Maintaining access or execution across disruptive events",
+              "explanation": "Persistence is about maintaining foothold or execution over time."
+            },
+            "summary": [
+              "ATT&CK can provide a shared behavioral vocabulary.",
+              "Use host evidence and authorization boundaries when investigating persistence."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Enterprise Tactics",
+                "url": "https://attack.mitre.org/tactics/enterprise/"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Host Baselines and Anomaly Recognition",
+            "description": "Use normal behavior as the baseline for useful detection.",
+            "learningObjectives": [
+              "Explain why baselines reduce alert noise.",
+              "Identify candidate anomalous changes.",
+              "Distinguish rare from malicious."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A baseline can include expected process sets, services, software, accounts, destinations, and administration patterns.",
+                  "Rare behavior deserves context but is not automatically malicious."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not define anomalies solely as “never seen before”; maintenance, deployment, and new software can legitimately change behavior."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-04",
+              "question": "Why is a baseline valuable to detection engineering?",
+              "options": [
+                "It provides context for distinguishing expected from unusual behavior",
+                "It proves intent",
+                "It eliminates all false positives",
+                "It replaces threat intelligence"
+              ],
+              "answer": "It provides context for distinguishing expected from unusual behavior",
+              "explanation": "Baseline context improves signal quality and triage efficiency."
+            },
+            "summary": [
+              "Baselines should evolve with legitimate change.",
+              "Anomaly ≠ maliciousness."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Create an Endpoint Triage Checklist",
+            "level": "Easy",
+            "description": "Build a checklist for a suspicious workstation alert.",
+            "problemStatement": "Include identity, process tree, persistence clues, network activity, recent software changes, and evidence preservation.",
+            "objectives": [
+              "Keep the sequence safe and repeatable.",
+              "Include evidence before destructive action."
+            ],
+            "requirements": [
+              "Use a lab or fictional host only."
+            ],
+            "hint": "Separate collection from containment so analysts do not destroy useful evidence prematurely.",
+            "solutionCode": "Checklist: validate alert -> record host/user -> collect relevant process/service/account/network evidence -> preserve key artifacts -> assess scope -> escalate/contain per policy.",
+            "solutionExplanation": "This task reinforces structured endpoint investigation and evidence preservation."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Identity and Access Monitoring",
+        "description": "Investigate authentication, privilege, and identity misuse through identity-provider and directory telemetry.",
+        "lessons": [
+          {
+            "id": "lesson-16",
+            "title": "Authentication Events and Failure Patterns",
+            "description": "Analyze successful and failed authentication events.",
+            "learningObjectives": [
+              "Interpret login success/failure patterns.",
+              "Correlate source, account, device, time, and authentication method.",
+              "Recognize suspicious combinations without overclaiming."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Triage dimensions:\naccount + source + device + time + auth_method + result"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Repeated failures followed by success can be interesting in context.",
+                  "Impossible travel or unusual source context needs accurate identity/location data and should not be used blindly."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-05-01",
+              "question": "Which combination is most useful for login triage?",
+              "options": [
+                "Account, source, device, time, method, and result",
+                "Only username",
+                "Only source IP",
+                "Only country"
+              ],
+              "answer": "Account, source, device, time, method, and result",
+              "explanation": "Context determines whether authentication activity is unusual."
+            },
+            "summary": [
+              "Authentication analytics require multiple dimensions.",
+              "Avoid single-indicator conclusions."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-17",
+            "title": "Privileged Activity Monitoring",
+            "description": "Focus on administrative changes and high-impact identity actions.",
+            "learningObjectives": [
+              "Identify privileged events.",
+              "Design monitoring for administrative changes.",
+              "Explain separation of duties and approval evidence."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Privileged activity can include role changes, new admin accounts, policy changes, and access to sensitive systems.",
+                  "Administrative changes should be attributable and reviewable."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A privileged account being used is not itself malicious; investigate timing, source, business justification, and change records."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Build an Authentication Detection Test Set",
+                "description": "Create positive and negative test cases for a repeated-failure-followed-by-success detection rule.",
+                "steps": [
+                  "Create at least three positive sequences with five or more failures followed by a success within the selected window.",
+                  "Create at least three negative sequences, including fewer failures and failures outside the window.",
+                  "Run the detection logic manually or in a small script.",
+                  "Record expected versus actual outcomes and tune the rule if needed."
+                ],
+                "solution": "Positive cases should trigger and negative cases should not. If a negative case triggers, refine the time window, grouping fields, or threshold and rerun the regression set.",
+                "output": "A test table showing each case, expected result, actual result, and any tuning decision."
+              }
+            ],
+            "quiz": {
+              "id": "q-05-02",
+              "question": "What additional context is especially valuable for a privileged change?",
+              "options": [
+                "Business justification and change record",
+                "Screen size",
+                "Browser theme",
+                "Keyboard language"
+              ],
+              "answer": "Business justification and change record",
+              "explanation": "Administrative activity needs operational context and attribution."
+            },
+            "summary": [
+              "Privileged monitoring focuses on high-impact decisions.",
+              "Correlate identity activity with change-management records."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "MFA, Password, and Account Recovery Signals",
+            "description": "Understand security telemetry around authentication factors and recovery.",
+            "learningObjectives": [
+              "Recognize MFA-related telemetry.",
+              "Identify risky recovery events.",
+              "Explain why recovery flows can bypass strong login controls."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Signals can include MFA enrollment changes, repeated prompts, factor resets, password resets, and recovery-method changes.",
+                  "Recovery events should be monitored because account takeover attempts may target them."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-05-03",
+              "question": "Why monitor changes to authentication factors?",
+              "options": [
+                "They can alter who controls access to an account",
+                "They only affect display settings",
+                "They replace authorization",
+                "They prove account compromise"
+              ],
+              "answer": "They can alter who controls access to an account",
+              "explanation": "Factor changes materially affect account control."
+            },
+            "summary": [
+              "Monitor both login and lifecycle events.",
+              "Recovery paths deserve the same security attention as primary authentication."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authentication Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Account Compromise Triage",
+            "description": "Turn identity signals into an investigation plan.",
+            "learningObjectives": [
+              "Build a compact account-compromise hypothesis.",
+              "Scope affected sessions/devices.",
+              "Choose containment actions that match confidence and impact."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Start with identity evidence, then correlate device, network, and application activity.",
+                  "Containment might include session revocation, credential reset, access restriction, or endpoint isolation according to policy."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not reset or disable an account indiscriminately if doing so could disrupt critical operations; follow the approved incident process."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-05-04",
+              "question": "What is a strong first step after a credible account-compromise alert?",
+              "options": [
+                "Validate and scope the activity before selecting containment",
+                "Immediately delete all logs",
+                "Publish the account name publicly",
+                "Assume the device is clean"
+              ],
+              "answer": "Validate and scope the activity before selecting containment",
+              "explanation": "Scope and evidence should guide containment decisions."
+            },
+            "summary": [
+              "Identity response should be evidence-driven.",
+              "Containment must balance security and operational impact."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CISA Use Logging on Business Systems",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/use-logging-on-business-systems"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Investigate a Suspicious Login Sequence",
+            "level": "Intermediate",
+            "description": "Analyze a fictional login timeline with failures, MFA events, a success, and a privileged change.",
+            "problemStatement": "Write a triage note that decides whether to escalate and what evidence is still needed.",
+            "objectives": [
+              "Correlate identity events.",
+              "State confidence and uncertainty.",
+              "Recommend containment only when justified."
+            ],
+            "requirements": [
+              "Use the fictional timeline supplied in the exercise.",
+              "Do not infer attacker identity."
+            ],
+            "hint": "Look for sequence, context, privilege, and business justification.",
+            "solutionCode": "A strong solution identifies the anomalous sequence, validates source/device context, checks privileged changes, and proposes evidence-preserving containment if compromise is credible.",
+            "solutionExplanation": "This trains account-compromise reasoning while avoiding overclaiming."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Detection Engineering and Alert Triage",
+        "description": "Learn how to design explainable detections, tune noise, and triage alerts consistently.",
+        "lessons": [
+          {
+            "id": "lesson-20",
+            "title": "Detection Hypotheses and Analytic Logic",
+            "description": "Translate threat-relevant behavior into testable detection hypotheses.",
+            "learningObjectives": [
+              "Write a detection hypothesis.",
+              "Define required fields and conditions.",
+              "Separate detection logic from response logic."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Hypothesis:\n\"Repeated authentication failures followed by success from the same account and source in a short window may warrant review.\""
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A good rule states what behavior it is looking for, why it matters, and what evidence is required.",
+                  "Detection and response should be decoupled so that a noisy rule does not automatically trigger destructive containment."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-06-01",
+              "question": "What makes a detection hypothesis useful?",
+              "options": [
+                "It identifies behavior, evidence, and why the behavior matters",
+                "It names an attacker",
+                "It guarantees maliciousness",
+                "It avoids defining data fields"
+              ],
+              "answer": "It identifies behavior, evidence, and why the behavior matters",
+              "explanation": "A hypothesis guides both data selection and analyst interpretation."
+            },
+            "summary": [
+              "Good detections are explainable and testable.",
+              "Keep automatic response proportional to confidence."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-21",
+            "title": "Rule Design, Thresholds, and Suppression",
+            "description": "Tune detections with thresholds and exception handling.",
+            "learningObjectives": [
+              "Explain thresholds and windows.",
+              "Use allowlists carefully.",
+              "Avoid suppressions that hide real incidents."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Thresholds control sensitivity over a defined window.",
+                  "Allowlists should have owners and review dates.",
+                  "Suppression logic should be narrower than the behavior it is intended to exclude."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A permanent broad allowlist can silently remove visibility from exactly the activity attackers may imitate."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-06-02",
+              "question": "Why review allowlists periodically?",
+              "options": [
+                "Legitimate conditions change and overly broad exceptions can hide attacks",
+                "It makes dashboards prettier",
+                "It removes all noise permanently",
+                "It replaces asset inventory"
+              ],
+              "answer": "Legitimate conditions change and overly broad exceptions can hide attacks",
+              "explanation": "Exception logic decays as environments change."
+            },
+            "summary": [
+              "Tune with evidence, not aesthetics.",
+              "Every suppression should have a reason and owner."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Alert Triage and Evidence Weighting",
+            "description": "Build a repeatable process for deciding whether an alert is benign, suspicious, or an incident.",
+            "learningObjectives": [
+              "Separate observation, inference, and conclusion.",
+              "Weight evidence by source quality and corroboration.",
+              "Document confidence."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Observation: what the telemetry literally shows. Inference: what that pattern may mean. Conclusion: the current operational decision.",
+                  "Independent corroboration raises confidence. Missing data should be recorded as uncertainty."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-06-03",
+              "question": "Why separate observation from inference?",
+              "options": [
+                "It prevents analysts from presenting assumptions as facts",
+                "It makes alerts slower",
+                "It removes the need for evidence",
+                "It improves attribution certainty automatically"
+              ],
+              "answer": "It prevents analysts from presenting assumptions as facts",
+              "explanation": "Keeping evidence and interpretation separate improves analytical rigor."
+            },
+            "summary": [
+              "Good triage states confidence and missing evidence.",
+              "Evidence quality matters more than dramatic narratives."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Detection Validation and Regression Testing",
+            "description": "Treat detections like engineering artifacts that need test cases.",
+            "learningObjectives": [
+              "Create positive and negative test cases.",
+              "Explain regression testing for detections.",
+              "Measure alert quality with useful operational metrics."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Positive cases should fire; negative cases should not.",
+                  "Regression tests protect a rule when schemas or environments change.",
+                  "Useful measures include coverage, false-positive burden, analyst effort, and time to validate—not just alert volume."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-06-04",
+              "question": "What is a negative detection test?",
+              "options": [
+                "A known-benign event expected not to trigger the rule",
+                "A test that deletes logs",
+                "A test against a random internet host",
+                "An alert that must always fire"
+              ],
+              "answer": "A known-benign event expected not to trigger the rule",
+              "explanation": "Negative cases are essential for measuring unintended alerting."
+            },
+            "summary": [
+              "Detection engineering requires ongoing testing.",
+              "Alert count alone is not a quality metric."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Write and Test an Authentication Detection",
+            "level": "Advanced",
+            "description": "Design a detection rule for repeated failures followed by a successful login and test it against supplied fictional events.",
+            "problemStatement": "The rule must be explainable, include a time window, and avoid triggering on the documented benign batch process.",
+            "objectives": [
+              "Write the hypothesis.",
+              "Specify required fields.",
+              "Create at least three positive and three negative test cases.",
+              "Document tuning."
+            ],
+            "requirements": [
+              "Use only fictional event data.",
+              "No real credential attacks."
+            ],
+            "hint": "Write the normal/baseline condition first, then define the suspicious deviation.",
+            "solutionCode": "A valid rule correlates user, source, failure count, success, and time window, while excluding a narrowly scoped approved automation source.",
+            "solutionExplanation": "The task exercises detection engineering, tuning, and regression thinking."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Threat Intelligence and MITRE ATT&CK",
+        "description": "Use intelligence and ATT&CK to add context to detections and investigations without confusing behavior mapping with attribution.",
+        "lessons": [
+          {
+            "id": "lesson-24",
+            "title": "Indicators, TTPs, and Intelligence Context",
+            "description": "Differentiate artifacts from behavior and context.",
+            "learningObjectives": [
+              "Define IOC and TTP.",
+              "Assess indicator freshness and provenance.",
+              "Explain why behavior can outlive individual indicators."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "IOCs include artifacts such as domains, IPs, hashes, and file paths.",
+                  "TTPs describe behaviors and objectives.",
+                  "Intelligence quality depends on provenance, confidence, timing, scope, and relevance."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-07-01",
+              "question": "Why can TTP-based intelligence remain useful after an IP address changes?",
+              "options": [
+                "Behavior patterns can remain observable across infrastructure changes",
+                "TTPs contain passwords",
+                "TTPs are immutable hashes",
+                "TTPs replace logs"
+              ],
+              "answer": "Behavior patterns can remain observable across infrastructure changes",
+              "explanation": "Behavior is often more durable than individual infrastructure indicators."
+            },
+            "summary": [
+              "Use indicators with provenance and expiry context.",
+              "Behavioral context complements, rather than replaces, indicators."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Tactics",
+                "url": "https://attack.mitre.org/tactics/enterprise/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-25",
+            "title": "ATT&CK Tactics vs Techniques",
+            "description": "Learn ATT&CK structure and analyst use cases.",
+            "learningObjectives": [
+              "Differentiate tactics and techniques.",
+              "Map observed behavior to ATT&CK.",
+              "Avoid using ATT&CK as proof of attribution."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ATT&CK tactics describe adversary goals or reasons; techniques describe how an objective may be achieved."
+              },
+              {
+                "type": "warning",
+                "text": "Mapping a behavior to ATT&CK does not establish who performed it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-07-02",
+              "question": "In ATT&CK, tactics describe:",
+              "options": [
+                "Adversary goals or reasons",
+                "Specific file hashes",
+                "Exact firewall rules",
+                "Vendor names"
+              ],
+              "answer": "Adversary goals or reasons",
+              "explanation": "Tactics are the “why”; techniques are the “how.”"
+            },
+            "summary": [
+              "ATT&CK provides a behavioral vocabulary.",
+              "Attribution requires separate evidence and analytic methods."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Enterprise Tactics",
+                "url": "https://attack.mitre.org/tactics/enterprise/"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Threat Feed Evaluation",
+            "description": "Evaluate intelligence sources before operationalizing them.",
+            "learningObjectives": [
+              "Assess source reliability and relevance.",
+              "Identify stale or overly broad indicators.",
+              "Design lifecycle controls for threat-feed data."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record source, time, scope, confidence, and handling requirements.",
+                  "An indicator can be accurate but irrelevant to your environment.",
+                  "Feed entries should be reviewed, expired, or retired when their usefulness decays."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-07-03",
+              "question": "What is a key question before blocking an indicator?",
+              "options": [
+                "Is the indicator relevant and sufficiently trustworthy for this environment?",
+                "Does it have a dramatic name?",
+                "Was it shared on social media?",
+                "Can it block all attacks?"
+              ],
+              "answer": "Is the indicator relevant and sufficiently trustworthy for this environment?",
+              "explanation": "Operational impact requires relevance and confidence, not just availability."
+            },
+            "summary": [
+              "Threat intelligence is decision support.",
+              "Do not operationalize unvalidated feeds blindly."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Threat Intelligence in the SOC Workflow",
+            "description": "Integrate intelligence into detections, investigations, and reporting.",
+            "learningObjectives": [
+              "Explain where intelligence adds value in triage.",
+              "Combine indicators with local telemetry.",
+              "Document confidence and limitations."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use threat context to prioritize or enrich an investigation, not to replace local evidence.",
+                  "Threat reporting should explain what is known, inferred, and uncertain."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-07-04",
+              "question": "What is the best use of a threat-intelligence match during triage?",
+              "options": [
+                "Enrich local evidence and guide investigation",
+                "Declare attribution immediately",
+                "Disable all systems",
+                "Ignore local telemetry"
+              ],
+              "answer": "Enrich local evidence and guide investigation",
+              "explanation": "Context should improve, not replace, local investigation."
+            },
+            "summary": [
+              "Local evidence remains primary for incident scoping.",
+              "Intelligence is strongest when linked to relevant observations."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Map a Detection to ATT&CK",
+            "level": "Intermediate",
+            "description": "Map three fictional SOC detections to ATT&CK tactics and techniques.",
+            "problemStatement": "For each detection, explain the behavior mapping, evidence, confidence, and a potential defensive control.",
+            "objectives": [
+              "Use the current ATT&CK taxonomy.",
+              "Distinguish tactic from technique.",
+              "Do not assign actor attribution."
+            ],
+            "requirements": [
+              "Use only public ATT&CK descriptions as the mapping source."
+            ],
+            "hint": "Describe the observed behavior in plain language before selecting the ATT&CK mapping.",
+            "solutionCode": "Each mapping states the observed behavior, relevant tactic/technique, evidence needed, and a defensive improvement.",
+            "solutionExplanation": "The task integrates threat behavior vocabulary with SOC detection engineering."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Vulnerability, Exposure, and Remediation Operations",
+        "description": "Learn how SOC and security teams manage vulnerability exposure, prioritization, patching, and exceptions.",
+        "lessons": [
+          {
+            "id": "lesson-28",
+            "title": "Asset Inventory and Exposure",
+            "description": "Connect vulnerability findings to real assets and owners.",
+            "learningObjectives": [
+              "Explain why inventory underpins vulnerability management.",
+              "Identify exposure and ownership metadata.",
+              "Relate asset criticality to remediation urgency."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Useful inventory fields include asset owner, role, environment, software, exposure, and business criticality.",
+                  "An unknown or unmanaged asset is a security blind spot."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-01",
+              "question": "Why does asset ownership matter in vulnerability operations?",
+              "options": [
+                "It identifies who can validate impact and execute remediation",
+                "It increases CVSS score automatically",
+                "It removes the need for patching",
+                "It makes every vulnerability critical"
+              ],
+              "answer": "It identifies who can validate impact and execute remediation",
+              "explanation": "Ownership enables action and accountability."
+            },
+            "summary": [
+              "Vulnerability findings need asset context.",
+              "Inventory is an operational control, not just documentation."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-29",
+            "title": "Scanning, Validation, and False Positives",
+            "description": "Understand what scanners can and cannot tell you.",
+            "learningObjectives": [
+              "Differentiate scanning from exploitation.",
+              "Validate findings in context.",
+              "Recognize false positives and false negatives."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Scanning produces candidate findings based on observable signals.",
+                  "Validation determines applicability, exposure, and whether controls already mitigate the condition."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Only scan systems within approved scope and at safe rates."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-02",
+              "question": "What should happen after a vulnerability scanner reports a finding?",
+              "options": [
+                "Validate applicability and context",
+                "Assume compromise",
+                "Immediately publish the result",
+                "Ignore asset ownership"
+              ],
+              "answer": "Validate applicability and context",
+              "explanation": "Scanner output needs verification and contextual interpretation."
+            },
+            "summary": [
+              "Scanning is not the same as exploitation.",
+              "Scope and authorization matter."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115 Security Testing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "NIST SP 800-40 Rev. 4 Patch Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/40/r4/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "CVSS v4.0 and EPSS for Prioritization",
+            "description": "Combine standardized severity with exploitation likelihood and environmental context.",
+            "learningObjectives": [
+              "Explain CVSS v4.0 metric groups.",
+              "Explain what EPSS estimates.",
+              "Avoid treating either as a complete business-risk score."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "CVSS v4.0 includes Base, Threat, Environmental, and Supplemental metric groups.",
+                  "EPSS estimates the probability that a disclosed vulnerability will be exploited in the wild within the next 30 days.",
+                  "Business priority should incorporate exposure, asset criticality, compensating controls, and remediation constraints."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-03",
+              "question": "What does EPSS estimate?",
+              "options": [
+                "Probability a CVE will be exploited in the wild within the next 30 days",
+                "Business impact of every vulnerability",
+                "Whether a vulnerability exists on a specific host",
+                "Patch installation success rate"
+              ],
+              "answer": "Probability a CVE will be exploited in the wild within the next 30 days",
+              "explanation": "EPSS is an exploitation-likelihood estimate, not a complete risk score."
+            },
+            "summary": [
+              "CVSS and EPSS answer different questions.",
+              "Local environment remains essential for prioritization."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CVSS v4.0 Specification",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              },
+              {
+                "title": "FIRST EPSS",
+                "url": "https://www.first.org/epss/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Patch, Mitigation, and Exception Management",
+            "description": "Turn findings into controlled remediation.",
+            "learningObjectives": [
+              "Describe a patch lifecycle.",
+              "Choose compensating controls when patches cannot be applied immediately.",
+              "Document exceptions and review dates."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "NIST frames enterprise patching as identifying, prioritizing, acquiring, installing, and verifying updates.",
+                  "Mitigations can reduce risk when immediate patching is not feasible.",
+                  "Exceptions are explicit risk decisions with owners and review points."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-04",
+              "question": "What should an exception record include?",
+              "options": [
+                "Rationale, owner, compensating control, and review date",
+                "Only a ticket number",
+                "Nothing once approved",
+                "The attacker’s identity"
+              ],
+              "answer": "Rationale, owner, compensating control, and review date",
+              "explanation": "Exceptions need accountability and planned reassessment."
+            },
+            "summary": [
+              "Remediation is a managed lifecycle.",
+              "Verification confirms that risk was actually reduced."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-40 Rev. 4 Patch Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/40/r4/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Prioritize a Vulnerability Queue",
+            "level": "Advanced",
+            "description": "Rank a fictional vulnerability backlog using severity, exploit likelihood, exposure, asset criticality, and compensating controls.",
+            "problemStatement": "Produce a remediation order and justify every priority decision.",
+            "objectives": [
+              "Use CVSS concepts correctly.",
+              "Use EPSS only as exploitation-likelihood context.",
+              "Document residual uncertainty."
+            ],
+            "requirements": [
+              "Use fictional scenario data only.",
+              "Do not add unsupported exploit claims."
+            ],
+            "hint": "Start with the asset and exposure, then incorporate vulnerability and threat signals.",
+            "solutionCode": "A valid ordering explicitly combines CVSS/EPSS with local exposure and criticality; it does not rely on one score.",
+            "solutionExplanation": "The task develops risk-based remediation prioritization."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Incident Response and Digital Evidence",
+        "description": "Learn how SOC analysts move from alert to incident, preserve evidence, coordinate containment, and support recovery.",
+        "lessons": [
+          {
+            "id": "lesson-32",
+            "title": "Incident Classification and Severity",
+            "description": "Classify events consistently and decide when a case becomes an incident.",
+            "learningObjectives": [
+              "Differentiate event, alert, case, and incident.",
+              "Define severity using impact, scope, and confidence.",
+              "Escalate according to an incident-response plan."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "An alert is a signal requiring evaluation. An incident is a confirmed or reasonably suspected event requiring coordinated response according to policy.",
+                  "Severity models should reflect business impact, scope, and urgency."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-09-01",
+              "question": "What distinguishes an incident from a routine alert?",
+              "options": [
+                "It meets the organization’s criteria for coordinated response",
+                "It contains a scary hostname",
+                "It always involves malware",
+                "It has the highest alert count"
+              ],
+              "answer": "It meets the organization’s criteria for coordinated response",
+              "explanation": "Incident classification is a policy and risk decision supported by evidence."
+            },
+            "summary": [
+              "Classification should be consistent and documented.",
+              "Avoid severity by emotion or headline impact alone."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-33",
+            "title": "Evidence Preservation and Chain of Custody",
+            "description": "Preserve useful evidence without contaminating or unnecessarily destroying it.",
+            "learningObjectives": [
+              "Explain chain-of-custody fields.",
+              "Use hashes for integrity checking.",
+              "Document collection context."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence records should include source, collector, time, method, integrity information, and handling events.",
+                  "A cryptographic hash can provide an integrity check for a collected artifact."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Real investigations may involve legal requirements and specialized forensic procedures; follow organizational policy and qualified guidance."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Create an Evidence Integrity Record",
+                "description": "Practice recording and validating the integrity of a locally created training artifact.",
+                "steps": [
+                  "Create a small local text artifact containing fictional evidence.",
+                  "Calculate a SHA-256 hash with a standard operating-system utility or trusted local tool.",
+                  "Record the source, collection time, collector, method, and hash in an evidence log.",
+                  "Copy the artifact and verify that the copied file produces the same hash.",
+                  "Modify the copy and recalculate the hash to demonstrate change detection."
+                ],
+                "solution": "The unchanged copy should produce the same SHA-256 value; after modification the hash should differ. The evidence log should preserve provenance and handling details.",
+                "output": "An evidence record plus matching and changed hash results demonstrating integrity verification."
+              }
+            ],
+            "quiz": {
+              "id": "q-09-02",
+              "question": "What does a hash provide for a collected artifact?",
+              "options": [
+                "An integrity value useful for detecting changes",
+                "Legal admissibility by itself",
+                "Attacker attribution",
+                "Encryption of the artifact"
+              ],
+              "answer": "An integrity value useful for detecting changes",
+              "explanation": "Hashing supports integrity verification; it is not a complete legal process."
+            },
+            "summary": [
+              "Preserve original context.",
+              "Hashing is an integrity control, not proof of intent."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-34",
+            "title": "Containment, Eradication, Recovery",
+            "description": "Understand the distinct purposes of response actions.",
+            "learningObjectives": [
+              "Differentiate containment, eradication, and recovery.",
+              "Choose reversible actions when practical.",
+              "Document decision points and business impact."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Containment limits ongoing harm. Eradication removes the cause or foothold. Recovery restores trustworthy operations and monitoring.",
+                  "Response actions should account for evidence preservation and business continuity."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-09-03",
+              "question": "Which action best fits containment?",
+              "options": [
+                "Isolating an affected endpoint from sensitive network segments",
+                "Rebuilding every server immediately",
+                "Deleting investigation records",
+                "Publishing an incident report before validation"
+              ],
+              "answer": "Isolating an affected endpoint from sensitive network segments",
+              "explanation": "Isolation can limit ongoing harm while investigation continues."
+            },
+            "summary": [
+              "Containment is not eradication.",
+              "Response actions should be proportionate and documented."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CISA Cybersecurity Performance Goals",
+                "url": "https://www.cisa.gov/cybersecurity-performance-goals"
+              }
+            ]
+          },
+          {
+            "id": "lesson-35",
+            "title": "Timeline Analysis and Correlation",
+            "description": "Build a timeline across identity, endpoint, network, and application evidence.",
+            "learningObjectives": [
+              "Normalize timestamps.",
+              "Correlate events across sources.",
+              "Record uncertainty and gaps."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Timeline fields:\nUTC time | source | host | account | event | evidence | confidence"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve original timestamps and note timezone conversions.",
+                  "Do not infer missing events simply because a sequence would be convenient."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-09-04",
+              "question": "Why record the original timestamp alongside a normalized timestamp?",
+              "options": [
+                "To preserve source context and support later verification",
+                "To make logs harder to search",
+                "To replace the evidence source",
+                "To infer missing events"
+              ],
+              "answer": "To preserve source context and support later verification",
+              "explanation": "Original context helps validate timeline transformations."
+            },
+            "summary": [
+              "Timelines are analytical constructions over evidence.",
+              "Missing evidence should stay visible as uncertainty."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Create an Incident Timeline",
+            "level": "Advanced",
+            "description": "Construct a timeline from fictional identity, endpoint, and network events and produce an incident summary.",
+            "problemStatement": "Determine the first suspicious event, likely scope, confidence, and recommended containment.",
+            "objectives": [
+              "Sort events accurately.",
+              "Separate observed facts from inference.",
+              "Identify evidence gaps."
+            ],
+            "requirements": [
+              "Use fictional event records only.",
+              "No attribution claims."
+            ],
+            "hint": "Normalize times first, then correlate by host/account/session.",
+            "solutionCode": "The solution produces an evidence-backed timeline and a bounded conclusion with explicit uncertainties.",
+            "solutionExplanation": "The exercise builds core incident-analysis discipline."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "SOC Metrics, Detection Quality, and Continuous Improvement",
+        "description": "Measure security-operations effectiveness without falling into vanity metrics.",
+        "lessons": [
+          {
+            "id": "lesson-36",
+            "title": "Operational SOC Metrics",
+            "description": "Select metrics that reflect analyst workload and security outcomes.",
+            "learningObjectives": [
+              "Differentiate volume metrics from outcome metrics.",
+              "Explain MTTD and MTTR cautiously.",
+              "Choose metrics aligned to operational goals."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Useful metrics may include mean time to detect/respond, alert validation time, false-positive rate, backlog age, detection coverage, and remediation closure—but definitions must be consistent.",
+                  "Metrics should support decisions rather than become targets that encourage gaming."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-10-01",
+              "question": "Why can raw alert count be a poor SOC performance metric?",
+              "options": [
+                "More alerts can mean more noise rather than better security",
+                "It is always too low",
+                "It proves response quality",
+                "It measures business impact directly"
+              ],
+              "answer": "More alerts can mean more noise rather than better security",
+              "explanation": "Volume does not reveal signal quality or outcome."
+            },
+            "summary": [
+              "Metrics need definitions and context.",
+              "Avoid optimizing for numbers that can be gamed."
+            ],
+            "resources": [
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-37",
+            "title": "Detection Coverage and Gaps",
+            "description": "Use coverage mapping to find blind spots.",
+            "learningObjectives": [
+              "Map detections to behaviors and assets.",
+              "Identify coverage gaps.",
+              "Prioritize improvements by risk."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Coverage is not merely the number of rules. Consider asset classes, telemetry availability, detection logic, test results, and response capability.",
+                  "ATT&CK mappings can help describe behavioral coverage."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-10-02",
+              "question": "What is a meaningful detection gap?",
+              "options": [
+                "A high-risk behavior or asset class with insufficient telemetry or tested detection coverage",
+                "A dashboard with few colors",
+                "A low alert count",
+                "A missing logo"
+              ],
+              "answer": "A high-risk behavior or asset class with insufficient telemetry or tested detection coverage",
+              "explanation": "Coverage gaps are tied to risk and actual detection capability."
+            },
+            "summary": [
+              "Use risk to prioritize coverage improvements.",
+              "Testing matters more than rule count."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-38",
+            "title": "Post-Incident Improvement",
+            "description": "Turn lessons learned into concrete control changes.",
+            "learningObjectives": [
+              "Write actionable lessons learned.",
+              "Connect incidents to detection and control improvements.",
+              "Track improvements to completion."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A useful post-incident review identifies contributing conditions, what worked, what failed, and measurable actions with owners.",
+                  "Improvements can affect telemetry, access, architecture, playbooks, training, or vulnerability management."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-10-03",
+              "question": "What makes a lessons-learned action useful?",
+              "options": [
+                "It has an owner, measurable outcome, and due date",
+                "It says “be more careful”",
+                "It blames one person",
+                "It is never revisited"
+              ],
+              "answer": "It has an owner, measurable outcome, and due date",
+              "explanation": "Actions need accountability and verification."
+            },
+            "summary": [
+              "Learning should produce control changes.",
+              "Track improvement work to closure."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-39",
+            "title": "Automation with Guardrails",
+            "description": "Use automation safely in high-volume operations.",
+            "learningObjectives": [
+              "Identify good candidates for automation.",
+              "Define approval and rollback controls.",
+              "Design fail-safe behavior."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Automate deterministic, low-risk enrichment before automating irreversible containment.",
+                  "Guardrails include scope checks, rate limits, approval gates, audit logging, and rollback paths."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Automation should not silently escalate privileges or take destructive action without a tested policy boundary."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-10-04",
+              "question": "Which action is a good early automation candidate?",
+              "options": [
+                "Enriching an alert with asset and identity context",
+                "Deleting a compromised account without validation",
+                "Reimaging every host automatically",
+                "Changing firewall policy globally on one indicator"
+              ],
+              "answer": "Enriching an alert with asset and identity context",
+              "explanation": "Enrichment is low-risk and reversible compared with destructive response."
+            },
+            "summary": [
+              "Automate for consistency and scale.",
+              "Add stronger guardrails as action impact increases."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-10-01",
+            "title": "Build a SOC Improvement Backlog",
+            "level": "Intermediate",
+            "description": "Turn a fictional incident review into a prioritized improvement backlog.",
+            "problemStatement": "Create actions for detections, telemetry, identity, patching, and response process with owners and measurable outcomes.",
+            "objectives": [
+              "Prioritize by risk.",
+              "Assign owners.",
+              "Define completion evidence."
+            ],
+            "requirements": [
+              "Use a table.",
+              "Use only fictional organization data."
+            ],
+            "hint": "A backlog item is stronger when someone can prove it is complete.",
+            "solutionCode": "Example columns: risk, gap, action, owner, target date, evidence of completion, residual risk.",
+            "solutionExplanation": "The task converts incident learning into measurable improvement work."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Cloud and SaaS Security Operations",
+        "description": "Apply SOC principles to cloud control-plane activity, identity, workload telemetry, and SaaS audit logs.",
+        "lessons": [
+          {
+            "id": "lesson-40",
+            "title": "Cloud Shared Responsibility and Control Planes",
+            "description": "Understand cloud-specific responsibility and high-value control-plane telemetry.",
+            "learningObjectives": [
+              "Explain shared responsibility at a conceptual level.",
+              "Identify control-plane activity as a high-value signal.",
+              "Separate provider controls from customer-configured controls."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Responsibilities depend on service type. Customers commonly remain responsible for identity, configuration, data access, and application behavior.",
+                  "Control-plane logs can reveal changes to identities, policies, storage, networking, and resources."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-11-01",
+              "question": "Why are cloud control-plane logs valuable?",
+              "options": [
+                "They record administrative API and configuration activity",
+                "They replace endpoint telemetry",
+                "They prove attribution",
+                "They remove the need for IAM"
+              ],
+              "answer": "They record administrative API and configuration activity",
+              "explanation": "Administrative activity can have high impact and is often auditable."
+            },
+            "summary": [
+              "Verify provider-specific responsibility for the service used.",
+              "Monitor high-impact administrative changes."
+            ],
+            "resources": [
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              },
+              {
+                "title": "NIST SP 800-207 Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-41",
+            "title": "Cloud Identity and Workload Monitoring",
+            "description": "Extend identity-centric monitoring to workloads and service identities.",
+            "learningObjectives": [
+              "Explain workload identity at a high level.",
+              "Monitor risky permission changes.",
+              "Correlate service identity with resource activity."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Service identities can perform actions without a human login.",
+                  "Least privilege should apply to workloads just as it does to users."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-11-02",
+              "question": "What is a key SOC concern with service identities?",
+              "options": [
+                "They may perform high-impact actions without a human session",
+                "They cannot be logged",
+                "They never have permissions",
+                "They replace audit trails"
+              ],
+              "answer": "They may perform high-impact actions without a human session",
+              "explanation": "Service identities need the same scrutiny as other principals."
+            },
+            "summary": [
+              "Treat workloads as security principals.",
+              "Monitor permission and policy changes."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-207 Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-42",
+            "title": "SaaS Audit Logs and Data Access",
+            "description": "Use SaaS audit events to investigate suspicious application activity.",
+            "learningObjectives": [
+              "Identify data-access events.",
+              "Correlate user, application, and administrative activity.",
+              "Define retention and privacy considerations."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "SaaS audit logs can capture sign-ins, file access, sharing changes, administrative settings, and application activity depending on the service.",
+                  "Access to logs and their retention should reflect privacy and business requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-11-03",
+              "question": "Which SaaS audit event is often high value for data-exposure investigations?",
+              "options": [
+                "Unexpected sharing-permission change",
+                "Wallpaper update",
+                "Mouse sensitivity change",
+                "Printer name change"
+              ],
+              "answer": "Unexpected sharing-permission change",
+              "explanation": "Sharing changes can directly affect data exposure."
+            },
+            "summary": [
+              "SaaS telemetry varies by provider.",
+              "Handle data-access logs as potentially sensitive records."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-43",
+            "title": "Cloud Misconfiguration Triage",
+            "description": "Investigate exposed resources and configuration drift.",
+            "learningObjectives": [
+              "Validate exposure.",
+              "Assess business impact and data sensitivity.",
+              "Coordinate remediation without assuming compromise."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Misconfiguration may expose resources without evidence of exploitation.",
+                  "Triage should identify what is exposed, who can reach it, what data is present, and what controls or logs exist."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-11-04",
+              "question": "What should be established before declaring a cloud exposure an incident?",
+              "options": [
+                "The actual exposure, affected data/resources, and evidence of impact or policy-defined incident criteria",
+                "The presence of a public URL alone",
+                "The vendor name",
+                "A high CVSS score on unrelated software"
+              ],
+              "answer": "The actual exposure, affected data/resources, and evidence of impact or policy-defined incident criteria",
+              "explanation": "Exposure and incident classification require context."
+            },
+            "summary": [
+              "Exposure is not automatically compromise.",
+              "Follow the organization’s incident criteria."
+            ],
+            "resources": [
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-11-01",
+            "title": "Review a Cloud Control-Plane Alert",
+            "level": "Advanced",
+            "description": "Triage a fictional cloud administrative change that modifies access to a storage resource.",
+            "problemStatement": "Determine whether the event is expected, what evidence to collect, and what containment is appropriate.",
+            "objectives": [
+              "Correlate identity, change, resource, and business context.",
+              "Document uncertainty."
+            ],
+            "requirements": [
+              "Use only fictional audit events.",
+              "No real cloud account actions."
+            ],
+            "hint": "Check whether the actor, source, change ticket, resource sensitivity, and timing align.",
+            "solutionCode": "A valid triage note identifies the changed policy, actor, resource, expected-change evidence, data exposure, and proportionate containment if unauthorized.",
+            "solutionExplanation": "This develops cloud-native SOC reasoning without requiring live cloud access."
+          }
+        ]
+      },
+      {
+        "id": "module-12",
+        "title": "Final Real-World Project — Defensive SOC Alert Triage Platform",
+        "description": "The final assessment integrates the course into a practical, defensive SOC workflow. It intentionally contains no module tasks; the project itself is the final assessment.",
+        "lessons": [
+          {
+            "id": "lesson-44",
+            "title": "Capstone Requirements and Architecture",
+            "description": "Define the project boundaries, event schema, detection logic, output, and acceptance criteria.",
+            "learningObjectives": [
+              "Translate SOC requirements into an architecture.",
+              "Define the event model and validation rules.",
+              "Identify safe operational boundaries."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone is a local analysis application. Inputs are fictional JSON events; outputs are a structured analyst report. No live infrastructure is required."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Acceptance criteria: valid parsing, deterministic detections, explainable findings, severity ordering, malformed-input handling, and tests."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-12-01",
+              "question": "Why does the capstone require deterministic rules?",
+              "options": [
+                "They are easier to explain, test, and audit",
+                "They prove compromise",
+                "They eliminate false positives",
+                "They identify attackers automatically"
+              ],
+              "answer": "They are easier to explain, test, and audit",
+              "explanation": "Determinism makes detection behavior reproducible and testable."
+            },
+            "summary": [
+              "The design prioritizes explainability and safety.",
+              "Scope the project before implementing rules."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-45",
+            "title": "Capstone Validation and Analyst Readiness",
+            "description": "Run automated tests and a CLI smoke test, then evaluate the report from an analyst’s perspective.",
+            "learningObjectives": [
+              "Compile the application.",
+              "Run positive and negative tests.",
+              "Verify malformed input fails predictably.",
+              "Evaluate the explainability of findings."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "python -m py_compile triage.py\npython -m pytest -q\npython triage.py sample_events.json"
+              },
+              {
+                "type": "warning",
+                "text": "Passing tests does not prove production security; it demonstrates that the stated requirements behave as designed for the supplied cases."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-12-02",
+              "question": "What does a negative test case demonstrate?",
+              "options": [
+                "That benign input does not trigger the rule unexpectedly",
+                "That every alert is malicious",
+                "That the network is secure",
+                "That logs can be deleted safely"
+              ],
+              "answer": "That benign input does not trigger the rule unexpectedly",
+              "explanation": "Negative cases guard against excessive false positives."
+            },
+            "summary": [
+              "Validate requirements with tests and realistic training data.",
+              "Treat the report as an analyst aid, not an autonomous verdict."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-137 Information Security Continuous Monitoring",
+                "url": "https://csrc.nist.gov/pubs/sp/800/137/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Defensive SOC Alert Triage Platform",
+          "description": "Build a local-only security-operations training application that ingests fictional SOC events, validates them, correlates authentication and privileged-change activity, produces explainable findings, and outputs an analyst-oriented report. The capstone integrates telemetry quality, detection engineering, evidence-aware triage, severity handling, incident-response discipline, testing, and safe automation boundaries.",
+          "conceptsCovered": [
+            "SOC workflow and escalation",
+            "Security telemetry and normalization",
+            "Authentication and privileged activity",
+            "Detection engineering",
+            "Alert triage",
+            "Evidence-aware incident handling",
+            "Severity and risk context",
+            "Automated validation and testing"
+          ],
+          "steps": [
+            "Define the event schema and required fields.",
+            "Load and validate local JSON event data.",
+            "Normalize timestamps for deterministic ordering.",
+            "Implement a documented authentication-sequence rule using a 15-minute window.",
+            "Implement a privileged-change rule that checks for an approved-change marker.",
+            "Generate explainable findings with severity, reason, and source event IDs.",
+            "Generate a report containing counts, highest severity, findings, and analyst guidance.",
+            "Add automated tests for valid detections, benign cases, and malformed input.",
+            "Run the CLI only against the supplied fictional training data and inspect the report."
+          ],
+          "code": {
+            "triage.py": "#!/usr/bin/env python3\n\nfrom __future__ import annotations\n\nimport argparse\nimport json\nfrom collections import defaultdict\nfrom dataclasses import dataclass, asdict\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any\n\nSEVERITY_RANK = {\"low\": 1, \"medium\": 2, \"high\": 3, \"critical\": 4}\n\n@dataclass(frozen=True)\nclass Finding:\n    rule: str\n    severity: str\n    reason: str\n    event_ids: list[str]\n\n\ndef parse_time(value: str) -> datetime:\n    return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n\n\ndef validate_events(events: Any) -> list[dict[str, Any]]:\n    if not isinstance(events, list):\n        raise ValueError(\"Input must be a JSON array\")\n    required = {\"id\", \"timestamp\", \"event_type\", \"username\", \"source_ip\", \"host\"}\n    for item in events:\n        if not isinstance(item, dict):\n            raise ValueError(\"Every event must be an object\")\n        missing = required - item.keys()\n        if missing:\n            raise ValueError(f\"Missing fields: {sorted(missing)}\")\n        parse_time(str(item[\"timestamp\"]))\n    return events\n\n\ndef detect(events: list[dict[str, Any]]) -> list[Finding]:\n    ordered = sorted(events, key=lambda e: parse_time(str(e[\"timestamp\"])))\n    failures: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)\n    findings: list[Finding] = []\n\n    for event in ordered:\n        key = (str(event[\"username\"]), str(event[\"source_ip\"]))\n        if event[\"event_type\"] == \"login_failure\":\n            failures[key].append(event)\n        elif event[\"event_type\"] == \"login_success\":\n            prior = failures.get(key, [])\n            recent = [f for f in prior if (parse_time(str(event[\"timestamp\"])) - parse_time(str(f[\"timestamp\"]))).total_seconds() <= 900]\n            if len(recent) >= 5:\n                findings.append(Finding(\n                    rule=\"AUTH-SEQ-01\",\n                    severity=\"high\",\n                    reason=\"A successful login followed at least five failures for the same user and source within 15 minutes.\",\n                    event_ids=[r[\"id\"] for r in recent] + [event[\"id\"]],\n                ))\n\n        if event[\"event_type\"] == \"privileged_change\" and event.get(\"approved_change\") is not True:\n            findings.append(Finding(\n                rule=\"PRIV-CHANGE-01\",\n                severity=\"high\",\n                reason=\"A privileged change lacks an approved-change marker in the supplied event data.\",\n                event_ids=[str(event[\"id\"])],\n            ))\n\n    return findings\n\n\ndef build_report(events: list[dict[str, Any]]) -> dict[str, Any]:\n    findings = detect(events)\n    highest = max((f.severity for f in findings), key=lambda s: SEVERITY_RANK[s], default=\"low\")\n    return {\n        \"event_count\": len(events),\n        \"finding_count\": len(findings),\n        \"highest_severity\": highest,\n        \"findings\": [asdict(f) for f in findings],\n        \"analyst_guidance\": [\n            \"Validate whether the observed activity is expected.\",\n            \"Correlate identity, endpoint, and network evidence before escalation.\",\n            \"Preserve relevant evidence before destructive containment where practical.\",\n            \"Escalate according to the approved incident-response procedure when compromise is credible.\"\n        ]\n    }\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser(description=\"Defensive SOC triage training tool\")\n    parser.add_argument(\"events\", type=Path)\n    parser.add_argument(\"--output\", type=Path)\n    args = parser.parse_args()\n\n    events = validate_events(json.loads(args.events.read_text(encoding=\"utf-8\")))\n    rendered = json.dumps(build_report(events), indent=2)\n    if args.output:\n        args.output.write_text(rendered + \"\\n\", encoding=\"utf-8\")\n    else:\n        print(rendered)\n    return 0\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+            "sample_events.json": "[\n  {\n    \"id\": \"e1\",\n    \"timestamp\": \"2026-09-07T08:00:00Z\",\n    \"event_type\": \"login_failure\",\n    \"username\": \"analyst\",\n    \"source_ip\": \"203.0.113.10\",\n    \"host\": \"portal-01\"\n  },\n  {\n    \"id\": \"e2\",\n    \"timestamp\": \"2026-09-07T08:02:00Z\",\n    \"event_type\": \"login_failure\",\n    \"username\": \"analyst\",\n    \"source_ip\": \"203.0.113.10\",\n    \"host\": \"portal-01\"\n  },\n  {\n    \"id\": \"e3\",\n    \"timestamp\": \"2026-09-07T08:04:00Z\",\n    \"event_type\": \"login_failure\",\n    \"username\": \"analyst\",\n    \"source_ip\": \"203.0.113.10\",\n    \"host\": \"portal-01\"\n  },\n  {\n    \"id\": \"e4\",\n    \"timestamp\": \"2026-09-07T08:06:00Z\",\n    \"event_type\": \"login_failure\",\n    \"username\": \"analyst\",\n    \"source_ip\": \"203.0.113.10\",\n    \"host\": \"portal-01\"\n  },\n  {\n    \"id\": \"e5\",\n    \"timestamp\": \"2026-09-07T08:08:00Z\",\n    \"event_type\": \"login_failure\",\n    \"username\": \"analyst\",\n    \"source_ip\": \"203.0.113.10\",\n    \"host\": \"portal-01\"\n  },\n  {\n    \"id\": \"e6\",\n    \"timestamp\": \"2026-09-07T08:09:00Z\",\n    \"event_type\": \"login_success\",\n    \"username\": \"analyst\",\n    \"source_ip\": \"203.0.113.10\",\n    \"host\": \"portal-01\"\n  },\n  {\n    \"id\": \"e7\",\n    \"timestamp\": \"2026-09-07T09:00:00Z\",\n    \"event_type\": \"privileged_change\",\n    \"username\": \"ops-admin\",\n    \"source_ip\": \"198.51.100.20\",\n    \"host\": \"admin-01\",\n    \"approved_change\": false\n  }\n]",
+            "test_triage.py": "import json\nimport subprocess\nimport sys\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parent\n\ndef run(events):\n    path = ROOT / '_test.json'\n    path.write_text(json.dumps(events), encoding='utf-8')\n    try:\n        result = subprocess.run([sys.executable, str(ROOT/'triage.py'), str(path)], capture_output=True, text=True)\n        return result.returncode, json.loads(result.stdout) if result.returncode == 0 else result.stderr\n    finally:\n        path.unlink(missing_ok=True)\n\ndef test_auth_sequence():\n    base = {\"timestamp\":\"2026-09-07T08:00:00Z\",\"event_type\":\"login_failure\",\"username\":\"u\",\"source_ip\":\"203.0.113.1\",\"host\":\"h\"}\n    events = [dict(base, id=f\"f{i}\", timestamp=f\"2026-09-07T08:{i:02d}:00Z\") for i in range(5)]\n    events.append(dict(base, id='s', timestamp='2026-09-07T08:10:00Z', event_type='login_success'))\n    rc, report = run(events)\n    assert rc == 0\n    assert report['finding_count'] == 1\n    assert report['highest_severity'] == 'high'\n\ndef test_benign_success_without_failures():\n    e = {\"id\":\"s\",\"timestamp\":\"2026-09-07T08:10:00Z\",\"event_type\":\"login_success\",\"username\":\"u\",\"source_ip\":\"203.0.113.1\",\"host\":\"h\"}\n    rc, report = run([e])\n    assert rc == 0\n    assert report['finding_count'] == 0\n\ndef test_invalid_input():\n    rc, _ = run([{\"id\":\"x\"}])\n    assert rc != 0\n"
+          },
+          "explanation": "The project uses a deterministic local pipeline: validate -> normalize -> correlate -> score -> report. The findings are explainable because each rule records a stable identifier, reason, severity, and source event IDs. The design intentionally avoids external network access, credential testing, exploitation, or destructive response actions. The report guidance keeps an analyst in the loop and reinforces evidence preservation and approved escalation paths."
+        }
+      }
+    ]
+  }
+}

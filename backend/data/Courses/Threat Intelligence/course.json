@@ -1,0 +1,1390 @@
+{
+  "course": {
+    "id": "threat-intelligence-v1",
+    "title": "Threat Intelligence",
+    "slug": "threat-intelligence",
+    "description": "A vendor-neutral, research-backed course in cyber threat intelligence that teaches students how to turn threat information into defensible decisions. It covers intelligence requirements and lifecycle management; source evaluation; indicators and observables; enrichment; confidence and freshness; STIX 2.1 and TAXII 2.1; TLP 2.0; MISP and OpenCTI concepts; ATT&CK-based behavioral context; infrastructure and campaign clustering; hypothesis testing; vulnerability intelligence; operationalization into detection and threat hunting; controlled sharing; governance; metrics; feed-risk management; and incident-response feedback. The capstone is an auditable local Python CTI fusion pipeline using synthetic training data. The course is designed for cybersecurity learners and junior-to-intermediate CTI/SOC practitioners who want strong vendor-neutral practical foundations.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 36,
+    "prerequisites": [
+      "Basic networking concepts including IP addressing, DNS, and HTTP/HTTPS",
+      "Basic cybersecurity concepts including assets, vulnerabilities, incidents, and common threat terminology",
+      "Ability to read and modify simple Python 3 code",
+      "Basic JSON and command-line familiarity",
+      "Python 3.11+ for the practical labs and capstone"
+    ],
+    "learningOutcomes": [
+      "define intelligence requirements and align collection to decisions",
+      "evaluate CTI sources using explicit reliability, relevance, timeliness, precision, coverage, and operational criteria",
+      "classify, normalize, enrich, deduplicate, age, and prioritize indicators",
+      "construct and explain core STIX 2.1 objects and relationships",
+      "describe TAXII 2.1 exchange concepts and operational security considerations",
+      "apply TLP 2.0 handling labels and distinguish handling from access control",
+      "map observed behavior to MITRE ATT&CK with explicit evidence and uncertainty",
+      "cluster infrastructure and campaigns without over-claiming attribution",
+      "construct competing hypotheses and document confidence",
+      "translate intelligence into threat-hunting and detection requirements",
+      "design sharing-ready intelligence products with provenance and feedback",
+      "apply CTI governance, quality assurance, source-risk, and incident-feedback practices",
+      "build and test an auditable local CTI fusion pipeline"
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Threat Intelligence Foundations",
+        "description": "Build the decision-oriented mindset, lifecycle, vocabulary, and source discipline needed for intelligence work.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "Threat Intelligence as Decision Support",
+            "description": "Establish what cyber threat intelligence is, what it is not, and why intelligence products must be tied to decisions.",
+            "learningObjectives": [
+              "distinguish data, information, indicators, intelligence, and decisions",
+              "identify tactical, operational, and strategic consumers",
+              "explain why context, provenance, confidence, and timeliness matter"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Core distinction"
+              },
+              {
+                "type": "paragraph",
+                "text": "Raw telemetry is an observation. An indicator is a representation intended to identify potentially relevant activity. Intelligence adds context, analytic judgment, provenance, confidence, relevance, and a consumer-specific implication or action."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Tactical intelligence supports near-term technical operations such as detection, investigation, and blocking decisions.",
+                  "Operational intelligence explains activity patterns, campaigns, infrastructure, capabilities, and likely near-term adversary behavior.",
+                  "Strategic intelligence informs risk, priorities, investment, and longer-term defensive decisions."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "An indicator is not automatically malicious. Shared infrastructure, dynamic addressing, common services, and benign prevalence can make a raw indicator ambiguous."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-01",
+              "question": "Which statement best describes cyber threat intelligence?",
+              "options": [
+                "A list of every IP observed on the Internet",
+                "Analyzed and contextualized threat information used to support decisions",
+                "Only malware hashes",
+                "A vulnerability scan without interpretation"
+              ],
+              "answer": "Analyzed and contextualized threat information used to support decisions",
+              "explanation": "Threat intelligence adds analysis and context so a consumer can make a defensible decision."
+            },
+            "summary": [
+              "Threat intelligence is decision-oriented, not a feed-size competition.",
+              "The meaning of an indicator depends on context and evidence."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://attack.mitre.org/"
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "The Intelligence Lifecycle",
+            "description": "Use a lifecycle that moves from requirements to collection, processing, analysis, dissemination, and feedback.",
+            "learningObjectives": [
+              "write a bounded intelligence requirement",
+              "map collection to a requirement",
+              "describe processing and analysis steps",
+              "design feedback into dissemination"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Lifecycle"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Direction: define the question, consumer, decision, scope, and time horizon.",
+                  "Collection: obtain relevant external and internal information.",
+                  "Processing: normalize, deduplicate, timestamp, tag, and preserve provenance.",
+                  "Analysis: assess reliability, relevance, relationships, confidence, and implications.",
+                  "Dissemination: provide an actionable product to the appropriate audience with handling guidance.",
+                  "Feedback: capture usefulness, sightings, corrections, and new requirements."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The lifecycle is iterative rather than a rigid one-way pipeline. Feedback can change sources, collection priorities, analytic methods, and product formats."
+              }
+            ],
+            "practicals": {
+              "id": "p-01-01",
+              "title": "Write an Intelligence Requirement",
+              "description": "Turn a vague request into a usable intelligence requirement and collection plan.",
+              "steps": [
+                "Define the consumer and decision.",
+                "Set a time horizon and priority.",
+                "List external source categories plus one internal validation source.",
+                "Define two measures that indicate the intelligence was useful."
+              ],
+              "solution": "import json\n\nrequirement = {\n    \"consumer\": \"SOC and vulnerability-management leads\",\n    \"decision\": \"prioritize monitoring and remediation of exposed services\",\n    \"time_horizon\": \"next 30 days\",\n    \"sources\": [\"CISA KEV\", \"vendor advisories\", \"asset inventory\", \"internal security telemetry\"],\n    \"validation\": \"Compare reported products and versions with owned assets.\",\n    \"success_measures\": [\"Actionable findings are tied to owned assets.\", \"Every finding preserves provenance and confidence.\"]\n}\nprint(json.dumps(requirement, indent=2))",
+              "output": "Expected result: a bounded requirement that a collection and analysis process can actually answer."
+            },
+            "quiz": null,
+            "summary": [
+              "Begin with the question or decision that intelligence must support.",
+              "Feedback is part of intelligence operations, not an optional afterthought."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Actors, Campaigns, TTPs, and Attribution",
+            "description": "Develop behavior-centered vocabulary and disciplined attribution habits.",
+            "learningObjectives": [
+              "differentiate groups, campaigns, software, tools, tactics, and techniques",
+              "describe behavior without over-claiming identity",
+              "record alternative hypotheses and uncertainty"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK models adversary behavior using tactics, techniques, and sub-techniques. ATT&CK Group pages describe activity clusters based on publicly reported information and encourage analysts to perform additional research."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use behavior and evidence as the primary description.",
+                  "Record aliases as source context; an alias is not proof of exact identity.",
+                  "Shared tools, common hosting, and reused infrastructure can support multiple hypotheses."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Attribution should be written as an evidence-weighted hypothesis rather than certainty from one indicator or one tool."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-03",
+              "question": "Why is one commonly used tool weak attribution evidence?",
+              "options": [
+                "Tools are always encrypted",
+                "Multiple actors can use the same tool or native utility",
+                "ATT&CK forbids tools",
+                "Tools cannot be observed"
+              ],
+              "answer": "Multiple actors can use the same tool or native utility",
+              "explanation": "Tool use overlaps across actors and defenders, so it is one evidence point rather than a unique identity marker."
+            },
+            "summary": [
+              "Behavioral descriptions are often more durable than actor labels.",
+              "Attribution confidence should rise only as independent evidence converges."
+            ],
+            "resources": [
+              "https://attack.mitre.org/groups/index.html",
+              "https://attack.mitre.org/software/",
+              "https://attack.mitre.org/resources/"
+            ]
+          },
+          {
+            "id": "lesson-01-04",
+            "title": "Source Evaluation and Collection Strategy",
+            "description": "Evaluate source quality and build collection that serves defined intelligence requirements.",
+            "learningObjectives": [
+              "classify CTI sources",
+              "compare reliability, relevance, timeliness, precision, and cost",
+              "identify blind spots and feed risks"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Government/CERT advisories: useful for authoritative guidance and exploited-vulnerability reporting.",
+                  "Vendor research: often rich in technical detail but varies in methodology and scope.",
+                  "Community sharing: broad collaboration with a higher need for validation and provenance.",
+                  "Internal sources: incidents, detections, telemetry, asset inventory, and investigations provide environmental relevance."
+                ]
+              },
+              {
+                "type": "heading",
+                "level": 3,
+                "text": "Source scorecard"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Requirement fit",
+                  "Source reliability and provenance",
+                  "Timeliness/update cadence",
+                  "Precision/noise",
+                  "Coverage and blind spots",
+                  "Licensing/distribution constraints",
+                  "Operational cost"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-04",
+              "question": "Which factor best predicts whether a CTI source is operationally useful?",
+              "options": [
+                "Indicator count alone",
+                "Fit to a defined requirement plus acceptable reliability and timeliness",
+                "Dashboard appearance",
+                "File format alone"
+              ],
+              "answer": "Fit to a defined requirement plus acceptable reliability and timeliness",
+              "explanation": "Operational value comes from usefulness to a consumer and decision, supported by trustworthy and timely evidence."
+            },
+            "summary": [
+              "Choose sources because they answer requirements, not because they publish large feeds.",
+              "Review source performance periodically."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+              "https://misp-project.org/documentation/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Build a Source Evaluation Matrix",
+            "level": "Easy",
+            "description": "Rank four sources against an intelligence requirement using explicit criteria.",
+            "problemStatement": "A team needs intelligence about exploited vulnerabilities affecting internet-facing services. Score four supplied source records and document the recommendation.",
+            "objectives": [
+              "calculate a weighted score",
+              "justify the recommendation",
+              "make the scoring assumptions auditable"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Use a weighted sum and make lower noise score better.",
+            "solutionCode": "sources = [\n    {\"name\":\"CISA KEV\",\"relevance\":5,\"provenance\":5,\"timeliness\":4,\"noise\":1},\n    {\"name\":\"Vendor bulletin\",\"relevance\":5,\"provenance\":4,\"timeliness\":4,\"noise\":2},\n    {\"name\":\"Broad IOC feed\",\"relevance\":2,\"provenance\":3,\"timeliness\":3,\"noise\":5},\n    {\"name\":\"Internal asset inventory\",\"relevance\":5,\"provenance\":5,\"timeliness\":5,\"noise\":1},\n]\nweights = {\"relevance\":0.40,\"provenance\":0.25,\"timeliness\":0.25,\"noise\":0.10}\n\ndef score(s):\n    return (s[\"relevance\"]*weights[\"relevance\"] +\n            s[\"provenance\"]*weights[\"provenance\"] +\n            s[\"timeliness\"]*weights[\"timeliness\"] +\n            (6-s[\"noise\"])*weights[\"noise\"])\n\nfor value, name in sorted(((score(s),s[\"name\"]) for s in sources), reverse=True):\n    print(f\"{name}: {value:.2f}\")",
+            "solutionExplanation": "This score is a decision aid, not an objective truth; the weights must be documented and may differ by requirement."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Indicators, Observables, and Context",
+        "description": "Teach indicator handling, normalization, lifecycle, and disciplined enrichment.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Indicators, Observables, and IoCs",
+            "description": "Learn common indicator types and the difference between observable facts and analytic indicators.",
+            "learningObjectives": [
+              "classify IPs, domains, URLs, hashes, email artifacts, and behavioral indicators",
+              "explain observable versus inferred claims",
+              "identify why a single indicator may be ambiguous"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "IPv4 addresses can be shared, dynamic, or infrastructure-related.",
+                  "Domains and URLs can be precise but may change rapidly.",
+                  "File hashes identify exact artifacts well but are brittle when files change.",
+                  "Email artifacts gain value when sender, reply-to, URLs, attachments, authentication results, and timing are considered together.",
+                  "Behavioral indicators describe patterns rather than one static value."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "An IoC list without provenance, timestamps, or validation can generate false positives and unsafe automation."
+              }
+            ],
+            "practicals": {
+              "id": "p-02-01",
+              "title": "Normalize and Classify Mixed Indicators",
+              "description": "Build a small classifier that normalizes training indicators and labels their type.",
+              "steps": [
+                "Create inputs containing an IPv4 address, domain, URL, SHA-256 hash, and email.",
+                "Validate basic syntax.",
+                "Normalize domains and hashes to lowercase and preserve original values.",
+                "Print the type plus normalized value."
+              ],
+              "solution": "import re\n\nIPV4 = re.compile(r\"^(?:\\d{1,3}\\.){3}\\d{1,3}$\")\nDOMAIN = re.compile(r\"^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$\", re.I)\nSHA256 = re.compile(r\"^[0-9a-fA-F]{64}$\")\nEMAIL = re.compile(r\"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$\")\n\nvalues = [\" 203.0.113.10 \", \"EXAMPLE.ORG\", \"https://example.org/path\", \"a\"*64, \"analyst@example.org\"]\n\ndef classify(value):\n    raw = value\n    v = value.strip()\n    if IPV4.fullmatch(v) and all(0 <= int(p) <= 255 for p in v.split('.')):\n        return raw, v, \"ipv4\"\n    if SHA256.fullmatch(v):\n        return raw, v.lower(), \"sha256\"\n    if EMAIL.fullmatch(v):\n        return raw, v.lower(), \"email\"\n    if v.startswith((\"http://\",\"https://\")):\n        return raw, v, \"url\"\n    if DOMAIN.fullmatch(v.lower().rstrip('.')):\n        return raw, v.lower().rstrip('.'), \"domain\"\n    return raw, v, \"unknown\"\n\nfor item in values:\n    print(classify(item))",
+              "output": "Expected result: each training value is classified and normalized while the original input remains available."
+            },
+            "quiz": null,
+            "summary": [
+              "Use indicator type and context to judge appropriate action.",
+              "Preserve original values when normalizing."
+            ],
+            "resources": [
+              "https://www.oasis-open.org/standard/stix2-1/",
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://www.rfc-editor.org/rfc/rfc5737"
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Confidence, Freshness, and Indicator Lifecycle",
+            "description": "Design records that express confidence, timing, review, and expiration.",
+            "learningObjectives": [
+              "separate source reliability from indicator confidence",
+              "use valid-from and valid-until concepts",
+              "explain why stale intelligence should stop influencing active controls"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Source reliability describes trust in the producer or collection method.",
+                  "Indicator confidence describes how strongly current evidence supports a claim.",
+                  "Freshness affects usefulness and should be represented with observation and review timestamps.",
+                  "Expiration or review dates should stop stale data from remaining active indefinitely."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Retention and active-use lifecycle are different decisions: historical records may need retention even after an indicator is no longer active."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-02-02",
+              "question": "Why is freshness important for many indicators?",
+              "options": [
+                "Freshness proves maliciousness",
+                "Indicators can change meaning or become stale",
+                "Freshness replaces provenance",
+                "Freshness removes the need for validation"
+              ],
+              "answer": "Indicators can change meaning or become stale",
+              "explanation": "Operational controls should account for how quickly intelligence can age or lose relevance."
+            },
+            "summary": [
+              "Confidence and freshness answer different questions.",
+              "Lifecycle metadata makes automation safer and auditable."
+            ],
+            "resources": [
+              "https://www.oasis-open.org/standard/stix2-1/",
+              "https://www.rfc-editor.org/rfc/rfc3339",
+              "https://csrc.nist.gov/pubs/sp/800/150/final"
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Enrichment and Pivoting",
+            "description": "Move from one observable to related evidence while retaining provenance and avoiding unjustified conclusions.",
+            "learningObjectives": [
+              "select pivots based on an investigation question",
+              "connect related entities",
+              "separate enrichment facts from analytic inference"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Pivot examples"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Domain → DNS history → related names → certificates → hosting/infrastructure context.",
+                  "Hash → artifact metadata → signing → malware relationships → internal sightings.",
+                  "IP → ownership/hosting → domains → certificates → temporal activity.",
+                  "Behavior → ATT&CK technique → needed data components → available telemetry."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Enrichment results should include provider, retrieval time, and interpretation. A pivot creates a hypothesis; it does not automatically validate it."
+              }
+            ],
+            "practicals": {
+              "id": "p-02-02",
+              "title": "Build an Enrichment Record",
+              "description": "Create a JSON record that traces two synthetic pivots and explicitly separates facts from inference.",
+              "steps": [
+                "Use example.org and 203.0.113.10 only as documentation-safe training values.",
+                "Record both pivots as synthetic.",
+                "Add a low-confidence inference that shared relationships do not prove maliciousness or attribution."
+              ],
+              "solution": "import json\n\nassessment = {\n    \"observable\": {\"type\": \"domain\", \"value\": \"example.org\", \"status\": \"training-only\"},\n    \"pivots\": [\n        {\"relation\": \"resolves-to\", \"target\": \"203.0.113.10\", \"evidence\": \"synthetic\"},\n        {\"relation\": \"presents-certificate-for\", \"target\": \"edge.example.org\", \"evidence\": \"synthetic\"}\n    ],\n    \"assessment\": {\"statement\": \"The synthetic relationships suggest a possible cluster but do not establish maliciousness or attribution.\", \"confidence\": \"low\"}\n}\nprint(json.dumps(assessment, indent=2))",
+              "output": "Expected result: a traceable enrichment chain that preserves provenance and uncertainty."
+            },
+            "quiz": null,
+            "summary": [
+              "Every pivot should have a purpose tied to the intelligence question.",
+              "Record provenance at the point of enrichment."
+            ],
+            "resources": [
+              "https://www.oasis-open.org/standard/stix2-1/",
+              "https://attack.mitre.org/datacomponents/",
+              "https://docs.opencti.io/latest/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Implement Indicator Aging",
+            "level": "Intermediate",
+            "description": "Determine whether an indicator is active, due for review, expired, or invalid.",
+            "problemStatement": "Build a timezone-aware status function using valid_from, valid_until, and review_at.",
+            "objectives": [
+              "parse UTC timestamps",
+              "handle missing fields",
+              "return deterministic lifecycle status"
+            ],
+            "requirements": [
+              "Python 3.11+; standard library only"
+            ],
+            "hint": "Normalize a trailing Z to +00:00 before parsing.",
+            "solutionCode": "from datetime import datetime, timezone\n\ndef ts(value):\n    if value is None:\n        return None\n    return datetime.fromisoformat(value.replace(\"Z\",\"+00:00\")).astimezone(timezone.utc)\n\ndef indicator_status(record, now=None):\n    now = now or datetime.now(timezone.utc)\n    try:\n        valid_from = ts(record.get(\"valid_from\"))\n        valid_until = ts(record.get(\"valid_until\"))\n        review_at = ts(record.get(\"review_at\"))\n    except (TypeError, ValueError):\n        return \"invalid\"\n    if valid_from and now < valid_from:\n        return \"invalid\"\n    if valid_until and now >= valid_until:\n        return \"expired\"\n    if review_at and now >= review_at:\n        return \"review\"\n    return \"active\"",
+            "solutionExplanation": "The function uses UTC-aware timestamps and keeps review status distinct from expiration."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "STIX, TAXII, and Structured Sharing",
+        "description": "Teach interoperable CTI representation, exchange protocols, handling markings, and practical platform concepts.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "STIX 2.1 Core Model",
+            "description": "Understand the STIX graph model and the difference among indicators, observations, relationships, sightings, and bundles.",
+            "learningObjectives": [
+              "identify STIX object categories",
+              "explain the graph relationship model",
+              "distinguish indicators, observed data, and sightings"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "STIX uses STIX Domain Objects and STIX Cyber-observable Objects as graph nodes, with Relationship Objects providing edges. A bundle packages STIX content."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Indicator: a pattern intended to detect potentially relevant activity.",
+                  "Observed Data: observed cyber observables used as evidence.",
+                  "Sighting: records that an intelligence entity was seen and can connect intelligence to where/when it was observed.",
+                  "Relationship: typed links such as indicates connect related objects."
+                ]
+              }
+            ],
+            "practicals": {
+              "id": "p-03-01",
+              "title": "Create a Minimal STIX Bundle",
+              "description": "Construct a small STIX 2.1 bundle with synthetic training data.",
+              "steps": [
+                "Generate UUIDv4 values.",
+                "Create an indicator with a STIX pattern over a synthetic SHA-256 value.",
+                "Create a synthetic malware object and an indicates relationship.",
+                "Wrap objects in a bundle and parse the JSON."
+              ],
+              "solution": "import json, uuid\nfrom datetime import datetime, timezone\n\ndef now():\n    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace(\"+00:00\",\"Z\")\n\nt = now()\nindicator_id = f\"indicator--{uuid.uuid4()}\"\nmalware_id = f\"malware--{uuid.uuid4()}\"\nindicator = {\"type\":\"indicator\",\"spec_version\":\"2.1\",\"id\":indicator_id,\"created\":t,\"modified\":t,\"name\":\"Training SHA-256 indicator\",\"pattern\":\"[file:hashes.'SHA-256' = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']\",\"pattern_type\":\"stix\",\"valid_from\":t}\nmalware = {\"type\":\"malware\",\"spec_version\":\"2.1\",\"id\":malware_id,\"created\":t,\"modified\":t,\"name\":\"Training Malware Family\",\"is_family\":True}\nrelationship = {\"type\":\"relationship\",\"spec_version\":\"2.1\",\"id\":f\"relationship--{uuid.uuid4()}\",\"created\":t,\"modified\":t,\"relationship_type\":\"indicates\",\"source_ref\":indicator_id,\"target_ref\":malware_id}\nbundle = {\"type\":\"bundle\",\"id\":f\"bundle--{uuid.uuid4()}\",\"objects\":[indicator,malware,relationship]}\nprint(json.dumps(bundle, indent=2))",
+              "output": "Expected result: parseable JSON following the STIX 2.1 object/relationship model using explicitly synthetic data."
+            },
+            "quiz": null,
+            "summary": [
+              "STIX is a content model, not a truth oracle.",
+              "Relationships preserve context that flat indicator lists lose."
+            ],
+            "resources": [
+              "https://www.oasis-open.org/standard/stix2-1/",
+              "https://stix2.readthedocs.io/"
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "TAXII 2.1 Exchange Concepts",
+            "description": "Learn discovery, API roots, collections, objects, status, pagination, and secure transport considerations.",
+            "learningObjectives": [
+              "describe the TAXII resource model",
+              "explain collections and object exchange",
+              "identify security and operational concerns for real deployments"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Discovery exposes available API roots.",
+                  "An API root exposes collections and related resources.",
+                  "Collections store or provide CTI objects.",
+                  "Servers can expose status for asynchronous processing.",
+                  "Clients should handle pagination, content negotiation, authentication failures, rate limits, and transport errors."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "OASIS’s Medallion repository is explicitly a prototype/reference implementation and is not intended for production use; production deployments require appropriate authentication, authorization, TLS, hardening, logging, and operational controls."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-02",
+              "question": "What is the role of TAXII relative to STIX?",
+              "options": [
+                "TAXII is the data model and STIX is the transport",
+                "TAXII defines exchange protocol semantics while STIX represents CTI content",
+                "They are identical specifications",
+                "TAXII is only for CSV"
+              ],
+              "answer": "TAXII defines exchange protocol semantics while STIX represents CTI content",
+              "explanation": "STIX provides the threat-information representation, while TAXII defines RESTful mechanisms for exchanging it."
+            },
+            "summary": [
+              "TAXII transports CTI; STIX represents the content.",
+              "A protocol standard does not remove operational security requirements."
+            ],
+            "resources": [
+              "https://www.oasis-open.org/standard/taxii-version-2-1/",
+              "https://www.cisa.gov/topics/cyber-threats-and-advisories/information-sharing/automated-indicator-sharing-ais/how-share-cyber-threat-information-through-ais"
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "TLP 2.0 and Controlled Sharing",
+            "description": "Use Traffic Light Protocol markings correctly and understand their limits.",
+            "learningObjectives": [
+              "explain the purpose of TLP 2.0",
+              "differentiate the four TLP labels at a high level",
+              "separate handling markings from access control and legal classification"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "FIRST’s Traffic Light Protocol facilitates controlled sharing of sensitive information. TLP 2.0 replaced earlier TLP versions as of 1 January 2023."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "TLP:RED: recipients should not share outside the specific exchange context.",
+                  "TLP:AMBER: restricted sharing to help recipients act, under the standard’s conditions.",
+                  "TLP:GREEN: limited sharing within a community or sector.",
+                  "TLP:CLEAR: broad sharing is permitted subject to applicable rules and copyright."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "TLP communicates sharing expectations. It does not itself enforce technical access controls or replace law, contract, privacy policy, or internal data classification."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-03",
+              "question": "What does TLP primarily communicate?",
+              "options": [
+                "Whether a source is true",
+                "How sensitive information may be shared",
+                "Whether an indicator is malicious",
+                "Whether malware is active"
+              ],
+              "answer": "How sensitive information may be shared",
+              "explanation": "TLP is a sharing and handling convention, not a truth or maliciousness rating."
+            },
+            "summary": [
+              "Apply TLP as a handling instruction.",
+              "Keep handling markings with the intelligence record through downstream workflows."
+            ],
+            "resources": [
+              "https://www.first.org/standards/",
+              "https://www.oasis-open.org/standard/stix2-1/"
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "MISP and OpenCTI as CTI Platforms",
+            "description": "Understand platform capabilities without confusing tooling with intelligence tradecraft.",
+            "learningObjectives": [
+              "describe typical CTI platform workflows",
+              "compare event/attribute and graph-oriented perspectives",
+              "identify when platform automation should be governed carefully"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MISP provides workflows around sharing, events, attributes, taxonomies, galaxies, objects, warning lists, and APIs. OpenCTI is designed as a knowledge-graph platform for organizing and linking threat intelligence, observables, vulnerabilities, sightings, alerts, and related context."
+              },
+              {
+                "type": "warning",
+                "text": "A CTI platform stores and automates intelligence workflows; it does not replace source evaluation, analytic judgment, or governance."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Choose a platform based on workflow, integrations, sharing, scale, and operational constraints.",
+              "Tool capability should not be mistaken for intelligence quality."
+            ],
+            "resources": [
+              "https://misp-project.org/documentation/",
+              "https://www.circl.lu/doc/misp/",
+              "https://docs.opencti.io/latest/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Validate a STIX Relationship Graph",
+            "level": "Intermediate",
+            "description": "Detect dangling STIX relationship references inside a bundle.",
+            "problemStatement": "A received bundle contains indicators, malware, and relationships. Report relationships whose source_ref or target_ref is absent from the bundle.",
+            "objectives": [
+              "index object IDs",
+              "validate relationship references",
+              "return structured errors"
+            ],
+            "requirements": [
+              "Python 3.11+; standard library only"
+            ],
+            "hint": "Build an ID set before validating relationships.",
+            "solutionCode": "import json\n\ndef validate_bundle(bundle):\n    objects = bundle.get(\"objects\", [])\n    ids = {o.get(\"id\") for o in objects if o.get(\"id\")}\n    errors = []\n    for obj in objects:\n        if obj.get(\"type\") != \"relationship\":\n            continue\n        for field in (\"source_ref\",\"target_ref\"):\n            ref = obj.get(field)\n            if ref not in ids:\n                errors.append({\"relationship\":obj.get(\"id\"),\"field\":field,\"missing_ref\":ref})\n    return errors\n\nwith open(\"bundle.json\",encoding=\"utf-8\") as fh:\n    bundle = json.load(fh)\nprint(json.dumps({\"valid\":not validate_bundle(bundle),\"errors\":validate_bundle(bundle)},indent=2))",
+            "solutionExplanation": "The validator checks structural graph integrity only; it does not establish whether the underlying intelligence claim is true."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Threat Analysis and ATT&CK-Based Context",
+        "description": "Develop behavior-centered analysis, clustering, hypotheses, confidence, and vulnerability intelligence skills.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "MITRE ATT&CK for CTI Analysts",
+            "description": "Use ATT&CK to describe adversary behavior, communicate hypotheses, and reason about required telemetry.",
+            "learningObjectives": [
+              "differentiate tactics, techniques, and sub-techniques",
+              "map observed behavior to ATT&CK concepts",
+              "use ATT&CK without treating it as an attribution engine"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ATT&CK is a knowledge base of adversary tactics and techniques based on real-world observations. Tactics describe why an action is performed; techniques describe how a tactical goal is achieved."
+              },
+              {
+                "type": "warning",
+                "text": "ATT&CK mappings must be evidence-based. Technique mapping does not prove attribution and does not automatically prove that an organization can detect that technique."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-01",
+              "question": "In ATT&CK, what do tactics represent?",
+              "options": [
+                "The exact command used",
+                "Why the adversary performs an action",
+                "The source reliability score",
+                "A network address"
+              ],
+              "answer": "Why the adversary performs an action",
+              "explanation": "ATT&CK defines tactics as adversary goals or reasons for performing actions."
+            },
+            "summary": [
+              "ATT&CK provides a common behavioral language.",
+              "Detection coverage requires actual telemetry and analytics."
+            ],
+            "resources": [
+              "https://attack.mitre.org/",
+              "https://attack.mitre.org/resources/",
+              "https://attack.mitre.org/techniques/",
+              "https://attack.mitre.org/datacomponents/"
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Campaign and Infrastructure Clustering",
+            "description": "Combine infrastructure, artifact, timing, targeting, and behavior evidence into defensible clusters.",
+            "learningObjectives": [
+              "build an evidence table for clustering",
+              "avoid false conclusions from shared infrastructure",
+              "use temporal and behavioral pivots"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Infrastructure: domains, IPs, certificates, hosting, naming patterns.",
+                  "Artifacts: hashes, file metadata, configurations, filenames.",
+                  "Behavior: ATT&CK techniques and distinctive execution/persistence patterns.",
+                  "Time: first/last-seen patterns, turnover, campaign windows.",
+                  "Targeting: sectors or technologies only when supported by evidence."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Common hosting, CDNs, compromised servers, and legitimate shared services can connect unrelated activity. Cross-check with independent dimensions."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Corroborate clusters across multiple independent evidence types.",
+              "State alternative explanations for ambiguous overlaps."
+            ],
+            "resources": [
+              "https://www.oasis-open.org/standard/stix2-1/",
+              "https://attack.mitre.org/groups/index.html",
+              "https://attack.mitre.org/software/"
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Hypothesis Testing and Confidence",
+            "description": "Apply structured analytic thinking to avoid confirmation bias and make uncertainty explicit.",
+            "learningObjectives": [
+              "write competing hypotheses",
+              "score supporting and contradicting evidence transparently",
+              "identify what evidence would change the conclusion"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "State the question and decision.",
+                  "List at least two plausible hypotheses.",
+                  "Classify each evidence item as supporting, contradicting, or neutral.",
+                  "Weight evidence by reliability or specificity when appropriate.",
+                  "Record disconfirming evidence and missing information.",
+                  "Publish confidence with caveats."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "An ordinal confidence label such as low/medium/high is not automatically a probability. Define what the scale means."
+              }
+            ],
+            "practicals": {
+              "id": "p-04-01",
+              "title": "Build an Evidence Matrix",
+              "description": "Evaluate two competing hypotheses about synthetic infrastructure relationships.",
+              "steps": [
+                "Create H1: same campaign and H2: unrelated shared infrastructure.",
+                "Enter four synthetic evidence items with reliability and directional effects.",
+                "Calculate weighted directional scores.",
+                "Write a conditional conclusion and identify one missing data point."
+              ],
+              "solution": "evidence=[\n {\"item\":\"overlapping malware configuration\",\"reliability\":4,\"h1\":1,\"h2\":-1},\n {\"item\":\"same certificate pattern\",\"reliability\":3,\"h1\":1,\"h2\":-1},\n {\"item\":\"same hosting provider\",\"reliability\":2,\"h1\":0,\"h2\":1},\n {\"item\":\"different registration timing\",\"reliability\":2,\"h1\":-1,\"h2\":1},\n]\n\nh1=sum(e[\"reliability\"]*e[\"h1\"] for e in evidence)\nh2=sum(e[\"reliability\"]*e[\"h2\"] for e in evidence)\nprint({\"H1_score\":h1,\"H2_score\":h2})\nprint(\"Scores are a reasoning aid, not a probability model.\")",
+              "output": "Expected result: a transparent analytic record that shows competing explanations rather than hiding uncertainty."
+            },
+            "quiz": null,
+            "summary": [
+              "Good analysis records how conclusions could be falsified.",
+              "Confidence should reflect evidence quality, not analyst certainty alone."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://attack.mitre.org/"
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Vulnerability Intelligence and Exploitation Context",
+            "description": "Use exploited-vulnerability information with exposure and asset context.",
+            "learningObjectives": [
+              "distinguish a published vulnerability from exploitation evidence",
+              "use CISA KEV as one prioritization input",
+              "combine vulnerability intelligence with asset and business context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "CISA describes the Known Exploited Vulnerabilities Catalog as an authoritative source of vulnerabilities exploited in the wild and recommends using it as an input to vulnerability-management prioritization."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A vulnerable asset is not the same as a compromised asset.",
+                  "Exploitation in the wild is not proof of exploitation in your environment.",
+                  "Exposure, asset criticality, compensating controls, reachability, remediation options, and business impact still matter."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not convert a CVE or KEV entry directly into an incident conclusion without local evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Threat intelligence can prioritize investigation and remediation questions.",
+              "Keep public exploitation evidence distinct from local compromise evidence."
+            ],
+            "resources": [
+              "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Map Behavior to ATT&CK Evidence",
+            "level": "Intermediate",
+            "description": "Map observed behavior to ATT&CK and specify telemetry needed for confirmation.",
+            "problemStatement": "Produce a small report with technique IDs, rationale, confidence, and missing telemetry.",
+            "objectives": [
+              "keep mapping separate from confidence",
+              "identify required telemetry",
+              "generate a reviewable report"
+            ],
+            "requirements": [
+              "Python 3.11+; current ATT&CK documentation"
+            ],
+            "hint": "Verify each ID against the ATT&CK release used by your organization.",
+            "solutionCode": "behaviors=[\n {\"behavior\":\"process enumerated installed security software\",\"technique\":\"T1518.001\",\"name\":\"Security Software Discovery\",\"confidence\":\"medium\",\"missing\":\"process-creation and endpoint inventory telemetry\"},\n {\"behavior\":\"scheduled task created\",\"technique\":\"T1053.005\",\"name\":\"Scheduled Task/Job: Scheduled Task\",\"confidence\":\"medium\",\"missing\":\"task-creation audit and process telemetry\"}\n]\nfor b in behaviors:\n print(f\"{b['technique']} {b['name']} [{b['confidence']}]\")\n print(\"Behavior:\",b['behavior'])\n print(\"Needed:\",b['missing'],\"\\n\")",
+            "solutionExplanation": "The pattern explicitly records technique mapping, confidence, and telemetry gaps as separate analytic fields."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Operational CTI: Hunting, Detection, and Sharing",
+        "description": "Teach how to turn intelligence into defensible detection, hunting, and sharing workflows.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "From Intelligence to Detection Requirements",
+            "description": "Translate intelligence into testable detection requirements instead of blindly importing feeds into controls.",
+            "learningObjectives": [
+              "convert threat reporting into detection hypotheses",
+              "distinguish detection from prevention",
+              "specify telemetry, validation, and false-positive conditions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Inform: briefings, watchlists, analyst notes.",
+                  "Detect: rules, queries, correlation, analytics.",
+                  "Hunt: hypotheses that guide targeted searches.",
+                  "Prevent: block or control changes when confidence and safety justify them.",
+                  "Respond: evidence-backed containment or remediation."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Prevention has a different risk tolerance from detection. Always validate indicators and behavior before automated blocking."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Operationalization should specify threat behavior, telemetry, logic, false positives, and validation.",
+              "Indicators can be one input among several signals."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://sigmahq.io/"
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Threat Hunting from Intelligence",
+            "description": "Build scoped, falsifiable hunting hypotheses and report negative findings responsibly.",
+            "learningObjectives": [
+              "write a hunt hypothesis",
+              "identify the necessary telemetry",
+              "define outcomes including insufficient telemetry",
+              "record false positives"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Hunt structure"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Hypothesis: a falsifiable statement.",
+                  "Scope: users, assets, identities, time, cloud accounts, or network segments.",
+                  "Telemetry: data needed to evaluate the hypothesis.",
+                  "Query/analytic: the test applied to the data.",
+                  "Outcome: confirmed, refuted, inconclusive, or telemetry insufficient."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "No results are not automatically evidence of absence. Missing logs, retention gaps, parser problems, or wrong assumptions can produce empty results."
+              }
+            ],
+            "practicals": {
+              "id": "p-05-01",
+              "title": "Convert a Threat Report into a Hunt Plan",
+              "description": "Turn a fictional intelligence statement into a scoped hunting plan.",
+              "steps": [
+                "Use the hypothesis: a compromised privileged account may access an unusual internal service after successful authentication.",
+                "Define time window, identities, telemetry, query logic, and outcomes.",
+                "List two false positives.",
+                "Define escalation evidence."
+              ],
+              "solution": "from dataclasses import asdict, dataclass\nimport json\n\n@dataclass\nclass HuntSpecification:\n    hypothesis: str\n    scope: str\n    telemetry: list[str]\n    logic: list[str]\n    outcomes: list[str]\n    false_positives: list[str]\n    escalation: str\n\nspec = HuntSpecification(\n    hypothesis=\"A compromised privileged identity may access an unusual internal service after authentication.\",\n    scope=\"14 days; privileged identities; remote-access entry points\",\n    telemetry=[\"identity authentication\", \"VPN/remote access\", \"network connections\", \"asset inventory\"],\n    logic=[\"Find successful authentication.\", \"Join to service access in a bounded time window.\", \"Compare the destination with the approved baseline.\"],\n    outcomes=[\"suspicious\", \"benign explained\", \"inconclusive\", \"telemetry insufficient\"],\n    false_positives=[\"emergency administration\", \"newly assigned responsibilities\"],\n    escalation=\"Escalate unexplained privileged access only when corroborating evidence supports the hypothesis.\"\n)\nprint(json.dumps(asdict(spec), indent=2))",
+              "output": "Expected result: a falsifiable hunt plan with explicit evidence requirements."
+            },
+            "quiz": null,
+            "summary": [
+              "Hunts should be bounded and testable.",
+              "Negative findings should include data-coverage limitations."
+            ],
+            "resources": [
+              "https://attack.mitre.org/datacomponents/",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Sigma Detection Concepts",
+            "description": "Use Sigma-style vendor-neutral detection logic and understand field mappings and backend conversion.",
+            "learningObjectives": [
+              "identify common Sigma sections",
+              "write a simple behavioral rule",
+              "explain why backend field mapping matters"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "logsource describes source assumptions.",
+                  "detection contains selections and Boolean conditions.",
+                  "Metadata such as title, description, level, status, falsepositives, and tags improves maintainability.",
+                  "ATT&CK tags provide context; they do not prove coverage."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Sigma rules still require target-platform field mappings and representative event testing. A Sigma rule is not automatically executable by every SIEM."
+              }
+            ],
+            "practicals": {
+              "id": "p-05-02",
+              "title": "Write a Safe Sigma Training Rule",
+              "description": "Create a benign training rule for a rare parent-child process relationship.",
+              "steps": [
+                "Use synthetic Windows process-creation fields.",
+                "Match a browser parent launching Python as the child process.",
+                "Add an explicit false-positive note.",
+                "Keep the rule labeled experimental."
+              ],
+              "solution": "from pathlib import Path\n\nsigma_yaml = r'''title: Rare browser-to-Python process relationship (training)\nstatus: experimental\nlogsource:\n  category: process_creation\n  product: windows\ndetection:\n  selection:\n    ParentImage|endswith:\n      - \"\\\\browser.exe\"\n    Image|endswith:\n      - \"\\\\python.exe\"\n  condition: selection\nfalsepositives:\n  - Approved developer or test automation activity\nlevel: medium\n'''\n\nPath(\"training_sigma_rule.yml\").write_text(sigma_yaml, encoding=\"utf-8\")\nprint(\"Wrote training_sigma_rule.yml\")",
+              "output": "Expected result: a readable vendor-neutral training rule that is explicitly subject to testing and tuning."
+            },
+            "quiz": null,
+            "summary": [
+              "Portability depends on semantic field mapping, not just syntax.",
+              "Validate rules against realistic event samples before production."
+            ],
+            "resources": [
+              "https://sigmahq.io/",
+              "https://attack.mitre.org/datacomponents/"
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "Intelligence Sharing and Feedback",
+            "description": "Build sharing-ready products with provenance, confidence, handling markings, and an explicit feedback mechanism.",
+            "learningObjectives": [
+              "design a consumer-specific sharing package",
+              "apply handling markings",
+              "request sightings, corrections, and other feedback"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "What happened?",
+                  "Why does it matter?",
+                  "What evidence supports the claim?",
+                  "What is the confidence?",
+                  "What can the recipient do now?",
+                  "What handling/distribution rule applies?",
+                  "How should sightings or corrections be returned?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Sharing quality is measured by recipient action and feedback—not by the number of recipients or indicators transmitted."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "A good sharing product is actionable and traceable.",
+              "Feedback closes the loop and improves future intelligence."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://www.first.org/standards/",
+              "https://www.cisa.gov/topics/cyber-threats-and-advisories/information-sharing/automated-indicator-sharing-ais/how-share-cyber-threat-information-through-ais"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Create a Hunt-to-Detection Specification",
+            "level": "Advanced",
+            "description": "Produce a portable detection specification from a hunt hypothesis.",
+            "problemStatement": "A detection engineer needs a reviewable specification before implementing a query in a particular SIEM.",
+            "objectives": [
+              "define data dependencies",
+              "state logic in plain language",
+              "record false positives and tuning",
+              "include ATT&CK context"
+            ],
+            "requirements": [
+              "Python 3.11+; JSON standard library"
+            ],
+            "hint": "Keep the hypothesis separate from vendor-specific query syntax.",
+            "solutionCode": "import json\nspec={\n \"title\":\"Unusual privileged authentication followed by sensitive-service access\",\n \"hypothesis\":\"A privileged identity may be compromised when successful authentication is followed by unexplained access to a sensitive service.\",\n \"telemetry\":[\"identity_authentication\",\"remote_access\",\"network_connection\",\"asset_inventory\"],\n \"logic\":[\"find successful privileged authentication\",\"join to service access in a bounded time window\",\"compare destination to approved baseline\",\"require corroborating evidence before escalation\"],\n \"attck\":[\"T1078\"],\n \"false_positives\":[\"approved emergency administration\",\"new responsibilities\"],\n \"validation\":[\"replay benign events\",\"replay controlled suspicious test events\",\"measure precision\",\"check telemetry coverage\"],\n \"tuning\":[\"scope to high-value identities\",\"maintain approved exceptions\",\"require supporting signals\"]\n}\nprint(json.dumps(spec,indent=2))",
+            "solutionExplanation": "The specification is portable because it separates the analytic hypothesis, data dependencies, and validation from a particular SIEM query language."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "CTI Program Operations and Quality",
+        "description": "Operate a sustainable intelligence capability with governance, metrics, source controls, and incident feedback.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Governance, Privacy, and Handling",
+            "description": "Design CTI governance for access, purpose, provenance, privacy, retention, and controlled sharing.",
+            "learningObjectives": [
+              "identify CTI governance controls",
+              "separate TLP handling from technical permissions",
+              "apply data-minimization reasoning"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Purpose: why is the data collected?",
+                  "Access: who needs it and at what sensitivity?",
+                  "Provenance: where did it originate?",
+                  "Handling: what sharing limits apply?",
+                  "Retention: what remains historically useful and what should stop active use?",
+                  "Privacy: does it contain personal or sensitive information?"
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "CTI may contain victim information, personal data, credentials, or other sensitive content. Apply applicable policy and legal requirements and minimize unnecessary collection."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Governance is part of operational quality and safety.",
+              "TLP does not enforce access control by itself."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://www.first.org/standards/",
+              "https://www.nist.gov/cyberframework"
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "CTI Metrics and Quality Assurance",
+            "description": "Measure CTI by its usefulness and security outcomes rather than feed volume.",
+            "learningObjectives": [
+              "define actionable CTI metrics",
+              "measure source and lifecycle quality",
+              "design a review loop"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Timeliness: time from publication to usable intelligence.",
+                  "Actionability: intelligence leading to a documented defensive action or decision.",
+                  "Precision: proportion of operationalized intelligence that remains relevant after validation.",
+                  "Coverage: alignment with intelligence requirements and key assets.",
+                  "Feedback: sightings, corrections, and information gaps.",
+                  "Lifecycle: stale active intelligence removed or reviewed on time."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Metrics can be gamed. Large indicator counts or alert volumes can represent noise rather than success."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Connect metrics to decisions and outcomes.",
+              "Combine quantitative metrics with analyst and consumer feedback."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Source and Feed Risk Management",
+            "description": "Protect CTI pipelines against malformed content, poisoning, drift, schema changes, outages, and licensing problems.",
+            "learningObjectives": [
+              "identify source supply-chain risks",
+              "design validation and quarantine controls",
+              "plan safe fallback behavior"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Validate schemas and field types before ingestion.",
+                  "Quarantine malformed or unexpected updates.",
+                  "Monitor volume, duplicates, missing fields, and timestamp drift.",
+                  "Track licensing and redistribution requirements.",
+                  "Keep source-specific trust and rollback controls."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "An external feed can influence security controls. Treat feed changes as operational events that require monitoring and review."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "External intelligence dependencies deserve supply-chain controls.",
+              "Automated enforcement should require a validated path from source to action."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://misp-project.org/documentation/",
+              "https://www.nist.gov/cyberframework"
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "Incident Integration and Feedback Loops",
+            "description": "Connect CTI with incident response and feed validated incident findings back into intelligence.",
+            "learningObjectives": [
+              "identify CTI handoffs during response",
+              "capture validated new indicators and TTPs",
+              "return lessons and observations into future intelligence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-61 Revision 3 was finalized in April 2025 and supersedes Revision 2. It places incident response recommendations throughout the NIST Cybersecurity Framework 2.0 risk-management approach."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "CTI can enrich incident artifacts, identify related activity, and support response decisions.",
+                  "Incident findings can produce new indicators, behavior observations, and intelligence requirements.",
+                  "Evidence and intelligence claims should remain linked but conceptually distinct."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not publish unvalidated incident details. Preserve evidence handling, authorization, privacy, and provenance before external sharing."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Incident response can generate new intelligence as well as consume it.",
+              "Keep evidence provenance intact through analytic and sharing workflows."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/150/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Design a CTI Data-Quality Gate",
+            "level": "Advanced",
+            "description": "Build an ingestion validator for required CTI fields and handling controls.",
+            "problemStatement": "Reject records with missing provenance, unsupported TLP, invalid confidence, malformed timestamps, or future observations.",
+            "objectives": [
+              "validate required fields",
+              "validate TLP",
+              "validate timestamp format and time direction",
+              "return all errors"
+            ],
+            "requirements": [
+              "Python 3.11+; standard library only"
+            ],
+            "hint": "Return all validation findings instead of failing on the first error.",
+            "solutionCode": "from datetime import datetime, timezone\n\nALLOWED_TLP={\"TLP:RED\",\"TLP:AMBER\",\"TLP:GREEN\",\"TLP:CLEAR\"}\n\ndef validate(record, now=None):\n    now=now or datetime.now(timezone.utc)\n    errors=[]\n    for field in (\"type\",\"value\",\"source\",\"confidence\",\"tlp\",\"observed_at\"):\n        if not record.get(field):\n            errors.append(f\"missing required field: {field}\")\n    if record.get(\"tlp\") and record[\"tlp\"] not in ALLOWED_TLP:\n        errors.append(\"unsupported TLP label\")\n    if record.get(\"confidence\") not in {\"low\",\"medium\",\"high\"}:\n        errors.append(\"confidence must be low, medium, or high\")\n    if record.get(\"observed_at\"):\n        try:\n            t=datetime.fromisoformat(record[\"observed_at\"].replace(\"Z\",\"+00:00\")).astimezone(timezone.utc)\n            if t>now:\n                errors.append(\"observed_at cannot be in the future\")\n        except (TypeError,ValueError):\n            errors.append(\"observed_at must be an RFC 3339-compatible timestamp\")\n    return errors\n\nexample={\"type\":\"domain\",\"value\":\"example.org\",\"source\":\"training-source\",\"confidence\":\"medium\",\"tlp\":\"TLP:GREEN\",\"observed_at\":\"2026-09-07T00:00:00Z\"}\nprint(validate(example))",
+            "solutionExplanation": "The validator creates a safety boundary before data reaches downstream controls. Production deployments should add organization-specific policies and authorization requirements."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Capstone: Threat Intelligence Fusion and Prioritization Pipeline",
+        "description": "Final practical assessment that combines collection context, indicator handling, structured CTI, ATT&CK context, sharing controls, quality checks, and prioritization in one reproducible local project.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Capstone Implementation and Assessment",
+            "description": "Assemble the complete pipeline and evaluate it against course concepts.",
+            "learningObjectives": [
+              "run the project end-to-end",
+              "explain each stage and its assumptions",
+              "validate output and defend prioritization decisions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Assessment focus"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Data quality and provenance",
+                  "Safe handling and lifecycle logic",
+                  "Reasoning transparency",
+                  "ATT&CK context without over-claiming",
+                  "Actionable output for a consumer"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "The capstone integrates the course as a workflow rather than a collection of isolated concepts.",
+              "A good result is reproducible, explainable, and appropriately cautious."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/150/final",
+              "https://www.oasis-open.org/standard/stix2-1/",
+              "https://attack.mitre.org/",
+              "https://www.first.org/standards/"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "CTI Fusion and Prioritization Pipeline",
+          "description": "A local vendor-neutral Python project that ingests synthetic intelligence observations, validates them, normalizes and deduplicates indicators, applies transparent confidence/freshness/actionability scoring, preserves TLP and provenance, attaches local ATT&CK context, and produces a Markdown intelligence brief. It deliberately avoids live enrichment, external network access, and automatic blocking so students can concentrate on safe, auditable intelligence tradecraft.",
+          "conceptsCovered": [
+            "intelligence requirements",
+            "provenance",
+            "indicator normalization",
+            "deduplication",
+            "freshness",
+            "confidence",
+            "TLP handling",
+            "ATT&CK context",
+            "prioritization",
+            "auditability",
+            "safe local processing"
+          ],
+          "steps": [
+            "Create app.py and the input directory.",
+            "Use synthetic training observations only; documentation-safe example values are provided.",
+            "Run the built-in self-test before changing the pipeline.",
+            "Run the pipeline against input/observations.json.",
+            "Inspect validation failures and correct the data rather than bypassing checks.",
+            "Review the deduplicated prioritized report and verify provenance, handling, context, and next actions.",
+            "Adapt the scoring weights only with documented analytic justification.",
+            "For production use, add real source authentication, authorization, licensing controls, external-service error handling, caching, schema validation, monitoring, and organization-specific policy."
+          ],
+          "code": {
+            "app.py": "#!/usr/bin/env python3\n\"\"\"Local vendor-neutral CTI fusion pipeline using only Python stdlib.\"\"\"\nfrom __future__ import annotations\nimport argparse\nimport json\nimport re\nimport sys\nfrom dataclasses import dataclass\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom typing import Any\n\nALLOWED_TYPES={\"ipv4\",\"domain\",\"url\",\"sha256\"}\nALLOWED_TLP={\"TLP:RED\",\"TLP:AMBER\",\"TLP:GREEN\",\"TLP:CLEAR\"}\nCONF={\"low\":0.4,\"medium\":0.7,\"high\":1.0}\nSHA256_RE=re.compile(r\"^[0-9a-f]{64}$\")\nIPV4_RE=re.compile(r\"^(?:\\d{1,3}\\.){3}\\d{1,3}$\")\nDOMAIN_RE=re.compile(r\"^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$\",re.I)\n\n@dataclass(frozen=True)\nclass Observation:\n    type:str\n    value:str\n    source:str\n    confidence:str\n    tlp:str\n    observed_at:datetime\n    actionability:float\n    evidence:str\n    attck:tuple[str,...]\n    context:str\n\n    @property\n    def normalized_value(self)->str:\n        value=self.value.strip()\n        if self.type in {\"domain\",\"sha256\"}:\n            value=value.lower().rstrip(\".\")\n        return value\n\n\ndef parse_time(value:str)->datetime:\n    return datetime.fromisoformat(value.replace(\"Z\",\"+00:00\")).astimezone(timezone.utc)\n\n\ndef validate_indicator(kind:str,value:str)->None:\n    if kind not in ALLOWED_TYPES:\n        raise ValueError(f\"unsupported indicator type: {kind}\")\n    if kind==\"sha256\" and not SHA256_RE.fullmatch(value.lower()):\n        raise ValueError(\"invalid SHA-256\")\n    if kind==\"ipv4\":\n        if not IPV4_RE.fullmatch(value) or not all(0<=int(x)<=255 for x in value.split(\".\")):\n            raise ValueError(\"invalid IPv4\")\n    if kind==\"domain\" and not DOMAIN_RE.fullmatch(value.lower().rstrip(\".\")):\n        raise ValueError(\"invalid domain\")\n    if kind==\"url\" and not value.startswith((\"http://\",\"https://\")):\n        raise ValueError(\"URL must use http or https\")\n\n\ndef parse_observation(raw:dict[str,Any],now:datetime)->Observation:\n    required=(\"type\",\"value\",\"source\",\"confidence\",\"tlp\",\"observed_at\",\"actionability\",\"evidence\")\n    missing=[x for x in required if raw.get(x) in (None,\"\")]\n    if missing:\n        raise ValueError(\"missing: \"+\", \".join(missing))\n    if raw[\"confidence\"] not in CONF:\n        raise ValueError(\"confidence must be low, medium, or high\")\n    if raw[\"tlp\"] not in ALLOWED_TLP:\n        raise ValueError(\"unsupported TLP\")\n    observed_at=parse_time(raw[\"observed_at\"])\n    if observed_at>now:\n        raise ValueError(\"observed_at cannot be in the future\")\n    value=str(raw[\"value\"]).strip()\n    validate_indicator(raw[\"type\"],value)\n    action=float(raw[\"actionability\"])\n    if not 0<=action<=1:\n        raise ValueError(\"actionability must be between 0 and 1\")\n    if raw[\"evidence\"] not in {\"observed\",\"inferred\"}:\n        raise ValueError(\"evidence must be observed or inferred\")\n    return Observation(raw[\"type\"],value,str(raw[\"source\"]),raw[\"confidence\"],raw[\"tlp\"],observed_at,action,raw[\"evidence\"],tuple(raw.get(\"attck\",[])),str(raw.get(\"context\",\"\")))\n\n\ndef freshness(now:datetime,observed_at:datetime,half_life_days:float=30.0)->float:\n    age=max(0.0,(now-observed_at).total_seconds()/86400.0)\n    return 0.5**(age/half_life_days)\n\n\ndef priority_score(obs:Observation,now:datetime)->float:\n    evidence_factor=1.0 if obs.evidence==\"observed\" else 0.7\n    score=100*(0.40*CONF[obs.confidence]+0.25*freshness(now,obs.observed_at)+0.25*obs.actionability+0.10*evidence_factor)\n    return round(score,2)\n\n\ndef deduplicate(items:list[Observation]):\n    grouped={}\n    for obs in items:\n        grouped.setdefault((obs.type,obs.normalized_value),[]).append(obs)\n    return grouped\n\n\ndef render(grouped,attck_names,now):\n    ranked=[]\n    for (kind,value),records in grouped.items():\n        best=max(records,key=lambda r:priority_score(r,now))\n        ranked.append((priority_score(best,now),kind,value,records))\n    ranked.sort(reverse=True,key=lambda x:x[0])\n    lines=[\"# Threat Intelligence Fusion Report\",\"\",f\"Generated: {now.isoformat().replace('+00:00','Z')}\",\"\",\"> Training artifact: use synthetic or documentation-safe data. Scores support prioritization and are not maliciousness verdicts.\",\"\",\"## Executive Summary\",\"\",f\"- Unique indicator groups: {len(ranked)}\",f\"- Highest priority score: {ranked[0][0] if ranked else 0}\",\"- Source provenance is retained during deduplication.\",\"\",\"## Prioritized Findings\",\"\"]\n    for score,kind,value,records in ranked:\n        best=max(records,key=lambda r:priority_score(r,now))\n        lines += [f\"### {kind}: `{value}`\",\"\",f\"**Priority score:** {score}\",f\"**Confidence:** {best.confidence}\",f\"**Evidence:** {best.evidence}\",f\"**TLP:** {best.tlp}\",f\"**Actionability:** {best.actionability:.2f}\",f\"**Context:** {best.context or 'None provided'}\",\"\",\"**Provenance / sightings:**\"]\n        for r in sorted(records,key=lambda r:r.observed_at,reverse=True):\n            lines.append(f\"- {r.source}, observed {r.observed_at.isoformat().replace('+00:00','Z')}\")\n        if best.attck:\n            lines += [\"\",\"**ATT&CK context:**\"]\n            for technique in best.attck:\n                lines.append(f\"- `{technique}` — {attck_names.get(technique,'Name not supplied in local mapping')}\")\n        lines += [\"\",\"**Recommended next actions:**\",\"- Validate against internal telemetry and asset context.\",\"- Confirm handling marking before wider distribution.\",\"- Use supporting evidence before preventive controls.\",\"\",\"---\",\"\"]\n    return \"\\n\".join(lines)\n\n\ndef run(input_path:Path,attck_path:Path,output_path:Path)->None:\n    now=datetime.now(timezone.utc).replace(microsecond=0)\n    with input_path.open(encoding=\"utf-8\") as fh:\n        raw=json.load(fh)\n    if not isinstance(raw,list):\n        raise ValueError(\"input JSON must be an array\")\n    observations=[]\n    errors=[]\n    for idx,item in enumerate(raw,1):\n        try:\n            observations.append(parse_observation(item,now))\n        except (TypeError,ValueError,KeyError) as exc:\n            errors.append(f\"record {idx}: {exc}\")\n    if errors:\n        raise ValueError(\"input validation failed:\\n\"+\"\\n\".join(errors))\n    mapping=json.loads(attck_path.read_text(encoding=\"utf-8\")) if attck_path.exists() else {}\n    output_path.write_text(render(deduplicate(observations),mapping,now),encoding=\"utf-8\")\n\n\ndef self_test()->None:\n    now=datetime(2026,9,7,tzinfo=timezone.utc)\n    sample=Observation(\"domain\",\"Example.ORG\",\"training\",\"high\",\"TLP:GREEN\",now,1.0,\"observed\",(\"T1078\",),\"synthetic\")\n    assert sample.normalized_value==\"example.org\"\n    assert freshness(now,now)==1.0\n    assert priority_score(sample,now)==100.0\n    assert len(deduplicate([sample,sample]))==1\n    print(\"self-test: PASS\")\n\n\ndef main()->int:\n    parser=argparse.ArgumentParser(description=\"Local CTI fusion pipeline\")\n    parser.add_argument(\"--input\",default=\"input/observations.json\")\n    parser.add_argument(\"--attck\",default=\"input/attck_mapping.json\")\n    parser.add_argument(\"--output\",default=\"report.md\")\n    parser.add_argument(\"--self-test\",action=\"store_true\")\n    args=parser.parse_args()\n    try:\n        if args.self_test:\n            self_test()\n        else:\n            run(Path(args.input),Path(args.attck),Path(args.output))\n        return 0\n    except (OSError,ValueError,json.JSONDecodeError) as exc:\n        print(f\"ERROR: {exc}\",file=sys.stderr)\n        return 1\n\nif __name__==\"__main__\":\n    raise SystemExit(main())\n",
+            "input/observations.json": [
+              {
+                "type": "domain",
+                "value": "EXAMPLE.ORG",
+                "source": "training-advisory",
+                "confidence": "high",
+                "tlp": "TLP:GREEN",
+                "observed_at": "2026-09-05T12:00:00Z",
+                "actionability": 0.8,
+                "evidence": "observed",
+                "attck": [
+                  "T1078"
+                ],
+                "context": "Synthetic training observation only."
+              },
+              {
+                "type": "domain",
+                "value": "example.org",
+                "source": "training-hunt",
+                "confidence": "medium",
+                "tlp": "TLP:GREEN",
+                "observed_at": "2026-09-06T08:00:00Z",
+                "actionability": 0.6,
+                "evidence": "inferred",
+                "attck": [
+                  "T1078"
+                ],
+                "context": "Second synthetic source used to exercise deduplication."
+              },
+              {
+                "type": "ipv4",
+                "value": "203.0.113.10",
+                "source": "training-network-observation",
+                "confidence": "low",
+                "tlp": "TLP:CLEAR",
+                "observed_at": "2026-09-04T10:00:00Z",
+                "actionability": 0.4,
+                "evidence": "observed",
+                "attck": [],
+                "context": "TEST-NET-1 documentation-only example address."
+              }
+            ],
+            "input/attck_mapping.json": {
+              "T1078": "Valid Accounts"
+            }
+          },
+          "explanation": "Architecture: local JSON observations enter a validation layer, then normalization and deduplication, transparent priority scoring, local ATT&CK context lookup, and Markdown rendering. Each stage preserves provenance and explicit uncertainty. The project demonstrates an end-to-end CTI workflow without live lookups or automated enforcement, which makes it reproducible and safe for student use."
+        }
+      }
+    ],
+    "researchMetadata": {
+      "snapshotDate": "2026-09-07",
+      "sources": [
+        "https://csrc.nist.gov/pubs/sp/800/150/final",
+        "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+        "https://csrc.nist.gov/pubs/sp/800/92/final",
+        "https://www.nist.gov/cyberframework",
+        "https://www.oasis-open.org/standard/stix2-1/",
+        "https://www.oasis-open.org/standard/taxii-version-2-1/",
+        "https://attack.mitre.org/",
+        "https://attack.mitre.org/resources/",
+        "https://attack.mitre.org/techniques/",
+        "https://attack.mitre.org/datacomponents/",
+        "https://attack.mitre.org/groups/index.html",
+        "https://attack.mitre.org/software/",
+        "https://www.first.org/standards/",
+        "https://misp-project.org/documentation/",
+        "https://www.circl.lu/doc/misp/",
+        "https://docs.opencti.io/latest/",
+        "https://stix2.readthedocs.io/",
+        "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories/information-sharing/automated-indicator-sharing-ais/how-share-cyber-threat-information-through-ais",
+        "https://www.rfc-editor.org/rfc/rfc5737",
+        "https://www.rfc-editor.org/rfc/rfc3339",
+        "https://sigmahq.io/"
+      ],
+      "currentPracticeNotes": [
+        "MITRE ATT&CK Data Sources were deprecated in the ATT&CK v18 release; the course uses current Data Components rather than teaching Data Sources as the modern model.",
+        "NIST SP 800-61 Revision 3 was finalized in April 2025 and supersedes Revision 2.",
+        "FIRST TLP 2.0 replaced earlier TLP versions as of 1 January 2023."
+      ]
+    }
+  }
+}

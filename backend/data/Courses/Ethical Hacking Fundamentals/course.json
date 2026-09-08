@@ -1,0 +1,1975 @@
+{
+  "course": {
+    "id": "ethical-hacking-fundamentals",
+    "title": "Ethical Hacking Fundamentals",
+    "slug": "ethical-hacking-fundamentals",
+    "description": "A practical, authorization-first foundation in ethical hacking and penetration testing. The course teaches engagement scoping, reconnaissance, network and service enumeration, vulnerability discovery and validation, web and API security testing, controlled exploitation concepts, evidence handling, reporting, remediation, and retesting. Hands-on activities use synthetic data, local labs, intentionally vulnerable systems, and dedicated test accounts; the course does not require attacking public or third-party systems.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 78,
+    "prerequisites": [
+      "Basic computer and operating-system familiarity.",
+      "Basic networking concepts such as IP addresses, ports, HTTP, and DNS are helpful but are introduced where required.",
+      "A local lab environment is recommended for hands-on exercises; students should only test systems they own or are explicitly authorized to assess."
+    ],
+    "learningOutcomes": [
+      "Define ethical hacking, vulnerability assessment, penetration testing, and rules of engagement.",
+      "Build a scoped asset inventory and perform controlled reconnaissance and network/service enumeration.",
+      "Interpret scanner results and validate vulnerabilities using evidence rather than assumptions.",
+      "Apply OWASP-based web application and API security testing concepts to authorized applications.",
+      "Design safe, minimal exploit-validation procedures using dedicated lab targets and test accounts.",
+      "Produce evidence-driven findings with severity, confidence, impact, remediation, and retest criteria.",
+      "Execute a complete local reporting workflow and explain how ethical hacking integrates with remediation and risk management."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Foundations, Ethics, and Engagement Scope",
+        "description": "Establish the legal, ethical, technical, and operational boundaries of authorized security testing.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "What Ethical Hacking Is—and Is Not",
+            "description": "Define ethical hacking as authorized security testing performed to discover and communicate weaknesses so they can be reduced.",
+            "learningObjectives": [
+              "Define ethical hacking, vulnerability assessment, penetration testing, and security assessment.",
+              "Explain why authorization and scope are prerequisites for testing.",
+              "Differentiate defensive validation from unauthorized intrusion."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Ethical hacking is a testing activity performed with permission and a defined objective. The tester is accountable for respecting the agreed scope, protecting sensitive information, and minimizing disruption."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Vulnerability assessment emphasizes discovering and characterizing weaknesses; penetration testing adds controlled attempts to demonstrate exploitability and impact.",
+                  "A test result is evidence about the tested condition, not proof that every untested path is secure.",
+                  "Use lab systems or explicitly authorized targets for all hands-on work."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never scan or test systems simply because they are reachable. Reachability is not authorization."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "What is the most important prerequisite before actively testing a third-party system?",
+              "options": [
+                "A popular scanning tool",
+                "A written authorization and defined scope",
+                "A high CVSS score",
+                "A public IP address"
+              ],
+              "answer": "A written authorization and defined scope",
+              "explanation": "Authorization and scope establish what may be tested, how, and under what conditions."
+            },
+            "summary": [
+              "Ethical hacking is permission-based security testing.",
+              "Scope and safety rules are part of the technical methodology, not administrative paperwork alone."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Rules of Engagement and Scope Control",
+            "description": "Turn a broad testing request into explicit target, timing, communication, and safety constraints.",
+            "learningObjectives": [
+              "Create in-scope and out-of-scope asset lists.",
+              "Specify test windows, rate limits, prohibited actions, and escalation contacts.",
+              "Explain stop conditions for disruptive findings."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Scope should identify domains, IP ranges, applications, accounts, environments, and exclusions where applicable.",
+                  "Rules of engagement should state allowed techniques, test windows, emergency contacts, logging expectations, and evidence-handling requirements.",
+                  "Stop conditions protect availability and client operations."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Example scope document fragment:\n\nIn scope: app.lab.example, 192.0.2.10/32\nOut of scope: payment.example, production database\nTest window: 22:00–02:00 UTC\nRate limit: 5 requests/second\nStop if: service instability, data corruption, or unexpected third-party impact"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "Why should a rules-of-engagement document include stop conditions?",
+              "options": [
+                "To increase scan speed",
+                "To prevent unnecessary operational impact and define when testing must pause",
+                "To replace authorization",
+                "To guarantee zero vulnerabilities"
+              ],
+              "answer": "To prevent unnecessary operational impact and define when testing must pause",
+              "explanation": "Stop conditions provide objective safety boundaries for the engagement."
+            },
+            "summary": [
+              "Scope documents convert authorization into actionable constraints.",
+              "Testing discipline includes knowing when not to continue."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Threat Modeling and Attack Surface",
+            "description": "Use assets, trust boundaries, entry points, and business impact to prioritize what to test first.",
+            "learningObjectives": [
+              "Identify assets and trust boundaries.",
+              "Map external and internal attack surface components.",
+              "Prioritize testing based on exposure and business criticality."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful threat model is not a list of generic attacks. It connects assets, actors, entry points, trust boundaries, and consequences. For testing, this produces a defensible order of operations."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Internet-facing services often deserve early review because they have broad exposure.",
+                  "Administrative interfaces and sensitive data flows are high-value paths.",
+                  "Assumptions should be written down so another tester can reproduce the prioritization."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "What is the purpose of a trust boundary in threat modeling?",
+              "options": [
+                "To mark a physical office wall",
+                "To identify where data, privileges, or trust assumptions change",
+                "To select a password policy",
+                "To measure internet speed"
+              ],
+              "answer": "To identify where data, privileges, or trust assumptions change",
+              "explanation": "Trust boundaries highlight places where security assumptions change and deserve scrutiny."
+            },
+            "summary": [
+              "Threat modeling gives the assessment a reasoned order.",
+              "Business impact and exposure should influence testing priorities."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "NIST SP 800-218 Secure Software Development Framework",
+                "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Evidence, Notes, and Data Handling",
+            "description": "Create reproducible evidence while protecting client data and maintaining chain-of-custody awareness.",
+            "learningObjectives": [
+              "Capture timestamps, commands, responses, and screenshots consistently.",
+              "Hash collected files when integrity verification matters.",
+              "Minimize retention of unnecessary sensitive data."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record timezone and system time assumptions when building evidence timelines.",
+                  "Use least-data principles: collect what supports the finding and avoid unnecessary secrets or personal data.",
+                  "A hash can detect later changes; it does not itself establish authenticity or legal admissibility."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "sha256sum evidence.txt\n# Record: timestamp, source, collector, method, SHA-256"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-04",
+              "question": "What does hashing an evidence file primarily provide?",
+              "options": [
+                "Attribution to an attacker",
+                "An integrity check value",
+                "Authorization to access the system",
+                "Encryption of the file contents"
+              ],
+              "answer": "An integrity check value",
+              "explanation": "A cryptographic hash can be recomputed later to detect changes."
+            },
+            "summary": [
+              "Evidence should be reproducible and minimized.",
+              "Integrity checks support trustworthy handling of collected artifacts."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Write a Rules-of-Engagement Summary",
+            "level": "Easy",
+            "description": "Create a one-page ROE for a fictional web assessment.",
+            "problemStatement": "Convert a business request into testable boundaries, including targets, exclusions, timing, rate limits, communication, and stop conditions.",
+            "objectives": [
+              "Define target scope.",
+              "Document explicit exclusions.",
+              "Add operational safety constraints."
+            ],
+            "requirements": [
+              "Use only fictional domains and documentation IP ranges.",
+              "Do not include personal data or real credentials."
+            ],
+            "hint": "Start with what the tester is allowed to touch, then define how testing may occur.",
+            "solutionCode": "Return a markdown document with the sections Scope, Exclusions, Schedule, Allowed Methods, Prohibited Actions, Contacts, Stop Conditions, and Evidence Handling.",
+            "solutionExplanation": "A complete ROE turns permission into concrete technical limits that a tester can follow consistently."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Reconnaissance and Information Gathering",
+        "description": "Perform controlled discovery of externally visible information and build a target profile without crossing authorization boundaries.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Passive vs Active Reconnaissance",
+            "description": "Differentiate collection that does not directly interact with the target from direct probing.",
+            "learningObjectives": [
+              "Classify common reconnaissance activities as passive or active.",
+              "Explain why passive collection can still expose sensitive information.",
+              "Choose the least intrusive method that answers the current question."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Passive sources can include public documentation, DNS records, certificate transparency, and organization-published information.",
+                  "Active reconnaissance sends traffic to the target and therefore consumes scope and operational risk.",
+                  "Recon should produce a target inventory rather than an unstructured pile of facts."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Build a Passive Recon Worksheet",
+                "description": "Create a passive reconnaissance record from a fictional organization profile without directly probing any live target.",
+                "steps": [
+                  "Use the provided fictional organization name and documentation data in the lesson scenario.",
+                  "Record discovered domains, service names, technologies, and public-facing business functions.",
+                  "For each observation, record source, timestamp, confidence, and whether the asset is confirmed in scope.",
+                  "Identify two observations that require authorization confirmation before active testing."
+                ],
+                "solution": "Example solution structure:\nasset: app.lab.example\ntype: hostname\nsource: engagement-provided inventory\nconfidence: high\nscope_status: confirmed\nnext_step: controlled service enumeration",
+                "output": "A normalized reconnaissance worksheet with provenance and explicit scope status."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "Why is passive reconnaissance often preferred first?",
+              "options": [
+                "It always finds every vulnerability",
+                "It can reduce unnecessary interaction with the target while building context",
+                "It guarantees anonymity",
+                "It replaces validation"
+              ],
+              "answer": "It can reduce unnecessary interaction with the target while building context",
+              "explanation": "Passive collection can establish useful context before active testing begins."
+            },
+            "summary": [
+              "Use the least intrusive discovery technique that answers the question.",
+              "Organize reconnaissance into a usable target inventory."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "DNS and Certificate Intelligence",
+            "description": "Use DNS and certificate information to understand exposed naming and service relationships.",
+            "learningObjectives": [
+              "Explain A/AAAA, CNAME, MX, and TXT records at a practical level.",
+              "Use certificate names as clues to discover authorized service names.",
+              "Avoid treating DNS data as proof of application ownership without validation."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "# Documentation-only examples\ndig A app.lab.example\ndig CNAME api.lab.example\ndig TXT lab.example"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "DNS often reveals service names and infrastructure relationships.",
+                  "Certificate names can expose alternate hostnames; they are clues, not automatic authorization.",
+                  "Document source and observation time for time-sensitive recon data."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "What should a tester do before actively probing a hostname found during recon?",
+              "options": [
+                "Assume it is in scope",
+                "Confirm it is explicitly authorized or covered by the engagement scope",
+                "Publish it",
+                "Run all exploits against it"
+              ],
+              "answer": "Confirm it is explicitly authorized or covered by the engagement scope",
+              "explanation": "Discovery does not expand authorization."
+            },
+            "summary": [
+              "DNS and certificates provide reconnaissance clues.",
+              "Discovered assets must be reconciled with the engagement scope before testing."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Web Application Fingerprinting and Content Mapping",
+            "description": "Map the application structure and technologies using safe, authorized discovery.",
+            "learningObjectives": [
+              "Identify application entry points.",
+              "Build a content and function map.",
+              "Record technology fingerprints as hypotheses rather than facts."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Map pages, APIs, authentication flows, administrative functions, and static assets.",
+                  "Fingerprinting can use response headers, content patterns, and normal application behavior.",
+                  "Do not disclose client details in public notes or repositories."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "Why should technology fingerprints be treated as hypotheses?",
+              "options": [
+                "Fingerprints are always illegal",
+                "Applications can obscure or alter identifying information",
+                "Headers never exist",
+                "Technology cannot be inferred"
+              ],
+              "answer": "Applications can obscure or alter identifying information",
+              "explanation": "Fingerprints are clues that require corroboration."
+            },
+            "summary": [
+              "Build a functional map before testing individual weaknesses.",
+              "Use multiple observations to support technology hypotheses."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "OWASP Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Controlled Recon Tools: Nmap and HTTP Proxies",
+            "description": "Understand the role of common recon tools while keeping their use constrained to authorized targets.",
+            "learningObjectives": [
+              "Describe Nmap host and service discovery capabilities.",
+              "Explain the role of an intercepting proxy in web testing.",
+              "Select scan intensity and tooling based on scope and risk."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "# Lab-only examples against a target you own\nnmap -sT -Pn 192.0.2.10\ncurl -I https://app.lab.example/\n\n# Proxy-based workflow\nBrowser -> local intercepting proxy -> authorized application"
+              },
+              {
+                "type": "warning",
+                "text": "Do not copy scan commands onto arbitrary internet hosts. Use a local VM, an explicitly authorized test host, or a dedicated training range."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "What is an intercepting proxy mainly useful for during web testing?",
+              "options": [
+                "Changing the operating system",
+                "Observing and modifying HTTP requests and responses within an authorized test",
+                "Bypassing authorization everywhere",
+                "Replacing TLS certificates"
+              ],
+              "answer": "Observing and modifying HTTP requests and responses within an authorized test",
+              "explanation": "Interception provides visibility into application-layer traffic during testing."
+            },
+            "summary": [
+              "Nmap supports controlled discovery; proxies support web traffic inspection.",
+              "Tool capability never expands the authorized scope."
+            ],
+            "resources": [
+              {
+                "title": "Nmap Reference Guide",
+                "url": "https://nmap.org/book/man.html"
+              },
+              {
+                "title": "PortSwigger Web Security Academy",
+                "url": "https://portswigger.net/web-security"
+              },
+              {
+                "title": "OWASP ZAP Documentation",
+                "url": "https://www.zaproxy.org/docs/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Build an Authorized Recon Inventory",
+            "level": "Intermediate",
+            "description": "Create an inventory from a small fictional target dataset.",
+            "problemStatement": "Given hostnames, IPs, and service observations, normalize them into an asset list with owner, exposure, evidence source, and scope status.",
+            "objectives": [
+              "Normalize duplicate assets.",
+              "Mark in-scope versus out-of-scope items.",
+              "Record evidence provenance."
+            ],
+            "requirements": [
+              "Use only the scenario data provided in the task."
+            ],
+            "hint": "Keep discovery separate from authorization status.",
+            "solutionCode": "Provide a CSV or JSON inventory with fields asset, type, exposure, observation, evidence_source, and scope_status.",
+            "solutionExplanation": "The inventory becomes the handoff artifact for later enumeration and testing."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Network and Service Enumeration",
+        "description": "Enumerate authorized hosts and services carefully enough to form a reliable exposure picture.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Host Discovery and Port States",
+            "description": "Understand what host discovery and port states mean operationally.",
+            "learningObjectives": [
+              "Explain open, closed, and filtered TCP port states.",
+              "Choose host-discovery methods appropriate to the network context.",
+              "Avoid interpreting scanner results without context."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Open usually means an application is listening and accepted the probe.",
+                  "Closed means reachable but no application is listening on that port.",
+                  "Filtered means a packet filter or other control prevented a definitive determination."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "nmap -sT -p 22,80,443 192.0.2.10"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Interpret a Controlled Nmap Result",
+                "description": "Analyze a fictional Nmap result and determine which services deserve validation in an authorized lab.",
+                "steps": [
+                  "Review the sample result containing ports 22, 80, 443, and 8080.",
+                  "Classify each port as open, closed, or filtered according to the supplied output.",
+                  "Compare the services with the fictional architecture statement.",
+                  "Identify one unexpected service and write the safest next validation step."
+                ],
+                "solution": "Example conclusion:\n22/tcp -> SSH -> expected on management segment only\n80/tcp -> HTTP -> expected for redirect/service role\n443/tcp -> HTTPS -> expected public web service\n8080/tcp -> HTTP-alt -> unexpected; confirm ownership and scope before deeper testing",
+                "output": "A short evidence-based exposure analysis, not an exploitation attempt."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "What does an 'open' TCP port generally indicate?",
+              "options": [
+                "The host is always vulnerable",
+                "An application is listening and accepted the probe",
+                "The firewall is disabled",
+                "The service is encrypted"
+              ],
+              "answer": "An application is listening and accepted the probe",
+              "explanation": "Open describes transport-level reachability to a listening service; it does not imply vulnerability."
+            },
+            "summary": [
+              "Port state is an observation, not a vulnerability verdict.",
+              "Enumerate only services justified by the authorized scope."
+            ],
+            "resources": [
+              {
+                "title": "Nmap Reference Guide",
+                "url": "https://nmap.org/book/man.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Service and Version Identification",
+            "description": "Identify services and versions to support vulnerability correlation and later validation.",
+            "learningObjectives": [
+              "Explain the purpose of service/version detection.",
+              "Record banner or fingerprint evidence with timestamps.",
+              "Distinguish observed version evidence from vendor metadata or assumptions."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "nmap -sV -p 22,80,443 192.0.2.10"
+              },
+              {
+                "type": "warning",
+                "text": "Version detection can create additional traffic. Use it only where the engagement permits the technique and where the added traffic is acceptable."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "Why is version evidence useful in vulnerability assessment?",
+              "options": [
+                "It proves exploitation",
+                "It supports matching observed software to relevant advisories and configuration guidance",
+                "It removes the need for validation",
+                "It identifies the attacker"
+              ],
+              "answer": "It supports matching observed software to relevant advisories and configuration guidance",
+              "explanation": "Accurate version evidence narrows the set of relevant security information."
+            },
+            "summary": [
+              "Service identification improves vulnerability correlation.",
+              "Evidence quality matters more than a guessed version string."
+            ],
+            "resources": [
+              {
+                "title": "Nmap Reference Guide",
+                "url": "https://nmap.org/book/man.html"
+              },
+              {
+                "title": "NIST National Vulnerability Database",
+                "url": "https://nvd.nist.gov/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Network Segmentation and Exposure Analysis",
+            "description": "Use enumerated services to reason about boundaries and unexpected exposure.",
+            "learningObjectives": [
+              "Identify services that should not be internet-facing.",
+              "Compare observed exposure with intended architecture.",
+              "Document segmentation gaps without assuming compromise."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "An administrative service exposed outside its intended management network can be a material finding.",
+                  "Unexpected exposure should be validated against architecture and ownership records.",
+                  "A finding should explain business impact, not only technical awkwardness."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "What makes an exposed management service especially important to review?",
+              "options": [
+                "It always runs on port 22",
+                "It can create a high-impact administrative entry point if access controls are weak",
+                "It is never encrypted",
+                "It cannot be logged"
+              ],
+              "answer": "It can create a high-impact administrative entry point if access controls are weak",
+              "explanation": "Administrative interfaces can carry high privilege and therefore deserve careful exposure review."
+            },
+            "summary": [
+              "Exposure findings should connect technical access to business impact.",
+              "Architecture context helps distinguish intended from unintended exposure."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "CISA Cybersecurity Performance Goals",
+                "url": "https://www.cisa.gov/cross-sector-cybersecurity-performance-goals"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Network Enumeration Task Design",
+            "description": "Design repeatable enumeration sequences that minimize unnecessary traffic.",
+            "learningObjectives": [
+              "Sequence lightweight discovery before deeper probes.",
+              "Set explicit port, host, and timing limits.",
+              "Capture commands and outputs so another tester can reproduce the result."
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Confirm target is in scope.",
+                  "Perform limited host/port discovery.",
+                  "Identify candidate services.",
+                  "Run deeper version detection only where needed.",
+                  "Validate interesting results manually.",
+                  "Record evidence and stop conditions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-04",
+              "question": "Why should a tester start with lightweight discovery?",
+              "options": [
+                "It guarantees no findings",
+                "It reduces unnecessary traffic and focuses deeper testing on relevant services",
+                "It eliminates authorization",
+                "It disables logging"
+              ],
+              "answer": "It reduces unnecessary traffic and focuses deeper testing on relevant services",
+              "explanation": "Progressive discovery improves safety and efficiency."
+            },
+            "summary": [
+              "Use progressive disclosure: broad enough to map, narrow enough to stay safe.",
+              "Reproducibility requires recording tools, options, targets, and timestamps."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "Nmap Reference Guide",
+                "url": "https://nmap.org/book/man.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Analyze a Port-Scan Result",
+            "level": "Easy",
+            "description": "Interpret a sample Nmap result and turn it into security observations.",
+            "problemStatement": "Classify each discovered service as expected, questionable, or requiring validation based on a provided architecture statement.",
+            "objectives": [
+              "Map ports to services.",
+              "Identify unexpected exposure.",
+              "Write evidence-based recommendations."
+            ],
+            "requirements": [
+              "Do not infer vulnerabilities solely from port numbers."
+            ],
+            "hint": "Compare the scan to the intended architecture first.",
+            "solutionCode": "Return a table with host, port, observed service, expected?, concern, and next validation step.",
+            "solutionExplanation": "The task builds analytical discipline: scanner output is input to reasoning, not the final finding."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Vulnerability Discovery and Validation",
+        "description": "Move from scanner output to verified, risk-aware vulnerability findings.",
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "What a Vulnerability Scanner Actually Does",
+            "description": "Understand signatures, configuration checks, version matching, and the limits of automated discovery.",
+            "learningObjectives": [
+              "Describe common scanner detection strategies.",
+              "Explain false positives and false negatives.",
+              "Identify evidence needed to validate a scanner result."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Scanners may use version matching, configuration tests, protocol responses, and other indicators.",
+                  "A scanner can miss conditions that depend on business logic or unusual application states.",
+                  "A finding should be validated before it is represented as confirmed in a report."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "Why can automated vulnerability scans produce false positives?",
+              "options": [
+                "Scanners use only encryption",
+                "A detection signal can match a condition that is not actually exploitable or applicable in the environment",
+                "Scanners never inspect versions",
+                "All findings are guesses"
+              ],
+              "answer": "A detection signal can match a condition that is not actually exploitable or applicable in the environment",
+              "explanation": "Detection logic is evidence, but contextual validation is still needed."
+            },
+            "summary": [
+              "Treat scanner results as candidate findings until verified.",
+              "Validation considers applicability, reachability, and compensating controls."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "NIST National Vulnerability Database",
+                "url": "https://nvd.nist.gov/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "CVE, CWE, and Vulnerability Identity",
+            "description": "Connect vulnerability records to root causes and standardized identifiers.",
+            "learningObjectives": [
+              "Differentiate CVE from CWE.",
+              "Use NVD and vendor advisories as vulnerability references.",
+              "Avoid using a generic weakness identifier as proof of a specific CVE."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "CVE identifies a publicly disclosed vulnerability record; CWE describes classes of software weakness and root cause.",
+                  "NVD enriches public CVE records with additional analysis and references.",
+                  "A vulnerability report should use the most specific identifier supported by evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "Which identifier describes a class of software weakness rather than a single disclosed vulnerability?",
+              "options": [
+                "CWE",
+                "CVE",
+                "IP address",
+                "CVSS score"
+              ],
+              "answer": "CWE",
+              "explanation": "CWE classifies weakness types; CVE identifies specific disclosed vulnerability records."
+            },
+            "summary": [
+              "CVE and CWE answer different questions.",
+              "Use identifiers precisely and cite authoritative records."
+            ],
+            "resources": [
+              {
+                "title": "NIST National Vulnerability Database",
+                "url": "https://nvd.nist.gov/"
+              },
+              {
+                "title": "MITRE CWE Top 25 Most Dangerous Software Weaknesses",
+                "url": "https://cwe.mitre.org/top25/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "CVSS v4.0 and Contextual Risk",
+            "description": "Use CVSS appropriately while keeping environmental risk and exploit activity in view.",
+            "learningObjectives": [
+              "Explain the purpose of CVSS v4.0.",
+              "Distinguish standardized severity metrics from organization-specific risk.",
+              "Incorporate exposure, asset criticality, and compensating controls into prioritization."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "CVSS is a standardized framework for communicating vulnerability severity.",
+                  "Environmental context can change how an organization prioritizes a vulnerability.",
+                  "Patch priority should consider more than one score, including business impact and active exploitation intelligence."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not use a CVSS score as a complete substitute for organizational risk assessment."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "What is a key limitation of using only CVSS Base severity for patch prioritization?",
+              "options": [
+                "CVSS cannot describe technical severity",
+                "Base metrics do not fully represent the organization's asset criticality and exposure",
+                "CVSS is an encryption standard",
+                "CVSS only applies to passwords"
+              ],
+              "answer": "Base metrics do not fully represent the organization's asset criticality and exposure",
+              "explanation": "Environmental and operational context can change the practical priority."
+            },
+            "summary": [
+              "Use CVSS for severity communication, not as the only risk input.",
+              "Prioritization should reflect the actual environment and threat context."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CVSS v4.0 Specification",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              },
+              {
+                "title": "CISA Known Exploited Vulnerabilities Catalog",
+                "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Exploitability Validation Without Causing Harm",
+            "description": "Demonstrate a weakness safely using the minimum proof necessary in an authorized lab.",
+            "learningObjectives": [
+              "Choose a minimal proof-of-concept objective.",
+              "Define safety checks before validation.",
+              "Stop once sufficient evidence has been obtained."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A good validation proves the security condition with the least intrusive action that establishes the claim.",
+                  "Do not dump secrets, destroy data, establish persistence, or pivot beyond the authorized test objective.",
+                  "Capture the exact precondition, test input, observed result, and remediation state."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Validation record:\nPrecondition: authenticated test account can request record 1001\nTest: request record 1002 using the same session\nObserved: response returned record not owned by test account\nImpact: horizontal authorization boundary bypass\nStop condition: once unauthorized access is confirmed"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "When should a tester stop exploit validation?",
+              "options": [
+                "Only after compromising the whole environment",
+                "Once sufficient evidence proves the finding and continued testing adds unnecessary risk",
+                "After deleting logs",
+                "Never"
+              ],
+              "answer": "Once sufficient evidence proves the finding and continued testing adds unnecessary risk",
+              "explanation": "Minimal necessary proof is safer and usually sufficient for reporting."
+            },
+            "summary": [
+              "Exploit validation should be minimal, controlled, and evidence-driven.",
+              "Proof is a means to establish a finding, not a goal of maximum compromise."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Validate a Scanner Finding",
+            "level": "Intermediate",
+            "description": "Turn a fictional scanner alert into a confirmed, rejected, or needs-more-evidence finding.",
+            "problemStatement": "Given a version finding, asset criticality, configuration snapshot, and vendor advisory, determine the proper finding state and document the evidence.",
+            "objectives": [
+              "Cross-check the affected version.",
+              "Check applicability and compensating controls.",
+              "State the remaining uncertainty."
+            ],
+            "requirements": [
+              "Use only the supplied scenario evidence."
+            ],
+            "hint": "Ask what observation would prove or disprove the finding.",
+            "solutionCode": "Return a finding record with status, evidence, confidence, risk, and next step.",
+            "solutionExplanation": "The solution demonstrates evidence-based validation and avoids overstating scanner output."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Web Application Security Testing",
+        "description": "Apply the OWASP testing framework to authentication, authorization, session, input, error-handling, and business-logic review in authorized applications.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Web Testing Methodology and Information Gathering",
+            "description": "Map web application functionality and entry points before probing security controls.",
+            "learningObjectives": [
+              "Build a functional application map.",
+              "Identify authenticated and unauthenticated attack surfaces.",
+              "Create a test hypothesis from observed workflows."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "OWASP WSTG organizes testing into information gathering, configuration, identity, authentication, authorization, session management, input validation, error handling, cryptography, business logic, and client-side areas.",
+                  "Start with the application workflow so security tests map to actual behavior."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Why map application entry points before testing?",
+              "options": [
+                "To make the report longer",
+                "To understand where input, authentication, authorization, and business logic can be exercised",
+                "To bypass authorization",
+                "To remove logging"
+              ],
+              "answer": "To understand where input, authentication, authorization, and business logic can be exercised",
+              "explanation": "Entry-point mapping gives structure to test coverage."
+            },
+            "summary": [
+              "OWASP WSTG provides a structured web testing framework.",
+              "Functional understanding precedes targeted security testing."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "OWASP Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Authentication and Session Management Testing",
+            "description": "Evaluate login, logout, session issuance, timeout, recovery, and credential-handling controls.",
+            "learningObjectives": [
+              "Test authentication flows against stated requirements.",
+              "Review session identifiers, invalidation, timeout, and cookie attributes.",
+              "Recognize account-enumeration and recovery risks."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authentication establishes identity; authorization decides what that identity may access.",
+                  "Session security includes issuance, storage, rotation, expiration, invalidation, and protection in transit.",
+                  "Password reset and account recovery flows deserve security review because they can bypass the primary login path."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "Which property should a secure logout operation achieve?",
+              "options": [
+                "Change the user's password",
+                "Invalidate the server-side session or otherwise prevent continued use of the session",
+                "Delete all logs",
+                "Disable TLS"
+              ],
+              "answer": "Invalidate the server-side session or otherwise prevent continued use of the session",
+              "explanation": "Logout should end the active session according to the application's session model."
+            },
+            "summary": [
+              "Authentication and session management are connected but distinct test areas.",
+              "Recovery flows deserve the same scrutiny as login flows."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authentication Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+              },
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Authorization and Access-Control Testing",
+            "description": "Test whether users can access only the objects and actions they are permitted to use.",
+            "learningObjectives": [
+              "Differentiate authentication failures from authorization failures.",
+              "Test horizontal and vertical access boundaries safely.",
+              "Document the exact resource and permission boundary violated."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Safe authorization test pattern:\n1. Log in as test-user-A.\n2. Access a record owned by A.\n3. Request a record owned by test-user-B using the same session.\n4. Stop after the server either correctly denies or incorrectly reveals the object.\n5. Do not modify or delete data."
+              },
+              {
+                "type": "warning",
+                "text": "Use dedicated test accounts and test records. Never use another real user's data as a test fixture."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Test Object-Level Authorization in a Lab",
+                "description": "Use two synthetic test accounts and two synthetic records to validate server-side object authorization without modifying data.",
+                "steps": [
+                  "Create or use test-user-A and test-user-B in a dedicated lab application.",
+                  "Access record-A as user A and confirm normal authorized behavior.",
+                  "Using the same user-A session, request synthetic record-B.",
+                  "Record the HTTP status and response behavior.",
+                  "Stop immediately after the application either correctly denies access or demonstrates an authorization failure."
+                ],
+                "solution": "Expected secure behavior:\nuser A -> record A: allowed\nuser A -> record B: denied (for example, 403 or an application-specific safe response)\nNo record is modified or deleted.",
+                "output": "Evidence showing whether the authorization boundary is correctly enforced."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "A logged-in test user can read another test user's record by changing an ID. What does this most directly demonstrate?",
+              "options": [
+                "Broken object-level authorization",
+                "DNS failure",
+                "TLS downgrade",
+                "Rate limiting"
+              ],
+              "answer": "Broken object-level authorization",
+              "explanation": "The application failed to enforce authorization for the requested object."
+            },
+            "summary": [
+              "Authorization must be enforced at the resource/action boundary.",
+              "Dedicated test accounts make access-control testing safer and clearer."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "OWASP API Security Top 10 (2023)",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Input Validation, Injection, and Error Handling",
+            "description": "Test whether untrusted input is validated and safely handled across application contexts.",
+            "learningObjectives": [
+              "Identify input locations and expected data types.",
+              "Explain injection risks at a conceptual level.",
+              "Use benign test values to confirm validation behavior and error handling."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Validation checks whether input meets expected requirements; parameterized queries and context-aware encoding address separate downstream risks.",
+                  "Errors should not disclose secrets, stack traces, or internal connection details.",
+                  "Testing should begin with benign boundary values before any higher-risk proof is considered."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Boundary cases:\nempty\nmaximum-length expected input\nunexpected character class\ninvalid numeric value\nmissing required field"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "What is a good initial strategy for testing an input field?",
+              "options": [
+                "Immediately attempt destructive payloads",
+                "Start with benign boundary and type-confusion cases that test validation behavior",
+                "Delete the database",
+                "Disable application logging"
+              ],
+              "answer": "Start with benign boundary and type-confusion cases that test validation behavior",
+              "explanation": "Low-impact cases reveal validation behavior before any higher-risk testing."
+            },
+            "summary": [
+              "Input testing starts with expected types, boundaries, and benign invalid cases.",
+              "Error messages are also security-relevant outputs."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "OWASP Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-21",
+            "title": "Business Logic and Client-Side Testing",
+            "description": "Find security failures that scanners often miss because they depend on workflow or browser behavior.",
+            "learningObjectives": [
+              "Model business invariants and sequence-dependent rules.",
+              "Test duplicate, reordered, or missing workflow steps safely.",
+              "Review client-side controls without treating them as authoritative security boundaries."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Business-logic flaws often involve valid inputs used in an invalid sequence or context.",
+                  "Client-side checks improve user experience but security decisions must be enforced server-side.",
+                  "Use non-destructive test accounts and transactions when probing workflow invariants."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-05",
+              "question": "Why can business-logic vulnerabilities be missed by generic scanners?",
+              "options": [
+                "They are always encrypted",
+                "They depend on application-specific workflows and invariants",
+                "Scanners only test ports",
+                "Business logic cannot be tested"
+              ],
+              "answer": "They depend on application-specific workflows and invariants",
+              "explanation": "Generic tools cannot fully infer every intended workflow rule."
+            },
+            "summary": [
+              "Security testing must include application-specific reasoning.",
+              "Client controls should never be the sole enforcement point."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Create a Web Application Test Matrix",
+            "level": "Intermediate",
+            "description": "Create a test matrix based on the application functions and security boundaries.",
+            "problemStatement": "Map each application function to relevant WSTG categories, test accounts, expected controls, evidence, and status.",
+            "objectives": [
+              "Map application functions.",
+              "Assign relevant tests.",
+              "Define evidence and acceptance criteria."
+            ],
+            "requirements": [
+              "Use a fictional application.",
+              "Do not include real credentials."
+            ],
+            "hint": "Build the matrix from business functions, not tool names.",
+            "solutionCode": "Return a matrix with Function, User Role, WSTG Area, Test Case, Expected Result, Evidence, and Status.",
+            "solutionExplanation": "The matrix makes coverage measurable and helps avoid blind spots."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "API, Authentication, and Modern Application Surfaces",
+        "description": "Assess API-specific authorization, rate limits, schema validation, and sensitive business flows using OWASP guidance.",
+        "lessons": [
+          {
+            "id": "lesson-22",
+            "title": "API Discovery and Schema Understanding",
+            "description": "Map REST-style endpoints, methods, parameters, schemas, and trust boundaries.",
+            "learningObjectives": [
+              "Identify API endpoints and HTTP methods.",
+              "Review request/response schemas and authentication requirements.",
+              "Build an API inventory that distinguishes documented from observed endpoints."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "APIs often expose direct object identifiers and machine-readable schemas, making authorization testing especially important.",
+                  "Documented endpoints are not necessarily the complete attack surface.",
+                  "Inventory should include method, path, authentication state, object identifiers, and expected role."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Which API property should be recorded alongside an endpoint path?",
+              "options": [
+                "Only the color of the UI",
+                "HTTP method, authentication state, and authorization expectation",
+                "Only the server's hostname",
+                "None"
+              ],
+              "answer": "HTTP method, authentication state, and authorization expectation",
+              "explanation": "These details define the security context of an endpoint."
+            },
+            "summary": [
+              "API inventory requires more than URLs.",
+              "Authorization expectations should be explicit for each sensitive endpoint."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10 (2023)",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Object-Level and Function-Level Authorization",
+            "description": "Apply API authorization testing to both data objects and privileged functions.",
+            "learningObjectives": [
+              "Test object-level authorization boundaries.",
+              "Test function-level authorization for privileged operations.",
+              "Use role-based test accounts and synthetic objects."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Object-level authorization asks whether the caller may access a particular object.",
+                  "Function-level authorization asks whether the caller may invoke an operation at all.",
+                  "Testing both levels catches cases where an application protects the API broadly but not each object or action."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "What is function-level authorization concerned with?",
+              "options": [
+                "Whether a user can invoke an action such as admin-only account management",
+                "Whether DNS can resolve a name",
+                "Whether TLS is enabled",
+                "Whether a file is compressed"
+              ],
+              "answer": "Whether a user can invoke an action such as admin-only account management",
+              "explanation": "Function-level authorization controls which operations a principal may perform."
+            },
+            "summary": [
+              "API authorization exists at multiple decision points.",
+              "Use least privilege and dedicated test roles to validate boundaries."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10 (2023)",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Rate Limiting and Sensitive Business Flows",
+            "description": "Assess abuse resistance without generating harmful traffic.",
+            "learningObjectives": [
+              "Explain why rate limits protect availability and sensitive workflows.",
+              "Design low-volume rate-limit tests in a lab or authorized environment.",
+              "Differentiate abuse prevention from authorization."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Rate limiting can reduce automated abuse of resource-intensive or sensitive operations.",
+                  "Business-flow protections may also require quotas, device or account signals, transaction limits, or workflow controls.",
+                  "A test should measure policy behavior with small, safe request volumes rather than attempting service degradation."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Low-volume test concept:\n10 requests over a controlled interval\nObserve status codes, headers, and application behavior\nStop if latency or errors increase materially"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "What is a key difference between authorization and rate limiting?",
+              "options": [
+                "Authorization decides whether an action is permitted; rate limiting constrains request frequency or volume",
+                "They are identical",
+                "Rate limiting identifies users",
+                "Authorization only applies to DNS"
+              ],
+              "answer": "Authorization decides whether an action is permitted; rate limiting constrains request frequency or volume",
+              "explanation": "They solve different security problems and are complementary controls."
+            },
+            "summary": [
+              "Rate limiting is an abuse-resistance control, not an authorization mechanism.",
+              "Keep volume low enough to protect service availability."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10 (2023)",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-25",
+            "title": "SSRF and Server-Side Fetching Controls",
+            "description": "Understand the security boundary around server-side network requests without using real third-party infrastructure.",
+            "learningObjectives": [
+              "Explain the SSRF threat model.",
+              "Identify server-side URL fetch features that require scrutiny.",
+              "Describe safe validation and allowlist strategies conceptually."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "SSRF occurs when a server makes requests to a location influenced by an untrusted user in ways that cross intended trust boundaries.",
+                  "Controls can include strict allowlists, network egress restrictions, canonicalization, and avoiding unnecessary fetch features.",
+                  "Use a local mock endpoint for lab demonstrations instead of real internal services."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not probe cloud metadata services or private network addresses unless they are explicitly part of a dedicated training lab."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-04",
+              "question": "What is the core security concern in SSRF?",
+              "options": [
+                "The server can be induced to make requests across trust boundaries it should not reach",
+                "The client cannot render CSS",
+                "The DNS resolver is too fast",
+                "All requests become encrypted"
+              ],
+              "answer": "The server can be induced to make requests across trust boundaries it should not reach",
+              "explanation": "SSRF turns a server-side request primitive into a boundary-crossing capability."
+            },
+            "summary": [
+              "SSRF is fundamentally a trust-boundary problem.",
+              "Use safe mock services when teaching or validating the concept."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10 (2023)",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              },
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Assess an API Authorization Design",
+            "level": "Advanced",
+            "description": "Review a fictional API policy and identify missing authorization checks.",
+            "problemStatement": "The API supports records, exports, and administrative functions. Build a test plan that covers object-level and function-level authorization.",
+            "objectives": [
+              "Define role-based test accounts.",
+              "Identify resource and action boundaries.",
+              "Define safe test cases and expected results."
+            ],
+            "requirements": [
+              "Use synthetic object IDs and test roles only."
+            ],
+            "hint": "For each endpoint ask: who, what action, which object, under what context?",
+            "solutionCode": "Return an API test matrix and a short prioritized list of likely authorization gaps.",
+            "solutionExplanation": "The task reinforces systematic API authorization analysis without requiring exploit execution."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Configuration, Exploitation Concepts, and Post-Validation",
+        "description": "Understand controlled exploitation, misconfiguration review, and the difference between proving a flaw and causing unnecessary impact.",
+        "lessons": [
+          {
+            "id": "lesson-26",
+            "title": "Security Misconfiguration Testing",
+            "description": "Review configurations that expose unnecessary functionality, credentials, debug features, or weak defaults.",
+            "learningObjectives": [
+              "Identify insecure configuration patterns.",
+              "Compare observed settings with intended baselines.",
+              "Document remediation-oriented evidence."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Examples include unnecessary services, debug modes, default accounts, verbose errors, insecure headers, weak TLS settings, and permissive cloud or file permissions.",
+                  "A configuration finding should identify the expected secure state and the observed deviation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "What makes a configuration finding useful?",
+              "options": [
+                "Only the tool name",
+                "Observed state, expected state, evidence, impact, and remediation",
+                "A scary title",
+                "A CVSS score with no evidence"
+              ],
+              "answer": "Observed state, expected state, evidence, impact, and remediation",
+              "explanation": "Actionable findings compare observed and expected control states."
+            },
+            "summary": [
+              "Configuration testing compares implementation against an intended secure state.",
+              "Evidence should directly support the claimed weakness."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "CISA Cybersecurity Performance Goals",
+                "url": "https://www.cisa.gov/cross-sector-cybersecurity-performance-goals"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Controlled Exploitation and Cleanup",
+            "description": "Understand exploitation as a bounded demonstration with explicit safety controls and cleanup.",
+            "learningObjectives": [
+              "Define a proof objective before exploitation.",
+              "Use test accounts and reversible actions.",
+              "Document cleanup and residual state."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Controlled exploitation should answer a specific question: can the weakness be demonstrated, and what minimum evidence is needed?",
+                  "Prefer reversible operations and synthetic data.",
+                  "Cleanup includes removing temporary files, accounts, tokens, or configuration changes created during testing."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not build persistence, deploy malware, dump real credentials, or pivot to unrelated systems as part of a fundamentals course lab."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "Why is cleanup part of exploitation safety?",
+              "options": [
+                "It increases the CVSS score",
+                "It removes tester-created state that could affect the client environment after testing",
+                "It hides the finding",
+                "It replaces reporting"
+              ],
+              "answer": "It removes tester-created state that could affect the client environment after testing",
+              "explanation": "Cleanup reduces residual impact from the test itself."
+            },
+            "summary": [
+              "Exploitation should be controlled, reversible, and cleaned up.",
+              "The test objective determines when enough evidence has been obtained."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Safe Metasploit and Lab Framework Use",
+            "description": "Understand framework roles in a dedicated lab without extending the exercise into real-world compromise.",
+            "learningObjectives": [
+              "Explain what an exploitation framework provides conceptually.",
+              "Use a deliberately vulnerable local VM or training target for framework practice.",
+              "Record module options and evidence without targeting third parties."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Frameworks can automate payload generation, session handling, and exploitation steps. For an ethical-hacking fundamentals course, the important skill is controlled validation: understand prerequisites, choose the smallest useful demonstration, and document the result."
+              },
+              {
+                "type": "code",
+                "text": "Lab workflow:\n1. Start isolated vulnerable VM.\n2. Confirm its lab-only network address.\n3. Verify the exercise is in scope.\n4. Run the course-approved demonstration module.\n5. Capture evidence.\n6. Reset the VM snapshot."
+              },
+              {
+                "type": "warning",
+                "text": "Use intentionally vulnerable machines such as a local training VM. Do not point exploitation frameworks at public hosts or production systems."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "What is the safest environment for learning exploitation frameworks?",
+              "options": [
+                "Random internet servers",
+                "A deliberately vulnerable isolated lab you are authorized to control",
+                "A workplace production server",
+                "A public cloud account with unknown targets"
+              ],
+              "answer": "A deliberately vulnerable isolated lab you are authorized to control",
+              "explanation": "An isolated authorized lab provides controlled conditions and limits unintended harm."
+            },
+            "summary": [
+              "Frameworks are tools for controlled validation, not permission to attack.",
+              "Isolation and snapshots are important safety controls."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-29",
+            "title": "Credential Testing and Password Policy Review",
+            "description": "Assess authentication strength with bounded test credentials and without credential theft.",
+            "learningObjectives": [
+              "Explain password policy and credential-stuffing concepts.",
+              "Design a safe test-credential set.",
+              "Recognize when testing should stop because of lockout or service-impact risk."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use dedicated test credentials supplied for the assessment rather than collected user passwords.",
+                  "Test password policy requirements and lockout behavior at low volume.",
+                  "Never attempt to recover or reuse real users' passwords in a fundamentals exercise."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-04",
+              "question": "What should be used for safe credential testing?",
+              "options": [
+                "Real users' passwords",
+                "Dedicated test accounts and approved test credentials",
+                "Credentials found in public dumps",
+                "Shared production administrator credentials"
+              ],
+              "answer": "Dedicated test accounts and approved test credentials",
+              "explanation": "Dedicated test identities reduce risk and keep the exercise controlled."
+            },
+            "summary": [
+              "Credential testing should be performed with dedicated identities and explicit limits.",
+              "Account lockouts and availability are safety concerns."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authentication Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Design a Safe Exploitation Plan",
+            "level": "Advanced",
+            "description": "Create a bounded exploitation plan for one lab vulnerability.",
+            "problemStatement": "Define objective, preconditions, approved technique, evidence, stop conditions, cleanup, and reset steps.",
+            "objectives": [
+              "Limit the proof objective.",
+              "Document preconditions and rollback.",
+              "Define cleanup and evidence requirements."
+            ],
+            "requirements": [
+              "Use a dedicated training VM.",
+              "No persistence or lateral movement."
+            ],
+            "hint": "If the finding is already proven, do not escalate the test simply to gain a more dramatic result.",
+            "solutionCode": "Return a one-page exploitation plan.",
+            "solutionExplanation": "The plan demonstrates that exploitation is a controlled validation step with safety gates."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Reporting, Remediation, and Retesting",
+        "description": "Turn technical observations into decision-ready findings and verify remediation objectively.",
+        "lessons": [
+          {
+            "id": "lesson-30",
+            "title": "Writing a High-Quality Finding",
+            "description": "Structure a finding so technical teams and decision-makers can act on it.",
+            "learningObjectives": [
+              "Write concise titles and evidence-based descriptions.",
+              "Explain impact in business and technical terms.",
+              "Separate evidence, inference, and recommendation."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A strong finding includes: title, affected asset, severity, description, evidence, impact, reproduction summary, remediation, references, and status.",
+                  "Avoid overstating impact beyond the evidence.",
+                  "Recommendations should be specific enough to guide remediation but not prescribe one vendor product without need."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Which part of a finding should explain why the issue matters to the organization?",
+              "options": [
+                "Impact",
+                "Scanner name",
+                "Raw HTTP headers only",
+                "Appendix numbering"
+              ],
+              "answer": "Impact",
+              "explanation": "Impact connects the technical weakness to consequences."
+            },
+            "summary": [
+              "Good reports are evidence-led and action-oriented.",
+              "Separate what was observed from what is inferred."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Severity, Confidence, and Risk Communication",
+            "description": "Communicate finding severity without confusing confidence with impact.",
+            "learningObjectives": [
+              "Differentiate severity, confidence, likelihood, and business impact.",
+              "Use standardized severity where appropriate.",
+              "Explain uncertainty clearly."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Severity describes the consequence and technical seriousness of a condition; confidence describes how strongly the evidence supports the finding.",
+                  "A medium-severity finding with high confidence can be more actionable than a critical-sounding claim with weak evidence.",
+                  "Use CVSS when appropriate and supplement it with business context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "What does confidence primarily communicate?",
+              "options": [
+                "How certain the evidence supports the finding",
+                "How expensive the software is",
+                "How fast the scanner ran",
+                "How old the server is"
+              ],
+              "answer": "How certain the evidence supports the finding",
+              "explanation": "Confidence expresses evidentiary certainty, not impact magnitude."
+            },
+            "summary": [
+              "Severity and confidence answer different questions.",
+              "Risk communication should preserve uncertainty instead of hiding it."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CVSS v4.0 Specification",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              }
+            ]
+          },
+          {
+            "id": "lesson-32",
+            "title": "Remediation and Compensating Controls",
+            "description": "Translate vulnerabilities into practical corrective actions and temporary risk reductions.",
+            "learningObjectives": [
+              "Recommend remediation aligned to root cause.",
+              "Identify compensating controls when immediate fixes are unavailable.",
+              "Specify verification criteria for remediation."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Root-cause remediation is preferable to a brittle workaround.",
+                  "Compensating controls reduce risk while the primary fix is pending.",
+                  "Every recommendation should have a verification method, such as a configuration check or repeat test."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "What is a compensating control?",
+              "options": [
+                "A control that temporarily or alternatively reduces the same risk when the preferred fix is not yet available",
+                "A new vulnerability",
+                "A duplicate report",
+                "A scanner license"
+              ],
+              "answer": "A control that temporarily or alternatively reduces the same risk when the preferred fix is not yet available",
+              "explanation": "Compensating controls reduce residual exposure while the direct fix is pending."
+            },
+            "summary": [
+              "Remediation should address root cause where practical.",
+              "Verification criteria make retesting objective."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "CISA Cybersecurity Performance Goals",
+                "url": "https://www.cisa.gov/cross-sector-cybersecurity-performance-goals"
+              }
+            ]
+          },
+          {
+            "id": "lesson-33",
+            "title": "Retesting and Closure",
+            "description": "Perform focused retests to confirm that reported vulnerabilities are actually fixed.",
+            "learningObjectives": [
+              "Design a retest from the original evidence and acceptance criteria.",
+              "Distinguish fixed, partially fixed, and not fixed states.",
+              "Close findings with traceable evidence."
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Reference the original finding and affected component.",
+                  "Repeat the minimal validation that established the issue.",
+                  "Verify the security property or configuration state.",
+                  "Capture fresh evidence.",
+                  "Record the closure state and any residual risk."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-04",
+              "question": "What is the best basis for a remediation retest?",
+              "options": [
+                "A completely unrelated scan",
+                "The original finding's evidence and acceptance criteria",
+                "A new password policy",
+                "A random exploit"
+              ],
+              "answer": "The original finding's evidence and acceptance criteria",
+              "explanation": "Retesting should directly verify whether the original condition was removed."
+            },
+            "summary": [
+              "Retesting is a verification activity, not a second full engagement by default.",
+              "Closure requires fresh evidence and explicit status."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Produce a Mini Penetration-Test Report",
+            "level": "Intermediate",
+            "description": "Create a short professional report from three fictional findings.",
+            "problemStatement": "Write executive summary, methodology, findings, risk table, remediation priorities, and retest criteria.",
+            "objectives": [
+              "Write evidence-based findings.",
+              "Assign severity and confidence.",
+              "Define measurable remediation verification."
+            ],
+            "requirements": [
+              "Use only fictional data."
+            ],
+            "hint": "Readers need enough evidence to reproduce the conclusion and enough business context to prioritize the fix.",
+            "solutionCode": "Submit a markdown report with an executive summary and three detailed findings.",
+            "solutionExplanation": "The report demonstrates the communication skill required to turn testing into useful remediation decisions."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Real-World Project — Authorized Web Assessment Reporting Toolkit",
+        "description": "Integrate the course into a defensible assessment workflow: scope, evidence, findings, risk communication, remediation, and retesting. The project itself is the final practical assessment and contains no module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-34",
+            "title": "Capstone Architecture and Acceptance Criteria",
+            "description": "Define the final assessment workflow and local data model before implementation.",
+            "learningObjectives": [
+              "Translate an engagement scope into structured data.",
+              "Define finding fields and validation rules.",
+              "Specify acceptance criteria for report generation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone is intentionally local-only. It processes fictional scope and finding records, validates required fields, sorts findings by severity, and generates a markdown report. This demonstrates the reporting and evidence discipline of an ethical-hacking engagement without performing offensive activity."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "Why does the capstone validate scope data before generating the report?",
+              "options": [
+                "To make the script longer",
+                "To ensure the report reflects an explicit engagement boundary and required metadata",
+                "To bypass authorization",
+                "To scan the internet"
+              ],
+              "answer": "To ensure the report reflects an explicit engagement boundary and required metadata",
+              "explanation": "Scope integrity is foundational to trustworthy security-testing output."
+            },
+            "summary": [
+              "Structure first, then generate output.",
+              "The capstone models safe assessment operations rather than live exploitation."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-35",
+            "title": "Implementing and Testing the Reporting Workflow",
+            "description": "Build, run, and validate the local report generator and its tests.",
+            "learningObjectives": [
+              "Run syntax and unit tests.",
+              "Generate a report from synthetic records.",
+              "Verify findings remain traceable from source data to output."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "python -m py_compile report.py\npython -m pytest -q\npython report.py scope.json findings.json --output report.md"
+              },
+              {
+                "type": "warning",
+                "text": "Only use the included synthetic assessment data. The capstone does not require network access or live target interaction."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What does an automated test in the capstone primarily protect against?",
+              "options": [
+                "Real-world attribution errors",
+                "Regressions in report generation and input validation",
+                "Network intrusion",
+                "Physical tampering"
+              ],
+              "answer": "Regressions in report generation and input validation",
+              "explanation": "Automated tests verify that the local reporting logic continues to behave as specified."
+            },
+            "summary": [
+              "Testing makes the final reporting workflow reproducible.",
+              "The tool remains useful even without network access."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "OWASP Web Security Testing Guide",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Authorized Web Assessment Reporting Toolkit",
+          "description": "Create a local, evidence-driven reporting toolkit for a fictional web security assessment. The tool validates engagement scope and finding records, sorts findings by severity, and generates a structured markdown report. The final artifact demonstrates ethical engagement discipline, application-security findings, severity and confidence communication, remediation guidance, and retesting criteria without performing live scanning or exploitation.",
+          "conceptsCovered": [
+            "Rules of engagement",
+            "Scope management",
+            "Evidence handling",
+            "Web authorization testing",
+            "API authorization concepts",
+            "Severity and confidence",
+            "Remediation",
+            "Retesting",
+            "Input validation",
+            "Automated testing",
+            "Professional reporting"
+          ],
+          "steps": [
+            "Review the synthetic scope.json and confirm that targets and exclusions are explicit.",
+            "Review findings.json and verify that each finding contains evidence, impact, remediation, and retest criteria.",
+            "Run report.py with the supplied local data and generate report.md.",
+            "Run the automated tests and syntax checks.",
+            "Add one additional synthetic finding and extend the tests to validate its required fields and ordering.",
+            "Review the generated report for overstated claims, missing evidence, and unclear remediation.",
+            "Document the final assessment workflow and identify two process improvements for a future engagement."
+          ],
+          "code": {
+            "README.md": "# Authorized Web Assessment Capstone\n\nThis capstone packages a scope file, finding records, and a small report generator for a fictional web application security assessment.\n\nSafety boundary: the project performs no network scanning, exploitation, password attacks, or external requests. It processes local assessment records only.\n",
+            "scope.json": "{\n  \"engagement\": \"WEB-LAB-001\",\n  \"targets\": [\"app.lab.example\"],\n  \"excluded_targets\": [\"payments.lab.example\"],\n  \"test_window\": \"22:00-02:00 UTC\",\n  \"notes\": \"Fictional training engagement; all data is synthetic.\"\n}\n",
+            "findings.json": "[\n  {\n    \"id\": \"F-001\",\n    \"title\": \"Broken object-level authorization on test records\",\n    \"severity\": \"high\",\n    \"confidence\": \"high\",\n    \"asset\": \"app.lab.example/api/records/{id}\",\n    \"status\": \"open\",\n    \"evidence\": \"Dedicated test-user-A retrieved the synthetic record owned by test-user-B when changing the record identifier.\",\n    \"impact\": \"A caller may access another tenant's records if equivalent controls are absent elsewhere.\",\n    \"remediation\": \"Enforce server-side object-level authorization for every record access.\",\n    \"retest\": \"Repeat the cross-record access test with two isolated test identities and confirm access is denied.\"\n  },\n  {\n    \"id\": \"F-002\",\n    \"title\": \"Verbose error response reveals implementation detail\",\n    \"severity\": \"low\",\n    \"confidence\": \"high\",\n    \"asset\": \"app.lab.example/api/search\",\n    \"status\": \"open\",\n    \"evidence\": \"A malformed search value returned a stack-trace fragment in the test environment.\",\n    \"impact\": \"Internal implementation details may aid reconnaissance.\",\n    \"remediation\": \"Return a generic client-facing error and log detailed diagnostics server-side.\",\n    \"retest\": \"Send the original benign malformed input and confirm the response no longer contains stack-trace details.\"\n  }\n]\n",
+            "report.py": "#!/usr/bin/env python3\nimport argparse\nimport json\nfrom pathlib import Path\n\nSEVERITY_ORDER = {\"critical\": 4, \"high\": 3, \"medium\": 2, \"low\": 1, \"info\": 0}\n\ndef load_json(path: Path):\n    with path.open(\"r\", encoding=\"utf-8\") as handle:\n        return json.load(handle)\n\ndef validate_scope(scope):\n    required = {\"engagement\", \"targets\", \"excluded_targets\", \"test_window\"}\n    missing = required - scope.keys()\n    if missing:\n        raise ValueError(f\"Missing scope fields: {sorted(missing)}\")\n    if not scope[\"targets\"]:\n        raise ValueError(\"At least one target is required\")\n\ndef validate_finding(finding):\n    required = {\"id\", \"title\", \"severity\", \"confidence\", \"asset\", \"status\", \"evidence\", \"impact\", \"remediation\", \"retest\"}\n    missing = required - finding.keys()\n    if missing:\n        raise ValueError(f\"Finding {finding.get('id', '?')} missing: {sorted(missing)}\")\n    if finding[\"severity\"] not in SEVERITY_ORDER:\n        raise ValueError(f\"Unsupported severity: {finding['severity']}\")\n    if finding[\"confidence\"] not in {\"high\", \"medium\", \"low\"}:\n        raise ValueError(f\"Unsupported confidence: {finding['confidence']}\")\n\ndef render_report(scope, findings):\n    for finding in findings:\n        validate_finding(finding)\n    findings = sorted(findings, key=lambda item: SEVERITY_ORDER[item[\"severity\"]], reverse=True)\n    lines = [\n        f\"# Security Assessment Report — {scope['engagement']}\",\n        \"\",\n        \"## Scope\",\n        f\"Targets: {', '.join(scope['targets'])}\",\n        f\"Excluded: {', '.join(scope['excluded_targets']) or 'None stated'}\",\n        f\"Test window: {scope['test_window']}\",\n        \"\",\n        \"## Findings\",\n    ]\n    for finding in findings:\n        lines.extend([\n            f\"### {finding['id']} — {finding['title']}\",\n            f\"- Severity: {finding['severity']}\",\n            f\"- Confidence: {finding['confidence']}\",\n            f\"- Asset: {finding['asset']}\",\n            f\"- Status: {finding['status']}\",\n            f\"- Evidence: {finding['evidence']}\",\n            f\"- Impact: {finding['impact']}\",\n            f\"- Remediation: {finding['remediation']}\",\n            f\"- Retest: {finding['retest']}\",\n            \"\",\n        ])\n    return \"\\n\".join(lines)\n\ndef main():\n    parser = argparse.ArgumentParser(description=\"Generate a report from local fictional assessment data\")\n    parser.add_argument(\"scope\", type=Path)\n    parser.add_argument(\"findings\", type=Path)\n    parser.add_argument(\"--output\", type=Path, default=Path(\"report.md\"))\n    args = parser.parse_args()\n\n    scope = load_json(args.scope)\n    findings = load_json(args.findings)\n    if not isinstance(findings, list):\n        raise ValueError(\"findings.json must contain a JSON array\")\n    validate_scope(scope)\n    report = render_report(scope, findings)\n    args.output.write_text(report + \"\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {args.output}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+            "test_report.py": "import json\nimport subprocess\nimport sys\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parent\n\ndef test_report_generation():\n    out = ROOT / \"test-report.md\"\n    result = subprocess.run([sys.executable, str(ROOT/\"report.py\"), str(ROOT/\"scope.json\"), str(ROOT/\"findings.json\"), \"--output\", str(out)], capture_output=True, text=True)\n    assert result.returncode == 0, result.stderr\n    text = out.read_text(encoding=\"utf-8\")\n    assert \"F-001\" in text\n    assert \"F-002\" in text\n    assert text.index(\"F-001\") < text.index(\"F-002\")\n    out.unlink()\n"
+          },
+          "explanation": "The project models a defensible security-assessment workflow as structured data plus deterministic validation and reporting. scope.json prevents the report from losing engagement boundaries; findings.json keeps each claim tied to evidence and remediation; report.py validates the inputs and renders a consistent markdown report; test_report.py provides regression coverage. The project intentionally avoids network access, scanning, credential attacks, exploitation, persistence, and data modification, because those actions are not necessary to demonstrate the core fundamentals of professional ethical-hacking reporting."
+        }
+      }
+    ]
+  }
+}

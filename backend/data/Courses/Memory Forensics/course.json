@@ -1,0 +1,1606 @@
+{
+  "course": {
+    "id": "memory-forensics",
+    "title": "Memory Forensics",
+    "slug": "memory-forensics",
+    "description": "A practical, research-driven Memory Forensics course covering volatile evidence, acquisition and integrity, virtual and physical memory, Volatility 3, Windows and Linux analysis, suspicious-memory and YARA triage, credential exposure, timeline reasoning, cross-source correlation, automation, and professional reporting. The course is designed around authorized lab work and emphasizes current authoritative documentation, reproducibility, and honest limitations.",
+    "level": "Intermediate to Advanced",
+    "language": "English",
+    "duration": 52,
+    "prerequisites": [
+      "Basic OS concepts: processes, threads, virtual memory, files, and permissions",
+      "Comfort with Windows and Linux command lines",
+      "Basic Python 3 programming",
+      "Basic networking concepts: IP, TCP/UDP, sockets, and client/server communication",
+      "Basic digital-forensics concepts including hashing and evidence integrity",
+      "An isolated lab or authorized memory samples"
+    ],
+    "learningOutcomes": [
+      "Explain why volatile memory is valuable and how acquisition choices affect evidentiary scope.",
+      "Explain virtual/physical memory and page-table concepts relevant to forensic interpretation.",
+      "Handle authorized Windows and Linux memory images using documented acquisition and integrity procedures.",
+      "Install and operate Volatility 3 reproducibly and diagnose common failures.",
+      "Analyze Windows and Linux processes, ancestry, command context, memory mappings, modules, and network objects.",
+      "Identify suspicious memory indicators without treating heuristics as proof.",
+      "Use controlled YARA-oriented scanning and contextualize matches.",
+      "Handle credential material and other secrets as sensitive evidence.",
+      "Build normalized timelines and correlate memory with independent evidence.",
+      "Automate repeatable analysis while preserving raw outputs and failures.",
+      "Write professional findings with explicit provenance and limitations.",
+      "Complete an end-to-end memory-forensics incident-triage project."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Memory Forensics Foundations",
+        "description": "Understand volatile evidence, memory architecture, acquisition versus analysis, and forensic integrity.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "Volatile Evidence and Memory Forensics",
+            "description": "Introduces RAM as a changing evidence source and defines the scope of memory forensics.",
+            "learningObjectives": [
+              "define memory forensics",
+              "identify transient evidence",
+              "explain acquisition timing",
+              "state evidentiary limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST describes RAM as volatile data that can contain frequently or recently accessed information such as data files, password hashes, and recent commands. Memory can also retain residual data in free or slack regions."
+              },
+              {
+                "type": "paragraph",
+                "text": "A memory image is a snapshot. It does not prove that every byte ever present on the system is represented."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "High-value artifacts include processes, command context, network state, loaded modules, secrets, and residual data.",
+                  "Interpretation must include acquisition context and limitations."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not treat a single memory artifact as self-proving; corroborate important findings."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-01",
+                "title": "Volatile triage plan",
+                "description": "Design an authorized triage sequence that preserves volatile evidence.",
+                "steps": "Record case/time; collect minimally invasive context; acquire memory; hash; preserve; analyze separately.",
+                "solution": "A sequence that prioritizes volatile evidence and records every action.",
+                "output": "A repeatable triage checklist."
+              }
+            ],
+            "quiz": {
+              "id": "q01",
+              "question": "Why is RAM called volatile evidence?",
+              "options": [
+                "It never changes",
+                "It changes while the system runs and may be lost on power removal",
+                "It only stores files",
+                "It is always more reliable than disk"
+              ],
+              "answer": "It changes while the system runs and may be lost on power removal",
+              "explanation": "Volatile data changes during execution and can disappear when power is removed."
+            },
+            "summary": [
+              "define memory forensics",
+              "identify transient evidence",
+              "explain acquisition timing",
+              "state evidentiary limitations"
+            ],
+            "resources": [
+              "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+              "https://volatility3.readthedocs.io/en/latest/basics.html"
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Acquisition Versus Analysis",
+            "description": "Separates capturing volatile memory from interpreting the resulting image.",
+            "learningObjectives": [
+              "distinguish acquisition and analysis",
+              "identify acquisition tools",
+              "explain acquisition side effects",
+              "record provenance"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Volatility 3 is an analysis framework, not a memory acquisition utility. Its Windows tutorial identifies WinPmem and FTK Imager as acquisition examples, while its Linux tutorial points to AVML."
+              },
+              {
+                "type": "paragraph",
+                "text": "The acquisition method determines what evidence exists for later analysis, so tool version, time, system state, and image type must be recorded."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A crash dump is not automatically equivalent to complete physical RAM.",
+                  "Analysis should normally occur on a verified copy."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Only acquire systems or datasets for which you have explicit authorization."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02",
+              "question": "What is Volatility 3 primarily used for?",
+              "options": [
+                "RAM acquisition",
+                "Memory-image analysis",
+                "Disk imaging",
+                "Packet capture"
+              ],
+              "answer": "Memory-image analysis",
+              "explanation": "Volatility 3 interprets memory images through OS-aware plugins and layers."
+            },
+            "summary": [
+              "distinguish acquisition and analysis",
+              "identify acquisition tools",
+              "explain acquisition side effects",
+              "record provenance"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst",
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-linux-tutorial.rst",
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Virtual and Physical Memory",
+            "description": "Builds the address-translation model needed to reason about memory layers and process context.",
+            "learningObjectives": [
+              "explain virtual and physical addresses",
+              "describe page-table translation",
+              "distinguish process and physical memory",
+              "explain why OS structures matter"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft explains that processes use virtual address spaces and that page tables translate virtual addresses to physical memory. The resident subset is the process working set."
+              },
+              {
+                "type": "paragraph",
+                "text": "Volatility 3 uses layers and symbol-aware objects to move from memory bytes toward operating-system structures."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A virtual address is meaningful only in an address-space context.",
+                  "Missing pages or incomplete images can limit reconstruction."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-02",
+                "title": "Virtual-to-physical explanation",
+                "description": "Explain how a process virtual address reaches physical memory and why an image may not contain the referenced bytes.",
+                "steps": "Describe page-table translation, physical frame lookup, and image offset limitations.",
+                "solution": "A correct conceptual explanation that does not assume complete page availability.",
+                "output": "Written address-translation trace."
+              }
+            ],
+            "quiz": {
+              "id": "q03",
+              "question": "What do page tables primarily provide?",
+              "options": [
+                "Event logs",
+                "Virtual-to-physical address mappings",
+                "Network routes",
+                "File hashes"
+              ],
+              "answer": "Virtual-to-physical address mappings",
+              "explanation": "Page tables provide mappings used by hardware for address translation."
+            },
+            "summary": [
+              "explain virtual and physical addresses",
+              "describe page-table translation",
+              "distinguish process and physical memory",
+              "explain why OS structures matter"
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/memory/virtual-address-space",
+              "https://learn.microsoft.com/en-us/windows/win32/memory/virtual-address-space-and-physical-storage",
+              "https://volatility3.readthedocs.io/en/latest/basics.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Design an evidence-preservation workflow",
+            "level": "Intermediate",
+            "description": "Create a defensible memory-evidence workflow.",
+            "problemStatement": "A workstation may be shut down soon; specify how to prioritize volatile evidence without unnecessary interaction.",
+            "objectives": [
+              "prioritize volatile data",
+              "define acquisition and hashing",
+              "record limitations",
+              "separate evidence and analysis"
+            ],
+            "requirements": [
+              "Forensic workstation",
+              "Authorized acquisition method",
+              "SHA-256"
+            ],
+            "hint": "Treat acquisition, verification, analysis, and reporting as separate phases.",
+            "solutionCode": "steps=['record context','acquire authorized memory','hash image','preserve original','analyze working copy','report limitations']\nprint('\\n'.join(steps))",
+            "solutionExplanation": "The workflow separates evidence facts from analyst interpretation."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Acquisition, Integrity, and Laboratory Preparation",
+        "description": "Learn Windows dump scope, Linux AVML acquisition, image validation, and safe lab organization.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Windows Memory Dump Types",
+            "description": "Explains complete, kernel, active, and small dump scope.",
+            "learningObjectives": [
+              "distinguish dump types",
+              "match dump scope to questions",
+              "identify omissions",
+              "record provenance"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents complete, kernel, small, and active dump types. A complete dump records system memory at crash time; a kernel dump focuses on kernel and kernel-mode memory and omits user-mode application memory."
+              },
+              {
+                "type": "paragraph",
+                "text": "Dump type therefore constrains what a forensic analyst can conclude."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use complete-memory evidence when user-mode memory is central.",
+                  "Always state dump scope as a limitation."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-03",
+                "title": "Dump-scope matrix",
+                "description": "Map four investigation questions to complete or kernel dump scope.",
+                "steps": "Identify whether each question requires user-mode or kernel memory; record omissions.",
+                "solution": "Questions requiring user-mode evidence generally need a dump containing user-mode memory.",
+                "output": "A scope matrix."
+              }
+            ],
+            "quiz": {
+              "id": "q04",
+              "question": "Which Windows dump type is broadest for system-memory questions?",
+              "options": [
+                "Small",
+                "Kernel",
+                "Complete",
+                "Only user-mode"
+              ],
+              "answer": "Complete",
+              "explanation": "Microsoft describes a complete memory dump as recording all system memory at crash time."
+            },
+            "summary": [
+              "distinguish dump types",
+              "match dump scope to questions",
+              "identify omissions",
+              "record provenance"
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/troubleshoot/windows-server/performance/memory-dump-file-options"
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Linux Acquisition with AVML",
+            "description": "Uses the Microsoft AVML project to teach authorized Linux volatile-memory acquisition.",
+            "learningObjectives": [
+              "explain AVML",
+              "use acquisition commands",
+              "recognize lockdown limitations",
+              "record acquisition metadata"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "AVML is an x86_64 userland Linux volatile-memory acquisition tool written in Rust. Its documented commands include acquire, convert, upload, and stream."
+              },
+              {
+                "type": "paragraph",
+                "text": "AVML can use supported kernel memory sources; its documentation notes that kernel lockdown can prevent acquisition."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record kernel version, tool version, time, source, output format, and hash.",
+                  "Acquisition is a live action and can alter system state."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not collect memory from systems without authorization."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-04",
+                "title": "Acquire a Linux lab image",
+                "description": "Use AVML on an isolated Linux VM and hash the resulting image.",
+                "steps": "Record metadata; run acquire; hash output; preserve manifest.",
+                "solution": "A memory image plus SHA-256 and acquisition record.",
+                "output": "Evidence package."
+              }
+            ],
+            "quiz": {
+              "id": "q05",
+              "question": "What is AVML?",
+              "options": [
+                "A Windows debugger",
+                "A Linux volatile-memory acquisition tool",
+                "A YARA compiler",
+                "A packet analyzer"
+              ],
+              "answer": "A Linux volatile-memory acquisition tool",
+              "explanation": "The Microsoft project identifies AVML as a portable Linux memory-acquisition tool."
+            },
+            "summary": [
+              "explain AVML",
+              "use acquisition commands",
+              "recognize lockdown limitations",
+              "record acquisition metadata"
+            ],
+            "resources": [
+              "https://github.com/microsoft/avml",
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-linux-tutorial.rst"
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Image Validation and Layers",
+            "description": "Explains why extensions are insufficient and how Volatility 3 validates images.",
+            "learningObjectives": [
+              "explain layers",
+              "validate an image",
+              "classify image errors",
+              "avoid profile guessing"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Volatility 3 describes memory layers as addressable data bodies used to move from a physical representation toward virtual and OS-specific views."
+              },
+              {
+                "type": "paragraph",
+                "text": "A first Windows validation command is commonly `windows.info`; failures should be diagnosed through image, plugin, dependency, and symbol evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "File extensions do not guarantee internal structure.",
+                  "Do not invent a profile when current Volatility 3 cannot identify an image."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q06",
+              "question": "Why is a file extension insufficient for memory-format identification?",
+              "options": [
+                "Extensions never matter",
+                "Different acquisition tools can use different internal representations",
+                "All images are raw",
+                "Volatility ignores contents"
+              ],
+              "answer": "Different acquisition tools can use different internal representations",
+              "explanation": "The actual image structure and provenance determine interpretation."
+            },
+            "summary": [
+              "explain layers",
+              "validate an image",
+              "classify image errors",
+              "avoid profile guessing"
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/basics.html",
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build a cross-platform acquisition checklist",
+            "level": "Intermediate",
+            "description": "Create one checklist with common forensic controls and platform-specific acquisition steps.",
+            "problemStatement": "A team needs Windows and Linux acquisition procedures without pretending the methods are identical.",
+            "objectives": [
+              "record authorization",
+              "record tool/version/time",
+              "hash and transfer",
+              "state limitations"
+            ],
+            "requirements": [
+              "AVML documentation",
+              "Microsoft dump documentation"
+            ],
+            "hint": "Keep common evidence controls identical and acquisition details platform-specific.",
+            "solutionCode": "checklist={'common':['authorization','UTC time','case ID','hash'],'windows':['dump type','build'],'linux':['kernel','AVML version','lockdown']}\nprint(checklist)",
+            "solutionExplanation": "The checklist makes platform differences explicit while preserving common forensic controls."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Volatility 3 Architecture and Workflow",
+        "description": "Install and operate Volatility 3 reproducibly, understand symbols and layers, and troubleshoot failures.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Installation and Versioning",
+            "description": "Creates an isolated Volatility 3 environment and records tool provenance.",
+            "learningObjectives": [
+              "create a virtual environment",
+              "install Volatility 3",
+              "verify the CLI",
+              "record version"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The official Volatility 3 repository documents Python 3.8+ and installation from PyPI. A virtual environment reduces dependency conflicts."
+              },
+              {
+                "type": "paragraph",
+                "text": "For forensic reproducibility, save the installed version and operating-system details."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not silently mix Volatility 2 and Volatility 3 syntax.",
+                  "Use the official repository for installation guidance."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-05",
+                "title": "Reproducible installation",
+                "description": "Install Volatility 3 in a venv and record version information.",
+                "steps": "Create venv; install; run `vol -h`; save package version.",
+                "solution": "An isolated, versioned environment.",
+                "output": "Tool manifest."
+              }
+            ],
+            "quiz": {
+              "id": "q07",
+              "question": "Why use a Python virtual environment for Volatility 3?",
+              "options": [
+                "To modify evidence",
+                "To isolate dependencies and improve reproducibility",
+                "To bypass errors",
+                "To change symbols"
+              ],
+              "answer": "To isolate dependencies and improve reproducibility",
+              "explanation": "Isolation improves reproducibility and dependency control."
+            },
+            "summary": [
+              "create a virtual environment",
+              "install Volatility 3",
+              "verify the CLI",
+              "record version"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "Layers, Context, Objects, and Symbols",
+            "description": "Explains the architecture behind structured memory interpretation.",
+            "learningObjectives": [
+              "explain layers",
+              "explain context and objects",
+              "explain symbol tables",
+              "distinguish Windows and Linux symbol workflows"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Volatility 3 documents memory layers, templates/objects, and symbol tables as central components held in a Context."
+              },
+              {
+                "type": "paragraph",
+                "text": "Windows symbol retrieval can use PDB-related mechanisms documented by the project; Linux analysis commonly requires suitable ISF symbol files."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Symbols must match the target kernel/build.",
+                  "A symbol failure should be diagnosed, not bypassed with a guessed profile."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q08",
+              "question": "What is the primary role of symbols?",
+              "options": [
+                "Encryption",
+                "Describe OS data structures so memory can be interpreted as objects",
+                "Compression",
+                "Network routing"
+              ],
+              "answer": "Describe OS data structures so memory can be interpreted as objects",
+              "explanation": "Symbols connect memory bytes to build-specific structures and fields."
+            },
+            "summary": [
+              "explain layers",
+              "explain context and objects",
+              "explain symbol tables",
+              "distinguish Windows and Linux symbol workflows"
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/basics.html",
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-linux-tutorial.rst"
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Plugin Discovery and Troubleshooting",
+            "description": "Teaches explicit plugin selection, help usage, raw-output preservation, and error classification.",
+            "learningObjectives": [
+              "discover plugins",
+              "use OS-qualified names",
+              "preserve raw output",
+              "diagnose failures"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The Volatility 3 CLI supports OS-qualified plugin names and warns that short names can be ambiguous across operating systems."
+              },
+              {
+                "type": "paragraph",
+                "text": "A disciplined workflow captures the exact command, tool version, stdout, stderr, exit status, and relevant symbol/image information."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Validate image recognition before debugging higher-level plugins.",
+                  "One successful plugin does not validate every interpretation."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-06",
+                "title": "Troubleshooting decision tree",
+                "description": "Build a decision tree for an unavailable or failing plugin.",
+                "steps": "Check plugin availability, image validation, symbols, dependencies, and reproduce exact error.",
+                "solution": "A decision tree that identifies the failure class before changing settings.",
+                "output": "Troubleshooting guide."
+              }
+            ],
+            "quiz": {
+              "id": "q09",
+              "question": "Why prefer `windows.pslist` over ambiguous `pslist`?",
+              "options": [
+                "It is always faster",
+                "It explicitly selects the Windows plugin",
+                "It skips symbols",
+                "It edits the image"
+              ],
+              "answer": "It explicitly selects the Windows plugin",
+              "explanation": "OS-qualified names reduce ambiguity."
+            },
+            "summary": [
+              "discover plugins",
+              "use OS-qualified names",
+              "preserve raw output",
+              "diagnose failures"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/vol-cli.rst",
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Automate a reproducible first pass",
+            "level": "Intermediate",
+            "description": "Create a Python wrapper around Volatility 3.",
+            "problemStatement": "Run image validation, process listing, and network enumeration while preserving stdout/stderr and not modifying the image.",
+            "objectives": [
+              "validate input",
+              "run subprocess safely",
+              "preserve outputs",
+              "record exit codes"
+            ],
+            "requirements": [
+              "Python 3.8+",
+              "Volatility 3"
+            ],
+            "hint": "Use a subprocess argument list rather than shell=True.",
+            "solutionCode": "from pathlib import Path\nimport subprocess\nimage=Path('memory.dmp')\nfor plugin in ['windows.info','windows.pslist','windows.netscan']:\n    r=subprocess.run(['vol','-f',str(image),plugin],capture_output=True,text=True,check=False)\n    Path(plugin.replace('.','_')+'.stdout.txt').write_text(r.stdout)\n    Path(plugin.replace('.','_')+'.stderr.txt').write_text(r.stderr)",
+            "solutionExplanation": "The wrapper preserves evidence of both successful and failed plugin execution."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Windows Memory Analysis",
+        "description": "Perform structured Windows analysis from process enumeration through virtual-memory and network correlation.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Process Enumeration: pslist, psscan, pstree",
+            "description": "Compares normal process enumeration, scanning, and ancestry.",
+            "learningObjectives": [
+              "run pslist",
+              "run psscan",
+              "run pstree",
+              "interpret discrepancies"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Volatility 3 documents psscan as scanning for process objects in a Windows memory image. pslist and psscan provide complementary views; pstree adds parent-child context."
+              },
+              {
+                "type": "paragraph",
+                "text": "A process appearing in one view but not another is an investigative lead, not automatic proof of hiding or malware."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Compare PID, PPID, name, timestamps, and lifecycle clues.",
+                  "Record hypotheses separately from observations."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-07",
+                "title": "Process-view comparison",
+                "description": "Compare pslist, psscan, and pstree on an authorized sample.",
+                "steps": "Run all three; normalize PID/PPID/name/time; inspect discrepancies.",
+                "solution": "A process comparison with explicit hypotheses and limitations.",
+                "output": "Investigation table."
+              }
+            ],
+            "quiz": {
+              "id": "q10",
+              "question": "What is the value of comparing pslist and psscan?",
+              "options": [
+                "It proves malware",
+                "It provides complementary enumeration views",
+                "It decrypts memory",
+                "It replaces network analysis"
+              ],
+              "answer": "It provides complementary enumeration views",
+              "explanation": "Different enumeration methods can expose discrepancies requiring investigation."
+            },
+            "summary": [
+              "run pslist",
+              "run psscan",
+              "run pstree",
+              "interpret discrepancies"
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/volatility3.plugins.windows.psscan.html",
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst"
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Command Lines, DLLs, and Handles",
+            "description": "Builds process context from execution arguments, loaded modules, and OS-managed handles.",
+            "learningObjectives": [
+              "use cmdline",
+              "use dlllist",
+              "use handles",
+              "correlate process context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Command lines can reveal script paths and arguments. DLL lists show loaded modules, while handles can expose relationships to files, registry keys, mutexes, pipes, and other objects."
+              },
+              {
+                "type": "paragraph",
+                "text": "A suspicious module or handle becomes more meaningful when correlated with process ancestry, memory permissions, and network state."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not judge a process from its name alone.",
+                  "Record paths and object types precisely."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q11",
+              "question": "Which provides stronger context for an unusual DLL?",
+              "options": [
+                "Name alone",
+                "Path plus process, ancestry, and memory context",
+                "Only size",
+                "Only PID"
+              ],
+              "answer": "Path plus process, ancestry, and memory context",
+              "explanation": "Context reduces false positives."
+            },
+            "summary": [
+              "use cmdline",
+              "use dlllist",
+              "use handles",
+              "correlate process context"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst",
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "VADs, Injection Indicators, and netscan",
+            "description": "Uses virtual-memory regions and network objects to prioritize suspicious processes.",
+            "learningObjectives": [
+              "explain VADs",
+              "inspect suspicious regions",
+              "run netscan",
+              "correlate endpoints with PIDs"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows virtual-memory regions can be examined through VAD-oriented plugins such as `windows.vadinfo` and `windows.vadwalk`. Executable private memory can be a useful indicator but is not proof of injection."
+              },
+              {
+                "type": "paragraph",
+                "text": "`windows.netscan` scans for network objects and can provide process context that helps connect memory evidence to network activity."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use multiple independent artifact classes before escalating a hypothesis.",
+                  "Network state is time-specific and may be incomplete."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never execute extracted suspicious code merely to validate a hypothesis."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-08",
+                "title": "Network-to-process correlation",
+                "description": "Trace a network object to process, command, and module context.",
+                "steps": "Run netscan; select PID; inspect process and command context; record endpoints and time.",
+                "solution": "A network finding supported by process context.",
+                "output": "Correlation record."
+              }
+            ],
+            "quiz": {
+              "id": "q12",
+              "question": "Does executable private memory prove injection?",
+              "options": [
+                "Yes",
+                "No, it is an indicator requiring context",
+                "Only on Windows 7",
+                "Only with odd PIDs"
+              ],
+              "answer": "No, it is an indicator requiring context",
+              "explanation": "Legitimate software can create executable private memory."
+            },
+            "summary": [
+              "explain VADs",
+              "inspect suspicious regions",
+              "run netscan",
+              "correlate endpoints with PIDs"
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/memory/virtual-address-space",
+              "https://volatility3.readthedocs.io/en/latest/volatility3.plugins.windows.netscan.html",
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Build a Windows process-investigation report",
+            "level": "Advanced",
+            "description": "Correlate process, command, module, VAD, and network artifacts.",
+            "problemStatement": "Produce a shortlist of processes for escalation from an authorized image without relying on names alone.",
+            "objectives": [
+              "compare process views",
+              "analyze ancestry",
+              "correlate modules/network",
+              "inspect memory indicators"
+            ],
+            "requirements": [
+              "Volatility 3",
+              "Authorized Windows image"
+            ],
+            "hint": "Use PID as a join key, then validate timestamps and context.",
+            "solutionCode": "evidence={}; evidence.setdefault(1000,[]).extend(['pslist','psscan','cmdline','dlllist','netscan','vadinfo']); print(evidence)",
+            "solutionExplanation": "The structure keeps multiple artifact classes attached to a process identifier."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Linux Memory Analysis",
+        "description": "Analyze Linux process state, memory mappings, command history, modules, sockets, and process-memory access indicators.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "Linux /proc and Memory Maps",
+            "description": "Connects Linux /proc semantics to memory-forensics concepts.",
+            "learningObjectives": [
+              "interpret maps",
+              "explain mem and pagemap",
+              "identify races",
+              "connect live and snapshot evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Linux kernel documentation describes `/proc/<pid>/maps` as current mapped memory regions and permissions, `/proc/<pid>/mem` as process memory, and `/proc/<pid>/pagemap` as page-table information."
+              },
+              {
+                "type": "paragraph",
+                "text": "Live /proc output can be racy because mappings change while being read; a memory image is a historical snapshot."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Classify code, heap, stack, shared libraries, and anonymous mappings.",
+                  "Kernel-version semantics can change, so consult matching documentation."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-09",
+                "title": "Classify a Linux memory map",
+                "description": "Inspect a benign process map and classify regions by permission and backing.",
+                "steps": "Read maps; classify code/heap/stack/shared/anonymous; explain forensic significance.",
+                "solution": "An annotated map with limitations.",
+                "output": "Memory-map worksheet."
+              }
+            ],
+            "quiz": {
+              "id": "q13",
+              "question": "What does `/proc/<pid>/maps` describe?",
+              "options": [
+                "Network sockets",
+                "Mapped memory regions and permissions",
+                "Only kernel modules",
+                "Disk partitions"
+              ],
+              "answer": "Mapped memory regions and permissions",
+              "explanation": "That is its documented purpose."
+            },
+            "summary": [
+              "interpret maps",
+              "explain mem and pagemap",
+              "identify races",
+              "connect live and snapshot evidence"
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/proc.html"
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Linux Process Enumeration and Ancestry",
+            "description": "Uses pslist, psscan, and pstree to reconstruct process state.",
+            "learningObjectives": [
+              "run linux.pslist",
+              "run linux.psscan",
+              "run linux.pstree",
+              "interpret discrepancies"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The Volatility Linux tutorial identifies process-listing and scanning plugins and notes broad Linux plugin coverage."
+              },
+              {
+                "type": "paragraph",
+                "text": "Process discrepancies are investigation leads and should be correlated with command, module, socket, and mapping evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Process names alone are weak evidence.",
+                  "Record PID/PPID and available timestamps."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q14",
+              "question": "Why compare Linux process views?",
+              "options": [
+                "To prove malware",
+                "To obtain complementary evidence and identify discrepancies",
+                "To change processes",
+                "To decrypt memory"
+              ],
+              "answer": "To obtain complementary evidence and identify discrepancies",
+              "explanation": "Different views provide different evidence."
+            },
+            "summary": [
+              "run linux.pslist",
+              "run linux.psscan",
+              "run linux.pstree",
+              "interpret discrepancies"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-linux-tutorial.rst"
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Bash History, Modules, and Sockets",
+            "description": "Combines command history, kernel modules, and socket state for Linux investigations.",
+            "learningObjectives": [
+              "use linux.bash",
+              "use linux.lsmod",
+              "use linux.sockstat",
+              "correlate commands and network context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Volatility 3 documents `linux.bash` for recovering bash history and lists `linux.lsmod` and `linux.sockstat` among representative Linux plugins."
+              },
+              {
+                "type": "paragraph",
+                "text": "MITRE's Linux credential-access detection strategy emphasizes monitoring access to `/proc/<pid>/mem` or `/proc/<pid>/maps` in suspicious contexts; memory analysis can provide supporting context but may need endpoint telemetry."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A recovered command is not guaranteed complete history.",
+                  "An unfamiliar module requires kernel/package provenance checks."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-10",
+                "title": "Test a Linux process-memory hypothesis",
+                "description": "Evaluate a hypothesis that one process accessed another process's memory.",
+                "steps": "Collect process, privilege, command, and memory-access context; compare with independent telemetry where available.",
+                "solution": "A supported, weakened, or unresolved hypothesis rather than an automatic verdict.",
+                "output": "Hypothesis worksheet."
+              }
+            ],
+            "quiz": {
+              "id": "q15",
+              "question": "What is recovered bash history?",
+              "options": [
+                "Guaranteed complete history",
+                "Potential historical evidence that may be incomplete",
+                "A disk log",
+                "A symbol table"
+              ],
+              "answer": "Potential historical evidence that may be incomplete",
+              "explanation": "Memory-based recovery can be incomplete."
+            },
+            "summary": [
+              "use linux.bash",
+              "use linux.lsmod",
+              "use linux.sockstat",
+              "correlate commands and network context"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-linux-tutorial.rst",
+              "https://attack.mitre.org/detectionstrategies/DET0593/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Investigate Linux process-memory access",
+            "level": "Advanced",
+            "description": "Evaluate a suspected unauthorized process-memory access event.",
+            "problemStatement": "Use an authorized Linux image to assess whether the evidence is consistent with suspicious /proc access.",
+            "objectives": [
+              "enumerate processes",
+              "inspect command and privilege context",
+              "consider /proc evidence",
+              "document uncertainty"
+            ],
+            "requirements": [
+              "Volatility 3",
+              "Authorized Linux image"
+            ],
+            "hint": "MITRE emphasizes /proc memory access combined with process and privilege context.",
+            "solutionCode": "hypothesis={'required':['process identity','privilege','memory-access evidence','corroboration']}; print(hypothesis)",
+            "solutionExplanation": "The task emphasizes defensive detection rather than credential extraction."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Malware Hunting, YARA, and Sensitive Memory",
+        "description": "Use memory heuristics and signature scanning safely and handle credential material defensively.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Malware Indicators and Heuristics",
+            "description": "Explains suspicious processes, mappings, modules, and network relationships as leads.",
+            "learningObjectives": [
+              "identify indicators",
+              "combine weak signals",
+              "document false positives",
+              "state confidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Memory malware triage often combines process ancestry, executable private memory, unusual modules, network state, and object relationships."
+              },
+              {
+                "type": "paragraph",
+                "text": "Each indicator can have benign explanations, so confidence should increase only when independent evidence aligns."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Heuristics prioritize investigation.",
+                  "Alternative explanations belong in the report."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never describe a heuristic as proof without corroboration."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-11",
+                "title": "Indicator-priority worksheet",
+                "description": "Create a qualitative triage score using several independent indicators.",
+                "steps": "List indicators; assign low/medium/high priority; require corroboration before escalation; document false positives.",
+                "solution": "A prioritization aid, not a probability model.",
+                "output": "Triage worksheet."
+              }
+            ],
+            "quiz": {
+              "id": "q16",
+              "question": "Why can executable private memory be a false positive?",
+              "options": [
+                "It cannot exist",
+                "Legitimate applications can allocate executable private memory",
+                "It is always encrypted",
+                "It only occurs in Linux"
+              ],
+              "answer": "Legitimate applications can allocate executable private memory",
+              "explanation": "Memory permissions have legitimate uses."
+            },
+            "summary": [
+              "identify indicators",
+              "combine weak signals",
+              "document false positives",
+              "state confidence"
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/basics.html",
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst"
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "malfind and Suspicious User-Mode Memory",
+            "description": "Uses malfind-oriented analysis while emphasizing limitations.",
+            "learningObjectives": [
+              "explain malfind",
+              "inspect suspicious regions",
+              "compare VAD/module context",
+              "avoid unsafe execution"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The Volatility project describes malfind as helping identify hidden or injected user-mode code/DLLs using characteristics such as VAD information and page permissions."
+              },
+              {
+                "type": "paragraph",
+                "text": "Different injection techniques and legitimate executable allocations mean malfind output requires contextual validation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve extracted bytes as evidence; do not execute them on a production system.",
+                  "Compare with module lists and memory-region context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q17",
+              "question": "What is malfind designed to help locate?",
+              "options": [
+                "Disk partitions",
+                "Potential hidden/injected user-mode code or DLL regions",
+                "Network routes",
+                "Event logs"
+              ],
+              "answer": "Potential hidden/injected user-mode code or DLL regions",
+              "explanation": "That is the plugin's intended purpose."
+            },
+            "summary": [
+              "explain malfind",
+              "inspect suspicious regions",
+              "compare VAD/module context",
+              "avoid unsafe execution"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst",
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "YARA Scanning and Credential Exposure",
+            "description": "Teaches controlled YARA memory scanning and safe handling of secrets recovered from RAM.",
+            "learningObjectives": [
+              "write a benign YARA rule",
+              "interpret a match",
+              "explain credential exposure",
+              "protect recovered secrets"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "YARA provides a rule language for pattern matching. Volatility 3 has YARA-oriented plugins when the necessary dependency is available. A YARA match is not proof of malware."
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST notes that RAM can contain password hashes and recent commands; MITRE documents credential-dumping techniques involving memory and Linux /proc access."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Never paste real credentials into reports or training notes.",
+                  "Record the minimum necessary locator/context and trigger defensive response when appropriate."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Only analyze credential material from authorized evidence and never reuse recovered secrets."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-12",
+                "title": "Benign YARA memory scan",
+                "description": "Create a unique training-marker rule and scan a controlled sample.",
+                "steps": "Write rule; validate syntax; scan; record address/PID/context.",
+                "solution": "Only the controlled marker should match in the designed sample.",
+                "output": "Rule and contextual result."
+              }
+            ],
+            "quiz": {
+              "id": "q18",
+              "question": "What does a YARA match establish?",
+              "options": [
+                "Only that the rule matched its condition",
+                "That malware is proven",
+                "That the system is compromised",
+                "That the rule is always correct"
+              ],
+              "answer": "Only that the rule matched its condition",
+              "explanation": "YARA establishes a pattern match; context determines meaning."
+            },
+            "summary": [
+              "write a benign YARA rule",
+              "interpret a match",
+              "explain credential exposure",
+              "protect recovered secrets"
+            ],
+            "resources": [
+              "https://yara.readthedocs.io/en/latest/",
+              "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+              "https://attack.mitre.org/techniques/T1003/",
+              "https://attack.mitre.org/detectionstrategies/DET0593/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Build a defensive memory-hunting playbook",
+            "level": "Advanced",
+            "description": "Combine process, VAD, network, YARA, and sensitive-memory indicators.",
+            "problemStatement": "Create a safe workflow for an authorized endpoint image without executing recovered code or reusing secrets.",
+            "objectives": [
+              "define evidence order",
+              "combine indicators",
+              "handle credentials",
+              "document alternatives"
+            ],
+            "requirements": [
+              "Volatility 3",
+              "YARA",
+              "Training memory image"
+            ],
+            "hint": "Start broad, narrow to high-priority processes, then scan targeted regions.",
+            "solutionCode": "steps=['validate','enumerate','prioritize','inspect','scan','secure secrets','correlate','report']; print('\\n'.join(steps))",
+            "solutionExplanation": "The playbook is evidence-driven and avoids unsafe execution."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Timeline, Correlation, Automation, and Reporting",
+        "description": "Turn plugin output into reproducible investigative findings and a professional report.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Temporal Reasoning and Timelines",
+            "description": "Builds timelines from memory timestamps while separating event and acquisition time.",
+            "learningObjectives": [
+              "identify timestamps",
+              "normalize UTC",
+              "record timestamp provenance",
+              "state uncertainty"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Memory artifacts may contain process, network, and other timestamps. Acquisition time is separate from event time. Clock drift and timezone assumptions can affect interpretation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record source plugin and artifact for every timestamp.",
+                  "Do not invent precision not supported by the evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-13",
+                "title": "Normalized timeline",
+                "description": "Create a UTC timeline from three hypothetical memory artifacts with source and confidence.",
+                "steps": "Normalize times; add event/source/object; sort; state limitations.",
+                "solution": "A timeline with timestamp provenance.",
+                "output": "CSV/JSON timeline."
+              }
+            ],
+            "quiz": {
+              "id": "q19",
+              "question": "Which timestamp should order an event?",
+              "options": [
+                "Always acquisition time",
+                "Reliable artifact event time, with acquisition time recorded separately",
+                "Report time",
+                "Any convenient timestamp"
+              ],
+              "answer": "Reliable artifact event time, with acquisition time recorded separately",
+              "explanation": "Event time and acquisition time answer different questions."
+            },
+            "summary": [
+              "identify timestamps",
+              "normalize UTC",
+              "record timestamp provenance",
+              "state uncertainty"
+            ],
+            "resources": [
+              "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf"
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Cross-Source Correlation",
+            "description": "Correlates memory with disk, network, and endpoint telemetry.",
+            "learningObjectives": [
+              "design independent correlations",
+              "identify contradictions",
+              "rank evidence strength",
+              "write evidence-backed conclusions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Memory findings become stronger when independent evidence such as endpoint process events, disk artifacts, DNS, firewall, or packet data supports the same event."
+              },
+              {
+                "type": "paragraph",
+                "text": "Repeating a parser is not the same as independent corroboration."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Document contradictions instead of hiding them.",
+                  "Use source provenance in every finding."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q20",
+              "question": "Why is independent corroboration valuable?",
+              "options": [
+                "It makes reports longer",
+                "It can validate or challenge a single-source interpretation",
+                "It guarantees certainty",
+                "It removes timestamps"
+              ],
+              "answer": "It can validate or challenge a single-source interpretation",
+              "explanation": "Independent sources reduce overreliance on one artifact."
+            },
+            "summary": [
+              "design independent correlations",
+              "identify contradictions",
+              "rank evidence strength",
+              "write evidence-backed conclusions"
+            ],
+            "resources": [
+              "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf"
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Automation, Performance, and Reporting",
+            "description": "Automates repeatable analysis while preserving failures and produces precise forensic findings.",
+            "learningObjectives": [
+              "write safe subprocess automation",
+              "preserve failures",
+              "control resource use",
+              "separate observation from inference"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Large memory images are I/O intensive. Running every plugin blindly can create low-value output and resource contention. Volatility 3 exposes configuration and parallelism controls."
+              },
+              {
+                "type": "paragraph",
+                "text": "A professional finding separates observation, interpretation, corroboration, conclusion, and limitation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve stdout, stderr, exit code, command, and tool version.",
+                  "Use targeted plugins after broad triage."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not hide failed plugins or silently replace unsupported results."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-14",
+                "title": "Failure-aware analysis manifest",
+                "description": "Design a batch runner that records each plugin's output, error, exit code, and timestamp.",
+                "steps": "Run independent plugins; continue after failure; write deterministic filenames and a JSON manifest.",
+                "solution": "A complete run manifest including failed plugins.",
+                "output": "Reproducible batch record."
+              }
+            ],
+            "quiz": {
+              "id": "q21",
+              "question": "Which finding style is most defensible?",
+              "options": [
+                "The PID proves the attacker",
+                "The image contains an unusual process and network object consistent with the hypothesis, requiring corroboration",
+                "This is definitely malware",
+                "The IP is malicious because it appears in memory"
+              ],
+              "answer": "The image contains an unusual process and network object consistent with the hypothesis, requiring corroboration",
+              "explanation": "The statement separates observed evidence from interpretation and avoids overclaiming."
+            },
+            "summary": [
+              "write safe subprocess automation",
+              "preserve failures",
+              "control resource use",
+              "separate observation from inference"
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/vol-cli.rst",
+              "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Produce a complete memory-forensics report",
+            "level": "Advanced",
+            "description": "Create a reproducible case report from an authorized image.",
+            "problemStatement": "Document provenance, validation, process/network findings, suspicious-memory indicators, timeline, and limitations.",
+            "objectives": [
+              "document evidence",
+              "correlate findings",
+              "state limitations",
+              "preserve raw references"
+            ],
+            "requirements": [
+              "Volatility 3",
+              "Authorized image",
+              "Markdown editor"
+            ],
+            "hint": "Use question → artifact → output → correlation → conclusion → limitation.",
+            "solutionCode": "sections=['Evidence','Tooling','Validation','Process/network','Suspicious memory','Timeline','Limitations','Conclusion','Appendix']; print('\\n'.join(sections))",
+            "solutionExplanation": "The structure makes each conclusion traceable."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Final Real-World Project: Memory Forensics Incident Triage",
+        "description": "Apply the complete course workflow to an authorized memory image and produce a reproducible forensic evidence package.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Project Brief and Assessment",
+            "description": "Defines the final assessment and quality criteria.",
+            "learningObjectives": [
+              "plan an end-to-end investigation",
+              "select appropriate plugins",
+              "preserve provenance",
+              "report limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The project is assessed on evidence quality and reasoning, not plugin count. Every major conclusion must be traceable to raw output and evidence metadata."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "No unauthorized collection.",
+                  "No execution of extracted suspicious code.",
+                  "No reuse or publication of recovered secrets.",
+                  "Unsupported plugins and failures must be documented."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q22",
+              "question": "What is the primary project success criterion?",
+              "options": [
+                "Maximum plugin count",
+                "A reproducible evidence-backed investigation with accurate limitations",
+                "Finding malware in every sample",
+                "Longest report"
+              ],
+              "answer": "A reproducible evidence-backed investigation with accurate limitations",
+              "explanation": "Forensic competence is measured by defensible reasoning and reproducibility."
+            },
+            "summary": [
+              "plan an end-to-end investigation",
+              "select appropriate plugins",
+              "preserve provenance",
+              "report limitations"
+            ],
+            "resources": [
+              "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+              "https://github.com/volatilityfoundation/volatility3"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Memory Forensics Incident Triage and Evidence Report",
+          "description": "An end-to-end authorized investigation that validates a memory image, performs platform-specific Volatility 3 triage, correlates process/network/memory indicators, handles sensitive memory safely, builds a timeline, automates repeatable runs, and produces a defensible report.",
+          "conceptsCovered": [
+            "volatile evidence",
+            "integrity hashing",
+            "Volatility 3",
+            "layers and symbols",
+            "Windows/Linux process analysis",
+            "network correlation",
+            "virtual-memory mapping",
+            "malfind/YARA triage",
+            "credential exposure",
+            "timeline reasoning",
+            "cross-source correlation",
+            "automation",
+            "forensic reporting"
+          ],
+          "steps": [
+            "Select an authorized Windows or Linux training image and record provenance, size, SHA-256, acquisition time, and source.",
+            "Create a Python virtual environment, install Volatility 3, and record the version.",
+            "Validate the image and document OS/build and symbol context.",
+            "Run broad process and network enumeration, then select high-priority processes using observable evidence.",
+            "Perform platform-specific deep analysis such as DLLs/handles/VAD/malfind on Windows or bash/modules/sockets/maps on Linux where supported.",
+            "Preserve command lines, stdout, stderr, exit codes, and analysis timestamps.",
+            "Handle credential material as sensitive evidence; never publish or reuse recovered secrets.",
+            "Build a UTC-normalized timeline and correlate with independent telemetry when available.",
+            "Write findings as observation → interpretation → corroboration → conclusion → limitation.",
+            "Recalculate the memory-image hash and verify it matches the original manifest.",
+            "Package the report and run manifest without modifying the original evidence."
+          ],
+          "code": {
+            "README.md": "Memory Forensics Incident Triage\\n\\nUse only with authorized evidence. Requires Python 3.8+ and Volatility 3 installed as `vol`.\\n\\nExample: `python memory_triage.py --image /path/to/memory.dmp --platform windows --out results`\\n",
+            "memory_triage.py": "#!/usr/bin/env python3\nfrom pathlib import Path\nfrom datetime import datetime, timezone\nimport argparse, hashlib, json, shutil, subprocess\n\nPLUGINS = {\n    \"windows\": [\"windows.info\",\"windows.pslist\",\"windows.psscan\",\"windows.pstree\",\"windows.cmdline\",\"windows.netscan\"],\n    \"linux\": [\"linux.pslist\",\"linux.psscan\",\"linux.pstree\",\"linux.bash\",\"linux.lsmod\",\"linux.sockstat\"],\n}\n\ndef sha256_file(path):\n    h = hashlib.sha256()\n    with path.open(\"rb\") as f:\n        for chunk in iter(lambda: f.read(1024 * 1024), b\"\"):\n            h.update(chunk)\n    return h.hexdigest()\n\ndef run_plugin(image, plugin, out):\n    name = plugin.replace(\".\", \"_\")\n    cmd = [\"vol\", \"-f\", str(image), plugin]\n    start = datetime.now(timezone.utc).isoformat()\n    result = subprocess.run(cmd, capture_output=True, text=True, check=False)\n    stdout = out / f\"{name}.stdout.txt\"\n    stderr = out / f\"{name}.stderr.txt\"\n    stdout.write_text(result.stdout, encoding=\"utf-8\", errors=\"replace\")\n    stderr.write_text(result.stderr, encoding=\"utf-8\", errors=\"replace\")\n    return {\"plugin\": plugin, \"command\": cmd, \"started_utc\": start,\n            \"finished_utc\": datetime.now(timezone.utc).isoformat(),\n            \"returncode\": result.returncode, \"stdout\": str(stdout), \"stderr\": str(stderr)}\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--image\", required=True)\n    parser.add_argument(\"--platform\", choices=PLUGINS, required=True)\n    parser.add_argument(\"--out\", default=\"memory-results\")\n    args = parser.parse_args()\n\n    image = Path(args.image).expanduser().resolve()\n    out = Path(args.out).expanduser().resolve()\n    out.mkdir(parents=True, exist_ok=True)\n\n    if not image.is_file():\n        raise SystemExit(f\"Memory image not found: {image}\")\n    if not shutil.which(\"vol\"):\n        raise SystemExit(\"Volatility 3 'vol' is not in PATH\")\n\n    manifest = {\n        \"created_utc\": datetime.now(timezone.utc).isoformat(),\n        \"image\": str(image),\n        \"size_bytes\": image.stat().st_size,\n        \"sha256_before\": sha256_file(image),\n        \"platform\": args.platform,\n        \"runs\": []\n    }\n\n    for plugin in PLUGINS[args.platform]:\n        manifest[\"runs\"].append(run_plugin(image, plugin, out))\n\n    manifest[\"sha256_after\"] = sha256_file(image)\n    manifest[\"image_unchanged\"] = manifest[\"sha256_before\"] == manifest[\"sha256_after\"]\n\n    (out / \"run-manifest.json\").write_text(json.dumps(manifest, indent=2), encoding=\"utf-8\")\n\n    if not manifest[\"image_unchanged\"]:\n        raise SystemExit(\"Evidence image hash changed during analysis\")\n    print(f\"Analysis complete: {out / 'run-manifest.json'}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+            "report_template.md": "# Memory Forensics Incident Report\\n\\n## Evidence\\nCase ID:\\nEvidence ID:\\nImage:\\nAcquisition method:\\nAcquisition time (UTC):\\nOriginal SHA-256:\\nFinal SHA-256:\\n\\n## Tooling\\nVolatility 3 version:\\nPython version:\\nAnalysis OS:\\n\\n## Validation\\nTarget OS/build, architecture, symbols, and image-validation result.\\n\\n## Findings\\nObservation → Interpretation → Corroboration → Conclusion → Limitation.\\n\\n## Timeline\\nNormalize event timestamps to UTC and identify source.\\n\\n## Credential exposure\\nRecord only the minimum locator/context. Never include recovered secrets.\\n\\n## Limitations\\nDocument acquisition scope, missing pages, symbols, unsupported plugins, and timestamp uncertainty.\\n\\n## Appendix\\nCommand lines, exit codes, raw-output paths, rule versions, and hashes.\\n"
+          }
+        }
+      }
+    ],
+    "researchSources": [
+      {
+        "title": "NIST SP 800-86",
+        "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf"
+      },
+      {
+        "title": "Volatility 3 official repository",
+        "url": "https://github.com/volatilityfoundation/volatility3"
+      },
+      {
+        "title": "Volatility 3 Basics",
+        "url": "https://volatility3.readthedocs.io/en/latest/basics.html"
+      },
+      {
+        "title": "Volatility 3 Windows tutorial",
+        "url": "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst"
+      },
+      {
+        "title": "Volatility 3 Linux tutorial",
+        "url": "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-linux-tutorial.rst"
+      },
+      {
+        "title": "Microsoft AVML",
+        "url": "https://github.com/microsoft/avml"
+      },
+      {
+        "title": "Microsoft Windows memory dump options",
+        "url": "https://learn.microsoft.com/en-us/troubleshoot/windows-server/performance/memory-dump-file-options"
+      },
+      {
+        "title": "Microsoft virtual address space",
+        "url": "https://learn.microsoft.com/en-us/windows/win32/memory/virtual-address-space"
+      },
+      {
+        "title": "Linux /proc documentation",
+        "url": "https://docs.kernel.org/filesystems/proc.html"
+      },
+      {
+        "title": "YARA documentation",
+        "url": "https://yara.readthedocs.io/en/latest/"
+      },
+      {
+        "title": "MITRE ATT&CK OS Credential Dumping",
+        "url": "https://attack.mitre.org/techniques/T1003/"
+      },
+      {
+        "title": "MITRE Linux /proc credential-access detection",
+        "url": "https://attack.mitre.org/detectionstrategies/DET0593/"
+      }
+    ]
+  }
+}

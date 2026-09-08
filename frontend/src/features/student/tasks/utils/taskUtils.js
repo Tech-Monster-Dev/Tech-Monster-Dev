@@ -193,6 +193,11 @@ export const buildModules = (contentData) => {
 
                         taskId,
 
+                        language:
+                            task.language ||
+                            task.programmingLanguage ||
+                            "",
+
                         title:
                             task.title ||
                             task.taskTitle ||
@@ -314,6 +319,11 @@ export const buildModules = (contentData) => {
                                     lessonId,
 
                                     taskId,
+
+                                    language:
+                                        task.language ||
+                                        task.programmingLanguage ||
+                                        "",
 
                                     title:
                                         task.title ||

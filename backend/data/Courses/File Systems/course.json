@@ -1,0 +1,2651 @@
+{
+  "course": {
+    "id": "file-systems",
+    "title": "File Systems",
+    "slug": "file-systems",
+    "description": "A deep, practical course on how modern file systems represent, organize, allocate, protect, recover, and account for persistent data. Students progress from the filesystem abstraction and names/metadata into allocation structures, inodes and NTFS MFT records, directories, journaling and copy-on-write, Windows NTFS, Linux ext4, APFS, Btrfs, permissions and special objects, deletion and recovery concepts, disk images and forensic tooling, timelines and validation, storage performance and integrity, security and privacy, and a final read-only filesystem evidence workbench. The course is suitable for learners who want a technically grounded understanding of filesystems for systems work, troubleshooting, storage engineering, and digital-forensics-oriented analysis without treating a particular vendor tool as an oracle.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 68,
+    "prerequisites": [
+      "Basic computer architecture and operating-system concepts",
+      "Comfort with files, directories, paths, and command-line navigation",
+      "Basic understanding of storage devices and partitions",
+      "Basic Linux shell or Windows PowerShell familiarity",
+      "Basic Python reading ability is helpful for the automation exercises",
+      "A controlled lab environment for filesystem experiments"
+    ],
+    "learningOutcomes": [
+      "Explain the purpose and layered architecture of file systems.",
+      "Distinguish files, directory entries, metadata objects, links, and storage allocation.",
+      "Interpret inode-based and NTFS MFT/attribute structures at a conceptual and practical level.",
+      "Explain blocks, clusters, extents, sparse files, compression, and shared-block storage.",
+      "Interpret journaling, copy-on-write, snapshots, and filesystem consistency mechanisms without overclaiming historical recovery.",
+      "Compare important filesystem behaviors in NTFS, ext4, APFS, and Btrfs.",
+      "Analyze permissions, ACL/security-descriptor concepts, extended attributes, links, mounts, and special objects.",
+      "Explain deletion, unallocated space, slack, carving, and residual-data limitations.",
+      "Use hashes, working copies, read-only boundaries, and filesystem-aware tools in controlled analysis workflows.",
+      "Construct source-preserving filesystem timelines and validate parser/recovery behavior with known test datasets.",
+      "Reason about storage performance, filesystem checksums, quotas, change journals, and shared-block accounting.",
+      "Identify filesystem security risks such as unsafe path handling, symlink traversal, weak permissions, and insecure temporary-file patterns.",
+      "Apply privacy-aware collection and evidence-storage principles.",
+      "Build and validate a read-only filesystem evidence inventory and integrity workbench."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "File-System Foundations",
+        "description": "Build the conceptual vocabulary needed to understand filesystem behavior across operating systems.",
+        "lessons": [
+          {
+            "id": "01-01",
+            "title": "What a File System Does",
+            "description": "Understand the abstraction that a file system provides and why files, directories, metadata, and allocation are separate concepts.",
+            "learningObjectives": [
+              "explain the purpose of a file system",
+              "distinguish logical file names from physical storage layout",
+              "identify the major information a file system must maintain"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Core model"
+              },
+              {
+                "type": "paragraph",
+                "text": "A file system organizes persistent data so programs can create, find, read, modify, rename, and delete files. It must map logical names and directories to metadata and the storage locations containing file data."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A regular file has content plus metadata such as ownership, size, timestamps, and permissions; exact metadata varies by file system.",
+                  "Directories provide name-to-object relationships. They are a structural part of the file system, not merely a graphical list.",
+                  "Allocation structures track which storage units are used and which are available.",
+                  "File-system metadata and file content can live in different on-disk structures."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not assume that a file name, directory entry, inode/MFT record, and file content are the same object. They are related layers with different semantics."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q01-01",
+              "question": "Which statement best describes a file system?",
+              "options": [
+                "A mechanism that organizes persistent data and metadata for storage and retrieval.",
+                "A network protocol for routing packets.",
+                "A database that only stores user passwords.",
+                "A CPU scheduling algorithm."
+              ],
+              "answer": "A mechanism that organizes persistent data and metadata for storage and retrieval.",
+              "explanation": "A file system manages the structures needed to name, locate, allocate, protect, and retrieve persistent data."
+            },
+            "summary": [
+              "A file system is an abstraction plus concrete metadata and allocation structures.",
+              "Understanding the abstraction is the foundation for interpreting platform-specific file systems."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/vfs.html",
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html"
+            ]
+          },
+          {
+            "id": "01-02",
+            "title": "Files, Directories, Links, and Names",
+            "description": "Learn how directory names relate to file objects and how hard and symbolic links change the mental model.",
+            "learningObjectives": [
+              "differentiate a directory entry from the underlying file object",
+              "explain hard-link and symbolic-link behavior",
+              "predict what happens when one name is removed"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Names versus objects"
+              },
+              {
+                "type": "paragraph",
+                "text": "On Unix-like systems, a directory maps names to filesystem objects represented by inodes. A hard link is another directory entry referring to the same inode; a symbolic link is a separate filesystem object whose content identifies another path."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Hard links to the same file object share the underlying inode and link count.",
+                  "A symbolic link can cross filesystem boundaries because it stores a pathname rather than another inode reference.",
+                  "Removing one hard-link name does not remove the underlying object while other links keep it referenced.",
+                  "A dangling symbolic link can remain even when its target no longer exists."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "# Linux lab\nln original.txt hard.txt\nln -s original.txt symbolic.txt\nls -li original.txt hard.txt symbolic.txt\n"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q01-02",
+              "question": "What is the key property of a hard link on a typical Unix filesystem?",
+              "options": [
+                "It refers to the same underlying inode as the original name.",
+                "It always stores the target path as text.",
+                "It must point to a file on another disk.",
+                "It is automatically encrypted."
+              ],
+              "answer": "It refers to the same underlying inode as the original name.",
+              "explanation": "A hard link is another directory entry referencing the same inode."
+            },
+            "summary": [
+              "Directory entries and file objects are distinct concepts.",
+              "Link semantics matter when reasoning about deletion, identity, and storage."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man7/inode.7.html",
+              "https://docs.kernel.org/filesystems/vfs.html"
+            ]
+          },
+          {
+            "id": "01-03",
+            "title": "File Metadata and Attributes",
+            "description": "Learn which metadata fields are common across file systems and how platform-specific attributes fit into the model.",
+            "learningObjectives": [
+              "identify size, ownership, mode, and timestamp metadata",
+              "explain why metadata semantics vary across file systems",
+              "inspect metadata using standard tools"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Metadata categories"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identity: inode numbers, object IDs, or other file-system-specific identifiers.",
+                  "Ownership and permissions: user/group ownership, ACLs, mode bits, or security descriptors.",
+                  "Temporal metadata: access, modification, change, creation/birth, or other filesystem-specific times.",
+                  "Storage metadata: allocated size, logical size, extents or block mappings, allocation flags, compression, sparse state, and related properties."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Windows exposes file attributes such as read-only and hidden, while NTFS stores richer attribute structures. Unix-like systems expose inode-based metadata through interfaces such as stat. These are not interchangeable schemas."
+              },
+              {
+                "type": "code",
+                "text": "# Linux metadata inspection\nstat sample.txt\n\n# Python: selected metadata\nfrom pathlib import Path\npath = Path(\"sample.txt\")\nmeta = path.stat()\nprint(meta.st_size, meta.st_mode, meta.st_uid, meta.st_gid)\n"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "pr-01",
+                "title": "Compare Linux and Windows File Metadata",
+                "description": "Inspect the same controlled test file on Linux and Windows and record the metadata exposed by each operating system.",
+                "steps": [
+                  "Create a small text file in a disposable lab directory on each OS.",
+                  "Run `stat` on Linux and inspect the Windows file using PowerShell `Get-Item`.",
+                  "Record size, owner information, permissions/attributes, and available times.",
+                  "Write the semantic meaning of each timestamp instead of assigning generic labels.",
+                  "Identify one field that cannot be directly equated across the platforms."
+                ],
+                "solution": "Linux command: `stat sample.txt`\nWindows PowerShell: `Get-Item .\\sample.txt | Format-List Name,Length,CreationTime,LastWriteTime,LastAccessTime,Attributes`\nUse the measured lab output; do not invent values.",
+                "output": "The expected result is a comparison table showing that filesystem metadata differs by operating system and that similarly named timestamps can have different semantics."
+              }
+            ],
+            "quiz": {
+              "id": "q01-03",
+              "question": "Why should an examiner avoid assuming that every filesystem has the same timestamp set?",
+              "options": [
+                "Timestamp meanings and available fields differ by filesystem and operating system.",
+                "All filesystems use identical timestamp semantics.",
+                "Timestamps are stored only in filenames.",
+                "Timestamps exist only in RAM."
+              ],
+              "answer": "Timestamp meanings and available fields differ by filesystem and operating system.",
+              "explanation": "Filesystem metadata models vary; even similarly named times can have different meanings."
+            },
+            "summary": [
+              "Metadata is evidence about filesystem state, not automatically evidence of human intent.",
+              "Always preserve source semantics when normalizing metadata."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man7/inode.7.html",
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants",
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85"
+            ]
+          },
+          {
+            "id": "01-04",
+            "title": "File-System Architecture Layers",
+            "description": "Understand the layers from storage media through partitions/volumes, filesystem metadata, directories, and files.",
+            "learningObjectives": [
+              "map physical storage to logical filesystem layers",
+              "explain why offsets and boundaries matter",
+              "identify where common forensic tools operate"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Layered view"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Storage device or image",
+                  "Partition table / volume system",
+                  "Filesystem volume",
+                  "Filesystem metadata and allocation structures",
+                  "Directories and file objects",
+                  "Application-level formats"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The Sleuth Kit explicitly separates file-system concepts into filesystem, data units, metadata, filename, and application categories. A forensic analyst benefits from keeping these layers distinct even when a GUI makes them appear as one tree."
+              },
+              {
+                "type": "warning",
+                "text": "A file browser view is a logical presentation. It does not by itself reveal unallocated space, hidden metadata, alternate streams, filesystem journals, or deleted objects."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q01-04",
+              "question": "Why are partition boundaries important when analyzing a disk image?",
+              "options": [
+                "Filesystem structures must be interpreted at the correct offsets and within the correct volume boundaries.",
+                "Partitions contain application passwords by definition.",
+                "Every partition uses the same filesystem.",
+                "Partition tables replace filesystem metadata."
+              ],
+              "answer": "Filesystem structures must be interpreted at the correct offsets and within the correct volume boundaries.",
+              "explanation": "Incorrect boundaries can cause the examiner to parse the wrong bytes as filesystem structures."
+            },
+            "summary": [
+              "Filesystem analysis depends on correct layer identification.",
+              "Tools automate layer discovery, but the analyst must still understand the model."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html",
+              "https://sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/imgpage.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Map a Path from Name to Stored Data",
+            "level": "Easy",
+            "description": "Build a layer-by-layer explanation of how a pathname resolves to a file object and its stored data.",
+            "problemStatement": "Explain how `/lab/reports/summary.txt` is resolved on a Unix-like filesystem and contrast the metadata layer with NTFS.",
+            "objectives": [
+              "identify namespace and directory lookup",
+              "identify metadata object",
+              "identify allocation mapping",
+              "separate logical path from storage layout"
+            ],
+            "requirements": [
+              "Linux filesystem documentation",
+              "NTFS documentation",
+              "No real evidence"
+            ],
+            "hint": "Show directory lookup as a separate step from metadata-object lookup.",
+            "solutionCode": "Path → parent directories → final directory entry → inode/object metadata → allocation mapping → data blocks. NTFS uses directory indexing plus MFT/attribute structures rather than Unix inodes.",
+            "solutionExplanation": "The task tests the filesystem stack rather than one command or GUI view."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "On-Disk Structures and Allocation",
+        "description": "Move from conceptual files to the actual metadata and allocation structures that implement them.",
+        "lessons": [
+          {
+            "id": "02-01",
+            "title": "Blocks, Clusters, Extents, and Allocation",
+            "description": "Understand the units used to map file content onto storage and how allocation affects performance and analysis.",
+            "learningObjectives": [
+              "define block, cluster, extent, and allocation map",
+              "explain logical versus allocated size",
+              "relate fragmentation to file layout"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Allocation vocabulary"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A filesystem divides storage into allocatable units; names vary by platform.",
+                  "An extent is a contiguous range of storage units represented as a mapping rather than a long list of individual blocks.",
+                  "Logical file size describes the bytes the file presents to applications; allocated size describes storage consumed and can differ for sparse or compressed data.",
+                  "Allocation metadata lets the filesystem reuse free space efficiently and track which regions belong to which objects."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "ext4 uses block groups and extents; NTFS uses clusters and file attributes that can describe data runs. These structures are not the same implementation, but both solve the mapping problem between logical files and physical storage."
+              },
+              {
+                "type": "code",
+                "text": "# Linux: compare apparent and allocated size\nls -l sparse.bin\ndu -B1 sparse.bin\n"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "pr-02",
+                "title": "Observe Sparse-File Allocation",
+                "description": "Create a sparse file on Linux and compare logical length with disk allocation.",
+                "steps": [
+                  "Create a disposable directory.",
+                  "Use `truncate` to create a 100 MiB sparse file.",
+                  "Write a short string near the beginning and end.",
+                  "Compare `ls -l` and `du -B1`.",
+                  "Explain the difference between logical size and allocated space."
+                ],
+                "solution": "`mkdir -p fs-lab/sparse && cd fs-lab/sparse && truncate -s 100M sparse.bin && printf 'BEGIN' | dd of=sparse.bin bs=1 seek=0 conv=notrunc status=none && printf 'END' | dd of=sparse.bin bs=1 seek=$((100*1024*1024-3)) conv=notrunc status=none && ls -l sparse.bin && du -B1 sparse.bin`",
+                "output": "The logical file length is about 100 MiB, while the allocated space can be far smaller because the file contains a hole."
+              }
+            ],
+            "quiz": {
+              "id": "q02-01",
+              "question": "Why can logical file size differ from allocated space?",
+              "options": [
+                "Sparse files, compression, filesystem metadata, and other features can change how much storage is physically allocated.",
+                "A file name changes its size.",
+                "Directories always duplicate file content.",
+                "The CPU stores file size in registers."
+              ],
+              "answer": "Sparse files, compression, filesystem metadata, and other features can change how much storage is physically allocated.",
+              "explanation": "Logical and physical allocation are distinct concepts, particularly for sparse and compressed files."
+            },
+            "summary": [
+              "Allocation structures are central to both performance and forensic recovery.",
+              "Never assume file size alone tells you how many storage blocks contain data."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/ext4/overview.html",
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/files-and-clusters"
+            ]
+          },
+          {
+            "id": "02-02",
+            "title": "Inodes, MFT Records, and File Attributes",
+            "description": "Compare two major metadata models: Unix-like inodes and NTFS MFT records/attributes.",
+            "learningObjectives": [
+              "explain what an inode stores",
+              "explain the role of the NTFS MFT",
+              "distinguish metadata records from directory names and file data"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Unix-like inode model"
+              },
+              {
+                "type": "paragraph",
+                "text": "In Unix-like filesystems, an inode represents the metadata for a filesystem object and includes fields such as file type, ownership, permissions, timestamps, size, link count, and filesystem-specific mapping information."
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "NTFS record and attribute model"
+              },
+              {
+                "type": "paragraph",
+                "text": "NTFS maintains an MFT with at least one entry for every file on the volume. NTFS represents file-associated information through attributes such as $STANDARD_INFORMATION, $FILE_NAME, and $DATA; an MFT record can therefore contain multiple attributes."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A filename is not simply the MFT record itself; it is represented by NTFS filename metadata and directory indexing structures.",
+                  "NTFS files can use multiple MFT records when their attributes do not fit in the base record.",
+                  "An inode number or MFT reference is useful as an object identifier within its filesystem but is not globally unique across all devices."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02-02",
+              "question": "What is the primary role of the NTFS MFT?",
+              "options": [
+                "To store records and attributes used by NTFS to describe files and retrieve their data.",
+                "To route Ethernet frames.",
+                "To store only filenames and nothing else.",
+                "To replace the CPU cache."
+              ],
+              "answer": "To store records and attributes used by NTFS to describe files and retrieve their data.",
+              "explanation": "Microsoft documents the MFT as the central NTFS structure containing file records and associated attributes."
+            },
+            "summary": [
+              "Inodes and MFT records are analogous only at a conceptual level; their implementations differ.",
+              "The correct investigative question is what structure a platform actually uses and what fields mean."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/master-file-table",
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85",
+              "https://man7.org/linux/man-pages/man7/inode.7.html"
+            ]
+          },
+          {
+            "id": "02-03",
+            "title": "Directory Structures and Lookup",
+            "description": "Learn how directories map names to file objects and why large directories use indexes.",
+            "learningObjectives": [
+              "explain directory-entry mapping",
+              "identify why directory indexing improves lookup",
+              "recognize directory metadata as distinct evidence"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Directory lookup"
+              },
+              {
+                "type": "paragraph",
+                "text": "A directory associates human-readable names with underlying filesystem objects. Implementations vary: ext4 uses directory entries and indexing; NTFS uses indexed attributes. The shared concept is name resolution rather than a universal on-disk structure."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Directory entries can contain names and references to metadata objects.",
+                  "Deleting or renaming a file can change directory metadata without immediately erasing all file content.",
+                  "Large directories benefit from indexing because linear scans become expensive.",
+                  "A path is a derived relationship through parent directories, not an immutable property stored inside the file content."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02-03",
+              "question": "What is a directory primarily responsible for?",
+              "options": [
+                "Mapping names to filesystem objects and organizing hierarchy.",
+                "Encrypting all file contents.",
+                "Scheduling CPU instructions.",
+                "Storing network routing tables."
+              ],
+              "answer": "Mapping names to filesystem objects and organizing hierarchy.",
+              "explanation": "Directories are the namespace layer that maps names to underlying objects."
+            },
+            "summary": [
+              "Directory entries are part of evidence because they establish name/path relationships.",
+              "A file can survive after one name is removed if other references or recovery structures remain."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/vfs.html",
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html"
+            ]
+          },
+          {
+            "id": "02-04",
+            "title": "Journaling, Copy-on-Write, and Crash Consistency",
+            "description": "Understand how modern filesystems protect consistency and why journal/snapshot data can affect interpretation.",
+            "learningObjectives": [
+              "explain the purpose of journaling",
+              "contrast journaling with copy-on-write",
+              "identify forensic implications of filesystem consistency mechanisms"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Consistency mechanisms"
+              },
+              {
+                "type": "paragraph",
+                "text": "Journaling records filesystem changes so metadata can be recovered after crashes. ext4 uses the jbd2 journal; the default data=ordered mode journals filesystem metadata but does not guarantee all file data blocks are journaled."
+              },
+              {
+                "type": "paragraph",
+                "text": "Copy-on-write (COW) filesystems such as Btrfs write new versions of blocks rather than overwriting them in place and can provide snapshots. APFS similarly provides copy-on-write-oriented features such as snapshots and cloning."
+              },
+              {
+                "type": "warning",
+                "text": "A journal or snapshot is not a time machine for every past file version. Retention, allocation, garbage collection, transaction boundaries, and filesystem behavior determine what remains available."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02-04",
+              "question": "What is the primary purpose of an ext4 journal?",
+              "options": [
+                "To help maintain filesystem consistency across crashes.",
+                "To store every historical copy of every user file forever.",
+                "To replace directory entries.",
+                "To provide Wi-Fi encryption."
+              ],
+              "answer": "To help maintain filesystem consistency across crashes.",
+              "explanation": "The journal supports recovery of committed filesystem changes after interruption."
+            },
+            "summary": [
+              "Journaling and snapshots have different purposes and retention behavior.",
+              "Forensic interpretation must respect filesystem-specific semantics rather than assuming all historical data persists."
+            ],
+            "resources": [
+              "https://www.kernel.org/doc/html/latest/filesystems/ext4/journal.html",
+              "https://btrfs.readthedocs.io/en/stable/Introduction.html",
+              "https://developer.apple.com/documentation/technologyoverviews/files-and-directories"
+            ]
+          },
+          {
+            "id": "02-05",
+            "title": "Sparse Files, Compression, and Alternate Data",
+            "description": "Understand storage features that cause a file's logical content and on-disk representation to diverge.",
+            "learningObjectives": [
+              "define sparse files",
+              "explain how compression changes storage mapping",
+              "identify alternate data streams as a filesystem-specific feature"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "When one file is more than one byte stream"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Sparse files contain regions that read as zeros without requiring physical storage for every logical byte.",
+                  "Filesystem compression can store content in encoded chunks rather than one-to-one blocks.",
+                  "NTFS supports alternate data streams, which are additional named streams associated with a file; they are distinct from the default unnamed data stream.",
+                  "A forensic tool that only displays default file contents may omit additional filesystem metadata or streams."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "# PowerShell: inspect NTFS file streams (NTFS volumes)\nGet-Item .\\sample.txt -Stream *\n"
+              },
+              {
+                "type": "warning",
+                "text": "Alternate data streams and other filesystem-specific features should be tested on a lab volume before being relied upon in a case."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02-05",
+              "question": "What is an NTFS alternate data stream?",
+              "options": [
+                "An additional named data stream associated with an NTFS file.",
+                "A second network interface.",
+                "A duplicate partition table.",
+                "A CPU cache line."
+              ],
+              "answer": "An additional named data stream associated with an NTFS file.",
+              "explanation": "Microsoft documents additional streams as distinct streams within an NTFS file."
+            },
+            "summary": [
+              "Logical file presentation can hide filesystem-specific storage features.",
+              "Filesystem-aware tools and explicit artifact checks are important in forensic examination."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/files-and-clusters",
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Explain a Logical-vs-Allocated Size Case",
+            "level": "Intermediate",
+            "description": "Analyze why a large logical file can consume much less physical storage.",
+            "problemStatement": "A file reports 1 GiB logical length but only a small allocation. Explain plausible filesystem features and the measurements needed to distinguish them.",
+            "objectives": [
+              "separate logical and allocated size",
+              "identify sparse/compressed/shared storage causes",
+              "propose discriminating measurements"
+            ],
+            "requirements": [
+              "Linux filesystem lab",
+              "Filesystem documentation"
+            ],
+            "hint": "Check for holes, compression, or shared blocks before assuming corruption.",
+            "solutionCode": "Possible causes include sparse regions, filesystem compression, or shared COW/reflink blocks. Measure allocation and filesystem feature state using the filesystem-appropriate tools.",
+            "solutionExplanation": "The task reinforces that logical length is not a universal measure of physical storage consumption."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Windows, Linux, and Modern Filesystems",
+        "description": "Apply the core model to major real-world filesystems used in current desktops and servers.",
+        "lessons": [
+          {
+            "id": "03-01",
+            "title": "Windows NTFS in Practice",
+            "description": "Learn the NTFS structures most useful for technical file-system analysis.",
+            "learningObjectives": [
+              "identify core NTFS metadata files and attributes",
+              "explain how file records relate to data",
+              "interpret common NTFS structures cautiously"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Important NTFS structures"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "$MFT indexes file records; $MftMirr mirrors selected initial records.",
+                  "$Bitmap tracks cluster allocation.",
+                  "$LogFile supports transactional filesystem recovery.",
+                  "$Secure stores security descriptor information.",
+                  "$Extend contains additional system metadata such as USN and other features depending on volume state."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents many NTFS components as files or attributes. The forensic significance depends on what question is being asked and whether the structure has been preserved and parsed correctly."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q03-01",
+              "question": "What does `$Bitmap` primarily represent on NTFS?",
+              "options": [
+                "Cluster allocation state.",
+                "Browser history.",
+                "Process memory.",
+                "DNS cache entries."
+              ],
+              "answer": "Cluster allocation state.",
+              "explanation": "Microsoft identifies $Bitmap as the NTFS volume cluster map showing in-use versus free clusters."
+            },
+            "summary": [
+              "NTFS system metadata is itself stored in a structured filesystem namespace.",
+              "Different NTFS metadata files answer different questions."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/master-file-table",
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85",
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/files-and-clusters"
+            ]
+          },
+          {
+            "id": "03-02",
+            "title": "NTFS Timestamps and File Names",
+            "description": "Interpret NTFS timestamp sources and distinguish filename metadata from standard information.",
+            "learningObjectives": [
+              "compare $STANDARD_INFORMATION and $FILE_NAME time fields conceptually",
+              "explain why timestamps should not be read as human intent",
+              "identify conditions that can produce different timestamp views"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Two metadata contexts"
+              },
+              {
+                "type": "paragraph",
+                "text": "NTFS exposes timestamps through different attributes, notably $STANDARD_INFORMATION and $FILE_NAME. A forensic examiner should preserve which attribute produced a timestamp and avoid assuming that similar-looking values have identical semantics."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Filesystem timestamps describe filesystem state or metadata updates; they do not inherently prove a person performed an action.",
+                  "Copying or moving files, application behavior, and filesystem operations can produce changes in metadata.",
+                  "Time zone conversion is a presentation concern; retain the original timestamp representation and documented offset where possible."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q03-02",
+              "question": "What is the safest interpretation of an NTFS modification timestamp?",
+              "options": [
+                "The filesystem records a modification time for the file; further evidence is needed to attribute the action to a person.",
+                "It proves which keyboard was used.",
+                "It proves the user intentionally edited the file.",
+                "It proves the computer was online."
+              ],
+              "answer": "The filesystem records a modification time for the file; further evidence is needed to attribute the action to a person.",
+              "explanation": "The timestamp is evidence of filesystem state, not independent proof of attribution or intent."
+            },
+            "summary": [
+              "Timestamp interpretation is contextual and source-specific.",
+              "Strong conclusions use corroborating artifacts rather than a single timestamp."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85",
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/master-file-table"
+            ]
+          },
+          {
+            "id": "03-03",
+            "title": "NTFS USN Change Journal",
+            "description": "Understand the role and limitations of the NTFS Update Sequence Number change journal.",
+            "learningObjectives": [
+              "explain what the USN change journal records",
+              "identify how it differs from a complete file history",
+              "inspect USN configuration on a Windows lab volume"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "USN journal"
+              },
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents the NTFS USN change journal as a persistent log of changes made to files on a volume. Records can identify the object changed and the type of change, but the journal is not a complete historical copy of all file content or an immutable record of every past event."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "USN records are associated with a volume and are appended as changes are recorded.",
+                  "Retention and journal size influence which records remain available.",
+                  "A USN record can show that a filesystem object experienced a particular class of change without proving why or who caused it."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "# Windows lab inspection\nfsutil usn queryjournal C:\n"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "pr-03",
+                "title": "Inspect an NTFS USN Journal",
+                "description": "Inspect, without modifying, the update-sequence-number journal configuration on a Windows lab volume.",
+                "steps": [
+                  "Use a disposable Windows lab VM.",
+                  "Run `fsutil usn queryjournal C:` from an elevated terminal.",
+                  "Record the returned journal metadata.",
+                  "Explain what the presence of the journal can support and what it cannot establish.",
+                  "Do not create, resize, or delete the journal for this practical."
+                ],
+                "solution": "PowerShell/Command Prompt: `fsutil usn queryjournal C:`. The exact output is system-dependent and should be copied from the lab VM.",
+                "output": "The command reports journal configuration when a USN journal is available and accessible. The practical teaches interpretation and documentation rather than modification."
+              }
+            ],
+            "quiz": {
+              "id": "q03-03",
+              "question": "What is a key limitation of the NTFS USN journal?",
+              "options": [
+                "It records filesystem change events but is not a complete historical record of file contents or human intent.",
+                "It stores every previous version of every file.",
+                "It works only on Linux.",
+                "It is the same thing as a disk image."
+              ],
+              "answer": "It records filesystem change events but is not a complete historical record of file contents or human intent.",
+              "explanation": "USN is a change journal, not a full version-control history or attribution mechanism."
+            },
+            "summary": [
+              "USN is useful for change sequencing and corroboration.",
+              "Retention and journal configuration must be considered."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/fsutil-usn"
+            ]
+          },
+          {
+            "id": "03-04",
+            "title": "Linux Ext4 and Inode-Based Analysis",
+            "description": "Learn ext4 structures that matter for storage and forensic reasoning.",
+            "learningObjectives": [
+              "explain ext4 block groups and inodes",
+              "describe extents and journal behavior",
+              "inspect inode metadata safely on a Linux lab system"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "ext4 model"
+              },
+              {
+                "type": "paragraph",
+                "text": "ext4 divides storage into block groups and uses inodes to represent file metadata. Extents efficiently map ranges of blocks for files. The filesystem journal supports consistency after crashes."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Inodes hold metadata and references to file data, while directory entries associate names with inodes.",
+                  "ext4 uses checksums and metadata structures to help detect corruption.",
+                  "The journal's semantics depend on the selected data mode; the default ordered mode prioritizes metadata consistency rather than journaling all file data."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "pr-04",
+                "title": "Observe Inode Sharing with Hard Links",
+                "description": "Demonstrate how two directory names can reference one inode on a Linux lab filesystem.",
+                "steps": [
+                  "Create `original.txt` and add a short line.",
+                  "Create `second-name.txt` with `ln original.txt second-name.txt`.",
+                  "Run `ls -li` on both names.",
+                  "Append data through one name and read through the other.",
+                  "Remove one name and confirm the other still accesses the data."
+                ],
+                "solution": "`mkdir -p fs-lab/links && cd fs-lab/links && printf 'filesystem lab\\n' > original.txt && ln original.txt second-name.txt && ls -li original.txt second-name.txt && printf 'updated\\n' >> second-name.txt && cat original.txt && rm original.txt && cat second-name.txt && ls -li second-name.txt`",
+                "output": "The two names should show the same inode before deletion. Removing one directory entry leaves the other linked object accessible."
+              }
+            ],
+            "quiz": {
+              "id": "q03-04",
+              "question": "Which structure identifies a regular file's metadata in ext4?",
+              "options": [
+                "An inode.",
+                "A DNS record.",
+                "A process ID.",
+                "A partition table entry."
+              ],
+              "answer": "An inode.",
+              "explanation": "ext4 uses inodes to store file metadata and mappings needed to locate file data."
+            },
+            "summary": [
+              "ext4 combines inode metadata, directory entries, block allocation, extents, and a journal.",
+              "The inode number is unique within a filesystem, not globally."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/ext4/overview.html",
+              "https://man7.org/linux/man-pages/man7/inode.7.html",
+              "https://www.kernel.org/doc/html/latest/filesystems/ext4/journal.html"
+            ]
+          },
+          {
+            "id": "03-05",
+            "title": "APFS and Btrfs: Why Modern Filesystems Change Forensic Expectations",
+            "description": "Learn the forensic implications of snapshots, clones, subvolumes, checksums, and copy-on-write.",
+            "learningObjectives": [
+              "describe APFS snapshot and clone features",
+              "describe Btrfs snapshots, checksums, and subvolumes",
+              "explain why copy-on-write can preserve or expose multiple versions of storage blocks"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Modern storage features"
+              },
+              {
+                "type": "paragraph",
+                "text": "Apple documents APFS features including snapshots, cloning, space sharing, atomic safe-save, and sparse files. Btrfs documents copy-on-write, snapshots, subvolumes, checksums, compression, and reflinks."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Snapshots can preserve prior filesystem state without being a full duplicate of all blocks.",
+                  "Clones/reflinks can create multiple logical references to shared physical data.",
+                  "Checksums help detect corruption but are not forensic hashes proving external chain of custody.",
+                  "Garbage collection and snapshot deletion can change which historical blocks remain accessible."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never infer that a snapshot is a complete historical disk image. Snapshot semantics are filesystem-specific and must be documented."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q03-05",
+              "question": "Why can a copy-on-write filesystem complicate forensic interpretation?",
+              "options": [
+                "Multiple logical versions may share or reference physical blocks, so storage state cannot be inferred from filenames alone.",
+                "COW filesystems have no metadata.",
+                "COW prevents snapshots.",
+                "COW stores files only in RAM."
+              ],
+              "answer": "Multiple logical versions may share or reference physical blocks, so storage state cannot be inferred from filenames alone.",
+              "explanation": "Copy-on-write changes how updates and shared blocks are represented, which affects historical and allocation analysis."
+            },
+            "summary": [
+              "Modern filesystems may retain useful historical state through snapshots or shared blocks.",
+              "Filesystem-native checksums serve different purposes from examiner-created evidence hashes."
+            ],
+            "resources": [
+              "https://developer.apple.com/documentation/technologyoverviews/files-and-directories",
+              "https://developer.apple.com/documentation/foundation/about-apple-file-system",
+              "https://btrfs.readthedocs.io/en/stable/Introduction.html",
+              "https://btrfs.readthedocs.io/en/stable/Checksumming.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Correlate NTFS MFT and USN Evidence",
+            "level": "Intermediate",
+            "description": "Interpret hypothetical MFT, filename, and USN records as one cautious evidence sequence.",
+            "problemStatement": "Determine which observations are directly established by each record and which claims require corroboration.",
+            "objectives": [
+              "label direct observations",
+              "correlate NTFS sources",
+              "state attribution limits"
+            ],
+            "requirements": [
+              "Synthetic records",
+              "Microsoft NTFS/USN documentation"
+            ],
+            "hint": "Use Source → Observation → Inference → Limitation.",
+            "solutionCode": "MFT: file-record metadata exists. USN: a recorded filesystem-object change occurred. Combined: supports a filesystem change sequence. Limitation: does not establish the human actor or intent.",
+            "solutionExplanation": "The task teaches source-aware correlation and prevents overclaiming from individual artifacts."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Filesystem Security, Naming, and Special Objects",
+        "description": "Understand the filesystem state that affects access, visibility, object identity, and safe traversal.",
+        "lessons": [
+          {
+            "id": "04-01",
+            "title": "Permissions, Modes, ACLs, and Security Descriptors",
+            "description": "Understand how filesystems enforce access and why permissions are part of filesystem state.",
+            "learningObjectives": [
+              "interpret Unix mode bits",
+              "explain ACL/security-descriptor concepts",
+              "distinguish filesystem authorization from application authorization"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Unix mode bits"
+              },
+              {
+                "type": "code",
+                "text": "# Linux example\nchmod 640 report.txt\nls -l report.txt\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "Unix mode bits represent read, write, and execute permissions for owner, group, and others, alongside the file type. ACLs can express additional entries beyond the basic mode bits."
+              },
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Windows security descriptors"
+              },
+              {
+                "type": "paragraph",
+                "text": "NTFS uses security descriptors and SIDs to express access control information. Microsoft identifies the security descriptor attribute as part of NTFS metadata."
+              },
+              {
+                "type": "warning",
+                "text": "Permissions describe authorization rules on the filesystem. They do not automatically prove that a user accessed a file or that access succeeded."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q04-01",
+              "question": "What do Unix mode bits primarily represent?",
+              "options": [
+                "Read/write/execute permissions for owner, group, and others plus file-type information.",
+                "The file contents.",
+                "Network route priorities.",
+                "CPU scheduling weights."
+              ],
+              "answer": "Read/write/execute permissions for owner, group, and others plus file-type information.",
+              "explanation": "Mode bits encode basic filesystem type and permission state."
+            },
+            "summary": [
+              "Permission state is evidence about configuration/authorization possibilities.",
+              "Access logs or application records are needed to prove actual use."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man7/inode.7.html",
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85"
+            ]
+          },
+          {
+            "id": "04-02",
+            "title": "Extended Attributes, Flags, and Hidden State",
+            "description": "Explore filesystem features that are easy to overlook in ordinary file browsers.",
+            "learningObjectives": [
+              "identify extended attributes and filesystem flags",
+              "explain how hidden/system attributes affect visibility",
+              "inspect metadata without modifying it"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Less-visible metadata"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Unix-like systems can have extended attributes (xattrs), capabilities, immutable/append-only flags, and filesystem-specific extended metadata.",
+                  "Windows files can carry attributes such as hidden, system, archive, compressed, encrypted, and read-only; exact support depends on filesystem and API.",
+                  "A GUI file browser can hide attributes or special files from normal users."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "# Linux examples\ngetfattr -d sample.txt\nlsattr sample.txt\n\n# Windows PowerShell\nGet-Item .\\sample.txt | Format-List *\n"
+              },
+              {
+                "type": "warning",
+                "text": "Only run metadata-inspection commands against a controlled lab copy or system when preservation policy permits it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q04-02",
+              "question": "Why are extended attributes relevant to filesystem analysis?",
+              "options": [
+                "They can store additional metadata or security-related state not visible in the main file contents.",
+                "They always contain deleted files.",
+                "They replace directory entries.",
+                "They exist only on optical media."
+              ],
+              "answer": "They can store additional metadata or security-related state not visible in the main file contents.",
+              "explanation": "Extended attributes are an additional metadata channel and can affect security, behavior, or provenance."
+            },
+            "summary": [
+              "Normal file content is only one part of filesystem state.",
+              "Special metadata should be explicitly considered when the investigative question makes it relevant."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85",
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants"
+            ]
+          },
+          {
+            "id": "04-03",
+            "title": "Case-Sensitive Names, Unicode, and Path Semantics",
+            "description": "Learn why identical-looking paths may not identify the same object across systems.",
+            "learningObjectives": [
+              "explain filesystem case-sensitivity differences",
+              "identify Unicode normalization issues",
+              "avoid unsafe assumptions when comparing paths across systems"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Path identity"
+              },
+              {
+                "type": "paragraph",
+                "text": "Filesystem name comparison rules differ. Some filesystems are case-sensitive, some are case-insensitive by default, and some support configurable or normalization behavior. Unicode can also produce visually similar but byte-distinct names."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A string comparison in a script is not necessarily equivalent to the filesystem's comparison rules.",
+                  "Preserve raw names and filesystem-native representations when possible.",
+                  "When moving evidence between filesystems, names can collide or change representation."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "from pathlib import Path\nfor p in Path('.').iterdir():\n    print(repr(p.name))\n"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q04-03",
+              "question": "Why should a forensic tool preserve the original filename representation?",
+              "options": [
+                "Filesystem name comparison and Unicode behavior can differ, so normalization can hide meaningful distinctions.",
+                "All filenames are ASCII.",
+                "Every filesystem uses case-sensitive comparison.",
+                "Renaming is always impossible."
+              ],
+              "answer": "Filesystem name comparison and Unicode behavior can differ, so normalization can hide meaningful distinctions.",
+              "explanation": "Preserving the original representation avoids silently collapsing distinct names."
+            },
+            "summary": [
+              "Path comparison is a filesystem-semantic problem, not just a string problem.",
+              "Cross-platform copying can change names without changing file content."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/vfs.html",
+              "https://developer.apple.com/documentation/technologyoverviews/files-and-directories"
+            ]
+          },
+          {
+            "id": "04-04",
+            "title": "Links, Mounts, Reparse Points, and Special Files",
+            "description": "Handle filesystem objects that do not behave like ordinary regular files.",
+            "learningObjectives": [
+              "identify symbolic links, mount points, and device/special-file concepts",
+              "explain why following links can change an evidence scope",
+              "distinguish a filesystem object from its target"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Special objects"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Symbolic links store path-like references and can cross filesystem boundaries.",
+                  "Mount points expose another filesystem at a directory path, so a recursive walk can unexpectedly cross an evidence boundary.",
+                  "Windows reparse points provide filesystem-managed redirection behavior; not every reparse point is a symbolic link.",
+                  "Unix device nodes, FIFOs, sockets, and other special files are not ordinary content-bearing regular files."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A recursive acquisition script must explicitly decide whether to follow symbolic links or mount boundaries. Accidentally traversing them can duplicate data or escape the intended evidence scope."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q04-04",
+              "question": "Why should an evidence-walking script decide whether to follow symlinks?",
+              "options": [
+                "Following them can cause the walk to leave the intended tree, loop, or duplicate content.",
+                "Symlinks are always regular files.",
+                "Following symlinks encrypts data.",
+                "It is required for hashing."
+              ],
+              "answer": "Following them can cause the walk to leave the intended tree, loop, or duplicate content.",
+              "explanation": "Link traversal changes scope and can introduce loops or external targets."
+            },
+            "summary": [
+              "Traversal policy is part of evidence-scope control.",
+              "Use filesystem-aware walking functions and explicit link-handling decisions."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/pathlib.html",
+              "https://docs.kernel.org/filesystems/vfs.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Audit a Recursive File Walker",
+            "level": "Intermediate",
+            "description": "Review a filesystem traversal script for scope and preservation risks.",
+            "problemStatement": "A utility recursively walks an evidence tree, follows symlinks, and writes its report inside the same tree. Identify the risks and define corrected behavior.",
+            "objectives": [
+              "identify output-inside-evidence risk",
+              "identify symlink traversal risk",
+              "define safe traversal and output boundaries"
+            ],
+            "requirements": [
+              "Python 3",
+              "Filesystem lab"
+            ],
+            "hint": "Treat input and output as separate trust boundaries and decide whether symlinks should be followed.",
+            "solutionCode": "Correct design: resolve roots; reject output paths inside evidence; do not follow symlinks by default; process files incrementally; document traversal policy.",
+            "solutionExplanation": "The solution applies filesystem semantics to secure evidence tooling."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Deletion, Recovery, and Historical Storage",
+        "description": "Understand how deletion, residual space, carving, journals, and snapshots influence file recovery.",
+        "lessons": [
+          {
+            "id": "05-01",
+            "title": "File Deletion and Reuse",
+            "description": "Understand what deletion normally changes and why recovery is possible only under some conditions.",
+            "learningObjectives": [
+              "explain deletion as a metadata/allocation operation",
+              "describe how freed space can later be reused",
+              "distinguish deletion from sanitization"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Deletion versus erasure"
+              },
+              {
+                "type": "paragraph",
+                "text": "Deleting a file generally changes namespace and allocation state so its storage can be reused. The exact behavior depends on the filesystem and storage technology. Data can remain recoverable for a time, but recovery is not guaranteed."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Filesystem metadata may retain references after a file is deleted until entries or blocks are reused.",
+                  "Metadata reuse can destroy the information needed for recovery even when some content bytes remain.",
+                  "Solid-state storage behavior, discard/TRIM, wear leveling, encryption, and controller behavior can make traditional recovery assumptions unreliable.",
+                  "NIST SP 800-88 Rev. 2 treats sanitization as a distinct process intended to render access to target data infeasible for a defined level of effort."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not promise file recovery simply because a file was deleted. Recovery depends on storage medium, filesystem behavior, retention, and overwrite/discard conditions."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q05-01",
+              "question": "Why is deleting a file different from sanitizing media?",
+              "options": [
+                "Deletion changes filesystem state, while sanitization is a controlled process intended to prevent recovery to a defined level of effort.",
+                "They are always identical.",
+                "Deletion is a cryptographic operation.",
+                "Sanitization only renames files."
+              ],
+              "answer": "Deletion changes filesystem state, while sanitization is a controlled process intended to prevent recovery to a defined level of effort.",
+              "explanation": "NIST defines sanitization as a separate media-protection process; deletion alone does not provide that guarantee."
+            },
+            "summary": [
+              "Deletion is a namespace/allocation event, not a universal physical erasure operation.",
+              "Modern storage requires medium-specific reasoning."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/88/r2/final"
+            ]
+          },
+          {
+            "id": "05-02",
+            "title": "Unallocated Space, Slack, and Residual Data",
+            "description": "Learn what remains outside active file allocations and how it can affect recovery.",
+            "learningObjectives": [
+              "define unallocated space",
+              "distinguish file slack from unallocated clusters",
+              "explain why residual bytes can be fragmentary"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Residual storage areas"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Unallocated space is storage currently not allocated to an active filesystem object.",
+                  "Slack can refer to unused space within an allocated storage unit or related filesystem context; exact definitions vary by analysis methodology.",
+                  "Residual data can be partial, overwritten, encrypted, compressed, or fragmented.",
+                  "Carving from raw storage can recover recognizable structures even when directory metadata is unavailable, but validation is essential."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Recovered bytes should not be treated as an intact original file unless the evidence supports that conclusion. Always document recovery method and completeness limits."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q05-02",
+              "question": "What is unallocated space?",
+              "options": [
+                "Storage that is not currently assigned to an active filesystem allocation.",
+                "A backup copy of every file.",
+                "A CPU cache.",
+                "A network interface queue."
+              ],
+              "answer": "Storage that is not currently assigned to an active filesystem allocation.",
+              "explanation": "Unallocated regions may contain remnants but are not currently mapped to active files."
+            },
+            "summary": [
+              "Unallocated data can be valuable but has weaker context than a live filesystem object.",
+              "Fragmentation and reuse can make recovered content incomplete."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html",
+              "https://www.sleuthkit.org/sleuthkit/docs.php"
+            ]
+          },
+          {
+            "id": "05-03",
+            "title": "File Carving and Signature-Based Recovery",
+            "description": "Understand how carving works at a high level and how to validate carved results.",
+            "learningObjectives": [
+              "explain header/footer or structural carving",
+              "identify fragmentation-related failures",
+              "validate carved files using internal structure and context"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Carving model"
+              },
+              {
+                "type": "paragraph",
+                "text": "File carving searches raw data for recognizable byte patterns associated with file formats. Some formats have strong signatures or internal length structures; others are difficult to carve reliably."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Carving can operate without intact filesystem names or metadata.",
+                  "Fragmented files may produce false positives, partial files, or mixtures of adjacent content.",
+                  "A carved file should be checked for valid structure, consistency, expected size, context, and corroborating metadata when available."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "pr-05",
+                "title": "Validate a Carved Artifact",
+                "description": "Use a synthetic known-data set to determine whether a recovered carved file is complete and structurally valid.",
+                "steps": [
+                  "Create a synthetic input containing one known small file plus filler bytes.",
+                  "Use an approved carving utility in the lab.",
+                  "Record the utility version and carving rule/signature.",
+                  "Validate the recovered file with a format-aware tool.",
+                  "Compare its bytes/size with the known source and document discrepancies."
+                ],
+                "solution": "The correct solution is a validation record: preserve the synthetic source, record the measured carved result, compare it to the known file, and report whether the recovery is complete. Do not fabricate recovered bytes.",
+                "output": "The result should state whether the recovered object matches the known file, is partial, or is invalid, with the method and limitations recorded."
+              }
+            ],
+            "quiz": {
+              "id": "q05-03",
+              "question": "What is a major weakness of signature-based carving?",
+              "options": [
+                "It can recover incomplete or false-positive files when metadata is absent or content is fragmented.",
+                "It always restores filenames.",
+                "It depends on intact directory entries.",
+                "It never reads raw storage."
+              ],
+              "answer": "It can recover incomplete or false-positive files when metadata is absent or content is fragmented.",
+              "explanation": "Carving trades filesystem context for recognizable byte patterns and therefore needs validation."
+            },
+            "summary": [
+              "Carving is a recovery technique, not a guarantee of original completeness.",
+              "Metadata-based and content-based recovery should be interpreted together when possible."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html"
+            ]
+          },
+          {
+            "id": "05-04",
+            "title": "Journals, Snapshots, and Historical State",
+            "description": "Use filesystem journals and snapshots as historical sources without confusing them with complete archives.",
+            "learningObjectives": [
+              "identify when journals/snapshots may contain prior state",
+              "distinguish crash-consistency journals from snapshots",
+              "document the retention limits of historical structures"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Historical evidence"
+              },
+              {
+                "type": "paragraph",
+                "text": "A journal is designed primarily for consistency and recovery. A snapshot captures a filesystem state according to filesystem-specific snapshot semantics. Neither should automatically be treated as a full history of all prior data."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Journal contents may be short-lived and transaction-oriented.",
+                  "Snapshots can preserve older logical views while sharing storage blocks.",
+                  "Snapshot deletion can make historical blocks eligible for reuse.",
+                  "The forensic value depends on which blocks and metadata remain and on the parser's ability to reconstruct the state."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q05-04",
+              "question": "Which statement best distinguishes a filesystem journal from a snapshot?",
+              "options": [
+                "A journal primarily supports recovery/consistency; a snapshot preserves a point-in-time filesystem view according to its implementation.",
+                "They are identical concepts.",
+                "A journal is always a complete backup.",
+                "A snapshot only stores network packets."
+              ],
+              "answer": "A journal primarily supports recovery/consistency; a snapshot preserves a point-in-time filesystem view according to its implementation.",
+              "explanation": "Their purposes and data-retention semantics differ."
+            },
+            "summary": [
+              "Historical-state analysis must be tied to filesystem implementation details.",
+              "Do not make universal recovery claims across filesystems."
+            ],
+            "resources": [
+              "https://www.kernel.org/doc/html/latest/filesystems/ext4/journal.html",
+              "https://btrfs.readthedocs.io/en/stable/Introduction.html",
+              "https://developer.apple.com/documentation/technologyoverviews/files-and-directories"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Build a Deleted-Data Recovery Decision Tree",
+            "level": "Advanced",
+            "description": "Create a decision tree for evaluating whether deleted content is likely to remain recoverable.",
+            "problemStatement": "Compare an NTFS disk and flash storage after deletion, considering metadata reuse, allocation, discard/TRIM, encryption, and acquisition timing.",
+            "objectives": [
+              "distinguish deletion from sanitization",
+              "identify media-specific uncertainty",
+              "define validation steps"
+            ],
+            "requirements": [
+              "NIST media-sanitization guidance",
+              "NTFS documentation",
+              "Hypothetical lab scenario"
+            ],
+            "hint": "Never answer “always recoverable” or “always gone”; enumerate the variables that determine the answer.",
+            "solutionCode": "Identify storage technology and filesystem; inspect surviving metadata; assess reuse; consider flash discard behavior; consider encryption; attempt recovery on a verified image; validate recovered content; report limitations.",
+            "solutionExplanation": "The output is a cautious investigation plan, not a guaranteed recovery result."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Forensic File-System Acquisition and Tooling",
+        "description": "Turn filesystem knowledge into controlled analysis workflows using images, hashes, protection, and filesystem-aware tools.",
+        "lessons": [
+          {
+            "id": "06-01",
+            "title": "Disk Images and Evidence Containers",
+            "description": "Understand raw and structured disk-image representations and why the image boundary matters.",
+            "learningObjectives": [
+              "distinguish a raw image from a forensic evidence container conceptually",
+              "explain why split images and metadata matter",
+              "identify what should be hashed and documented"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Imaging concepts"
+              },
+              {
+                "type": "paragraph",
+                "text": "A raw image is a byte-for-byte representation of addressable storage sectors. Forensic containers such as E01 can store evidence data together with metadata and may support splitting/compression depending on the format and implementation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The image format is part of evidence provenance.",
+                  "Hash the acquired object(s) according to the validated acquisition procedure; if an image is split, maintain the manifest/metadata that links segments.",
+                  "Never assume that a mounted logical view is equivalent to the source media image."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q06-01",
+              "question": "What is the purpose of an evidence image?",
+              "options": [
+                "To provide a stable representation of acquired storage for controlled analysis.",
+                "To automatically identify the suspect.",
+                "To replace chain of custody.",
+                "To execute files safely."
+              ],
+              "answer": "To provide a stable representation of acquired storage for controlled analysis.",
+              "explanation": "An image provides a working representation of storage while allowing the original source to remain preserved."
+            },
+            "summary": [
+              "Image format and acquisition method should be recorded.",
+              "Analysis should use a verified copy or image rather than altering the source medium."
+            ],
+            "resources": [
+              "https://sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/imgpage.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "06-02",
+            "title": "Hashing Files and Images",
+            "description": "Use cryptographic hashes to detect changes and establish reproducible integrity checks.",
+            "learningObjectives": [
+              "calculate SHA-256 for a file",
+              "compare hashes before and after copying",
+              "explain what hashing can and cannot prove"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Hashing"
+              },
+              {
+                "type": "paragraph",
+                "text": "A cryptographic hash maps input bytes to a fixed-size digest. SHA-256 is standardized by NIST. In forensic workflows, comparing digests supports detection of unintended byte changes."
+              },
+              {
+                "type": "code",
+                "text": "from hashlib import sha256\n\ndef sha256_file(path, chunk_size=1024*1024):\n    h = sha256()\n    with open(path, 'rb') as f:\n        for chunk in iter(lambda: f.read(chunk_size), b''):\n            h.update(chunk)\n    return h.hexdigest()\n\nprint(sha256_file('evidence-copy.bin'))\n"
+              },
+              {
+                "type": "warning",
+                "text": "A hash does not prove who created a file, why it was created, or whether the original content was truthful. It is primarily an integrity/comparison mechanism."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "pr-06",
+                "title": "Verify SHA-256 Across a Working Copy",
+                "description": "Hash a source file and its working copy, then demonstrate that a controlled change affects only the working-copy hash.",
+                "steps": [
+                  "Create a lab source file.",
+                  "Copy it to a separate working directory.",
+                  "Calculate SHA-256 for both files.",
+                  "Modify only the working copy.",
+                  "Hash both files again and document which digest changed."
+                ],
+                "solution": "```python\nfrom hashlib import sha256\nfrom pathlib import Path\nimport shutil\n\nsource = Path(\"lab-source.txt\")\nworking = Path(\"lab-work/lab-source.txt\")\nworking.parent.mkdir(exist_ok=True)\nsource.write_text(\"controlled evidence\\n\", encoding=\"utf-8\")\nshutil.copy2(source, working)\n\ndef digest(path: Path) -> str:\n    h = sha256()\n    with path.open(\"rb\") as f:\n        for chunk in iter(lambda: f.read(1024 * 1024), b\"\"):\n            h.update(chunk)\n    return h.hexdigest()\n\nbefore_source = digest(source)\nbefore_working = digest(working)\nprint(\"before match:\", before_source == before_working)\nworking.write_text(\"controlled evidence changed\\n\", encoding=\"utf-8\")\nafter_working = digest(working)\nprint(\"working hash changed:\", before_working != after_working)\nprint(\"source unchanged:\", before_source == digest(source))\n```",
+                "output": "Before modification the two digests match. After modifying the working copy, its digest changes while the source digest remains unchanged."
+              }
+            ],
+            "quiz": {
+              "id": "q06-02",
+              "question": "What does a matching SHA-256 digest most directly support?",
+              "options": [
+                "That the compared byte sequences match with the security properties of the hash function.",
+                "That the same user created both files.",
+                "That the files are malware-free.",
+                "That the files were downloaded from the same website."
+              ],
+              "answer": "That the compared byte sequences match with the security properties of the hash function.",
+              "explanation": "Hash equality is evidence of content equality for the observed bytes; it does not establish provenance or intent."
+            },
+            "summary": [
+              "Hash values are derived evidence and should be recorded with the artifact and method used.",
+              "Use chunked reads for large evidence objects."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "06-03",
+            "title": "Write-Protection and Minimal-Change Analysis",
+            "description": "Understand the purpose of write blockers and read-only analysis, and why any live interaction is an intervention.",
+            "learningObjectives": [
+              "explain hardware/software write protection",
+              "choose read-only access when appropriate",
+              "document unavoidable changes during live analysis"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Preservation boundary"
+              },
+              {
+                "type": "paragraph",
+                "text": "Write blockers and read-only mounting reduce the risk of modifying source media during acquisition and examination. The exact control must match the media interface, operating system, and validated workflow."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Hardware write blockers are designed to prevent writes reaching the evidence device through the supported interface.",
+                  "Software read-only mounting protects against ordinary filesystem writes but should not be treated as equivalent to a validated hardware blocker in every context.",
+                  "Live analysis can create logs, access times, caches, process activity, and other changes. Those effects must be documented."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q06-03",
+              "question": "What is the purpose of a write blocker in forensic acquisition?",
+              "options": [
+                "To prevent acquisition tools from modifying the source storage through the supported interface.",
+                "To speed up internet traffic.",
+                "To recover deleted files automatically.",
+                "To encrypt the evidence."
+              ],
+              "answer": "To prevent acquisition tools from modifying the source storage through the supported interface.",
+              "explanation": "Write blockers are preservation controls intended to reduce writes to source media during acquisition."
+            },
+            "summary": [
+              "Preservation is an operational control, not only a software setting.",
+              "Validation should cover the exact hardware, interface, and workflow used."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "06-04",
+            "title": "The Sleuth Kit and Filesystem-Aware Tools",
+            "description": "Use TSK concepts to understand volume/system/file parsing without treating the tool as an oracle.",
+            "learningObjectives": [
+              "explain how TSK separates disk image, volume, and filesystem layers",
+              "identify the purpose of common TSK tool categories",
+              "interpret tool output with source awareness"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Tool-assisted analysis"
+              },
+              {
+                "type": "paragraph",
+                "text": "The Sleuth Kit provides libraries and command-line tools for disk-image, volume-system, filesystem, and file analysis. Its documentation explicitly models filesystem data using categories such as filesystem, data units, metadata, filename, and application."
+              },
+              {
+                "type": "code",
+                "text": "# Examples to study on a lab image\nfsstat image.dd\nfls image.dd\nils image.dd\nicat image.dd <inode-number>\n"
+              },
+              {
+                "type": "warning",
+                "text": "Command availability and arguments vary by TSK version and build. Always consult the installed version's documentation and test commands on non-sensitive training images first."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q06-04",
+              "question": "Why is understanding TSK's filesystem categories useful?",
+              "options": [
+                "It helps the analyst map tool output to the underlying filesystem layer and evidence source.",
+                "It makes tool output automatically admissible.",
+                "It eliminates the need for validation.",
+                "It guarantees successful deleted-file recovery."
+              ],
+              "answer": "It helps the analyst map tool output to the underlying filesystem layer and evidence source.",
+              "explanation": "Tool output is meaningful only when the analyst understands what structure was parsed."
+            },
+            "summary": [
+              "Forensic tools automate parsing but do not remove the need for methodological knowledge.",
+              "Version-specific behavior should be validated."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php",
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html",
+              "https://sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/imgpage.html"
+            ]
+          },
+          {
+            "id": "06-05",
+            "title": "Mounting Evidence Safely",
+            "description": "Learn when mounting an image is useful and why mount options and scope matter.",
+            "learningObjectives": [
+              "distinguish logical browsing from forensic parsing",
+              "use read-only mount concepts safely",
+              "avoid following external links or mounts unintentionally"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Mounts and views"
+              },
+              {
+                "type": "paragraph",
+                "text": "Mounting a filesystem image gives the operating system a filesystem view, which is useful for controlled inspection. It can also trigger metadata changes or helper processes if mounted read-write or with unsuitable options."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer read-only mounting for preserved images when the workflow permits it.",
+                  "Document the image, partition/offset, filesystem type, mount options, and access time.",
+                  "A mounted view can hide deleted/unallocated content and may follow filesystem semantics differently from forensic parsers."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q06-05",
+              "question": "Why can a mounted filesystem view be insufficient for forensic analysis?",
+              "options": [
+                "It presents a logical view and may omit deleted, unallocated, or low-level metadata structures.",
+                "It always shows more data than a disk image.",
+                "It prevents all access.",
+                "It replaces a filesystem parser."
+              ],
+              "answer": "It presents a logical view and may omit deleted, unallocated, or low-level metadata structures.",
+              "explanation": "A normal mounted view is not the same as low-level forensic parsing of all filesystem structures."
+            },
+            "summary": [
+              "Mounting is a convenience view, not a complete representation of forensic evidence.",
+              "Use the tool appropriate to the question and preserved evidence."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Design a Filesystem-Parser Validation Test",
+            "level": "Advanced",
+            "description": "Create a known-data test plan for a parser used to recover metadata and file contents.",
+            "problemStatement": "Design test cases for regular files, directories, links, renames, permissions, and deletion, and define expected results.",
+            "objectives": [
+              "create known-data fixtures",
+              "define expected parser output",
+              "record version/environment",
+              "document discrepancies"
+            ],
+            "requirements": [
+              "Controlled test image",
+              "Filesystem-aware tool",
+              "Tool documentation"
+            ],
+            "hint": "Validate each function that you will actually rely on.",
+            "solutionCode": "Use a known image; record expected filenames, inode/object identifiers, metadata, content hashes, deleted-state behavior, and link relationships. Compare observed output and retain the discrepancy log.",
+            "solutionExplanation": "This creates a repeatable parser-validation package."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Filesystem Analysis, Timelines, and Validation",
+        "description": "Develop reproducible analytical practices around filesystem evidence and tool behavior.",
+        "lessons": [
+          {
+            "id": "07-01",
+            "title": "Filesystem Timelines",
+            "description": "Construct a timeline that preserves source semantics and distinguishes observations from derived events.",
+            "learningObjectives": [
+              "design a timeline schema",
+              "normalize timestamps without losing original values",
+              "correlate file-system events with other sources"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Timeline schema"
+              },
+              {
+                "type": "code",
+                "text": "source_time | normalized_time | source_artifact | event | subject | confidence | limitation"
+              },
+              {
+                "type": "paragraph",
+                "text": "A filesystem timeline is a derived analytical view. It should retain the original artifact timestamp and source, then add a normalized representation for correlation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not call every timestamp a creation time.",
+                  "Use UTC or another documented reference zone while retaining the original offset where possible.",
+                  "Mark uncertainty and gaps explicitly."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q07-01",
+              "question": "What makes a forensic timeline traceable?",
+              "options": [
+                "Each event can be linked to a source artifact and the timestamp meaning is documented.",
+                "All events are converted to local time and original values discarded.",
+                "Only one timestamp source is used.",
+                "Uncertain events are removed."
+              ],
+              "answer": "Each event can be linked to a source artifact and the timestamp meaning is documented.",
+              "explanation": "A timeline is derived evidence and must preserve provenance and semantics."
+            },
+            "summary": [
+              "Timeline construction is interpretation layered on top of source artifacts.",
+              "Correlate multiple sources rather than flattening them into one story."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php",
+              "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85",
+              "https://man7.org/linux/man-pages/man7/inode.7.html"
+            ]
+          },
+          {
+            "id": "07-02",
+            "title": "Searching Names, Content, and Metadata",
+            "description": "Use multiple search dimensions while understanding false positives and encoding issues.",
+            "learningObjectives": [
+              "compare filename, metadata, and content searches",
+              "design reproducible search terms",
+              "record exclusions and search limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Search dimensions"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Name search finds objects by path/name patterns.",
+                  "Content search scans file data and can miss compressed, encrypted, binary, or unsupported formats.",
+                  "Metadata search targets timestamps, owners, sizes, attributes, and identifiers.",
+                  "Keyword results are leads, not conclusions; validate the underlying artifact."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "# Python filename search\nfrom pathlib import Path\nfor p in Path('evidence').rglob('*.log'):\n    print(p)\n"
+              },
+              {
+                "type": "warning",
+                "text": "Avoid broad searches that silently follow links, mounts, archives, or device nodes unless that behavior is explicitly intended and tested."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q07-02",
+              "question": "What is the best reason to record search terms and exclusions?",
+              "options": [
+                "They make the examination reproducible and explain what data was and was not considered.",
+                "They make false positives impossible.",
+                "They replace evidence hashes.",
+                "They prove user intent."
+              ],
+              "answer": "They make the examination reproducible and explain what data was and was not considered.",
+              "explanation": "Search settings are part of the analytical method and should be reproducible."
+            },
+            "summary": [
+              "Search methodology affects findings.",
+              "Record tools, versions, terms, paths, and exclusions."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php",
+              "https://docs.python.org/3/library/pathlib.html"
+            ]
+          },
+          {
+            "id": "07-03",
+            "title": "Validation of Parsers and Recovery Results",
+            "description": "Learn to test file-system parsers and recovery workflows with known datasets.",
+            "learningObjectives": [
+              "design a parser validation case",
+              "compare expected and observed filesystem structures",
+              "document tool/version limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Validation design"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Create a known dataset with known files, names, metadata, links, and deletions where safe.",
+                  "Acquire it using the same method used in the planned examination.",
+                  "Run the parser and compare expected versus observed structures.",
+                  "Record tool version, platform, settings, and discrepancies.",
+                  "Repeat after upgrades before relying on changed parser behavior."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Validation is a test of a defined function under defined conditions; it is not a permanent guarantee that a tool is correct for every case."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q07-03",
+              "question": "What is a strong parser validation method?",
+              "options": [
+                "Use a known test image with expected filesystem structures and compare parser output to the expected results.",
+                "Install the tool and assume it is correct.",
+                "Use a larger image without known results.",
+                "Skip documenting versions."
+              ],
+              "answer": "Use a known test image with expected filesystem structures and compare parser output to the expected results.",
+              "explanation": "Controlled known data provides an expected baseline for testing parser functions."
+            },
+            "summary": [
+              "Validation should test the specific functionality on which conclusions rely.",
+              "Preserve test cases so results can be reproduced after changes."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.sleuthkit.org/sleuthkit/docs.php"
+            ]
+          },
+          {
+            "id": "07-04",
+            "title": "Troubleshooting Corrupt or Inconsistent Filesystems",
+            "description": "Diagnose parsing failures without modifying preserved evidence.",
+            "learningObjectives": [
+              "differentiate image corruption from filesystem inconsistency",
+              "use independent checks to narrow the problem",
+              "document partial or failed parsing"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Failure modes"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Truncated images or damaged segments can prevent parsing.",
+                  "A dirty filesystem may require replay or recovery logic that should not be performed on preserved evidence.",
+                  "Unsupported features or parser-version limitations can look like corruption.",
+                  "Incorrect partition offsets can make a valid filesystem appear invalid."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "# Hash comparison example\nsha256sum evidence.dd\n# Compare with the acquisition record before troubleshooting further.\n"
+              },
+              {
+                "type": "warning",
+                "text": "Do not repair or mount a preserved original to make a parser work. Troubleshoot using verified copies or controlled test data."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q07-04",
+              "question": "What should be checked before blaming the filesystem for a parsing failure?",
+              "options": [
+                "Image integrity, partition boundaries, filesystem type, and parser/tool support.",
+                "The user's favorite browser.",
+                "CPU temperature only.",
+                "File naming conventions alone."
+              ],
+              "answer": "Image integrity, partition boundaries, filesystem type, and parser/tool support.",
+              "explanation": "Many apparent filesystem failures are actually acquisition, offset, or tool-support problems."
+            },
+            "summary": [
+              "Troubleshooting starts with evidence integrity and correct layer identification.",
+              "Preserved evidence should remain unchanged during troubleshooting."
+            ],
+            "resources": [
+              "https://sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/imgpage.html",
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Build a Source-Preserving Filesystem Timeline",
+            "level": "Intermediate",
+            "description": "Combine synthetic NTFS/ext4/application times without discarding source semantics.",
+            "problemStatement": "Create a chronological table while retaining each original timestamp and its source meaning.",
+            "objectives": [
+              "preserve source fields",
+              "normalize consistently",
+              "mark uncertainty"
+            ],
+            "requirements": [
+              "Spreadsheet or Python",
+              "Synthetic events"
+            ],
+            "hint": "Add `normalized_time`; do not replace `source_time`.",
+            "solutionCode": "Columns: source, source_time, normalized_time, event_type, subject, confidence, limitation. Sort by normalized_time while retaining source_time.",
+            "solutionExplanation": "The result is a traceable analytical timeline."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Performance, Integrity, and Change Observation",
+        "description": "Add operational reasoning about storage accounting, integrity, performance, and change detection.",
+        "lessons": [
+          {
+            "id": "08-01",
+            "title": "Performance: Fragmentation, Allocation, and I/O",
+            "description": "Understand how allocation strategy affects file-system performance and what an analyst can infer safely.",
+            "learningObjectives": [
+              "explain fragmentation and locality",
+              "relate extents/block groups to I/O behavior",
+              "distinguish performance evidence from application behavior"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Performance concepts"
+              },
+              {
+                "type": "paragraph",
+                "text": "Fragmentation spreads a file across non-contiguous storage, increasing the amount of mapping and potentially the physical I/O needed to read it. Filesystems use allocation policies, extents, caching, and indexing to reduce unnecessary work."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Performance depends on storage medium, filesystem, workload, caching, and allocator policy.",
+                  "A fragmented file does not imply malicious behavior or user misuse.",
+                  "A forensic examination should record measured facts rather than infer intent from performance characteristics."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q08-01",
+              "question": "What is fragmentation?",
+              "options": [
+                "A file or collection of blocks being stored in multiple non-contiguous regions.",
+                "Automatic encryption of all files.",
+                "A permissions model.",
+                "A directory name collision."
+              ],
+              "answer": "A file or collection of blocks being stored in multiple non-contiguous regions.",
+              "explanation": "Fragmentation concerns physical allocation and locality, not file permissions or encryption."
+            },
+            "summary": [
+              "Filesystem allocation policies aim to reduce unnecessary fragmentation and I/O.",
+              "Forensics should not turn a performance property into a behavioral conclusion."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/ext4/overview.html",
+              "https://btrfs.readthedocs.io/en/stable/Introduction.html"
+            ]
+          },
+          {
+            "id": "08-02",
+            "title": "Checksums, Integrity Features, and What They Do Not Prove",
+            "description": "Understand filesystem-native checksums and distinguish them from external forensic hashes.",
+            "learningObjectives": [
+              "explain filesystem checksums",
+              "compare internal corruption detection with examiner-generated hashes",
+              "identify appropriate uses for each"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Two integrity layers"
+              },
+              {
+                "type": "paragraph",
+                "text": "Some filesystems maintain checksums for metadata and/or data. Btrfs documents checksumming of data and metadata with verification on reads. These checksums help detect corruption within the filesystem's integrity model."
+              },
+              {
+                "type": "paragraph",
+                "text": "An examiner-created SHA-256 digest of an acquired object provides an external reference for comparing the evidence object across transfers and analysis stages. The two mechanisms answer related but different questions."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q08-02",
+              "question": "What is the key distinction between a filesystem checksum and an examiner-created evidence hash?",
+              "options": [
+                "A filesystem checksum supports the filesystem's integrity mechanisms; an examiner hash supports external evidence-object comparison.",
+                "They are always identical and interchangeable.",
+                "The examiner hash repairs corrupted blocks.",
+                "The filesystem checksum identifies the human who edited a file."
+              ],
+              "answer": "A filesystem checksum supports the filesystem's integrity mechanisms; an examiner hash supports external evidence-object comparison.",
+              "explanation": "They exist at different layers and serve different integrity goals."
+            },
+            "summary": [
+              "Multiple integrity controls can coexist.",
+              "Do not confuse corruption detection with chain-of-custody integrity."
+            ],
+            "resources": [
+              "https://btrfs.readthedocs.io/en/stable/Checksumming.html",
+              "https://docs.python.org/3/library/hashlib.html"
+            ]
+          },
+          {
+            "id": "08-03",
+            "title": "Quotas, Capacity, and Storage Accounting",
+            "description": "Understand logical size, allocated size, free space, quotas, and shared blocks.",
+            "learningObjectives": [
+              "distinguish file size from filesystem free space",
+              "explain quota-related accounting conceptually",
+              "identify shared-block complications"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Storage accounting"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Logical file size is what applications see as file length.",
+                  "Allocated blocks describe physical storage consumed, which can differ for sparse/compressed/shared data.",
+                  "Filesystem free space is space available for future allocations, not the sum of file logical sizes subtracted from total capacity.",
+                  "Quotas impose per-user/project limits that can differ from physical device capacity.",
+                  "COW and reflink features can cause multiple logical files to share physical storage."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q08-03",
+              "question": "Why can two files with the same logical size consume different amounts of storage?",
+              "options": [
+                "Sparse, compressed, or shared-block representations can allocate different physical amounts.",
+                "Filenames determine physical size.",
+                "All files always consume exactly their logical size.",
+                "Directories are always stored in RAM."
+              ],
+              "answer": "Sparse, compressed, or shared-block representations can allocate different physical amounts.",
+              "explanation": "Filesystem allocation features can change the relationship between logical and physical size."
+            },
+            "summary": [
+              "Storage accounting needs filesystem-aware measurements.",
+              "Shared physical blocks complicate naive disk-usage attribution."
+            ],
+            "resources": [
+              "https://btrfs.readthedocs.io/en/stable/Introduction.html",
+              "https://developer.apple.com/documentation/technologyoverviews/files-and-directories",
+              "https://docs.kernel.org/filesystems/ext4/overview.html"
+            ]
+          },
+          {
+            "id": "08-04",
+            "title": "Filesystem Monitoring and Change Detection",
+            "description": "Understand how operating systems expose filesystem changes for operational monitoring.",
+            "learningObjectives": [
+              "compare journal/change logs with monitoring streams",
+              "identify what a change record can and cannot prove",
+              "design a safe change-detection experiment"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Operational change signals"
+              },
+              {
+                "type": "paragraph",
+                "text": "Operating systems provide different mechanisms for observing changes: filesystem journals, event logs, audit systems, OS notification APIs, and application logs. These sources differ in persistence, semantics, and retention."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A notification API can report changes to a running process without being a historical audit trail.",
+                  "A change journal can persist a class of changes but still has retention limits.",
+                  "Application audit logs may provide identity and context unavailable in filesystem metadata."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not treat a real-time notification stream as historical evidence unless it is itself persisted and preserved."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q08-04",
+              "question": "Why is a realtime filesystem notification not automatically a forensic history?",
+              "options": [
+                "Notifications can be transient and may not persist after the monitoring process stops.",
+                "Notifications are always cryptographically signed.",
+                "Notifications contain every past event.",
+                "Notifications replace the filesystem."
+              ],
+              "answer": "Notifications can be transient and may not persist after the monitoring process stops.",
+              "explanation": "Monitoring APIs often report changes as they happen and are not equivalent to persistent audit logs."
+            },
+            "summary": [
+              "Choose the evidence source based on the question and required retention.",
+              "A transient observer and a persistent change record have different evidentiary properties."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/fsutil-usn",
+              "https://docs.kernel.org/filesystems/vfs.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Analyze a Storage-Performance Anomaly",
+            "level": "Intermediate",
+            "description": "Use filesystem allocation knowledge to reason about a hypothetical performance regression.",
+            "problemStatement": "A sequential workload slowed after long-term use while the storage device remains healthy. The filesystem reports fragmentation. Explain what should be measured next.",
+            "objectives": [
+              "separate symptom from cause",
+              "measure fragmentation/allocation",
+              "consider cache and workload effects"
+            ],
+            "requirements": [
+              "Filesystem documentation",
+              "Controlled benchmark data"
+            ],
+            "hint": "Do not assume fragmentation is the only cause.",
+            "solutionCode": "Measure I/O latency/throughput; inspect filesystem allocation; compare workload and caching effects; examine capacity/health; report measured facts without inferring user intent.",
+            "solutionExplanation": "The task reinforces evidence-based performance analysis."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Security, Privacy, and Storage Lifecycle",
+        "description": "Apply filesystem knowledge to security boundaries, privacy, evidence storage, and media disposition.",
+        "lessons": [
+          {
+            "id": "09-01",
+            "title": "Filesystem Security Risks",
+            "description": "Recognize common security weaknesses involving permissions, links, mounts, and unsafe file operations.",
+            "learningObjectives": [
+              "identify insecure permission patterns",
+              "explain path traversal and symlink hazards",
+              "recommend least-privilege filesystem controls"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Security themes"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "World-writable files and directories can enable unintended modification or replacement.",
+                  "Following untrusted symlinks can redirect privileged processes to unexpected locations.",
+                  "Path traversal vulnerabilities occur when applications construct paths from untrusted input without enforcing an intended root.",
+                  "Insecure temporary-file creation can create race conditions or unexpected overwrites."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "# Safe-ish pattern for controlled application storage\nfrom pathlib import Path\nroot = Path('/srv/app-data').resolve()\nrequested = (root / user_supplied_name).resolve()\nif root not in requested.parents and requested != root:\n    raise ValueError('path escapes allowed directory')\n"
+              },
+              {
+                "type": "warning",
+                "text": "The code above illustrates a boundary-checking concept, not a complete security framework. Symlink races require stronger OS-level techniques such as descriptor-based APIs or `openat2`-style controls where available."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q09-01",
+              "question": "What is a path traversal vulnerability?",
+              "options": [
+                "Untrusted path input is used to access files outside the intended directory boundary.",
+                "A filesystem is fragmented.",
+                "A disk image is split into segments.",
+                "A file is compressed."
+              ],
+              "answer": "Untrusted path input is used to access files outside the intended directory boundary.",
+              "explanation": "Path traversal is an authorization/scope failure caused by unsafe path handling."
+            },
+            "summary": [
+              "Filesystem security includes both metadata permissions and application path-handling behavior.",
+              "Security controls should be tested against races and symlink behavior, not just string patterns."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/vfs.html",
+              "https://docs.python.org/3/library/pathlib.html"
+            ]
+          },
+          {
+            "id": "09-02",
+            "title": "Evidence Privacy and Least-Collection Principles",
+            "description": "Handle filesystem data with scope, minimization, and access controls.",
+            "learningObjectives": [
+              "define data minimization in a filesystem examination",
+              "identify sensitive filesystem contents",
+              "design restricted working directories"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Privacy-aware examination"
+              },
+              {
+                "type": "paragraph",
+                "text": "Filesystem evidence can contain credentials, private communications, health information, financial data, and unrelated third-party information. A serious examination limits collection and access to what the authorized question requires."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use case-specific evidence identifiers rather than embedding personal details in scripts or filenames.",
+                  "Restrict permissions on evidence storage and analysis workspaces.",
+                  "Separate raw evidence from derived exports and redact reports where policy requires it.",
+                  "Do not copy unnecessary sensitive data into logs or debugging output."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q09-02",
+              "question": "Why is data minimization relevant to filesystem forensics?",
+              "options": [
+                "It reduces unnecessary exposure of unrelated or sensitive information while keeping the examination focused on the authorized question.",
+                "It makes evidence less reliable.",
+                "It removes the need for access controls.",
+                "It guarantees that no sensitive data exists."
+              ],
+              "answer": "It reduces unnecessary exposure of unrelated or sensitive information while keeping the examination focused on the authorized question.",
+              "explanation": "A focused scope reduces privacy risk without changing the requirement for integrity and documentation."
+            },
+            "summary": [
+              "Evidence handling and privacy controls should be built into tooling and storage.",
+              "A forensic examiner should not collect unrelated data simply because it is technically accessible."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://csrc.nist.gov/pubs/sp/800/88/r2/final"
+            ]
+          },
+          {
+            "id": "09-03",
+            "title": "Secure Evidence Storage and Access Control",
+            "description": "Design storage controls for images, working copies, and reports.",
+            "learningObjectives": [
+              "design a least-privilege evidence repository",
+              "explain why write protection and access logging matter",
+              "separate evidence storage from analysis output"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Repository design"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use a dedicated evidence location with restrictive ownership and permissions.",
+                  "Keep source images and working copies logically separated.",
+                  "Record hashes for stored evidence objects and verify them after transfer or archive operations.",
+                  "Log administrative access where practical and follow the organization's retention requirements.",
+                  "Avoid placing case evidence on shared desktop folders or synchronized consumer storage unless specifically approved and controlled."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q09-03",
+              "question": "Which design best reduces accidental evidence modification?",
+              "options": [
+                "Restricted source storage plus separate verified working copies for analysis.",
+                "Single shared writable folder for originals and reports.",
+                "Editing files in place and rehousing them later.",
+                "Copying evidence into an unsupervised public directory."
+              ],
+              "answer": "Restricted source storage plus separate verified working copies for analysis.",
+              "explanation": "Separation reduces accidental modifications and keeps the preserved source distinct from analysis artifacts."
+            },
+            "summary": [
+              "Access control and evidence integrity complement each other.",
+              "The workflow should make the safe action the easy action."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://csrc.nist.gov/pubs/sp/800/88/r2/final"
+            ]
+          },
+          {
+            "id": "09-04",
+            "title": "Sanitization and End-of-Life Storage",
+            "description": "Understand modern media sanitization at a conceptual level and the importance of lifecycle records.",
+            "learningObjectives": [
+              "differentiate clear, purge, and destroy concepts at a high level",
+              "recognize that sanitization depends on media technology",
+              "design a disposition record"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Sanitization"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-88 Rev. 2 defines media sanitization in terms of rendering target data infeasible to access for a given level of effort. The appropriate method depends on media type, sensitivity, and lifecycle requirements."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Magnetic, flash, optical, virtualized, and cloud environments do not necessarily respond to the same sanitization technique.",
+                  "Cryptographic erase can be relevant when encryption and key management conditions make it appropriate.",
+                  "Disposal records should identify the asset, method, responsible party, date, and verification evidence required by the organization."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not teach one overwrite command as a universal secure-erasure method for modern storage. Use current media-specific NIST guidance."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q09-04",
+              "question": "Why should sanitization procedures be media-specific?",
+              "options": [
+                "Different storage technologies and architectures provide different guarantees about what a wipe operation actually reaches.",
+                "All storage devices erase identically.",
+                "Filesystems do not affect sanitization.",
+                "Sanitization only concerns filenames."
+              ],
+              "answer": "Different storage technologies and architectures provide different guarantees about what a wipe operation actually reaches.",
+              "explanation": "NIST Rev. 2 explicitly frames sanitization as a technology- and risk-aware process."
+            },
+            "summary": [
+              "Sanitization is an information-lifecycle control, not a forensic-recovery technique.",
+              "Use current NIST guidance for lifecycle decisions."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/88/r2/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09",
+            "title": "Harden a Filesystem Evidence Utility",
+            "level": "Advanced",
+            "description": "Review a command-line filesystem utility for path, symlink, output, and sensitive-data risks.",
+            "problemStatement": "Identify conditions that could cause the utility to read outside the evidence tree, modify source data, or expose sensitive metadata.",
+            "objectives": [
+              "identify filesystem attack surfaces",
+              "apply least privilege",
+              "enforce safe output/traversal rules"
+            ],
+            "requirements": [
+              "Python 3",
+              "Disposable filesystem lab"
+            ],
+            "hint": "Consider symlinks, mount points, malicious names, path normalization, and report placement.",
+            "solutionCode": "Resolve and validate roots; reject output under evidence; do not follow symlinks by default; reject unsupported special files; avoid unsafe shell calls; restrict report permissions; do not log sensitive content.",
+            "solutionExplanation": "The task turns filesystem semantics into concrete security controls."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Final Real-World Project — File-System Evidence Inventory & Integrity Workbench",
+        "description": "Combine filesystem traversal, metadata interpretation, hashing, duplicate-content analysis, preservation boundaries, and reproducible reporting in one controlled project. This final module contains the assessment project and intentionally has no separate Easy/Intermediate/Advanced module tasks.",
+        "lessons": [
+          {
+            "id": "10-01",
+            "title": "Project Requirements and Evidence Boundary",
+            "description": "Define the final project scope and its preservation boundary before implementing it.",
+            "learningObjectives": [
+              "specify input/output boundaries",
+              "identify filesystem concepts the project will measure",
+              "state project limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Project contract"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Input is an authorized filesystem working copy or exported evidence tree.",
+                  "Output must live outside the evidence root.",
+                  "The program follows no symbolic links during recursive discovery.",
+                  "Measured values: path, size, host metadata, and SHA-256.",
+                  "Derived values: duplicate-content groups and normalized UTC displays."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A project limitation is part of technical quality. The tool intentionally does not claim to replace a filesystem-native forensic parser."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q10-01",
+              "question": "Why does the project refuse to write its reports inside the evidence directory?",
+              "options": [
+                "To reduce the chance of modifying or contaminating the evidence tree.",
+                "Because JSON files are invalid on filesystems.",
+                "Because SHA-256 cannot read files in subdirectories.",
+                "To make duplicate detection impossible."
+              ],
+              "answer": "To reduce the chance of modifying or contaminating the evidence tree.",
+              "explanation": "Separating inputs and outputs is a preservation boundary."
+            },
+            "summary": [
+              "A controlled project starts by defining what it may read and where it may write.",
+              "The project measures general host-visible metadata rather than pretending to parse every filesystem feature."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/pathlib.html",
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "10-02",
+            "title": "Implementing Safe Recursive Inventory",
+            "description": "Implement recursive file discovery, metadata collection, symlink boundaries, and hashing.",
+            "learningObjectives": [
+              "implement deterministic recursive traversal",
+              "collect metadata without editing source files",
+              "calculate SHA-256 using chunked reads"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Implementation focus"
+              },
+              {
+                "type": "code",
+                "text": "from __future__ import annotations\n\nimport argparse\nimport csv\nimport hashlib\nimport json\nimport os\nfrom collections import defaultdict\nfrom dataclasses import asdict, dataclass\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\n\n@dataclass\nclass FileRecord:\n    relative_path: str\n    size_bytes: int\n    sha256: str\n    modified_utc: str\n    accessed_utc: str\n    status_changed_utc: str\n    mode_octal: str\n    uid: int | None\n    gid: int | None\n\n\ndef utc_iso(epoch_seconds: float) -> str:\n    return datetime.fromtimestamp(epoch_seconds, tz=timezone.utc).isoformat()\n\n\ndef sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as handle:\n        while True:\n            chunk = handle.read(chunk_size)\n            if not chunk:\n                break\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\ndef collect_files(evidence_root: Path) -> list[FileRecord]:\n    records: list[FileRecord] = []\n\n    # Do not follow symlinks: this keeps traversal inside the explicit evidence tree.\n    for path in sorted(p for p in evidence_root.rglob(\"*\") if p.is_file() and not p.is_symlink()):\n        st = path.stat()\n        records.append(\n            FileRecord(\n                relative_path=str(path.relative_to(evidence_root)),\n                size_bytes=st.st_size,\n                sha256=sha256_file(path),\n                modified_utc=utc_iso(st.st_mtime),\n                accessed_utc=utc_iso(st.st_atime),\n                status_changed_utc=utc_iso(st.st_ctime),\n                mode_octal=oct(st.st_mode & 0o7777),\n                uid=getattr(st, \"st_uid\", None),\n                gid=getattr(st, \"st_gid\", None),\n            )\n        )\n    return records\n\n\ndef duplicate_groups(records: list[FileRecord]) -> dict[str, list[str]]:\n    groups: dict[str, list[str]] = defaultdict(list)\n    for record in records:\n        groups[record.sha256].append(record.relative_path)\n    return {digest: paths for digest, paths in groups.items() if len(paths) > 1}\n\n\ndef write_csv(records: list[FileRecord], output: Path) -> None:\n    with output.open(\"w\", newline=\"\", encoding=\"utf-8\") as handle:\n        fields = list(asdict(records[0]).keys()) if records else list(FileRecord.__annotations__.keys())\n        writer = csv.DictWriter(handle, fieldnames=fields)\n        writer.writeheader()\n        for record in records:\n            writer.writerow(asdict(record))\n\n\ndef write_json(records: list[FileRecord], duplicates: dict[str, list[str]], output: Path) -> None:\n    payload = {\n        \"generated_at_utc\": datetime.now(timezone.utc).isoformat(),\n        \"file_count\": len(records),\n        \"files\": [asdict(record) for record in records],\n        \"duplicate_groups\": duplicates,\n    }\n    output.write_text(json.dumps(payload, indent=2), encoding=\"utf-8\")\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser(description=\"Read-only filesystem inventory for authorized lab evidence.\")\n    parser.add_argument(\"evidence_dir\", type=Path)\n    parser.add_argument(\"--output\", type=Path, default=Path(\"forensic_report\"))\n    args = parser.parse_args()\n\n    evidence = args.evidence_dir.resolve()\n    output = args.output.resolve()\n\n    if not evidence.is_dir():\n        raise SystemExit(f\"Evidence directory does not exist: {evidence}\")\n    if output == evidence or evidence in output.parents:\n        raise SystemExit(\"Refusing to write reports inside the evidence directory.\")\n\n    output.mkdir(parents=True, exist_ok=True)\n    records = collect_files(evidence)\n    duplicates = duplicate_groups(records)\n\n    write_csv(records, output / \"file_inventory.csv\")\n    write_json(records, duplicates, output / \"file_inventory.json\")\n\n    print(f\"files_examined={len(records)}\")\n    print(f\"duplicate_groups={len(duplicates)}\")\n    print(f\"report_directory={output}\")\n    print(\"evidence_directory_written=False\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "The code resolves both the evidence root and the output directory. It explicitly rejects an output directory inside the evidence tree, and it filters out symbolic links before hashing. SHA-256 is calculated incrementally so large files do not have to be loaded into memory at once."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q10-02",
+              "question": "Why does the project calculate hashes in chunks?",
+              "options": [
+                "To avoid loading an entire potentially large evidence file into memory.",
+                "Because SHA-256 only works on 1-KB files.",
+                "To change the file contents.",
+                "To bypass permissions."
+              ],
+              "answer": "To avoid loading an entire potentially large evidence file into memory.",
+              "explanation": "Chunked reads scale to larger objects while producing the same digest as a one-shot read."
+            },
+            "summary": [
+              "The implementation demonstrates practical filesystem programming without modifying evidence.",
+              "Traversal policy and output boundaries are explicit security controls."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://docs.python.org/3/library/pathlib.html",
+              "https://docs.python.org/3/library/os.html#os.stat"
+            ]
+          },
+          {
+            "id": "10-03",
+            "title": "Project Validation and Findings",
+            "description": "Validate the workbench against known test cases and interpret outputs conservatively.",
+            "learningObjectives": [
+              "test expected project behaviors",
+              "compare independent file counts and hashes",
+              "write a limitation-aware findings summary"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Acceptance tests"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Empty tree produces zero file records.",
+                  "Nested regular files are all discovered.",
+                  "Symlinks are not followed.",
+                  "Identical content produces one duplicate group.",
+                  "Unchanged files retain matching hashes across runs.",
+                  "Output cannot be placed beneath the evidence root."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The final report should say what the program measured and what it derived. A duplicate group is a content comparison result; it is not evidence of shared authorship or common origin."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q10-03",
+              "question": "What does a duplicate SHA-256 group establish in this project?",
+              "options": [
+                "The observed files have matching content under SHA-256 comparison.",
+                "They were created by the same person.",
+                "They came from the same physical disk.",
+                "They were modified at the same time."
+              ],
+              "answer": "The observed files have matching content under SHA-256 comparison.",
+              "explanation": "The workbench only establishes a content-level relationship from the observed bytes."
+            },
+            "summary": [
+              "Validation tests the implemented behavior against known conditions.",
+              "Findings must remain within what the measurements actually establish."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "File-System Evidence Inventory & Integrity Workbench",
+          "description": "Build a read-only Python workbench that inventories an authorized filesystem working copy, records host-visible metadata, calculates SHA-256 digests, detects duplicate content, and emits structured reports outside the evidence tree.",
+          "conceptsCovered": [
+            "filesystem traversal",
+            "symlink boundaries",
+            "metadata",
+            "SHA-256 hashing",
+            "duplicate-content analysis",
+            "UTC time normalization",
+            "CSV/JSON reporting",
+            "read-only analysis boundaries",
+            "validation and reproducibility"
+          ],
+          "steps": [
+            "Create synthetic evidence with nested files, a zero-byte file, a binary file, and two different paths containing identical bytes.",
+            "Treat it as an authorized working copy and record the case identifier separately.",
+            "Create the embedded project files from the `code` object below using only Python standard-library modules.",
+            "Run the tool with the evidence directory and an output directory outside the evidence tree.",
+            "Verify the file count independently.",
+            "Confirm duplicate files share a SHA-256 digest and appear in one duplicate group.",
+            "Run the tool again and compare hashes.",
+            "Modify only a working-copy file and verify its digest changes.",
+            "Attempt to place output under the evidence root and confirm the tool refuses the request.",
+            "Write a short findings note separating measured observations from derived results and limitations."
+          ],
+          "code": {
+            "README.md": "See the full Python source embedded under `forensic_workbench.py`; the README states scope and safety boundaries.",
+            "forensic_workbench.py": "from __future__ import annotations\n\nimport argparse\nimport csv\nimport hashlib\nimport json\nfrom collections import defaultdict\nfrom dataclasses import asdict, dataclass\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\n@dataclass\nclass FileRecord:\n    relative_path: str\n    size_bytes: int\n    sha256: str\n    modified_utc: str\n    accessed_utc: str\n    status_changed_utc: str\n    mode_octal: str\n    uid: int | None\n    gid: int | None\n\ndef utc_iso(ts: float) -> str:\n    return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()\n\ndef sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:\n    h = hashlib.sha256()\n    with path.open('rb') as f:\n        while True:\n            chunk = f.read(chunk_size)\n            if not chunk:\n                break\n            h.update(chunk)\n    return h.hexdigest()\n\ndef collect_files(root: Path) -> list[FileRecord]:\n    records: list[FileRecord] = []\n    for path in sorted(p for p in root.rglob('*') if p.is_file() and not p.is_symlink()):\n        st = path.stat()\n        records.append(FileRecord(\n            relative_path=str(path.relative_to(root)),\n            size_bytes=st.st_size,\n            sha256=sha256_file(path),\n            modified_utc=utc_iso(st.st_mtime),\n            accessed_utc=utc_iso(st.st_atime),\n            status_changed_utc=utc_iso(st.st_ctime),\n            mode_octal=oct(st.st_mode & 0o7777),\n            uid=getattr(st, 'st_uid', None),\n            gid=getattr(st, 'st_gid', None),\n        ))\n    return records\n\ndef duplicate_groups(records: list[FileRecord]) -> dict[str, list[str]]:\n    groups: dict[str, list[str]] = defaultdict(list)\n    for r in records:\n        groups[r.sha256].append(r.relative_path)\n    return {d:p for d,p in groups.items() if len(p) > 1}\n\ndef write_reports(records: list[FileRecord], output: Path) -> None:\n    with (output / 'file_inventory.csv').open('w', newline='', encoding='utf-8') as f:\n        fields=list(FileRecord.__annotations__.keys())\n        w=csv.DictWriter(f, fieldnames=fields); w.writeheader()\n        for r in records: w.writerow(asdict(r))\n    payload={'generated_at_utc':datetime.now(timezone.utc).isoformat(),'file_count':len(records),'files':[asdict(r) for r in records],'duplicate_groups':duplicate_groups(records)}\n    (output / 'file_inventory.json').write_text(json.dumps(payload, indent=2), encoding='utf-8')\n\ndef main() -> int:\n    parser=argparse.ArgumentParser(description='Read-only filesystem inventory for authorized lab evidence.')\n    parser.add_argument('evidence_dir', type=Path)\n    parser.add_argument('--output', type=Path, default=Path('forensic_report'))\n    args=parser.parse_args()\n    evidence=args.evidence_dir.resolve(); output=args.output.resolve()\n    if not evidence.is_dir(): raise SystemExit(f'Evidence directory does not exist: {evidence}')\n    if output == evidence or evidence in output.parents:\n        raise SystemExit('Refusing to write reports inside the evidence directory.')\n    output.mkdir(parents=True, exist_ok=True)\n    records=collect_files(evidence)\n    write_reports(records, output)\n    print(f'files_examined={len(records)}')\n    print(f'duplicate_groups={len(duplicate_groups(records))}')\n    print(f'report_directory={output}')\n    print('evidence_directory_written=False')\n    return 0\n\nif __name__ == '__main__':\n    raise SystemExit(main())\n"
+          },
+          "explanation": "The tool separates evidence input from report output, refuses to write under the evidence root, does not follow symbolic links, hashes files incrementally, records host-visible metadata, and groups duplicate content by SHA-256. These are derived outputs and do not replace filesystem-native forensic parsing or establish authorship.",
+          "validationPlan": [
+            "Empty directory returns zero file records.",
+            "Nested files are discovered.",
+            "Symlinks are not followed.",
+            "Two identical files create one duplicate group.",
+            "Repeated runs produce stable hashes for unchanged files.",
+            "Changing a working-copy file changes its hash.",
+            "An output path inside the evidence tree is refused.",
+            "The evidence tree has no report files after a normal run."
+          ],
+          "limitations": [
+            "No disk imaging or acquisition.",
+            "No deleted-file or unallocated-space recovery.",
+            "No filesystem-native parsing of MFT, extents, journals, snapshots, or alternate streams.",
+            "Host timestamps have platform-specific semantics.",
+            "Hashes do not establish authorship or intent.",
+            "The application is an educational utility, not a validated forensic platform."
+          ]
+        }
+      }
+    ]
+  }
+}

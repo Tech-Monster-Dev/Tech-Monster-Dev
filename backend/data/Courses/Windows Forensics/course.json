@@ -1,0 +1,2179 @@
+{
+  "course": {
+    "id": "windows-forensics",
+    "title": "Windows Forensics",
+    "slug": "windows-forensics",
+    "description": "A Windows-specific forensic training program that teaches how to preserve, acquire, validate, interpret, correlate, and report evidence from modern Windows endpoints. The curriculum progresses from forensic reasoning and evidence integrity into NTFS/MFT/USN analysis, Registry hives, EVTX and process-creation telemetry, PowerShell and Defender logs, execution artifacts such as Prefetch/BAM/Amcache/Shimcache, LNK and user-activity artifacts, Volume Shadow Copy, memory with Volatility 3, endpoint collection with Velociraptor, timeline construction, validation, privacy, reporting, and a complete read-only triage workbench. It is intended for serious beginners who already understand basic Windows and command-line concepts and want practical Windows forensic competency without treating any single tool as authoritative.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 68,
+    "prerequisites": [
+      "Basic Windows administration and filesystem concepts",
+      "Comfort with PowerShell or Command Prompt",
+      "Basic understanding of processes, files, users, permissions, and networking",
+      "Basic Python is helpful for automation exercises but not required for the conceptual lessons",
+      "A controlled Windows lab or authorized training datasets; never use third-party evidence without permission"
+    ],
+    "learningOutcomes": [
+      "Explain the Windows forensic lifecycle and turn investigation objectives into testable questions.",
+      "Preserve Windows evidence appropriately and document power state, acquisition choices, integrity, and custody.",
+      "Use SHA-256 hashes to verify evidence and working-copy integrity and explain the limits of hashing.",
+      "Explain NTFS layers and interpret MFT, USN Journal, deleted-data, timestamps, and filesystem evidence.",
+      "Analyze Windows Registry hives and distinguish configuration/state evidence from proof of execution or intent.",
+      "Query and interpret EVTX sources, logon/session context, Event 4688, PowerShell logging, and Defender Operational evidence.",
+      "Correlate Windows execution artifacts including Prefetch, BAM, Amcache, Shimcache/AppCompatCache, LNK, services, and scheduled tasks.",
+      "Use VSS, Volatility 3, and controlled endpoint-collection tooling to extend an investigation beyond static files.",
+      "Construct source-preserving timelines and write evidence-grounded findings with explicit limitations.",
+      "Validate forensic tooling using known datasets and preserve the information required for reproducibility.",
+      "Complete a safe, read-only Windows forensic triage workbench that hashes files, records metadata, groups duplicate content, and generates reviewable reports."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Windows Forensics Foundations",
+        "description": "Establish Windows-specific forensic reasoning: evidence models, investigation questions, system architecture, provenance, and examiner discipline before touching artifacts.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "Windows Forensics Scope and Evidence Model",
+            "description": "Define what a Windows forensic examination is, what it can answer, and where its boundaries lie.",
+            "learningObjectives": [
+              "define Windows digital evidence and forensic examination",
+              "distinguish artifacts, observations, findings, and conclusions",
+              "identify common Windows evidence sources"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A Windows forensic mindset"
+              },
+              {
+                "type": "paragraph",
+                "text": "Windows forensics examines data produced or preserved by Windows, its filesystems, applications, security controls, and user environment. The examiner asks a bounded question, identifies relevant sources, preserves them, extracts artifacts, correlates evidence, and states conclusions with explicit limitations."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Common sources include NTFS metadata, the Registry, EVTX logs, user profiles, shell links, execution artifacts, PowerShell logs, application data, Volume Shadow Copies, memory, and endpoint telemetry.",
+                  "Artifacts record system or application state. They do not automatically prove human intent or identity.",
+                  "The same event may have several representations across the system. Independent corroboration is valuable when the conclusion matters."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never treat a familiar artifact name as a conclusion. The meaning depends on the operating-system version, configuration, collection method, parser, and surrounding evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which statement best describes a Windows forensic artifact?",
+              "options": [
+                "A record or data structure that can provide evidence about system state or activity.",
+                "A legal authorization to search the device.",
+                "A guaranteed record of human intent.",
+                "A malware signature only."
+              ],
+              "answer": "A record or data structure that can provide evidence about system state or activity.",
+              "explanation": "Artifacts are evidence sources. Their interpretation must be grounded in semantics and context."
+            },
+            "summary": [
+              "Windows forensics is evidence-centered rather than tool-centered.",
+              "Good conclusions are narrower than the evidence base, not broader."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.swgde.org/documents/published-complete-listing/"
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Windows Investigation Questions and Hypotheses",
+            "description": "Turn vague suspicions into testable Windows-specific questions and competing explanations.",
+            "learningObjectives": [
+              "translate an investigative objective into testable questions",
+              "map questions to Windows artifact classes",
+              "create competing hypotheses and discriminating evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Instead of asking “Was malware run?”, ask “Is there evidence that executable X started during the relevant period, under which account or session, from which path, with what parent process, and what corroborates that interpretation?”"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Execution: Security 4688, Prefetch, BAM, Amcache, Shimcache/AppCompatCache, process telemetry.",
+                  "User context: logon events, profile artifacts, ShellBags, LNK files, recent-item records, application traces.",
+                  "Persistence/context: services, scheduled tasks, Run keys, WMI-related artifacts, startup folders, Defender logs."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not create a single narrative first and then search only for confirming artifacts. Identify at least one alternative explanation and what evidence would distinguish it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "What is the purpose of a competing hypothesis?",
+              "options": [
+                "To identify evidence that could support or challenge alternative explanations.",
+                "To eliminate the need for evidence.",
+                "To prove the preferred explanation.",
+                "To make all evidence inadmissible."
+              ],
+              "answer": "To identify evidence that could support or challenge alternative explanations.",
+              "explanation": "Competing hypotheses help reduce confirmation bias and guide targeted corroboration."
+            },
+            "summary": [
+              "Question-driven analysis prevents “artifact collecting” without an investigative purpose."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Windows Time Semantics",
+            "description": "Understand Windows timestamp sources, UTC conversion, clock skew, and timeline confidence.",
+            "learningObjectives": [
+              "distinguish timestamp source from event meaning",
+              "normalize timestamps without losing original values",
+              "identify clock and timezone limitations"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Windows FILETIME is represented as a 64-bit count of 100-nanosecond intervals since 1601-01-01 UTC in the Windows API model.",
+                  "EVTX records can contain UTC-based SystemTime values while user interfaces may display local time.",
+                  "Artifact-specific time fields can represent creation, modification, access, registry update, event creation, or application-defined time.",
+                  "Clock drift, time synchronization, daylight-saving changes, virtualization, and timezone conversions can produce apparent contradictions."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Preserve: original_time + source + offset/zone + normalized_time + event_semantics + confidence"
+              },
+              {
+                "type": "warning",
+                "text": "Never overwrite the original evidence timestamp with a converted value. Store derived time separately."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "What should a forensic timeline preserve when timestamps are normalized?",
+              "options": [
+                "The source timestamp and the documented normalization/conversion.",
+                "Only the converted local time.",
+                "Only the date.",
+                "Only the examiner time."
+              ],
+              "answer": "The source timestamp and the documented normalization/conversion.",
+              "explanation": "Preserving provenance makes derived timelines reviewable."
+            },
+            "summary": [
+              "Time normalization is a transformation, not a replacement for source evidence."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Build a Windows Evidence Question Matrix",
+            "level": "Easy",
+            "description": "Create a question-to-artifact matrix for a hypothetical Windows workstation investigation.",
+            "problemStatement": "A workstation may have been used to access and execute a sensitive program after hours. Build a matrix mapping questions to artifact sources, expected evidence, corroboration, and limitations.",
+            "objectives": [
+              "write at least six testable questions",
+              "map each to at least two Windows source types",
+              "state at least one limitation per question"
+            ],
+            "requirements": [
+              "Spreadsheet or Markdown",
+              "Fictional case data only"
+            ],
+            "hint": "Start with the investigative question, not with a favorite forensic tool.",
+            "solutionCode": "Question | Sources | Expected artifact | Corroboration | Limitation\nWas an interactive session active? | Security log, profile artifacts | Logon/session records | nearby process events | retention may be incomplete\nWas executable X launched? | 4688, Prefetch, BAM, Amcache | process/execution traces | parent process + path | artifact availability varies\nWas document Y opened? | LNK/recent-item/application data | path/filename records | filesystem + application | not proof of deliberate reading\nWas removable media present? | device artifacts | device identifiers | logon/session timing | connection ≠ file transfer",
+            "solutionExplanation": "The matrix forces the student to state what each artifact can establish and what it cannot. This becomes the backbone for targeted collection and later reporting."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Preservation, Acquisition, Integrity, and Working Copies",
+        "description": "Develop the discipline needed to preserve Windows evidence, choose acquisition strategies, verify integrity, and maintain reproducible custody.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Preservation of a Windows System",
+            "description": "Understand power state, volatile data, encryption, network isolation, and documentation before collection.",
+            "learningObjectives": [
+              "document pre-acquisition state",
+              "identify preservation risks",
+              "justify live versus offline approaches"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record hostname/device identifier, date/time, power state, visible applications, network state, connected media, and relevant screen state according to procedure.",
+                  "Live collection can preserve volatile information but can also change system state.",
+                  "Full shutdown can remove volatile evidence and can complicate encrypted-volume access.",
+                  "Preservation choices should be tied to the investigative question and documented."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "There is no universal “always power off” or “always keep it on” rule. Follow authorization, organizational procedure, and the volatility/risk trade-off."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "Why can live collection change the evidence?",
+              "options": [
+                "Collection can create processes, files, logs, network activity, and other state changes.",
+                "RAM never changes.",
+                "Windows freezes all activity during collection.",
+                "Live collection automatically creates a forensic image."
+              ],
+              "answer": "Collection can create processes, files, logs, network activity, and other state changes.",
+              "explanation": "A running system continues to evolve while tools interact with it."
+            },
+            "summary": [
+              "Preservation is an investigative decision, not merely a technical command."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/info/rfc3227",
+              "https://www.swgde.org/documents/published-complete-listing/"
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Acquisition Types and Scope",
+            "description": "Compare physical imaging, logical collection, targeted collection, live collection, and provider/exported evidence.",
+            "learningObjectives": [
+              "compare acquisition approaches",
+              "select an approach based on scope and volatility",
+              "document acquisition limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A physical image seeks a forensic representation of addressable storage. Logical collection extracts selected files or objects. Targeted collection narrows the scope to known evidence locations. Live collection captures information that may disappear or is only meaningfully available while the system runs."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Physical imaging may preserve unallocated areas and filesystem metadata that logical collection omits.",
+                  "Logical/targeted acquisition can be efficient but has explicit coverage limits.",
+                  "Live collection is appropriate for volatile state or mounted/decrypted content when authorized."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not claim that a logical collection is equivalent to a full image. Report exactly what was collected."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "What is the main limitation of a targeted logical collection?",
+              "options": [
+                "It may exclude relevant data outside the selected scope.",
+                "It always corrupts files.",
+                "It cannot be hashed.",
+                "It cannot be documented."
+              ],
+              "answer": "It may exclude relevant data outside the selected scope.",
+              "explanation": "Scope is the defining limitation of targeted collection."
+            },
+            "summary": [
+              "Acquisition strategy should follow the question and authorization."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.swgde.org/documents/published-complete-listing/"
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Cryptographic Hashing for Evidence Integrity",
+            "description": "Use SHA-256 to verify that a copied file or evidence package remains byte-for-byte stable.",
+            "learningObjectives": [
+              "explain what a cryptographic digest provides",
+              "calculate SHA-256 hashes with a standard tool",
+              "distinguish integrity verification from attribution"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A cryptographic hash maps input bytes to a fixed-length digest. Matching digests provide a strong integrity check for the exact bytes examined, while a mismatch indicates that the represented bytes differ."
+              },
+              {
+                "type": "code",
+                "text": "PowerShell: Get-FileHash .\\evidence\\image.E01 -Algorithm SHA256"
+              },
+              {
+                "type": "warning",
+                "text": "A matching hash does not prove who created the file, what it means, or that an investigative conclusion is correct."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-01",
+                "title": "Hash and Verify a Lab Evidence File",
+                "description": "Create a test file, copy it to a working directory, hash both, and verify the effect of a controlled modification.",
+                "steps": [
+                  "Create a synthetic evidence file in a dedicated lab folder.",
+                  "Run `Get-FileHash` with SHA256 on the source.",
+                  "Copy the file to a separate working directory.",
+                  "Hash the working copy and compare digests.",
+                  "Modify only the working copy and hash again."
+                ],
+                "solution": "PowerShell:\n$source = 'lab-evidence\\sample.bin'\n$copy = 'lab-work\\sample.bin'\nCopy-Item $source $copy -Force\n$h1 = (Get-FileHash $source -Algorithm SHA256).Hash\n$h2 = (Get-FileHash $copy -Algorithm SHA256).Hash\n$h1\n$h2\nif ($h1 -eq $h2) { 'MATCH' } else { 'MISMATCH' }\n",
+                "output": "The initial hashes should match. After modifying the working copy, the digest should change. This demonstrates integrity checking only; it does not establish authorship or admissibility."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "What does a matching SHA-256 digest most directly support?",
+              "options": [
+                "That the compared byte streams have the same digest.",
+                "That the same person created both files.",
+                "That the files are malware-free.",
+                "That the files are authentic in every legal sense."
+              ],
+              "answer": "That the compared byte streams have the same digest.",
+              "explanation": "Hashing is an integrity comparison, not a complete authenticity or attribution mechanism."
+            },
+            "summary": [
+              "Integrity is a measurable property; interpretation is a separate analytical step."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Chain of Custody and Examination Notes",
+            "description": "Create records that distinguish possession, transfer, technical procedures, and analytical reasoning.",
+            "learningObjectives": [
+              "identify chain-of-custody fields",
+              "separate custody from technical notes",
+              "design a reproducible evidence inventory"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Custody records track identity, possession/transfer, dates/times, and storage context.",
+                  "Technical notes capture acquisition method, tools and versions, commands, settings, errors, searches, filters, and transformations.",
+                  "Hashes can link source items and working copies to a stable baseline."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never put passwords, tokens, or other secrets in case notes merely because they were observed during collection."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "Which item belongs primarily in technical examination notes?",
+              "options": [
+                "The exact parser version and query used to extract an artifact.",
+                "The identity of the person receiving evidence.",
+                "The date of a custody transfer.",
+                "The evidence barcode alone."
+              ],
+              "answer": "The exact parser version and query used to extract an artifact.",
+              "explanation": "Technical notes explain how the evidence was examined and derived."
+            },
+            "summary": [
+              "A reproducible examination requires both custody records and technical notes."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/",
+              "https://www.rfc-editor.org/info/rfc3227"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Design an Evidence Intake and Verification Record",
+            "level": "Intermediate",
+            "description": "Create an intake record for a Windows disk image and a logical collection package.",
+            "problemStatement": "The lab receives two evidence items from one authorized workstation. Design a record that preserves identifiers, acquisition details, hashes, storage, and working-copy relationships.",
+            "objectives": [
+              "define unique evidence IDs",
+              "record hash algorithm and measured digest",
+              "document storage and transfer events",
+              "link working copies to sources"
+            ],
+            "requirements": [
+              "Spreadsheet/Markdown",
+              "Use fictional identifiers",
+              "No personal data"
+            ],
+            "hint": "Separate the identity of the evidence object from the method used to acquire it.",
+            "solutionCode": "Evidence ID: WIN-LAB-001\nType: Disk image\nSource: Training workstation\nAcquisition method: Documented forensic imaging procedure\nHash: [measured SHA-256]\nReceived: [timestamp + timezone]\nStorage: restricted evidence repository\nWorking copy: WIN-LAB-001-W1\nVerification: source and working-copy hashes compared before analysis",
+            "solutionExplanation": "The record is complete when another examiner can identify the item, reconstruct custody, verify integrity, and distinguish the preserved source from the analysis copy."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "NTFS and Windows Storage Artifacts",
+        "description": "Understand NTFS structures and Windows storage artifacts used to reconstruct file existence, changes, paths, deletion, and historical state.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Partitions, Volumes, and NTFS Layers",
+            "description": "Understand the storage stack from disk and partitions to NTFS metadata and file content.",
+            "learningObjectives": [
+              "distinguish disk, partition, volume, and filesystem",
+              "explain why correct offsets matter",
+              "identify allocated and unallocated space"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A disk may contain a partitioning structure and one or more partitions.",
+                  "A volume exposes a filesystem such as NTFS to the operating system.",
+                  "NTFS stores metadata about files/directories, allocation, and filesystem state.",
+                  "Unallocated space can contain remnants of previous data, but recovery is not guaranteed."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The Sleuth Kit and similar forensic platforms expose these layers separately because correct interpretation depends on knowing what structure is being parsed."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "Why must a forensic tool identify the correct volume boundaries before parsing NTFS?",
+              "options": [
+                "Because filesystem structures are interpreted relative to the volume layout.",
+                "Because NTFS exists only in RAM.",
+                "Because partitioning stores user passwords.",
+                "Because every disk has exactly one volume."
+              ],
+              "answer": "Because filesystem structures are interpreted relative to the volume layout.",
+              "explanation": "Incorrect offsets can produce invalid filesystem interpretation."
+            },
+            "summary": [
+              "Storage layers provide the context required for reliable filesystem parsing."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php"
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "MFT Records and NTFS Metadata",
+            "description": "Use the Master File Table as a core source for Windows file metadata and understand its forensic limits.",
+            "learningObjectives": [
+              "explain the role of the MFT",
+              "identify metadata available in an MFT record",
+              "avoid equating timestamps with human actions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents the Master File Table as a core NTFS structure with at least one entry for each file on an NTFS volume. An entry can describe file metadata and data locations."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "MFT records can provide filenames, attributes, timestamps, size-related information, and references to file data.",
+                  "Deleted-file recovery depends on whether metadata and data remain available and have not been reused or altered.",
+                  "Timestamps record filesystem state, not automatically the identity or intent of the person who caused the state change."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not label an MFT timestamp as “the time the user opened the file” unless the artifact semantics actually establish that event."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "What does an MFT record primarily describe?",
+              "options": [
+                "Filesystem metadata associated with a file or directory.",
+                "Every keystroke made by the user.",
+                "All network packets sent by the host.",
+                "The user's password."
+              ],
+              "answer": "Filesystem metadata associated with a file or directory.",
+              "explanation": "The MFT is an NTFS metadata structure, not a complete behavioral log."
+            },
+            "summary": [
+              "MFT data is powerful because it exposes filesystem state at the metadata layer."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/master-file-table"
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "USN Change Journal",
+            "description": "Understand the NTFS USN Journal as a persistent record of file-system changes and its retention limits.",
+            "learningObjectives": [
+              "explain what the USN journal records",
+              "use Microsoft commands to inspect journal state in a lab",
+              "identify journal retention limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft describes the USN change journal as a persistent log of changes made to files and directories on an NTFS volume. Records can indicate change reasons such as write, truncation, extension, and deletion."
+              },
+              {
+                "type": "code",
+                "text": "fsutil usn queryjournal C:\\"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The journal is per-volume and records change reasons rather than a complete history of all user behavior.",
+                  "Old records can be discarded to conserve space, so the journal is not necessarily complete for long-retention investigations.",
+                  "Disabling or deleting a journal can itself affect later collection and should be handled with extreme care."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-01",
+                "title": "Inspect USN Journal State in a Lab VM",
+                "description": "Query the USN journal on an authorized Windows lab VM and document what can and cannot be inferred.",
+                "steps": [
+                  "Open an elevated PowerShell session in the lab.",
+                  "Run `fsutil usn queryjournal C:`.",
+                  "Record whether a journal exists and its reported properties.",
+                  "Explain what a journal entry can establish and what it cannot establish about a human actor."
+                ],
+                "solution": "PowerShell:\nfsutil usn queryjournal C:\\\n",
+                "output": "The command reports current journal metadata when a journal is present. The exercise is about interpretation and preservation awareness; it does not require changing or deleting the journal."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "What is a key limitation of the USN Journal?",
+              "options": [
+                "Older records can be removed and the journal records filesystem changes rather than a complete human activity history.",
+                "It records every password typed.",
+                "It is immutable forever.",
+                "It records every network packet."
+              ],
+              "answer": "Older records can be removed and the journal records filesystem changes rather than a complete human activity history.",
+              "explanation": "The journal is a change-oriented filesystem artifact with retention limits."
+            },
+            "summary": [
+              "USN data is especially valuable for file-system change timelines, but it must be interpreted with its retention and semantics in mind."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/fsutil-usn",
+              "https://learn.microsoft.com/en-us/windows/win32/fileio/change-journals"
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "Deleted Files, Slack, and Carving",
+            "description": "Understand Windows deletion, metadata reuse, unallocated space, file slack, and carving limitations.",
+            "learningObjectives": [
+              "explain why deletion may leave recoverable remnants",
+              "distinguish metadata recovery from carving",
+              "identify fragmentation and SSD-related recovery limitations"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Deletion can release filesystem allocation and mark metadata available for reuse without immediately overwriting every byte.",
+                  "Metadata-based recovery may preserve filenames/paths and relationships when records remain available.",
+                  "Carving scans raw storage for recognizable file structures when filesystem metadata is absent or insufficient.",
+                  "Fragmentation, encryption, TRIM, overwriting, compression, and file format complexity can limit recovery."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A carved file should be validated for structural consistency and context. Recovery success does not prove the result is complete or original in every respect."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-04",
+              "question": "What is file carving primarily used for?",
+              "options": [
+                "Recovering recognizable file content from raw data when filesystem metadata is absent or insufficient.",
+                "Reading Security logon events.",
+                "Changing NTFS permissions.",
+                "Hashing the disk."
+              ],
+              "answer": "Recovering recognizable file content from raw data when filesystem metadata is absent or insufficient.",
+              "explanation": "Carving relies on byte patterns and file structures rather than ordinary directory metadata."
+            },
+            "summary": [
+              "Recovery is evidence-dependent and should be stated with confidence and limitations."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php"
+            ]
+          },
+          {
+            "id": "lesson-03-05",
+            "title": "File Times and Time Interpretation",
+            "description": "Use Windows file-time semantics carefully when constructing event narratives.",
+            "learningObjectives": [
+              "interpret creation, modification, and access timestamps by source",
+              "explain filesystem-versus-application timestamps",
+              "document time-conversion assumptions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Windows file times are exposed through system APIs with UTC-based FILETIME semantics.",
+                  "Explorer displays can present converted local times that differ from stored representations.",
+                  "Different applications can create their own timestamp fields, and copying/exporting files can introduce new filesystem times."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never merge multiple timestamp types into a single “activity time” without documenting the transformation and meaning."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-05",
+              "question": "Why can copying a file create misleading timeline entries?",
+              "options": [
+                "The destination filesystem can assign new metadata times even though the file content originated elsewhere.",
+                "Copying always changes the content hash.",
+                "Copying deletes the source file.",
+                "Copying removes all timestamps."
+              ],
+              "answer": "The destination filesystem can assign new metadata times even though the file content originated elsewhere.",
+              "explanation": "Filesystem times at the destination reflect destination-side operations and are not automatically original-file creation times."
+            },
+            "summary": [
+              "Timestamp semantics are evidence-specific; provenance must travel with the value."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Explain a File Timeline Without Overclaiming",
+            "level": "Intermediate",
+            "description": "Interpret a mixed NTFS timeline and write evidence-grounded findings.",
+            "problemStatement": "You receive synthetic MFT, USN, and application timestamps for a document. Explain what the data establishes, what it suggests, and what remains unproven.",
+            "objectives": [
+              "separate observations from inferences",
+              "identify at least three corroborating sources",
+              "state timestamp limitations"
+            ],
+            "requirements": [
+              "Synthetic CSV data",
+              "Windows filesystem concepts"
+            ],
+            "hint": "Write each conclusion as Observation → Corroboration → Interpretation → Limitation.",
+            "solutionCode": "Observation: The MFT metadata reports a modification time for report.docx.\nCorroboration: A USN record indicates a write-related change near the same period.\nInterpretation: The evidence supports that the filesystem recorded a change to the file around that time.\nLimitation: These artifacts alone do not identify the human actor or prove the document was intentionally edited.",
+            "solutionExplanation": "This approach demonstrates disciplined reporting: filesystem state is not automatically equivalent to human intent."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Windows Registry Forensics",
+        "description": "Examine Registry hives, transaction logs, user and system state, configuration artifacts, and persistence clues while respecting artifact semantics.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Registry Architecture and Hives",
+            "description": "Understand Windows Registry hives, supporting files, user profiles, and offline examination.",
+            "learningObjectives": [
+              "explain what a registry hive is",
+              "identify major system and user hive categories",
+              "describe offline examination considerations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft describes a hive as a logical group of keys, subkeys, and values with supporting files loaded into memory. User profile hives contain application settings, desktop/environment data, network connections, and printer settings."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "System-level hives live under the Windows configuration area and are accompanied by transaction/backup files depending on the hive and OS behavior.",
+                  "User hives such as NTUSER.DAT capture per-user configuration and activity-related state.",
+                  "Offline copies of hives can be examined without interacting with the running operating system, but the acquisition context must remain documented."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A Registry value represents configuration or state. Do not automatically interpret it as proof of a user intentionally changing that state."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "What is a Windows Registry hive?",
+              "options": [
+                "A logical group of registry keys, subkeys, and values with supporting files.",
+                "A network packet capture.",
+                "A disk partition table.",
+                "A browser cache only."
+              ],
+              "answer": "A logical group of registry keys, subkeys, and values with supporting files.",
+              "explanation": "Hives are the persistent/storage units used by the Windows Registry system."
+            },
+            "summary": [
+              "Registry analysis is structured state analysis, not just searching strings."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-hives"
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "NTUSER.DAT and Per-User Evidence",
+            "description": "Use user hives to understand application, environment, and user-specific state.",
+            "learningObjectives": [
+              "identify why NTUSER.DAT matters",
+              "relate user-hive data to a specific profile/SID",
+              "avoid assuming a Registry value proves an action"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "NTUSER.DAT is associated with a user profile hive and can contain user-specific settings and application state.",
+                  "The hive is interpreted in the context of the user profile and account/SID relationships.",
+                  "Different versions of Windows and applications can populate different keys or values."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A user-hive artifact may show that a setting or state existed under the profile; it is not always sufficient to prove when or why the state was created."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "Why is profile/SID context important when interpreting a user Registry hive?",
+              "options": [
+                "It helps associate the hive with the Windows user/security context that owns the profile.",
+                "It converts every Registry value into a timestamp.",
+                "It identifies all remote attackers.",
+                "It replaces the need for acquisition notes."
+              ],
+              "answer": "It helps associate the hive with the Windows user/security context that owns the profile.",
+              "explanation": "Registry evidence is more meaningful when the profile identity and collection context are preserved."
+            },
+            "summary": [
+              "User Registry analysis is strongest when correlated with filesystem and security-log evidence."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-hives"
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "SYSTEM, SOFTWARE, SAM, and SECURITY Hives",
+            "description": "Understand what major system hives can contribute to forensic reconstruction without teaching credential extraction.",
+            "learningObjectives": [
+              "differentiate system hive roles",
+              "identify configuration and security-relevant data categories",
+              "apply least-necessary collection principles"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "SYSTEM contains core operating-system and hardware/service configuration.",
+                  "SOFTWARE contains system- and application-related configuration state.",
+                  "SAM and SECURITY are security-sensitive stores; forensic handling requires strict authorization and controlled access.",
+                  "Registry transaction/log files can be important for reconstructing or validating state depending on the artifact."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not extract, crack, or disclose credentials outside a clearly authorized forensic lab. The course focuses on interpretation, not credential theft."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "Which hive is most directly associated with system-wide configuration such as services and device state?",
+              "options": [
+                "SYSTEM",
+                "NTUSER.DAT",
+                "Browser history database",
+                "Recycle Bin index"
+              ],
+              "answer": "SYSTEM",
+              "explanation": "The SYSTEM hive contains core Windows system configuration data."
+            },
+            "summary": [
+              "Security-sensitive hives require strong access controls and a clear investigative purpose."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-hives"
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Registry Transaction Logs and Deleted Keys",
+            "description": "Understand how Registry transaction/log artifacts affect interpretation of historical state.",
+            "learningObjectives": [
+              "describe why transaction/log files exist",
+              "recognize that historical state can be partial",
+              "avoid assuming every deleted key is recoverable"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows maintains supporting files for Registry hives, including transaction logs. These files can help preserve or recover state around hive updates, but their usefulness depends on the exact hive, operating-system behavior, acquisition state, and available records."
+              },
+              {
+                "type": "warning",
+                "text": "Registry “deleted data” is not equivalent to deleted filesystem files. Recovery depends on hive structure, records, transactions, and parser capabilities."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "What is a safe statement about Registry transaction logs?",
+              "options": [
+                "They can provide additional state/history relevant to hive updates, but coverage and interpretation depend on context and parser support.",
+                "They contain every historical Registry value forever.",
+                "They are network logs.",
+                "They prove who changed each key."
+              ],
+              "answer": "They can provide additional state/history relevant to hive updates, but coverage and interpretation depend on context and parser support.",
+              "explanation": "Transaction evidence is useful but not unlimited historical truth."
+            },
+            "summary": [
+              "Registry analysis requires artifact-specific parser knowledge and careful provenance."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-hives"
+            ]
+          },
+          {
+            "id": "lesson-04-05",
+            "title": "Registry-Based Execution and Persistence Clues",
+            "description": "Recognize common Registry locations that may support execution/persistence analysis without assuming every entry is malicious.",
+            "learningObjectives": [
+              "identify categories of execution and persistence Registry artifacts",
+              "correlate Registry evidence with process and filesystem artifacts",
+              "distinguish configuration from confirmed execution"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Run/RunOnce-style locations can establish configured startup behavior, subject to architecture and policy.",
+                  "Services are configured through Registry state and can be correlated with service-control artifacts.",
+                  "Application compatibility and related caches can preserve historical execution context.",
+                  "Registry evidence alone should not be treated as definitive proof that a program executed."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Persistence configuration may be legitimate administration. Review signer, path, parent process, installation context, and timing before making a maliciousness determination."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-05",
+              "question": "What does a configured startup entry most directly establish?",
+              "options": [
+                "That a startup mechanism was configured in the Registry at the observed state.",
+                "That the program definitely executed successfully.",
+                "That the file is malicious.",
+                "That a user intentionally installed it."
+              ],
+              "answer": "That a startup mechanism was configured in the Registry at the observed state.",
+              "explanation": "Configuration evidence should be corroborated with execution and installation artifacts."
+            },
+            "summary": [
+              "Registry persistence clues are triage leads until corroborated."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-hives",
+              "https://docs.velociraptor.app/docs/artifacts/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Correlate a Registry Persistence Lead",
+            "level": "Advanced",
+            "description": "Evaluate a synthetic suspicious startup entry and determine the next evidence needed.",
+            "problemStatement": "A user hive contains a startup value pointing to an executable in a user-writable directory. Produce a triage finding and a corroboration plan.",
+            "objectives": [
+              "interpret the Registry value",
+              "inspect path/context requirements",
+              "identify corroborating execution evidence",
+              "state benign alternatives"
+            ],
+            "requirements": [
+              "Synthetic Registry export",
+              "No real credentials",
+              "Windows artifact knowledge"
+            ],
+            "hint": "Ask whether the path, signer, installation event, process execution, and account context support the same story.",
+            "solutionCode": "Finding: The user hive contains a startup configuration referencing an executable under a user profile path.\nNext checks: file hash/signature, filesystem timestamps, Prefetch/BAM/4688 evidence, service/task configuration, and installation/application artifacts.\nLimitation: The Registry value alone establishes configuration, not successful execution or malicious intent.",
+            "solutionExplanation": "The student learns to turn a Registry artifact into a defensible triage lead rather than a premature verdict."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Windows Event Logs and Execution Evidence",
+        "description": "Analyze EVTX structure and process-creation telemetry, correlate logon/session information, and understand logging configuration limits.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "EVTX Fundamentals and wevtutil",
+            "description": "Use Windows Event Log channels and wevtutil to inspect and export logs without confusing collection with analysis.",
+            "learningObjectives": [
+              "explain event-log channels and EVTX files",
+              "use wevtutil for read/export operations in a lab",
+              "preserve source context when exporting events"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows Event Log stores structured events in channels such as Application, System, Security, and application/service logs. `wevtutil` can query event logs and export logs to EVTX."
+              },
+              {
+                "type": "code",
+                "text": "wevtutil qe Application /c:10 /rd:true /f:text\nwevtutil epl System C:\\Lab\\System.evtx"
+              },
+              {
+                "type": "warning",
+                "text": "Avoid clearing logs during a forensic examination. Clearing is destructive to the source record and must never be treated as a normal collection step."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-01",
+                "title": "Export a Lab Event Log",
+                "description": "Export the System log from a controlled Windows lab system and document the source and output file integrity.",
+                "steps": [
+                  "Create a dedicated lab output folder outside any evidence repository.",
+                  "Run `wevtutil epl System C:\\Lab\\System.evtx`.",
+                  "Calculate a SHA-256 hash of the exported EVTX.",
+                  "Record source channel, collection time, command, and digest."
+                ],
+                "solution": "PowerShell:\nwevtutil epl System C:\\Lab\\System.evtx\nGet-FileHash C:\\Lab\\System.evtx -Algorithm SHA256\n",
+                "output": "The export creates an EVTX file containing the exported System-channel events. The hash establishes an integrity baseline for the exported bytes."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Which command exports an event log to an EVTX file?",
+              "options": [
+                "wevtutil epl System C:\\backup\\system.evtx",
+                "wevtutil hash System",
+                "Get-MFT System",
+                "fsutil evtx export"
+              ],
+              "answer": "wevtutil epl System C:\\backup\\system.evtx",
+              "explanation": "`epl` is the wevtutil export-log operation."
+            },
+            "summary": [
+              "Event-log collection should preserve channel, command, time, and hash context."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/wevtutil"
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Security Logon and Session Context",
+            "description": "Interpret logon-related event records as session evidence rather than complete user attribution.",
+            "learningObjectives": [
+              "identify useful logon/session fields",
+              "correlate logon context with later activity",
+              "describe limitations caused by retention and auditing configuration"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Security auditing can record successful and failed authentication-related events depending on policy and system configuration.",
+                  "The logon ID can help correlate related events within the same session context.",
+                  "Account names, SIDs, logon type, workstation/network context, and timestamps can add investigative value."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A successful logon for an account does not prove who physically controlled the keyboard or that the user intentionally performed every later action."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "Why is a logon ID useful in Windows event analysis?",
+              "options": [
+                "It can help correlate related events within the same logon/session context.",
+                "It is the same as a password.",
+                "It identifies the public IP owner.",
+                "It proves user intent."
+              ],
+              "answer": "It can help correlate related events within the same logon/session context.",
+              "explanation": "The logon ID is a correlation field, not proof of physical identity or intent."
+            },
+            "summary": [
+              "Session context makes later process and file activity easier to interpret."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688"
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Event 4688 Process Creation",
+            "description": "Use process-creation telemetry to reconstruct executable launches when the audit policy provides it.",
+            "learningObjectives": [
+              "explain Event 4688 fields",
+              "interpret process path, creator process, and command line",
+              "recognize command-line logging prerequisites and privacy risks"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents Event 4688 as a process-creation event. Depending on audit policy/version, useful fields include creator subject, logon ID, new process ID, new process name, creator process name, and—when configured—process command line."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -FilterHashtable @{LogName=\"Security\"; Id=4688} -MaxEvents 20"
+              },
+              {
+                "type": "warning",
+                "text": "Command-line auditing can expose sensitive values such as passwords or private data; logging should be governed by appropriate security and privacy policy."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-02",
+                "title": "Extract Recent Process-Creation Events",
+                "description": "Query recent 4688 events from an authorized lab system and summarize executable path, account, and command line where available.",
+                "steps": [
+                  "Run the provided PowerShell query.",
+                  "Select TimeCreated, AccountName, NewProcessName, ParentProcessName, and ProcessCommandLine when present.",
+                  "Document when the command-line field is absent and why."
+                ],
+                "solution": "PowerShell:\nGet-WinEvent -FilterHashtable @{LogName='Security'; Id=4688} -MaxEvents 20 |\n  ForEach-Object {\n    [xml]$xml = $_.ToXml()\n    $data = @{}\n    foreach ($d in $xml.Event.EventData.Data) { $data[$d.Name] = $d.'#text' }\n    [pscustomobject]@{\n      Time=$_.TimeCreated\n      Account=$data.SubjectUserName\n      Process=$data.NewProcessName\n      Parent=$data.CreatorProcessName\n      CommandLine=$data.CommandLine\n    }\n  } | Format-Table -AutoSize\n",
+                "output": "Output depends on the lab system and its audit configuration. The exercise specifically tests interpretation of available fields and awareness that command-line data may be unavailable."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "What must be true for process command lines to appear in Event 4688?",
+              "options": [
+                "The relevant process-creation auditing is enabled and the policy to include command line is configured.",
+                "The filesystem must be FAT32.",
+                "PowerShell must be installed.",
+                "VSS must be disabled."
+              ],
+              "answer": "The relevant process-creation auditing is enabled and the policy to include command line is configured.",
+              "explanation": "Microsoft documents a separate policy setting for including process command lines."
+            },
+            "summary": [
+              "Event 4688 is most valuable when correlated with other execution artifacts and session context."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688",
+              "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing"
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "PowerShell Operational Logging",
+            "description": "Understand PowerShell logging sources, Script Block Logging, and evidence/privacy trade-offs.",
+            "learningObjectives": [
+              "identify PowerShell logging locations",
+              "explain Script Block Logging behavior",
+              "assess logging gaps and sensitive-data exposure"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents PowerShell Operational logging and Script Block Logging. When Script Block Logging is enabled, script blocks processed by PowerShell can be recorded in the Microsoft-Windows-PowerShell/Operational log."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -LogName Microsoft-Windows-PowerShell/Operational -MaxEvents 20"
+              },
+              {
+                "type": "warning",
+                "text": "Increased logging can capture sensitive data. Protect access to logs and enable protections appropriate to the deployment."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "Which log is associated with PowerShell Operational events?",
+              "options": [
+                "Microsoft-Windows-PowerShell/Operational",
+                "Application/System32/PowerShell.txt",
+                "NTFS/PowerShell.evtx",
+                "SAM/PowerShell"
+              ],
+              "answer": "Microsoft-Windows-PowerShell/Operational",
+              "explanation": "Microsoft documents the PowerShell Operational log channel."
+            },
+            "summary": [
+              "PowerShell logs can provide useful execution context but are configuration-dependent."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging",
+              "https://learn.microsoft.com/en-us/powershell/scripting/security/security-features"
+            ]
+          },
+          {
+            "id": "lesson-05-05",
+            "title": "Microsoft Defender Operational Evidence",
+            "description": "Use Defender event logs as one source of security telemetry and understand their scope.",
+            "learningObjectives": [
+              "locate the Defender Operational channel",
+              "query Defender events with PowerShell",
+              "correlate detection activity with endpoint evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft documents Windows Defender Antivirus events under Application and Services Logs > Microsoft > Windows > Windows Defender > Operational and shows querying them with `Get-WinEvent`."
+              },
+              {
+                "type": "code",
+                "text": "Get-WinEvent -LogName Microsoft-Windows-Windows Defender/Operational"
+              },
+              {
+                "type": "warning",
+                "text": "A Defender event is one telemetry source. A detection record does not independently reconstruct every action that occurred before or after it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-05",
+              "question": "Which PowerShell command queries the documented Defender Operational channel?",
+              "options": [
+                "Get-WinEvent -LogName Microsoft-Windows-Windows Defender/Operational",
+                "Get-DefenderHistory -DiskImage",
+                "wevtutil mft Defender",
+                "fsutil defender query"
+              ],
+              "answer": "Get-WinEvent -LogName Microsoft-Windows-Windows Defender/Operational",
+              "explanation": "This is the documented PowerShell approach shown by Microsoft for reviewing the channel."
+            },
+            "summary": [
+              "Defender events can corroborate execution and response timelines."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/defender-endpoint/troubleshoot-mdav-scan-issues"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Reconstruct an Execution Sequence",
+            "level": "Advanced",
+            "description": "Correlate synthetic Event 4688, logon, PowerShell, and Defender records.",
+            "problemStatement": "Determine whether the records support execution of a suspicious script and describe exactly what is established versus inferred.",
+            "objectives": [
+              "correlate logon ID/session context",
+              "use parent-process relationships",
+              "assess command-line availability",
+              "incorporate Defender telemetry",
+              "state evidence gaps"
+            ],
+            "requirements": [
+              "Synthetic EVTX-derived CSV data",
+              "Spreadsheet or Python",
+              "No real endpoints"
+            ],
+            "hint": "Correlate first, interpret second. Preserve source identifiers for every timeline row.",
+            "solutionCode": "1. Establish the relevant logon/session context.\n2. Identify Event 4688 process start and parent process.\n3. Use available command-line data to characterize the invocation.\n4. Correlate PowerShell Operational events when present.\n5. Compare timing with Defender detections.\n6. Report evidence gaps if logging was not enabled.\nExample conclusion: “The records support execution of PowerShell under the correlated session and show a Defender detection shortly afterward. They do not, by themselves, prove the operator’s physical identity or intent.”",
+            "solutionExplanation": "The solution demonstrates correlation across independent telemetry rather than a single-event verdict."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Windows User Activity and Execution Artifacts",
+        "description": "Interpret Prefetch, BAM, Amcache, Shimcache/AppCompatCache, LNK files, recent activity, removable media traces, and scheduled execution clues.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Prefetch Evidence",
+            "description": "Understand Prefetch as execution-related evidence and the conditions under which it can be useful.",
+            "learningObjectives": [
+              "describe the purpose of Prefetch",
+              "interpret Prefetch as execution evidence",
+              "identify version/configuration limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Prefetch is intended to help Windows optimize application startup. It can preserve execution-related information useful to forensic analysis."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefetch can support the proposition that a program executed on the system under the conditions represented by the artifact.",
+                  "It does not by itself identify the human operator.",
+                  "Availability and behavior vary with Windows version, system configuration, and file-system conditions."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Use current artifact documentation and the actual OS context. Never assume that every Windows build exposes identical Prefetch behavior."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "What is a defensible use of Prefetch?",
+              "options": [
+                "As execution-related evidence that a program was run under the artifact’s applicable conditions.",
+                "As proof of user intent.",
+                "As proof that a program was malicious.",
+                "As a complete process log."
+              ],
+              "answer": "As execution-related evidence that a program was run under the artifact’s applicable conditions.",
+              "explanation": "Prefetch is execution evidence, but not a complete behavioral or attribution record."
+            },
+            "summary": [
+              "Execution evidence should be corroborated with process logs, file metadata, and user/session context where available."
+            ],
+            "resources": [
+              "https://docs.velociraptor.app/docs/forensic/evidence_of_execution/"
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "BAM and User Attribution Context",
+            "description": "Understand Background Activity Moderator evidence and why it can add user/SID context.",
+            "learningObjectives": [
+              "describe BAM at a forensic level",
+              "relate BAM data to user SID context",
+              "avoid treating attribution evidence as absolute identity proof"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Velociraptor’s current forensic documentation describes BAM as Registry-backed evidence that can associate binaries with a user SID context, making it a useful complement to execution artifacts such as Prefetch."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "BAM is best interpreted alongside the executable path, timestamps, user profile, and other execution evidence.",
+                  "The presence of a record supports an artifact-derived relationship, not a complete account of who physically operated the machine."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "Why can BAM complement Prefetch?",
+              "options": [
+                "It can add user/SID context that Prefetch alone does not necessarily provide.",
+                "It replaces the need for all other execution artifacts.",
+                "It records every network packet.",
+                "It stores browser passwords."
+              ],
+              "answer": "It can add user/SID context that Prefetch alone does not necessarily provide.",
+              "explanation": "BAM can contribute user-context information to execution analysis."
+            },
+            "summary": [
+              "Execution plus user context is stronger than execution evidence alone."
+            ],
+            "resources": [
+              "https://docs.velociraptor.app/docs/forensic/evidence_of_execution/"
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Amcache and Shimcache/AppCompatCache",
+            "description": "Understand the different evidentiary roles of application-compatibility and application-inventory artifacts.",
+            "learningObjectives": [
+              "describe why Amcache and Shimcache matter",
+              "distinguish inventory/configuration evidence from confirmed execution",
+              "correlate path and metadata across artifacts"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows maintains application-compatibility and inventory-related artifacts. These can preserve information about executables and software state even when a direct process event is absent."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Amcache can contribute inventory and execution-context information useful in corroboration.",
+                  "Shimcache/AppCompatCache records compatibility-related executable information and should not automatically be treated as a proof that the executable was run.",
+                  "Artifact interpretation depends heavily on Windows version and parser semantics."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "Which statement is safest about Shimcache/AppCompatCache?",
+              "options": [
+                "It is evidence about executable/application compatibility state and should not automatically be equated with execution.",
+                "It is a complete process history.",
+                "It is a password database.",
+                "It records all browser visits."
+              ],
+              "answer": "It is evidence about executable/application compatibility state and should not automatically be equated with execution.",
+              "explanation": "The artifact can support context, but direct execution claims need corroboration."
+            },
+            "summary": [
+              "Different execution-related artifacts answer different questions."
+            ],
+            "resources": [
+              "https://docs.velociraptor.app/docs/forensic/evidence_of_execution/"
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "LNK Files and Shell Link Evidence",
+            "description": "Analyze Windows shortcut files for target-path and related metadata without overclaiming user action.",
+            "learningObjectives": [
+              "explain what an LNK file is",
+              "identify target path and related link metadata",
+              "use LNK evidence in a corroborated timeline"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft describes a Shell Link as a data object that gives access to an object in the Windows Shell namespace. Link files use the `.lnk` extension and can contain the referenced target path, working directory, arguments, icon information, and description."
+              },
+              {
+                "type": "warning",
+                "text": "The existence of an LNK file can establish a shortcut/link artifact, but it does not automatically prove who intentionally opened the target or why it was created."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-04",
+              "question": "What information can an LNK file contain?",
+              "options": [
+                "Information such as the target path, working directory, and arguments associated with the shortcut.",
+                "Only the target file contents.",
+                "The user's password.",
+                "Only network packet data."
+              ],
+              "answer": "Information such as the target path, working directory, and arguments associated with the shortcut.",
+              "explanation": "Microsoft documents these as properties stored in a Windows link file."
+            },
+            "summary": [
+              "LNK files are most useful when correlated with filesystem and user-profile artifacts."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/shell/links"
+            ]
+          },
+          {
+            "id": "lesson-06-05",
+            "title": "Recent Items, ShellBags, and Removable Media Traces",
+            "description": "Interpret user-interface and device-history artifacts cautiously.",
+            "learningObjectives": [
+              "identify common user-activity categories",
+              "distinguish access/context from confirmed transfer",
+              "correlate user-activity artifacts with session evidence"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Recent-item artifacts can indicate files or locations surfaced within the user environment.",
+                  "ShellBags can preserve folder-navigation context depending on artifact state and Windows version.",
+                  "Removable-device history can support that a device was connected; it does not alone prove a particular file was copied.",
+                  "These artifacts can be user-controlled or generated indirectly and therefore require corroboration."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never state “the user copied file X to USB Y” solely from a device-connection artifact."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-05",
+              "question": "What does a removable-device connection artifact most directly establish?",
+              "options": [
+                "That Windows recorded a device connection or device-related history represented by the artifact.",
+                "That a specific file was copied.",
+                "That malware was installed from the device.",
+                "That the device owner is identified."
+              ],
+              "answer": "That Windows recorded a device connection or device-related history represented by the artifact.",
+              "explanation": "Device connection is contextual evidence; file transfer and attribution require additional sources."
+            },
+            "summary": [
+              "User activity is distributed across multiple artifacts and should be interpreted as a sequence."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.swgde.org/documents/published-complete-listing/"
+            ]
+          },
+          {
+            "id": "lesson-06-06",
+            "title": "Scheduled Tasks and Service Execution Context",
+            "description": "Use services and scheduled tasks to investigate persistence and automated execution.",
+            "learningObjectives": [
+              "identify service and scheduled-task evidence sources",
+              "correlate configuration with execution telemetry",
+              "separate legitimate administration from suspicious persistence"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Services can be examined through Registry configuration, Service Control Manager logs, and system/service state.",
+                  "Scheduled tasks have task definitions, triggers, principals, actions, and run history depending on Windows version and logging.",
+                  "A configured task or service establishes configuration; execution requires corroborating runtime evidence."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Enterprise software, update agents, management tools, and security products routinely create services and scheduled tasks. Suspicion requires context."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-06",
+              "question": "What additional evidence strengthens a claim that a scheduled task actually executed?",
+              "options": [
+                "Task run-history/log evidence, process creation records, or other runtime telemetry near the relevant time.",
+                "The task name alone.",
+                "The fact that the task exists.",
+                "A screenshot of Task Scheduler without timestamps."
+              ],
+              "answer": "Task run-history/log evidence, process creation records, or other runtime telemetry near the relevant time.",
+              "explanation": "Configuration is not the same as runtime execution."
+            },
+            "summary": [
+              "Persistence analysis needs configuration plus execution evidence."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Execution Artifact Cross-Check",
+            "level": "Advanced",
+            "description": "Evaluate a synthetic executable using Prefetch, BAM, Amcache, Shimcache, and 4688 records.",
+            "problemStatement": "Decide whether the evidence supports execution, approximate timing, and user context for a given executable.",
+            "objectives": [
+              "compare artifact semantics",
+              "rank evidence strength",
+              "identify contradictions",
+              "write a bounded conclusion"
+            ],
+            "requirements": [
+              "Synthetic artifact table",
+              "No live malware",
+              "Spreadsheet or Markdown"
+            ],
+            "hint": "Do not count artifacts; ask what independent proposition each one supports.",
+            "solutionCode": "Example analysis:\n- 4688: direct process-creation evidence for a recorded start event.\n- Prefetch: additional execution-related corroboration.\n- BAM: user/SID context.\n- Amcache: inventory/application context.\n- Shimcache: compatibility/application context, not standalone execution proof.\nConclusion: “The combined records strongly support execution under the recorded session and time window, subject to logging and artifact limitations.”",
+            "solutionExplanation": "The task tests whether the learner understands that artifact categories have different meanings and should be weighted accordingly."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Advanced Windows Forensic Sources",
+        "description": "Add deeper Windows evidence sources: Volume Shadow Copy, PowerShell/Defender correlation, memory, network state, and endpoint collection frameworks.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Volume Shadow Copy Service for Historical State",
+            "description": "Understand VSS snapshots and their forensic value without confusing snapshots with full forensic images.",
+            "learningObjectives": [
+              "explain VSS requester/writer/provider concepts",
+              "describe copy-on-write at a high level",
+              "identify forensic uses of shadow copies"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft describes VSS as infrastructure that coordinates requesters, writers, and providers to create consistent shadow copies of volumes while applications continue to run. The system provider uses copy-on-write to maintain a point-in-time view."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A shadow copy can expose earlier filesystem state and therefore support historical file/configuration analysis.",
+                  "A snapshot is not automatically equivalent to a forensic image of all historical storage states.",
+                  "Availability depends on whether shadow copies exist and what retention/space settings permitted them to survive."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not create or delete shadow copies on evidence casually. Collection/management actions can alter the system and must follow procedure."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "What is a useful forensic value of a VSS shadow copy?",
+              "options": [
+                "It can provide a point-in-time view of volume data that may preserve earlier state.",
+                "It contains every past version of every block forever.",
+                "It is identical to a RAM image.",
+                "It proves file authorship."
+              ],
+              "answer": "It can provide a point-in-time view of volume data that may preserve earlier state.",
+              "explanation": "VSS can preserve earlier point-in-time state, subject to retention and system conditions."
+            },
+            "summary": [
+              "VSS can help recover or compare historical filesystem state when snapshots survived."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows-server/storage/file-server/volume-shadow-copy-service",
+              "https://learn.microsoft.com/en-us/windows-server/storage/file-server/volume-shadow-copy-service"
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Memory Forensics with Volatility 3",
+            "description": "Use current Volatility 3 process-analysis plugins on a permitted Windows memory image.",
+            "learningObjectives": [
+              "explain the value and volatility of memory evidence",
+              "run Windows process plugins in Volatility 3",
+              "interpret process ancestry without declaring maliciousness from names alone"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Memory can preserve transient state such as running processes, process relationships, command lines, and network-related structures. It is a snapshot captured under specific conditions and can change during acquisition."
+              },
+              {
+                "type": "code",
+                "text": "python vol.py -f MemDump.DMP windows.pslist\npython vol.py -f MemDump.DMP windows.pstree\npython vol.py -f MemDump.DMP windows.cmdline"
+              },
+              {
+                "type": "warning",
+                "text": "Use only legally obtained training images or authorized evidence. Do not collect memory from third-party systems without permission."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-01",
+                "title": "Enumerate Processes in a Training Memory Image",
+                "description": "Run current Volatility 3 process plugins and record the observations needed for a short triage finding.",
+                "steps": [
+                  "Obtain an authorized training memory image.",
+                  "Record its reference hash if supplied.",
+                  "Run `windows.pslist`.",
+                  "Run `windows.pstree`.",
+                  "Run `windows.cmdline`.",
+                  "Choose one unusual-looking relationship and document both suspicious and benign explanations."
+                ],
+                "solution": "Shell:\npython vol.py -f MemDump.DMP windows.pslist > pslist.txt\npython vol.py -f MemDump.DMP windows.pstree > pstree.txt\npython vol.py -f MemDump.DMP windows.cmdline > cmdline.txt\n",
+                "output": "The exact process list depends on the training image. The expected outcome is a reproducible set of plugin outputs plus a cautious interpretation."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "What does `windows.pstree` add to a flat process listing?",
+              "options": [
+                "Parent/child process relationships that provide execution context.",
+                "Filesystem free-space statistics.",
+                "Browser history.",
+                "Registry transaction logs."
+              ],
+              "answer": "Parent/child process relationships that provide execution context.",
+              "explanation": "Process ancestry can reveal how a process was launched and by which parent."
+            },
+            "summary": [
+              "Memory evidence is transient and should be interpreted with acquisition context."
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/",
+              "https://volatility3.readthedocs.io/en/stable/getting-started-windows-tutorial.html"
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Windows Network State in Forensic Context",
+            "description": "Correlate endpoint network evidence with process and event data while avoiding IP-to-person overclaims.",
+            "learningObjectives": [
+              "distinguish endpoint connection records from packet captures",
+              "correlate network timing with process/session evidence",
+              "state attribution limitations"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Endpoint telemetry can associate connections with processes or local ports depending on the source.",
+                  "DNS records, flow records, and packet captures answer different questions and have different retention requirements.",
+                  "NAT, VPNs, proxies, shared systems, dynamic addressing, and cloud infrastructure complicate human attribution."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "An IP address is not a human identity. State only what the evidence supports."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "Why is an IP address insufficient for human attribution?",
+              "options": [
+                "Network identities can be shared, translated, proxied, or reassigned.",
+                "IP addresses always identify a person.",
+                "IP addresses contain usernames.",
+                "IP addresses prove intent."
+              ],
+              "answer": "Network identities can be shared, translated, proxied, or reassigned.",
+              "explanation": "Network addressing and human identity are different evidence questions."
+            },
+            "summary": [
+              "Network evidence becomes stronger when combined with endpoint process and authentication context."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-07-04",
+            "title": "Velociraptor Artifacts for Windows Triage",
+            "description": "Use current Velociraptor artifact concepts and CLI examples to understand scalable endpoint collection.",
+            "learningObjectives": [
+              "explain what a Velociraptor artifact is",
+              "list and inspect artifacts from the CLI",
+              "understand artifact permissions and collection boundaries"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Current Velociraptor documentation describes artifacts as packaged VQL queries plus metadata. The CLI supports `artifacts list`, `artifacts show`, and `artifacts collect` for working with artifacts."
+              },
+              {
+                "type": "code",
+                "text": "velociraptor artifacts list \"Windows.*Services\"\nvelociraptor artifacts show Windows.System.Services\nvelociraptor artifacts collect Windows.System.Services --output services.zip"
+              },
+              {
+                "type": "warning",
+                "text": "Artifact collection can be powerful and potentially invasive. Use authorization, scope controls, and collection procedures; avoid indiscriminate large-scale collection."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-02",
+                "title": "Inspect and Collect One Windows Artifact",
+                "description": "Use a controlled Velociraptor environment to list, inspect, and collect one Windows artifact.",
+                "steps": [
+                  "Run `artifacts list` with a Windows-specific pattern.",
+                  "Use `artifacts show` on one selected artifact.",
+                  "Review its description, parameters, and query sources.",
+                  "Run `artifacts collect` only against a permitted training client or local lab context.",
+                  "Preserve the output ZIP and document its hash."
+                ],
+                "solution": "CLI:\nvelociraptor artifacts list \"Windows.System.*\"\nvelociraptor artifacts show Windows.System.Services\nvelociraptor artifacts collect Windows.System.Services --output services.zip\n",
+                "output": "The output depends on the environment and artifact version. The learning result is the ability to understand an artifact definition before collection and to preserve the collection output with provenance."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-07-04",
+              "question": "What does a Velociraptor artifact package?",
+              "options": [
+                "One or more VQL queries with metadata, parameters, and collection semantics.",
+                "A Windows disk image only.",
+                "A password database.",
+                "A browser extension."
+              ],
+              "answer": "One or more VQL queries with metadata, parameters, and collection semantics.",
+              "explanation": "Velociraptor artifacts package repeatable collection logic and descriptive metadata."
+            },
+            "summary": [
+              "Modern Windows triage benefits from understanding both artifact semantics and collection mechanics."
+            ],
+            "resources": [
+              "https://docs.velociraptor.app/docs/artifacts/",
+              "https://docs.velociraptor.app/docs/cli/commands/artifacts/",
+              "https://docs.velociraptor.app/docs/artifacts/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Memory-to-Disk Correlation Plan",
+            "level": "Advanced",
+            "description": "Create a correlation plan for a suspicious process seen in memory.",
+            "problemStatement": "A memory image shows a process with an unusual parent and command line. Define the disk, registry, event, and network evidence needed to validate or challenge the finding.",
+            "objectives": [
+              "map each memory observation to independent sources",
+              "state what would strengthen attribution",
+              "identify alternative benign explanations"
+            ],
+            "requirements": [
+              "Volatility 3 outputs or synthetic equivalents",
+              "Windows artifact knowledge"
+            ],
+            "hint": "Start with the process PID/name/path/parent and map outward to filesystem, execution, account, persistence, and network evidence.",
+            "solutionCode": "Memory observation: unusual parent/child relationship.\nDisk checks: executable path, SHA-256, signer, filesystem timestamps.\nWindows telemetry: 4688, PowerShell logs, Defender events.\nUser context: logon/session, BAM/profile artifacts.\nPersistence: services, scheduled tasks, Run keys.\nNetwork: endpoint connections around execution time.\nConclusion language should remain conditional until independent evidence agrees.",
+            "solutionExplanation": "The plan shows how memory is a lead that should be corroborated by durable artifacts rather than treated as the entire investigation."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Windows Timeline, Validation, Reporting, and Case Management",
+        "description": "Turn Windows artifacts into reproducible timelines and defensible findings, validate tools, manage uncertainty, and close cases properly.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Windows Timeline Construction",
+            "description": "Build source-preserving timelines across filesystem, Registry, EVTX, execution, and application records.",
+            "learningObjectives": [
+              "design a timeline schema",
+              "normalize heterogeneous timestamps",
+              "preserve source provenance and confidence"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "timestamp | source | event_type | artifact_id | subject | normalized_time | confidence | limitation"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Each timeline row should identify the source artifact and event semantics.",
+                  "Derived timelines should preserve original values and document normalization.",
+                  "Conflicting records should be shown as conflicts instead of silently reconciled."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08-01",
+                "title": "Build a Normalized Timeline with Python",
+                "description": "Merge synthetic Windows artifact CSV files into one sorted, source-preserving timeline.",
+                "steps": [
+                  "Create three CSV files with ISO-8601 timestamps.",
+                  "Read each file using Python’s `csv` module.",
+                  "Add a source field and preserve original time.",
+                  "Sort by normalized time.",
+                  "Write a final `timeline.csv`."
+                ],
+                "solution": "Python:\nimport csv\ninputs = {\"events.csv\":\"eventlog\", \"mft.csv\":\"filesystem\", \"browser.csv\":\"browser\"}\nevents=[]\nfor name, source in inputs.items():\n    with open(name, newline='', encoding='utf-8') as f:\n        for row in csv.DictReader(f):\n            events.append({\"timestamp\":row[\"timestamp\"],\"source\":source,\"event\":row[\"event\"],\"subject\":row.get(\"subject\",\"\")})\nevents.sort(key=lambda x:x[\"timestamp\"])\nwith open('timeline.csv','w',newline='',encoding='utf-8') as f:\n    w=csv.DictWriter(f,fieldnames=[\"timestamp\",\"source\",\"event\",\"subject\"])\n    w.writeheader(); w.writerows(events)\n",
+                "output": "The result is a chronological derived view. Because the lab inputs use ISO-8601 UTC, the practical avoids hidden timezone conversion and focuses on provenance."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "What makes a derived forensic timeline reviewable?",
+              "options": [
+                "Each row can be traced to a source artifact and its timestamp semantics are documented.",
+                "Only the final conclusion is preserved.",
+                "All uncertainty is removed.",
+                "Source identifiers are discarded."
+              ],
+              "answer": "Each row can be traced to a source artifact and its timestamp semantics are documented.",
+              "explanation": "A timeline is an analytical model and requires provenance."
+            },
+            "summary": [
+              "Timelines organize evidence; they do not replace original artifacts."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Tool Validation and Reproducibility",
+            "description": "Test forensic tools with known data and preserve versions, configurations, and expected results.",
+            "learningObjectives": [
+              "design a tool-validation test",
+              "compare expected and observed results",
+              "document version and environment information"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A useful validation test uses a known dataset with expected outputs for a defined function.",
+                  "Record tool name/version, operating system, configuration, input hash, expected result, observed result, and test date.",
+                  "Independent tools or manual inspection can provide additional confidence where appropriate."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "“It is a popular tool” is not a validation method."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "What is the strongest example of forensic tool validation?",
+              "options": [
+                "Running a known test image with expected artifacts and comparing the observed output to the expected output.",
+                "Installing the tool and assuming it works.",
+                "Using a newer version without retesting.",
+                "Relying only on an online review."
+              ],
+              "answer": "Running a known test image with expected artifacts and comparing the observed output to the expected output.",
+              "explanation": "Validation tests a defined function against controlled expectations."
+            },
+            "summary": [
+              "Validation should be tied to the exact function relied on in the case."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/projects/computer-forensics-tool-testing"
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Writing Windows Forensic Findings",
+            "description": "Write findings that separate observations, corroboration, interpretation, confidence, and limitations.",
+            "learningObjectives": [
+              "structure a forensic finding",
+              "use cautious attribution language",
+              "state limitations precisely"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Finding template:\nObservation -> Corroboration -> Interpretation -> Limitation"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Observation: what the artifact records.",
+                  "Corroboration: independent evidence that supports or challenges it.",
+                  "Interpretation: what the combined evidence reasonably supports.",
+                  "Limitation: missing data, configuration, ambiguity, or alternative explanations."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not convert “account activity” into “person X did it” without evidence supporting that attribution."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Which wording is most evidence-grounded?",
+              "options": [
+                "“The Security log records process creation for X under account Y at the recorded time; this is consistent with the correlated endpoint evidence.”",
+                "“User Y definitely typed the command.”",
+                "“The file timestamp proves intent.”",
+                "“The IP address proves the attacker.”"
+              ],
+              "answer": "“The Security log records process creation for X under account Y at the recorded time; this is consistent with the correlated endpoint evidence.”",
+              "explanation": "The first statement distinguishes the recorded event from the stronger attribution claim."
+            },
+            "summary": [
+              "Professional reporting is strongest when the conclusion is no broader than the evidence."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-08-04",
+            "title": "Case Closure, Archiving, and Reproducibility",
+            "description": "Prepare evidence, reports, hashes, notes, and scripts for future review.",
+            "learningObjectives": [
+              "define a reproducibility package",
+              "complete a closure checklist",
+              "preserve evidence and derived results separately"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve evidence identifiers, acquisition hashes, working-copy relationships, tool versions, scripts, queries, search terms, and important errors.",
+                  "Keep generated reports separate from preserved evidence.",
+                  "Archive material in accordance with retention and access requirements.",
+                  "Retain enough context for a future examiner to understand how a conclusion was reached."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A case is not complete merely because the report was delivered. Future review is part of forensic quality."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-04",
+              "question": "Why should forensic scripts be retained?",
+              "options": [
+                "They may be required to reproduce or understand derived results.",
+                "They automatically become evidence of guilt.",
+                "They replace chain of custody.",
+                "They eliminate the need for hashes."
+              ],
+              "answer": "They may be required to reproduce or understand derived results.",
+              "explanation": "Derived outputs depend on the transformation logic that generated them."
+            },
+            "summary": [
+              "Case closure preserves the method as well as the result."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/"
+            ]
+          },
+          {
+            "id": "lesson-08-05",
+            "title": "Privacy, Minimization, and Sensitive Windows Data",
+            "description": "Handle sensitive data responsibly during forensic collection and analysis.",
+            "learningObjectives": [
+              "identify privacy risks in Windows evidence",
+              "apply data minimization within authorized scope",
+              "protect sensitive logs and extracted records"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Windows artifacts can contain usernames, email addresses, browser history, document content, authentication metadata, command lines, and security-sensitive information.",
+                  "Collect only what the authorized scope and investigative objective require.",
+                  "Protect extracted evidence with appropriate access controls and encryption/storage controls.",
+                  "Do not expose secrets in reports when the secret itself is not necessary to answer the investigative question."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Evidence handling must respect applicable legal, organizational, and privacy requirements."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-05",
+              "question": "What is a good forensic privacy practice?",
+              "options": [
+                "Minimize collection and disclosure to what is authorized and necessary for the investigative purpose.",
+                "Collect all available personal data by default.",
+                "Publish extracted credentials in the report.",
+                "Disable access controls to simplify collaboration."
+              ],
+              "answer": "Minimize collection and disclosure to what is authorized and necessary for the investigative purpose.",
+              "explanation": "Forensic scope should be purposeful and appropriately protected."
+            },
+            "summary": [
+              "Privacy and evidence quality are compatible: targeted, well-documented collection is often more defensible."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Write a Defensible Windows Forensic Report",
+            "level": "Advanced",
+            "description": "Turn a synthetic evidence set into a professional findings report.",
+            "problemStatement": "Produce scope, evidence inventory, methods, at least four findings, limitations, and conclusions for a synthetic Windows investigation.",
+            "objectives": [
+              "cite evidence identifiers",
+              "distinguish observations from inferences",
+              "include tool/version context",
+              "state limitations and alternatives"
+            ],
+            "requirements": [
+              "Markdown or document editor",
+              "Synthetic data only"
+            ],
+            "hint": "Use the structure: Scope → Evidence → Methods → Findings → Limitations → Conclusion.",
+            "solutionCode": "Finding 1 — Process execution:\nObservation: Event 4688 records process X under account Y at time T.\nCorroboration: Prefetch/BAM and a matching file hash support the same execution context.\nLimitation: The artifacts do not independently establish who was physically operating the device.\n\nRepeat this evidence-grounded structure for file activity, persistence, and network context.",
+            "solutionExplanation": "The solution models professional restraint: it documents what was recorded, what corroborates it, and what remains unknown."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Project — Windows Forensic Triage Workbench",
+        "description": "Build a read-only Windows evidence triage utility that hashes files, records metadata, creates a deterministic inventory, groups duplicate content, and produces a reproducibility package. This is the final assessment and contains no separate module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Project Design and Safety Boundary",
+            "description": "Design a non-invasive triage workbench that reads an authorized evidence directory and writes reports elsewhere.",
+            "learningObjectives": [
+              "define project input/output boundaries",
+              "design a read-only analysis workflow",
+              "identify testable safety requirements"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Project architecture"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Input: authorized Windows working-copy or logical-export directory.",
+                  "Core: deterministic file enumeration, SHA-256 hashing, metadata collection, duplicate grouping, and source-preserving JSON/CSV reporting.",
+                  "Output: reports outside the evidence directory.",
+                  "Safety: the program must reject output paths inside the evidence root."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "This educational project does not replace forensic imaging, filesystem-native parsing, registry parsing, memory acquisition, mobile extraction, or validated enterprise forensic suites."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "What is the most important safety boundary in this project?",
+              "options": [
+                "Do not write generated reports inside the evidence directory.",
+                "Rename evidence files to standardize them.",
+                "Modify timestamps to UTC.",
+                "Delete duplicate files."
+              ],
+              "answer": "Do not write generated reports inside the evidence directory.",
+              "explanation": "The workbench is deliberately designed as a read-only analysis tool."
+            },
+            "summary": [
+              "The final project demonstrates automation while preserving the evidence boundary."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/pathlib.html",
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://docs.python.org/3/library/json.html"
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Implementation and Validation",
+            "description": "Implement the triage workbench, test edge cases, and explain its forensic limitations.",
+            "learningObjectives": [
+              "run the complete project on synthetic Windows-style evidence",
+              "verify hashes and duplicate detection",
+              "test path-safety behavior",
+              "document project limitations"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Test zero-byte files, nested directories, filenames with spaces, duplicate content, and modified working-copy files.",
+                  "Run the tool twice and compare unchanged-file hashes.",
+                  "Attempt to set the report directory inside the evidence directory and verify that execution is rejected.",
+                  "Preserve project source and test outputs as a reproducibility package."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What does duplicate SHA-256 grouping establish?",
+              "options": [
+                "That the compared files have matching digest values for their observed bytes.",
+                "That both files were created by the same user.",
+                "That they have identical filesystem histories.",
+                "That they were copied from the same device."
+              ],
+              "answer": "That the compared files have matching digest values for their observed bytes.",
+              "explanation": "Content equality by hash does not establish provenance or authorship."
+            },
+            "summary": [
+              "The project output is derived evidence and must be interpreted within the documented collection and test conditions."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://docs.python.org/3/library/json.html"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Windows Forensic Triage Workbench",
+          "description": "A controlled, read-only Python utility for authorized Windows evidence working directories. It inventories regular files, computes SHA-256 digests, captures filesystem timestamps and sizes available through the Python runtime, groups duplicate content, and emits CSV/JSON reports outside the evidence directory. It is intentionally narrow: it teaches evidence integrity, metadata handling, deterministic automation, provenance, validation, and safe report generation rather than pretending to replace validated forensic acquisition or artifact-specific parsers.",
+          "conceptsCovered": [
+            "Windows forensic working copies",
+            "cryptographic hashing",
+            "filesystem metadata",
+            "evidence inventory",
+            "source provenance",
+            "duplicate-content analysis",
+            "UTC normalization",
+            "read-only boundaries",
+            "JSON/CSV reporting",
+            "validation",
+            "reproducibility",
+            "limitations"
+          ],
+          "steps": [
+            "Create a synthetic Windows-style evidence tree with nested directories, text files, binary files, and at least one pair of duplicate-content files. Use fictional content only.",
+            "Compute or record a baseline hash for the test files independently before running the project.",
+            "Create the project files embedded below. Keep the report directory outside the evidence tree.",
+            "Run `python main.py <evidence_dir> --output <report_dir>` using a supported Python 3 release.",
+            "Verify the file count against an independent manual count of regular files.",
+            "Inspect `file_inventory.csv` and `file_inventory.json` for paths, sizes, SHA-256 values, and UTC representations.",
+            "Inspect `duplicate_groups.json` and confirm the deliberately duplicated files share a digest.",
+            "Run the program again without modifying evidence and verify unchanged file hashes remain identical.",
+            "Change one working-copy file in a controlled experiment and verify that its content hash changes while other files remain unchanged.",
+            "Try an output path inside the evidence tree and verify the application refuses it.",
+            "Write a short forensic interpretation separating observed metadata, derived duplicate groups, limitations, and what the utility does not establish.",
+            "Package the source code, test description, measured hashes, Python version, and validation notes as the educational reproducibility record."
+          ],
+          "code": {
+            "README.md": "# Windows Forensic Triage Workbench\n\nThis project performs read-only triage of an authorized Windows evidence working directory.\n\nIt:\n- enumerates regular files;\n- computes SHA-256;\n- records size and runtime-visible timestamps;\n- identifies duplicate content by digest;\n- writes JSON/CSV reports outside the evidence directory.\n\nIt does not:\n- acquire a disk image;\n- parse NTFS internals;\n- recover deleted data;\n- parse Registry/EVTX/Prefetch directly;\n- acquire memory;\n- establish human attribution or intent.\n",
+            "main.py": "from __future__ import annotations\n\nimport argparse\nimport csv\nimport hashlib\nimport json\nimport sys\nfrom collections import defaultdict\nfrom dataclasses import asdict, dataclass\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\n\n@dataclass\nclass FileRecord:\n    path: str\n    size: int\n    sha256: str\n    modified_utc: str\n    accessed_utc: str\n    changed_utc: str\n\n\ndef utc_iso(timestamp: float) -> str:\n    return datetime.fromtimestamp(timestamp, tz=timezone.utc).isoformat()\n\n\ndef sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as handle:\n        while True:\n            chunk = handle.read(chunk_size)\n            if not chunk:\n                break\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\ndef collect_files(evidence_root: Path) -> list[FileRecord]:\n    records: list[FileRecord] = []\n\n    for path in sorted(p for p in evidence_root.rglob(\"*\") if p.is_file()):\n        stat = path.stat()\n        records.append(\n            FileRecord(\n                path=str(path.relative_to(evidence_root)),\n                size=stat.st_size,\n                sha256=sha256_file(path),\n                modified_utc=utc_iso(stat.st_mtime),\n                accessed_utc=utc_iso(stat.st_atime),\n                changed_utc=utc_iso(stat.st_ctime),\n            )\n        )\n\n    return records\n\n\ndef duplicate_groups(records: list[FileRecord]) -> dict[str, list[str]]:\n    grouped: dict[str, list[str]] = defaultdict(list)\n    for record in records:\n        grouped[record.sha256].append(record.path)\n    return {digest: paths for digest, paths in grouped.items() if len(paths) > 1}\n\n\ndef write_reports(records: list[FileRecord], output: Path) -> None:\n    output.mkdir(parents=True, exist_ok=True)\n\n    with (output / \"file_inventory.csv\").open(\"w\", newline=\"\", encoding=\"utf-8\") as handle:\n        writer = csv.DictWriter(handle, fieldnames=list(FileRecord.__annotations__.keys()))\n        writer.writeheader()\n        for record in records:\n            writer.writerow(asdict(record))\n\n    (output / \"file_inventory.json\").write_text(\n        json.dumps({\n            \"generated_at_utc\": datetime.now(timezone.utc).isoformat(),\n            \"file_count\": len(records),\n            \"records\": [asdict(record) for record in records],\n        }, indent=2),\n        encoding=\"utf-8\",\n    )\n\n    (output / \"duplicate_groups.json\").write_text(\n        json.dumps({\"duplicate_groups\": duplicate_groups(records)}, indent=2),\n        encoding=\"utf-8\",\n    )\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser(description=\"Read-only Windows evidence triage\")\n    parser.add_argument(\"evidence_dir\", type=Path)\n    parser.add_argument(\"--output\", type=Path, default=Path(\"forensic_report\"))\n    args = parser.parse_args()\n\n    evidence = args.evidence_dir.resolve()\n    output = args.output.resolve()\n\n    if not evidence.is_dir():\n        print(f\"Evidence directory does not exist: {evidence}\", file=sys.stderr)\n        return 2\n\n    if output == evidence or evidence in output.parents:\n        print(\"Refusing to write reports inside the evidence directory.\", file=sys.stderr)\n        return 2\n\n    records = collect_files(evidence)\n    write_reports(records, output)\n\n    print(f\"Files examined: {len(records)}\")\n    print(f\"Reports written to: {output}\")\n    print(\"Evidence directory was read only by this application.\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+            "case_manifest.example.json": "{\n  \"case_id\": \"TRAINING-WIN-001\",\n  \"evidence_id\": \"EVID-001\",\n  \"description\": \"Synthetic Windows evidence working copy\",\n  \"authority\": \"Instructor-authorized laboratory use\",\n  \"source_hash\": \"record-the-measured-value\",\n  \"collection_time_utc\": \"2026-09-08T10:00:00Z\",\n  \"notes\": \"Example schema only; replace values only with authorized case metadata.\"\n}\n"
+          },
+          "explanation": "The project is intentionally narrow and defensible. `main.py` treats the evidence directory as read-only, refuses report destinations inside it, computes SHA-256 in streaming chunks so large files do not need to be loaded into memory, preserves relative paths, and emits deterministic inventory records plus duplicate-content groups. The generated timestamp identifies when the report was created; it is not a claim about the evidence time. The project demonstrates how automation can support forensic work without replacing artifact-specific interpretation. A serious examiner must still validate the method, preserve provenance, and distinguish measured metadata from analytical conclusions.",
+          "validationPlan": [
+            "Run against an empty evidence directory and verify a zero-file report.",
+            "Run against nested directories and filenames containing spaces.",
+            "Test a zero-byte file and confirm the SHA-256 of an empty stream is produced consistently.",
+            "Create two identical files under different names and confirm one duplicate hash group is produced.",
+            "Modify one working-copy file and confirm its digest changes while unrelated files retain their digests.",
+            "Attempt to write reports inside the evidence directory and verify exit code 2 plus a refusal message.",
+            "Run twice on unchanged evidence and compare all file hashes.",
+            "Inspect the source code to confirm it does not write under the evidence root."
+          ],
+          "limitations": [
+            "Python filesystem timestamps are runtime/OS views and are not a substitute for NTFS-native forensic parsing.",
+            "The tool does not create forensic images or acquire volatile memory.",
+            "The tool does not recover deleted files or interpret unallocated space.",
+            "Hash equality supports byte-level content comparison, not provenance or authorship.",
+            "The tool does not establish user intent or physical attribution.",
+            "Case-specific legal, privacy, retention, and evidentiary requirements remain outside the implementation."
+          ]
+        }
+      }
+    ]
+  }
+}

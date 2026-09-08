@@ -21,15 +21,20 @@ export default function LessonResources({
 
             <div className="lesson-resources__list">
                 {resources.map((resource, index) => {
+                    const normalizedResource =
+                        typeof resource === "string"
+                            ? { title: resource, url: resource }
+                            : resource;
+
                     const title =
-                        resource?.title ||
-                        resource?.name ||
+                        normalizedResource?.title ||
+                        normalizedResource?.name ||
                         `Resource ${index + 1}`;
 
                     const url =
-                        resource?.url ||
-                        resource?.href ||
-                        resource?.link ||
+                        normalizedResource?.url ||
+                        normalizedResource?.href ||
+                        normalizedResource?.link ||
                         "";
 
                     return (
@@ -49,9 +54,9 @@ export default function LessonResources({
                                     {title}
                                 </span>
 
-                                {resource?.description ? (
+                                {normalizedResource?.description ? (
                                     <span className="lesson-resources__description">
-                                        {resource.description}
+                                        {normalizedResource.description}
                                     </span>
                                 ) : null}
                             </span>

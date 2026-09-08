@@ -1,0 +1,1495 @@
+{
+  "course": {
+    "id": "network-forensics",
+    "title": "Network Forensics",
+    "slug": "network-forensics",
+    "description": "A practical, evidence-driven course in Network Forensics covering network evidence acquisition and integrity, packet and protocol analysis, Wireshark/TShark workflows, DNS/HTTP/TLS/TCP/UDP interpretation, traffic reconstruction, timelines, Zeek and Suricata telemetry, automation with Python, investigative reasoning, privacy, reporting, and a controlled capstone incident reconstruction. The course is designed for learners who already understand basic networking and want to develop defensible hands-on forensic analysis skills without relying on unauthorized access or offensive activity.",
+    "level": "Intermediate to Advanced",
+    "language": "English",
+    "duration": 56,
+    "prerequisites": [
+      "Basic TCP/IP networking concepts, including IPv4 addressing, ports, TCP and UDP.",
+      "Comfort using a Linux or Windows command line.",
+      "Basic familiarity with DNS, HTTP, and common network services.",
+      "Ability to read simple structured data such as CSV, TSV, and JSON.",
+      "Python fundamentals are recommended for the automation module; the course uses Python's standard library rather than requiring a third-party Python framework.",
+      "An authorized lab environment and synthetic or organizationally approved network evidence."
+    ],
+    "learningOutcomes": [
+      "Explain the purpose, scope, and limitations of network forensics.",
+      "Plan evidence collection and preserve provenance and cryptographic integrity.",
+      "Use Wireshark and TShark to inspect, filter, reconstruct, and extract packet evidence.",
+      "Interpret Ethernet/ARP, IP/IPv6, TCP, UDP, DNS, HTTP, and TLS observations.",
+      "Construct evidence-qualified timelines from packet captures and network telemetry.",
+      "Use Zeek and Suricata records as complementary sources and validate alerts against evidence.",
+      "Automate repeatable network-evidence extraction and log analysis with Python.",
+      "Recognize attribution limitations caused by NAT, proxies, VPNs, encryption, and sensor placement.",
+      "Produce forensic findings that distinguish direct observation, correlation, inference, and uncertainty.",
+      "Complete an end-to-end authorized network incident reconstruction with reproducible evidence handling and reporting."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Network Forensics Foundations",
+        "description": "Establishes the investigative mindset, evidence lifecycle, network visibility limits, and core terminology needed before interpreting packet or network telemetry.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "What Network Forensics Is",
+            "description": "Defines network forensics as the collection, preservation, analysis, and interpretation of network-derived evidence in support of an investigation or operational question.",
+            "learningObjectives": [
+              "distinguish network forensics from live network monitoring and vulnerability scanning",
+              "identify common network evidence sources and their limitations",
+              "describe why an investigation must preserve context and provenance"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence is more than packets"
+              },
+              {
+                "type": "paragraph",
+                "text": "Network evidence can include packet captures, flow records, DNS logs, proxy logs, firewall events, IDS alerts, VPN records, and protocol metadata. A packet capture may provide byte-level detail, while a flow or sensor log may provide broader coverage with less payload visibility."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Treat timestamps, collection location, interface, sensor configuration, and file hashes as part of the evidence context.",
+                  "A lack of packet payload does not mean there is no useful evidence; metadata can still establish communication patterns.",
+                  "Network evidence usually answers questions about communications and timing rather than proving the identity or intent of a human by itself."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not assume that a packet capture is a complete record of all network activity. Encryption, segmentation, asymmetric routing, packet loss, NAT, encapsulation, and sensor placement can all limit visibility."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01",
+              "question": "Which statement best describes network forensics?",
+              "options": [
+                "Only scanning a network for open ports",
+                "Analyzing network-derived evidence to answer an investigative question",
+                "Blocking malicious IP addresses in a firewall",
+                "Writing IDS signatures without examining evidence"
+              ],
+              "answer": "Analyzing network-derived evidence to answer an investigative question",
+              "explanation": "Network forensics is an evidence-driven investigative activity; detection and prevention can supply evidence but are not the whole discipline."
+            },
+            "summary": [
+              "Network forensics is evidence analysis, not simply packet viewing.",
+              "Evidence provenance and visibility limits must be recorded.",
+              "Investigative conclusions should be tied to observable network facts."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Evidence Sources and Collection Strategy",
+            "description": "Compares packet captures, flow telemetry, DNS, DHCP, firewall, proxy, VPN, IDS/IPS, and application logs and teaches selection based on the investigative question.",
+            "learningObjectives": [
+              "map investigative questions to appropriate network evidence sources",
+              "explain the strengths and weaknesses of full packet capture versus metadata",
+              "design a collection plan that records source and time context"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Choosing the right evidence"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Define the question and time window.",
+                  "Identify the systems, segments, and protocols involved.",
+                  "Locate the telemetry source closest to the relevant communication.",
+                  "Record collection scope, timezone, clock assumptions, and retention limits.",
+                  "Preserve originals before analysis and work from copies where practical."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A DNS investigation may begin with resolver logs rather than a large PCAP. A suspected protocol exploit may require packet-level evidence. A lateral-movement timeline may require a combination of flow, DNS, authentication, and endpoint telemetry."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Evidence selection should follow the investigative question.",
+              "Multiple telemetry sources are often more informative than one source alone."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ],
+              [
+                "Zeek logs",
+                "https://docs.zeek.org/en/lts/logs/index.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Evidence Integrity, Provenance, and Chain of Custody",
+            "description": "Introduces cryptographic hashing, acquisition records, working copies, and documentation practices for defensible network evidence handling.",
+            "learningObjectives": [
+              "calculate and record a cryptographic hash for an evidence file",
+              "distinguish integrity verification from authenticity and interpretation",
+              "document acquisition and analysis actions in a repeatable manner"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Hashing is an integrity control"
+              },
+              {
+                "type": "paragraph",
+                "text": "A cryptographic digest can be calculated when evidence is acquired and recalculated later to detect changes. A matching digest supports a claim that the bytes are unchanged; it does not prove that the source was truthful or that the evidence is complete."
+              },
+              {
+                "type": "code",
+                "text": "from hashlib import sha256\nfrom pathlib import Path\n\npath = Path(\"capture.pcapng\")\ndigest = sha256(path.read_bytes()).hexdigest()\nprint(digest)\n"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the hash algorithm and digest alongside the evidence identifier.",
+                  "Keep original evidence read-only where possible.",
+                  "Document transformations such as filtering, reassembly, export, or format conversion."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Hash and document a capture",
+                "description": "Create an evidence record for a supplied PCAP/PCAPNG file and verify its SHA-256 digest before and after analysis.",
+                "steps": [
+                  "Calculate the initial digest.",
+                  "Record filename, acquisition time, analyst, source description, and digest in an evidence log.",
+                  "Copy the capture to a working directory.",
+                  "Recalculate the digest of the original and compare it with the recorded value."
+                ],
+                "solution": "from hashlib import sha256\nfrom pathlib import Path\nimport json\n\nsource = Path(\"capture.pcapng\")\ndigest = sha256(source.read_bytes()).hexdigest()\n\nrecord = {\n    \"evidence_file\": source.name,\n    \"size_bytes\": source.stat().st_size,\n    \"sha256\": digest,\n    \"integrity_check\": \"recorded\"\n}\nPath(\"evidence-record.json\").write_text(\n    json.dumps(record, indent=2), encoding=\"utf-8\"\n)\nprint(json.dumps(record, indent=2))\n",
+                "output": "The two SHA-256 values should match when the original file has not changed."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03",
+              "question": "What does a matching SHA-256 digest primarily establish?",
+              "options": [
+                "That the capture is complete",
+                "That the file bytes have not changed between measurements",
+                "That the traffic is malicious",
+                "That the source host is trustworthy"
+              ],
+              "answer": "That the file bytes have not changed between measurements",
+              "explanation": "A digest comparison is an integrity check; it does not establish completeness, maliciousness, or source trust."
+            },
+            "summary": [
+              "Hashing supports integrity verification.",
+              "Provenance records explain where evidence came from and how it was handled.",
+              "Integrity does not equal authenticity or completeness."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ],
+              [
+                "Python hashlib",
+                "https://docs.python.org/3/library/hashlib.html"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Build an evidence intake record",
+            "level": "Easy",
+            "description": "Create a small evidence intake record for a network capture and its hash.",
+            "problemStatement": "An analyst receives a PCAPNG file. Produce a machine-readable record containing the evidence filename, SHA-256, acquisition description, analysis-copy path, and integrity-check status.",
+            "objectives": [
+              "calculate a SHA-256 digest",
+              "document provenance fields",
+              "verify integrity before analysis"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "A local PCAP/PCAPNG file"
+            ],
+            "hint": "Use pathlib for file access and hashlib.sha256 for the digest.",
+            "solutionCode": "from hashlib import sha256\nfrom pathlib import Path\n\npath = Path(\"capture.pcapng\")\ndigest = sha256(path.read_bytes()).hexdigest()\nrecord = {\n    \"evidence_file\": str(path),\n    \"sha256\": digest,\n    \"integrity_check\": \"initial\"\n}\nprint(record)\n",
+            "solutionExplanation": "The solution keeps the hash computation deterministic and separates the evidence bytes from the metadata describing them."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Packet Capture and Analysis Workflow",
+        "description": "Builds practical competence with PCAP/PCAPNG handling, Wireshark/TShark workflow, capture versus display filters, stream following, and packet-level validation.",
+        "lessons": [
+          {
+            "id": "lesson-04",
+            "title": "PCAP/PCAPNG and Capture Architecture",
+            "description": "Explains what packet captures contain, how capture points affect visibility, and how link-layer and encapsulation choices influence analysis.",
+            "learningObjectives": [
+              "describe packet capture at a high level",
+              "identify how sensor placement changes what can be observed",
+              "recognize common capture limitations such as loss, truncation, asymmetric routing, and encryption"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A capture is a record of observed packets plus capture metadata. The observation point matters: a host interface, switch mirror, network tap, firewall, or virtual interface can expose different traffic. Captures may also contain encapsulation such as VLAN or tunneling headers that affect interpretation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the interface or sensor and capture filter used when known.",
+                  "Check capture statistics and packet timestamps before drawing conclusions.",
+                  "Do not treat missing packets as evidence that communication never occurred."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Capture files preserve observations, not an omniscient view of a network.",
+              "Sensor placement and capture quality are part of evidence interpretation."
+            ],
+            "resources": [
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-05",
+            "title": "Wireshark Filtering and Packet Navigation",
+            "description": "Teaches the distinction between capture filters and display filters and develops repeatable filtering techniques.",
+            "learningObjectives": [
+              "write display filters for protocols, addresses, ports, and fields",
+              "explain how display filtering differs from capture filtering",
+              "use packet details, stream following, and protocol fields to narrow an investigation"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Two filter languages serve different stages"
+              },
+              {
+                "type": "paragraph",
+                "text": "Wireshark documents capture filters separately from display filters. Capture filters limit packets during collection; display filters change which already-captured packets are shown. A display filter does not delete packets from the capture."
+              },
+              {
+                "type": "code",
+                "text": "# Example Wireshark display filters\nip.addr == 192.0.2.10\ntcp.port == 443\ndns\nhttp.request\ntcp.flags.syn == 1 and tcp.flags.ack == 0\n"
+              },
+              {
+                "type": "warning",
+                "text": "Filter syntax is version-sensitive. Use Wireshark's current display-filter reference and the field names offered by the installed dissector rather than relying on an old cheat sheet."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Investigate a PCAP with display filters",
+                "description": "Use Wireshark to isolate DNS, TCP handshakes, and HTTP requests in a provided lab capture.",
+                "steps": [
+                  "Open the supplied capture in Wireshark.",
+                  "Inspect protocol hierarchy and capture statistics.",
+                  "Apply `dns` and identify representative queries.",
+                  "Apply `tcp.flags.syn == 1 and tcp.flags.ack == 0` and inspect initiators.",
+                  "Apply `http.request` if HTTP traffic exists and inspect request fields.",
+                  "Record packet numbers supporting each finding."
+                ],
+                "solution": "No code is required; the solution is the documented filter-and-observation workflow.",
+                "output": "The analyst should produce a short evidence table mapping each finding to packet numbers and observed fields."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05",
+              "question": "What does a Wireshark display filter do?",
+              "options": [
+                "Delete nonmatching packets",
+                "Prevent nonmatching packets from being captured",
+                "Control which captured packets are displayed",
+                "Encrypt the capture"
+              ],
+              "answer": "Control which captured packets are displayed",
+              "explanation": "Display filtering changes the view of an existing capture without removing packets from the capture file."
+            },
+            "summary": [
+              "Capture filters and display filters are distinct.",
+              "Packet numbers and exact fields make observations reproducible.",
+              "Use current Wireshark documentation for filter syntax."
+            ],
+            "resources": [
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ],
+              [
+                "Wireshark display filters",
+                "https://www.wireshark.org/docs/man-pages/wireshark-filter.html"
+              ],
+              [
+                "Wireshark Display Filter Reference",
+                "https://www.wireshark.org/docs/dfref/"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "TShark for Repeatable Analysis",
+            "description": "Uses TShark for command-line packet inspection and structured output, enabling reproducible analysis and automation.",
+            "learningObjectives": [
+              "select fields from a capture using TShark",
+              "export structured packet information for downstream analysis",
+              "distinguish command-line extraction from investigative interpretation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TShark is Wireshark's command-line analyzer. A repeatable command can turn a large capture into a smaller evidence table without manually clicking through packets."
+              },
+              {
+                "type": "code",
+                "text": "tshark -r capture.pcapng -Y \"dns\" -T fields \\\n  -e frame.number -e frame.time_epoch -e ip.src -e ip.dst \\\n  -e dns.qry.name -E header=y -E separator=, > dns.csv\n"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Keep the original capture and record the exact extraction command.",
+                  "Use explicit fields rather than screen scraping GUI output.",
+                  "Validate that the requested fields exist in the installed TShark version."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "TShark supports repeatable packet extraction.",
+              "Command provenance is important when generated CSV/JSON becomes investigative evidence."
+            ],
+            "resources": [
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ],
+              [
+                "Wireshark Display Filter Reference",
+                "https://www.wireshark.org/docs/dfref/"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Create a reproducible packet triage command",
+            "level": "Intermediate",
+            "description": "Build a TShark command that extracts time, source, destination, protocol, and TCP/UDP port information for a defined investigation window.",
+            "problemStatement": "Given a capture and a time window, produce a CSV that can be reviewed without opening Wireshark.",
+            "objectives": [
+              "use TShark read mode",
+              "apply a display filter",
+              "export explicit fields"
+            ],
+            "requirements": [
+              "TShark installed and a lab capture"
+            ],
+            "hint": "Start with `tshark -r` and add `-Y` plus `-T fields`; verify the chosen field names against the installed Wireshark version.",
+            "solutionCode": "tshark -r capture.pcapng -Y 'frame.time_epoch >= 1700000000 and frame.time_epoch <= 1700003600' -T fields -e frame.number -e frame.time_epoch -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e udp.srcport -e udp.dstport -E header=y -E separator=,",
+            "solutionExplanation": "The command constrains the evidence view to a time range and exports fields suitable for a repeatable CSV-based triage workflow."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Core Protocol Analysis",
+        "description": "Teaches the protocol behaviors most useful in network investigations: Ethernet/ARP, IP/IPv6, TCP/UDP, DNS, HTTP, TLS metadata, and common encapsulation.",
+        "lessons": [
+          {
+            "id": "lesson-07",
+            "title": "Ethernet, ARP, and Layer-2 Clues",
+            "description": "Examines MAC addresses, ARP requests/replies, broadcasts, and layer-2 observations that can support host attribution.",
+            "learningObjectives": [
+              "interpret Ethernet source and destination addresses",
+              "explain ARP request/reply behavior",
+              "identify suspicious or inconsistent layer-2 observations without overclaiming intent"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Layer-2 evidence can associate an IP address with a MAC address at a particular observation point and time. ARP is local-network address resolution; an ARP observation is contextual and can be affected by caching, proxies, virtualization, and network topology."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A MAC address is not a permanent identity for a person or even necessarily a physical host.",
+                  "Look for time-bounded associations rather than assuming a single mapping is universal.",
+                  "Broadcast and multicast traffic can create large volumes of non-malicious packets."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Layer-2 evidence is local and contextual.",
+              "ARP observations can help build time-bounded IP-to-MAC relationships."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "IPv4, IPv6, and Routing Evidence",
+            "description": "Develops packet-level interpretation of IP headers, addressing, fragmentation, TTL/hop-limit clues, and IPv6 extension headers.",
+            "learningObjectives": [
+              "identify source and destination IP fields",
+              "explain why NAT and routing affect attribution",
+              "recognize IPv6 as a first-class forensic data source"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "IPv6 is not simply IPv4 with longer addresses"
+              },
+              {
+                "type": "paragraph",
+                "text": "IPv6 has a different base header and uses extension headers for optional processing. RFC 8200 specifies IPv6, while later RFCs update parts of the standard. Analysts should use the current standards and dissector behavior when interpreting captures."
+              },
+              {
+                "type": "code",
+                "text": "# Useful Wireshark filters\nip.addr == 192.0.2.10\nipv6\nipv6.src == 2001:db8::10\nipv6.dst == 2001:db8::20\n"
+              },
+              {
+                "type": "warning",
+                "text": "Do not infer physical geography from an IP address alone. NAT, proxies, VPNs, cloud networks, and relays can separate the observed address from the originating system."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "IP evidence describes network-layer communication, not human identity.",
+              "IPv6 traffic must be included in modern investigations."
+            ],
+            "resources": [
+              [
+                "RFC 8200 IPv6",
+                "https://www.rfc-editor.org/rfc/rfc8200.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-09",
+            "title": "TCP and UDP Behavior for Investigators",
+            "description": "Explains TCP connection establishment/termination, retransmission clues, ports, UDP's datagram model, and how transport evidence supports timelines.",
+            "learningObjectives": [
+              "reconstruct a basic TCP handshake",
+              "recognize SYN, SYN/ACK, ACK, FIN, and RST patterns",
+              "explain what UDP evidence can and cannot establish"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "# Wireshark examples\ntcp.flags.syn == 1\ntcp.flags.reset == 1\ntcp.analysis.retransmission\nudp\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "TCP provides a reliable byte-stream service, while UDP provides datagrams without TCP's reliability and ordering mechanisms. A TCP SYN followed by SYN/ACK and ACK is evidence of an observed handshake sequence, but application success requires additional evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Retransmissions can reflect loss or congestion, not automatically an attack.",
+                  "RST packets can occur for legitimate reasons.",
+                  "UDP request/response behavior is protocol-specific; absence of a response is not proof that a service was unreachable."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09",
+              "question": "What does a TCP SYN/SYN-ACK/ACK sequence primarily demonstrate?",
+              "options": [
+                "A completed application login",
+                "An observed TCP connection establishment sequence",
+                "That the payload was encrypted",
+                "That the remote host is malicious"
+              ],
+              "answer": "An observed TCP connection establishment sequence",
+              "explanation": "The handshake establishes the TCP connection state; it does not by itself prove application-level success or maliciousness."
+            },
+            "summary": [
+              "Transport flags help reconstruct connection behavior.",
+              "TCP and UDP have different evidentiary characteristics."
+            ],
+            "resources": [
+              [
+                "RFC 768 UDP",
+                "https://www.rfc-editor.org/rfc/rfc768.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "DNS as Investigative Evidence",
+            "description": "Teaches DNS query/response interpretation, record types, caching context, and the limits of DNS-based attribution.",
+            "learningObjectives": [
+              "interpret common DNS query and response fields",
+              "correlate DNS events with subsequent connections",
+              "recognize caching and resolver architecture as sources of ambiguity"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "DNS maps names to resource records through a distributed hierarchy and resolver/cache architecture. RFC 1034 describes the conceptual system; current deployments also include DNSSEC, encrypted transports, split-horizon DNS, and enterprise resolvers that can alter what a sensor observes."
+              },
+              {
+                "type": "code",
+                "text": "# Useful Wireshark filters\ndns\ndns.qry.name\ndns.flags.response == 0\ndns.flags.response == 1\n"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The queried domain is not necessarily the final destination of application traffic.",
+                  "A local resolver may hide the original client from an upstream authoritative server.",
+                  "Correlate DNS timestamps with IP connections rather than treating a DNS answer as proof of later communication."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Build a DNS-to-connection timeline",
+                "description": "Given a capture containing DNS and subsequent TCP/UDP traffic, correlate selected DNS answers with observed destination addresses.",
+                "steps": [
+                  "Filter DNS queries and record query names and response addresses.",
+                  "Record timestamps for selected answers.",
+                  "Filter connections to those destination addresses.",
+                  "Compare the time ordering and note cases where no subsequent connection is observed.",
+                  "Document uncertainty caused by caching or reused IP addresses."
+                ],
+                "solution": "No code required; create a table with query time, name, answer, connection time, and conclusion.",
+                "output": "The expected result is a defensible correlation table that distinguishes direct observation from inference."
+              }
+            ],
+            "quiz": {},
+            "summary": [
+              "DNS is valuable for naming and temporal correlation.",
+              "Resolver architecture and caching can break simplistic one-query-to-one-connection assumptions."
+            ],
+            "resources": [
+              [
+                "RFC 1034 DNS",
+                "https://www.rfc-editor.org/rfc/rfc1034.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "HTTP, TLS, and Encrypted Traffic",
+            "description": "Analyzes HTTP request/response metadata and TLS handshake information while teaching what encryption prevents an analyst from seeing in ordinary packet captures.",
+            "learningObjectives": [
+              "extract meaningful HTTP request metadata from unencrypted traffic",
+              "identify TLS handshake metadata available without decryption",
+              "explain why encrypted payloads require additional authorized evidence sources"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "HTTP is a stateless application-level request/response protocol. In ordinary HTTPS captures, application payload is protected by TLS, but packet timing, endpoint addresses, ports, and some handshake metadata may remain observable."
+              },
+              {
+                "type": "code",
+                "text": "# Wireshark examples\nhttp.request.method\nhttp.host\nhttp.request.uri\ntls.handshake\ntcp.port == 443\n"
+              },
+              {
+                "type": "warning",
+                "text": "Do not teach students to defeat encryption. In authorized investigations, decryption depends on legitimate access to session keys, endpoint telemetry, TLS inspection infrastructure, or other approved evidence. A packet capture alone does not generally expose plaintext HTTPS content."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "HTTP metadata can reveal requests when traffic is unencrypted.",
+              "TLS protects application content while leaving some network and handshake metadata observable.",
+              "Encrypted traffic analysis must clearly distinguish observation from inference."
+            ],
+            "resources": [
+              [
+                "RFC 9110 HTTP semantics",
+                "https://www.rfc-editor.org/rfc/rfc9110.html"
+              ],
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Correlate DNS and transport evidence",
+            "level": "Intermediate",
+            "description": "Create a timeline that links selected DNS responses to later network connections and explicitly records uncertainty.",
+            "problemStatement": "Analyze a supplied capture and determine whether selected domain resolutions are followed by connections to returned addresses.",
+            "objectives": [
+              "extract DNS timestamps and answers",
+              "correlate destination addresses",
+              "record evidence packet numbers"
+            ],
+            "requirements": [
+              "Wireshark or TShark"
+            ],
+            "hint": "Treat DNS correlation as evidence of temporal association, not proof of application intent.",
+            "solutionCode": "'''\n# Suggested TShark extraction commands\n# DNS:\ntshark -r capture.pcapng -Y dns -T fields -e frame.number -e frame.time_epoch -e dns.qry.name -e dns.a -e dns.aaaa\n# Connections:\ntshark -r capture.pcapng -Y \"tcp.flags.syn==1\" -T fields -e frame.number -e frame.time_epoch -e ip.dst -e tcp.dstport\n'''",
+            "solutionExplanation": "The analysis separates DNS observations from connection observations and makes the correlation explicit instead of treating a domain name as proof of a connection."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Traffic Reconstruction and Network Timelines",
+        "description": "Moves from individual packets to conversations, sessions, objects, timestamps, and multi-source timelines that can support an incident narrative.",
+        "lessons": [
+          {
+            "id": "lesson-12",
+            "title": "Conversations, Streams, and Reassembly",
+            "description": "Teaches how to move from packet-by-packet inspection to TCP streams and protocol-level conversations.",
+            "learningObjectives": [
+              "identify a conversation and its endpoints",
+              "use stream following to reconstruct application exchanges where protocol support permits",
+              "explain why reassembly can fail or be incomplete"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Following a stream groups packets that belong to a protocol conversation and can make application behavior easier to understand. Reassembly depends on captured segments, protocol support, and encryption state; a missing segment can prevent a complete reconstruction."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the stream identifier and packet range when using reconstructed content as evidence.",
+                  "Do not assume a stream view represents data that was not captured.",
+                  "Compare reconstructed content with packet-level timestamps when chronology matters."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Stream reconstruction is an analysis convenience built from observed packets.",
+              "Incomplete capture or encryption can limit reconstruction."
+            ],
+            "resources": [
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Objects, Files, and Content Extraction",
+            "description": "Explains protocol-aware object extraction and the evidentiary cautions around reconstructed files and content.",
+            "learningObjectives": [
+              "identify when protocol object extraction is appropriate",
+              "hash an extracted artifact separately from its source capture",
+              "record packet ranges and extraction method for derived artifacts"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Protocol-aware extraction can recover objects embedded in supported protocols. An extracted file is a derived artifact, so the analyst should preserve its relationship to the source capture and record the extraction method."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Hash derived artifacts if they will be transferred or independently analyzed.",
+                  "Keep the original capture unchanged.",
+                  "Record whether an object was reconstructed from complete or partial traffic."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Derived artifacts need provenance linking them to source packets.",
+              "Extraction is not proof that the reconstructed object was complete or originally stored exactly as shown."
+            ],
+            "resources": [
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ],
+              [
+                "Python hashlib",
+                "https://docs.python.org/3/library/hashlib.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Timeline Construction and Clock Reasoning",
+            "description": "Teaches timestamp normalization, relative ordering, time zones, clock drift, and confidence levels in network timelines.",
+            "learningObjectives": [
+              "normalize timestamps without silently changing their meaning",
+              "build a timeline from multiple network sources",
+              "identify contradictions caused by clock differences or asynchronous logging"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Preserve original timestamps and their stated timezone/epoch representation.",
+                  "Convert copies into a common analytical representation.",
+                  "Record the source clock and precision.",
+                  "Use relative ordering when absolute synchronization is uncertain.",
+                  "Flag contradictions instead of forcing an artificial sequence."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A forensic timeline is an analytical model, not a magical ground truth. Packet timestamps may come from capture hosts with imperfect clocks, while application logs may use different time zones or timestamp precision."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Preserve original time representations.",
+              "Normalize for analysis while retaining source timing metadata.",
+              "Use confidence and uncertainty explicitly."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "NAT, Proxies, VPNs, and Attribution Limits",
+            "description": "Explores why network addresses do not map directly to people or endpoints and how intermediaries alter investigative reasoning.",
+            "learningObjectives": [
+              "identify attribution challenges introduced by NAT and proxies",
+              "correlate source ports and timestamps when appropriate",
+              "state conclusions with evidence-qualified language"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NAT can cause multiple internal systems to appear behind a shared public address. Proxies and VPNs can further separate an observed connection from its originating client. Attribution therefore often requires additional logs, such as NAT translations, proxy records, VPN authentication, or endpoint telemetry."
+              },
+              {
+                "type": "warning",
+                "text": "Avoid statements such as 'IP address X is the attacker' unless the evidence actually establishes that conclusion. Prefer formulations such as 'the sensor observed host X initiating a connection to Y at time T.'"
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Network identity is contextual.",
+              "Intermediary logs can be essential for attribution.",
+              "Investigative writing should distinguish observations, correlations, and conclusions."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Produce an evidence-qualified incident timeline",
+            "level": "Advanced",
+            "description": "Build a timeline from packet and log observations while preserving uncertainty and provenance.",
+            "problemStatement": "Given several network evidence excerpts, construct a chronological timeline of a simulated incident and label each event as observed, correlated, or inferred.",
+            "objectives": [
+              "normalize time representations",
+              "link events to evidence identifiers",
+              "state attribution limits"
+            ],
+            "requirements": [
+              "Python 3.11+ or spreadsheet software; supplied lab evidence"
+            ],
+            "hint": "Use three confidence categories: direct observation, corroborated correlation, and inference.",
+            "solutionCode": "events = [\n    {\"time\":\"2026-01-10T10:15:02Z\",\"type\":\"DNS\",\"evidence\":\"dns-pkt-41\",\"confidence\":\"observed\"},\n    {\"time\":\"2026-01-10T10:15:04Z\",\"type\":\"TCP\",\"evidence\":\"tcp-pkt-58\",\"confidence\":\"observed\"},\n]\nfor e in sorted(events, key=lambda x: x[\"time\"]):\n    print(e)",
+            "solutionExplanation": "The solution demonstrates the discipline of keeping evidence references and confidence labels attached to timeline events rather than collapsing them into an unsupported narrative."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Network Security Telemetry and Detection Evidence",
+        "description": "Introduces Zeek and Suricata as complementary telemetry sources and teaches correlation of network security logs with packet evidence.",
+        "lessons": [
+          {
+            "id": "lesson-16",
+            "title": "Zeek Network Security Monitoring",
+            "description": "Introduces Zeek's passive network analysis model and its structured logs for connections, DNS, HTTP, files, TLS, and other protocols.",
+            "learningObjectives": [
+              "explain Zeek's role as a passive network traffic analyzer",
+              "identify major Zeek log types useful in investigations",
+              "correlate Zeek log records with packet-level observations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Zeek is a passive open-source network traffic analyzer commonly used for network security monitoring. Its logs summarize network activity at higher semantic levels than raw packets, including connection, DNS, HTTP, file, TLS, SMTP, and other protocol records."
+              },
+              {
+                "type": "code",
+                "text": "# Example shell workflow for a Zeek log directory\nls\nhead -n 5 conn.log\nhead -n 5 dns.log\nhead -n 5 http.log\n"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Zeek logs can reduce the search space before packet-level inspection.",
+                  "A Zeek record is derived from observed traffic and therefore inherits visibility limitations.",
+                  "Use the installed Zeek version's field documentation when writing parsers."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Zeek provides structured network activity records.",
+              "Use Zeek for scalable triage and PCAP for packet-level validation."
+            ],
+            "resources": [
+              [
+                "Zeek documentation",
+                "https://docs.zeek.org/en/lts/about.html"
+              ],
+              [
+                "Zeek logs",
+                "https://docs.zeek.org/en/lts/logs/index.html"
+              ],
+              [
+                "Suricata EVE JSON schema",
+                "https://docs.suricata.io/en/latest/appendix/eve-schema.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-17",
+            "title": "Suricata Alerts and EVE JSON",
+            "description": "Teaches interpretation of IDS alerts and EVE JSON events while avoiding the mistake of treating every alert as confirmed compromise.",
+            "learningObjectives": [
+              "read key fields in Suricata EVE JSON",
+              "distinguish an alert from independently confirmed malicious activity",
+              "correlate IDS events with packet and flow evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Suricata can emit EVE JSON records containing events such as alerts, DNS, HTTP, TLS, flows, and more. The EVE schema is version-specific, so parsers should be tested against the deployed version."
+              },
+              {
+                "type": "code",
+                "text": "{\n  \"event_type\": \"alert\",\n  \"src_ip\": \"192.0.2.10\",\n  \"dest_ip\": \"198.51.100.20\",\n  \"alert\": {\n    \"signature\": \"LAB signature\",\n    \"category\": \"Example\",\n    \"severity\": 2\n  }\n}"
+              },
+              {
+                "type": "warning",
+                "text": "An IDS alert is a detection signal, not automatically proof of successful exploitation or compromise. Validate the alert against packet content, host telemetry, configuration, and context."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "EVE JSON is structured and version-sensitive.",
+              "Alerts should be validated rather than accepted blindly."
+            ],
+            "resources": [
+              [
+                "Suricata EVE JSON schema",
+                "https://docs.suricata.io/en/latest/appendix/eve-schema.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Flow Records, SIEM Correlation, and Scale",
+            "description": "Explains flow-style telemetry and how analysts combine summaries with packet and host evidence for large investigations.",
+            "learningObjectives": [
+              "compare flow summaries with full packet captures",
+              "design correlation keys across telemetry sources",
+              "reduce a large event set to an evidence-supported shortlist"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Common correlation dimensions include time, source/destination addresses, ports, protocol, sensor, and event identifiers.",
+                  "Flow data can cover long periods more cheaply than full packet capture but generally lacks payload.",
+                  "SIEM searches should preserve original event identifiers and timestamps so findings can be reproduced."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A scalable workflow often starts with coarse telemetry to identify a small number of candidate hosts or sessions, then pivots into detailed PCAP or endpoint evidence for validation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Flow data provides breadth; PCAP provides depth.",
+              "Correlation keys must be explicit and time-aware."
+            ],
+            "resources": [
+              [
+                "Zeek logs",
+                "https://docs.zeek.org/en/lts/logs/index.html"
+              ],
+              [
+                "Suricata EVE JSON schema",
+                "https://docs.suricata.io/en/latest/appendix/eve-schema.html"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Correlate Zeek and Suricata evidence",
+            "level": "Intermediate",
+            "description": "Create a correlation table joining network-monitoring records by time and endpoints.",
+            "problemStatement": "Given sample Zeek conn.log and Suricata EVE JSON records, identify events that refer to the same communication and flag those requiring packet validation.",
+            "objectives": [
+              "parse tab-separated Zeek records",
+              "parse JSON EVE records",
+              "match on time window and endpoints"
+            ],
+            "requirements": [
+              "Python 3.11+ and supplied lab logs"
+            ],
+            "hint": "Normalize timestamps first; then compare source/destination and a bounded time window.",
+            "solutionCode": "import json\nfrom datetime import datetime\n\ndef endpoint_key(src, dst):\n    return (src, dst)\n\nwith open('eve.jsonl', encoding='utf-8') as f:\n    alerts = [json.loads(line) for line in f if line.strip()]\nfor event in alerts:\n    if event.get('event_type') == 'alert':\n        print(endpoint_key(event.get('src_ip'), event.get('dest_ip')))\n",
+            "solutionExplanation": "The solution establishes a correlation key and deliberately leaves detailed packet validation as a separate investigative step."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Advanced Network Forensics",
+        "description": "Covers evasive or complex traffic patterns, fragmentation, tunnels, encrypted protocols, and investigative handling of suspicious network behavior without overclaiming.",
+        "lessons": [
+          {
+            "id": "lesson-19",
+            "title": "Fragmentation, Tunneling, and Encapsulation",
+            "description": "Explains how fragmentation and nested protocols complicate analysis and how to recognize encapsulation in packet traces.",
+            "learningObjectives": [
+              "identify IP fragmentation indicators",
+              "explain why tunnels change the visible protocol context",
+              "document nested protocol layers without assuming hidden content"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Encapsulation can place one protocol inside another, while fragmentation can divide a packet across multiple IP fragments. Analysts should understand how the capture tool reassembles or displays these structures before interpreting higher-layer evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Check reassembly settings when results appear inconsistent.",
+                  "Record the outer and inner addressing when tunnels are visible.",
+                  "A tunnel can conceal the original application protocol from a sensor that only sees the outer layer."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Fragmentation and encapsulation change what the analyst can directly observe.",
+              "Always distinguish outer transport metadata from inner protocol content."
+            ],
+            "resources": [
+              [
+                "RFC 8200 IPv6",
+                "https://www.rfc-editor.org/rfc/rfc8200.html"
+              ],
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Encrypted Traffic and Metadata Analysis",
+            "description": "Develops methods for analyzing encrypted traffic through endpoints, timing, sizes, destinations, certificates, and other metadata without attempting unauthorized decryption.",
+            "learningObjectives": [
+              "identify useful metadata in encrypted sessions",
+              "construct cautious hypotheses from timing and endpoint patterns",
+              "state what encrypted traffic analysis cannot establish"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Even when payloads are encrypted, analysts may observe endpoints, ports, packet sizes, timing, TCP behavior, and some protocol handshake metadata. These observations can support triage but usually cannot reveal the plaintext application content."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use repeated behavior and corroborating telemetry rather than one packet feature as a verdict.",
+                  "Certificate metadata can provide useful context but is not equivalent to proof of application legitimacy.",
+                  "Do not infer a specific file or command from encrypted traffic without supporting evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Encrypted traffic still produces useful metadata.",
+              "Metadata-based conclusions should be probabilistic and corroborated."
+            ],
+            "resources": [
+              [
+                "RFC 9110 HTTP semantics",
+                "https://www.rfc-editor.org/rfc/rfc9110.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-21",
+            "title": "Threat Hunting with Network Evidence",
+            "description": "Teaches hypothesis-driven hunting, indicators, behavioral pivots, and evidence validation.",
+            "learningObjectives": [
+              "turn an investigative hypothesis into packet/log queries",
+              "pivot from an indicator to related infrastructure and communications",
+              "separate indicator matching from proof of malicious activity"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "State the hypothesis in one sentence.",
+                  "Define observable network indicators or behaviors.",
+                  "Search broad telemetry first.",
+                  "Pivot to related hosts, domains, sessions, and time windows.",
+                  "Validate high-value findings with packet or endpoint evidence.",
+                  "Record false positives and alternative explanations."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A good hunt is falsifiable. For example, instead of searching for 'malware traffic,' search for a specific hypothesized behavior such as repeated connections to an unusual destination after a particular DNS response, then test competing explanations."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Threat hunting is hypothesis-driven.",
+              "Indicators are leads; corroboration turns leads into stronger findings."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ],
+              [
+                "Zeek documentation",
+                "https://docs.zeek.org/en/lts/about.html"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Develop a hypothesis-driven network hunt",
+            "level": "Advanced",
+            "description": "Investigate a simulated suspicious-beacon hypothesis using packet and log evidence.",
+            "problemStatement": "Determine whether a host exhibits repeated outbound connections matching a defined time interval and destination pattern, while documenting benign alternatives.",
+            "objectives": [
+              "define a measurable hypothesis",
+              "extract connection times",
+              "calculate intervals",
+              "compare against supporting evidence"
+            ],
+            "requirements": [
+              "Python 3.11+; supplied Zeek or TShark-derived CSV"
+            ],
+            "hint": "Measure behavior rather than searching for a label such as 'malware'.",
+            "solutionCode": "from datetime import datetime\n\n# ISO timestamps supplied by the lab\nsamples = [\n    '2026-02-01T12:00:00Z',\n    '2026-02-01T12:05:00Z',\n    '2026-02-01T12:10:00Z',\n]\ntimes = [datetime.fromisoformat(x.replace('Z', '+00:00')) for x in samples]\nintervals = [(b-a).total_seconds() for a,b in zip(times, times[1:])]\nprint(intervals)",
+            "solutionExplanation": "The code measures observed intervals. The analyst must then determine whether the pattern is distinctive enough to warrant further validation rather than declaring compromise from periodicity alone."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Automation, Data Processing, and Quality Control",
+        "description": "Uses Python and command-line tooling to process network evidence repeatably while emphasizing parsing safety, schema drift, error handling, and validation.",
+        "lessons": [
+          {
+            "id": "lesson-22",
+            "title": "Parsing Network Logs Safely",
+            "description": "Teaches structured parsing of CSV/TSV/JSON network data, malformed-record handling, and explicit field validation.",
+            "learningObjectives": [
+              "parse structured network logs with standard-library tools",
+              "handle missing or malformed fields without silently dropping evidence",
+              "produce deterministic summary output"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import csv\nfrom collections import Counter\n\nwith open(\"conn.log\", newline=\"\", encoding=\"utf-8\") as f:\n    rows = list(csv.DictReader(f, delimiter=\"\\t\"))\n\ncounts = Counter(row[\"service\"] for row in rows if row.get(\"service\"))\nfor service, count in counts.most_common():\n    print(f\"{service}: {count}\")\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "Automation should fail loudly on schema assumptions that matter to the investigation. A parser that silently skips malformed records can create an incomplete analytical dataset."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the source filename and parser version or script hash.",
+                  "Count parsed, skipped, and malformed records.",
+                  "Prefer explicit field access and validation over positional assumptions when the format supports names."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Automated analysis must preserve provenance and error counts.",
+              "Schema assumptions should be explicit and tested."
+            ],
+            "resources": [
+              [
+                "Python csv",
+                "https://docs.python.org/3/library/csv.html"
+              ],
+              [
+                "Python argparse",
+                "https://docs.python.org/3/library/argparse.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Packet-to-Data Pipelines with TShark",
+            "description": "Shows how to build a reproducible pipeline from PCAP to structured data and how to validate the extracted dataset.",
+            "learningObjectives": [
+              "invoke TShark from Python safely",
+              "parse JSON or field output",
+              "validate counts and required fields before analysis"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import json\nimport subprocess\n\ncmd = [\"tshark\", \"-r\", \"capture.pcapng\", \"-T\", \"json\"]\nresult = subprocess.run(cmd, check=True, capture_output=True, text=True)\npackets = json.loads(result.stdout)\nprint(\"packets:\", len(packets))\n"
+              },
+              {
+                "type": "warning",
+                "text": "Do not build shell commands by concatenating untrusted input. Use subprocess argument lists when invoking external tools."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Capture the exact command arguments in an analysis log.",
+                  "Check the subprocess exit status.",
+                  "Keep the source PCAP available so extracted records can be traced back to packets."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "TShark can be an evidence-extraction stage in a repeatable pipeline.",
+              "Validation should occur before downstream statistics are trusted."
+            ],
+            "resources": [
+              [
+                "Wireshark User's Guide",
+                "https://www.wireshark.org/docs/wsug_html/"
+              ],
+              [
+                "Python argparse",
+                "https://docs.python.org/3/library/argparse.html"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Analytical Quality Control and Reproducibility",
+            "description": "Covers sanity checks, cross-validation, test fixtures, output determinism, and documenting assumptions.",
+            "learningObjectives": [
+              "design sanity checks for network-analysis scripts",
+              "cross-check automated results against a known sample",
+              "document assumptions and limitations in an analysis report"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Verify input hashes.",
+                  "Count source records/packets.",
+                  "Check time ranges and required fields.",
+                  "Compare a sample manually with tool output.",
+                  "Record parser/tool versions and commands.",
+                  "Store derived outputs with provenance.",
+                  "Repeat the analysis and compare results."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Reproducibility is especially important when an automated script produces a conclusion that may later be challenged. A useful analysis package lets another analyst identify the source evidence, transformation, assumptions, and output."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Quality control prevents silent analytical errors.",
+              "A reproducible pipeline connects every derived result to its source evidence."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ],
+              [
+                "Python hashlib",
+                "https://docs.python.org/3/library/hashlib.html"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Write a validated network-log summarizer",
+            "level": "Advanced",
+            "description": "Implement a Python summarizer that reads a Zeek-style TSV file, validates required fields, counts services, and reports malformed rows.",
+            "problemStatement": "The parser must not silently ignore malformed records. It should report total rows, accepted rows, rejected rows, and a service summary.",
+            "objectives": [
+              "use csv.DictReader with tab delimiter",
+              "validate required fields",
+              "count accepted/rejected rows"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Use a required-field set and catch CSV parsing errors; report the counts at the end.",
+            "solutionCode": "import csv\nfrom collections import Counter\n\nrequired = {'ts', 'id.orig_h', 'id.resp_h', 'service'}\naccepted = rejected = 0\nservices = Counter()\nwith open('conn.log', newline='', encoding='utf-8') as f:\n    reader = csv.DictReader(f, delimiter='\\t')\n    for row in reader:\n        if not required.issubset(row) or any(row[k] == '' for k in required):\n            rejected += 1\n            continue\n        accepted += 1\n        services[row['service']] += 1\nprint({'accepted': accepted, 'rejected': rejected, 'services': dict(services)})",
+            "solutionExplanation": "The solution validates the schema before counting records and exposes rejection counts, reducing the risk of silently incomplete findings."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Reporting, Ethics, and Investigative Practice",
+        "description": "Turns technical observations into defensible forensic findings, emphasizing uncertainty, evidence citation, privacy, authorization, and professional reporting.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "From Observations to Findings",
+            "description": "Teaches the distinction between observation, interpretation, hypothesis, and conclusion and provides a structure for defensible network-forensic findings.",
+            "learningObjectives": [
+              "write findings that cite concrete network evidence",
+              "separate observed facts from analytical interpretation",
+              "express uncertainty and alternative explanations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A useful finding structure"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Question: what were you asked to determine?",
+                  "Observation: what exact packets/logs show?",
+                  "Interpretation: what does that evidence support?",
+                  "Limitations: what could not be observed or attributed?",
+                  "Conclusion: what can be stated with the available evidence?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Strong forensic writing avoids loaded language. 'Host A sent 12 DNS queries for domain X between times T1 and T2' is an observation. 'Host A was infected' is a conclusion requiring substantially more evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Good reports separate evidence from interpretation.",
+              "Evidence references and limitations make findings reviewable."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Privacy, Authorization, and Legal Considerations",
+            "description": "Addresses authorized collection, minimization, sensitive content, retention, access control, and the boundary between technical guidance and legal advice.",
+            "learningObjectives": [
+              "identify privacy risks in network evidence",
+              "apply data minimization and access-control principles",
+              "recognize when organizational policy or legal counsel is required"
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Network captures can contain credentials, personal communications, health information, proprietary data, and other sensitive content. Collection and analysis should occur only under appropriate authorization and organizational policy."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Limit access to evidence to authorized personnel.",
+                  "Avoid copying sensitive payloads into reports unless necessary.",
+                  "Record retention and disposal requirements.",
+                  "Consult applicable organizational policy and legal counsel for jurisdiction-specific requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Network evidence can be highly sensitive.",
+              "Technical investigators must operate within authorization, policy, and applicable law."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ]
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Professional Investigation Report",
+            "description": "Shows how to assemble scope, methodology, evidence references, findings, limitations, and appendices into a reproducible report.",
+            "learningObjectives": [
+              "structure a network-forensic report",
+              "cite packet/log evidence precisely",
+              "document tooling and analytical limitations"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Investigation ID: LAB-001\nQuestion: Determine whether host A contacted the investigated service.\n\nEvidence:\n- capture.pcapng SHA-256: <recorded digest>\n- Packet 184: TCP SYN from host A to destination B:443\n- Packet 186: TCP SYN/ACK from B to A\n- Packets 201-215: TLS handshake\n\nFinding:\nThe capture directly shows a TCP connection attempt and subsequent TLS\nhandshake between the observed endpoints during the stated time window.\n\nLimitation:\nThe capture does not expose encrypted application payload content.\n"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Include exact evidence identifiers and timestamps.",
+                  "State the tool versions and relevant filters/commands.",
+                  "Include limitations rather than hiding uncertainty."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "A professional report is reproducible from its evidence references.",
+              "Limitations are part of the finding, not an embarrassment to conceal."
+            ],
+            "resources": [
+              [
+                "NIST SP 800-86",
+                "https://csrc.nist.gov/pubs/sp/800/86/final"
+              ]
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Write an evidence-qualified forensic finding",
+            "level": "Intermediate",
+            "description": "Turn a supplied packet timeline into a concise finding that distinguishes observation from inference.",
+            "problemStatement": "Produce a one-page finding containing question, observations, interpretation, conclusion, evidence references, and limitations.",
+            "objectives": [
+              "cite packet/log identifiers",
+              "separate observation from conclusion",
+              "state at least one limitation"
+            ],
+            "requirements": [
+              "A supplied lab timeline and evidence table"
+            ],
+            "hint": "Start every factual statement with the evidence source in your notes, then remove only the scaffolding that is not needed in the final report.",
+            "solutionCode": "finding = {\n    'question': 'What communication was observed?',\n    'observations': ['Packet 184: TCP SYN A -> B:443', 'Packet 186: TCP SYN/ACK B -> A'],\n    'interpretation': 'The trace supports an observed TCP connection establishment sequence.',\n    'limitation': 'The trace alone does not establish user identity or application intent.'\n}\nfor k,v in finding.items():\n    print(k + ':', v)",
+            "solutionExplanation": "The solution uses evidence-specific wording and avoids unsupported claims about user identity or intent."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Project — Network Incident Reconstruction",
+        "description": "A capstone investigation that integrates capture handling, protocol analysis, timeline construction, structured telemetry, automation, and evidence-qualified reporting.",
+        "lessons": [],
+        "tasks": [],
+        "project": {
+          "name": "Network Incident Reconstruction Lab",
+          "description": "Investigate a controlled, synthetic network-incident evidence package containing a packet capture plus structured network-monitoring records. The student must determine what communications occurred, build a timeline, identify technically significant behavior, validate key observations against multiple evidence sources, and produce an evidence-qualified report. The lab is designed for authorized educational data only and does not require exploitation or unauthorized access.",
+          "conceptsCovered": [
+            "evidence integrity and provenance",
+            "Wireshark/TShark packet analysis",
+            "TCP/UDP analysis",
+            "DNS correlation",
+            "HTTP/TLS metadata",
+            "Zeek logs",
+            "Suricata EVE JSON",
+            "timeline construction",
+            "NAT/attribution limits",
+            "Python-based evidence processing",
+            "quality control",
+            "forensic reporting"
+          ],
+          "steps": [
+            "Create an evidence manifest containing each input filename, source description, acquisition context, and SHA-256 digest.",
+            "Work from analysis copies while preserving the original evidence files.",
+            "Use Wireshark to inspect protocol hierarchy, conversations, DNS activity, TCP connection behavior, and relevant application metadata.",
+            "Use TShark to export a repeatable table of selected packets and record the exact command used.",
+            "Parse the supplied Zeek-style logs and Suricata EVE JSON; validate required fields and report malformed records.",
+            "Construct a unified timeline using normalized timestamps while retaining each source's original time representation.",
+            "Correlate DNS answers with subsequent connections and validate high-value correlations against packet evidence.",
+            "Identify any suspicious or technically significant behavior, but record alternative explanations and avoid unsupported attribution.",
+            "Write findings using the sequence: question, observation, interpretation, limitation, conclusion.",
+            "Hash the final report and derived evidence tables, then package the report and analysis manifest according to the lab's submission rules."
+          ],
+          "code": {
+            "README.md": "Network Incident Reconstruction Lab\n\nThis capstone assumes an authorized synthetic evidence package. Required external tools: Wireshark/TShark. Optional: Zeek and Suricata for reproducing telemetry. Python 3.11+ is used for deterministic evidence processing.\n",
+            "hash_evidence.py": "from hashlib import sha256\nfrom pathlib import Path\nimport json\n\nEVIDENCE_DIR = Path(\"evidence\")\nrecords = []\nfor path in sorted(EVIDENCE_DIR.rglob(\"*\")):\n    if path.is_file():\n        digest = sha256(path.read_bytes()).hexdigest()\n        records.append({\n            \"file\": str(path),\n            \"sha256\": digest,\n            \"size\": path.stat().st_size\n        })\n\nPath(\"evidence_manifest.json\").write_text(\n    json.dumps(records, indent=2), encoding=\"utf-8\"\n)\nprint(f\"Recorded {len(records)} evidence files.\")\n",
+            "extract_dns.py": "import csv\nimport subprocess\n\ncmd = [\n    \"tshark\", \"-r\", \"evidence/capture.pcapng\",\n    \"-Y\", \"dns\",\n    \"-T\", \"fields\",\n    \"-e\", \"frame.number\",\n    \"-e\", \"frame.time_epoch\",\n    \"-e\", \"ip.src\",\n    \"-e\", \"ip.dst\",\n    \"-e\", \"dns.qry.name\",\n    \"-e\", \"dns.a\",\n    \"-e\", \"dns.aaaa\",\n    \"-E\", \"header=y\",\n    \"-E\", \"separator=,\"\n]\nwith open(\"dns_events.csv\", \"w\", newline=\"\", encoding=\"utf-8\") as out:\n    subprocess.run(cmd, check=True, stdout=out, text=True)\nprint(\"Wrote dns_events.csv\")\n",
+            "summarize_zeek.py": "import csv\nfrom collections import Counter\n\nrequired = {\"ts\", \"id.orig_h\", \"id.resp_h\"}\naccepted = rejected = 0\nservices = Counter()\n\nwith open(\"evidence/conn.log\", newline=\"\", encoding=\"utf-8\") as f:\n    reader = csv.DictReader(f, delimiter=\"\\t\")\n    for row in reader:\n        if not required.issubset(row):\n            rejected += 1\n            continue\n        if any(not row[k] for k in required):\n            rejected += 1\n            continue\n        accepted += 1\n        if row.get(\"service\"):\n            services[row[\"service\"]] += 1\n\nprint({\"accepted\": accepted, \"rejected\": rejected, \"services\": dict(services)})\n",
+            "parse_eve.py": "import json\nfrom collections import Counter\n\ncounts = Counter()\nwith open(\"evidence/eve.jsonl\", encoding=\"utf-8\") as f:\n    for line_number, line in enumerate(f, 1):\n        if not line.strip():\n            continue\n        try:\n            event = json.loads(line)\n        except json.JSONDecodeError as exc:\n            print(f\"Malformed JSON line {line_number}: {exc}\")\n            continue\n        counts[event.get(\"event_type\", \"unknown\")] += 1\n\nprint(dict(counts))\n"
+          },
+          "explanation": "The project begins with integrity and provenance, then uses coarse-to-fine analysis: structured telemetry narrows the investigation, packet analysis validates important observations, and the final report separates direct evidence from inference. The Python utilities intentionally use standard-library modules and subprocess argument lists to reduce dependency and command-injection risk. The student must adapt field names to the actual lab files and deployed tool versions rather than assuming a fixed schema. The capstone does not require offensive activity; its purpose is reconstruction and evidence analysis."
+        }
+      }
+    ]
+  }
+}

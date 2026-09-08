@@ -254,9 +254,7 @@ export default function TaskDetailView({ task }) {
                     solutionExplanation={
                         task.solutionExplanation || ""
                     }
-                    language={
-                        task.language || "javascript"
-                    }
+                    language={task.language || ""}
                 />
             )}
         </motion.div>

@@ -1,0 +1,1673 @@
+{
+  "course": {
+    "id": "siem-fundamentals",
+    "title": "SIEM Fundamentals",
+    "slug": "siem-fundamentals",
+    "description": "A vendor-neutral, hands-on course that teaches how Security Information and Event Management systems collect, structure, search, correlate, detect, investigate, and respond to security-relevant events. Students move from SIEM architecture and log-management fundamentals through telemetry sources, normalization, query design, detection engineering, Sigma, correlation, threat hunting, incident response, cloud audit telemetry, tuning, governance, and operational metrics. Labs use portable formats and controlled examples rather than requiring one commercial SIEM, while the final project implements a small working SIEM-style pipeline with Python and SQLite. The course is appropriate for beginners with basic networking and cybersecurity knowledge who want practical SIEM analysis skills.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 42,
+    "prerequisites": [
+      "Basic TCP/IP and common network-service concepts.",
+      "Comfort using a command line and editing text files.",
+      "Basic cybersecurity concepts such as authentication, authorization, malware, and incident response.",
+      "Basic JSON and YAML reading; prior Python is helpful but not required."
+    ],
+    "learningOutcomes": [
+      "Explain SIEM architecture, core data flows, and the role of SIEM in security operations.",
+      "Identify useful telemetry from Windows, Linux, identity, network, endpoint, and cloud sources.",
+      "Design practical log-collection and retention approaches while accounting for transport, time, volume, and data quality.",
+      "Parse, normalize, enrich, and validate security events so detections can operate on consistent fields.",
+      "Write and evaluate search queries, including time-bounded filtering, aggregation, grouping, and investigation pivots.",
+      "Create behavioral detections using thresholds, field conditions, sequences, and reusable Sigma rules.",
+      "Correlate evidence across multiple sources and map detections to ATT&CK techniques where appropriate.",
+      "Conduct a structured SIEM investigation and document scope, evidence, hypotheses, and response decisions.",
+      "Perform basic threat hunting, detection tuning, false-positive analysis, and operational measurement.",
+      "Build and test a small SIEM-style pipeline that ingests events, normalizes them, stores them, detects suspicious behavior, and emits alerts."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "SIEM Mental Model and Architecture",
+        "description": "Build a precise mental model of what a SIEM does, how security telemetry moves through a platform, and where SIEM fits with adjacent security-operations capabilities.",
+        "lessons": [
+          {
+            "id": "m01-l01",
+            "title": "What a SIEM Is—and Is Not",
+            "description": "Define SIEM in operational terms and distinguish collection, search, detection, investigation, and response functions from adjacent tools such as EDR, SOAR, NDR, and a data lake.",
+            "learningObjectives": [
+              "Explain the difference between raw event data, security-relevant telemetry, alerts, and incidents.",
+              "Describe the core value of centralizing and analyzing heterogeneous security events.",
+              "Distinguish SIEM capabilities from EDR, SOAR, NDR, and general-purpose data platforms."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "The operational unit of a SIEM"
+              },
+              {
+                "type": "paragraph",
+                "text": "A SIEM turns security-relevant events from multiple systems into searchable evidence and, when detection logic matches, produces alerts that analysts can investigate and manage. A mature implementation also supports enrichment, correlation, case workflow, and reporting."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Event: an observed occurrence such as an authentication failure or process creation.",
+                  "Alert: a detection result that warrants analyst attention; it is not automatically proof of compromise.",
+                  "Incident: a managed security event or group of related events that requires investigation and response.",
+                  "SIEM is not synonymous with endpoint telemetry: endpoint products collect and analyze endpoint behavior, while a SIEM commonly joins that evidence with identity, network, application, and cloud telemetry."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Avoid equating alert volume with security value. Useful SIEM operations depend on data quality, detection fidelity, investigation context, and response workflow."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m01-l01-q1",
+              "question": "Which statement best distinguishes an alert from an incident?",
+              "options": [
+                "An alert is always malicious and an incident is never malicious.",
+                "An alert is a detection result; an incident is a managed security case that may contain one or more related alerts and evidence.",
+                "An alert contains only raw logs; an incident contains only dashboards.",
+                "An alert is generated by a firewall, while an incident is generated by a SIEM."
+              ],
+              "answer": "An alert is a detection result; an incident is a managed security case that may contain one or more related alerts and evidence.",
+              "explanation": "An alert is the output of detection logic. Incident handling adds scope, investigation, evidence, decisions, and response management."
+            },
+            "summary": [
+              "A SIEM is best treated as an evidence-and-detection platform inside a broader security-operations process.",
+              "Centralization is useful because incidents cross system boundaries; identity, endpoint, network, application, and cloud events can provide complementary evidence.",
+              "Tool boundaries vary by architecture, so teach functions and data flows rather than vendor marketing labels."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Authoritative foundation for enterprise log-management infrastructure and processes."
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                "why": "Current NIST incident-response guidance for connecting detection, analysis, response, and recovery."
+              }
+            ]
+          },
+          {
+            "id": "m01-l02",
+            "title": "SIEM Data Flow and Core Components",
+            "description": "Trace a security event from source system through collection, transport, ingestion, parsing, storage, detection, alerting, investigation, and retention.",
+            "learningObjectives": [
+              "Draw the logical stages of a SIEM data pipeline.",
+              "Identify where loss, duplication, delay, parsing failure, and field-quality problems can arise.",
+              "Explain why collection and storage architecture influence detection quality."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Reference data flow"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Sources generate telemetry.",
+                  "Collectors or agents receive and forward records.",
+                  "Transport moves events to an ingestion layer.",
+                  "Parsers extract fields and assign a schema or normalized representation.",
+                  "Enrichment adds context such as asset, identity, or threat-intelligence information.",
+                  "Storage makes events available for queries and retention policies.",
+                  "Detection logic evaluates events and creates alerts.",
+                  "Analysts pivot through events, related alerts, and contextual data.",
+                  "Response tooling or procedures act on validated findings."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Every stage creates an engineering question: Did the event arrive? Was it parsed correctly? Is its timestamp trustworthy? Can it be searched efficiently? Can an analyst reconstruct the activity later?"
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "source -> collector -> transport -> parse/normalize -> enrich -> store -> detect -> investigate -> respond"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m01-l02-q1",
+              "question": "Which stage is responsible for turning an unstructured message into usable fields such as source_ip and user?",
+              "options": [
+                "Retention",
+                "Parsing and normalization",
+                "Case management",
+                "Executive reporting"
+              ],
+              "answer": "Parsing and normalization",
+              "explanation": "Parsing extracts values from raw records, while normalization maps them into consistent fields used by searches and detections."
+            },
+            "summary": [
+              "The SIEM pipeline is a chain; failures upstream propagate into searches and detections.",
+              "Availability and correctness are separate: an event that arrives late or with a broken timestamp can still be operationally misleading.",
+              "Architecture should be designed around security use cases, not storage alone."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Supports the lifecycle view of generating, transmitting, storing, accessing, and disposing of logs."
+              },
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/",
+                "why": "Provides a current example of a structured log data model and timestamp semantics."
+              }
+            ]
+          },
+          {
+            "id": "m01-l03",
+            "title": "SIEM Use Cases and Detection-Driven Design",
+            "description": "Translate security questions into data requirements and detection use cases so the SIEM is engineered around analyst outcomes.",
+            "learningObjectives": [
+              "Convert a security question into required telemetry, fields, detection logic, and investigation pivots.",
+              "Separate must-have telemetry from nice-to-have telemetry.",
+              "Define a simple success criterion for a SIEM use case."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Start with the question"
+              },
+              {
+                "type": "paragraph",
+                "text": "Instead of starting with 'collect everything,' begin with a question such as 'Can we detect suspicious authentication activity and determine whether the account subsequently performed a sensitive action?' Then specify data sources, required fields, acceptable latency, detection logic, investigation context, and response ownership."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Define the threat or operational question.",
+                  "List evidence needed to answer it.",
+                  "Identify source systems and fields.",
+                  "Define detection conditions and exclusions.",
+                  "Define analyst pivots and expected evidence.",
+                  "Set an evaluation method using controlled test data or known cases."
+                ]
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use cases should have an owner and a review cadence.",
+                  "A detection that cannot be investigated because context is missing is incomplete, even if it fires correctly.",
+                  "Telemetry cost and privacy constraints belong in use-case design."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m01-l03-q1",
+              "question": "What is the best starting point for designing a SIEM use case?",
+              "options": [
+                "Pick the most expensive storage tier.",
+                "Collect every available log immediately.",
+                "Define the security question or detection objective.",
+                "Start by writing a dashboard."
+              ],
+              "answer": "Define the security question or detection objective.",
+              "explanation": "A detection-driven requirement lets the team decide which sources and fields are actually needed and how success will be measured."
+            },
+            "summary": [
+              "A good SIEM use case is testable: it names the signal, context, expected behavior, and analyst action.",
+              "Use-case design reduces blind collection and makes tuning more defensible.",
+              "Treat telemetry selection as a security engineering decision, not just an infrastructure decision."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Data Sources",
+                "url": "https://attack.mitre.org/datasources/",
+                "why": "Provides a framework for relating defensive data sources and data components to adversary behaviors."
+              },
+              {
+                "title": "NIST Cybersecurity Framework",
+                "url": "https://www.nist.gov/cyberframework",
+                "why": "Useful governance context for linking detection and monitoring activities to broader risk management."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m01-t01",
+            "title": "Design an Authentication-Monitoring Use Case",
+            "level": "Easy",
+            "description": "Create a one-page SIEM use-case specification for detecting suspicious authentication behavior and supporting investigation.",
+            "problemStatement": "A security team wants to identify bursts of failed logons, preserve enough context to determine the affected account and source host, and investigate whether a successful logon followed the failures.",
+            "objectives": [
+              "Define the detection objective and scope.",
+              "Specify required event fields and minimum telemetry sources.",
+              "Describe the detection condition and investigation pivots.",
+              "Define a measurable test case using synthetic events."
+            ],
+            "requirements": [
+              "A text editor or Markdown file.",
+              "Basic understanding of authentication events."
+            ],
+            "hint": "Think in the order: question -> data -> fields -> detection -> investigation -> success criteria.",
+            "solutionCode": "# Example use-case specification\nuse_case = {\n    \"name\": \"Suspicious Authentication Burst\",\n    \"signal\": \"Many failed authentications for one account from a source within a short window\",\n    \"required_fields\": [\n        \"timestamp\", \"user\", \"source_ip\", \"source_host\", \"action\", \"result\"\n    ],\n    \"detection\": \"Count failed authentications by user and source_ip over a bounded window.\",\n    \"investigation_pivots\": [\n        \"successful authentication for the same user\",\n        \"other users targeted by the source\",\n        \"endpoint or identity events from the source\"\n    ],\n    \"test_success\": \"A controlled burst creates an alert and the analyst can pivot to the related successful authentication.\"\n}\nprint(use_case)\n",
+            "solutionExplanation": "The solution turns a broad security concern into an explicit, testable SIEM requirement with fields and pivots that later lessons can implement."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Telemetry Sources and Collection",
+        "description": "Learn which data sources create useful security evidence and how transport, collection, loss, and source configuration affect SIEM reliability.",
+        "lessons": [
+          {
+            "id": "m02-l01",
+            "title": "Windows Security and Process Telemetry",
+            "description": "Understand Windows security event logging as a source of authentication and process-creation evidence, including the trade-offs of enabling detailed command-line auditing.",
+            "learningObjectives": [
+              "Interpret common Windows authentication event identifiers at a high level.",
+              "Explain what process-creation telemetry contributes to investigations.",
+              "Recognize the security and privacy implications of command-line capture."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Useful Windows evidence"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "4624 commonly represents a successful logon and 4625 a failed logon.",
+                  "4648 records an explicit credential use event.",
+                  "4688 records process creation; command-line data requires the appropriate audit policy and can expose sensitive material."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Event identifiers are clues, not conclusions. Investigation should combine identity, host, process, network, and time context rather than treating one event as proof of an attack."
+              },
+              {
+                "type": "warning",
+                "text": "Command-line auditing can capture secrets or user data embedded in command arguments. Apply least-collection, access controls, and retention rules appropriate to the environment."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l01-q1",
+              "question": "Which Windows event is associated with a newly created process?",
+              "options": [
+                "4625",
+                "4688",
+                "4648",
+                "1102"
+              ],
+              "answer": "4688",
+              "explanation": "Microsoft documents Event ID 4688 as a new process creation event. Its command-line field is subject to audit-policy configuration."
+            },
+            "summary": [
+              "Windows event IDs have meaning only in their documented context; field availability depends on policy and platform configuration.",
+              "Process telemetry is especially valuable when paired with user, host, parent process, and command-line context.",
+              "Collecting sensitive command-line content requires thoughtful access and retention controls."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Learn — Windows Event Logging Security",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging-security",
+                "why": "Official Windows guidance on event logging security and event-log access."
+              },
+              {
+                "title": "Microsoft Learn — Audit Logon",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/audit-logon",
+                "why": "Documents common logon event IDs including 4624, 4625, and 4648."
+              },
+              {
+                "title": "Microsoft Learn — Event 4688",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688",
+                "why": "Official reference for new process creation and command-line auditing behavior."
+              }
+            ]
+          },
+          {
+            "id": "m02-l02",
+            "title": "Linux and Network Security Telemetry",
+            "description": "Identify high-value Linux, network, DNS, firewall, and proxy telemetry and learn how source context affects interpretation.",
+            "learningObjectives": [
+              "Describe the security questions commonly answered by Linux authentication and process logs.",
+              "Explain what firewall, DNS, proxy, and network-flow records contribute to investigations.",
+              "Choose fields that allow useful cross-source pivots."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Telemetry by question"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Identity: who authenticated, from where, and whether the attempt succeeded.",
+                  "Execution: what process or command ran, under which account, and when.",
+                  "Network access: source, destination, port/protocol, action, and disposition.",
+                  "DNS: queried name, response behavior, resolver, and client context.",
+                  "Web/proxy: URL or host, user/device context, action, and response metadata."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The exact record format varies by operating system and product. Normalize stable security concepts such as timestamp, principal, source address, destination address, action, result, and process into consistent analytic fields."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l02-q1",
+              "question": "Why is source context important when analyzing a network connection event?",
+              "options": [
+                "Because the destination port alone identifies the attacker.",
+                "Because a connection record is more useful when the analyst can relate it to the originating asset, user, process, direction, and disposition.",
+                "Because SIEMs cannot store IP addresses.",
+                "Because all network logs use the same schema."
+              ],
+              "answer": "Because a connection record is more useful when the analyst can relate it to the originating asset, user, process, direction, and disposition.",
+              "explanation": "Network evidence becomes actionable when connected to the endpoint, identity, and intended network behavior around the connection."
+            },
+            "summary": [
+              "Avoid assuming all vendors emit identical field names or semantics.",
+              "For network sources, explicitly distinguish source/destination and inbound/outbound semantics.",
+              "DNS and proxy data can provide useful pivots even when full packet capture is unavailable."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Provides the log-management context needed to select and manage system and network logs."
+              }
+            ]
+          },
+          {
+            "id": "m02-l03",
+            "title": "Identity, Application, and Cloud Audit Logs",
+            "description": "Use identity-provider, application, and cloud-provider audit trails to understand account and control-plane activity outside traditional servers.",
+            "learningObjectives": [
+              "Differentiate identity, application, and cloud control-plane telemetry.",
+              "Recognize major categories of AWS CloudTrail and Google Cloud Audit Logs.",
+              "Design cross-source pivots around principal, resource, action, source address, and time."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Cloud audit telemetry"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "AWS CloudTrail events can cover management, data, network, and CloudTrail Insights activity; event structure is JSON.",
+                  "AWS event history is a limited historical view of management events; ongoing retention and broader coverage use trails or event data stores according to the selected architecture.",
+                  "Google Cloud Audit Logs include Admin Activity, Data Access, System Event, and Policy Denied categories."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Cloud investigations frequently pivot on identity and resource names rather than hostnames alone. Keep provider-specific fields until after normalization so analysts can still reach original evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l03-q1",
+              "question": "Which Google Cloud Audit Logs category is specifically intended for administrative activity?",
+              "options": [
+                "Admin Activity",
+                "Data Access",
+                "System Event",
+                "Policy Denied"
+              ],
+              "answer": "Admin Activity",
+              "explanation": "Google Cloud documents Admin Activity as a Cloud Audit Logs category for administrative actions."
+            },
+            "summary": [
+              "Cloud audit events often describe API actions against resources, making identity and resource context central to SIEM analysis.",
+              "Data-access logging can be especially sensitive and may have different cost or default-enable characteristics from administrative logging.",
+              "Retain original cloud provider fields alongside normalized fields for investigation fidelity."
+            ],
+            "resources": [
+              {
+                "title": "AWS CloudTrail — Events",
+                "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-events.html",
+                "why": "Official description of CloudTrail event types and event structure."
+              },
+              {
+                "title": "AWS CloudTrail — How it works",
+                "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/how-cloudtrail-works.html",
+                "why": "Explains event history and ongoing CloudTrail collection/retention mechanisms."
+              },
+              {
+                "title": "Google Cloud — Understanding Audit Logs",
+                "url": "https://docs.cloud.google.com/logging/docs/audit/understanding-audit-logs",
+                "why": "Official taxonomy for Google Cloud Audit Logs."
+              }
+            ]
+          },
+          {
+            "id": "m02-l04",
+            "title": "Collection, Transport, and Loss Control",
+            "description": "Design reliable log transport with attention to collectors, buffering, protocol behavior, backpressure, duplicate delivery, and observability of the collection pipeline.",
+            "learningObjectives": [
+              "Explain why collection reliability is part of SIEM detection quality.",
+              "Compare practical implications of stateful and connectionless transport for log delivery.",
+              "Define collection-health metrics such as lag, drop rate, parse failure rate, and source heartbeat."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Syslog fundamentals"
+              },
+              {
+                "type": "paragraph",
+                "text": "RFC 5424 defines a standardized syslog message format and structured-data mechanism. Its transport discussion distinguishes the message format from transport behavior; an implementation may use transports with different delivery characteristics."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "RFC 5424 uses severity values 0 through 7, from Emergency to Debug.",
+                  "TLS transport is defined for syslog and supports confidentiality/integrity in transit when correctly configured.",
+                  "A UDP-based transport has no acknowledgement at the syslog layer, so loss is possible without another reliability mechanism."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Operationally, the SIEM should measure the collection path itself. A detector cannot compensate for logs that never arrived."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l04-q1",
+              "question": "What is the main operational risk of relying on an unacknowledged UDP transport for critical security logs?",
+              "options": [
+                "The logs become encrypted automatically.",
+                "Messages can be lost without a delivery acknowledgement at the syslog layer.",
+                "The logs cannot contain timestamps.",
+                "Severity values are disabled."
+              ],
+              "answer": "Messages can be lost without a delivery acknowledgement at the syslog layer.",
+              "explanation": "RFC 5424 distinguishes the message format from transport, and UDP does not provide an acknowledgement mechanism at the syslog layer."
+            },
+            "summary": [
+              "Reliability is a system property: source configuration, collector capacity, transport, queues, indexing, and storage all matter.",
+              "Use secure, observable collection paths for high-value security telemetry.",
+              "Measure collection health so analysts can distinguish 'no event' from 'event was not collected.'"
+            ],
+            "resources": [
+              {
+                "title": "RFC 5424 — The Syslog Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc5424.html",
+                "why": "Standards-track specification for syslog format, severity, structured data, and transport considerations."
+              },
+              {
+                "title": "OpenTelemetry Logs Specification",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/",
+                "why": "Current architecture reference for log emitters, processors, exporters, and collectors."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m02-t01",
+            "title": "Build a Telemetry Coverage Matrix",
+            "level": "Intermediate",
+            "description": "Create a coverage matrix that maps a set of security questions to data sources, fields, collection risks, and investigation pivots.",
+            "problemStatement": "A small organization needs to detect suspicious sign-ins, suspicious process execution, unexpected cloud administration, and outbound connections to unusual destinations. Design a practical telemetry plan without assuming a specific vendor SIEM.",
+            "objectives": [
+              "Map each security question to at least one primary and one supporting source.",
+              "Specify minimum fields needed for detection and investigation.",
+              "Identify one collection failure mode for each primary source.",
+              "Define a source-health signal that would reveal a collection problem."
+            ],
+            "requirements": [
+              "Spreadsheet or Markdown editor.",
+              "Basic understanding of endpoint, identity, network, and cloud logs."
+            ],
+            "hint": "For each use case, ask both 'What proves the behavior?' and 'What context lets an analyst explain it?'",
+            "solutionCode": "coverage = [\n    {\n        \"use_case\": \"Suspicious sign-in\",\n        \"primary\": \"Identity/authentication logs\",\n        \"supporting\": \"Endpoint logon events\",\n        \"fields\": [\"timestamp\", \"user\", \"source_ip\", \"result\", \"application\"],\n        \"collection_risk\": \"identity connector stops ingesting\",\n        \"health_signal\": \"expected-event heartbeat and ingest-lag monitoring\"\n    },\n    {\n        \"use_case\": \"Suspicious process\",\n        \"primary\": \"Endpoint process telemetry\",\n        \"supporting\": \"authentication and network events\",\n        \"fields\": [\"timestamp\", \"host\", \"user\", \"process_name\", \"parent_process\", \"command_line\"],\n        \"collection_risk\": \"audit policy disabled or agent backlog\",\n        \"health_signal\": \"process-event rate by managed host\"\n    },\n]\nprint(coverage)\n",
+            "solutionExplanation": "The matrix forces the design to include evidence, context, and collection observability rather than just a list of log sources."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Parsing, Normalization, Time, and Enrichment",
+        "description": "Turn heterogeneous events into reliable analytic data by extracting fields, preserving raw evidence, handling timestamps, normalizing semantics, and enriching events with context.",
+        "lessons": [
+          {
+            "id": "m03-l01",
+            "title": "Parsing Structured and Unstructured Logs",
+            "description": "Learn how field extraction differs between structured records such as JSON and delimiter/text-based records, and how parsing errors affect detections.",
+            "learningObjectives": [
+              "Extract security-relevant fields from JSON and delimiter-based logs.",
+              "Explain the difference between parsing failure and missing source data.",
+              "Preserve raw records so normalized fields can be revalidated."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Parse without losing evidence"
+              },
+              {
+                "type": "paragraph",
+                "text": "Structured events should normally be parsed according to their declared field structure. Text logs may require delimiters, regular expressions, key-value extraction, or source-specific parsers. Keep the original record so an analyst can compare the normalized event to the evidence emitted by the source."
+              },
+              {
+                "type": "code",
+                "language": "python",
+                "text": "import json\n\nraw = '{\"timestamp\":\"2026-09-07T12:30:00Z\",\"user\":\"analyst\",\"src_ip\":\"198.51.100.20\",\"action\":\"login\",\"result\":\"failure\"}'\nevent = json.loads(raw)\n\nnormalized = {\n    \"timestamp\": event[\"timestamp\"],\n    \"user\": event[\"user\"],\n    \"source_ip\": event[\"src_ip\"],\n    \"action\": event[\"action\"],\n    \"result\": event[\"result\"],\n    \"raw\": raw,\n}\n\nprint(normalized[\"source_ip\"], normalized[\"result\"])"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "m03-l01-p1",
+                "title": "Parse a JSON Authentication Event",
+                "description": "Extract a small authentication record and map its source field names into a stable analytic representation.",
+                "steps": [
+                  "Create a JSON event containing timestamp, user, src_ip, action, and result.",
+                  "Parse it with Python's standard json module.",
+                  "Create a normalized dictionary using source_ip and user field names.",
+                  "Print the normalized result."
+                ],
+                "solution": "import json\n\nraw = '{\"timestamp\":\"2026-09-07T12:30:00Z\",\"usr\":\"operator\",\"ip\":\"192.0.2.25\",\"event\":\"login\",\"status\":\"failure\"}'\nsrc = json.loads(raw)\nnormalized = {\n    \"timestamp\": src[\"timestamp\"],\n    \"user\": src[\"usr\"],\n    \"source_ip\": src[\"ip\"],\n    \"action\": src[\"event\"],\n    \"result\": src[\"status\"],\n    \"raw\": raw\n}\nprint(normalized)",
+                "output": "The output shows the same security event using stable analytic field names while retaining the original raw record."
+              }
+            ],
+            "quiz": {
+              "id": "m03-l01-q1",
+              "question": "Why should a normalized event retain the raw record when practical?",
+              "options": [
+                "Because raw records make indexing faster.",
+                "Because the raw record lets an analyst verify and re-parse the source evidence.",
+                "Because normalized fields cannot be stored.",
+                "Because JSON requires a raw copy."
+              ],
+              "answer": "Because the raw record lets an analyst verify and re-parse the source evidence.",
+              "explanation": "Preserving source evidence supports validation, troubleshooting, and investigation when a parser or normalization rule is later corrected."
+            },
+            "summary": [
+              "Parsing should be deterministic and testable; treat parser changes as production changes.",
+              "A field missing from the normalized representation is not evidence that it was absent from the source.",
+              "Keep parser errors measurable so broken integrations are visible."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/",
+                "why": "Defines structured log fields and the relationship between raw and structured log data."
+              }
+            ]
+          },
+          {
+            "id": "m03-l02",
+            "title": "Normalization and Semantic Field Design",
+            "description": "Design a small vendor-neutral event schema that supports cross-source search and detection without pretending all products mean exactly the same thing.",
+            "learningObjectives": [
+              "Choose normalized fields for identity, network, host, process, action, and outcome.",
+              "Distinguish field names from field semantics and document expected value domains.",
+              "Explain when source-specific fields must be retained alongside normalized fields."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A practical normalization core"
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "timestamp\nevent_type\nuser\nsource_ip\ndestination_ip\nhost\nprocess_name\nparent_process\ncommand_line\naction\nresult\nresource\nraw"
+              },
+              {
+                "type": "paragraph",
+                "text": "Normalization should make common investigations easier: a detector can use result=failure regardless of whether a Windows connector, Linux parser, or identity provider called the original field status, outcome, or result. Document allowed values rather than silently collapsing important distinctions."
+              },
+              {
+                "type": "warning",
+                "text": "Do not normalize away evidence. Keep provider-specific identifiers and raw data where they are needed to answer source-specific questions."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l02-q1",
+              "question": "What is the main purpose of semantic normalization in a multi-source SIEM?",
+              "options": [
+                "To make every source emit identical raw messages.",
+                "To let analytics use consistent concepts across different source schemas.",
+                "To delete vendor-specific fields.",
+                "To reduce every event to one string."
+              ],
+              "answer": "To let analytics use consistent concepts across different source schemas.",
+              "explanation": "Normalization creates stable analytic semantics while preserving enough source-specific context for investigation."
+            },
+            "summary": [
+              "A schema is a contract. Document meaning, type, expected values, and time semantics.",
+              "Prefer explicit mappings and tests over ad-hoc field aliases spread across individual detections.",
+              "Normalize only what has stable meaning; preserve source-specific context where meaning differs."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/",
+                "why": "A current example of a formalized log data model with common attributes."
+              },
+              {
+                "title": "MITRE ATT&CK Data Sources",
+                "url": "https://attack.mitre.org/datasources/",
+                "why": "Provides a way to reason about data sources and the behaviors they can help observe."
+              }
+            ]
+          },
+          {
+            "id": "m03-l03",
+            "title": "Time, Ordering, and Event Windows",
+            "description": "Handle event time correctly, including source timestamps, ingestion time, clock skew, late arrival, duplicate records, and bounded detection windows.",
+            "learningObjectives": [
+              "Distinguish event time from observation or ingestion time.",
+              "Explain why clock skew and late events can change detection results.",
+              "Design bounded windows that are explicit about the timestamp being evaluated."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Two clocks matter"
+              },
+              {
+                "type": "paragraph",
+                "text": "Event time describes when the source says the activity occurred. Observed or ingestion time describes when the collector or backend received it. OpenTelemetry's log data model explicitly represents Timestamp and ObservedTimestamp, which is useful for reasoning about delayed or replayed events."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Use event time for behavioral sequencing when source clocks are trustworthy.",
+                  "Use observed/ingestion time to diagnose pipeline delay and source delivery behavior.",
+                  "Define tolerance for clock skew when correlating systems.",
+                  "Avoid unbounded searches when a detection can be expressed with a finite window."
+                ]
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "window = 10 minutes\ncondition: >= 5 failed_auth events for the same user and source_ip inside event_time window"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l03-q1",
+              "question": "Why can ingestion time be useful even when detection logic uses event time?",
+              "options": [
+                "It proves the event was malicious.",
+                "It helps measure collection delay and identify pipeline problems.",
+                "It replaces the source timestamp automatically.",
+                "It prevents duplicate events."
+              ],
+              "answer": "It helps measure collection delay and identify pipeline problems.",
+              "explanation": "Comparing source event time with observed or ingestion time reveals latency and delivery problems."
+            },
+            "summary": [
+              "A detector should name its time basis and window explicitly.",
+              "Clock quality and timezone handling are part of detection correctness.",
+              "Late-arriving events can require reprocessing or alert reconciliation in production systems."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/",
+                "why": "Defines Timestamp and ObservedTimestamp and their roles in log records."
+              }
+            ]
+          },
+          {
+            "id": "m03-l04",
+            "title": "Enrichment and Data Quality Controls",
+            "description": "Add useful context such as asset identity and threat intelligence while measuring freshness, validity, and confidence rather than treating enrichment as unquestionable truth.",
+            "learningObjectives": [
+              "Explain how asset, identity, and threat-intelligence enrichment can improve triage.",
+              "Distinguish enrichment confidence from original evidence.",
+              "Define practical data-quality checks for a SIEM pipeline."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Enrichment is context, not proof"
+              },
+              {
+                "type": "paragraph",
+                "text": "An IP-to-asset lookup may add hostname, owner role, environment, or criticality. Threat-intelligence feeds may add indicators and confidence. These fields should be timestamped or versioned where appropriate so analysts can understand when and how the context was derived."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Check required-field presence for critical event types.",
+                  "Monitor parser error rates and unknown-field rates.",
+                  "Track enrichment misses and stale lookups.",
+                  "Keep provenance so an analyst can distinguish source evidence from derived context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l04-q1",
+              "question": "Which is the best practice for enrichment data used in an investigation?",
+              "options": [
+                "Treat the enrichment as stronger evidence than the original log.",
+                "Discard the original event after enrichment.",
+                "Record enough provenance and freshness information to evaluate the enrichment.",
+                "Replace source IPs with intelligence labels permanently."
+              ],
+              "answer": "Record enough provenance and freshness information to evaluate the enrichment.",
+              "explanation": "Derived context can be stale or wrong; provenance and freshness let analysts judge how much weight to give it."
+            },
+            "summary": [
+              "Useful enrichment should answer an investigation question, not merely increase field count.",
+              "Data-quality dashboards belong beside detection dashboards because bad telemetry creates silent detection gaps.",
+              "Threat intelligence is one evidence source among many and should be evaluated for relevance and timeliness."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Sentinel — Threat Indicators in Analytics Rules",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/use-threat-indicators-in-analytics-rules",
+                "why": "Official example of using threat-indicator enrichment in detection logic."
+              },
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Supports lifecycle and quality considerations for security log management."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m03-t01",
+            "title": "Normalize Mixed Authentication Records",
+            "level": "Intermediate",
+            "description": "Implement a small parser that accepts heterogeneous authentication events and produces one stable normalized schema while preserving the raw input.",
+            "problemStatement": "You receive JSON records from three sources using different field names. Produce a normalized list with timestamp, user, source_ip, action, result, source_system, and raw fields. Reject records missing the minimum fields needed for an authentication investigation.",
+            "objectives": [
+              "Handle three different field naming conventions.",
+              "Validate required values and skip malformed records with a clear reason.",
+              "Preserve original input in the normalized representation.",
+              "Report counts of accepted and rejected records."
+            ],
+            "requirements": [
+              "Python 3 standard library.",
+              "Input is a list of JSON objects."
+            ],
+            "hint": "Define a per-source mapping first; then validate the normalized representation rather than validating every raw schema separately.",
+            "solutionCode": "import json\n\nEVENTS = [\n    {\"source_system\": \"idp\", \"ts\": \"2026-09-07T12:00:00Z\", \"principal\": \"admin\", \"ip\": \"192.0.2.10\", \"action\": \"login\", \"outcome\": \"failure\"},\n    {\"source_system\": \"linux\", \"timestamp\": \"2026-09-07T12:01:00Z\", \"user\": \"admin\", \"src\": \"192.0.2.10\", \"event\": \"login\", \"result\": \"failure\"},\n    {\"source_system\": \"windows\", \"time\": \"2026-09-07T12:02:00Z\", \"account\": \"admin\", \"source_ip\": \"192.0.2.10\", \"action\": \"logon\", \"status\": \"success\"}\n]\n\nMAPPINGS = {\n    \"idp\": {\"timestamp\": \"ts\", \"user\": \"principal\", \"source_ip\": \"ip\", \"result\": \"outcome\"},\n    \"linux\": {\"timestamp\": \"timestamp\", \"user\": \"user\", \"source_ip\": \"src\", \"result\": \"result\"},\n    \"windows\": {\"timestamp\": \"time\", \"user\": \"account\", \"source_ip\": \"source_ip\", \"result\": \"status\"}\n}\n\nnormalized = []\nrejected = []\n\nfor raw in EVENTS:\n    source = raw.get(\"source_system\")\n    mapping = MAPPINGS.get(source)\n    if not mapping:\n        rejected.append({\"reason\": \"unsupported source\", \"raw\": raw})\n        continue\n\n    event = {\n        \"timestamp\": raw.get(mapping[\"timestamp\"]),\n        \"user\": raw.get(mapping[\"user\"]),\n        \"source_ip\": raw.get(mapping[\"source_ip\"]),\n        \"action\": raw.get(\"action\", \"login\"),\n        \"result\": raw.get(mapping[\"result\"]),\n        \"source_system\": source,\n        \"raw\": raw\n    }\n\n    required = [\"timestamp\", \"user\", \"source_ip\", \"action\", \"result\"]\n    missing = [k for k in required if not event.get(k)]\n    if missing:\n        rejected.append({\"reason\": f\"missing: {', '.join(missing)}\", \"raw\": raw})\n    else:\n        normalized.append(event)\n\nprint(\"accepted:\", len(normalized))\nprint(\"rejected:\", len(rejected))\nprint(json.dumps(normalized, indent=2))\n",
+            "solutionExplanation": "The solution centralizes schema mapping, validates the post-mapping fields, retains raw input, and produces an audit-friendly accepted/rejected count."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Search, Querying, Visualization, and Performance",
+        "description": "Develop analyst-grade search habits: narrow time ranges, aggregate meaningfully, pivot across entities, visualize trends, and optimize expensive searches.",
+        "lessons": [
+          {
+            "id": "m04-l01",
+            "title": "Search Patterns for Security Investigation",
+            "description": "Build investigations from narrow, time-bounded queries that pivot through users, hosts, addresses, processes, and resources.",
+            "learningObjectives": [
+              "Use time, identity, network, and event filters to reduce search space.",
+              "Pivot from one observation to related evidence.",
+              "Explain why broad unbounded searches are poor first steps in an investigation."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "The investigation loop"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Start with the known observation and a bounded time range.",
+                  "Identify stable pivots such as user, host, source_ip, process, or resource.",
+                  "Expand only one dimension at a time so each result changes the hypothesis.",
+                  "Save useful evidence and timestamps before moving to a new pivot.",
+                  "Compare expected behavior with the observed sequence."
+                ]
+              },
+              {
+                "type": "code",
+                "language": "kql",
+                "text": "SecurityEvent\n| where TimeGenerated between (datetime(2026-09-07 12:00:00) .. datetime(2026-09-07 12:30:00))\n| where EventID in (4624, 4625)\n| summarize failures=countif(EventID == 4625), successes=countif(EventID == 4624) by Account, IpAddress\n| order by failures desc"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "m04-l01-p1",
+                "title": "Analyze a Synthetic Authentication Burst",
+                "description": "Use a small Python event list to identify the account/source pair with the highest failure count and report whether a success followed.",
+                "steps": [
+                  "Create synthetic authentication events covering two users and two source addresses.",
+                  "Group failed events by user and source_ip.",
+                  "Find the pair with at least three failures in the test window.",
+                  "Check whether a later success exists for that same pair."
+                ],
+                "solution": "from collections import defaultdict\nfrom datetime import datetime\n\nevents = [\n    {\"ts\": \"2026-09-07T12:00:00\", \"user\": \"admin\", \"source_ip\": \"192.0.2.10\", \"result\": \"failure\"},\n    {\"ts\": \"2026-09-07T12:01:00\", \"user\": \"admin\", \"source_ip\": \"192.0.2.10\", \"result\": \"failure\"},\n    {\"ts\": \"2026-09-07T12:02:00\", \"user\": \"admin\", \"source_ip\": \"192.0.2.10\", \"result\": \"failure\"},\n    {\"ts\": \"2026-09-07T12:03:00\", \"user\": \"admin\", \"source_ip\": \"192.0.2.10\", \"result\": \"success\"},\n]\n\nfailures = defaultdict(list)\nfor event in events:\n    if event[\"result\"] == \"failure\":\n        key = (event[\"user\"], event[\"source_ip\"])\n        failures[key].append(datetime.fromisoformat(event[\"ts\"]))\n\nfor key, times in failures.items():\n    if len(times) >= 3:\n        later_success = any(\n            e[\"user\"] == key[0]\n            and e[\"source_ip\"] == key[1]\n            and e[\"result\"] == \"success\"\n            and datetime.fromisoformat(e[\"ts\"]) > max(times)\n            for e in events\n        )\n        print(key, \"failures=\", len(times), \"success_after=\", later_success)",
+                "output": "The observable result identifies the suspicious pair and reports whether a later success followed the failure burst."
+              }
+            ],
+            "quiz": {
+              "id": "m04-l01-q1",
+              "question": "What is the safest first move when starting a SIEM investigation?",
+              "options": [
+                "Search every event for the entire retention period.",
+                "Start with a bounded time range and the strongest known pivot.",
+                "Delete unrelated events first.",
+                "Run every available dashboard."
+              ],
+              "answer": "Start with a bounded time range and the strongest known pivot.",
+              "explanation": "Bounding the search reduces noise, cost, and ambiguity and helps the analyst test a specific hypothesis."
+            },
+            "summary": [
+              "A query should answer a question; avoid collecting thousands of rows without an intended pivot.",
+              "Time is a primary investigation dimension, especially for sequence and correlation analysis.",
+              "Write down the hypothesis that each pivot is testing."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Kusto Query Language Overview",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/",
+                "why": "Official KQL reference and overview for log queries used in Microsoft security tooling."
+              }
+            ]
+          },
+          {
+            "id": "m04-l02",
+            "title": "Aggregation, Baselines, and Visualization",
+            "description": "Use counts, groupings, rates, and time-series views to distinguish unusual activity from expected operational noise.",
+            "learningObjectives": [
+              "Aggregate events by meaningful entities and windows.",
+              "Explain the difference between a threshold and a baseline-based anomaly signal.",
+              "Choose visualizations that support an investigation question."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Counts are context"
+              },
+              {
+                "type": "paragraph",
+                "text": "A threshold such as 'at least 10 failures' is easy to explain and test, but fixed thresholds can be noisy across users or systems. Baselines compare current activity with historical behavior; they require representative history and careful handling of legitimate changes."
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "group by user, source_ip\ncount failures per 10-minute window\ncompare to policy-defined threshold or an established baseline"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Time-series charts are useful for bursts and seasonality.",
+                  "Top-N tables expose dominant entities but can hide low-volume outliers.",
+                  "Percentiles and historical distributions can be useful when a simple average is misleading."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m04-l02-q1",
+              "question": "Which statement best describes a fixed threshold?",
+              "options": [
+                "It always adapts to historical behavior.",
+                "It triggers when a metric reaches a predetermined condition.",
+                "It requires machine learning.",
+                "It can only be used for network traffic."
+              ],
+              "answer": "It triggers when a metric reaches a predetermined condition.",
+              "explanation": "A threshold is an explicit condition such as count >= N within a defined window."
+            },
+            "summary": [
+              "A baseline is only useful when the historical population is meaningful and stable enough to compare.",
+              "Visualization is not decoration; it should reveal a trend, burst, outlier, or sequence that supports a hypothesis.",
+              "Analysts should be able to reproduce the underlying query behind an important chart."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft KQL Overview",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/",
+                "why": "Documents aggregation and analytical query capabilities used to build security investigations and visualizations."
+              }
+            ]
+          },
+          {
+            "id": "m04-l03",
+            "title": "Query Performance and Search Hygiene",
+            "description": "Learn portable techniques for making SIEM searches faster, cheaper, and easier to reason about without sacrificing investigative completeness.",
+            "learningObjectives": [
+              "Explain why time filters and selective predicates reduce work.",
+              "Use aggregation instead of retrieving unnecessary raw rows when the question is statistical.",
+              "Recognize the trade-off between broad investigation and query cost."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Practical optimization"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Restrict time before adding expensive processing.",
+                  "Filter to relevant event types or datasets.",
+                  "Project only fields needed for the current question when supported.",
+                  "Aggregate on the server side when the question is count/rate based.",
+                  "Avoid repeated identical wide searches; cache or save useful results where the platform supports it."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not optimize away evidence needed for incident reconstruction. Performance improvements must preserve the semantics of the investigation."
+              },
+              {
+                "type": "paragraph",
+                "text": "Vendor implementations differ in indexing, storage, and query execution. The portable skill is to make the query's intent selective and explicit."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m04-l03-q1",
+              "question": "Which change is generally useful for reducing the amount of data a SIEM query needs to process?",
+              "options": [
+                "Remove all time filters.",
+                "Start with a bounded time range and relevant event-type filters.",
+                "Return every available field.",
+                "Run the same query repeatedly without change."
+              ],
+              "answer": "Start with a bounded time range and relevant event-type filters.",
+              "explanation": "Selective predicates reduce the amount of data that must be scanned or processed on many SIEM backends."
+            },
+            "summary": [
+              "Performance is query- and backend-dependent, so test with the actual platform.",
+              "A fast incorrect query is worse than a slower correct investigation.",
+              "Keep saved queries understandable enough for another analyst to reproduce."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft KQL Overview",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/",
+                "why": "Provides the formal query language documentation used to illustrate search and aggregation concepts."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m04-t01",
+            "title": "Write an Investigation Pivot Script",
+            "level": "Intermediate",
+            "description": "Build a Python analysis script that starts from a suspicious source IP and reconstructs related authentication and process activity in a bounded time window.",
+            "problemStatement": "Given JSON Lines with normalized events, accept a source IP and UTC time range, print authentication failures/successes, then show process events for the same host within the window.",
+            "objectives": [
+              "Parse JSON Lines safely.",
+              "Apply inclusive time-window filtering.",
+              "Pivot from source_ip to host and then to process events.",
+              "Present results in a readable order without changing the source evidence."
+            ],
+            "requirements": [
+              "Python 3 standard library.",
+              "A JSONL file containing normalized events."
+            ],
+            "hint": "Parse timestamps once and compare datetime objects. Keep the pivot values explicit so the output can be reproduced.",
+            "solutionCode": "import json\nimport sys\nfrom datetime import datetime, timezone\n\ndef parse_ts(value):\n    return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).astimezone(timezone.utc)\n\nsource_ip = sys.argv[1]\nstart = parse_ts(sys.argv[2])\nend = parse_ts(sys.argv[3])\npath = sys.argv[4]\n\nselected = []\nwith open(path, encoding=\"utf-8\") as fh:\n    for line in fh:\n        if not line.strip():\n            continue\n        event = json.loads(line)\n        ts = parse_ts(event[\"timestamp\"])\n        if start <= ts <= end and event.get(\"source_ip\") == source_ip:\n            selected.append((ts, event))\n\nfor ts, event in sorted(selected):\n    print(ts.isoformat(), event.get(\"event_type\"), event.get(\"user\"),\n          event.get(\"host\"), event.get(\"process_name\"), event.get(\"result\"))\n",
+            "solutionExplanation": "The script narrows by source address and time, preserves the selected events, and sorts the evidence chronologically so the analyst can reason about sequence."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Detection Engineering, Sigma, and Correlation",
+        "description": "Build portable detections from security hypotheses, express them in Sigma, correlate events across sources, and reason about thresholds, sequences, and enrichment.",
+        "lessons": [
+          {
+            "id": "m05-l01",
+            "title": "Detection Engineering Lifecycle",
+            "description": "Learn a repeatable process for turning a threat hypothesis into a tested, documented, monitored detection.",
+            "learningObjectives": [
+              "Define a detection hypothesis and the observable behavior it depends on.",
+              "Specify required fields, exclusions, test data, and expected alert evidence.",
+              "Explain why detections need tuning, ownership, and review after deployment."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A detection is an engineering artifact"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "State the behavior to detect and why it matters.",
+                  "Identify the data sources and fields that make the behavior observable.",
+                  "Write the analytic condition and expected evidence.",
+                  "Create positive and negative test cases.",
+                  "Deploy with severity, owner, documentation, and monitoring.",
+                  "Review false positives, false negatives, and telemetry changes."
+                ]
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A rule without test cases is difficult to trust.",
+                  "A high-fidelity alert still needs context for triage.",
+                  "Track detection changes so tuning does not become unreviewed rule drift."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m05-l01-q1",
+              "question": "What should exist before a new detection is considered ready for production?",
+              "options": [
+                "Only the final rule text.",
+                "A hypothesis, required data, tests, expected results, ownership, and deployment/tuning plan.",
+                "A dashboard screenshot.",
+                "A claim that the rule has no false positives."
+              ],
+              "answer": "A hypothesis, required data, tests, expected results, ownership, and deployment/tuning plan.",
+              "explanation": "Reliable detections require more than query syntax; their evidence requirements, tests, ownership, and lifecycle must be explicit."
+            },
+            "summary": [
+              "Think of detections like code: define expected behavior, test changes, review them, and monitor production impact.",
+              "Separate the detection signal from triage context and response automation.",
+              "Use controlled replay or synthetic data to verify both true-positive and benign cases."
+            ],
+            "resources": [
+              {
+                "title": "SigmaHQ — Rules",
+                "url": "https://sigmahq.io/docs/basics/rules.html",
+                "why": "Official Sigma guidance for expressing log-detection logic in a portable rule format."
+              },
+              {
+                "title": "Sigma Specification",
+                "url": "https://sigmahq.io/sigma-specification/",
+                "why": "Formal specification including rules, correlations, filters, modifiers, and tags."
+              }
+            ]
+          },
+          {
+            "id": "m05-l02",
+            "title": "Sigma Rules and Portable Detection Logic",
+            "description": "Write Sigma rules using logsource, detection selections, conditions, metadata, and tags, and understand how backend conversion works.",
+            "learningObjectives": [
+              "Construct a valid Sigma rule for a narrow behavior.",
+              "Explain the roles of logsource, detection, condition, and metadata.",
+              "Use sigma-cli conversion conceptually to adapt a portable rule to a target backend."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Example Sigma rule"
+              },
+              {
+                "type": "code",
+                "language": "yaml",
+                "text": "title: Suspicious PowerShell Download Pattern\nid: 2b0fb9d7-0f6e-4c07-82f7-2f8d4d1e9f62\nstatus: test\ndescription: Detect a PowerShell process whose command line contains a web download indicator.\nlogsource:\n  category: process_creation\n  product: windows\ndetection:\n  selection:\n    Image|endswith: '\\powershell.exe'\n    CommandLine|contains:\n      - 'Invoke-WebRequest'\n      - 'WebClient'\n  condition: selection\nlevel: medium\ntags:\n  - attack.command-and-control\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "Sigma is a rule format rather than a SIEM query engine. A backend or conversion tool maps the rule into the target system's query or rule representation, and conversion does not remove the need for backend-specific validation."
+              },
+              {
+                "type": "code",
+                "language": "shell",
+                "text": "python -m pip install sigma-cli\nsigma convert -t <backend> rule.yml"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "m05-l02-p1",
+                "title": "Validate and Convert a Sigma Rule",
+                "description": "Create a focused Sigma rule for repeated failed authentication, then inspect or convert it with sigma-cli.",
+                "steps": [
+                  "Create a YAML file containing title, id, logsource, detection, condition, and level.",
+                  "Install sigma-cli in an isolated environment if it is not already installed.",
+                  "Run a Sigma conversion command for a backend supported by the installed sigma-cli plugin set.",
+                  "Review the generated query and compare its semantics with the original condition."
+                ],
+                "solution": "# rule.yml\ntitle: Multiple Failed Authentication Attempts\nid: 5cfa6dd8-9e8a-43de-9c91-2f7d4c1a6e01\nstatus: test\ndescription: Detect a failed authentication event as an input to threshold/correlation logic.\nlogsource:\n  category: authentication\ndetection:\n  selection:\n    result: failure\n  condition: selection\nlevel: low\n",
+                "output": "The Sigma document is the portable source rule. The converted query depends on the target backend and available Sigma plugin/backend support, so students must inspect the result rather than assume identical execution semantics."
+              }
+            ],
+            "quiz": {
+              "id": "m05-l02-q1",
+              "question": "What is the role of Sigma in a SIEM workflow?",
+              "options": [
+                "It is a physical log transport protocol.",
+                "It is a portable rule format for describing detection logic over log data.",
+                "It is an encryption algorithm.",
+                "It is a database engine."
+              ],
+              "answer": "It is a portable rule format for describing detection logic over log data.",
+              "explanation": "Sigma expresses detection logic independently of one particular SIEM query language; tooling can convert it to backend representations."
+            },
+            "summary": [
+              "The condition is the semantic core; backend syntax is an implementation detail.",
+              "Stable rule IDs help track tuning and lifecycle across repositories and converted targets.",
+              "Test the converted rule on the target data model; syntax conversion does not guarantee semantic parity."
+            ],
+            "resources": [
+              {
+                "title": "SigmaHQ — Rules",
+                "url": "https://sigmahq.io/docs/basics/rules.html",
+                "why": "Current official rule-authoring guidance."
+              },
+              {
+                "title": "Sigma CLI",
+                "url": "https://github.com/SigmaHQ/sigma-cli",
+                "why": "Official command-line tooling for converting Sigma rules with backend/plugins."
+              }
+            ]
+          },
+          {
+            "id": "m05-l03",
+            "title": "Correlation, Thresholds, and Threat Intelligence",
+            "description": "Combine events across time and sources using thresholds, sequences, and contextual indicators without overfitting detections to one data source.",
+            "learningObjectives": [
+              "Differentiate threshold detections from sequence and multi-source correlation.",
+              "Design a correlation that joins identity and endpoint or network evidence.",
+              "Use threat-intelligence matches as context or a detection input with explicit confidence and scope."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Correlation is a hypothesis about related evidence"
+              },
+              {
+                "type": "paragraph",
+                "text": "A useful correlation says what relationship matters: for example, repeated authentication failures from one source followed by a successful authentication for the same account. Correlation requires a shared pivot, compatible time window, and clear handling of missing or late events."
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "within 10 minutes:\n  5+ authentication failures by user + source_ip\nthen:\n  successful authentication for same user + source_ip\nthen optionally:\n  privileged action by same user within 15 minutes"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Threat-intelligence matches can accelerate triage but may be noisy or stale.",
+                  "Multi-source joins should use stable identifiers and documented time tolerances.",
+                  "Correlation logic should specify whether event order is mandatory or merely suggestive."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m05-l03-q1",
+              "question": "What is essential to a reliable multi-event correlation?",
+              "options": [
+                "Only a large volume of events.",
+                "A meaningful relationship among events, stable pivots, and an explicit time/ordering rule.",
+                "A dashboard with no filtering.",
+                "A threat-intelligence feed by itself."
+              ],
+              "answer": "A meaningful relationship among events, stable pivots, and an explicit time/ordering rule.",
+              "explanation": "Correlation is about evidence relationships, not simply combining many records."
+            },
+            "summary": [
+              "Thresholds are simple and testable but can be brittle; correlations add context but can be more expensive and sensitive to telemetry quality.",
+              "Explicit time windows prevent accidental correlations across unrelated activity.",
+              "Threat intelligence should be treated as context with provenance and freshness, not as automatic proof of compromise."
+            ],
+            "resources": [
+              {
+                "title": "OpenSearch Correlation Rules",
+                "url": "https://docs.opensearch.org/latest/security-analytics/sec-analytics-config/correlation-config/",
+                "why": "Current example of correlation rules across multiple log sources."
+              },
+              {
+                "title": "Microsoft Sentinel — Threat Indicators in Analytics Rules",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/use-threat-indicators-in-analytics-rules",
+                "why": "Official example of applying threat-indicator context to analytics rules."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m05-t01",
+            "title": "Engineer a Password-Spray Detection",
+            "level": "Advanced",
+            "description": "Design and implement a password-spray style detector over normalized authentication events, with exclusions and test cases.",
+            "problemStatement": "The security team wants an alert when a single source IP causes failures against at least four distinct users within ten minutes, while avoiding alerts for a documented scanner address range used in the lab.",
+            "objectives": [
+              "Group failed authentications by source IP and bounded event-time window.",
+              "Count distinct targeted users rather than only raw failure volume.",
+              "Apply an explicit exclusion list for approved lab scanners.",
+              "Create positive and negative test cases and print why each case alerts or does not alert."
+            ],
+            "requirements": [
+              "Python 3 standard library.",
+              "Synthetic normalized authentication events.",
+              "No external packages required."
+            ],
+            "hint": "Use sets for distinct users and compare event timestamps in a sliding or fixed window. Apply exclusions before evaluating the final condition.",
+            "solutionCode": "from collections import defaultdict\nfrom datetime import datetime, timedelta\n\nevents = [\n    {\"ts\": \"2026-09-07T12:00:00\", \"source_ip\": \"192.0.2.50\", \"user\": \"a\", \"result\": \"failure\"},\n    {\"ts\": \"2026-09-07T12:01:00\", \"source_ip\": \"192.0.2.50\", \"user\": \"b\", \"result\": \"failure\"},\n    {\"ts\": \"2026-09-07T12:02:00\", \"source_ip\": \"192.0.2.50\", \"user\": \"c\", \"result\": \"failure\"},\n    {\"ts\": \"2026-09-07T12:03:00\", \"source_ip\": \"192.0.2.50\", \"user\": \"d\", \"result\": \"failure\"},\n    {\"ts\": \"2026-09-07T12:20:00\", \"source_ip\": \"192.0.2.60\", \"user\": \"a\", \"result\": \"failure\"},\n]\napproved_scanners = {\"192.0.2.60\"}\nwindow = timedelta(minutes=10)\n\nfailures = [e for e in events if e[\"result\"] == \"failure\" and e[\"source_ip\"] not in approved_scanners]\nfor source in sorted({e[\"source_ip\"] for e in failures}):\n    source_events = sorted(\n        (e for e in failures if e[\"source_ip\"] == source),\n        key=lambda e: datetime.fromisoformat(e[\"ts\"])\n    )\n    for i, start_event in enumerate(source_events):\n        start = datetime.fromisoformat(start_event[\"ts\"])\n        users = {\n            e[\"user\"] for e in source_events[i:]\n            if datetime.fromisoformat(e[\"ts\"]) <= start + window\n        }\n        if len(users) >= 4:\n            print(\"ALERT\", source, \"distinct_users=\", len(users))\n            break\n",
+            "solutionExplanation": "The detector counts distinct users within a ten-minute event-time window and excludes an explicitly approved source before evaluating the threshold. The test data demonstrates one alerting source and one suppressed source."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Investigation, Threat Hunting, Incident Response, and Tuning",
+        "description": "Turn SIEM alerts into defensible investigations, perform hypothesis-driven hunts, connect findings to incident response, and reduce noise through disciplined tuning.",
+        "lessons": [
+          {
+            "id": "m06-l01",
+            "title": "Alert Triage and Investigation",
+            "description": "Follow a repeatable triage workflow that validates the signal, establishes scope, pivots through evidence, and records an explicit disposition.",
+            "learningObjectives": [
+              "Triage a SIEM alert using signal, context, scope, and confidence.",
+              "Build an evidence timeline around a suspicious entity.",
+              "Differentiate alert validation from incident declaration."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Triage workflow"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Validate that the detection fired on the intended data.",
+                  "Check the affected identity, host, source, destination, and time range.",
+                  "Expand to related events before and after the trigger.",
+                  "Determine whether the behavior is expected, suspicious, or clearly malicious.",
+                  "Assess scope: other accounts, hosts, resources, or source addresses.",
+                  "Record disposition, evidence, confidence, and recommended next action."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The analyst should preserve enough evidence to explain why the alert was closed, escalated, or suppressed. A benign disposition should still identify the benign reason because those reasons become valuable tuning inputs."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "m06-l01-p1",
+                "title": "Build an Alert Timeline",
+                "description": "Given normalized events around an authentication alert, produce a chronological timeline containing the trigger and related activity for the same user and host.",
+                "steps": [
+                  "Load events from a JSONL file.",
+                  "Select the alert's user and host as pivots.",
+                  "Include events within five minutes before and ten minutes after the trigger.",
+                  "Sort by event time and print event type, action, result, and source."
+                ],
+                "solution": "import json\nfrom datetime import datetime, timedelta\n\ntrigger_time = datetime.fromisoformat(\"2026-09-07T12:05:00\")\ntarget_user = \"admin\"\ntarget_host = \"workstation-01\"\nwindow_start = trigger_time - timedelta(minutes=5)\nwindow_end = trigger_time + timedelta(minutes=10)\n\nevents = [\n    {\"timestamp\": \"2026-09-07T12:01:00\", \"user\": \"admin\", \"host\": \"workstation-01\", \"event_type\": \"authentication\", \"action\": \"login\", \"result\": \"failure\", \"source_ip\": \"192.0.2.10\"},\n    {\"timestamp\": \"2026-09-07T12:05:00\", \"user\": \"admin\", \"host\": \"workstation-01\", \"event_type\": \"authentication\", \"action\": \"login\", \"result\": \"success\", \"source_ip\": \"192.0.2.10\"},\n    {\"timestamp\": \"2026-09-07T12:07:00\", \"user\": \"admin\", \"host\": \"workstation-01\", \"event_type\": \"process\", \"action\": \"create\", \"result\": \"success\", \"process_name\": \"powershell.exe\"},\n]\n\ntimeline = []\nfor event in events:\n    ts = datetime.fromisoformat(event[\"timestamp\"])\n    if window_start <= ts <= window_end and event.get(\"user\") == target_user and event.get(\"host\") == target_host:\n        timeline.append(event)\n\nfor event in sorted(timeline, key=lambda e: e[\"timestamp\"]):\n    print(event[\"timestamp\"], event[\"event_type\"], event.get(\"action\"), event.get(\"result\"), event.get(\"source_ip\", \"\"))",
+                "output": "The result is a reproducible evidence timeline around the trigger, preserving the sequence needed for hypothesis testing."
+              }
+            ],
+            "quiz": {
+              "id": "m06-l01-q1",
+              "question": "Which action best supports defensible alert triage?",
+              "options": [
+                "Close every alert after checking only the title.",
+                "Record the trigger, supporting evidence, scope, confidence, and disposition.",
+                "Delete the raw events after opening the case.",
+                "Treat every alert as confirmed compromise."
+              ],
+              "answer": "Record the trigger, supporting evidence, scope, confidence, and disposition.",
+              "explanation": "A defensible triage decision records the evidence and reasoning that led to the disposition."
+            },
+            "summary": [
+              "Triage should be consistent enough that another analyst can understand the decision.",
+              "Preserve original timestamps and relevant raw events when evidence may later be needed.",
+              "Use escalation criteria tied to impact, confidence, and scope rather than emotion or alert count."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                "why": "Current NIST incident-response guidance covering analysis, response, and recovery activities."
+              }
+            ]
+          },
+          {
+            "id": "m06-l02",
+            "title": "Threat Hunting with Hypotheses",
+            "description": "Turn uncertainty into an explicit hunting hypothesis and use SIEM data to search broadly enough to falsify it while maintaining scope and evidence discipline.",
+            "learningObjectives": [
+              "Write a concrete, testable threat-hunting hypothesis.",
+              "Select data sources that can confirm or refute the hypothesis.",
+              "Document search boundaries, pivots, findings, and unresolved uncertainty."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Hunting is not random searching"
+              },
+              {
+                "type": "paragraph",
+                "text": "A hunt should begin with a reasoned hypothesis such as 'A credentialed account may be used from an unusual source after a burst of authentication failures.' The hunt then selects observables, searches the relevant population, compares results with known-good behavior, and records both positive and negative findings."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Define scope: systems, identities, time window, and excluded environments.",
+                  "Choose observable behaviors instead of relying solely on malware names or indicators.",
+                  "Write down what evidence would raise or lower confidence.",
+                  "Save queries and useful results so another analyst can reproduce the hunt."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m06-l02-q1",
+              "question": "What makes a threat-hunting hypothesis useful?",
+              "options": [
+                "It is so vague that any result supports it.",
+                "It defines an observable behavior and evidence that could support or refute it.",
+                "It only names a malware family.",
+                "It avoids all time boundaries."
+              ],
+              "answer": "It defines an observable behavior and evidence that could support or refute it.",
+              "explanation": "A good hypothesis is falsifiable: the SIEM search should be able to increase or decrease confidence."
+            },
+            "summary": [
+              "Hunting complements detections by exploring behaviors that may not yet have high-fidelity automated rules.",
+              "Negative results should be documented; 'nothing found' is useful only when the search scope and telemetry coverage are known.",
+              "ATT&CK can help organize behavior-oriented hunt questions without becoming a substitute for evidence."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Data Sources",
+                "url": "https://attack.mitre.org/datasources/",
+                "why": "Provides a behavior-oriented framework for relating data sources to adversary activity."
+              }
+            ]
+          },
+          {
+            "id": "m06-l03",
+            "title": "Incident Response Integration and Detection Tuning",
+            "description": "Connect SIEM findings with incident-response activities and use evidence-driven tuning to reduce noise without creating blind spots.",
+            "learningObjectives": [
+              "Explain where SIEM analysis fits within incident-response workflows.",
+              "Use false-positive reasons and missed-detection findings to tune a rule.",
+              "Recognize the risk of overbroad exclusions and brittle allowlists."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Tuning without blindness"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Classify why a detection fired: expected behavior, stale data, parser error, rule logic, or truly suspicious activity.",
+                  "Fix the smallest cause that removes the noise.",
+                  "Prefer scoped conditions over broad global exclusions.",
+                  "Retest with the original positive case and at least one benign case.",
+                  "Review the rule after telemetry or environment changes."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A broad exclusion can eliminate future true positives. Document every exclusion, its owner, scope, expiration/review date, and the evidence supporting it."
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-61 Rev. 3 integrates incident response with the Cybersecurity Framework 2.0, emphasizing preparation, detection/analysis, response, and recovery as parts of organizational risk management."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m06-l03-q1",
+              "question": "Which tuning change is usually safer?",
+              "options": [
+                "Exclude an entire data source because one event was noisy.",
+                "Create a narrowly scoped condition for a known benign process and retest the positive case.",
+                "Disable the rule permanently after the first false positive.",
+                "Remove all time-window limits."
+              ],
+              "answer": "Create a narrowly scoped condition for a known benign process and retest the positive case.",
+              "explanation": "Narrow tuning reduces noise while preserving more detection coverage and makes the rationale testable."
+            },
+            "summary": [
+              "Tuning is part of the detection lifecycle, not a one-time cleanup step.",
+              "Incident response provides the context for escalation, containment, eradication, recovery, and lessons learned; a SIEM supplies evidence and detection support.",
+              "Use NIST's current Rev. 3 rather than teaching Rev. 2 as the primary current framework."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                "why": "Current final NIST incident-response publication, released in 2025 and superseding Rev. 2."
+              },
+              {
+                "title": "NIST Cybersecurity Framework",
+                "url": "https://www.nist.gov/cyberframework",
+                "why": "Current NIST CSF context for risk-management integration of detection and response."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m06-t01",
+            "title": "Tune a Noisy Detection Without a Blind Spot",
+            "level": "Advanced",
+            "description": "Given a threshold detection that produces legitimate maintenance noise, modify it with a narrow exclusion and demonstrate that the intended suspicious case still alerts.",
+            "problemStatement": "A detector flags repeated authentication failures. A documented automation account causes predictable failures from one management host every morning. Exclude only that known behavior while preserving detection for the same pattern from other hosts and for unexpected times.",
+            "objectives": [
+              "Represent the benign pattern explicitly.",
+              "Apply the exclusion only when all benign conditions match.",
+              "Retest a legitimate automation case, a suspicious case, and a partially matching case.",
+              "Explain why the exclusion does not create a broad source or user blind spot."
+            ],
+            "requirements": [
+              "Python 3 standard library.",
+              "Synthetic authentication events."
+            ],
+            "hint": "Do not exclude by source IP alone. Require the full known-benign context that distinguishes the automation from the suspicious case.",
+            "solutionCode": "def is_alert(event, failure_count):\n    benign_automation = (\n        event[\"user\"] == \"svc-backup\"\n        and event[\"source_ip\"] == \"192.0.2.40\"\n        and event[\"hour_utc\"] == 2\n    )\n    return failure_count >= 8 and not benign_automation\n\ncases = [\n    {\"user\": \"svc-backup\", \"source_ip\": \"192.0.2.40\", \"hour_utc\": 2, \"count\": 12},\n    {\"user\": \"svc-backup\", \"source_ip\": \"192.0.2.40\", \"hour_utc\": 14, \"count\": 12},\n    {\"user\": \"admin\", \"source_ip\": \"192.0.2.40\", \"hour_utc\": 2, \"count\": 12},\n]\n\nfor case in cases:\n    print(case, \"ALERT\" if is_alert(case, case[\"count\"]) else \"suppressed\")\n",
+            "solutionExplanation": "The exclusion requires user, source, and expected time together. The second and third cases remain visible because only part of the benign pattern is present."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "SIEM Governance, Cloud Operations, and Final Assessment",
+        "description": "Operate SIEM capabilities as a managed security service: establish retention and access controls, monitor telemetry and detections, understand cloud audit coverage, and complete the final SIEM-style implementation project.",
+        "lessons": [
+          {
+            "id": "m07-l01",
+            "title": "Retention, Access, Privacy, and Operational Governance",
+            "description": "Treat SIEM data as security-sensitive operational data with explicit retention, access, change control, privacy, and evidence-handling requirements.",
+            "learningObjectives": [
+              "Explain why retention is a business and security requirement rather than only a storage setting.",
+              "Identify access-control and privacy considerations for centralized security logs.",
+              "Define operational ownership for sources, parsers, detections, and retention policies."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Governance questions"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "What events are required for each security use case, and for how long?",
+                  "Who can access raw logs, normalized data, threat intelligence, and case information?",
+                  "How are parser, schema, and detection changes reviewed and rolled back?",
+                  "How are legal, regulatory, contractual, and organizational requirements translated into retention and access rules?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST log-management guidance treats generating, transmitting, storing, accessing, and disposing of logs as a lifecycle. Centralized logs may contain credentials, personal data, command-line arguments, or other sensitive content, so access and retention controls should be part of the design."
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "Example ownership model:\nsource owner -> collection owner -> schema/parser owner -> detection owner -> SOC/IR consumer"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m07-l01-q1",
+              "question": "Why should SIEM retention be explicitly designed?",
+              "options": [
+                "Because logs become harmless after 24 hours.",
+                "Because retention affects investigation capability, storage cost, privacy, and evidence availability.",
+                "Because SIEM products cannot delete data.",
+                "Because every organization must keep every log forever."
+              ],
+              "answer": "Because retention affects investigation capability, storage cost, privacy, and evidence availability.",
+              "explanation": "Retention is a lifecycle decision balancing operational, security, and organizational requirements."
+            },
+            "summary": [
+              "Least privilege applies to security logs because they can reveal identity, behavior, credentials in arguments, and system internals.",
+              "Retention should match documented use cases and requirements; 'keep everything forever' is not a defensible universal policy.",
+              "Change management matters for parsers and detections because silent changes can alter security decisions."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Lifecycle guidance for generating, transmitting, storing, accessing, and disposing of logs."
+              },
+              {
+                "title": "Microsoft — Command-line Process Auditing",
+                "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing",
+                "why": "Illustrates why captured command-line data can contain sensitive information and requires appropriate controls."
+              }
+            ]
+          },
+          {
+            "id": "m07-l02",
+            "title": "SIEM Health, Detection Metrics, and Continuous Improvement",
+            "description": "Measure collection health and detection effectiveness using operational metrics that reveal data gaps, noise, latency, and investigative burden.",
+            "learningObjectives": [
+              "Define useful telemetry-health and detection-quality metrics.",
+              "Distinguish volume metrics from quality metrics.",
+              "Build a feedback loop from incidents and hunts into detection engineering."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Metrics worth monitoring"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Source heartbeat and ingest lag show whether telemetry is arriving on time.",
+                  "Parse-failure and unknown-schema rates reveal data quality problems.",
+                  "Alert rate by rule, disposition rate, and recurring benign reasons show detection noise.",
+                  "Time to triage and time to close help expose analyst workload and process friction.",
+                  "Detection coverage should be discussed in terms of known use cases and observable data, not a single universal percentage."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "No one metric proves SIEM effectiveness. A healthy program combines pipeline reliability, detection quality, investigation outcomes, and feedback from incidents and hunts."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m07-l02-q1",
+              "question": "Which metric most directly identifies a collection pipeline problem?",
+              "options": [
+                "Analyst vacation count.",
+                "Ingest lag or source heartbeat failure.",
+                "Number of dashboard tiles.",
+                "Number of threat-intelligence vendors."
+              ],
+              "answer": "Ingest lag or source heartbeat failure.",
+              "explanation": "Collection health indicators reveal whether expected telemetry is reaching the SIEM."
+            },
+            "summary": [
+              "Measure what can change a decision: pipeline failures, detection noise, analyst effort, and missed or weak evidence.",
+              "Metrics should be segmented by source and detection so a healthy average cannot hide one broken integration.",
+              "Continuous improvement is the loop: observe -> investigate -> learn -> tune -> test -> monitor."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92 — Guide to Computer Security Log Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Provides the lifecycle and operational foundation for log-management programs."
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3 — Incident Response",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                "why": "Connects incident-response analysis and lessons learned to organizational improvement."
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Mini-SIEM Event Pipeline",
+          "description": "Build a vendor-neutral SIEM-style pipeline that ingests JSON Lines security events, normalizes a small common schema, stores events in SQLite, evaluates two behavioral detections, and emits structured alerts. The implementation uses only the Python standard library so a learner can run it locally without a commercial SIEM or external service.",
+          "conceptsCovered": [
+            "Event ingestion from JSON Lines",
+            "Normalization with preserved raw evidence",
+            "UTC event-time parsing",
+            "SQLite storage and indexed lookup",
+            "Threshold detection for authentication failures",
+            "Sequence correlation between authentication success and privileged activity",
+            "Alert output and evidence references",
+            "Unit testing",
+            "Basic operational metrics and limitations"
+          ],
+          "steps": [
+            "Create the project files shown in the code section.",
+            "Run `python siem.py ingest sample_events.jsonl` to validate, normalize, and store the sample events in `siem.db`.",
+            "Run `python siem.py detect` to evaluate the password-spray and post-authentication privileged-action detectors.",
+            "Review the generated alerts and compare them with the original sample events.",
+            "Run `python -m unittest -v test_siem.py` and fix any failure before considering the project complete.",
+            "Extend the sample data with a benign case and a delayed event, then explain how time and data-quality limitations affect your detector.",
+            "Write a short operations note describing source assumptions, retention considerations, tuning points, and what this mini-SIEM does not provide compared with a production SIEM."
+          ],
+          "code": [
+            {
+              "path": "README.md",
+              "language": "markdown",
+              "content": "# Mini-SIEM Event Pipeline\n\nA small educational SIEM-style pipeline using only Python's standard library and SQLite.\n\n## Commands\n\n```bash\npython siem.py ingest sample_events.jsonl\npython siem.py detect\npython -m unittest -v test_siem.py\n```\n\nThe project demonstrates ingestion, normalization, storage, threshold detection, sequence correlation, alert output, and tests.\n\nThis is an educational local implementation, not a production SIEM. It does not provide distributed ingestion, authentication/authorization, high availability, production retention controls, or vendor-specific query execution.\n"
+            },
+            {
+              "path": "sample_events.jsonl",
+              "language": "jsonl",
+              "content": "{\"timestamp\":\"2026-09-07T12:00:00Z\",\"event_type\":\"authentication\",\"user\":\"admin\",\"source_ip\":\"192.0.2.50\",\"host\":\"identity-01\",\"action\":\"login\",\"result\":\"failure\"}\n{\"timestamp\":\"2026-09-07T12:01:00Z\",\"event_type\":\"authentication\",\"user\":\"admin\",\"source_ip\":\"192.0.2.50\",\"host\":\"identity-01\",\"action\":\"login\",\"result\":\"failure\"}\n{\"timestamp\":\"2026-09-07T12:02:00Z\",\"event_type\":\"authentication\",\"user\":\"admin\",\"source_ip\":\"192.0.2.50\",\"host\":\"identity-01\",\"action\":\"login\",\"result\":\"failure\"}\n{\"timestamp\":\"2026-09-07T12:03:00Z\",\"event_type\":\"authentication\",\"user\":\"admin\",\"source_ip\":\"192.0.2.50\",\"host\":\"identity-01\",\"action\":\"login\",\"result\":\"success\"}\n{\"timestamp\":\"2026-09-07T12:04:00Z\",\"event_type\":\"process\",\"user\":\"admin\",\"source_ip\":\"192.0.2.50\",\"host\":\"server-01\",\"action\":\"create\",\"result\":\"success\",\"process_name\":\"powershell.exe\"}\n{\"timestamp\":\"2026-09-07T12:05:00Z\",\"event_type\":\"privileged_action\",\"user\":\"admin\",\"source_ip\":\"192.0.2.50\",\"host\":\"server-01\",\"action\":\"role-change\",\"result\":\"success\",\"resource\":\"admin-role\"}\n{\"timestamp\":\"2026-09-07T12:10:00Z\",\"event_type\":\"authentication\",\"user\":\"analyst\",\"source_ip\":\"192.0.2.30\",\"host\":\"identity-01\",\"action\":\"login\",\"result\":\"success\"}\n"
+            },
+            {
+              "path": "siem.py",
+              "language": "python",
+              "content": "#!/usr/bin/env python3\nimport argparse\nimport json\nimport sqlite3\nfrom collections import defaultdict\nfrom datetime import datetime, timedelta, timezone\nfrom pathlib import Path\n\nDB_PATH = Path(\"siem.db\")\n\n\ndef parse_ts(value):\n    if not isinstance(value, str):\n        raise ValueError(\"timestamp must be a string\")\n    normalized = value.replace(\"Z\", \"+00:00\")\n    dt = datetime.fromisoformat(normalized)\n    if dt.tzinfo is None:\n        raise ValueError(\"timestamp must include a timezone\")\n    return dt.astimezone(timezone.utc)\n\n\ndef normalize(raw, line_number):\n    required = [\"timestamp\", \"event_type\", \"user\", \"source_ip\", \"host\", \"action\", \"result\"]\n    missing = [key for key in required if not raw.get(key)]\n    if missing:\n        raise ValueError(f\"line {line_number}: missing {', '.join(missing)}\")\n\n    ts = parse_ts(raw[\"timestamp\"])\n    normalized = {\n        \"timestamp\": ts.isoformat().replace(\"+00:00\", \"Z\"),\n        \"event_type\": str(raw[\"event_type\"]),\n        \"user\": str(raw[\"user\"]),\n        \"source_ip\": str(raw[\"source_ip\"]),\n        \"host\": str(raw[\"host\"]),\n        \"action\": str(raw[\"action\"]),\n        \"result\": str(raw[\"result\"]),\n        \"process_name\": str(raw[\"process_name\"]) if raw.get(\"process_name\") else None,\n        \"resource\": str(raw[\"resource\"]) if raw.get(\"resource\") else None,\n        \"raw\": raw,\n    }\n    return normalized\n\n\ndef connect():\n    con = sqlite3.connect(DB_PATH)\n    con.execute(\n        \"\"\"CREATE TABLE IF NOT EXISTS events (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            timestamp TEXT NOT NULL,\n            event_type TEXT NOT NULL,\n            user TEXT NOT NULL,\n            source_ip TEXT NOT NULL,\n            host TEXT NOT NULL,\n            action TEXT NOT NULL,\n            result TEXT NOT NULL,\n            process_name TEXT,\n            resource TEXT,\n            raw_json TEXT NOT NULL\n        )\"\"\"\n    )\n    con.execute(\"CREATE INDEX IF NOT EXISTS idx_events_time ON events(timestamp)\")\n    con.execute(\"CREATE INDEX IF NOT EXISTS idx_events_user_ip ON events(user, source_ip, timestamp)\")\n    con.commit()\n    return con\n\n\ndef ingest(path):\n    con = connect()\n    accepted = 0\n    rejected = 0\n    with open(path, encoding=\"utf-8\") as fh:\n        for line_number, line in enumerate(fh, start=1):\n            if not line.strip():\n                continue\n            try:\n                raw = json.loads(line)\n                event = normalize(raw, line_number)\n                con.execute(\n                    \"\"\"INSERT INTO events\n                    (timestamp, event_type, user, source_ip, host, action, result, process_name, resource, raw_json)\n                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\"\"\",\n                    (\n                        event[\"timestamp\"], event[\"event_type\"], event[\"user\"],\n                        event[\"source_ip\"], event[\"host\"], event[\"action\"], event[\"result\"],\n                        event[\"process_name\"], event[\"resource\"], json.dumps(event[\"raw\"])\n                    )\n                )\n                accepted += 1\n            except (json.JSONDecodeError, ValueError) as exc:\n                rejected += 1\n                print(f\"REJECTED: {exc}\")\n    con.commit()\n    con.close()\n    print(json.dumps({\"accepted\": accepted, \"rejected\": rejected}))\n\n\ndef load_events(con):\n    rows = con.execute(\n        \"\"\"SELECT id, timestamp, event_type, user, source_ip, host, action, result,\n                  process_name, resource, raw_json\n           FROM events ORDER BY timestamp, id\"\"\"\n    ).fetchall()\n    events = []\n    for row in rows:\n        events.append({\n            \"id\": row[0], \"timestamp\": row[1], \"event_type\": row[2],\n            \"user\": row[3], \"source_ip\": row[4], \"host\": row[5],\n            \"action\": row[6], \"result\": row[7], \"process_name\": row[8],\n            \"resource\": row[9], \"raw_json\": row[10]\n        })\n    return events\n\n\ndef detect_password_spray(events, threshold=3, window_minutes=10):\n    alerts = []\n    failures = defaultdict(list)\n    window = timedelta(minutes=window_minutes)\n\n    for event in events:\n        if event[\"event_type\"] != \"authentication\" or event[\"result\"] != \"failure\":\n            continue\n        failures[event[\"source_ip\"]].append(event)\n\n    for source_ip, source_events in failures.items():\n        source_events.sort(key=lambda e: parse_ts(e[\"timestamp\"]))\n        for index, start_event in enumerate(source_events):\n            start = parse_ts(start_event[\"timestamp\"])\n            window_events = [\n                e for e in source_events[index:]\n                if parse_ts(e[\"timestamp\"]) <= start + window\n            ]\n            users = sorted({e[\"user\"] for e in window_events})\n            if len(users) >= threshold:\n                evidence = [e[\"id\"] for e in window_events]\n                alerts.append({\n                    \"type\": \"password-spray\",\n                    \"severity\": \"medium\",\n                    \"source_ip\": source_ip,\n                    \"distinct_users\": len(users),\n                    \"evidence_event_ids\": evidence,\n                })\n                break\n    return alerts\n\n\ndef detect_post_auth_privileged_action(events, success_window=timedelta(minutes=15)):\n    alerts = []\n    successes = [\n        e for e in events\n        if e[\"event_type\"] == \"authentication\" and e[\"result\"] == \"success\"\n    ]\n    privileged = [\n        e for e in events\n        if e[\"event_type\"] == \"privileged_action\" and e[\"result\"] == \"success\"\n    ]\n\n    for auth in successes:\n        auth_time = parse_ts(auth[\"timestamp\"])\n        for action in privileged:\n            action_time = parse_ts(action[\"timestamp\"])\n            if (\n                action[\"user\"] == auth[\"user\"]\n                and action[\"source_ip\"] == auth[\"source_ip\"]\n                and timedelta(0) <= action_time - auth_time <= success_window\n            ):\n                alerts.append({\n                    \"type\": \"post-auth-privileged-action\",\n                    \"severity\": \"high\",\n                    \"user\": auth[\"user\"],\n                    \"source_ip\": auth[\"source_ip\"],\n                    \"authentication_event_id\": auth[\"id\"],\n                    \"privileged_event_id\": action[\"id\"],\n                })\n    return alerts\n\n\ndef detect():\n    con = connect()\n    events = load_events(con)\n    alerts = detect_password_spray(events)\n    alerts.extend(detect_post_auth_privileged_action(events))\n    con.close()\n\n    for alert in alerts:\n        print(json.dumps(alert, sort_keys=True))\n    print(json.dumps({\"alert_count\": len(alerts)}))\n\n\ndef main():\n    parser = argparse.ArgumentParser(description=\"Mini-SIEM educational pipeline\")\n    sub = parser.add_subparsers(dest=\"command\", required=True)\n\n    ingest_parser = sub.add_parser(\"ingest\", help=\"ingest JSONL events\")\n    ingest_parser.add_argument(\"path\")\n\n    sub.add_parser(\"detect\", help=\"run detections against stored events\")\n\n    args = parser.parse_args()\n    if args.command == \"ingest\":\n        ingest(args.path)\n    elif args.command == \"detect\":\n        detect()\n\n\nif __name__ == \"__main__\":\n    main()\n"
+            },
+            {
+              "path": "test_siem.py",
+              "language": "python",
+              "content": "import unittest\n\nfrom siem import detect_password_spray, detect_post_auth_privileged_action\n\n\nclass DetectionTests(unittest.TestCase):\n    def test_password_spray_uses_distinct_users(self):\n        events = [\n            {\"id\": 1, \"timestamp\": \"2026-09-07T12:00:00Z\", \"event_type\": \"authentication\", \"user\": \"a\", \"source_ip\": \"192.0.2.50\", \"host\": \"id-01\", \"action\": \"login\", \"result\": \"failure\"},\n            {\"id\": 2, \"timestamp\": \"2026-09-07T12:01:00Z\", \"event_type\": \"authentication\", \"user\": \"a\", \"source_ip\": \"192.0.2.50\", \"host\": \"id-01\", \"action\": \"login\", \"result\": \"failure\"},\n            {\"id\": 3, \"timestamp\": \"2026-09-07T12:02:00Z\", \"event_type\": \"authentication\", \"user\": \"b\", \"source_ip\": \"192.0.2.50\", \"host\": \"id-01\", \"action\": \"login\", \"result\": \"failure\"},\n            {\"id\": 4, \"timestamp\": \"2026-09-07T12:03:00Z\", \"event_type\": \"authentication\", \"user\": \"c\", \"source_ip\": \"192.0.2.50\", \"host\": \"id-01\", \"action\": \"login\", \"result\": \"failure\"},\n        ]\n        alerts = detect_password_spray(events, threshold=3)\n        self.assertEqual(len(alerts), 1)\n        self.assertEqual(alerts[0][\"distinct_users\"], 3)\n\n    def test_post_auth_privileged_action_requires_same_user_and_ip(self):\n        events = [\n            {\"id\": 1, \"timestamp\": \"2026-09-07T12:00:00Z\", \"event_type\": \"authentication\", \"user\": \"admin\", \"source_ip\": \"192.0.2.50\", \"host\": \"id-01\", \"action\": \"login\", \"result\": \"success\"},\n            {\"id\": 2, \"timestamp\": \"2026-09-07T12:05:00Z\", \"event_type\": \"privileged_action\", \"user\": \"admin\", \"source_ip\": \"192.0.2.50\", \"host\": \"server-01\", \"action\": \"role-change\", \"result\": \"success\"},\n            {\"id\": 3, \"timestamp\": \"2026-09-07T12:06:00Z\", \"event_type\": \"privileged_action\", \"user\": \"admin\", \"source_ip\": \"192.0.2.60\", \"host\": \"server-02\", \"action\": \"role-change\", \"result\": \"success\"},\n        ]\n        alerts = detect_post_auth_privileged_action(events)\n        self.assertEqual(len(alerts), 1)\n        self.assertEqual(alerts[0][\"privileged_event_id\"], 2)\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+            }
+          ],
+          "explanation": "The pipeline has a simple but explicit data flow. `ingest` reads JSON Lines, validates required fields, parses timezone-aware timestamps, normalizes selected attributes, and stores both normalized values and the original JSON in SQLite. Indexes support time-based and user/source pivots. `detect_password_spray` groups failed authentications by source and counts distinct users inside a ten-minute event-time window. `detect_post_auth_privileged_action` correlates a successful authentication with a later successful privileged action for the same user and source within fifteen minutes. The project prints structured alert records with event IDs that let an analyst pivot back to stored evidence. Unit tests verify distinct-user threshold semantics and the same-user/same-source correlation constraint. This intentionally omits production capabilities such as distributed collection, durable queueing, role-based access control, encryption/key management, schema versioning, hot/warm retention tiers, HA, scaling, and a commercial SIEM's native rule engine; those are governance and architecture topics taught in the course rather than hidden behind an artificial demo."
+        }
+      }
+    ]
+  }
+}

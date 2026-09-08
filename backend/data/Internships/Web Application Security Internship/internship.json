@@ -1,0 +1,1689 @@
+{
+  "internship": {
+    "id": "web-application-security-internship-2026",
+    "title": "Web Application Security Internship",
+    "slug": "web-application-security-internship",
+    "description": "A research-backed internship program focused specifically on assessing and improving the security of web applications. It combines structured security testing, secure engineering, controlled manual assessment, code review, automated regression testing and professional reporting. Practical work is limited to applications and environments the intern owns or is explicitly authorized to test.",
+    "domain": "Web Application Security",
+    "level": "Intermediate progressing to advanced practical assessment",
+    "language": "English",
+    "duration": {
+      "estimated": "12-16 weeks",
+      "basis": "The program contains 8 progressive modules, module-level engineering tasks, a hands-on capstone and a final assessment. The exact calendar depends on prior HTTP, Python and Git experience."
+    },
+    "prerequisites": [
+      "Basic Python or another scripting language.",
+      "Basic HTML and HTTP knowledge.",
+      "Command-line familiarity.",
+      "Basic SQL concepts.",
+      "Basic Git usage.",
+      "Comfort reading web requests and responses."
+    ],
+    "objectives": [
+      "Perform authorized web application security testing using a repeatable methodology.",
+      "Understand authentication, authorization, sessions and browser trust boundaries.",
+      "Identify and remediate injection, XSS, CSRF, SSRF, file-upload and configuration risks in controlled environments.",
+      "Use secure code review and automated regression tests to verify remediation.",
+      "Produce evidence-based security findings and retest results."
+    ],
+    "competencies": [
+      {
+        "name": "Assessment planning",
+        "evidence": "Scope document, asset inventory and WSTG-aligned coverage matrix."
+      },
+      {
+        "name": "HTTP analysis",
+        "evidence": "Captured request/response evidence and endpoint inventory."
+      },
+      {
+        "name": "Authentication and session testing",
+        "evidence": "Cookie review, login tests and session lifecycle reasoning."
+      },
+      {
+        "name": "Authorization testing",
+        "evidence": "Cross-user object-level and role-level regression tests."
+      },
+      {
+        "name": "Secure coding",
+        "evidence": "Parameterized SQL, validation, safe templating and secret handling."
+      },
+      {
+        "name": "Security testing",
+        "evidence": "pytest regression suite plus controlled manual tests."
+      },
+      {
+        "name": "Reporting",
+        "evidence": "Reproducible findings with impact, remediation and retest fields."
+      },
+      {
+        "name": "Engineering judgment",
+        "evidence": "Architecture decisions, limitations and explicit assumptions."
+      }
+    ],
+    "technologyStack": [
+      {
+        "name": "Python",
+        "role": "Automation and application code",
+        "selectionReason": "Useful for focused HTTP test harnesses and the capstone implementation."
+      },
+      {
+        "name": "Flask 3.1.3",
+        "role": "Capstone web application",
+        "selectionReason": "Current documented Flask 3.1 release during research and simple enough to expose security boundaries."
+      },
+      {
+        "name": "SQLite",
+        "role": "Local training database",
+        "selectionReason": "Self-contained relational storage for deterministic lab work."
+      },
+      {
+        "name": "pytest",
+        "role": "Security regression tests",
+        "selectionReason": "Matches Flask's documented testing workflow."
+      },
+      {
+        "name": "Browser developer tools and an intercepting proxy",
+        "role": "Request/response inspection",
+        "selectionReason": "Directly exposes browser and server behavior needed for web assessment."
+      },
+      {
+        "name": "OWASP WSTG",
+        "role": "Testing methodology",
+        "selectionReason": "Provides structured web application security testing guidance."
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-01",
+        "name": "Foundations and Scope",
+        "modules": [
+          "module-01"
+        ]
+      },
+      {
+        "id": "phase-02",
+        "name": "Attack Surface and HTTP Testing",
+        "modules": [
+          "module-02"
+        ]
+      },
+      {
+        "id": "phase-03",
+        "name": "Identity and Access Control",
+        "modules": [
+          "module-03",
+          "module-04"
+        ]
+      },
+      {
+        "id": "phase-04",
+        "name": "Application Input and Browser Security",
+        "modules": [
+          "module-05",
+          "module-06"
+        ]
+      },
+      {
+        "id": "phase-05",
+        "name": "Review, Verification and Capstone",
+        "modules": [
+          "module-07",
+          "module-08"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Security Assessment Foundations and Scope",
+        "description": "Build the professional foundation for authorized web application security testing: scope, rules of engagement, asset inventory, evidence handling, HTTP fundamentals and repeatable test planning.",
+        "objectives": [
+          "Define an authorized assessment boundary and distinguish in-scope from out-of-scope behavior.",
+          "Read HTTP requests and responses well enough to identify trust boundaries and security-relevant data.",
+          "Create a repeatable test plan and evidence trail instead of ad-hoc probing.",
+          "Use Git and disciplined notes for reproducible security work."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Authorization, Scope and Rules of Engagement",
+            "description": "Security testing is useful only when the tester knows exactly what is authorized. The intern learns scope statements, safe handling of credentials, evidence discipline, stopping conditions and the difference between a lab, a staging environment and an Internet target.",
+            "learningObjectives": [
+              "Explain authorization and scope boundaries.",
+              "Create a safe test plan with objectives, exclusions and stopping conditions.",
+              "Recognize when a requested test needs explicit approval."
+            ],
+            "notes": "A professional assessment begins with authorization, asset identification, objectives, assumptions, communication paths and evidence rules. NIST SP 800-115 describes planning and conducting technical security tests and analyzing findings. Use it as a methodology reference, not as permission to test arbitrary targets.",
+            "practicals": [
+              [
+                {
+                  "id": "q1-1",
+                  "question": "Which item belongs in a rules-of-engagement document?",
+                  "options": [
+                    "A personal password",
+                    "An in-scope hostname and testing window",
+                    "A hidden secret key",
+                    "A claim that testing is always safe"
+                  ],
+                  "answer": "An in-scope hostname and testing window",
+                  "explanation": "Scope and timing turn a technical action into an authorized assessment activity."
+                }
+              ]
+            ],
+            "quiz": {
+              "id": "q1-1",
+              "question": "Which item belongs in a rules-of-engagement document?",
+              "options": [
+                "A personal password",
+                "An in-scope hostname and testing window",
+                "A hidden secret key",
+                "A claim that testing is always safe"
+              ],
+              "answer": "An in-scope hostname and testing window",
+              "explanation": "Scope and timing turn a technical action into an authorized assessment activity."
+            },
+            "summary": "The intern should be able to apply the ideas from Authorization, Scope and Rules of Engagement during authorized assessment and remediation work.",
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/115/final"
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "HTTP Request and Response Anatomy",
+            "description": "HTTP is the primary evidence stream for web security testing. Learn methods, URLs, parameters, headers, cookies, bodies, status codes, redirects and content types.",
+            "learningObjectives": [
+              "Trace a user action through its HTTP representation.",
+              "Distinguish path, query, header, cookie and body inputs.",
+              "Identify security-relevant response headers."
+            ],
+            "notes": "Treat client-controlled values as untrusted. The browser is not a security boundary. A tester should inspect the server response directly instead of inferring security only from the user interface.",
+            "practicals": [
+              {
+                "title": "Capture and classify one complete request/response exchange",
+                "instructions": [
+                  "Use an intentionally controlled local web application or a training lab you are authorized to test.",
+                  "Capture one GET and one state-changing request in browser developer tools or an intercepting proxy.",
+                  "Record method, path, query parameters, headers, cookies, content type, response status and relevant response headers.",
+                  "Mark which fields are user-controlled and which security controls appear to protect them.",
+                  "Write three test hypotheses without changing server state beyond the lab workflow."
+                ],
+                "deliverable": "A short request inventory containing two exchanges, trust-boundary notes and three test hypotheses."
+              }
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/HTTP"
+            ],
+            "summary": "The intern should be able to apply the ideas from HTTP Request and Response Anatomy during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-03",
+            "title": "Threat Modeling and Trust Boundaries",
+            "description": "Turn an application description into security questions by identifying assets, actors, trust boundaries, entry points and high-value actions.",
+            "learningObjectives": [
+              "Draw a lightweight data-flow diagram.",
+              "Identify high-risk entry points and sensitive operations.",
+              "Translate threats into testable hypotheses."
+            ],
+            "notes": "Threat modeling is a design and testing aid. A useful model connects a business action to an asset, an actor and a control that should enforce the intended behavior.",
+            "summary": "The intern should be able to apply the ideas from Threat Modeling and Trust Boundaries during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-04",
+            "title": "Evidence, Findings and Git-Based Workflow",
+            "description": "A security finding is more useful when another engineer can reproduce it. Learn issue statements, evidence quality, severity reasoning, remediation notes and a simple branch/commit workflow.",
+            "learningObjectives": [
+              "Write a concise finding with evidence and impact.",
+              "Separate observed facts from inference.",
+              "Use small commits and meaningful messages for security work."
+            ],
+            "notes": "Keep secrets out of repositories. Record timestamps, target, endpoint, test condition and evidence while avoiding unnecessary sensitive data.",
+            "summary": "The intern should be able to apply the ideas from Evidence, Findings and Git-Based Workflow during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-05",
+            "title": "Testing Methodology with OWASP WSTG and NIST SP 800-115",
+            "description": "Use established methodology instead of inventing a checklist. Map reconnaissance, configuration review, identity tests, input tests, business-logic checks and reporting to a repeatable process.",
+            "learningObjectives": [
+              "Use the OWASP WSTG structure to organize a web assessment.",
+              "Relate test planning to NIST SP 800-115 concepts.",
+              "Document coverage and gaps."
+            ],
+            "notes": "OWASP WSTG is a comprehensive web security testing resource and includes methodology, application testing, reporting and tools guidance.",
+            "quiz": {
+              "id": "q1-5",
+              "question": "What is the main reason to use a testing guide such as WSTG?",
+              "options": [
+                "To replace authorization",
+                "To make testing repeatable and coverage-oriented",
+                "To guarantee every vulnerability exists",
+                "To automate every decision"
+              ],
+              "answer": "To make testing repeatable and coverage-oriented",
+              "explanation": "A testing guide improves consistency and coverage but does not guarantee findings or replace tester judgment."
+            },
+            "resources": [
+              "https://owasp.org/www-project-web-security-testing-guide/stable/",
+              "https://csrc.nist.gov/pubs/sp/800/115/final"
+            ],
+            "summary": "The intern should be able to apply the ideas from Testing Methodology with OWASP WSTG and NIST SP 800-115 during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Create an authorized assessment plan for a local target",
+            "level": "Easy",
+            "description": "Create a one-page assessment plan for a fictional internal application running on localhost.",
+            "problemStatement": "The engineering team needs a repeatable plan that defines scope, assets, objectives, constraints, evidence handling and stopping conditions before testing begins.",
+            "objectives": [
+              "Define in-scope assets and exclusions.",
+              "Create test categories and evidence requirements.",
+              "Describe safe stopping and escalation conditions."
+            ],
+            "requirements": [
+              "Use localhost or a documented training VM only.",
+              "Include authentication assumptions and test accounts as placeholders rather than real credentials.",
+              "Include a coverage checklist mapped to WSTG areas."
+            ],
+            "constraints": [
+              "Do not scan or test public assets.",
+              "Do not include credentials or secrets in the plan.",
+              "Keep all actions non-destructive."
+            ],
+            "hint": "Start with assets, objectives and rules of engagement before tool commands.",
+            "solutionCode": "ASSESSMENT PLAN\nScope: http://127.0.0.1:5000 only.\nAssets: local training application, local SQLite database.\nObjectives: authentication, session, authorization, injection, XSS, CSRF, headers, error handling.\nExcluded: denial-of-service, destructive actions, credential attacks against real accounts, third-party systems.\nEvidence: request/response pair, screenshot when useful, endpoint, timestamp, reproduction steps.\nStopping: stop on unexpected data exposure, service instability or any out-of-scope dependency.\nReporting: every finding includes evidence, impact, remediation and regression test recommendation.",
+            "solutionExplanation": "The solution is a compact scope document that makes later testing reproducible and bounded."
+          }
+        ],
+        "deliverables": [
+          "Assessment plan",
+          "Asset inventory",
+          "Initial test coverage matrix"
+        ],
+        "assessment": "The intern is evaluated on scope discipline, clarity and evidence quality."
+      },
+      {
+        "id": "module-02",
+        "title": "Reconnaissance, Attack Surface Mapping and HTTP Testing",
+        "description": "Map the reachable web attack surface, identify endpoints and input locations, and learn controlled manual and automated HTTP testing without treating a tool result as proof.",
+        "objectives": [
+          "Build an endpoint inventory from browser and HTTP evidence.",
+          "Identify parameters, cookies, forms, APIs and alternative routes.",
+          "Use controlled request automation with timeouts and explicit targets.",
+          "Differentiate enumeration from exploitation and preserve evidence."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-06",
+            "title": "Attack Surface Inventory",
+            "description": "Inventory routes, forms, APIs, static assets, authentication entry points and administrative functions.",
+            "learningObjectives": [
+              "Build an endpoint table.",
+              "Identify state-changing routes and sensitive functions.",
+              "Record observed input sources."
+            ],
+            "notes": "A route is not only a URL. Method, content type, authentication state and parameters change the security properties of an endpoint.",
+            "summary": "The intern should be able to apply the ideas from Attack Surface Inventory during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-07",
+            "title": "Proxy-Based Request Inspection",
+            "description": "Use an intercepting proxy to understand how browsers construct requests and how server responses reveal security controls.",
+            "learningObjectives": [
+              "Capture and replay requests within scope.",
+              "Compare authenticated and unauthenticated responses.",
+              "Record security headers and cookies."
+            ],
+            "notes": "Burp Suite and OWASP ZAP are useful for controlled inspection. The intern should understand each request before replaying or modifying it.",
+            "summary": "The intern should be able to apply the ideas from Proxy-Based Request Inspection during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-08",
+            "title": "Safe HTTP Automation with Requests",
+            "description": "Use Python Requests for small, deterministic test harnesses that target only an explicit URL and fail safely.",
+            "learningObjectives": [
+              "Set timeouts on requests.",
+              "Check status codes and headers.",
+              "Avoid uncontrolled crawling or high-rate activity."
+            ],
+            "notes": "Requests supports common HTTP methods, sessions, cookies and timeouts. Use it for focused verification rather than indiscriminate scanning.",
+            "quiz": {
+              "id": "q2-8",
+              "question": "Why should a security test harness set a timeout?",
+              "options": [
+                "To bypass authentication",
+                "To prevent a hanging request from blocking the test run",
+                "To increase exploit reliability",
+                "To disable TLS"
+              ],
+              "answer": "To prevent a hanging request from blocking the test run",
+              "explanation": "Explicit timeouts make automation predictable and help prevent accidental resource consumption."
+            },
+            "resources": [
+              "https://requests.readthedocs.io/en/latest/"
+            ],
+            "summary": "The intern should be able to apply the ideas from Safe HTTP Automation with Requests during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build a focused endpoint inventory script",
+            "level": "Easy",
+            "description": "Create a small Python script that requests a provided list of local URLs and records response status, content type and selected security headers.",
+            "problemStatement": "A tester needs a repeatable baseline inventory without introducing broad crawling or high request volume.",
+            "objectives": [
+              "Read targets from an explicit local file.",
+              "Apply a fixed timeout.",
+              "Record status, content type, HSTS, CSP, X-Content-Type-Options and Referrer-Policy.",
+              "Handle connection errors cleanly."
+            ],
+            "requirements": [
+              "Use Python and Requests.",
+              "Only accept http://127.0.0.1/ or http://localhost/ targets.",
+              "Use GET only."
+            ],
+            "constraints": [
+              "No concurrency.",
+              "No recursive crawling.",
+              "No external hosts."
+            ],
+            "hint": "Build the URL allow-list before creating the HTTP session.",
+            "solutionCode": "import argparse\nfrom pathlib import Path\nimport requests\n\nALLOWED_PREFIXES = (\"http://127.0.0.1\", \"http://localhost\")\n\ndef load_targets(path: Path):\n    return [line.strip() for line in path.read_text(encoding=\"utf-8\").splitlines() if line.strip()]\n\ndef scan(targets):\n    session = requests.Session()\n    session.headers.update({\"User-Agent\": \"WAS-Intern-Inventory/1.0\"})\n    rows = []\n    for url in targets:\n        if not url.startswith(ALLOWED_PREFIXES):\n            raise ValueError(f\"Out-of-scope target: {url}\")\n        try:\n            response = session.get(url, timeout=5, allow_redirects=False)\n            rows.append({\n                \"url\": url,\n                \"status\": response.status_code,\n                \"content_type\": response.headers.get(\"Content-Type\", \"\"),\n                \"content_security_policy\": response.headers.get(\"Content-Security-Policy\", \"\"),\n                \"strict_transport_security\": response.headers.get(\"Strict-Transport-Security\", \"\"),\n                \"x_content_type_options\": response.headers.get(\"X-Content-Type-Options\", \"\"),\n                \"referrer_policy\": response.headers.get(\"Referrer-Policy\", \"\")\n            })\n        except requests.RequestException as exc:\n            rows.append({\"url\": url, \"error\": str(exc)})\n    return rows\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(description=\"Focused local web inventory\")\n    parser.add_argument(\"targets\", type=Path)\n    args = parser.parse_args()\n    for row in scan(load_targets(args.targets)):\n        print(row)",
+            "solutionExplanation": "The script restricts the target to loopback, uses GET only, fixes request timeouts and records a small set of security-relevant response properties. This is suitable for controlled local assessment work.",
+            "validation": "Run against a targets.txt file containing only localhost URLs and compare the output with browser/proxy observations."
+          }
+        ],
+        "deliverables": [
+          "Endpoint inventory",
+          "Focused HTTP evidence",
+          "Controlled automation script"
+        ],
+        "assessment": "The intern must demonstrate target discipline and accurate interpretation of HTTP evidence."
+      },
+      {
+        "id": "module-03",
+        "title": "Identity, Authentication and Session Security",
+        "description": "Assess login flows, credential handling, session lifecycle and cookie protections, and understand how authentication failures differ from authorization failures.",
+        "objectives": [
+          "Differentiate authentication, session management and authorization.",
+          "Assess login workflows, password storage controls and session lifecycle.",
+          "Inspect cookie attributes including Secure, HttpOnly and SameSite.",
+          "Recognize session fixation and weak session handling risks."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Authentication versus Authorization",
+            "description": "Authentication establishes identity; authorization determines what an authenticated identity may do.",
+            "learningObjectives": [
+              "Explain AuthN and AuthZ clearly.",
+              "Identify missing or misplaced access checks.",
+              "Test both positive and negative authorization cases."
+            ],
+            "notes": "OWASP Authentication guidance recommends strong transport for login and authenticated pages and reauthentication for sensitive changes. Authorization must still be enforced server-side.",
+            "summary": "The intern should be able to apply the ideas from Authentication versus Authorization during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-10",
+            "title": "Password Storage and Login Defenses",
+            "description": "Learn why passwords must not be stored in plaintext, how modern password hashing differs from encryption, and how authentication endpoints should resist common abuse.",
+            "learningObjectives": [
+              "Explain hashing, salting and verification.",
+              "Identify hard-coded credentials and unsafe password storage.",
+              "Document appropriate account-protection requirements."
+            ],
+            "notes": "A web application should not expose credentials or sensitive internal accounts through public UI. Use framework-supported password hashing and secret management.",
+            "summary": "The intern should be able to apply the ideas from Password Storage and Login Defenses during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-11",
+            "title": "Session Lifecycle and Cookie Security",
+            "description": "Assess session creation, rotation, expiry, invalidation and cookie attributes.",
+            "learningObjectives": [
+              "Check HttpOnly, Secure and SameSite properties.",
+              "Explain why session identifiers are high-value secrets.",
+              "Identify session fixation conditions."
+            ],
+            "notes": "OWASP's Session Management guidance treats session identifiers as highly sensitive and recommends secure lifecycle handling. MDN documents Set-Cookie behavior and attribute semantics.",
+            "quiz": {
+              "id": "q3-11",
+              "question": "What does HttpOnly primarily protect?",
+              "options": [
+                "It prevents all CSRF",
+                "It prevents JavaScript from reading the cookie value",
+                "It encrypts the database",
+                "It blocks all cross-origin requests"
+              ],
+              "answer": "It prevents JavaScript from reading the cookie value",
+              "explanation": "HttpOnly reduces cookie disclosure through scripts, but it does not stop the browser from sending the cookie with requests."
+            },
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html",
+              "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+            ],
+            "summary": "The intern should be able to apply the ideas from Session Lifecycle and Cookie Security during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-12",
+            "title": "Sensitive Actions and Reauthentication",
+            "description": "Learn when applications should require fresh authentication for password changes and other high-risk actions.",
+            "learningObjectives": [
+              "Identify high-risk account actions.",
+              "Design reauthentication requirements.",
+              "Review invalidation and timeout behavior."
+            ],
+            "notes": "Reauthentication reduces the impact of stolen sessions and attacks that reach sensitive functions.",
+            "summary": "The intern should be able to apply the ideas from Sensitive Actions and Reauthentication during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Review session cookie configuration",
+            "level": "Intermediate",
+            "description": "Given a captured Set-Cookie header from a local training application, assess the security attributes and write a corrected configuration.",
+            "problemStatement": "The application currently sets a session cookie but the development team is unsure whether the attributes provide appropriate protection for a production HTTPS deployment.",
+            "objectives": [
+              "Inspect Secure, HttpOnly and SameSite.",
+              "Explain local development versus production configuration.",
+              "Recommend a safe cookie name and scope."
+            ],
+            "requirements": [
+              "Use a local application only.",
+              "Do not include live credentials.",
+              "Reference MDN and OWASP session guidance."
+            ],
+            "constraints": [
+              "Do not claim that one cookie configuration fits every architecture.",
+              "Do not recommend storing tokens in localStorage for convenience."
+            ],
+            "hint": "Check whether the cookie is carrying authenticated session state and whether the deployment uses HTTPS.",
+            "solutionCode": "from dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass CookieReview:\n    name: str\n    secure: bool\n    httponly: bool\n    samesite: str\n    path: str\n\ndef review(cookie: CookieReview, production_https: bool):\n    findings = []\n    if production_https and not cookie.secure:\n        findings.append(\"Secure is missing for an HTTPS production session cookie.\")\n    if not cookie.httponly:\n        findings.append(\"HttpOnly is missing for a session cookie and increases script-readable exposure.\")\n    if cookie.samesite.lower() not in {\"strict\", \"lax\"}:\n        findings.append(\"SameSite should be deliberately selected and justified for the application flow.\")\n    if cookie.path != \"/\":\n        findings.append(\"Review path scope; choose the narrowest scope that matches the session architecture.\")\n    return findings\n\nif __name__ == \"__main__\":\n    sample = CookieReview(\"__Host-session\", True, True, \"Lax\", \"/\")\n    print(review(sample, production_https=True))",
+            "solutionExplanation": "The review logic deliberately distinguishes properties that can be checked mechanically from architectural decisions that need context. MDN documents cookie semantics; OWASP adds security rationale."
+          }
+        ],
+        "deliverables": [
+          "Authentication test matrix",
+          "Session review",
+          "Cookie security checklist"
+        ],
+        "assessment": "The intern must accurately distinguish AuthN, AuthZ and session controls."
+      },
+      {
+        "id": "module-04",
+        "title": "Authorization, Access Control and Business Logic",
+        "description": "Test whether server-side controls actually enforce object ownership, role restrictions and business rules, with emphasis on horizontal and vertical authorization.",
+        "objectives": [
+          "Test object ownership and role boundaries.",
+          "Recognize IDOR/BOLA and function-level authorization failures.",
+          "Reason about business logic beyond input validation.",
+          "Write authorization findings with reproducible evidence."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "Object-Level Authorization",
+            "description": "Learn to test whether one identity can access another user's resources by changing identifiers or routes in authorized lab scenarios.",
+            "learningObjectives": [
+              "Build cross-user authorization test cases.",
+              "Distinguish predictable identifiers from authorization decisions.",
+              "Verify controls on every request."
+            ],
+            "notes": "Authorization must be enforced on the server for the requested object and action; hiding links in the UI is not an access control boundary.",
+            "quiz": {
+              "id": "q4-13",
+              "question": "What should prevent a user from reading another user's record even if they know its identifier?",
+              "options": [
+                "A hidden button",
+                "Server-side object authorization",
+                "Client-side validation only",
+                "A longer URL"
+              ],
+              "answer": "Server-side object authorization",
+              "explanation": "The server must verify that the authenticated identity is allowed to perform the requested action on that object."
+            },
+            "resources": [
+              "https://owasp.org/Top10/2025/",
+              "https://owasp.org/www-project-web-security-testing-guide/stable/"
+            ],
+            "summary": "The intern should be able to apply the ideas from Object-Level Authorization during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-14",
+            "title": "Role and Function-Level Authorization",
+            "description": "Test admin routes, privileged actions and HTTP method changes without assuming the user interface is authoritative.",
+            "learningObjectives": [
+              "Create role-based positive and negative tests.",
+              "Identify privileged endpoints.",
+              "Document authorization failures without causing destructive effects."
+            ],
+            "notes": "A route may require authorization even if it is not linked in the client. Test server-side function checks explicitly.",
+            "summary": "The intern should be able to apply the ideas from Role and Function-Level Authorization during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-15",
+            "title": "Business Logic and Workflow Abuse",
+            "description": "Security bugs can arise when an application allows an action sequence that violates its intended business rules even though each individual request looks valid.",
+            "learningObjectives": [
+              "Model sensitive workflows as state transitions.",
+              "Identify missing server-side invariants.",
+              "Propose controls and regression tests."
+            ],
+            "notes": "Business-logic assessment requires understanding the intended workflow. Examples include changing an account state without satisfying prerequisites or repeating a sensitive transition unexpectedly.",
+            "summary": "The intern should be able to apply the ideas from Business Logic and Workflow Abuse during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Design a cross-user authorization regression suite",
+            "level": "Intermediate",
+            "description": "Create tests for two local test users accessing resources owned by each other.",
+            "problemStatement": "A service must guarantee that authenticated users can view and modify only objects they are entitled to use.",
+            "objectives": [
+              "Create same-user positive cases.",
+              "Create cross-user negative cases.",
+              "Cover both read and update operations.",
+              "Record expected HTTP status and body properties."
+            ],
+            "requirements": [
+              "Use local test data only.",
+              "Test server-side behavior through the application interface.",
+              "Do not brute-force identifiers."
+            ],
+            "constraints": [
+              "Keep the test data small and deterministic.",
+              "Do not treat obscurity of IDs as authorization."
+            ],
+            "hint": "For every object test both owner and non-owner identities against the same resource.",
+            "solutionCode": "import pytest\n\n@pytest.mark.parametrize(\"client_role,expected_status\", [\n    (\"owner\", 200),\n    (\"other_user\", 403),\n])\ndef test_document_authorization(app_client, seeded_document, client_role, expected_status):\n    client = app_client(client_role)\n    response = client.get(f\"/documents/{seeded_document}\")\n    assert response.status_code == expected_status\n\n@pytest.mark.parametrize(\"client_role,expected_status\", [\n    (\"owner\", 204),\n    (\"other_user\", 403),\n])\ndef test_document_update_authorization(app_client, seeded_document, client_role, expected_status):\n    client = app_client(client_role)\n    response = client.patch(f\"/documents/{seeded_document}\", json={\"title\": \"Updated\"})\n    assert response.status_code == expected_status",
+            "solutionExplanation": "The test design focuses on authorization outcomes. In the final project, the same principle is implemented by checking the authenticated user's ownership before read or update operations."
+          }
+        ],
+        "deliverables": [
+          "Authorization matrix",
+          "Cross-user regression tests",
+          "Business logic review notes"
+        ],
+        "assessment": "The intern is assessed on server-side authorization reasoning and negative test coverage."
+      },
+      {
+        "id": "module-05",
+        "title": "Injection and Input Handling",
+        "description": "Understand SQL injection, command injection concepts, path traversal and safe input handling. Emphasize parameterized interfaces, allow-lists and contextual handling rather than blacklist-only defenses.",
+        "objectives": [
+          "Recognize injection boundaries and dangerous sinks.",
+          "Use parameterized queries and safe APIs.",
+          "Explain why output encoding and input validation solve different problems.",
+          "Build regression tests for injection defenses."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-16",
+            "title": "Injection Boundaries and Safe APIs",
+            "description": "Injection occurs when untrusted data changes the structure or meaning of an interpreted command. Learn common interpreter boundaries and safe API patterns.",
+            "learningObjectives": [
+              "Identify source-to-sink injection paths.",
+              "Prefer parameterized interfaces.",
+              "Use validation as a complementary control."
+            ],
+            "notes": "OWASP places Injection at A05:2025 and recommends safe APIs, proper input validation and contextual handling. Blacklists alone are not a reliable primary defense.",
+            "quiz": {
+              "id": "q5-16",
+              "question": "What is the preferred defense against SQL injection when available?",
+              "options": [
+                "String concatenation with escaping only",
+                "Parameterized queries",
+                "Client-side input validation",
+                "A longer SQL statement"
+              ],
+              "answer": "Parameterized queries",
+              "explanation": "Parameterized queries keep data separate from SQL syntax and are the primary defense described by OWASP."
+            },
+            "resources": [
+              "https://owasp.org/Top10/2025/A05_2025-Injection/",
+              "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+            ],
+            "summary": "The intern should be able to apply the ideas from Injection Boundaries and Safe APIs during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-17",
+            "title": "SQL Injection Testing and Remediation",
+            "description": "Learn how to recognize unsafe query construction, design safe test cases for a local lab, and remediate with parameter binding and least privilege.",
+            "learningObjectives": [
+              "Compare unsafe and parameterized query patterns.",
+              "Write a regression test for a search or lookup endpoint.",
+              "Explain database least privilege."
+            ],
+            "notes": "Never test arbitrary databases. Use the local training project and verify both the query implementation and observable behavior.",
+            "summary": "The intern should be able to apply the ideas from SQL Injection Testing and Remediation during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-18",
+            "title": "XSS, Output Contexts and Template Safety",
+            "description": "Study reflected and stored XSS, context-sensitive output encoding, safe templating and defense in depth such as CSP.",
+            "learningObjectives": [
+              "Identify HTML, attribute, URL and script contexts.",
+              "Use autoescaping or context-appropriate encoding.",
+              "Explain why CSP is defense in depth rather than the sole control."
+            ],
+            "notes": "OWASP's XSS guidance emphasizes context-specific output encoding and warns against treating CSP as a complete XSS solution.",
+            "practicals": [
+              {
+                "title": "Validate an output-encoding boundary in a training application",
+                "instructions": [
+                  "Use a local intentionally vulnerable training page or a purpose-built test case only.",
+                  "Trace one input from request parameter to rendered output.",
+                  "Identify the rendering context as HTML text, attribute, URL or script data.",
+                  "Demonstrate the difference between raw interpolation and context-appropriate encoding using inert test strings before using any executable payload in the lab.",
+                  "Document the remediation and add a regression test."
+                ],
+                "deliverable": "A data-flow diagram, remediation note and regression test reference."
+              }
+            ],
+            "quiz": {
+              "id": "q5-18",
+              "question": "Why is context important for output encoding?",
+              "options": [
+                "All contexts use the same encoding",
+                "Different sinks interpret characters differently",
+                "Encoding is only for SQL",
+                "Context has no security effect"
+              ],
+              "answer": "Different sinks interpret characters differently",
+              "explanation": "HTML text, attributes, URLs and script contexts have different parsing rules and therefore need appropriate handling."
+            },
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+              "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+            ],
+            "summary": "The intern should be able to apply the ideas from XSS, Output Contexts and Template Safety during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-19",
+            "title": "Path Traversal and Command Injection Concepts",
+            "description": "Understand dangerous file-path and operating-system command construction and the role of allow-lists and safe APIs.",
+            "learningObjectives": [
+              "Recognize tainted path and command inputs.",
+              "Explain why concatenating user input into commands is dangerous.",
+              "Prefer safe filesystem and process APIs."
+            ],
+            "notes": "The internship focuses on controlled recognition and remediation, not weaponized exploitation. Test only purpose-built local cases.",
+            "summary": "The intern should be able to apply the ideas from Path Traversal and Command Injection Concepts during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Refactor an unsafe SQLite lookup into a parameterized query",
+            "level": "Intermediate",
+            "description": "Replace string concatenation in a local Python SQLite lookup with a parameterized query and add regression tests.",
+            "problemStatement": "A search function builds SQL from untrusted input using string concatenation. The goal is to separate data from SQL syntax and prove the behavior is preserved for normal input.",
+            "objectives": [
+              "Use sqlite3 parameter binding.",
+              "Preserve expected search behavior.",
+              "Add tests for ordinary input and metacharacters.",
+              "Explain least-privilege considerations."
+            ],
+            "requirements": [
+              "Use Python sqlite3.",
+              "Use an in-memory database for tests.",
+              "Do not expose or dump real data."
+            ],
+            "constraints": [
+              "Do not rely on manual escaping as the primary fix.",
+              "Do not change business behavior unnecessarily."
+            ],
+            "hint": "Replace string interpolation with placeholders and pass values separately.",
+            "solutionCode": "import sqlite3\n\ndef find_user(connection: sqlite3.Connection, username: str):\n    cursor = connection.execute(\n        \"SELECT id, username, display_name FROM users WHERE username = ?\",\n        (username,)\n    )\n    return cursor.fetchone()\n\ndef test_find_user():\n    connection = sqlite3.connect(\":memory:\")\n    connection.execute(\"CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT NOT NULL, display_name TEXT NOT NULL)\")\n    connection.execute(\"INSERT INTO users (username, display_name) VALUES (?, ?)\", (\"alice\", \"Alice\"))\n    connection.commit()\n    assert find_user(connection, \"alice\")[1] == \"alice\"\n    assert find_user(connection, \"alice' OR '1'='1\") is None",
+            "solutionExplanation": "OWASP recommends prepared statements/parameterized queries as the preferred defense for SQL injection. Python sqlite3 accepts SQL and bound parameters separately.",
+            "validation": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+          }
+        ],
+        "deliverables": [
+          "Injection test cases",
+          "Parameterized query remediation",
+          "Regression tests"
+        ],
+        "assessment": "The intern must understand source-to-sink boundaries and safe API use."
+      },
+      {
+        "id": "module-06",
+        "title": "CSRF, SSRF, CORS, File Uploads and Security Headers",
+        "description": "Assess common browser/server interaction risks and configuration controls: CSRF, SSRF, CORS, upload validation and browser security headers.",
+        "objectives": [
+          "Explain CSRF and appropriate defenses.",
+          "Recognize SSRF risk at URL-fetching boundaries.",
+          "Configure CORS deliberately rather than broadly.",
+          "Assess file upload and browser security headers using authoritative guidance."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-20",
+            "title": "CSRF and Request Authenticity",
+            "description": "Learn how browser credentials can be sent with forged requests and how token, SameSite and Origin/Fetch Metadata controls can reduce risk.",
+            "learningObjectives": [
+              "Identify state-changing endpoints.",
+              "Explain synchronizer token and double-submit patterns.",
+              "Use defense in depth for sensitive requests."
+            ],
+            "notes": "OWASP recommends token-based mitigations and discusses Fetch Metadata and SameSite as complementary controls. Do not treat a cookie flag as a complete CSRF design.",
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html",
+              "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+            ],
+            "summary": "The intern should be able to apply the ideas from CSRF and Request Authenticity during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-21",
+            "title": "SSRF and Safe URL Consumption",
+            "description": "Understand the server-side request forgery boundary when a server fetches attacker-influenced URLs.",
+            "learningObjectives": [
+              "Identify URL-fetching features.",
+              "Explain why network location validation is difficult.",
+              "Design allow-list and egress controls for controlled integrations."
+            ],
+            "notes": "The safest design is often to avoid arbitrary server-side URL fetching. When business requirements need it, use strong allow-lists, DNS/IP handling, egress controls and logging.",
+            "summary": "The intern should be able to apply the ideas from SSRF and Safe URL Consumption during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-22",
+            "title": "CORS and the Same-Origin Policy",
+            "description": "Understand browser origin boundaries and deliberate cross-origin access.",
+            "learningObjectives": [
+              "Explain what CORS does and does not protect.",
+              "Review origin allow-lists.",
+              "Avoid reflecting arbitrary origins with credentials."
+            ],
+            "notes": "CORS controls browser-enforced cross-origin access; it is not an authentication mechanism or a replacement for server-side authorization.",
+            "quiz": {
+              "id": "q6-22",
+              "question": "What is a major CORS anti-pattern?",
+              "options": [
+                "Explicitly allowing one trusted origin",
+                "Reflecting arbitrary Origin values while allowing credentials",
+                "Restricting methods",
+                "Restricting headers"
+              ],
+              "answer": "Reflecting arbitrary Origin values while allowing credentials",
+              "explanation": "Credentialed cross-origin access must be deliberately scoped to trusted origins."
+            },
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS"
+            ],
+            "summary": "The intern should be able to apply the ideas from CORS and the Same-Origin Policy during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-23",
+            "title": "File Upload Security",
+            "description": "Learn allow-listed extensions, content-type and signature checks, safe file names, storage separation and size limits.",
+            "learningObjectives": [
+              "Identify upload attack surfaces.",
+              "Design a layered upload validation approach.",
+              "Store uploads safely and enforce resource limits."
+            ],
+            "notes": "OWASP recommends multiple controls because file extensions and client-provided content types are weak signals by themselves.",
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html"
+            ],
+            "summary": "The intern should be able to apply the ideas from File Upload Security during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-24",
+            "title": "Security Headers and Transport",
+            "description": "Assess CSP, HSTS, clickjacking controls, MIME sniffing protections and referrer policy.",
+            "learningObjectives": [
+              "Read security headers correctly.",
+              "Distinguish current-response behavior from future browser policy where relevant.",
+              "Configure headers consistently with application behavior."
+            ],
+            "notes": "HSTS tells browsers to use HTTPS for future requests to a host. MDN documents that HSTS affects future browser connections rather than the current response handling.",
+            "quiz": {
+              "id": "q6-24",
+              "question": "What does HSTS primarily instruct a browser to do?",
+              "options": [
+                "Use HTTP instead of HTTPS",
+                "Use HTTPS for future connections to the host",
+                "Disable cookies",
+                "Allow mixed content"
+              ],
+              "answer": "Use HTTPS for future connections to the host",
+              "explanation": "HSTS informs browsers that the host should only be accessed using HTTPS in future connections."
+            },
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security",
+              "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+            ],
+            "summary": "The intern should be able to apply the ideas from Security Headers and Transport during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Build a security-header review table",
+            "level": "Easy",
+            "description": "Create a review function that classifies key response headers and records missing or inconsistent values for a local HTTPS deployment.",
+            "problemStatement": "The security team needs a consistent way to review response headers without overstating what each header can protect against.",
+            "objectives": [
+              "Check CSP, HSTS, X-Content-Type-Options and Referrer-Policy.",
+              "Record missing versus present headers.",
+              "Keep recommendations tied to the application's deployment model."
+            ],
+            "requirements": [
+              "Use pure Python for the classifier.",
+              "Do not label HTTP responses as compliant with HSTS requirements.",
+              "Treat HSTS as relevant to HTTPS deployment."
+            ],
+            "constraints": [
+              "Do not invent a universal CSP for every application.",
+              "Do not claim headers replace access control or validation."
+            ],
+            "hint": "Start with an explicit list of security headers and evaluate them independently.",
+            "solutionCode": "REQUIRED_HEADERS = {\n    \"content-security-policy\": \"required\",\n    \"x-content-type-options\": \"nosniff\",\n    \"referrer-policy\": \"deliberate-policy\",\n}\n\ndef review_headers(headers: dict[str, str], https_deployment: bool):\n    normalized = {k.lower(): v for k, v in headers.items()}\n    findings = []\n    for name in REQUIRED_HEADERS:\n        if name not in normalized:\n            findings.append(f\"Missing: {name}\")\n    if https_deployment and \"strict-transport-security\" not in normalized:\n        findings.append(\"Missing: strict-transport-security for HTTPS deployment review\")\n    return findings\n\nassert \"Missing: content-security-policy\" in review_headers({}, True)",
+            "solutionExplanation": "The review intentionally keeps HSTS tied to an HTTPS deployment context and treats headers as defense in depth rather than complete security boundaries."
+          }
+        ],
+        "deliverables": [
+          "Header review",
+          "CSRF test matrix",
+          "Upload security checklist",
+          "SSRF design review"
+        ],
+        "assessment": "The intern must connect each control to the threat it actually addresses."
+      },
+      {
+        "id": "module-07",
+        "title": "Secure Code Review, Testing, Findings and Remediation",
+        "description": "Move from isolated vulnerability knowledge to engineering review: inspect code, write tests, triage findings, explain impact and verify fixes.",
+        "objectives": [
+          "Conduct a structured secure code review.",
+          "Write unit and integration tests for security controls.",
+          "Produce evidence-based findings with remediation guidance.",
+          "Verify that fixes close the issue without introducing regressions."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Secure Code Review Method",
+            "description": "Use an evidence-driven checklist covering validation, output handling, authentication, authorization, secrets, database access, file handling and error responses.",
+            "learningObjectives": [
+              "Follow a repeatable code-review checklist.",
+              "Identify security-relevant data flows.",
+              "Separate correctness bugs from security impact."
+            ],
+            "notes": "OWASP's Secure Code Review Cheat Sheet provides practical review questions spanning input, output, file uploads, SQL injection, authentication and session management.",
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Code_Review_Cheat_Sheet.html"
+            ],
+            "summary": "The intern should be able to apply the ideas from Secure Code Review Method during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-26",
+            "title": "Security Testing with pytest",
+            "description": "Create deterministic tests for security boundaries and run them in a local development environment.",
+            "learningObjectives": [
+              "Write tests for expected and forbidden behavior.",
+              "Use fixtures and isolated databases.",
+              "Interpret failures without fabricating pass rates."
+            ],
+            "notes": "Flask's testing guidance uses pytest and its test client for application tests. Tests should be deterministic and match actual application behavior.",
+            "quiz": {
+              "id": "q7-26",
+              "question": "What is a useful security regression test?",
+              "options": [
+                "A test that asserts an unauthorized action is rejected",
+                "A test that only clicks visible buttons",
+                "A test that assumes the browser is secure",
+                "A test that ignores status codes"
+              ],
+              "answer": "A test that asserts an unauthorized action is rejected",
+              "explanation": "Security regression tests should directly assert the application's control boundary."
+            },
+            "resources": [
+              "https://flask.palletsprojects.com/en/stable/testing/"
+            ],
+            "summary": "The intern should be able to apply the ideas from Security Testing with pytest during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-27",
+            "title": "Finding Triage and Severity Reasoning",
+            "description": "Learn to describe evidence, affected asset, impact, exploitability assumptions, remediation and verification status without pretending to have measured more than you did.",
+            "learningObjectives": [
+              "Separate observation from inference.",
+              "Write reproducible steps.",
+              "Describe impact without sensationalism."
+            ],
+            "notes": "Use severity as a communication aid, not as a substitute for evidence. State assumptions and limitations.",
+            "summary": "The intern should be able to apply the ideas from Finding Triage and Severity Reasoning during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-28",
+            "title": "Remediation Verification and Regression",
+            "description": "A fix is not complete until the original case is retested and adjacent behavior is checked.",
+            "learningObjectives": [
+              "Retest the original condition.",
+              "Add a regression case.",
+              "Check for regressions around the fix."
+            ],
+            "notes": "Security verification should compare the pre-fix expectation with the post-fix behavior and implementation controls.",
+            "summary": "The intern should be able to apply the ideas from Remediation Verification and Regression during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Perform a focused secure code review",
+            "level": "Advanced",
+            "description": "Review a small local Flask handler and identify input, authorization, session and error-handling concerns, then propose corrected code and tests.",
+            "problemStatement": "A feature appears to work but has weak server-side controls. The review must identify the actual security boundary, recommend fixes and specify regression coverage.",
+            "objectives": [
+              "Identify security-sensitive inputs and sinks.",
+              "Review authorization placement.",
+              "Check session and error-handling behavior.",
+              "Recommend concrete tests."
+            ],
+            "requirements": [
+              "Use the supplied local review scenario in the final internship project.",
+              "Ground every finding in code behavior.",
+              "Do not claim a vulnerability without identifying a plausible data/control flow."
+            ],
+            "constraints": [
+              "Do not invent hidden dependencies.",
+              "Do not propose unrelated rewrites.",
+              "Keep findings actionable."
+            ],
+            "hint": "Trace each request from route to validation, authorization, persistence and response.",
+            "solutionCode": "REVIEW_CHECKLIST = {\n    \"input_validation\": True,\n    \"server_side_authorization\": True,\n    \"parameterized_database_access\": True,\n    \"secret_handling\": True,\n    \"safe_errors\": True,\n    \"session_cookie_controls\": True,\n    \"csrf_for_state_change\": True,\n}\n\ndef review_controls(controls):\n    missing = [name for name, required in REVIEW_CHECKLIST.items() if required and not controls.get(name, False)]\n    return missing\n\nexample = {\n    \"input_validation\": True,\n    \"server_side_authorization\": True,\n    \"parameterized_database_access\": True,\n    \"secret_handling\": True,\n    \"safe_errors\": True,\n    \"session_cookie_controls\": True,\n    \"csrf_for_state_change\": True,\n}\nassert review_controls(example) == []",
+            "solutionExplanation": "The solution represents a review rubric that can be applied against actual code. The final project itself includes code implementing the controls. The intern should learn to connect review items to concrete files and tests."
+          }
+        ],
+        "deliverables": [
+          "Secure code review",
+          "Findings log",
+          "Regression test plan",
+          "Remediation verification record"
+        ],
+        "assessment": "The intern is evaluated on evidence quality and remediation reasoning."
+      },
+      {
+        "id": "module-08",
+        "title": "Final Security Assessment and Secure Application Capstone",
+        "description": "Integrate the full workflow: scope, reconnaissance, authentication, authorization, injection defense, CSRF, security headers, code review, automated testing, evidence, remediation and retest.",
+        "objectives": [
+          "Conduct an end-to-end web application security assessment of the local capstone.",
+          "Explain each security control and its threat model.",
+          "Use automated and manual evidence together.",
+          "Produce a professional final report and defend engineering decisions."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Capstone Assessment Planning",
+            "description": "Translate the final project requirements into a coverage plan mapped to the internship competencies.",
+            "learningObjectives": [
+              "Build an assessment matrix.",
+              "Prioritize high-impact routes and trust boundaries.",
+              "Define evidence and retest requirements."
+            ],
+            "notes": "Use the project's own architecture and data flow to choose tests. Avoid scanning or exploiting targets outside the explicit local boundary.",
+            "summary": "The intern should be able to apply the ideas from Capstone Assessment Planning during authorized assessment and remediation work."
+          },
+          {
+            "id": "lesson-30",
+            "title": "Final Report and Security Review Defense",
+            "description": "Present findings, limitations, remediation decisions and regression evidence to a technical reviewer.",
+            "learningObjectives": [
+              "Write concise findings.",
+              "Explain why controls work.",
+              "Defend limitations honestly."
+            ],
+            "notes": "A good security report is reproducible, specific and actionable. It should not claim unmeasured exploitability, deployment readiness or absence of vulnerabilities.",
+            "summary": "The intern should be able to apply the ideas from Final Report and Security Review Defense during authorized assessment and remediation work."
+          }
+        ],
+        "tasks": [],
+        "deliverables": [
+          "Final source review",
+          "Security test matrix",
+          "Automated test run",
+          "Evidence set",
+          "Final assessment report",
+          "Retest record"
+        ],
+        "assessment": "The capstone is the final practical assessment; module tasks are intentionally absent by design.",
+        "project": {
+          "id": "project-final-was-01",
+          "heading": "Build and Audit a Secure Case Management Web Application",
+          "description": "Build a small authenticated case-management portal and then perform a structured web application security assessment against your own local instance. The application is designed to let an intern demonstrate request analysis, authentication and session review, server-side authorization, input validation, parameterized database access, CSRF protection, secure error handling, security headers, accessibility-aware UI construction, automated regression testing and evidence-based reporting. The assessment boundary is intentionally limited to a locally running application.",
+          "problemStatement": "A team needs a case portal where authenticated users can create and review their own cases, administrators can review all training cases, and state-changing operations cannot be triggered without an appropriate authenticated session and CSRF proof. The security engineering problem is to implement these controls correctly, test them, and produce an evidence-backed assessment record showing why the controls work.",
+          "objectives": [
+            "Implement a complete local web application with security controls enforced server-side.",
+            "Demonstrate authentication, session and authorization testing.",
+            "Use parameterized SQLite queries and input validation.",
+            "Protect state-changing actions with CSRF tokens.",
+            "Configure browser-facing security headers and secure session-cookie defaults.",
+            "Write and run security regression tests.",
+            "Produce a professional security assessment report with findings, evidence, remediation and retest notes."
+          ],
+          "requirements": [
+            {
+              "category": "Functional",
+              "items": [
+                "Users can sign in with seeded local training identities.",
+                "Authenticated users can create cases containing a bounded title and details field.",
+                "Users can view and delete only cases they own.",
+                "Administrators can access a separate case-review route.",
+                "Users can sign out through a state-changing POST request protected by CSRF."
+              ]
+            },
+            {
+              "category": "Technical",
+              "items": [
+                "Python 3.11 or newer.",
+                "Flask 3.1.3.",
+                "SQLite through Python's sqlite3 module.",
+                "pytest for the automated security regression suite.",
+                "Environment variables for secrets and deployment settings."
+              ]
+            },
+            {
+              "category": "Security",
+              "items": [
+                "Server-side object authorization on case access and deletion.",
+                "Role-based protection for the administrator route.",
+                "Parameterized SQL statements.",
+                "CSRF protection on state-changing forms.",
+                "Session cookie HttpOnly and deliberate SameSite configuration.",
+                "Secure cookie behavior configurable for HTTPS deployment.",
+                "Generic authentication failure messages.",
+                "Security headers including CSP, X-Content-Type-Options and Referrer-Policy; HSTS only when HTTPS is actually in use."
+              ]
+            },
+            {
+              "category": "Testing",
+              "items": [
+                "Automated tests for authentication failure and success.",
+                "Automated CSRF negative test.",
+                "Automated cross-user authorization test.",
+                "Automated admin authorization tests.",
+                "Automated security-header test.",
+                "Tests use an isolated temporary database."
+              ]
+            },
+            {
+              "category": "Accessibility",
+              "items": [
+                "Use semantic headings and landmarks.",
+                "Associate labels with form controls.",
+                "Keep controls keyboard reachable.",
+                "Use readable responsive layout."
+              ]
+            },
+            {
+              "category": "Assessment",
+              "items": [
+                "Maintain an endpoint inventory.",
+                "Create a security test matrix.",
+                "Document at least one verification record for authentication, authorization, CSRF, injection defense and security headers.",
+                "Submit source review notes and test evidence without exposing unnecessary secrets."
+              ]
+            }
+          ],
+          "features": [
+            {
+              "name": "Authentication",
+              "behavior": "POST login checks the stored password hash and starts a new session; failed authentication returns a generic message."
+            },
+            {
+              "name": "Per-user case management",
+              "behavior": "The dashboard queries only cases owned by the authenticated user, and every direct case access re-checks ownership server-side."
+            },
+            {
+              "name": "Administrative review",
+              "behavior": "Only the admin role may access the administrative case list."
+            },
+            {
+              "name": "CSRF protection",
+              "behavior": "State-changing forms include a session-bound token and the server compares it with a constant-time comparison before processing."
+            },
+            {
+              "name": "SQL injection resistance",
+              "behavior": "Database writes and reads use SQLite parameter binding rather than string-built SQL."
+            },
+            {
+              "name": "Safe output handling",
+              "behavior": "Case titles and details are rendered through Jinja templates using normal autoescaping."
+            },
+            {
+              "name": "Security headers",
+              "behavior": "The application adds a strict same-origin CSP, MIME sniffing protection and referrer policy; HSTS is added only for secure requests."
+            },
+            {
+              "name": "Safe errors",
+              "behavior": "Client-facing error pages use concise messages without stack traces or database details."
+            }
+          ],
+          "technologyStack": [
+            {
+              "name": "Python 3.11+",
+              "purpose": "Application language and test code",
+              "role": "Server logic, security helpers, SQLite access and tests",
+              "why": "Readable, mature server-side ecosystem and standard library support for secure primitives such as secrets and sqlite3."
+            },
+            {
+              "name": "Flask 3.1.3",
+              "purpose": "Web framework",
+              "role": "Routing, request handling, sessions, templates and test client",
+              "why": "Small enough for a security internship project while exposing the request/response lifecycle clearly."
+            },
+            {
+              "name": "SQLite",
+              "purpose": "Local relational storage",
+              "role": "Users and case data",
+              "why": "Provides a serverless local database suitable for a self-contained training application."
+            },
+            {
+              "name": "pytest",
+              "purpose": "Automated testing",
+              "role": "Security regression tests",
+              "why": "Flask documentation uses pytest for application testing, and deterministic security regression tests are a core internship competency."
+            }
+          ],
+          "architecture": {
+            "style": "Single-process Flask application with separated security helpers, database access and route handlers.",
+            "components": [
+              "Application factory",
+              "SQLite data layer",
+              "Security helper layer",
+              "HTTP route layer",
+              "Jinja templates",
+              "Same-origin static assets",
+              "Pytest security regression suite"
+            ],
+            "trustBoundaries": [
+              "Browser to Flask HTTP boundary",
+              "Authenticated session to server-side authorization boundary",
+              "Route handler to SQLite database boundary"
+            ],
+            "authorizationModel": "Users can operate on their own cases. Administrators can access the administrative review route. Ownership and role checks happen on the server for every protected operation.",
+            "errorModel": "Known client and authorization errors map to concise 400, 401, 403 and 404 pages; no stack traces are returned to clients.",
+            "securityModel": "Defense in depth: CSRF tokens, secure session configuration, server-side authorization, parameterized SQL, bounded input, safe templating, security headers and automated regression tests."
+          },
+          "dataFlow": [
+            "Browser submits request",
+            "Flask route receives and validates input",
+            "Authentication/session or authorization control is applied",
+            "Business action reads or updates SQLite with parameterized SQL",
+            "Safe response template renders output",
+            "Browser receives response with security headers"
+          ],
+          "fileStructure": "secure_case_portal/\n├── app.py\n├── pyproject.toml\n├── .env.example\n├── .gitignore\n├── README.md\n├── app/\n│   ├── __init__.py\n│   ├── db.py\n│   ├── security.py\n│   ├── routes.py\n│   ├── templates/\n│   │   ├── base.html\n│   │   ├── login.html\n│   │   ├── dashboard.html\n│   │   ├── case.html\n│   │   ├── admin_cases.html\n│   │   └── error.html\n│   └── static/\n│       └── style.css\n└── tests/\n    ├── conftest.py\n    └── test_security.py",
+          "setupRequirements": [
+            "Python 3.11+",
+            "A local virtual environment",
+            "No public network target is required",
+            "Internet access is useful only for reading official documentation and training resources"
+          ],
+          "setupInstructions": [
+            "Create a virtual environment with `python -m venv .venv`.",
+            "Activate it for your shell.",
+            "Install the project with `python -m pip install -e .`.",
+            "Copy `.env.example` to `.env` and choose a development-only SECRET_KEY.",
+            "Start the local application with `python app.py`.",
+            "Open `http://127.0.0.1:5000/` in a browser.",
+            "Run the security regression suite with `pytest`.",
+            "Use browser developer tools or a proxy to inspect request and response evidence.",
+            "Run only manual tests that are explicitly within the local target boundary."
+          ],
+          "implementationSteps": [
+            "Review the threat model and trust boundaries before touching code.",
+            "Create the application factory and configuration.",
+            "Initialize the SQLite schema and local training identities.",
+            "Implement password verification and session creation.",
+            "Add CSRF token generation and validation.",
+            "Implement user-scoped case queries with parameterized SQL.",
+            "Enforce per-object ownership on detail and delete operations.",
+            "Enforce admin role checks on the administrative route.",
+            "Render user-controlled case data through normal Jinja escaping.",
+            "Add response security headers with HSTS conditional on HTTPS.",
+            "Add deterministic pytest coverage for authentication, CSRF, authorization and headers.",
+            "Run a manual security review against the local application and capture evidence.",
+            "Write findings and remediation notes based on observed behavior.",
+            "Retest the original cases and record the final verification state."
+          ],
+          "testing": {
+            "strategy": "Unit and integration-style application tests using Flask's test client and a temporary SQLite database.",
+            "commands": [
+              "pytest"
+            ],
+            "testCases": [
+              "Successful login",
+              "Generic failed login response",
+              "CSRF required on case creation",
+              "Owner can create and read a case",
+              "Other user receives 403 for owner case",
+              "Non-admin receives 403 on admin route",
+              "Admin can access admin route",
+              "Security headers are present",
+              "Session cookie configuration is deliberate"
+            ],
+            "limitations": "No test suite can prove absence of all vulnerabilities. The manual security assessment must complement automated regression tests."
+          },
+          "securityReview": [
+            {
+              "area": "Authentication",
+              "expected": "Password hashes are verified server-side; failure response is generic; session is refreshed on login."
+            },
+            {
+              "area": "Authorization",
+              "expected": "Every object access checks owner_id; admin functionality checks role server-side."
+            },
+            {
+              "area": "CSRF",
+              "expected": "Every state-changing form has a token checked against session state."
+            },
+            {
+              "area": "Injection",
+              "expected": "All SQL uses bound parameters; no string concatenation of user data into SQL."
+            },
+            {
+              "area": "XSS",
+              "expected": "Templates render ordinary user content through Jinja autoescaping and a strict CSP provides defense in depth."
+            },
+            {
+              "area": "Cookies",
+              "expected": "HttpOnly and SameSite are enabled; Secure is configurable and should be enabled for HTTPS production deployment."
+            },
+            {
+              "area": "Headers",
+              "expected": "CSP, X-Content-Type-Options, Referrer-Policy and X-Frame-Options are set; HSTS only on HTTPS responses."
+            },
+            {
+              "area": "Errors",
+              "expected": "Known errors are concise and no debug traceback is exposed."
+            },
+            {
+              "area": "Secrets",
+              "expected": "Secrets are sourced from environment configuration; .env is ignored by Git."
+            }
+          ],
+          "performance": [
+            "Use request timeouts in external test harnesses.",
+            "Keep the local application simple enough that tests are deterministic.",
+            "Review SQL query patterns and indexes if the data model grows beyond training scale.",
+            "Do not claim performance benchmarks without measuring them."
+          ],
+          "deployment": {
+            "local": "Use the Flask development server only for local training.",
+            "production": "Use a production WSGI server and HTTPS termination appropriate to the deployment environment; configure a strong secret, secure cookies and trusted hosts for the actual deployment.",
+            "rollback": "Keep code and configuration changes versioned in Git and revert a change that introduces a verified security regression.",
+            "monitoring": "At minimum capture application errors and security-relevant authentication/authorization events without logging passwords, session tokens or CSRF tokens."
+          },
+          "troubleshooting": [
+            {
+              "symptom": "Session cookie is not accepted when switching SESSION_COOKIE_SECURE=true on plain HTTP local testing",
+              "cause": "Secure cookies require an HTTPS request in ordinary deployment contexts.",
+              "resolution": "Use SESSION_COOKIE_SECURE=false only for local HTTP training, and enable it when the application is actually served over HTTPS."
+            },
+            {
+              "symptom": "HSTS header is absent from local HTTP responses",
+              "cause": "The application adds HSTS only when request.is_secure is true.",
+              "resolution": "Test HSTS behind an HTTPS setup; do not classify a plain HTTP response as an HSTS failure without considering deployment context."
+            },
+            {
+              "symptom": "CSRF-protected POST returns 400",
+              "cause": "The token is absent or does not match the session token.",
+              "resolution": "Load a form page first so the session has a token, then submit the token with the state-changing request."
+            },
+            {
+              "symptom": "A user receives 403 for another user's case",
+              "cause": "The route deliberately enforces object ownership.",
+              "resolution": "Treat the 403 as expected security behavior and keep the authorization regression test."
+            }
+          ],
+          "howItWorks": {
+            "startup": "app.py creates the Flask application through the factory; the factory initializes configuration and SQLite, adds response security headers and registers routes.",
+            "login": "GET /login returns the form; POST /login checks a password hash using the local database, clears the session and creates an authenticated session on success.",
+            "authorization": "Protected routes use decorators and explicit owner_id checks before returning or mutating case data.",
+            "csrf": "A token is generated in session state and must be returned by state-changing requests.",
+            "database": "sqlite3 executes parameterized SQL statements; foreign keys are enabled for the local database connection.",
+            "rendering": "Jinja templates render ordinary user data with autoescaping; the CSP restricts executable content to same-origin scripts and styles.",
+            "errors": "Known client errors are turned into concise templates. Debug mode is disabled in app.py."
+          },
+          "reportTemplate": {
+            "findingTitle": "",
+            "severity": "",
+            "asset": "http://127.0.0.1:5000",
+            "endpoint": "",
+            "prerequisite": "",
+            "observation": "",
+            "reproduction": [
+              ""
+            ],
+            "evidence": "",
+            "impact": "",
+            "rootCause": "",
+            "remediation": "",
+            "regressionTest": "",
+            "retestStatus": "Not yet retested"
+          },
+          "completionCriteria": [
+            "All files in the project structure exist and match the file-wise solution.",
+            "pytest passes in the intern's environment.",
+            "Owner and non-owner authorization behavior is demonstrated.",
+            "CSRF rejection is demonstrated on at least one state-changing route.",
+            "Parameterized SQL is confirmed by code review.",
+            "Security headers are inspected manually.",
+            "The final report distinguishes verified observations from assumptions and limitations.",
+            "No public target is tested as part of this project."
+          ],
+          "fileWiseSolution": [
+            {
+              "path": "secure_case_portal/pyproject.toml",
+              "purpose": "Python project metadata and dependencies",
+              "explanation": "Pins a tested framework line while keeping the project small. Flask 3.1.3 was the current documented 3.1 release during research; pytest is used for the test suite.",
+              "code": "[build-system]\nrequires = [\"hatchling\"]\nbuild-backend = \"hatchling.build\"\n\n[project]\nname = \"secure-case-portal\"\nversion = \"1.0.0\"\ndescription = \"Local training portal for web application security engineering\"\nrequires-python = \">=3.11\"\ndependencies = [\n  \"Flask==3.1.3\",\n  \"pytest>=8,<9\"\n]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\npythonpath = [\".\"]\n\n[tool.hatch.build.targets.wheel]\npackages = [\"app\"]"
+            },
+            {
+              "path": "secure_case_portal/.env.example",
+              "purpose": "Safe environment configuration example",
+              "explanation": "Shows non-secret configuration names. The application reads a secret from the environment and fails closed when production mode lacks one.",
+              "code": "APP_ENV=development\nSECRET_KEY=replace-this-in-your-local-environment\nDATABASE_PATH=instance/cases.db\nSESSION_COOKIE_SECURE=false\nTRUSTED_HOSTS=localhost,127.0.0.1"
+            },
+            {
+              "path": "secure_case_portal/.gitignore",
+              "purpose": "Prevent local secrets and runtime files from entering Git",
+              "explanation": "Keeps environment files, Python caches and local SQLite data out of source control.",
+              "code": "__pycache__/\n*.py[cod]\n.pytest_cache/\n.venv/\n.env\ninstance/*.db\n"
+            },
+            {
+              "path": "secure_case_portal/app/__init__.py",
+              "purpose": "Application factory and global security configuration",
+              "explanation": "Creates the Flask application, configures sessions and trusted hosts, registers routes, initializes the database and installs security headers appropriate to the deployment mode.",
+              "code": "import os\nfrom pathlib import Path\nfrom flask import Flask, request\n\nfrom .db import init_db\nfrom .routes import register_routes\n\ndef create_app(test_config=None):\n    app = Flask(__name__, instance_relative_config=True)\n    app.config.from_mapping(\n        SECRET_KEY=os.environ.get(\"SECRET_KEY\", \"\"),\n        DATABASE_PATH=os.environ.get(\"DATABASE_PATH\", str(Path(app.instance_path) / \"cases.db\")),\n        SESSION_COOKIE_SECURE=os.environ.get(\"SESSION_COOKIE_SECURE\", \"false\").lower() == \"true\",\n        SESSION_COOKIE_HTTPONLY=True,\n        SESSION_COOKIE_SAMESITE=\"Lax\",\n        TRUSTED_HOSTS=[h.strip() for h in os.environ.get(\"TRUSTED_HOSTS\", \"localhost,127.0.0.1\").split(\",\") if h.strip()],\n    )\n\n    if test_config:\n        app.config.update(test_config)\n\n    if not app.config[\"SECRET_KEY\"]:\n        if app.config.get(\"TESTING\"):\n            app.config[\"SECRET_KEY\"] = \"test-only-secret\"\n        elif os.environ.get(\"APP_ENV\", \"development\") != \"development\":\n            raise RuntimeError(\"SECRET_KEY must be configured outside development and tests\")\n        else:\n            app.config[\"SECRET_KEY\"] = \"development-only-secret\"\n\n    Path(app.instance_path).mkdir(parents=True, exist_ok=True)\n    init_db(app)\n\n    @app.after_request\n    def add_security_headers(response):\n        response.headers.setdefault(\"X-Content-Type-Options\", \"nosniff\")\n        response.headers.setdefault(\"Content-Security-Policy\", \"default-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'\")\n        response.headers.setdefault(\"Referrer-Policy\", \"no-referrer\")\n        response.headers.setdefault(\"X-Frame-Options\", \"DENY\")\n        if request.is_secure:\n            response.headers.setdefault(\"Strict-Transport-Security\", \"max-age=31536000; includeSubDomains\")\n        return response\n\n    register_routes(app)\n    return app"
+            },
+            {
+              "path": "secure_case_portal/app/db.py",
+              "purpose": "SQLite schema, connections and seed data",
+              "explanation": "Uses Python's sqlite3 DB-API with parameterized SQL and an isolated database path. The seed accounts are local training identities only and are not production credentials.",
+              "code": "import sqlite3\nfrom pathlib import Path\nfrom flask import current_app, g\n\nSCHEMA = \"\"\"\nCREATE TABLE IF NOT EXISTS users (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    username TEXT NOT NULL UNIQUE,\n    password_hash TEXT NOT NULL,\n    role TEXT NOT NULL CHECK(role IN ('user', 'admin'))\n);\nCREATE TABLE IF NOT EXISTS cases (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    owner_id INTEGER NOT NULL,\n    title TEXT NOT NULL,\n    details TEXT NOT NULL,\n    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    FOREIGN KEY(owner_id) REFERENCES users(id)\n);\n\"\"\"\n\ndef get_db():\n    if \"db\" not in g:\n        database = Path(current_app.config[\"DATABASE_PATH\"])\n        database.parent.mkdir(parents=True, exist_ok=True)\n        g.db = sqlite3.connect(database)\n        g.db.row_factory = sqlite3.Row\n        g.db.execute(\"PRAGMA foreign_keys = ON\")\n    return g.db\n\ndef close_db(_exception=None):\n    db = g.pop(\"db\", None)\n    if db is not None:\n        db.close()\n\ndef init_db(app):\n    with app.app_context():\n        db = get_db()\n        db.executescript(SCHEMA)\n        from werkzeug.security import generate_password_hash\n        users = [\n            (\"alice\", generate_password_hash(\"training-alice-password\"), \"user\"),\n            (\"bob\", generate_password_hash(\"training-bob-password\"), \"user\"),\n            (\"admin\", generate_password_hash(\"training-admin-password\"), \"admin\"),\n        ]\n        for username, password_hash, role in users:\n            db.execute(\n                \"INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)\",\n                (username, password_hash, role),\n            )\n        db.commit()\n    app.teardown_appcontext(close_db)"
+            },
+            {
+              "path": "secure_case_portal/app/security.py",
+              "purpose": "Security helpers for CSRF, authentication, authorization and input validation",
+              "explanation": "Centralizes security-sensitive policy instead of duplicating checks in each route.",
+              "code": "import secrets\nfrom functools import wraps\nfrom flask import abort, session, request\nfrom werkzeug.security import check_password_hash\n\ndef csrf_token():\n    token = session.get(\"csrf_token\")\n    if token is None:\n        token = secrets.token_urlsafe(32)\n        session[\"csrf_token\"] = token\n    return token\n\ndef require_csrf():\n    expected = session.get(\"csrf_token\")\n    supplied = request.form.get(\"csrf_token\") or request.headers.get(\"X-CSRF-Token\")\n    if not expected or not supplied or not secrets.compare_digest(expected, supplied):\n        abort(400, description=\"Invalid CSRF token\")\n\ndef login_user(user_id, role):\n    session.clear()\n    session[\"user_id\"] = user_id\n    session[\"role\"] = role\n    csrf_token()\n\ndef logout_user():\n    session.clear()\n\ndef current_user_id():\n    return session.get(\"user_id\")\n\ndef require_login(view):\n    @wraps(view)\n    def wrapped(*args, **kwargs):\n        if current_user_id() is None:\n            abort(401)\n        return view(*args, **kwargs)\n    return wrapped\n\ndef require_admin(view):\n    @wraps(view)\n    def wrapped(*args, **kwargs):\n        if current_user_id() is None:\n            abort(401)\n        if session.get(\"role\") != \"admin\":\n            abort(403)\n        return view(*args, **kwargs)\n    return wrapped\n\ndef verify_password(stored_hash, candidate):\n    return check_password_hash(stored_hash, candidate)\n\ndef validate_case_text(value, max_length=2000):\n    if not isinstance(value, str):\n        abort(400, description=\"Expected text\")\n    value = value.strip()\n    if not value or len(value) > max_length:\n        abort(400, description=\"Invalid text length\")\n    return value"
+            },
+            {
+              "path": "secure_case_portal/app/routes.py",
+              "purpose": "HTTP routes for login, case management and admin review",
+              "explanation": "Enforces CSRF on state-changing routes, checks ownership before case access and returns generic authentication failures.",
+              "code": "from flask import abort, flash, redirect, render_template, request, session, url_for\n\nfrom .db import get_db\nfrom .security import (\n    csrf_token, current_user_id, login_user, logout_user, require_admin,\n    require_csrf, require_login, validate_case_text, verify_password\n)\n\ndef register_routes(app):\n    @app.context_processor\n    def inject_security_helpers():\n        return {\"csrf_token\": csrf_token, \"current_user_id\": current_user_id}\n\n    @app.get(\"/\")\n    def index():\n        if current_user_id() is None:\n            return redirect(url_for(\"login\"))\n        return redirect(url_for(\"dashboard\"))\n\n    @app.route(\"/login\", methods=[\"GET\", \"POST\"])\n    def login():\n        if request.method == \"POST\":\n            require_csrf()\n            username = request.form.get(\"username\", \"\").strip()\n            password = request.form.get(\"password\", \"\")\n            user = get_db().execute(\n                \"SELECT id, password_hash, role FROM users WHERE username = ?\",\n                (username,),\n            ).fetchone()\n            if user is None or not verify_password(user[\"password_hash\"], password):\n                flash(\"Invalid username or password\")\n                return render_template(\"login.html\"), 401\n            login_user(user[\"id\"], user[\"role\"])\n            return redirect(url_for(\"dashboard\"))\n        return render_template(\"login.html\")\n\n    @app.post(\"/logout\")\n    @require_login\n    def logout():\n        require_csrf()\n        logout_user()\n        return redirect(url_for(\"login\"))\n\n    @app.get(\"/dashboard\")\n    @require_login\n    def dashboard():\n        rows = get_db().execute(\n            \"SELECT id, title, details, created_at FROM cases WHERE owner_id = ? ORDER BY id DESC\",\n            (current_user_id(),),\n        ).fetchall()\n        return render_template(\"dashboard.html\", cases=rows, role=session.get(\"role\"))\n\n    @app.post(\"/cases\")\n    @require_login\n    def create_case():\n        require_csrf()\n        title = validate_case_text(request.form.get(\"title\", \"\"), 120)\n        details = validate_case_text(request.form.get(\"details\", \"\"), 2000)\n        db = get_db()\n        db.execute(\n            \"INSERT INTO cases (owner_id, title, details) VALUES (?, ?, ?)\",\n            (current_user_id(), title, details),\n        )\n        db.commit()\n        return redirect(url_for(\"dashboard\"))\n\n    @app.get(\"/cases/<int:case_id>\")\n    @require_login\n    def case_detail(case_id):\n        row = get_db().execute(\n            \"SELECT id, owner_id, title, details, created_at FROM cases WHERE id = ?\",\n            (case_id,),\n        ).fetchone()\n        if row is None:\n            abort(404)\n        if row[\"owner_id\"] != current_user_id():\n            abort(403)\n        return render_template(\"case.html\", case=row)\n\n    @app.post(\"/cases/<int:case_id>/delete\")\n    @require_login\n    def delete_case(case_id):\n        require_csrf()\n        row = get_db().execute(\n            \"SELECT owner_id FROM cases WHERE id = ?\",\n            (case_id,),\n        ).fetchone()\n        if row is None:\n            abort(404)\n        if row[\"owner_id\"] != current_user_id():\n            abort(403)\n        db = get_db()\n        db.execute(\"DELETE FROM cases WHERE id = ?\", (case_id,))\n        db.commit()\n        return redirect(url_for(\"dashboard\"))\n\n    @app.get(\"/admin/cases\")\n    @require_admin\n    def admin_cases():\n        rows = get_db().execute(\n            \"SELECT cases.id, cases.title, users.username AS owner, cases.created_at FROM cases JOIN users ON users.id = cases.owner_id ORDER BY cases.id DESC\"\n        ).fetchall()\n        return render_template(\"admin_cases.html\", cases=rows)\n\n    @app.errorhandler(400)\n    def bad_request(error):\n        return render_template(\"error.html\", code=400, message=error.description), 400\n\n    @app.errorhandler(401)\n    def unauthorized(_error):\n        return render_template(\"error.html\", code=401, message=\"Authentication required\"), 401\n\n    @app.errorhandler(403)\n    def forbidden(_error):\n        return render_template(\"error.html\", code=403, message=\"You are not authorized to perform this action\"), 403\n\n    @app.errorhandler(404)\n    def not_found(_error):\n        return render_template(\"error.html\", code=404, message=\"Resource not found\"), 404\n"
+            },
+            {
+              "path": "secure_case_portal/app/templates/base.html",
+              "purpose": "Shared accessible page layout",
+              "explanation": "Provides semantic navigation, labels, keyboard-friendly controls and links the external stylesheet from the same origin.",
+              "code": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>{% block title %}Secure Case Portal{% endblock %}</title>\n  <link rel=\"stylesheet\" href=\"{{ url_for('static', filename='style.css') }}\">\n</head>\n<body>\n  <header>\n    <nav aria-label=\"Primary\">\n      <a href=\"{{ url_for('dashboard') if current_user_id() else url_for('login') }}\">Secure Case Portal</a>\n      {% if current_user_id() %}\n      <form method=\"post\" action=\"{{ url_for('logout') }}\" class=\"inline-form\">\n        <input type=\"hidden\" name=\"csrf_token\" value=\"{{ csrf_token() }}\">\n        <button type=\"submit\">Sign out</button>\n      </form>\n      {% endif %}\n    </nav>\n  </header>\n  <main>\n    {% with messages = get_flashed_messages() %}\n      {% if messages %}\n        <section aria-label=\"Messages\">\n          {% for message in messages %}<p role=\"status\">{{ message }}</p>{% endfor %}\n        </section>\n      {% endif %}\n    {% endwith %}\n    {% block content %}{% endblock %}\n  </main>\n</body>\n</html>"
+            },
+            {
+              "path": "secure_case_portal/app/templates/login.html",
+              "purpose": "Authentication form",
+              "explanation": "Uses POST with a CSRF token and generic failure messaging.",
+              "code": "{% extends \"base.html\" %}\n{% block title %}Sign in{% endblock %}\n{% block content %}\n<h1>Sign in</h1>\n<form method=\"post\" autocomplete=\"on\">\n  <input type=\"hidden\" name=\"csrf_token\" value=\"{{ csrf_token() }}\">\n  <label for=\"username\">Username</label>\n  <input id=\"username\" name=\"username\" type=\"text\" autocomplete=\"username\" required maxlength=\"80\">\n  <label for=\"password\">Password</label>\n  <input id=\"password\" name=\"password\" type=\"password\" autocomplete=\"current-password\" required>\n  <button type=\"submit\">Sign in</button>\n</form>\n<p>Training accounts are defined by the local seed routine.</p>\n{% endblock %}"
+            },
+            {
+              "path": "secure_case_portal/app/templates/dashboard.html",
+              "purpose": "Authenticated user's case list and create form",
+              "explanation": "Only server-returned, already-authorized cases are rendered. Jinja autoescaping protects ordinary text rendering contexts.",
+              "code": "{% extends \"base.html\" %}\n{% block title %}Dashboard{% endblock %}\n{% block content %}\n<h1>Your cases</h1>\n<form method=\"post\" action=\"{{ url_for('create_case') }}\">\n  <input type=\"hidden\" name=\"csrf_token\" value=\"{{ csrf_token() }}\">\n  <label for=\"title\">Case title</label>\n  <input id=\"title\" name=\"title\" type=\"text\" maxlength=\"120\" required>\n  <label for=\"details\">Details</label>\n  <textarea id=\"details\" name=\"details\" maxlength=\"2000\" required></textarea>\n  <button type=\"submit\">Create case</button>\n</form>\n<section aria-labelledby=\"case-list-heading\">\n  <h2 id=\"case-list-heading\">Existing cases</h2>\n  {% if cases %}\n  <ul>\n    {% for case in cases %}\n    <li>\n      <a href=\"{{ url_for('case_detail', case_id=case['id']) }}\">{{ case['title'] }}</a>\n      <time datetime=\"{{ case['created_at'] }}\">{{ case['created_at'] }}</time>\n    </li>\n    {% endfor %}\n  </ul>\n  {% else %}\n  <p>No cases yet.</p>\n  {% endif %}\n</section>\n{% if role == 'admin' %}<p><a href=\"{{ url_for('admin_cases') }}\">Admin case review</a></p>{% endif %}\n{% endblock %}"
+            },
+            {
+              "path": "secure_case_portal/app/templates/case.html",
+              "purpose": "Case detail and delete action",
+              "explanation": "The route performs an ownership check before rendering. Delete is a POST with CSRF protection rather than a state-changing GET.",
+              "code": "{% extends \"base.html\" %}\n{% block title %}Case {{ case['id'] }}{% endblock %}\n{% block content %}\n<article>\n  <h1>{{ case['title'] }}</h1>\n  <p>{{ case['details'] }}</p>\n  <p>Created <time datetime=\"{{ case['created_at'] }}\">{{ case['created_at'] }}</time></p>\n</article>\n<form method=\"post\" action=\"{{ url_for('delete_case', case_id=case['id']) }}\">\n  <input type=\"hidden\" name=\"csrf_token\" value=\"{{ csrf_token() }}\">\n  <button type=\"submit\">Delete case</button>\n</form>\n<p><a href=\"{{ url_for('dashboard') }}\">Back to dashboard</a></p>\n{% endblock %}"
+            },
+            {
+              "path": "secure_case_portal/app/templates/admin_cases.html",
+              "purpose": "Administrative review page",
+              "explanation": "The route is protected with a server-side role check. Data is rendered using normal Jinja escaping.",
+              "code": "{% extends \"base.html\" %}\n{% block title %}Admin cases{% endblock %}\n{% block content %}\n<h1>All cases</h1>\n<table>\n  <caption>Training cases visible to administrators</caption>\n  <thead><tr><th>ID</th><th>Owner</th><th>Title</th><th>Created</th></tr></thead>\n  <tbody>\n  {% for case in cases %}\n    <tr><td>{{ case['id'] }}</td><td>{{ case['owner'] }}</td><td>{{ case['title'] }}</td><td>{{ case['created_at'] }}</td></tr>\n  {% endfor %}\n  </tbody>\n</table>\n{% endblock %}"
+            },
+            {
+              "path": "secure_case_portal/app/templates/error.html",
+              "purpose": "Safe error responses",
+              "explanation": "Returns concise error messages and avoids exposing stack traces or internal database details to clients.",
+              "code": "{% extends \"base.html\" %}\n{% block title %}Error {{ code }}{% endblock %}\n{% block content %}\n<h1>Error {{ code }}</h1>\n<p>{{ message }}</p>\n<p><a href=\"{{ url_for('index') }}\">Return to the application</a></p>\n{% endblock %}"
+            },
+            {
+              "path": "secure_case_portal/app/static/style.css",
+              "purpose": "Simple responsive and accessible styling",
+              "explanation": "Keeps all styles same-origin so the CSP can remain strict. The interface uses readable labels, adequate spacing and responsive layout.",
+              "code": "body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 0; background: #f4f6f8; color: #17202a; }\nheader { background: #17202a; color: white; padding: 1rem; }\nnav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; max-width: 60rem; margin: 0 auto; }\nnav a { color: white; }\nmain { max-width: 60rem; margin: 2rem auto; padding: 0 1rem; }\nform { display: grid; gap: 0.6rem; max-width: 36rem; margin-bottom: 2rem; }\ninput, textarea, button { font: inherit; padding: 0.6rem; }\ntextarea { min-height: 8rem; }\nbutton { cursor: pointer; }\n.inline-form { display: inline; margin: 0; }\ntable { width: 100%; border-collapse: collapse; background: white; }\nth, td { border: 1px solid #c8cdd2; padding: 0.6rem; text-align: left; }\n@media (max-width: 700px) { main { margin-top: 1rem; } nav { align-items: flex-start; flex-direction: column; } }"
+            },
+            {
+              "path": "secure_case_portal/app.py",
+              "purpose": "Development entry point",
+              "explanation": "Runs the Flask development server for local training. Flask's own documentation warns that the development server is not intended for production use.",
+              "code": "from app import create_app\n\napp = create_app()\n\nif __name__ == \"__main__\":\n    app.run(host=\"127.0.0.1\", port=5000, debug=False)"
+            },
+            {
+              "path": "secure_case_portal/tests/conftest.py",
+              "purpose": "Reusable pytest fixtures",
+              "explanation": "Creates a temporary SQLite database and a Flask test client for deterministic local security tests.",
+              "code": "import os\nimport tempfile\nimport pytest\n\nfrom app import create_app\n\n@pytest.fixture()\ndef app(tmp_path):\n    database = tmp_path / \"test.db\"\n    app = create_app({\n        \"TESTING\": True,\n        \"SECRET_KEY\": \"test-secret-key\",\n        \"DATABASE_PATH\": str(database),\n        \"SESSION_COOKIE_SECURE\": False,\n        \"TRUSTED_HOSTS\": [\"localhost\", \"127.0.0.1\"],\n    })\n    yield app\n\n@pytest.fixture()\ndef client(app):\n    return app.test_client()\n\ndef csrf(client):\n    with client.session_transaction() as session:\n        return session.get(\"csrf_token\")\n\ndef login(client, username, password):\n    token = csrf(client)\n    return client.post(\"/login\", data={\n        \"username\": username,\n        \"password\": password,\n        \"csrf_token\": token,\n    }, follow_redirects=True)"
+            },
+            {
+              "path": "secure_case_portal/tests/test_security.py",
+              "purpose": "End-to-end security regression suite",
+              "explanation": "Covers authentication failure handling, CSRF, object ownership, admin authorization, parameterized persistence and security headers.",
+              "code": "from tests.conftest import csrf, login\n\ndef test_login_success(client):\n    response = login(client, \"alice\", \"training-alice-password\")\n    assert response.status_code == 200\n    assert b\"Your cases\" in response.data\n\ndef test_login_failure_is_generic(client):\n    response = login(client, \"alice\", \"wrong-password\")\n    assert response.status_code == 401\n    assert b\"Invalid username or password\" in response.data\n    assert b\"Traceback\" not in response.data\n\ndef test_csrf_required_for_case_creation(client):\n    login(client, \"alice\", \"training-alice-password\")\n    response = client.post(\"/cases\", data={\"title\": \"Test\", \"details\": \"Details\"})\n    assert response.status_code == 400\n\ndef test_owner_can_create_and_read_case(client):\n    login(client, \"alice\", \"training-alice-password\")\n    token = csrf(client)\n    created = client.post(\"/cases\", data={\"title\": \"Private case\", \"details\": \"Alice detail\", \"csrf_token\": token}, follow_redirects=True)\n    assert created.status_code == 200\n    with client.session_transaction() as session:\n        assert session[\"user_id\"] == 1\n    response = client.get(\"/dashboard\")\n    assert b\"Private case\" in response.data\n\ndef test_other_user_cannot_read_owner_case(client, app):\n    login(client, \"alice\", \"training-alice-password\")\n    token = csrf(client)\n    client.post(\"/cases\", data={\"title\": \"Alice private\", \"details\": \"Secret detail\", \"csrf_token\": token})\n    with app.app_context():\n        from app.db import get_db\n        case_id = get_db().execute(\"SELECT id FROM cases WHERE owner_id = 1 ORDER BY id DESC LIMIT 1\").fetchone()[\"id\"]\n    client.post(\"/logout\", data={\"csrf_token\": csrf(client)})\n    login(client, \"bob\", \"training-bob-password\")\n    response = client.get(f\"/cases/{case_id}\")\n    assert response.status_code == 403\n    assert b\"Secret detail\" not in response.data\n\ndef test_non_admin_cannot_access_admin_route(client):\n    login(client, \"alice\", \"training-alice-password\")\n    response = client.get(\"/admin/cases\")\n    assert response.status_code == 403\n\ndef test_admin_can_access_admin_route(client):\n    login(client, \"admin\", \"training-admin-password\")\n    response = client.get(\"/admin/cases\")\n    assert response.status_code == 200\n    assert b\"All cases\" in response.data\n\ndef test_security_headers(client):\n    response = client.get(\"/\")\n    assert response.headers[\"X-Content-Type-Options\"] == \"nosniff\"\n    assert response.headers[\"Content-Security-Policy\"]\n    assert response.headers[\"Referrer-Policy\"] == \"no-referrer\"\n\ndef test_cookie_configuration(app):\n    assert app.config[\"SESSION_COOKIE_HTTPONLY\"] is True\n    assert app.config[\"SESSION_COOKIE_SAMESITE\"] == \"Lax\""
+            },
+            {
+              "path": "secure_case_portal/README.md",
+              "purpose": "Local setup, testing and security-review workflow",
+              "explanation": "Explains how to run the local target, execute tests, inspect the application and record findings. It explicitly limits assessment to the local training application.",
+              "code": "# Secure Case Portal\n\nA small local training application for the Web Application Security Internship. The project is intentionally scoped to loopback addresses and uses SQLite for local data.\n\n## Safety boundary\n\nRun and assess this application only on your own machine or another environment where you have explicit permission. Do not point the included test workflow at public sites.\n\n## Setup\n\n1. Create and activate a Python 3.11+ virtual environment.\n2. Install the project: `python -m pip install -e .`\n3. Copy `.env.example` to `.env` and set a development-only secret.\n4. Start the app with `python app.py`.\n5. Browse to `http://127.0.0.1:5000/`.\n\n## Test accounts\n\nThe local seed creates three training identities: `alice`, `bob`, and `admin`. Their training passwords are defined in `app/db.py` and are not intended for any external deployment.\n\n## Tests\n\nRun `pytest`. The suite covers CSRF enforcement, ownership authorization, admin authorization, login failure handling and security headers.\n\n## Security review workflow\n\nReview the application with browser developer tools or an intercepting proxy. Inventory endpoints, compare authenticated and unauthenticated behavior, test owner versus non-owner access using the local training identities, inspect cookie attributes, review security headers and verify that state-changing routes reject missing CSRF tokens.\n\n## Deployment boundary\n\nThe Flask development server is for local training. For production, use a supported production WSGI server and HTTPS termination appropriate to the deployment environment. Reconfigure the session cookie Secure flag and secret management for production.\n"
+            }
+          ]
+        }
+      }
+    ],
+    "evaluation": {
+      "approach": "Evidence-based evaluation across practical work, module tasks, code review, testing and the capstone.",
+      "rubric": [
+        {
+          "area": "Assessment planning",
+          "weight": 15,
+          "passEvidence": "Scope is explicit, safe and complete."
+        },
+        {
+          "area": "Technical analysis",
+          "weight": 20,
+          "passEvidence": "HTTP, identity, authorization and input-flow reasoning is accurate."
+        },
+        {
+          "area": "Engineering implementation",
+          "weight": 20,
+          "passEvidence": "Security controls are implemented correctly and coherently."
+        },
+        {
+          "area": "Testing",
+          "weight": 15,
+          "passEvidence": "Regression tests cover both positive and negative cases."
+        },
+        {
+          "area": "Security review",
+          "weight": 15,
+          "passEvidence": "Findings map to actual behavior and relevant controls."
+        },
+        {
+          "area": "Reporting and documentation",
+          "weight": 15,
+          "passEvidence": "Evidence, impact, remediation and retest status are clear."
+        }
+      ],
+      "finalAssessment": "The final capstone is reviewed for technical correctness, security reasoning, test coverage, evidence quality, documentation and honest treatment of limitations. Completion does not imply employment, accreditation or absence of all undiscovered vulnerabilities."
+    },
+    "professionalWorkflow": [
+      "Requirement and scope",
+      "Threat modeling",
+      "Attack-surface inventory",
+      "Controlled testing",
+      "Evidence capture",
+      "Finding triage",
+      "Remediation",
+      "Automated regression testing",
+      "Retest",
+      "Documentation and review"
+    ],
+    "gitWorkflow": [
+      "Create repository",
+      "Use small branches per feature or remediation",
+      "Write focused commits",
+      "Never commit .env or database files",
+      "Review security-sensitive changes before merge",
+      "Tag the final audited state"
+    ],
+    "documentationStandards": [
+      "README with setup and safety boundary",
+      "Architecture and data-flow notes",
+      "Endpoint inventory",
+      "Security test matrix",
+      "Findings with evidence and remediation",
+      "Retest record",
+      "Explicit limitations"
+    ],
+    "safetyBoundary": "All hands-on offensive testing in this internship is restricted to intentionally vulnerable training labs, localhost applications, or other environments for which the intern has explicit authorization. No public target, credential theft, persistence, destructive action, or denial-of-service activity is required.",
+    "resources": [
+      {
+        "title": "OWASP Top 10:2025",
+        "url": "https://owasp.org/Top10/",
+        "type": "Official awareness standard",
+        "use": "Risk taxonomy and prioritization for web application security work."
+      },
+      {
+        "title": "OWASP Web Security Testing Guide",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/stable/",
+        "type": "Official testing guidance",
+        "use": "Structured web security testing methodology and reporting workflow."
+      },
+      {
+        "title": "OWASP Application Security Verification Standard 5.0.0",
+        "url": "https://owasp.org/www-project-application-security-verification-standard/",
+        "type": "Official verification standard",
+        "use": "Security control requirements for application verification."
+      },
+      {
+        "title": "OWASP Cheat Sheet Series",
+        "url": "https://cheatsheetseries.owasp.org/",
+        "type": "Official practical guidance",
+        "use": "Focused secure-development and testing guidance."
+      },
+      {
+        "title": "OWASP SQL Injection Prevention Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+        "type": "Official practical guidance",
+        "use": "Parameterized queries, allow-listing, and least privilege."
+      },
+      {
+        "title": "OWASP Cross Site Scripting Prevention Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+        "type": "Official practical guidance",
+        "use": "Contextual output encoding and defense in depth for XSS."
+      },
+      {
+        "title": "OWASP Cross-Site Request Forgery Prevention Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html",
+        "type": "Official practical guidance",
+        "use": "CSRF token patterns, Fetch Metadata and request protections."
+      },
+      {
+        "title": "OWASP Session Management Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html",
+        "type": "Official practical guidance",
+        "use": "Session lifecycle, cookie protections and fixation defenses."
+      },
+      {
+        "title": "OWASP File Upload Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+        "type": "Official practical guidance",
+        "use": "Upload allow-lists, content validation, storage and limits."
+      },
+      {
+        "title": "OWASP Secure Code Review Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Code_Review_Cheat_Sheet.html",
+        "type": "Official practical guidance",
+        "use": "Review checklist covering validation, authentication, logging and data handling."
+      },
+      {
+        "title": "NIST SP 800-115",
+        "url": "https://csrc.nist.gov/pubs/sp/800/115/final",
+        "type": "Government technical guide",
+        "use": "Planning, conducting, analyzing and reporting technical security tests."
+      },
+      {
+        "title": "MDN Strict-Transport-Security",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security",
+        "type": "Web platform reference",
+        "use": "HSTS behavior and HTTPS-only transport policy."
+      },
+      {
+        "title": "MDN Set-Cookie",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie",
+        "type": "Web platform reference",
+        "use": "Secure, HttpOnly and SameSite cookie attributes."
+      },
+      {
+        "title": "MDN Cookies guide",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies",
+        "type": "Web platform guidance",
+        "use": "Cookie lifecycle, scope and security considerations."
+      },
+      {
+        "title": "MDN CORS",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS",
+        "type": "Web platform guidance",
+        "use": "Same-origin policy and controlled cross-origin requests."
+      },
+      {
+        "title": "WCAG 2.2",
+        "url": "https://www.w3.org/TR/WCAG22/",
+        "type": "W3C standard",
+        "use": "Accessibility expectations for security-conscious web interfaces."
+      },
+      {
+        "title": "Flask 3.1.x documentation",
+        "url": "https://flask.palletsprojects.com/en/stable/",
+        "type": "Official framework documentation",
+        "use": "Application structure, request handling, sessions and deployment boundaries."
+      },
+      {
+        "title": "Flask testing documentation",
+        "url": "https://flask.palletsprojects.com/en/stable/testing/",
+        "type": "Official framework testing guidance",
+        "use": "Testing applications with pytest and Flask test clients."
+      },
+      {
+        "title": "Python sqlite3 documentation",
+        "url": "https://docs.python.org/3.11/library/sqlite3.html",
+        "type": "Official language documentation",
+        "use": "SQLite access, transactions and DB-API behavior."
+      },
+      {
+        "title": "Requests documentation",
+        "url": "https://requests.readthedocs.io/en/latest/",
+        "type": "Official library documentation",
+        "use": "Programmatic HTTP requests for controlled test harnesses."
+      },
+      {
+        "title": "PortSwigger Web Security Academy",
+        "url": "https://portswigger.net/web-security/all-topics",
+        "type": "Security training platform",
+        "use": "Hands-on, intentionally vulnerable web-security labs."
+      }
+    ]
+  }
+}

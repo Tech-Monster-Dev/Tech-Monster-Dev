@@ -1,0 +1,1718 @@
+{
+  "course": {
+    "id": "linux-forensics",
+    "title": "Linux Forensics",
+    "slug": "linux-forensics",
+    "description": "A Linux-specific practical forensics course covering evidence thinking, integrity and provenance, storage/VFS, ext4, timestamps, journald, Linux Audit, authentication, process and /proc triage, shell history, systemd and cron persistence, users and permissions, capabilities, xattrs and links, network/SSH evidence, package provenance, SQLite artifacts, current Volatility 3 Linux memory analysis, timelines, anti-forensics awareness, validation, reporting, and a read-only final triage workbench.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 72,
+    "prerequisites": [
+      "Basic Linux command line",
+      "Basic filesystem and process concepts",
+      "Basic networking concepts",
+      "Basic Python is helpful for the final project",
+      "Controlled lab environment"
+    ],
+    "learningOutcomes": [
+      "Map investigative questions to Linux evidence sources.",
+      "Preserve evidence integrity with hashes and provenance.",
+      "Interpret VFS, ext4, inode, journal, link, and timestamp concepts.",
+      "Query and interpret journald and Linux Audit records with retention limits.",
+      "Correlate authentication, process, service, persistence, permission, and network evidence.",
+      "Use /proc and current Volatility 3 Linux plugins for controlled triage.",
+      "Interpret package and SQLite application evidence.",
+      "Construct source-preserving timelines and evaluate alternative explanations.",
+      "Recognize evidence gaps and anti-forensics indicators cautiously.",
+      "Validate tools and write evidence-grounded findings.",
+      "Complete the read-only final triage workbench."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Foundations, Scope, and Evidence Thinking",
+        "description": "Linux forensic foundations, investigative questions, evidence classes, integrity, and provenance.",
+        "lessons": [
+          {
+            "id": "l01-01",
+            "title": "Linux Evidence Landscape",
+            "description": "Map Linux evidence across persistent storage, virtual kernel interfaces, logs, accounts, applications, network state, and memory.",
+            "learningObjectives": [
+              "identify persistent and volatile sources",
+              "map questions to evidence sources",
+              "state artifact limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Linux evidence is distributed. Filesystem metadata, journals, audit records, shell histories, application data, network state, and RAM answer different questions."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Persistent evidence includes files, metadata, logs, configuration, and package data.",
+                  "Volatile evidence includes processes, sockets, mounts, /proc state, and RAM."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l01-01-quiz",
+              "question": "Which source is inherently volatile?",
+              "options": [
+                "RAM and current process state",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "RAM and current process state",
+              "explanation": "Processes and RAM change continuously; preserved copies do not have that same volatility."
+            },
+            "summary": [
+              "Linux forensic evidence is distributed across layers.",
+              "Artifact semantics matter as much as artifact presence."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.kernel.org/doc/html/latest/filesystems/proc.html"
+            ]
+          },
+          {
+            "id": "l01-02",
+            "title": "Forensic Workflow",
+            "description": "Follow preparation, preservation, acquisition, examination, analysis, reporting, and closure.",
+            "learningObjectives": [
+              "sequence forensic phases",
+              "identify scope and authority",
+              "document collection impact"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-86 frames forensics as a process involving files, operating systems, network traffic, and applications. It is guidance rather than legal advice or a universal investigation procedure."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Question-driven collection is preferable to indiscriminate collection.",
+                  "Live acquisition may alter the source system."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l01-02-quiz",
+              "question": "What should drive evidence collection?",
+              "options": [
+                "The investigative question and preservation requirements",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "The investigative question and preservation requirements",
+              "explanation": "Collection should be justified by the question and the effect of the method on evidence."
+            },
+            "summary": [
+              "A defensible workflow is deliberate and documented."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l01-03",
+            "title": "Hashing and Provenance",
+            "description": "Use hashes and evidence identifiers to protect integrity and preserve traceability.",
+            "learningObjectives": [
+              "calculate SHA-256",
+              "compare source and working copies",
+              "distinguish integrity from authorship"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A SHA-256 digest is useful for detecting changes to represented bytes. It does not prove authorship, intent, or truthfulness."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record case/evidence IDs, acquisition details, tool/version, and hashes.",
+                  "Keep preserved evidence separate from working copies."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p01-03",
+                "title": "Verify a Working Copy",
+                "description": "Hash a controlled lab file before and after copying, then modify only the working copy.",
+                "steps": [
+                  "Create a non-sensitive test file.",
+                  "Hash it with sha256sum.",
+                  "Copy it to a separate directory.",
+                  "Hash the copy.",
+                  "Modify only the copy and hash again."
+                ],
+                "solution": "```bash\nprintf \"forensic-lab\\n\" > source.txt\nsha256sum source.txt\ncp --preserve=all source.txt working.txt\nsha256sum working.txt\nprintf \"changed\\n\" >> working.txt\nsha256sum working.txt\n```",
+                "output": "The source and unchanged copy should initially have the same digest; after modification the working-copy digest changes."
+              }
+            ],
+            "quiz": {
+              "id": "l01-03-quiz",
+              "question": "What does a SHA-256 comparison primarily establish?",
+              "options": [
+                "Whether represented bytes match",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Whether represented bytes match",
+              "explanation": "A hash comparison is an integrity/comparison operation."
+            },
+            "summary": [
+              "Integrity supports reproducibility but does not answer attribution questions."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t01-01",
+            "title": "Build a Linux Evidence Question Matrix",
+            "level": "Easy",
+            "description": "Map five investigation questions to Linux evidence sources.",
+            "problemStatement": "A server may have experienced unauthorized administrative access. Build a matrix for authentication, execution, persistence, file activity, and time.",
+            "objectives": [
+              "define five questions",
+              "map two sources per question",
+              "state one limitation per question"
+            ],
+            "requirements": [
+              "Linux basics",
+              "Markdown or spreadsheet"
+            ],
+            "hint": "Keep every proposed conclusion tied to a source artifact.",
+            "solutionCode": "Example mapping: authentication→journald/audit; execution→audit/process; persistence→systemd/cron; file activity→filesystem metadata; time→multiple sources.",
+            "solutionExplanation": "The matrix demonstrates question-driven collection and explicit limitations."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Storage, VFS, ext4, and Timestamps",
+        "description": "Understand Linux storage layers and filesystem metadata needed for forensic interpretation.",
+        "lessons": [
+          {
+            "id": "l02-01",
+            "title": "Storage Layers and VFS",
+            "description": "Distinguish block devices, partitions, filesystems, directories, and inodes.",
+            "learningObjectives": [
+              "differentiate storage layers",
+              "explain why offsets matter",
+              "describe the VFS abstraction"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A disk or image can contain partitions and filesystems. The VFS gives userspace a common interface over different filesystem implementations."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A pathname is a namespace view, not a physical address.",
+                  "Incorrect layer identification can invalidate higher-level parsing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l02-01-quiz",
+              "question": "Why establish filesystem boundaries before parsing?",
+              "options": [
+                "The parser needs the correct filesystem structures and offsets",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "The parser needs the correct filesystem structures and offsets",
+              "explanation": "Forensic parsing depends on correct layer identification."
+            },
+            "summary": [
+              "Storage-layer understanding prevents false interpretations."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/vfs.html",
+              "https://www.sleuthkit.org/sleuthkit/docs/api-docs/4.15.0-develop/fspage.html"
+            ]
+          },
+          {
+            "id": "l02-02",
+            "title": "ext4 Inodes and Directory Entries",
+            "description": "Understand inode metadata and how directory names map to inodes.",
+            "learningObjectives": [
+              "explain inode purpose",
+              "distinguish directory entries from inode data",
+              "interpret hard-link identity"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ext4 inodes store metadata for filesystem objects. Directory entries associate names with inode numbers; a hard link can provide another name for the same inode."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Ownership, mode, size, and timestamps are metadata.",
+                  "A pathname does not uniquely define filesystem object identity."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l02-02-quiz",
+              "question": "What is the relationship between a hard-linked name and an inode?",
+              "options": [
+                "They can be two names for the same inode",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "They can be two names for the same inode",
+              "explanation": "Hard links create multiple directory entries referring to the same inode."
+            },
+            "summary": [
+              "Filesystem identity is richer than a pathname."
+            ],
+            "resources": [
+              "https://docs.kernel.org/filesystems/ext4/",
+              "https://docs.kernel.org/filesystems/vfs.html"
+            ]
+          },
+          {
+            "id": "l02-03",
+            "title": "ext4 Journaling",
+            "description": "Explain journal purpose and forensic limitations.",
+            "learningObjectives": [
+              "describe ext4 journal purpose",
+              "distinguish metadata journaling from activity logging",
+              "state recovery limits"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Kernel documentation describes ext4 journaling as part of crash consistency. Under the usual data=ordered mode, metadata is journaled; the journal is not a complete user activity log."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Journal contents are finite and can be overwritten.",
+                  "Use journal evidence with inode, log, and application evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l02-03-quiz",
+              "question": "What is the safest description of the ext4 journal?",
+              "options": [
+                "A filesystem-consistency mechanism that records journaled transactions",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "A filesystem-consistency mechanism that records journaled transactions",
+              "explanation": "The journal supports filesystem consistency and recovery; it is not a universal history of user actions."
+            },
+            "summary": [
+              "Journal evidence must stay within documented ext4 semantics."
+            ],
+            "resources": [
+              "https://cdn.kernel.org/doc/html/latest/filesystems/ext4/journal.html",
+              "https://docs.kernel.org/filesystems/ext4/"
+            ]
+          },
+          {
+            "id": "l02-04",
+            "title": "Linux Timestamps",
+            "description": "Interpret atime, mtime, ctime, and optional birth-time fields without renaming their meaning.",
+            "learningObjectives": [
+              "interpret stat timestamps",
+              "preserve source time representation",
+              "identify clock/timezone issues"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Linux atime concerns access, mtime concerns content modification, and ctime concerns inode/status change. ctime is not a generic creation timestamp."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Filesystem and kernel support determines whether birth time is available.",
+                  "Preserve original timestamps and document any conversion."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p02-04",
+                "title": "Timestamp Lab",
+                "description": "Observe how content and metadata changes affect stat output.",
+                "steps": [
+                  "Create a file.",
+                  "Run stat.",
+                  "Modify its contents and run stat.",
+                  "Change permissions and run stat.",
+                  "Explain mtime versus ctime."
+                ],
+                "solution": "```bash\nprintf \"one\\n\" > sample.txt\nstat sample.txt\nprintf \"two\\n\" >> sample.txt\nstat sample.txt\nchmod 640 sample.txt\nstat sample.txt\n```",
+                "output": "Exact timestamps vary. The expected learning result is correct interpretation of content and inode changes."
+              }
+            ],
+            "quiz": {
+              "id": "l02-04-quiz",
+              "question": "What does Linux ctime represent?",
+              "options": [
+                "The last inode/status change",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "The last inode/status change",
+              "explanation": "Linux ctime represents inode/status change time rather than a generic creation timestamp."
+            },
+            "summary": [
+              "Timestamp semantics are platform-specific."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man1/stat.1.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t02-01",
+            "title": "Classify Filesystem Timeline Evidence",
+            "level": "Intermediate",
+            "description": "Separate observed filesystem values from inference and attribution.",
+            "problemStatement": "Given synthetic ext4 metadata, classify each statement as observation, inference, or unsupported attribution.",
+            "objectives": [
+              "preserve time semantics",
+              "identify unsupported attribution",
+              "list corroborating artifacts"
+            ],
+            "requirements": [
+              "Synthetic CSV",
+              "Linux filesystem knowledge"
+            ],
+            "hint": "Do not rename ctime as creation time.",
+            "solutionCode": "Observation: filesystem reports ctime T. Inference: inode state changed near T. Unsupported: a named person intentionally performed the change.",
+            "solutionExplanation": "This task teaches evidence-bounded reasoning."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "journald, Audit, Authentication, and Retention",
+        "description": "Analyze Linux logs, audit telemetry, authentication, privilege use, and evidence gaps.",
+        "lessons": [
+          {
+            "id": "l03-01",
+            "title": "systemd-journald",
+            "description": "Query bounded journal records and interpret retention correctly.",
+            "learningObjectives": [
+              "run journalctl queries",
+              "identify useful fields",
+              "state retention limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "systemd-journald collects structured records from multiple sources. journalctl can filter by time, unit, and priority."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Journal persistence and retention depend on configuration.",
+                  "A query reports what matching records remain available."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p03-01",
+                "title": "Bounded Journal Review",
+                "description": "Run read-only journal queries and document source, time, and limitations.",
+                "steps": [
+                  "List boots.",
+                  "Choose a boot/time range.",
+                  "Query a narrow period.",
+                  "Query one unit if relevant.",
+                  "Record gaps without modifying the journal."
+                ],
+                "solution": "```bash\njournalctl --list-boots\njournalctl --since \"1 hour ago\" --until \"now\"\njournalctl -u systemd-logind.service --since \"1 hour ago\" --until \"now\"\n```",
+                "output": "The exact records depend on the lab host. No fixed log output should be expected."
+              }
+            ],
+            "quiz": {
+              "id": "l03-01-quiz",
+              "question": "What does a bounded journalctl query establish?",
+              "options": [
+                "What matching records are present in the selected journal/time range",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "What matching records are present in the selected journal/time range",
+              "explanation": "The query is bounded by source, time, filters, and retention."
+            },
+            "summary": [
+              "Journal evidence must be interpreted with configuration and retention context."
+            ],
+            "resources": [
+              "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html",
+              "https://www.freedesktop.org/software/systemd/man/latest/systemd-journald.service.html"
+            ]
+          },
+          {
+            "id": "l03-02",
+            "title": "Linux Audit and ausearch",
+            "description": "Understand auditd and query audit records while checking configuration assumptions.",
+            "learningObjectives": [
+              "explain auditd/ausearch",
+              "query audit types",
+              "identify rule/retention limits"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "auditd writes audit records; ausearch and aureport inspect them. Recorded coverage depends on audit configuration and rules."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Audit is configurable telemetry.",
+                  "Historical rule configuration may be essential to explain missing records."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l03-02-quiz",
+              "question": "What most directly affects Linux Audit coverage?",
+              "options": [
+                "The audit rules/configuration in effect",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "The audit rules/configuration in effect",
+              "explanation": "Enabled rules determine which audit events are generated."
+            },
+            "summary": [
+              "Audit evidence is powerful but not universal."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man8/auditd.8.html",
+              "https://man7.org/linux/man-pages/man8/ausearch.8.html"
+            ]
+          },
+          {
+            "id": "l03-03",
+            "title": "Authentication and Privilege Evidence",
+            "description": "Correlate SSH/PAM, sudo, audit, and journal records while separating account identity from human attribution.",
+            "learningObjectives": [
+              "correlate login and privilege events",
+              "interpret successful authentication",
+              "state attribution limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A successful authentication record establishes a system-observed authentication event for an account or mechanism. It does not independently identify the physical operator."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Shared accounts and stolen credentials complicate attribution.",
+                  "Post-login activity should be correlated with process and filesystem evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l03-03-quiz",
+              "question": "What is the safest conclusion from a successful SSH login record?",
+              "options": [
+                "The system recorded successful authentication for the account",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "The system recorded successful authentication for the account",
+              "explanation": "The record supports the authentication event; attribution and subsequent activity need additional evidence."
+            },
+            "summary": [
+              "Account identity and human identity are different evidence questions."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l03-04",
+            "title": "Rotation, Retention, and Centralized Logs",
+            "description": "Investigate missing log periods without assuming deliberate deletion.",
+            "learningObjectives": [
+              "identify retention causes",
+              "compare local and remote logging",
+              "document evidence gaps"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Logs can rotate, compress, expire, or be centrally forwarded. Missing data can also result from clock errors, acquisition scope, storage issues, or deliberate deletion."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Retention is part of evidence completeness.",
+                  "Never fill a gap with an invented event."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l03-04-quiz",
+              "question": "What should an examiner do when an expected log period is missing?",
+              "options": [
+                "Check retention, rotation, configuration, time sources, remote logging, and scope",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Check retention, rotation, configuration, time sources, remote logging, and scope",
+              "explanation": "Multiple benign and technical explanations must be tested before concluding deliberate manipulation."
+            },
+            "summary": [
+              "Evidence gaps should be documented and investigated."
+            ],
+            "resources": [
+              "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html",
+              "https://man7.org/linux/man-pages/man8/auditd.8.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t03-01",
+            "title": "Correlate Login-to-Privilege Activity",
+            "level": "Intermediate",
+            "description": "Create a source-preserving sequence from synthetic auth, sudo, and audit data.",
+            "problemStatement": "Correlate a successful SSH event, sudo authorization, and command event.",
+            "objectives": [
+              "align timestamps",
+              "preserve sources",
+              "state what cannot be attributed"
+            ],
+            "requirements": [
+              "Synthetic records",
+              "Spreadsheet or Markdown"
+            ],
+            "hint": "Do not translate account names into people.",
+            "solutionCode": "Conclusion: the host recorded authentication followed by privileged command activity; physical operator identity remains unresolved.",
+            "solutionExplanation": "Cross-source correlation increases confidence without inventing attribution."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Processes, /proc, Shells, and Persistence",
+        "description": "Investigate live process state, shell history, systemd units, timers, and cron without changing evidence.",
+        "lessons": [
+          {
+            "id": "l04-01",
+            "title": "/proc Live-State Triage",
+            "description": "Use /proc for controlled point-in-time process inspection.",
+            "learningObjectives": [
+              "inspect process state",
+              "read command lines safely",
+              "explain volatility"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "proc is a virtual filesystem exposing kernel and process information. Entries such as /proc/PID/status and /proc/PID/cmdline represent live state."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "PIDs can disappear during collection.",
+                  "/proc is not a historical database."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04-01",
+                "title": "Process Snapshot",
+                "description": "Collect selected /proc evidence for a benign process.",
+                "steps": [
+                  "List processes.",
+                  "Select a benign PID.",
+                  "Read status and command line.",
+                  "List file descriptors.",
+                  "Repeat after a short interval."
+                ],
+                "solution": "```bash\nPID=$(pgrep -n systemd || true)\nif [ -n \"$PID\" ]; then cat /proc/$PID/status; tr \"\\0\" \" \" < /proc/$PID/cmdline; echo; ls -l /proc/$PID/fd; fi\n```",
+                "output": "Output varies by host. The important result is recognizing live-state volatility."
+              }
+            ],
+            "quiz": {
+              "id": "l04-01-quiz",
+              "question": "What is the main limitation of /proc evidence?",
+              "options": [
+                "It reflects live state and is time-sensitive",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "It reflects live state and is time-sensitive",
+              "explanation": "proc is a live kernel interface."
+            },
+            "summary": [
+              "Live triage requires timestamps and collection notes."
+            ],
+            "resources": [
+              "https://www.kernel.org/doc/html/latest/filesystems/proc.html"
+            ]
+          },
+          {
+            "id": "l04-02",
+            "title": "Shell History",
+            "description": "Interpret shell history as contextual evidence rather than a complete execution log.",
+            "learningObjectives": [
+              "inspect history safely",
+              "identify omission/tampering limits",
+              "correlate with audit evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Shell history behavior depends on shell configuration and use. Commands can be omitted, altered, disabled, or executed outside interactive shells."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Audit/process telemetry can corroborate execution.",
+                  "Never inject test commands into real case data."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l04-02-quiz",
+              "question": "Why is shell history incomplete?",
+              "options": [
+                "It can be absent/altered and misses other execution paths",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "It can be absent/altered and misses other execution paths",
+              "explanation": "History is user-space evidence with coverage limitations."
+            },
+            "summary": [
+              "Use shell history with independent sources."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l04-03",
+            "title": "systemd Services and Timers",
+            "description": "Inspect current service/timer configuration and correlate it with execution telemetry.",
+            "learningObjectives": [
+              "identify enabled units",
+              "inspect timer configuration",
+              "distinguish configuration from execution"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An enabled systemd unit establishes current configuration state. It does not, alone, prove when it was created or that it executed."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Journal/audit/process records can establish execution.",
+                  "Forensic inspection should be read-only."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l04-03-quiz",
+              "question": "What does an enabled systemd unit establish by itself?",
+              "options": [
+                "Current enabled configuration",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Current enabled configuration",
+              "explanation": "Configuration and observed execution are distinct evidence classes."
+            },
+            "summary": [
+              "Persistence analysis combines configuration and execution evidence."
+            ],
+            "resources": [
+              "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html"
+            ]
+          },
+          {
+            "id": "l04-04",
+            "title": "Cron and Scheduled Execution",
+            "description": "Interpret cron definitions and distinguish configured schedules from observed execution.",
+            "learningObjectives": [
+              "locate cron configuration",
+              "interpret schedules",
+              "seek execution corroboration"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Cron entries describe scheduled commands. They do not automatically prove that a scheduled command ran successfully."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Correlate cron definitions with logs and audit events.",
+                  "Do not modify schedules during examination."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l04-04-quiz",
+              "question": "What does a cron entry directly show?",
+              "options": [
+                "A scheduled command is configured",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "A scheduled command is configured",
+              "explanation": "A cron entry is configuration evidence, not execution proof."
+            },
+            "summary": [
+              "Scheduled execution requires corroborating telemetry."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t04-01",
+            "title": "Reconstruct an Execution Chain",
+            "level": "Advanced",
+            "description": "Correlate service, process, shell, and audit evidence.",
+            "problemStatement": "Determine whether a scheduled-service process chain is internally consistent and identify missing evidence.",
+            "objectives": [
+              "build a process timeline",
+              "correlate configuration and execution",
+              "state uncertainty"
+            ],
+            "requirements": [
+              "Synthetic records",
+              "Linux service/process knowledge"
+            ],
+            "hint": "Start from parent-child relationships, then validate timing and source semantics.",
+            "solutionCode": "Supported: a service-related execution chain exists in the synthetic records. Unproven: authorship and malicious intent.",
+            "solutionExplanation": "The task trains process-context reasoning."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Users, Permissions, Capabilities, and Links",
+        "description": "Interpret Linux identity, access configuration, capabilities, extended attributes, and link semantics.",
+        "lessons": [
+          {
+            "id": "l05-01",
+            "title": "UID/GID and Account State",
+            "description": "Interpret Linux account mappings and session evidence.",
+            "learningObjectives": [
+              "explain UID/GID",
+              "inspect account state",
+              "separate configured accounts from observed use"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "UIDs and GIDs are numeric identities used by Linux permissions and process credentials. NSS may provide identity information beyond local files."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Configured account state is not proof of interactive use.",
+                  "Do not expose password hashes or secrets."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l05-01-quiz",
+              "question": "What does a UID provide?",
+              "options": [
+                "A numeric OS identity used for ownership and process credentials",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "A numeric OS identity used for ownership and process credentials",
+              "explanation": "UID is a numeric identity used by Linux access-control mechanisms."
+            },
+            "summary": [
+              "Identity mapping is not human attribution."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l05-02",
+            "title": "Permissions and ACLs",
+            "description": "Read mode bits and ACLs as access configuration.",
+            "learningObjectives": [
+              "interpret mode bits",
+              "inspect ACLs",
+              "separate allowed access from observed access"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Mode bits express owner/group/other permissions. POSIX ACLs can add entries beyond basic mode bits when supported."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Permissions describe authorization state.",
+                  "Actual access needs access-event evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p05-02",
+                "title": "Permission and ACL Inspection",
+                "description": "Create controlled lab files and inspect their permissions.",
+                "steps": [
+                  "Create two files.",
+                  "Set modes 600 and 644.",
+                  "Inspect with stat and ls.",
+                  "Run getfacl if available.",
+                  "Write one limitation."
+                ],
+                "solution": "```bash\nmkdir -p lab-perms\nprintf A > lab-perms/a\nprintf B > lab-perms/b\nchmod 600 lab-perms/a\nchmod 644 lab-perms/b\nstat -c \"%A %U %G %a %n\" lab-perms/a lab-perms/b\ngetfacl lab-perms/a 2>/dev/null || true\n```",
+                "output": "The output shows access configuration; it does not prove a user actually accessed the files."
+              }
+            ],
+            "quiz": {
+              "id": "l05-02-quiz",
+              "question": "What does mode 600 mean under basic permissions?",
+              "options": [
+                "Owner read/write; group and others none",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Owner read/write; group and others none",
+              "explanation": "600 grants read/write to owner and no permissions to group or others."
+            },
+            "summary": [
+              "Access configuration is not access history."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man1/stat.1.html"
+            ]
+          },
+          {
+            "id": "l05-03",
+            "title": "Linux Capabilities",
+            "description": "Analyze fine-grained privileges as configuration/state.",
+            "learningObjectives": [
+              "explain capabilities",
+              "inspect file/process capabilities",
+              "avoid privilege-to-malware overclaims"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Linux capabilities divide selected privileged operations into units. They may be associated with processes or file metadata."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A capability indicates privilege, not intent.",
+                  "Do not modify capabilities on evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l05-03-quiz",
+              "question": "What is a Linux capability?",
+              "options": [
+                "A distinct unit of privilege",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "A distinct unit of privilege",
+              "explanation": "Capabilities represent fine-grained privileged operations."
+            },
+            "summary": [
+              "Privilege evidence needs execution and usage context."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man7/capabilities.7.html"
+            ]
+          },
+          {
+            "id": "l05-04",
+            "title": "Extended Attributes and Links",
+            "description": "Interpret xattrs, symlinks, and hard links and their collection implications.",
+            "learningObjectives": [
+              "inspect xattrs",
+              "distinguish symlink and hard link",
+              "control traversal"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Extended attributes attach name/value metadata. A symlink stores a path reference; a hard link is another directory entry to the same inode."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Following symlinks can cross an evidence-root boundary.",
+                  "Link semantics can affect file identity and duplication analysis."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l05-04-quiz",
+              "question": "Why can symlinks matter during forensic collection?",
+              "options": [
+                "They can point outside the intended evidence tree",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "They can point outside the intended evidence tree",
+              "explanation": "A path-based collector can accidentally leave the intended root by following symlink targets."
+            },
+            "summary": [
+              "Safe traversal is a forensic boundary control."
+            ],
+            "resources": [
+              "https://man7.org/linux/man-pages/man2/lstat.2.html",
+              "https://man7.org/linux/man-pages/man7/xattr.7.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t05-01",
+            "title": "Assess a Privilege-Capability Finding",
+            "level": "Advanced",
+            "description": "Evaluate whether a capability finding warrants escalation.",
+            "problemStatement": "Separate evidence that a capability exists from evidence that a binary executed or used the privilege.",
+            "objectives": [
+              "interpret capability state",
+              "correlate metadata and execution",
+              "state gaps"
+            ],
+            "requirements": [
+              "Synthetic evidence",
+              "Linux capability knowledge"
+            ],
+            "hint": "Analyze the inference chain one step at a time.",
+            "solutionCode": "The capability establishes privileged configuration. It does not by itself establish execution, misuse, or authorship.",
+            "solutionExplanation": "This prevents a single-artifact verdict."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Network, SSH, Packages, and Application Data",
+        "description": "Correlate live network state, SSH configuration/authentication, package provenance, and SQLite application evidence.",
+        "lessons": [
+          {
+            "id": "l06-01",
+            "title": "Socket and Network State",
+            "description": "Use live socket and interface state as point-in-time evidence.",
+            "learningObjectives": [
+              "inspect sockets",
+              "distinguish live state from history",
+              "correlate with processes"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ss reports socket state; interface and route commands describe configuration at collection time. Historical activity requires retained telemetry."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "An IP address is not a human identity.",
+                  "Encrypted traffic may still expose metadata without plaintext."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l06-01-quiz",
+              "question": "What is the main limitation of ss forensics?",
+              "options": [
+                "It is primarily a point-in-time view of socket state",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "It is primarily a point-in-time view of socket state",
+              "explanation": "The command provides current socket state unless persistent telemetry is also available."
+            },
+            "summary": [
+              "Network evidence gains value through correlation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l06-02",
+            "title": "SSH Evidence",
+            "description": "Correlate SSH configuration and authentication events.",
+            "learningObjectives": [
+              "inspect effective configuration",
+              "identify authentication events",
+              "separate allowed access from observed use"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SSH configuration can define authentication methods and access settings. Authorized keys show configured access; authentication logs show observed events."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Post-login process and sudo evidence can establish subsequent activity.",
+                  "Never copy private keys or tokens into reports."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p06-02",
+                "title": "SSH Correlation Lab",
+                "description": "Inspect controlled SSH configuration and correlate it with journal records.",
+                "steps": [
+                  "Record relevant effective configuration.",
+                  "Query a bounded SSH-related log period.",
+                  "Compare key configuration with recorded authentication.",
+                  "State one supported conclusion and one limitation."
+                ],
+                "solution": "```bash\nsshd -T 2>/dev/null | grep -E \"^(port|passwordauthentication|pubkeyauthentication)$\" || true\njournalctl --since \"24 hours ago\" | grep -Ei \"sshd|ssh\" | tail -100\n```",
+                "output": "Exact records vary by lab host. The result should keep configuration and observed authentication separate."
+              }
+            ],
+            "quiz": {
+              "id": "l06-02-quiz",
+              "question": "What does an authorized SSH public key primarily establish?",
+              "options": [
+                "The account is configured to permit that key",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "The account is configured to permit that key",
+              "explanation": "Configuration establishes permitted authentication state, not observed use."
+            },
+            "summary": [
+              "SSH findings should combine configuration and event records."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l06-03",
+            "title": "Package Provenance",
+            "description": "Use package databases to contextualize binaries.",
+            "learningObjectives": [
+              "query package ownership",
+              "interpret provenance",
+              "identify unmanaged-file limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Package systems can map installed paths to package ownership on supported distributions. A file outside package ownership may be locally compiled or copied."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Package ownership does not identify the person who installed software.",
+                  "Do not alter package state during examination."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l06-03-quiz",
+              "question": "What can package ownership tell an examiner?",
+              "options": [
+                "A path is associated with an installed package",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "A path is associated with an installed package",
+              "explanation": "It supplies provenance/context about installed software."
+            },
+            "summary": [
+              "Package context is useful but not a complete attribution mechanism."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l06-04",
+            "title": "SQLite Application Evidence",
+            "description": "Inspect a SQLite artifact read-only and preserve schema/timestamp semantics.",
+            "learningObjectives": [
+              "inspect schema",
+              "query read-only",
+              "use parameterized queries",
+              "preserve database hash"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Applications may use SQLite to store history and state. Schema and timestamp semantics are application-specific."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Read-only access reduces accidental modification.",
+                  "A syntactically correct query can still support a wrong interpretation if schema is misunderstood."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l06-04-quiz",
+              "question": "Why inspect the SQLite schema first?",
+              "options": [
+                "To understand data structure and avoid incorrect assumptions",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "To understand data structure and avoid incorrect assumptions",
+              "explanation": "The schema defines tables/fields and their relationships."
+            },
+            "summary": [
+              "Application data requires schema-aware interpretation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t06-01",
+            "title": "Correlate Remote-Access Evidence",
+            "level": "Intermediate",
+            "description": "Build a source-preserving SSH activity sequence.",
+            "problemStatement": "Combine configured access, authentication, process, and network observations.",
+            "objectives": [
+              "align source records",
+              "separate configuration from events",
+              "state attribution limits"
+            ],
+            "requirements": [
+              "Synthetic records"
+            ],
+            "hint": "Keep account identity separate from human identity.",
+            "solutionCode": "The records can support a sequence of configured access→authentication→process activity, while human attribution remains unresolved.",
+            "solutionExplanation": "The task reinforces cross-source correlation."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Memory Forensics with Volatility 3",
+        "description": "Use current Volatility 3 Linux plugins on permitted memory images and understand acquisition limitations.",
+        "lessons": [
+          {
+            "id": "l07-01",
+            "title": "Volatile Memory Fundamentals",
+            "description": "Understand what RAM can answer and why acquisition is disruptive.",
+            "learningObjectives": [
+              "identify volatile artifacts",
+              "explain snapshot limits",
+              "document acquisition conditions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "RAM can contain processes, command lines, mappings, sockets, modules, and transient secrets/tokens in some contexts. A memory image is a snapshot."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Acquisition can change memory.",
+                  "Volatility 3 analyzes memory images; it is not a general Linux memory-acquisition tool."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l07-01-quiz",
+              "question": "What is a defining memory-image limitation?",
+              "options": [
+                "It represents volatile state at a particular time",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "It represents volatile state at a particular time",
+              "explanation": "Memory is dynamic and the image captures only a point-in-time state."
+            },
+            "summary": [
+              "Memory analysis complements persistent evidence."
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/"
+            ]
+          },
+          {
+            "id": "l07-02",
+            "title": "Volatility 3 Linux Process Analysis",
+            "description": "Run current Linux process plugins and interpret ancestry.",
+            "learningObjectives": [
+              "run linux.pslist",
+              "run linux.pstree",
+              "record symbol/tool context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Current Volatility 3 documentation includes Linux process plugins such as `linux.pslist`, `linux.pstree`, and `linux.psaux`. Linux symbol information may be required."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Output varies with image and symbols.",
+                  "Use permitted training memory images only."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p07-02",
+                "title": "Analyze a Training Memory Image",
+                "description": "Run process plugins against an instructor-provided or permitted public training image.",
+                "steps": [
+                  "Verify any supplied reference hash.",
+                  "Record Volatility version.",
+                  "Run linux.pslist.",
+                  "Run linux.pstree.",
+                  "Run linux.psaux.",
+                  "Select one lead and state one benign alternative explanation."
+                ],
+                "solution": "```bash\npython3 vol.py -f linux-memdump.raw linux.pslist > pslist.txt\npython3 vol.py -f linux-memdump.raw linux.pstree > pstree.txt\npython3 vol.py -f linux-memdump.raw linux.psaux > psaux.txt\n```",
+                "output": "Exact process output depends on the memory image. The important result is correct procedure and cautious interpretation."
+              }
+            ],
+            "quiz": {
+              "id": "l07-02-quiz",
+              "question": "What does linux.pstree primarily provide?",
+              "options": [
+                "Process parent/child relationships",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Process parent/child relationships",
+              "explanation": "The plugin adds execution context through process ancestry."
+            },
+            "summary": [
+              "Current plugin documentation should guide use."
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/volatility3.plugins.linux.pslist.html",
+              "https://volatility3.readthedocs.io/en/latest/"
+            ]
+          },
+          {
+            "id": "l07-03",
+            "title": "Memory Anomalies and Corroboration",
+            "description": "Use loaded modules and process anomalies as leads requiring disk/log validation.",
+            "learningObjectives": [
+              "identify anomalies",
+              "define corroborating evidence",
+              "avoid anomaly-to-malware leaps"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An unusual module or process chain is a lead. Validate path, file bytes, package ownership, persistence, and logs when available."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Unfamiliar is not synonymous with malicious.",
+                  "Persistent evidence can validate volatile findings."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l07-03-quiz",
+              "question": "Why correlate a suspicious memory module with disk evidence?",
+              "options": [
+                "To validate path, bytes, provenance, and persistence",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "To validate path, bytes, provenance, and persistence",
+              "explanation": "Persistent evidence provides context missing from a volatile snapshot."
+            },
+            "summary": [
+              "Memory creates leads; corroboration supports conclusions."
+            ],
+            "resources": [
+              "https://volatility3.readthedocs.io/en/latest/",
+              "https://www.kernel.org/doc/html/latest/filesystems/proc.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t07-01",
+            "title": "Triage a Linux Memory Anomaly",
+            "level": "Advanced",
+            "description": "Evaluate a synthetic Volatility process/module finding.",
+            "problemStatement": "Decide whether escalation is justified and specify the evidence needed before calling it malicious.",
+            "objectives": [
+              "interpret ancestry",
+              "correlate persistent evidence",
+              "state alternative explanations"
+            ],
+            "requirements": [
+              "Synthetic Volatility output"
+            ],
+            "hint": "Separate anomaly detection from malware classification.",
+            "solutionCode": "Escalate for deeper validation, then correlate module path/hash, package ownership, persistence, and logs.",
+            "solutionExplanation": "The task models disciplined memory triage."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Timelines, Anti-Forensics, Validation, Reporting, and Project",
+        "description": "Construct defensible timelines, recognize evidence gaps, validate tools, report findings, and complete the final project.",
+        "lessons": [
+          {
+            "id": "l08-01",
+            "title": "Source-Preserving Timelines",
+            "description": "Build timelines that retain original timestamps and artifact provenance.",
+            "learningObjectives": [
+              "design timeline fields",
+              "preserve source times",
+              "identify conflicts"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A timeline is a derived analytical dataset. Keep source timestamp and artifact alongside any normalized value."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not silently resolve contradictions.",
+                  "Each important event should be traceable back to evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p08-01",
+                "title": "Build a Linux Timeline",
+                "description": "Merge synthetic journal, audit, and filesystem CSV files.",
+                "steps": [
+                  "Read each CSV.",
+                  "Add source labels.",
+                  "Preserve original timestamps.",
+                  "Sort by normalized time.",
+                  "Write timeline.csv.",
+                  "Record conflicts."
+                ],
+                "solution": "```python\nimport csv\nsources={\"journal.csv\":\"journal\",\"audit.csv\":\"audit\",\"filesystem.csv\":\"filesystem\"}\nevents=[]\nfor fn,src in sources.items():\n    with open(fn,newline=\"\",encoding=\"utf-8\") as f:\n        for r in csv.DictReader(f): events.append({\"source\":src,\"source_time\":r[\"timestamp\"],\"event\":r[\"event\"]})\nevents.sort(key=lambda e:e[\"source_time\"])\nwith open(\"timeline.csv\",\"w\",newline=\"\",encoding=\"utf-8\") as f:\n    w=csv.DictWriter(f,fieldnames=[\"source\",\"source_time\",\"event\"]); w.writeheader(); w.writerows(events)\n```",
+                "output": "The output is a chronological analytical view with source provenance."
+              }
+            ],
+            "quiz": {
+              "id": "l08-01-quiz",
+              "question": "What makes a derived timeline traceable?",
+              "options": [
+                "Each event links to a source artifact and preserves time semantics",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Each event links to a source artifact and preserves time semantics",
+              "explanation": "Traceability connects derived rows to the evidence from which they were produced."
+            },
+            "summary": [
+              "Timeline construction is analysis, not original evidence."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l08-02",
+            "title": "Anti-Forensics Awareness",
+            "description": "Recognize wiping, log clearing, timestamp manipulation, and encryption as evidence-gap categories.",
+            "learningObjectives": [
+              "identify anti-forensics categories",
+              "test benign alternatives",
+              "document unresolved gaps"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Evidence loss can result from wiping or clearing, but also from retention, configuration, clock problems, acquisition limits, or normal system behavior."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Treat evidence gaps as hypotheses to investigate.",
+                  "Do not perform destructive evasion techniques in labs unless explicitly authorized and safe."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l08-02-quiz",
+              "question": "What should happen when an expected artifact is missing?",
+              "options": [
+                "Test retention, configuration, clock, acquisition, and scope before concluding manipulation",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Test retention, configuration, clock, acquisition, and scope before concluding manipulation",
+              "explanation": "Multiple explanations must be considered before concluding deliberate evidence destruction."
+            },
+            "summary": [
+              "The course focuses on defensive recognition, not evasion procedures."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l08-03",
+            "title": "Tool Validation",
+            "description": "Validate forensic functions using known data and preserved tool context.",
+            "learningObjectives": [
+              "design validation tests",
+              "compare expected and actual output",
+              "retain versions and test data"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Tool validation is function- and condition-specific. A known test image with expected artifacts provides a stronger basis than popularity or recency alone."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record tool version, environment, configuration, and expected results.",
+                  "Preserve scripts and derived outputs where reproducibility matters."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l08-03-quiz",
+              "question": "Which is a strong tool-validation test?",
+              "options": [
+                "Run a known test image with expected artifacts and compare results",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "Run a known test image with expected artifacts and compare results",
+              "explanation": "Controlled expected data allows a defined forensic function to be tested."
+            },
+            "summary": [
+              "Validation supports repeatability and review."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.sleuthkit.org/sleuthkit/docs.php"
+            ]
+          },
+          {
+            "id": "l08-04",
+            "title": "Forensic Reporting",
+            "description": "Write findings using observation, corroboration, interpretation, and limitation.",
+            "learningObjectives": [
+              "structure a report",
+              "write evidence-grounded findings",
+              "state uncertainty"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful report contains scope, evidence, integrity, methods, tools/versions, findings, limitations, conclusions, and supporting exhibits."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use the narrowest claim supported by evidence.",
+                  "Do not convert account activity into human identity without additional evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l08-04-quiz",
+              "question": "Which report wording is strongest when attribution is uncertain?",
+              "options": [
+                "The system recorded successful authentication for account X at 18:42Z",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "The system recorded successful authentication for account X at 18:42Z",
+              "explanation": "The first statement is directly tied to a system record and avoids unsupported attribution."
+            },
+            "summary": [
+              "Strong reports expose limitations."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "l08-05",
+            "title": "Case Closure and Reproducibility",
+            "description": "Prepare evidence, methods, derived outputs, and reports for future review.",
+            "learningObjectives": [
+              "build a closure checklist",
+              "preserve integrity records",
+              "retain reproducibility material"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Closure can include evidence hashes, custody/provenance, working-copy derivation, tool versions, scripts, queries, reports, exhibits, and archive controls."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not store passwords, tokens, or private keys in ordinary reports.",
+                  "Retention and access controls should follow the case environment."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "l08-05-quiz",
+              "question": "Why retain forensic scripts?",
+              "options": [
+                "They can help reproduce and explain derived results",
+                "It always proves intent",
+                "It records every historical event",
+                "It is unrelated to the lesson"
+              ],
+              "answer": "They can help reproduce and explain derived results",
+              "explanation": "Scripts document how derived data was transformed and can support review."
+            },
+            "summary": [
+              "Case closure includes future reproducibility."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Linux Forensic Evidence Triage Workbench",
+          "description": "A read-only Python workbench for an authorized Linux evidence working directory. It inventories regular files, computes SHA-256, records generic filesystem times available through Python, detects duplicate content, and writes structured reports outside the evidence root.",
+          "conceptsCovered": [
+            "evidence working copies",
+            "SHA-256",
+            "filesystem metadata",
+            "safe traversal",
+            "symlink boundary control",
+            "duplicate-content analysis",
+            "CSV/JSON reporting",
+            "unit testing",
+            "reproducibility"
+          ],
+          "steps": [
+            "Create synthetic nested evidence with a zero-byte file and a duplicate-content pair.",
+            "Create the project files from the embedded code.",
+            "Run `python3 -m unittest -v`.",
+            "Run `python3 main.py <evidence_dir> --output <report_dir>`.",
+            "Verify file count, hashes, timestamps, and duplicate groups.",
+            "Repeat and compare hashes.",
+            "Modify only a working copy and observe the changed digest.",
+            "Attempt an output directory inside the evidence root and verify refusal.",
+            "Write a short observation/interpretation/limitation note."
+          ],
+          "code": {
+            "forensic_core.py": "from __future__ import annotations\\nimport csv, hashlib, json\\nfrom collections import defaultdict\\nfrom dataclasses import asdict, dataclass\\nfrom datetime import datetime, timezone\\nfrom pathlib import Path\\n\\n@dataclass\\nclass FileRecord:\\n    path: str\\n    size: int\\n    sha256: str\\n    modified_utc: str\\n    accessed_utc: str\\n    status_changed_utc: str\\n\\ndef utc_iso(ts: float) -> str:\\n    return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()\\n\\ndef sha256_file(path: Path, chunk_size: int = 1024*1024) -> str:\\n    h=hashlib.sha256()\\n    with path.open('rb') as f:\\n        while True:\\n            b=f.read(chunk_size)\\n            if not b: break\\n            h.update(b)\\n    return h.hexdigest()\\n\\ndef collect_records(root: Path):\\n    out=[]\\n    for p in sorted(root.rglob('*')):\\n        if p.is_symlink() or not p.is_file(): continue\\n        st=p.stat()\\n        out.append(FileRecord(str(p.relative_to(root)),st.st_size,sha256_file(p),utc_iso(st.st_mtime),utc_iso(st.st_atime),utc_iso(st.st_ctime)))\\n    return out\\n\\ndef duplicate_groups(records):\\n    groups=defaultdict(list)\\n    for r in records: groups[r.sha256].append(r.path)\\n    return {k:v for k,v in groups.items() if len(v)>1}\\n\\ndef write_csv(records,path):\\n    fields=['path','size','sha256','modified_utc','accessed_utc','status_changed_utc']\\n    with path.open('w',newline='',encoding='utf-8') as f:\\n        w=csv.DictWriter(f,fieldnames=fields); w.writeheader()\\n        for r in records: w.writerow(asdict(r))\\n\\ndef write_json(records,path):\\n    path.write_text(json.dumps({'file_count':len(records),'records':[asdict(r) for r in records]},indent=2),encoding='utf-8')\\n\\ndef write_duplicates(records,path):\\n    path.write_text(json.dumps({'duplicate_groups':duplicate_groups(records)},indent=2),encoding='utf-8')\\n",
+            "main.py": "from __future__ import annotations\\nimport argparse,sys\\nfrom pathlib import Path\\nfrom forensic_core import collect_records,write_csv,write_json,write_duplicates\\n\\nap=argparse.ArgumentParser(description='Read-only Linux forensic triage')\\nap.add_argument('evidence_dir',type=Path)\\nap.add_argument('--output',type=Path,default=Path('forensic_report'))\\na=ap.parse_args()\\nroot=a.evidence_dir.resolve(); out=a.output.resolve()\\nif not root.is_dir(): print('Evidence directory does not exist',file=sys.stderr); raise SystemExit(2)\\nif out==root or root in out.parents: print('Refusing to write reports inside evidence directory',file=sys.stderr); raise SystemExit(2)\\nout.mkdir(parents=True,exist_ok=True)\\nrecords=collect_records(root)\\nwrite_csv(records,out/'file_inventory.csv'); write_json(records,out/'file_inventory.json'); write_duplicates(records,out/'duplicate_groups.json')\\nprint(f'Files examined: {len(records)}')\\n",
+            "test_forensic_core.py": "import tempfile,unittest\\nfrom pathlib import Path\\nfrom forensic_core import collect_records,duplicate_groups\\nclass TestCore(unittest.TestCase):\\n def test_duplicates(self):\\n  with tempfile.TemporaryDirectory() as td:\\n   r=Path(td); (r/'a').write_text('same'); (r/'b').write_text('same'); (r/'c').write_text('different')\\n   rs=collect_records(r); self.assertEqual(len(rs),3); self.assertEqual(sorted(next(iter(duplicate_groups(rs).values()))),['a','b'])\\n def test_symlink(self):\\n  with tempfile.TemporaryDirectory() as td:\\n   r=Path(td); t=r/'target'; t.write_text('x'); (r/'link').symlink_to(t); self.assertEqual([x.path for x in collect_records(r)],['target'])\\nif __name__=='__main__': unittest.main()\\n",
+            "README.md": "Educational, read-only triage project. Analyze only authorized working copies or evidence exports; this does not replace validated acquisition or forensic suites."
+          },
+          "explanation": "The project separates evidence input from generated reports, hashes regular files in chunks, records generic filesystem timestamps as derived metadata, excludes symlinks from regular-file traversal, groups identical content by SHA-256, and includes unit tests. It deliberately does not acquire disk images, recover deleted data, parse filesystem-native journals, or acquire RAM. Those functions require specialist tools and validated procedures.",
+          "validationPlan": [
+            "Run unit tests.",
+            "Test nested files and duplicate contents.",
+            "Repeat analysis and compare hashes.",
+            "Modify only a working copy and confirm the digest changes.",
+            "Verify unsafe output paths are rejected.",
+            "Review that evidence files are only opened for reading."
+          ],
+          "limitations": [
+            "Python stat fields are not a replacement for native forensic filesystem parsing.",
+            "The utility does not establish authorship or intent.",
+            "Hash equality establishes content equality, not provenance.",
+            "Actual investigations require appropriate authorization and evidentiary procedures."
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,1651 @@
+{
+  "course": {
+    "id": "system-security-fundamentals-to-practice",
+    "title": "System Security",
+    "slug": "system-security",
+    "description": "A practitioner-oriented System Security course focused on securing operating systems, servers, services, identities, filesystems, processes, and administrative paths. Students progress from host-security fundamentals through secure baselines, configuration management, least privilege, Linux capabilities, SSH hardening, SELinux, service isolation, patching, software integrity, Windows and Linux endpoint security, logging, file-integrity monitoring, and incident response. The course culminates in a read-only System Security Baseline Auditor that turns hardening requirements into evidence-backed control findings. It is appropriate for learners who know basic computing and are ready to work with Linux and Windows security concepts in authorized lab environments.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 68,
+    "prerequisites": [
+      "Basic computer and operating-system concepts.",
+      "Comfort with a command line and navigating files.",
+      "Basic understanding of users, processes, networking, and software installation is recommended.",
+      "A local Linux VM is strongly recommended for hands-on work; a Windows VM is useful for the endpoint-baseline lesson.",
+      "Only assess systems you own or are explicitly authorized to assess."
+    ],
+    "learningOutcomes": [
+      "Explain system-security goals, trust boundaries, threats, vulnerabilities, and risk.",
+      "Create and assess role-specific security baselines using authoritative configuration guidance.",
+      "Reduce host attack surface through service, account, privilege, and management-path controls.",
+      "Apply Linux permissions, ACLs, capabilities, SELinux concepts, and service isolation to reduce blast radius.",
+      "Design secure SSH administration and privileged-access models.",
+      "Build patching, software-integrity, configuration-drift, and control-assessment workflows.",
+      "Evaluate Windows and Linux host-hardening controls and security telemetry.",
+      "Investigate suspicious host activity using evidence-aware triage and response principles.",
+      "Write measurable system-security findings with evidence, risk rationale, remediation, and verification steps.",
+      "Build, test, and operate a read-only system-security baseline auditor."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "System Security Foundations",
+        "description": "Establish a host-security mental model: assets, trust boundaries, threat surfaces, security properties, and defense-in-depth.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "System Security Goals and Trust Boundaries",
+            "description": "Explain how system security protects hosts, workloads, identities, data, and management paths.",
+            "learningObjectives": [
+              "Explain confidentiality, integrity, availability, authenticity, accountability, and resilience in host-security contexts.",
+              "Identify trust boundaries between users, processes, services, administrators, and external systems.",
+              "Connect security goals to concrete system controls."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "System security is the practice of keeping a computing system trustworthy despite faults, misuse, malicious activity, and changing conditions. A useful model starts by naming what must be protected and what trust assumptions exist."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Confidentiality limits unauthorized disclosure.",
+                  "Integrity protects against unauthorized modification.",
+                  "Availability concerns timely access to required services.",
+                  "Trust boundaries are places where identity, privilege, data, or control assumptions change."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Example trust-boundary questions:\n- Who can start this service?\n- Which identity does it run as?\n- Which files can it write?\n- Which network peers can reach it?"
+              },
+              {
+                "type": "warning",
+                "text": "A secure boundary is enforced by controls; simply drawing a boundary does not create security."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which property is primarily affected when an attacker changes a system configuration without authorization?",
+              "options": [
+                "Availability",
+                "Integrity",
+                "Confidentiality",
+                "Compression"
+              ],
+              "answer": "Integrity",
+              "explanation": "The configuration has been altered, so the integrity of the system state has been compromised."
+            },
+            "summary": [
+              "Security goals describe desired outcomes, while controls implement those outcomes.",
+              "Trust boundaries should be explicit enough to support review and testing."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Threats, Vulnerabilities, Exploitation, and Risk",
+            "description": "Build precise terminology for host and workload security analysis.",
+            "learningObjectives": [
+              "Distinguish a threat from a vulnerability and an exploit.",
+              "Explain how exposure, likelihood, and impact affect risk.",
+              "Write a host-security risk statement with a clear asset and consequence."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A vulnerability is a weakness; a threat is a potential cause of harm; an exploit is a method that takes advantage of a weakness. Risk is contextual because the same weakness can matter differently depending on exposure, asset criticality, compensating controls, and operational constraints."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Exposure asks whether the weakness is reachable or otherwise usable.",
+                  "Impact describes what could happen if the weakness is abused.",
+                  "Controls can reduce probability, impact, or both."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "Which statement best distinguishes a vulnerability from an exploit?",
+              "options": [
+                "They are identical terms.",
+                "A vulnerability is a weakness; an exploit is a method or action that takes advantage of it.",
+                "An exploit is always a patch.",
+                "A vulnerability is a business process."
+              ],
+              "answer": "A vulnerability is a weakness; an exploit is a method or action that takes advantage of it.",
+              "explanation": "The terms refer to different stages of risk: weakness versus exploitation method."
+            },
+            "summary": [
+              "Use precise language in findings and change reviews.",
+              "Risk decisions should record context and assumptions."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              },
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Write a Host Risk Statement",
+            "level": "Easy",
+            "description": "Create three concise security risk statements for a fictional Linux server.",
+            "problemStatement": "For each case, name the asset, threat, weakness, impact, likelihood context, and one control.",
+            "objectives": [
+              "Separate threat from vulnerability.",
+              "State the business or operational consequence.",
+              "Choose a control that addresses the identified path."
+            ],
+            "requirements": [
+              "No special tooling is required; use a text editor."
+            ],
+            "hint": "Start with the protected asset, then describe the attack or failure path.",
+            "solutionCode": "Example: \"Internet-facing application server has unnecessary administrative service exposure; an external attacker could target the service and gain unauthorized execution, so management access should be restricted to a dedicated admin network and monitored.\"",
+            "solutionExplanation": "The solution is intentionally qualitative because the purpose is to practice disciplined risk statements rather than inventing a numerical model."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Secure Configuration and Hardening",
+        "description": "Turn vendor guidance, security baselines, and checklists into measurable host-hardening controls.",
+        "lessons": [
+          {
+            "id": "lesson-03",
+            "title": "Security Baselines and Configuration Checklists",
+            "description": "Learn how baseline configurations reduce attack surface and make drift measurable.",
+            "learningObjectives": [
+              "Explain the purpose of a security baseline.",
+              "Use authoritative vendor or industry checklists rather than inventing arbitrary settings.",
+              "Design a baseline that includes ownership, exceptions, and verification."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-70 Rev. 5 defines security configuration checklists as instructions or technical content used to configure a product to a target risk posture, verify configuration, detect unauthorized changes, or provide evidence of security posture."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A baseline is a target state, not a guarantee of security.",
+                  "Role-specific baselines are better than one universal configuration.",
+                  "Exceptions should have owners, rationale, and review dates."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "What is a core purpose of a security configuration checklist?",
+              "options": [
+                "Guarantee that no vulnerability exists",
+                "Define and verify a target configuration for a product and environment",
+                "Replace incident response",
+                "Replace all access controls"
+              ],
+              "answer": "Define and verify a target configuration for a product and environment",
+              "explanation": "Checklists provide repeatable secure-configuration guidance and verification."
+            },
+            "summary": [
+              "Baselines make secure configuration measurable.",
+              "NIST SP 800-70 Rev. 5 is the current NIST checklist guidance identified for this course."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-70 Rev. 5: National Checklist Program",
+                "url": "https://csrc.nist.gov/pubs/sp/800/70/r5/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Attack Surface Reduction",
+            "description": "Reduce exposed functionality without breaking required service behavior.",
+            "learningObjectives": [
+              "Identify unnecessary services, software, protocols, and management paths.",
+              "Explain why reducing attack surface should be role-specific.",
+              "Design a safe remove-or-disable change process."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Every enabled service creates some additional code, permissions, configuration, and monitoring requirements.",
+                  "Disable unused components rather than relying on obscurity.",
+                  "Validate dependencies before removing a service."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Linux inventory examples:\nss -lntup\nsystemctl --type=service --state=running\nrpm -qa | head"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Inventory and Reduce Listening Services",
+                "description": "In a disposable Linux VM, inventory listening services and document one safe attack-surface reduction change.",
+                "steps": [
+                  "Run ss -lntup and record the listening sockets.",
+                  "Use systemctl to identify the owning service where possible.",
+                  "Select one service that is not required for the lab role.",
+                  "Stop it in the lab, verify the listener disappears, and record the before/after state.",
+                  "Document how you would handle rollback in a production change."
+                ],
+                "solution": "Use ss -lntup to establish the baseline. For a nonessential test service, use systemctl stop <service> in the disposable VM, then re-run ss -lntup. The exact service name depends on the VM; do not stop a required management service.",
+                "output": "A before/after service table showing the removed listener and a documented rollback path."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "Why is attack-surface reduction valuable?",
+              "options": [
+                "It guarantees perfect security",
+                "It removes unnecessary exposed functionality and can reduce reachable weaknesses",
+                "It eliminates patches",
+                "It makes passwords unnecessary"
+              ],
+              "answer": "It removes unnecessary exposed functionality and can reduce reachable weaknesses",
+              "explanation": "Removing unnecessary exposure reduces the number of paths that need to be defended."
+            },
+            "summary": [
+              "Hardening must preserve required business function.",
+              "Exposure reduction complements patching and monitoring."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              },
+              {
+                "title": "Red Hat Enterprise Linux 10 Security Hardening",
+                "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/security_hardening/index"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05",
+            "title": "Configuration Drift and Continuous Assurance",
+            "description": "Detect when systems move away from the approved security state.",
+            "learningObjectives": [
+              "Define configuration drift.",
+              "Choose evidence for detecting high-impact changes.",
+              "Explain why recurring verification is needed."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Configuration management establishes and maintains system integrity by controlling how configurations are initialized, changed, and monitored. Drift occurs when actual state diverges from approved state."
+              },
+              {
+                "type": "code",
+                "text": "A simple desired-state record might contain:\nssh_password_authentication = false\nfirewall_default_policy = deny\naudit_logging = enabled"
+              },
+              {
+                "type": "warning",
+                "text": "Do not blindly auto-remediate every drift event; some changes are legitimate emergency or application changes."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "What does configuration drift mean?",
+              "options": [
+                "The system has no storage",
+                "Actual configuration differs from the approved or intended configuration",
+                "The server is always offline",
+                "The operating system has no users"
+              ],
+              "answer": "Actual configuration differs from the approved or intended configuration",
+              "explanation": "Drift is divergence between the desired state and current state."
+            },
+            "summary": [
+              "Security baselines become useful when they can be assessed repeatedly.",
+              "Change control and drift detection are complementary."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-70 Rev. 5: National Checklist Program",
+                "url": "https://csrc.nist.gov/pubs/sp/800/70/r5/final"
+              },
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Create a Secure Server Baseline",
+            "level": "Intermediate",
+            "description": "Build a concise baseline for a Linux application server.",
+            "problemStatement": "Specify baseline requirements for accounts, SSH, firewalling, logging, patching, file permissions, and service exposure, with verification evidence for each.",
+            "objectives": [
+              "Write measurable controls.",
+              "Distinguish required services from unnecessary services.",
+              "Include an exception and review process."
+            ],
+            "requirements": [
+              "A baseline entry should say what must be true and how you would verify it."
+            ],
+            "hint": [
+              "Python 3.11+ or a spreadsheet is sufficient; no third-party packages are required."
+            ],
+            "solutionCode": "Baseline excerpt:\n- SSH password authentication: disabled where approved key-based access exists\n- Management port: reachable only from management network\n- Audit logging: enabled and retained centrally\n- Unused network services: disabled",
+            "solutionExplanation": "The solution demonstrates measurable desired states instead of vague recommendations."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Identity, Privilege, and Access Control",
+        "description": "Secure local accounts, service identities, privileges, and administrative access paths.",
+        "lessons": [
+          {
+            "id": "lesson-06",
+            "title": "Local Accounts, Groups, and Lifecycle",
+            "description": "Understand account provisioning, review, and deprovisioning on secured hosts.",
+            "learningObjectives": [
+              "Explain why account lifecycle is a security control.",
+              "Inspect users and group membership safely.",
+              "Identify stale or over-privileged accounts for review."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Linux inspection:\ngetent passwd\ngetent group\nlastlog"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use named service identities where practical.",
+                  "Remove or disable stale access according to policy.",
+                  "Review group membership as an effective privilege boundary."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "Why is stale account access dangerous?",
+              "options": [
+                "Stale accounts improve security",
+                "They can preserve unnecessary access after the original business need ends",
+                "They disable logging",
+                "They prevent updates"
+              ],
+              "answer": "They can preserve unnecessary access after the original business need ends",
+              "explanation": "Unused identities are unnecessary attack and misuse paths."
+            },
+            "summary": [
+              "Identity lifecycle is broader than authentication.",
+              "Access reviews should consider groups and service accounts."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Least Privilege and Linux Capabilities",
+            "description": "Move beyond an all-or-nothing root model by understanding Linux capabilities.",
+            "learningObjectives": [
+              "Explain least privilege for human and service accounts.",
+              "Describe Linux capabilities as distinct units of privilege.",
+              "Identify why a process may need one privileged operation without needing full root authority."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Linux capabilities divide traditional superuser privileges into distinct units that can be independently enabled or disabled for processes. This can support more granular privilege design."
+              },
+              {
+                "type": "code",
+                "text": "Inspect file capabilities where the platform supports them:\ngetcap /path/to/program"
+              },
+              {
+                "type": "warning",
+                "text": "Capabilities can be highly security-sensitive. Grant only the exact capability needed and review why it is required."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "What is a Linux capability?",
+              "options": [
+                "A separate operating system",
+                "A distinct unit of privilege that can be independently controlled",
+                "A DNS record",
+                "A log format"
+              ],
+              "answer": "A distinct unit of privilege that can be independently controlled",
+              "explanation": "Linux capabilities split traditional superuser privileges into distinct permission units."
+            },
+            "summary": [
+              "Least privilege reduces the impact of compromise.",
+              "Capabilities are a mechanism, not a reason to avoid ordinary access controls."
+            ],
+            "resources": [
+              {
+                "title": "Linux capabilities(7)",
+                "url": "https://man7.org/linux/man-pages/man7/capabilities.7.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Administrative Access and Secure Remote Management",
+            "description": "Secure administrative sessions and minimize remote-management exposure.",
+            "learningObjectives": [
+              "Explain why administrative interfaces require strong controls.",
+              "Describe key-based SSH access and restrictive daemon configuration.",
+              "Plan a management-network-only access path."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Example sshd_config intent:\nPasswordAuthentication no\nPermitRootLogin no\nAllowGroups sysadmin"
+              },
+              {
+                "type": "paragraph",
+                "text": "The exact permitted directives depend on the installed OpenSSH version and distribution. Changes should be validated with the daemon configuration checker before restart where available."
+              },
+              {
+                "type": "warning",
+                "text": "Do not disable an administrative access path blindly. Ensure an alternate, tested administrative channel exists first."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Validate SSH Configuration Before Change",
+                "description": "Practice inspecting an SSH daemon configuration and validating it before any restart.",
+                "steps": [
+                  "Back up the lab sshd_config file.",
+                  "Review PasswordAuthentication, PermitRootLogin, and AllowGroups settings.",
+                  "Edit only in the disposable VM if a change is required.",
+                  "Run the platform-supported configuration test before restart.",
+                  "Record the configuration evidence and rollback command/file."
+                ],
+                "solution": "For OpenSSH, review /etc/ssh/sshd_config and validate with sshd -t before restarting. The exact command path may vary by distribution. Never disable an administrative path without a tested alternate access channel.",
+                "output": "A configuration-review record with validated syntax and a rollback plan."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "Which control most directly reduces remote SSH exposure?",
+              "options": [
+                "Allowing every source IP",
+                "Restricting SSH to approved management paths and identities",
+                "Disabling logs",
+                "Using a shared root password"
+              ],
+              "answer": "Restricting SSH to approved management paths and identities",
+              "explanation": "Limiting both network source and identity scope reduces unnecessary administrative exposure."
+            },
+            "summary": [
+              "Remote administration is a high-value trust boundary.",
+              "Treat configuration changes as controlled changes with rollback options."
+            ],
+            "resources": [
+              {
+                "title": "OpenBSD sshd_config(5)",
+                "url": "https://man.openbsd.org/sshd_config"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Design a Privileged Access Model",
+            "level": "Intermediate",
+            "description": "Create a least-privilege access model for a Linux web server.",
+            "problemStatement": "Define human administrator roles, service identities, group membership, SSH policy, and one exception process.",
+            "objectives": [
+              "Separate human and service identities.",
+              "Avoid shared administrator accounts.",
+              "Restrict remote management to authorized paths."
+            ],
+            "requirements": [
+              "Ask which operations truly require elevated rights rather than which users should be \"root\"."
+            ],
+            "hint": [
+              "Use a text editor; no special tools required."
+            ],
+            "solutionCode": "A defensible model might use an unprivileged admin account with controlled elevation, a separate deployment identity, and a service account with no interactive shell when not needed.",
+            "solutionExplanation": "The design minimizes standing privilege and keeps service identity separate from human administration."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Filesystem, Process, and Isolation Security",
+        "description": "Protect data and execution boundaries through permissions, MAC, sandboxing, and isolation controls.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Unix File Permissions and ACLs",
+            "description": "Use discretionary access controls correctly and recognize their limits.",
+            "learningObjectives": [
+              "Interpret owner/group/other permission bits.",
+              "Explain ACLs as more granular access rules.",
+              "Identify risky writable paths and sensitive files."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Example:\n-rw-r----- 1 app app 1200 config.ini"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Owner: read/write.",
+                  "Group: read.",
+                  "Others: no access.",
+                  "Effective access can also depend on ACLs and group membership."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "What is a key risk of unnecessary world-writable configuration files?",
+              "options": [
+                "They cannot be read",
+                "Unintended users may alter security-sensitive configuration",
+                "They increase encryption",
+                "They improve least privilege"
+              ],
+              "answer": "Unintended users may alter security-sensitive configuration",
+              "explanation": "Broad write permissions can allow tampering with configuration or program inputs."
+            },
+            "summary": [
+              "Use the narrowest write access compatible with operation.",
+              "Check effective access, not only the visible mode bits."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Mandatory Access Control with SELinux",
+            "description": "Understand MAC policy as a second layer beyond traditional file permissions.",
+            "learningObjectives": [
+              "Differentiate DAC and MAC.",
+              "Explain enforcing and permissive SELinux modes.",
+              "Use labels and policy concepts to reason about denied access."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SELinux is a mandatory access-control system that can constrain interactions based on security policy even when traditional Unix permissions would allow an action. Red Hat documents SELinux as an important part of host hardening."
+              },
+              {
+                "type": "code",
+                "text": "Useful status checks on systems using SELinux:\ngetenforce\nsestatus"
+              },
+              {
+                "type": "warning",
+                "text": "Changing SELinux to permissive or disabling it may hide policy failures rather than solving them; investigate the policy decision and required label or rule."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Observe SELinux Enforcement",
+                "description": "On a Red Hat-family lab VM where SELinux is available, compare policy behavior with normal Unix permissions.",
+                "steps": [
+                  "Run getenforce and record the mode.",
+                  "Inspect the security context of a service-related file with ls -Z.",
+                  "Review an existing denial or controlled lab condition rather than disabling SELinux.",
+                  "Explain which DAC permission would allow the operation and which MAC policy could still deny it.",
+                  "Restore the lab to its original state."
+                ],
+                "solution": "The student records the SELinux mode and contexts, then explains the layered decision: Unix DAC may permit an operation while SELinux policy still restricts it. The exercise does not require changing enforcement state.",
+                "output": "A short evidence note demonstrating the difference between DAC and MAC."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "How does SELinux complement traditional Unix permissions?",
+              "options": [
+                "It replaces all users",
+                "It can enforce additional policy constraints on processes and resources beyond DAC rules",
+                "It disables logging",
+                "It changes DNS"
+              ],
+              "answer": "It can enforce additional policy constraints on processes and resources beyond DAC rules",
+              "explanation": "SELinux provides mandatory policy enforcement in addition to traditional discretionary permissions."
+            },
+            "summary": [
+              "Mandatory controls are useful when application compromise must not automatically grant broad resource access.",
+              "Use vendor policy guidance rather than ad hoc policy rules."
+            ],
+            "resources": [
+              {
+                "title": "Red Hat Enterprise Linux 10 Security Hardening",
+                "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/security_hardening/index"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Process Sandboxing and Service Isolation",
+            "description": "Reduce the impact of compromised or misbehaving services.",
+            "learningObjectives": [
+              "Explain process isolation as a defense-in-depth control.",
+              "Identify useful sandboxing dimensions such as filesystem, network, device, and privilege restrictions.",
+              "Design isolation without hiding required dependencies."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A service can be restricted from writing sensitive paths even if its account has some local permissions.",
+                  "Isolation controls can reduce access to devices, kernel interfaces, or network destinations.",
+                  "Modern Linux service managers can combine several sandboxing primitives; exact directives are platform/version dependent."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Conceptual service policy:\nProtect sensitive filesystems\nRestrict device access\nDrop unnecessary privileges\nLimit network destinations"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "What is the main security benefit of sandboxing a service?",
+              "options": [
+                "It guarantees the service is bug-free",
+                "It limits the resources and authority available to the service if it is compromised",
+                "It removes the need for authentication",
+                "It replaces patching"
+              ],
+              "answer": "It limits the resources and authority available to the service if it is compromised",
+              "explanation": "Isolation reduces post-compromise reach and blast radius."
+            },
+            "summary": [
+              "Isolation should be layered with least privilege and secure configuration.",
+              "Measure the service dependencies before tightening a sandbox."
+            ],
+            "resources": [
+              {
+                "title": "Red Hat Enterprise Linux 10 Security Hardening",
+                "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/security_hardening/index"
+              },
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Harden a Service Identity and Filesystem",
+            "level": "Advanced",
+            "description": "Design access controls for a service that reads application data and writes temporary files.",
+            "problemStatement": "Specify the account, directories, permissions, ACL or MAC considerations, and isolation boundaries needed to prevent modification of unrelated system files.",
+            "objectives": [
+              "Minimize writable locations.",
+              "Separate application data from system configuration.",
+              "Explain one defense against path traversal or unexpected file replacement."
+            ],
+            "requirements": [
+              "Map every required read/write path before granting permissions."
+            ],
+            "hint": [
+              "A diagram is optional; a table plus configuration examples is sufficient."
+            ],
+            "solutionCode": "A strong design gives the service a dedicated identity, read-only access to required application assets, a narrow writable directory for temporary data, and additional isolation to prevent access to unrelated system paths.",
+            "solutionExplanation": "The solution emphasizes containment: a compromised service should have as little filesystem authority as its function requires."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Patching, Software Integrity, and Configuration Assurance",
+        "description": "Maintain secure system state through updates, software provenance, integrity checks, and compliance verification.",
+        "lessons": [
+          {
+            "id": "lesson-12",
+            "title": "Patch Management and Maintenance Windows",
+            "description": "Build a repeatable patching workflow rather than ad hoc updates.",
+            "learningObjectives": [
+              "Describe patch intake, risk assessment, testing, deployment, verification, and rollback.",
+              "Distinguish security updates from feature changes.",
+              "Document exceptions and deferred patches."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Patch management is a lifecycle process.",
+                  "Critical systems may need maintenance windows and staged deployment.",
+                  "Compensating controls may reduce exposure when immediate patching is impossible."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-123 describes securing and maintaining servers; patching should be integrated with asset ownership, configuration management, and operational change processes."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Why should patch deployment include verification?",
+              "options": [
+                "Because patches are always perfect",
+                "To confirm the intended security condition actually changed and services still function",
+                "To avoid documentation",
+                "To eliminate monitoring"
+              ],
+              "answer": "To confirm the intended security condition actually changed and services still function",
+              "explanation": "Deployment without verification can leave the vulnerability open or create operational failure."
+            },
+            "summary": [
+              "Patching is both a security and change-management process.",
+              "Deferred fixes should remain visible and owned."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Package Provenance and Software Integrity",
+            "description": "Protect the trust chain for installed software and updates.",
+            "learningObjectives": [
+              "Explain package provenance and repository trust.",
+              "Describe integrity checking and signed package metadata at a high level.",
+              "Identify suspicious manual installation paths."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Software integrity depends on knowing where software came from and whether the expected artifact was altered. Enterprise environments should prefer managed repositories, verified signatures, controlled build sources, and change records."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not copy binaries from untrusted sources as a routine practice.",
+                  "Verify package signatures or repository metadata according to the platform.",
+                  "Track versions to support vulnerability response."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "Why is provenance important for system software?",
+              "options": [
+                "It guarantees no bugs",
+                "It helps establish source and expected integrity of components",
+                "It disables updates",
+                "It replaces application authorization"
+              ],
+              "answer": "It helps establish source and expected integrity of components",
+              "explanation": "Provenance supports trust, reproducibility, and incident investigation."
+            },
+            "summary": [
+              "Software supply-chain trust begins with source and integrity.",
+              "Security teams should know how deployed components entered the system."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-218: Secure Software Development Framework",
+                "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Compliance Scanning and Control Assessment",
+            "description": "Use evidence-based assessments to measure whether controls are implemented as intended.",
+            "learningObjectives": [
+              "Differentiate configuration scanning from control assessment.",
+              "Collect evidence without making unsupported claims.",
+              "Write a finding that states condition, evidence, risk, and recommendation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-53A provides assessment procedures for security and privacy controls. A useful assessment distinguishes the control requirement from the evidence that shows implementation and from the assessor conclusion."
+              },
+              {
+                "type": "code",
+                "text": "Finding structure:\nCondition -> Evidence -> Risk -> Recommendation\nExample evidence: configuration file, command output, policy record, log sample"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Write a Control Assessment Finding",
+                "description": "Turn a small set of host evidence into an auditable security finding.",
+                "steps": [
+                  "Collect evidence for three controls from a lab VM.",
+                  "For each control, state the expected condition.",
+                  "Record the observed evidence exactly enough for another reviewer to reproduce it.",
+                  "Classify the control as pass, fail, or insufficient evidence.",
+                  "Write one measurable remediation and one verification step."
+                ],
+                "solution": "A good solution preserves raw evidence and clearly separates the observed condition from interpretation. For insufficient evidence, the correct result is not \"secure\" or \"failed\"; it is a documented evidence gap requiring follow-up.",
+                "output": "Three completed findings containing criterion, evidence, conclusion, remediation, and verification."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "What is an important difference between a scan result and an assessment conclusion?",
+              "options": [
+                "They are always identical",
+                "A scan produces evidence or indications; an assessment interprets evidence against defined criteria",
+                "Scans are legal documents",
+                "Assessments never use evidence"
+              ],
+              "answer": "A scan produces evidence or indications; an assessment interprets evidence against defined criteria",
+              "explanation": "Assessment requires defined criteria and interpretation of evidence."
+            },
+            "summary": [
+              "Avoid overstating what a scanner proves.",
+              "Evidence should be attributable and reproducible."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53A Rev. 5: Assessing Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final"
+              },
+              {
+                "title": "NIST SP 800-70 Rev. 5: National Checklist Program",
+                "url": "https://csrc.nist.gov/pubs/sp/800/70/r5/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Create an Evidence-Based Hardening Finding",
+            "level": "Intermediate",
+            "description": "Turn raw configuration evidence into a professional system-security finding.",
+            "problemStatement": "Given three configuration observations, produce findings containing condition, evidence, risk, recommendation, and verification steps.",
+            "objectives": [
+              "Keep evidence separate from inference.",
+              "State technical and business impact clearly.",
+              "Make recommendations testable."
+            ],
+            "requirements": [
+              "Do not call a host \"secure\" because one setting is correct."
+            ],
+            "hint": [
+              "Use a markdown document; no special tooling is required."
+            ],
+            "solutionCode": "Example: \"SSH password authentication remains enabled. Evidence: effective sshd configuration includes PasswordAuthentication yes. Risk: password-based remote access increases credential-attack exposure. Recommendation: move approved users to key-based authentication and validate access before disabling password authentication.\"",
+            "solutionExplanation": "The structure forces claims to remain traceable to evidence and makes remediation verifiable."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Endpoint Protection and Host Telemetry",
+        "description": "Secure Windows and Linux endpoints using built-in protections, logging, integrity monitoring, and secure defaults.",
+        "lessons": [
+          {
+            "id": "lesson-15",
+            "title": "Windows Security Architecture and Baselines",
+            "description": "Understand Windows security features and how Microsoft baselines provide a starting point.",
+            "learningObjectives": [
+              "Identify major Windows security layers such as UAC, Defender, firewalling, BitLocker, and security baselines.",
+              "Explain why enterprise baselines should be adapted and tested.",
+              "Distinguish baseline settings from product licensing and environment-specific requirements."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft publishes security baselines for supported Windows versions. The baseline guidance is intended to provide broadly tested configuration recommendations rather than asking every organization to invent settings from scratch."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Windows security includes OS, identity, application, data, and hardware protections.",
+                  "Baselines should be applied through managed configuration mechanisms where practical.",
+                  "Validate changes against business applications before broad rollout."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Why use an established Windows security baseline?",
+              "options": [
+                "It guarantees every threat is blocked",
+                "It provides a broadly tested starting configuration with documented security rationale",
+                "It replaces patching",
+                "It disables administration"
+              ],
+              "answer": "It provides a broadly tested starting configuration with documented security rationale",
+              "explanation": "Established baselines reduce arbitrary configuration choices and provide repeatable guidance."
+            },
+            "summary": [
+              "Baseline guidance is a starting point, not the whole security program.",
+              "Use the version appropriate to the supported Windows release."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Security Baselines",
+                "url": "https://learn.microsoft.com/en-us/windows/security/operating-system-security/device-management/windows-security-configuration-framework/windows-security-baselines"
+              },
+              {
+                "title": "Windows Security Documentation",
+                "url": "https://learn.microsoft.com/en-us/windows/security/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Linux Host Security and Hardening Layers",
+            "description": "Integrate Linux accounts, permissions, services, MAC, logging, and updates.",
+            "learningObjectives": [
+              "Assemble a layered Linux hardening strategy.",
+              "Identify which controls operate at account, process, filesystem, network, and kernel layers.",
+              "Explain why hardening must be role-specific."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Layered controls include identity, permissions, service minimization, mandatory access control, firewalling, logging, updates, and secure remote administration.",
+                  "Do not apply a hardening guide without understanding application dependencies."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Example review commands:\nid\nss -lntup\ngetenforce\nstat /path/to/sensitive/file\njournalctl -b -p warning"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "Which statement best describes layered Linux hardening?",
+              "options": [
+                "Use one control only",
+                "Combine controls at multiple system layers so one failure does not expose the entire host",
+                "Disable updates",
+                "Run every service as root"
+              ],
+              "answer": "Combine controls at multiple system layers so one failure does not expose the entire host",
+              "explanation": "Defense in depth aims to reduce single-control failure impact."
+            },
+            "summary": [
+              "Host hardening works when controls reinforce each other.",
+              "Role-specific configuration is safer than indiscriminate lockdown."
+            ],
+            "resources": [
+              {
+                "title": "Red Hat Enterprise Linux 10 Security Hardening",
+                "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/security_hardening/index"
+              },
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-17",
+            "title": "Endpoint Logging and Auditability",
+            "description": "Ensure important host actions leave useful, protected evidence.",
+            "learningObjectives": [
+              "Identify valuable endpoint telemetry sources.",
+              "Explain why time synchronization and log protection matter.",
+              "Design a minimum audit-log set for a server role."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Useful sources may include authentication, privilege changes, service starts, configuration changes, process activity, and security-product alerts.",
+                  "Centralization improves correlation and resilience against local log loss.",
+                  "Logs can contain sensitive information and need access controls and retention policy."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "What is a key benefit of centralized endpoint logs?",
+              "options": [
+                "They prevent all attacks",
+                "They preserve and correlate events beyond the individual host",
+                "They remove the need for authentication",
+                "They replace endpoint protection"
+              ],
+              "answer": "They preserve and correlate events beyond the individual host",
+              "explanation": "Centralized logs improve investigation and correlation across systems."
+            },
+            "summary": [
+              "Logging is an evidence capability as well as a detection capability.",
+              "Protect the logs themselves from unauthorized modification."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Endpoint Baseline Review",
+            "level": "Advanced",
+            "description": "Assess a fictional Windows or Linux workstation against a defined security baseline.",
+            "problemStatement": "Produce a gap table with control, expected state, observed evidence, risk, owner, and remediation priority.",
+            "objectives": [
+              "Use vendor or standards-based control language.",
+              "Separate missing evidence from failed controls.",
+              "Prioritize based on likely risk reduction."
+            ],
+            "requirements": [
+              "A missing screenshot or command result is evidence insufficiency, not automatically a failed control."
+            ],
+            "hint": [
+              "Use a text editor or spreadsheet."
+            ],
+            "solutionCode": "The expected output is an auditable table rather than a narrative-only review.",
+            "solutionExplanation": "The task develops repeatable endpoint-assurance practice and careful evidence handling."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Service Security and Secure System Operations",
+        "description": "Secure services through safe defaults, configuration validation, resource boundaries, and maintenance discipline.",
+        "lessons": [
+          {
+            "id": "lesson-18",
+            "title": "Secure Service Configuration",
+            "description": "Review service listeners, authentication settings, privileges, and security-sensitive defaults.",
+            "learningObjectives": [
+              "Create a service-security review checklist.",
+              "Identify insecure defaults and unnecessary listeners.",
+              "Explain how configuration errors can bypass otherwise strong host controls."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Review pattern:\n1. Identify exposed interfaces.\n2. Confirm required authentication.\n3. Confirm least privilege.\n4. Verify secure logging.\n5. Validate configuration syntax.\n6. Restart through approved change procedure."
+              },
+              {
+                "type": "warning",
+                "text": "Never change a production daemon configuration without an alternate administrative path, backup/rollback plan, and syntax validation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Why are service defaults security-sensitive?",
+              "options": [
+                "Defaults never matter",
+                "A default can enable unnecessary access, weak authentication, or broader exposure than intended",
+                "Defaults only affect performance",
+                "Defaults replace authorization"
+              ],
+              "answer": "A default can enable unnecessary access, weak authentication, or broader exposure than intended",
+              "explanation": "Initial configurations often determine exposure until deliberately changed."
+            },
+            "summary": [
+              "Service security is configuration plus operational discipline.",
+              "Read version-specific vendor documentation before applying settings."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Resource Limits and Availability Security",
+            "description": "Use limits to reduce denial-of-service impact and runaway process behavior.",
+            "learningObjectives": [
+              "Explain resource exhaustion as a security problem.",
+              "Identify CPU, memory, file, process, and connection limits that may matter for a service.",
+              "Balance protective limits with service requirements."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Availability security includes protecting systems from resource exhaustion. Limits can reduce blast radius when a process behaves unexpectedly, but limits that are too low can cause self-inflicted outages."
+              },
+              {
+                "type": "code",
+                "text": "Design question:\nWhat is the normal resource envelope?\nWhat limit contains abnormal behavior without breaking legitimate load?"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "Why should resource limits be tested before enforcement?",
+              "options": [
+                "Limits are harmless",
+                "Poorly chosen limits can create outages or break legitimate workloads",
+                "Testing is only for developers",
+                "Limits remove patches"
+              ],
+              "answer": "Poorly chosen limits can create outages or break legitimate workloads",
+              "explanation": "Availability controls must be designed with the service workload in mind."
+            },
+            "summary": [
+              "Availability is part of system security.",
+              "Protective limits should be measured against expected operational behavior."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              },
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Secure Software Integration at the System Boundary",
+            "description": "Understand how system configuration, applications, and deployment pipelines interact.",
+            "learningObjectives": [
+              "Explain why application security depends partly on host configuration.",
+              "Identify system-level risks from insecure secrets, writable deployment paths, and excessive service privileges.",
+              "Connect host controls to secure-development practices."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "An application can be well coded yet unsafe if deployed with excessive permissions or exposed management interfaces.",
+                  "Deployment identities should be narrowly scoped.",
+                  "Build and release processes should protect artifacts and secrets."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SSDF provides secure-development practices that complement system hardening by addressing the software lifecycle rather than only the runtime host."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "Which is an example of a system-level control supporting application security?",
+              "options": [
+                "Giving the service unrestricted root access",
+                "Restricting the service identity and protecting deployment secrets",
+                "Disabling audit logs",
+                "Making configuration files world-writable"
+              ],
+              "answer": "Restricting the service identity and protecting deployment secrets",
+              "explanation": "The host can enforce least privilege and protect secrets even when application code is the main focus."
+            },
+            "summary": [
+              "System and application security are coupled at the deployment boundary.",
+              "Prefer least privilege and controlled release paths."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-218: Secure Software Development Framework",
+                "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+              },
+              {
+                "title": "CISA Secure by Design",
+                "url": "https://www.cisa.gov/securebydesign"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Secure a Production Service Profile",
+            "level": "Advanced",
+            "description": "Create a service profile for a fictional internal API.",
+            "problemStatement": "Define listener scope, service identity, filesystem access, logging, secrets handling, resource limits, administrative access, and rollback procedure.",
+            "objectives": [
+              "Use only concepts taught in the module.",
+              "Identify dependencies and failure modes.",
+              "Include an operational verification step."
+            ],
+            "requirements": [
+              "Treat the service as untrusted code that must be contained by the host."
+            ],
+            "hint": [
+              "Use markdown; no third-party tooling required."
+            ],
+            "solutionCode": "A strong profile specifies a narrow network bind, dedicated service account, read-only application assets, protected secrets, bounded resources, and restricted administration.",
+            "solutionExplanation": "The task tests whether the learner can combine configuration and operational controls into one deployable service profile."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Detection, Integrity, and Response for System Security",
+        "description": "Detect host compromise, preserve evidence, investigate changes, and respond without destroying useful evidence.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "File Integrity and Unauthorized Change Detection",
+            "description": "Detect meaningful changes to system files and configuration.",
+            "learningObjectives": [
+              "Explain file-integrity monitoring.",
+              "Choose high-value paths for monitoring.",
+              "Differentiate authorized change from suspicious change."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "File-integrity monitoring compares current state with known-good state or expected metadata. It is most useful when focused on security-sensitive files and correlated with change management."
+              },
+              {
+                "type": "code",
+                "text": "Example integrity workflow:\n1. Record baseline hash.\n2. Detect changed file.\n3. Compare against approved change.\n4. Collect surrounding logs.\n5. Escalate if unexplained."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Why should file-integrity alerts be correlated with change records?",
+              "options": [
+                "Every change is malicious",
+                "Authorized maintenance can legitimately modify monitored files",
+                "Hashes are useless",
+                "Change records disable security"
+              ],
+              "answer": "Authorized maintenance can legitimately modify monitored files",
+              "explanation": "Correlation reduces false positives and helps distinguish expected maintenance."
+            },
+            "summary": [
+              "Integrity monitoring detects change, not intent.",
+              "Context from administration and deployment systems improves triage."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Host-Based Detection and Triage",
+            "description": "Develop a repeatable process for investigating suspicious host activity.",
+            "learningObjectives": [
+              "Gather process, account, network, and log context.",
+              "Form and test a hypothesis without overclaiming.",
+              "Prioritize evidence collection before destructive containment when practical."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Triage starts with scope: affected host, account, process, time window, and related systems.",
+                  "Record commands and evidence sources used.",
+                  "Containment may be necessary, but responders should consider evidence preservation and business impact."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "What is a good first step after a high-confidence host alert?",
+              "options": [
+                "Delete the host immediately",
+                "Validate and scope the alert using relevant host and identity evidence",
+                "Publish the attacker identity",
+                "Disable all logs"
+              ],
+              "answer": "Validate and scope the alert using relevant host and identity evidence",
+              "explanation": "Triage should establish what happened and what is affected before broad response actions where feasible."
+            },
+            "summary": [
+              "Detection and response are evidence-driven processes.",
+              "Do not infer attribution from one artifact."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              },
+              {
+                "title": "NIST SP 800-123: Guide to General Server Security",
+                "url": "https://csrc.nist.gov/pubs/sp/800/123/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Incident Containment and Recovery on Hosts",
+            "description": "Apply host containment, eradication, and recovery principles safely.",
+            "learningObjectives": [
+              "Differentiate containment, eradication, and recovery.",
+              "Choose reversible containment actions when practical.",
+              "Verify restored security state before returning systems to service."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Containment limits ongoing harm. Eradication removes the cause or foothold. Recovery restores trustworthy service and monitoring.",
+                  "Rebuild from a trusted image may be safer than attempting to clean an extensively compromised host, depending on evidence and operational constraints."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not destroy evidence or disconnect critical systems without considering legal, operational, and investigative requirements."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Which activity best represents recovery?",
+              "options": [
+                "Restricting network access during investigation",
+                "Removing the suspected malicious artifact",
+                "Restoring the system to a known-good state and validating controls",
+                "Deleting all logs"
+              ],
+              "answer": "Restoring the system to a known-good state and validating controls",
+              "explanation": "Recovery returns the service to a trustworthy operational condition."
+            },
+            "summary": [
+              "Containment, eradication, and recovery are related but distinct.",
+              "Verification should include security controls, not only application uptime."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53 Rev. 5.2.0: Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Build a Host Incident Runbook",
+            "level": "Advanced",
+            "description": "Write a runbook for suspected compromise of a Linux application server.",
+            "problemStatement": "Include alert validation, evidence collection, containment, credential handling, eradication, recovery, verification, and lessons learned.",
+            "objectives": [
+              "Use only host-security concepts from this course.",
+              "Include explicit decision points.",
+              "Avoid attacker attribution claims."
+            ],
+            "requirements": [
+              "Separate actions that stop harm from actions that establish what happened."
+            ],
+            "hint": [
+              "Markdown editor only; no offensive tooling is required."
+            ],
+            "solutionCode": "A good runbook starts with scope and evidence, uses controlled containment, rotates potentially exposed credentials, rebuilds or remediates the host as appropriate, and verifies the hardening baseline before return.",
+            "solutionExplanation": "The runbook converts conceptual response phases into repeatable operational actions."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Project — System Security Baseline Auditor",
+        "description": "Build the final local-only baseline auditor and demonstrate evidence-based security assessment. This module contains the final project only and no module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-24",
+            "title": "Project Architecture and Security Requirements",
+            "description": "Plan a read-only local system-security audit tool around measurable controls and safe evidence collection.",
+            "learningObjectives": [
+              "Define the capstone architecture and control set.",
+              "Design safe failure modes for missing permissions or platform differences.",
+              "Explain why the auditor must not modify the target host."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone is deliberately read-only. It checks a compact baseline covering root-shell state, world-writable files directly under /etc, SSH configuration, and package-manager presence. It reports pass, review, or unknown instead of pretending that unavailable evidence is a failure or pass."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The project is an assessment tool, not an auto-remediation engine.",
+                  "The final report preserves evidence and a remediation recommendation per control."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "Why should the capstone report an \"unknown\" state?",
+              "options": [
+                "Unknown is a failure",
+                "Some controls cannot be assessed safely or reliably with available evidence",
+                "Unknown means secure",
+                "Unknown disables logging"
+              ],
+              "answer": "Some controls cannot be assessed safely or reliably with available evidence",
+              "explanation": "Honest uncertainty is better than inventing evidence."
+            },
+            "summary": [
+              "Security assessment tools should distinguish failed controls from insufficient evidence.",
+              "Read-only assessment reduces operational risk."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53A Rev. 5: Assessing Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final"
+              },
+              {
+                "title": "NIST SP 800-70 Rev. 5: National Checklist Program",
+                "url": "https://csrc.nist.gov/pubs/sp/800/70/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-25",
+            "title": "Implementation, Testing, and Operational Use",
+            "description": "Run the completed auditor, validate its output, and interpret findings conservatively.",
+            "learningObjectives": [
+              "Run the capstone safely on a Linux environment you control.",
+              "Execute automated tests and CLI smoke tests.",
+              "Interpret findings as evidence for review rather than proof of compromise."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Validation sequence:\npython -m py_compile audit_baseline.py\npytest -q\npython audit_baseline.py"
+              },
+              {
+                "type": "warning",
+                "text": "Run the tool only on systems you own or are authorized to assess. The tool is intentionally read-only, but the results may still contain sensitive configuration information."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What does a passing unit test in the capstone establish?",
+              "options": [
+                "The host is secure",
+                "The tested program behavior matched the test expectation",
+                "The network is safe",
+                "No vulnerability exists"
+              ],
+              "answer": "The tested program behavior matched the test expectation",
+              "explanation": "Tests validate specified software behavior; they do not certify the environment."
+            },
+            "summary": [
+              "Use tests to validate the tool, not to overclaim host security.",
+              "Document environment limitations and evidence scope."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53A Rev. 5: Assessing Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Capstone Review and Security Assessment Report",
+            "description": "Turn the audit output into a professional system-security report and improvement plan.",
+            "learningObjectives": [
+              "Summarize findings by control and risk relevance.",
+              "Distinguish technical evidence from recommendations.",
+              "Create a remediation plan with ownership and verification."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A useful report includes scope, methodology, evidence, findings, risk rationale, remediation, owner, and verification method.",
+                  "Do not claim a control is absent if it was simply not observable."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The report should preserve raw evidence where appropriate and make remediation measurable: what changes, who owns it, and how the reviewer will confirm the change."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-03",
+              "question": "What makes a remediation recommendation measurable?",
+              "options": [
+                "It says \"fix security\"",
+                "It states the desired state and how verification will show that state was reached",
+                "It assigns blame",
+                "It omits the owner"
+              ],
+              "answer": "It states the desired state and how verification will show that state was reached",
+              "explanation": "Measurable remediation can be verified and closed objectively."
+            },
+            "summary": [
+              "Professional security work connects evidence to risk to action to verification.",
+              "The final project demonstrates the complete course loop."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53A Rev. 5: Assessing Security and Privacy Controls",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "System Security Baseline Auditor",
+          "description": "A read-only, local Python utility that checks a small host-security baseline and produces structured evidence for review. It is intentionally defensive, requires no third-party packages, and never modifies the audited system.",
+          "conceptsCovered": [
+            "Security baselines and checklists",
+            "Least privilege",
+            "Linux account and SSH security",
+            "Filesystem permissions",
+            "Evidence-based control assessment",
+            "Secure configuration",
+            "Testing and validation",
+            "Security reporting"
+          ],
+          "steps": [
+            "Create the project directory and add the supplied audit_baseline.py and test file.",
+            "Compile the auditor with Python to catch syntax errors.",
+            "Run the automated tests.",
+            "Run the CLI auditor on a Linux system you control or in a disposable local VM.",
+            "Review each finding and compare it with the approved baseline rather than assuming the tool is authoritative.",
+            "Document any remediations separately; do not add auto-remediation to the capstone unless the project requirements explicitly permit it.",
+            "Produce a short final report containing scope, evidence, findings, recommendations, owners, and verification steps."
+          ],
+          "code": {
+            "README.md": "# System Security Baseline Auditor\n\nA local-only training utility that audits a Linux host against a small, explicitly defined security baseline. It reports pass/fail/unknown states and never changes the system.\n\nThe tool intentionally uses only Python's standard library so it can be reviewed and tested without third-party dependencies.\n",
+            "audit_baseline.py": "#!/usr/bin/env python3\nimport argparse\nimport json\nimport os\nimport stat\nimport subprocess\nfrom dataclasses import dataclass, asdict\nfrom pathlib import Path\n\n@dataclass\nclass Finding:\n    control: str\n    status: str\n    evidence: str\n    recommendation: str\n\ndef run(command):\n    try:\n        result = subprocess.run(command, text=True, capture_output=True, check=False)\n        return result.returncode, result.stdout.strip(), result.stderr.strip()\n    except OSError as exc:\n        return 127, \"\", str(exc)\n\ndef check_root_login():\n    rc, out, err = run([\"sh\", \"-c\", \"awk -F: '$1==\\\"root\\\" {print $7}' /etc/passwd 2>/dev/null\"] )\n    if rc != 0:\n        return Finding(\"AUTH-01\", \"unknown\", err or \"Unable to read /etc/passwd\", \"Verify the root account shell according to the approved baseline.\")\n    shell = out or \"\"\n    if shell in {\"/usr/sbin/nologin\", \"/sbin/nologin\", \"/bin/false\", \"\"}:\n        return Finding(\"AUTH-01\", \"pass\", f\"root shell={shell}\", \"No action required.\")\n    return Finding(\"AUTH-01\", \"review\", f\"root shell={shell}\", \"Review whether direct root login is required and restrict interactive use where possible.\")\n\ndef check_world_writable_etc():\n    path = Path(\"/etc\")\n    if not path.exists():\n        return Finding(\"FS-01\", \"unknown\", \"/etc not present\", \"Run the audit on a Linux system with /etc.\")\n    suspicious = []\n    for entry in path.iterdir():\n        try:\n            mode = entry.stat().st_mode\n        except OSError:\n            continue\n        if stat.S_ISREG(mode) and mode & stat.S_IWOTH:\n            suspicious.append(entry.name)\n    if not suspicious:\n        return Finding(\"FS-01\", \"pass\", \"No world-writable regular files found directly under /etc\", \"No action required.\")\n    return Finding(\"FS-01\", \"fail\", \", \".join(sorted(suspicious)[:20]), \"Remove unnecessary world-write permission after validating application requirements.\")\n\ndef check_ssh_config():\n    candidates = [Path(\"/etc/ssh/sshd_config\")]\n    for path in candidates:\n        if path.exists():\n            text = path.read_text(encoding=\"utf-8\", errors=\"replace\")\n            password_auth = None\n            root_login = None\n            for raw in text.splitlines():\n                line = raw.strip()\n                if not line or line.startswith(\"#\"):\n                    continue\n                parts = line.split(None, 1)\n                if len(parts) != 2:\n                    continue\n                key, value = parts[0].lower(), parts[1].strip().lower()\n                if key == \"passwordauthentication\":\n                    password_auth = value\n                elif key == \"permitrootlogin\":\n                    root_login = value\n            evidence = f\"PasswordAuthentication={password_auth}; PermitRootLogin={root_login}\"\n            if password_auth == \"no\" and root_login in {\"no\", \"prohibit-password\", \"without-password\"}:\n                return Finding(\"SSH-01\", \"pass\", evidence, \"No action required.\")\n            return Finding(\"SSH-01\", \"review\", evidence, \"Review SSH authentication and root-login settings against the approved management baseline.\")\n    return Finding(\"SSH-01\", \"unknown\", \"No /etc/ssh/sshd_config found\", \"Verify SSH configuration using the platform's supported configuration source.\")\n\ndef check_updates():\n    if Path(\"/usr/bin/apt-get\").exists() or Path(\"/usr/bin/dnf\").exists() or Path(\"/usr/bin/yum\").exists():\n        return Finding(\"PATCH-01\", \"review\", \"Package manager detected; this script does not query remote repositories\", \"Use the organization's approved patch process to verify current security updates.\")\n    return Finding(\"PATCH-01\", \"unknown\", \"No supported package manager detected by this training check\", \"Verify patch posture using the operating system's package-management process.\")\n\ndef main():\n    parser = argparse.ArgumentParser(description=\"Local-only System Security Baseline Auditor\")\n    parser.add_argument(\"--json\", type=Path, help=\"Write a JSON report to this path\")\n    args = parser.parse_args()\n\n    findings = [\n        check_root_login(),\n        check_world_writable_etc(),\n        check_ssh_config(),\n        check_updates(),\n    ]\n    report = {\n        \"tool_scope\": \"local-only, read-only training audit\",\n        \"finding_count\": len(findings),\n        \"findings\": [asdict(item) for item in findings],\n    }\n    text = json.dumps(report, indent=2)\n    if args.json:\n        args.json.write_text(text + \"\\n\", encoding=\"utf-8\")\n    else:\n        print(text)\n\nif __name__ == \"__main__\":\n    main()\n",
+            "test_audit_baseline.py": "import json\nimport subprocess\nimport sys\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parent\n\ndef test_cli_outputs_valid_json():\n    result = subprocess.run([sys.executable, str(ROOT / \"audit_baseline.py\")], capture_output=True, text=True, check=True)\n    report = json.loads(result.stdout)\n    assert report[\"tool_scope\"] == \"local-only, read-only training audit\"\n    assert report[\"finding_count\"] == 4\n    assert all(set(item) == {\"control\", \"status\", \"evidence\", \"recommendation\"} for item in report[\"findings\"])\n\ndef test_json_output_file(tmp_path):\n    out = tmp_path / \"report.json\"\n    subprocess.run([sys.executable, str(ROOT / \"audit_baseline.py\"), \"--json\", str(out)], check=True)\n    report = json.loads(out.read_text(encoding=\"utf-8\"))\n    assert len(report[\"findings\"]) == 4\n"
+          },
+          "explanation": "The project implements a simple assessment pipeline: local evidence collection -> control-specific evaluation -> structured finding -> report. It deliberately uses three result states (pass, review, unknown) to avoid overstating evidence. The code is read-only and standard-library-only, which makes it easy to review and test. The project demonstrates how configuration management, least privilege, secure remote administration, filesystem security, and assessment methodology combine into an auditable system-security workflow."
+        }
+      }
+    ]
+  }
+}

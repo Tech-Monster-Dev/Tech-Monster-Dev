@@ -1,0 +1,2121 @@
+{
+  "course": {
+    "id": "incident-detection",
+    "title": "Incident Detection",
+    "slug": "incident-detection",
+    "description": "A practical, research-backed course on designing, implementing, validating, and operating cybersecurity incident detections. Students progress from detection fundamentals and telemetry quality through identity, endpoint, network, cloud, and application signals; deterministic and behavioral analytics; Sigma and query-based detection engineering; normalization and enrichment; alert triage; investigation pivots; false-positive tuning; testing; scheduling; metrics; version control; and a final local incident-detection pipeline. The course is appropriate for serious beginners through intermediate security analysts, SOC practitioners, and detection engineers who want a structured foundation for turning security telemetry into explainable, testable detections.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 44,
+    "prerequisites": [
+      "Basic networking concepts such as IP addresses, ports, DNS, HTTP/HTTPS, and client/server communication.",
+      "Basic familiarity with Windows or Linux logs and command-line concepts.",
+      "Basic JSON and YAML reading ability.",
+      "Basic Python 3 knowledge is recommended for the capstone and test automation, but the conceptual modules are vendor-neutral."
+    ],
+    "learningOutcomes": [
+      "Explain the difference between security events, detections, alerts, and incidents and place detection within incident-response operations.",
+      "Evaluate telemetry sources for completeness, fidelity, latency, retention, provenance, and correlation suitability.",
+      "Design threshold, cardinality, sequence, indicator, behavioral, and baseline-aware detections with explicit hypotheses and test cases.",
+      "Author and review Sigma-style rules using appropriate metadata, log sources, selection logic, false-positive guidance, and threat-framework mappings.",
+      "Write and reason about query-based hunting and detection logic, including time windows, aggregation, joins, normalization, and enrichment.",
+      "Design incident detections across identity, endpoint, network, cloud, SaaS, and application audit signals.",
+      "Perform first-pass alert triage, entity-based investigation pivots, scope expansion, evidence recording, and defensible escalation decisions.",
+      "Tune false positives using narrow, documented conditions and measure the effect on workload and detection coverage.",
+      "Build regression tests, account for late-arriving data, define schedules and look-back windows, and manage detections as versioned engineering artifacts.",
+      "Implement and test a local incident-detection pipeline that validates normalized telemetry, correlates multiple evidence sources, produces explainable incident records, and demonstrates production limitations."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Detection Foundations",
+        "description": "Build the conceptual model for incident detection: events, detections, alerts, incidents, lifecycle decisions, telemetry quality, and time-aware correlation.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "What Incident Detection Means",
+            "description": "Incident detection is the disciplined process of turning security-relevant telemetry into trustworthy indications that a cybersecurity event may require investigation. This lesson establishes the difference between an event, signal, alert, and incident, and places detection inside the modern risk-management and incident-response lifecycle.",
+            "learningObjectives": [
+              "Explain the difference between security events, detections, alerts, and incidents.",
+              "Describe why detection quality depends on visibility, context, and operational handling.",
+              "Relate incident detection to the Detect function and incident-response preparation.",
+              "Identify the point at which suspicious activity should be escalated for human investigation."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Core model"
+              },
+              {
+                "type": "paragraph",
+                "text": "An event is an observation produced by a system. A detection is logic that evaluates observations against a hypothesis. An alert is a notification generated when detection logic matches. An incident is the broader case established after analysts determine that related events indicate a security problem or credible adverse activity."
+              },
+              {
+                "type": "paragraph",
+                "text": "Detection is not synonymous with prevention. Preventive controls may block activity, while detection controls provide evidence that an event occurred or that behavior is suspicious. Strong operations need both."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Detection starts with a hypothesis about harmful, unauthorized, or policy-violating behavior.",
+                  "A useful alert contains enough context to support a rapid triage decision.",
+                  "A single benign-looking event can become high value when correlated with identity, endpoint, network, or cloud context.",
+                  "Detection engineering is iterative: coverage, precision, telemetry quality, and analyst feedback continually influence the rule."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not equate “matched a rule” with “confirmed compromise.” Detection output is evidence, not proof, until investigated."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which statement best distinguishes an alert from an incident?",
+              "options": [
+                "An alert is always malicious; an incident is always benign.",
+                "An alert is a detection notification; an incident is a case established after evaluating related evidence.",
+                "An alert is only a network packet; an incident is only a log file.",
+                "They are interchangeable terms."
+              ],
+              "answer": "An alert is a detection notification; an incident is a case established after evaluating related evidence.",
+              "explanation": "An alert represents a detection result. An incident is a broader investigative determination that may combine many alerts and events."
+            },
+            "summary": [
+              "Incident detection turns telemetry into evidence for timely investigation.",
+              "Detection output needs context and analyst judgment.",
+              "Events, alerts, and incidents should be modeled as different stages of an operational workflow."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Detection Lifecycle and Decision Points",
+            "description": "A detection program is a lifecycle rather than a collection of isolated rules. This lesson develops a repeatable workflow from use-case definition through telemetry selection, rule creation, validation, deployment, triage feedback, and retirement.",
+            "learningObjectives": [
+              "Describe a detection lifecycle from hypothesis to production.",
+              "Select telemetry that can actually support a detection hypothesis.",
+              "Define success criteria before implementing a rule.",
+              "Identify decision points for promotion, tuning, suppression, and retirement."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A practical lifecycle"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Define the threat behavior or operational failure to detect.",
+                  "Identify the data sources and fields needed to observe that behavior.",
+                  "Choose an analytic method: exact match, threshold, sequence/correlation, anomaly, or indicator match.",
+                  "Test against representative benign and suspicious data.",
+                  "Deploy with severity, ownership, schedule, and response guidance.",
+                  "Measure outcomes and tune using analyst feedback.",
+                  "Version, review, and retire when the rule no longer provides value."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A detection hypothesis should be falsifiable. “Detect attackers” is too broad. “Detect repeated authentication failures followed by a successful authentication for the same account from a new source within a short window” is specific enough to design telemetry and analytics around."
+              },
+              {
+                "type": "code",
+                "text": "Detection hypothesis:\nRepeated authentication failures + subsequent success + unusual source\n\nRequired fields:\ntimestamp, user, source_ip, outcome, target, authentication_method\n\nPrimary analytic:\nthreshold + sequence correlation\n\nSuccess criteria:\n- produces an alert on controlled suspicious test data\n- does not alert on normal isolated failures\n- provides user, source, target, and time-window context"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Write a Detection Use-Case Card",
+                "description": "Create a compact, testable detection specification for suspicious remote authentication followed by process execution.",
+                "steps": "1. Define the unwanted behavior in one sentence.\n2. List the entities that must remain consistent across events.\n3. List the minimum fields required from authentication and endpoint telemetry.\n4. Choose a time window and explain why it is appropriate.\n5. Write one positive and two negative test cases.\n6. Record one expected false-positive source.",
+                "solution": "Use-case card:\n\nBehavior: remote authentication followed by unusual process creation on the same host.\nEntities: user, host, source_ip, process.\nAuth fields: timestamp, user, source_ip, target, outcome, logon_type.\nProcess fields: timestamp, host, user, parent_image, image, command_line.\nWindow: 10 minutes for the authentication-to-process relationship.\nPositive: remote success followed by an unapproved script interpreter.\nNegative 1: approved remote-management host followed by its normal agent process.\nNegative 2: local interactive logon followed by the same script interpreter.\nFalse positive: documented endpoint-management automation.",
+                "output": "The result is a detection specification that can be implemented in multiple platforms because it separates behavior, entities, data requirements, and validation cases."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "What should be defined before writing detection logic?",
+              "options": [
+                "Only the final alert title",
+                "The detection hypothesis and the evidence required to test it",
+                "Only the SIEM product name",
+                "Only the severity level"
+              ],
+              "answer": "The detection hypothesis and the evidence required to test it",
+              "explanation": "The hypothesis determines what telemetry, fields, logic, and validation criteria are necessary."
+            },
+            "summary": [
+              "Detection engineering starts with an explicit, testable hypothesis.",
+              "Telemetry requirements and success criteria should be known before production deployment.",
+              "Tuning is part of the lifecycle, not an afterthought."
+            ],
+            "resources": [
+              {
+                "title": "nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "attck_det",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Telemetry Value, Fidelity, and Coverage",
+            "description": "Not every log is equally useful for detection. This lesson explains event fidelity, completeness, latency, retention, provenance, and coverage so students can judge whether a data source is suitable for a detection rather than assuming that ingestion equals visibility.",
+            "learningObjectives": [
+              "Evaluate a telemetry source using completeness, fidelity, latency, retention, and provenance.",
+              "Distinguish raw collection from actionable security visibility.",
+              "Explain how missing fields and delayed telemetry affect detection quality.",
+              "Prioritize telemetry investments using threat-driven reasoning."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Five telemetry questions"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Completeness: Are the critical event classes and fields present?",
+                  "Fidelity: Does the data represent what the detection claims it represents?",
+                  "Latency: How long after the activity is the event available?",
+                  "Retention: Is the history long enough for the detection window and investigation needs?",
+                  "Provenance: Can analysts determine where the record came from and whether it was transformed?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A detection can be logically correct and still operationally fail because a required audit setting is disabled, a collector drops fields, clocks are inconsistent, or data arrives after the rule’s look-back window."
+              },
+              {
+                "type": "warning",
+                "text": "Never design a high-confidence detection around a field until you have confirmed that field is populated in the actual environment."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "Why can a logically correct rule still fail in production?",
+              "options": [
+                "Rules never work in production.",
+                "The required telemetry may be incomplete, delayed, normalized incorrectly, or absent.",
+                "Severity is too low by definition.",
+                "Only machine-learning rules work in production."
+              ],
+              "answer": "The required telemetry may be incomplete, delayed, normalized incorrectly, or absent.",
+              "explanation": "Detection quality depends on both analytics and the data pipeline that feeds them."
+            },
+            "summary": [
+              "Telemetry quality is an operational dependency of detection quality.",
+              "Completeness, fidelity, latency, retention, and provenance should be assessed per use case.",
+              "Data engineering and detection engineering must work together."
+            ],
+            "resources": [
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "cisa_log",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-sized-businesses/secure-your-business/use-logging-on-business-systems"
+              },
+              {
+                "title": "attck_ds",
+                "url": "https://attack.mitre.org/datasources/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-04",
+            "title": "Event Time, Time Zones, and Correlation Windows",
+            "description": "Multi-source detection frequently fails because analysts compare timestamps without understanding event time, ingestion time, clock drift, or time zones. This lesson teaches time normalization and defensible correlation windows.",
+            "learningObjectives": [
+              "Distinguish event time from ingestion time.",
+              "Explain why UTC-based normalization is useful for cross-source correlation.",
+              "Choose correlation windows based on expected attacker behavior and telemetry latency.",
+              "Recognize clock drift and delayed ingestion as sources of false conclusions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Detection engines commonly operate on a normalized timeline. Keep source timestamps, ingestion timestamps, and processing timestamps distinct when available."
+              },
+              {
+                "type": "code",
+                "text": "event_time = 2026-09-07T14:03:12Z\ningest_time = 2026-09-07T14:03:16Z\nlatency = ingest_time - event_time\n\nCorrelation example:\nfailed_logins within 10 minutes before a successful_login\nfor the same user and source context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer UTC for stored/correlated event timestamps unless the platform explicitly requires another standard.",
+                  "Use a look-back buffer when late events are expected.",
+                  "Do not hide time-zone conversion inside analyst-facing fields; make the reference time explicit.",
+                  "Document the time basis of every multi-event rule."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-04",
+              "question": "What is the safest default for cross-source correlation timestamps?",
+              "options": [
+                "Mix local time and UTC as long as values look similar.",
+                "Normalize to a documented common basis, commonly UTC, while preserving original context when useful.",
+                "Use the analyst workstation clock only.",
+                "Discard timestamps and correlate by record order."
+              ],
+              "answer": "Normalize to a documented common basis, commonly UTC, while preserving original context when useful.",
+              "explanation": "A shared, explicit time basis reduces correlation errors across systems and locations."
+            },
+            "summary": [
+              "Cross-source correlation requires consistent time semantics.",
+              "Latency and clock drift must be accounted for.",
+              "Correlation windows should be deliberate and documented."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Advanced Hunting",
+                "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-overview"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Design a Testable Authentication Detection",
+            "level": "Easy",
+            "description": "Turn a vague requirement into a precise detection specification for suspicious authentication behavior.",
+            "problemStatement": "A SOC receives repeated authentication failures for several accounts and wants a detection that identifies suspicious failure bursts without treating every user typo as an incident. Produce a written hypothesis, required fields, logic, and validation cases.",
+            "objectives": [
+              "Define a falsifiable hypothesis.",
+              "Identify required telemetry fields.",
+              "Specify a threshold and correlation window.",
+              "Create positive and negative test cases."
+            ],
+            "requirements": [
+              "A text editor or notebook.",
+              "Access to representative authentication samples or the sample events described in the course."
+            ],
+            "hint": "Separate the behavior you want to detect from the data you need to observe it. Include at least one benign pattern that must not alert.",
+            "solutionCode": "Detection specification:\n\nHypothesis:\nFlag a source that generates 8 or more failed authentication events for 3 or more distinct users within 10 minutes, with at least one successful authentication from the same source within 15 minutes.\n\nRequired fields:\ntimestamp, user, source_ip, outcome.\n\nPositive test:\n8+ failures against several users, then a success from the same source.\n\nNegative tests:\n- 2 isolated failures for one user.\n- 8 failures spread over several hours.\n- normal password-reset activity from an approved service source.\n\nOperational requirements:\n- exclude documented service accounts where justified;\n- attach source_ip, affected_users, first_seen, last_seen, and event counts to the alert.",
+            "solutionExplanation": "This task demonstrates the difference between a vague goal and an implementable analytic. The explicit window and multi-user condition improve signal quality, while a negative test set creates a clear tuning target."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Telemetry and Data Sources",
+        "description": "Learn which identity, endpoint, network, cloud, and application signals support reliable detection and how telemetry quality determines what can be detected.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Identity and Authentication Telemetry",
+            "description": "Authentication activity is central to incident detection because compromised credentials can create valid-looking sessions. This lesson covers successful and failed logons, source context, logon types, authentication methods, service accounts, and the pitfalls of treating any unusual login as malicious.",
+            "learningObjectives": [
+              "Identify the fields that make authentication detections useful.",
+              "Interpret failed and successful authentication patterns.",
+              "Use source, target, logon type, and authentication method as context.",
+              "Separate suspicious behavior from expected service-account or administrative activity."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Windows example"
+              },
+              {
+                "type": "paragraph",
+                "text": "Windows Security event 4624 records creation of a successful logon session on the destination system. Event 4688 records process creation. These events become substantially more useful when correlated with source address, account, process, and surrounding activity."
+              },
+              {
+                "type": "code",
+                "text": "Example normalized authentication event:\n{\n  \"timestamp\": \"2026-09-07T10:12:42Z\",\n  \"event_type\": \"authentication\",\n  \"outcome\": \"success\",\n  \"user\": \"analyst01\",\n  \"source_ip\": \"192.0.2.40\",\n  \"target\": \"srv-01\",\n  \"logon_type\": 3\n}"
+              },
+              {
+                "type": "warning",
+                "text": "An unusual login source is a signal, not an automatic compromise verdict. Consider VPNs, identity proxies, administrator workflows, and service behavior before escalating."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Inspect Windows Authentication Events",
+                "description": "Read representative Windows 4624 events and identify the fields required for an authentication detection.",
+                "steps": "1. Open a representative 4624 event or the Microsoft example in the resource.\n2. Identify the account, target computer, source address, logon type, and authentication package.\n3. Record which fields distinguish local versus remote access in the sample.\n4. Translate those fields into a normalized authentication schema.\n5. Write one detection hypothesis using at least four normalized fields.",
+                "solution": "Normalized mapping example:\n\nAccount Name -> user\nSource Network Address -> source_ip\nComputer / destination system -> target\nLogon Type -> logon_type\nAuthentication Package -> authentication_method\nTimeCreated -> timestamp\n\nExample hypothesis:\nFlag repeated remote authentication failures from one source followed by a success for the same source and a sensitive target within a defined window.",
+                "output": "Students should finish with a field mapping and a detection hypothesis that can be implemented independently of the original event format."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "What makes a successful authentication event more useful for detection?",
+              "options": [
+                "Only its status code",
+                "Context such as account, source, target, time, authentication method, and logon type",
+                "Only the username",
+                "Only the destination host name"
+              ],
+              "answer": "Context such as account, source, target, time, authentication method, and logon type",
+              "explanation": "Context allows analysts to compare the event with expected behavior and related activity."
+            },
+            "summary": [
+              "Authentication detections depend on context, not just success/failure.",
+              "Windows provides rich audit events that can be correlated with endpoint telemetry.",
+              "Expected administrative and service behavior must be modeled to control false positives."
+            ],
+            "resources": [
+              {
+                "title": "ms_4624",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624"
+              },
+              {
+                "title": "ms_4688",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Endpoint Process and Execution Telemetry",
+            "description": "Process telemetry exposes what ran, how it was launched, and often which parent process initiated it. Students learn how process creation data supports detection hypotheses without relying solely on filenames or simple malware signatures.",
+            "learningObjectives": [
+              "Explain what process creation telemetry contributes to detection.",
+              "Use parent-child process relationships as behavioral context.",
+              "Distinguish stable fields from environment-specific values such as paths and usernames.",
+              "Correlate process execution with identity and network activity."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Windows event 4688 is generated when a new process is created. Command-line data may require explicit audit configuration. Sysmon can add process and network telemetry; Sysmon Event ID 3 records network connections and links them to a process using process identifiers/guid values."
+              },
+              {
+                "type": "code",
+                "text": "Behavioral hypothesis:\nA user-facing office application launches a scripting interpreter which immediately creates an outbound network connection.\n\nUseful fields:\nprocess_name\nparent_process_name\ncommand_line\nuser\nprocess_id / process_guid\ndestination_ip\ndestination_port\ntimestamp"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer relationships and behavior over brittle single strings.",
+                  "Treat command lines as potentially sensitive telemetry and apply appropriate access controls.",
+                  "Use a stable field contract in normalization so rules survive minor source changes."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Build a Process-Chain Detector",
+                "description": "Use a small CSV dataset to identify office applications spawning script interpreters.",
+                "steps": "1. Create `processes.csv` with columns `timestamp,host,user,parent_image,image,command_line`.\n2. Add three benign rows and one suspicious-looking office-to-script row.\n3. Load the file with Python's standard `csv` module.\n4. Normalize image and parent names to lower-case basenames.\n5. Print rows where an office parent launches a script interpreter.\n6. Add a test row showing that explorer.exe → notepad.exe is not selected.",
+                "solution": "import csv\nfrom pathlib import Path\n\noffice = {\"winword.exe\", \"excel.exe\", \"outlook.exe\", \"powerpnt.exe\"}\nscripts = {\"powershell.exe\", \"pwsh\", \"wscript.exe\", \"cscript.exe\", \"bash\", \"sh\"}\n\nwith Path(\"processes.csv\").open(newline=\"\", encoding=\"utf-8\") as f:\n    for row in csv.DictReader(f):\n        parent = row[\"parent_image\"].lower().replace(\"/\", \"\\\\\").split(\"\\\\\")[-1]\n        image = row[\"image\"].lower().replace(\"/\", \"\\\\\").split(\"\\\\\")[-1]\n        if parent in office and image in scripts:\n            print(row)",
+                "output": "The command prints only records whose parent process is an office executable and whose child is a known scripting interpreter. It demonstrates behavioral matching without executing the represented commands."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "Why is parent-child process context valuable?",
+              "options": [
+                "It makes every child process malicious.",
+                "It shows how execution was initiated and can reveal suspicious process chains.",
+                "It removes the need for timestamps.",
+                "It replaces all network telemetry."
+              ],
+              "answer": "It shows how execution was initiated and can reveal suspicious process chains.",
+              "explanation": "Process ancestry provides behavioral context that a filename alone cannot provide."
+            },
+            "summary": [
+              "Process relationships are a powerful detection signal.",
+              "Command-line visibility depends on audit configuration.",
+              "Endpoint and network context become stronger when correlated."
+            ],
+            "resources": [
+              {
+                "title": "ms_4688",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4688"
+              },
+              {
+                "title": "sysmon",
+                "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Network and Protocol Telemetry",
+            "description": "Network telemetry provides connection-level and protocol-level evidence that complements endpoint observations. This lesson introduces flow, DNS, HTTP, TLS, and protocol metadata, with a focus on how detections use the fields rather than on packet-capture analysis.",
+            "learningObjectives": [
+              "Differentiate flow, DNS, HTTP, TLS, and IDS alert telemetry.",
+              "Identify fields useful for network-based incident detection.",
+              "Correlate network events with hosts and processes when available.",
+              "Recognize encrypted traffic as a visibility constraint rather than proof of maliciousness."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Network sources"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Suricata EVE JSON can emit alerts, anomalies, file information, and protocol-specific records in JSON.",
+                  "Zeek commonly records connection, DNS, HTTP, TLS, file, SSH, and other protocol logs.",
+                  "Network detections benefit from direction, source/destination, ports, protocol, timing, and domain context.",
+                  "Network evidence should be combined with endpoint or identity context whenever the environment supports it."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Normalized network event:\n{\n  \"timestamp\": \"2026-09-07T12:05:13Z\",\n  \"event_type\": \"network_connection\",\n  \"src_ip\": \"192.0.2.10\",\n  \"dst_ip\": \"198.51.100.20\",\n  \"dst_port\": 443,\n  \"protocol\": \"tcp\",\n  \"bytes_out\": 84321,\n  \"bytes_in\": 12044\n}"
+              },
+              {
+                "type": "warning",
+                "text": "Encrypted traffic can hide payload content. Detection may still use metadata, destination reputation, process attribution, certificate/TLS metadata where available, and surrounding behavior."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Parse Suricata EVE JSON",
+                "description": "Extract alert and connection records from Suricata EVE JSON using Python without changing the source data.",
+                "steps": "1. Obtain a local sample `eve.json` from an authorized lab or use a copy of the structure shown in the Suricata documentation.\n2. Read the file line-by-line as JSON objects.\n3. Select records whose `event_type` is `alert` or `flow`.\n4. Print timestamp, source IP, destination IP, destination port, and event type when present.\n5. Count records by event type.\n6. Note any fields that are absent from your sample and would limit a planned detection.",
+                "solution": "import json\nfrom collections import Counter\nfrom pathlib import Path\n\ncounts = Counter()\nwith Path(\"eve.json\").open(encoding=\"utf-8\") as f:\n    for line in f:\n        if not line.strip():\n            continue\n        event = json.loads(line)\n        event_type = event.get(\"event_type\", \"unknown\")\n        counts[event_type] += 1\n        if event_type in {\"alert\", \"flow\"}:\n            print({\n                \"timestamp\": event.get(\"timestamp\"),\n                \"event_type\": event_type,\n                \"src_ip\": event.get(\"src_ip\"),\n                \"dest_ip\": event.get(\"dest_ip\"),\n                \"dest_port\": event.get(\"dest_port\"),\n            })\n\nprint(\"counts:\", dict(counts))",
+                "output": "The practical produces a field-level view of EVE records and highlights which telemetry is actually present. Exact output varies with the authorized sample file; no fixed record count is assumed."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "What is a sound approach when payload inspection is unavailable because traffic is encrypted?",
+              "options": [
+                "Assume the traffic is malicious.",
+                "Use metadata and correlate network behavior with endpoint, identity, and threat-intelligence context.",
+                "Ignore the traffic entirely.",
+                "Treat every TLS connection as high severity."
+              ],
+              "answer": "Use metadata and correlate network behavior with endpoint, identity, and threat-intelligence context.",
+              "explanation": "Encryption reduces some visibility but does not eliminate useful behavioral and contextual signals."
+            },
+            "summary": [
+              "Network telemetry includes both connection and protocol-level evidence.",
+              "Encrypted traffic changes what can be observed; it does not eliminate detection opportunities.",
+              "Correlation improves the meaning of isolated network observations."
+            ],
+            "resources": [
+              {
+                "title": "suricata",
+                "url": "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html"
+              },
+              {
+                "title": "zeek",
+                "url": "https://docs.zeek.org/en/current/reference/logs/index.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Cloud, SaaS, and Application Audit Signals",
+            "description": "Modern incidents often cross identity providers, SaaS applications, cloud control planes, and internal workloads. This lesson focuses on control-plane and application audit signals: logins, policy changes, token use, administrative actions, object access, and service-to-service activity.",
+            "learningObjectives": [
+              "Identify high-value cloud and SaaS audit categories.",
+              "Explain why control-plane changes are high-value detection opportunities.",
+              "Distinguish user activity from service automation.",
+              "Design detections around normalized identities and resources."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Cloud and SaaS audit logs often expose actor identity, source context, action, resource, result, and authentication/session details. These fields support detections such as suspicious administrative changes, new credentials, unusual geographic or network context, and high-impact configuration modifications."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identity events: sign-in, MFA change, credential/token activity.",
+                  "Control-plane events: policy, role, firewall, key, storage, or network configuration changes.",
+                  "Application events: unusual access patterns, bulk operations, privileged actions.",
+                  "Service events: automation accounts, workload identities, and scheduled jobs."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never assume a cloud action is suspicious solely because it is automated. Establish expected service principals, deployment systems, and maintenance windows."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "Which cloud audit property is most useful for distinguishing expected automation from suspicious activity?",
+              "options": [
+                "The color of the portal UI",
+                "Actor identity/context plus action, resource, result, and timing",
+                "Only the cloud region",
+                "Only the API endpoint name"
+              ],
+              "answer": "Actor identity/context plus action, resource, result, and timing",
+              "explanation": "Automation can be legitimate; detection requires enough context to compare observed activity with the expected service identity and scope."
+            },
+            "summary": [
+              "Cloud detection must include actor, action, resource, and timing context.",
+              "Control-plane changes can be high-value signals because they change security-relevant state.",
+              "Service identities require explicit baselining and ownership."
+            ],
+            "resources": [
+              {
+                "title": "ms_threat",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/threat-detection"
+              },
+              {
+                "title": "attck_ds",
+                "url": "https://attack.mitre.org/datasources/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build a Cross-Source Telemetry Map",
+            "level": "Easy",
+            "description": "Map a suspicious behavior to the minimum telemetry needed to detect and triage it.",
+            "problemStatement": "For a hypothetical investigation involving a remote login followed by suspicious process execution and outbound network traffic, create a telemetry map that names the evidence source, required fields, expected latency, and likely correlation key.",
+            "objectives": [
+              "Select identity, endpoint, and network evidence sources.",
+              "Define fields and join keys for correlation.",
+              "Identify one telemetry gap and explain its impact."
+            ],
+            "requirements": [
+              "A text editor.",
+              "The source documentation links in this course."
+            ],
+            "hint": "Think in entities and relationships: user, host, process, destination, and time.",
+            "solutionCode": "Telemetry map:\n\n1. Identity/authentication:\n- fields: timestamp, user, source_ip, target, outcome, logon_type\n- join: user + target + time\n\n2. Endpoint process:\n- fields: timestamp, host, user, process_id/process_guid, parent_process, command_line\n- join: host + user + time; process_id/process_guid where available\n\n3. Network:\n- fields: timestamp, src_ip, dst_ip, dst_port, protocol, bytes, process attribution if available\n- join: host/src_ip + time; process_guid when the endpoint sensor provides it\n\nGap example:\nIf the network sensor does not provide process attribution, the detection can still correlate by host and time but with lower confidence.",
+            "solutionExplanation": "The task demonstrates why detections are data-model problems as well as rule-logic problems. Explicit join keys and known gaps make the resulting detection easier to validate and troubleshoot."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Detection Logic and Correlation",
+        "description": "Develop precise analytics using indicators, thresholds, sequences, correlation keys, and baseline-aware anomaly reasoning.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Indicators, Behaviors, and Detection Hypotheses",
+            "description": "Incident detection can use known indicators such as hashes, domains, IPs, and filenames, but robust detection often emphasizes behaviors and relationships that persist as infrastructure changes. This lesson teaches students when each strategy is appropriate.",
+            "learningObjectives": [
+              "Differentiate IoC matching from behavioral detection.",
+              "Choose a detection strategy appropriate to the available evidence.",
+              "Explain the brittleness and lifecycle of static indicators.",
+              "Combine indicators with contextual evidence instead of treating matches as verdicts."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An indicator match answers “did this observed value match a known value?” A behavioral detection answers “did the sequence or characteristics of this activity resemble the threat behavior we care about?”"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Hash matches are precise when the exact artifact is known, but they miss repacked or modified variants.",
+                  "Domain/IP indicators can age quickly and may have legitimate shared infrastructure.",
+                  "Behavioral rules can generalize better but require stronger telemetry and careful tuning.",
+                  "Context—asset criticality, identity, process ancestry, reputation, and time sequence—raises detection confidence."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Indicator match:\nif file_hash in known_malicious_hashes:\n    alert()\n\nBehavioral hypothesis:\nif unusual_parent_child_chain and rare_external_destination:\n    raise_score()"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "What is a key advantage of behavioral detection over a single static IoC?",
+              "options": [
+                "It never needs telemetry.",
+                "It can generalize to related behavior even when exact indicators change.",
+                "It guarantees zero false positives.",
+                "It removes the need for analysts."
+              ],
+              "answer": "It can generalize to related behavior even when exact indicators change.",
+              "explanation": "Behavioral logic can be more resilient to changing infrastructure, although it also requires careful validation."
+            },
+            "summary": [
+              "IoCs and behaviors solve different detection problems.",
+              "Behavioral logic often survives indicator churn better.",
+              "Combining multiple evidence types can improve confidence."
+            ],
+            "resources": [
+              {
+                "title": "attck_det",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              },
+              {
+                "title": "ms_threat",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/threat-detection"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "Threshold and Statistical Detections",
+            "description": "Counts and rates are useful when a behavior becomes suspicious because of frequency. This lesson covers thresholds, cardinality, aggregation keys, baseline comparisons, and the dangers of “magic numbers.”",
+            "learningObjectives": [
+              "Construct threshold detections with explicit grouping keys and windows.",
+              "Distinguish count thresholds from rate and cardinality conditions.",
+              "Explain how baselines can reduce noise.",
+              "Choose thresholds using observed behavior and validation data rather than arbitrary values."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Common threshold shapes"
+              },
+              {
+                "type": "code",
+                "text": "Count:\nfailed_logins >= 10 in 5 minutes\n\nCardinality:\nunique_users(source_ip) >= 5 in 10 minutes\n\nRate:\nrequests_per_minute > baseline * 4\n\nSequence threshold:\nN failures followed by a success within a defined window"
+              },
+              {
+                "type": "paragraph",
+                "text": "Threshold quality depends on the grouping key. Counting failures across an entire enterprise may be meaningless; grouping by account, source, host, application, or user-and-source pair can align the metric with the threat model."
+              },
+              {
+                "type": "warning",
+                "text": "Avoid thresholds that were copied from another environment without validation. Normal traffic volumes and administrative practices differ substantially."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05",
+                "title": "Calculate a Source Cardinality Signal",
+                "description": "Compute failure count and unique-user count per source IP in a small normalized authentication dataset.",
+                "steps": "1. Create a JSONL file containing authentication events.\n2. Load events with Python.\n3. Filter to failures.\n4. Group failures by `source_ip`.\n5. Calculate total failures and distinct targeted users.\n6. Flag sources meeting the chosen threshold.\n7. Compare the result with a benign source that targets only one account.",
+                "solution": "import json\nfrom collections import defaultdict\n\nby_source = defaultdict(list)\nwith open(\"auth.jsonl\", encoding=\"utf-8\") as f:\n    for line in f:\n        e = json.loads(line)\n        if e.get(\"event_type\") == \"authentication\" and e.get(\"outcome\") == \"failure\":\n            by_source[e[\"source_ip\"]].append(e)\n\nfor source, events in by_source.items():\n    users = {e[\"user\"] for e in events}\n    if len(events) >= 8 and len(users) >= 3:\n        print({\"source_ip\": source, \"failures\": len(events), \"unique_users\": len(users)})",
+                "output": "Only source IPs that satisfy both the count and cardinality thresholds are printed. This teaches why a source-centric spray signal differs from a simple per-account failure count."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "What should determine a threshold value?",
+              "options": [
+                "Aesthetic preference",
+                "Observed environment behavior plus threat assumptions and validation",
+                "The largest possible number",
+                "A vendor slogan"
+              ],
+              "answer": "Observed environment behavior plus threat assumptions and validation",
+              "explanation": "Thresholds should be evidence-driven and tested against both benign and suspicious activity."
+            },
+            "summary": [
+              "Counts, rates, and cardinality are different analytic forms.",
+              "Grouping keys determine what a threshold actually means.",
+              "Thresholds should be evidence-driven, not arbitrary."
+            ],
+            "resources": [
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Sequences, Correlation, and Behavioral Chains",
+            "description": "Many high-value detections require multiple events in an order or relationship: authentication followed by privilege change, process start followed by network egress, or discovery followed by data access. This lesson teaches sequence modeling and entity-based joins.",
+            "learningObjectives": [
+              "Model multi-event behavior as ordered sequences.",
+              "Select correlation keys that link the correct entities.",
+              "Use time windows without creating accidental cross-entity matches.",
+              "Explain why behavior-chain detections can produce more context than isolated rules."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A behavior chain can be represented as E1 → E2 → E3 where each event shares a correlation key such as user, host, process identifier, or source address. The sequence should be constrained by time and by entity identity."
+              },
+              {
+                "type": "code",
+                "text": "E1: successful_remote_login(user, host)\nE2: privileged_change(user, host) within 10m\nE3: outbound_connection(host) within 15m\n\nAlert when:\nE1 and E2 and E3 are all observed for the same user/host\nand the sequence occurs in the expected order."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Sequence order can carry meaning that simultaneous counts cannot.",
+                  "Use process GUIDs or session identifiers when available instead of fuzzy string joins.",
+                  "Do not correlate events across unrelated assets merely because they happened within the same minute."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "Why are correlation keys important in a multi-event detection?",
+              "options": [
+                "They decorate alert colors.",
+                "They ensure events from the same logical entity or session are linked.",
+                "They eliminate timestamps.",
+                "They guarantee maliciousness."
+              ],
+              "answer": "They ensure events from the same logical entity or session are linked.",
+              "explanation": "Without a correct key, unrelated events can be incorrectly combined into a false behavior chain."
+            },
+            "summary": [
+              "Sequence detections gain power from order and entity relationships.",
+              "Correlation keys prevent unrelated events from being combined.",
+              "Time windows must be paired with meaningful identity or session keys."
+            ],
+            "resources": [
+              {
+                "title": "attck_det",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              },
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "Anomaly Detection and Baselines",
+            "description": "Some suspicious activity is difficult to express as an exact rule. Baselines help detect deviations in login location, process prevalence, network volume, or administrative behavior. This lesson explains when anomaly methods are appropriate and where they can mislead.",
+            "learningObjectives": [
+              "Explain the purpose of a baseline.",
+              "Distinguish anomaly scoring from deterministic rules.",
+              "Identify data quality requirements for useful baselines.",
+              "Use anomaly results as evidence that should be combined with context."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A baseline is a representation of expected behavior over a selected population and period. An anomaly detector identifies observations that differ materially from that baseline. The result is not automatically malicious; rare legitimate events exist."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Choose the population carefully: per user, host, role, application, or environment.",
+                  "Allow for seasonality such as weekends, maintenance windows, and deployment cycles.",
+                  "Exclude known automation where appropriate, but avoid hard-coding exclusions that hide genuine compromise.",
+                  "Use anomaly findings as a prioritization signal and correlate with deterministic evidence."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Anomaly detection fails when “normal” is unstable, poisoned by prior incidents, or built from insufficiently representative data."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-04",
+              "question": "What is a major limitation of anomaly-based detection?",
+              "options": [
+                "It cannot use timestamps.",
+                "Rare legitimate behavior can also look anomalous, so context and validation are required.",
+                "It always has zero alerts.",
+                "It only works on network traffic."
+              ],
+              "answer": "Rare legitimate behavior can also look anomalous, so context and validation are required.",
+              "explanation": "Anomaly is a deviation from a model of normality, not proof of maliciousness."
+            },
+            "summary": [
+              "Baselines describe expected behavior rather than define malware directly.",
+              "Population and seasonality choices affect anomaly quality.",
+              "Anomaly results should be combined with other evidence."
+            ],
+            "resources": [
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Write a Multi-Event Detection Specification",
+            "level": "Intermediate",
+            "description": "Design a behavior-chain detection for suspicious remote access followed by execution and outbound communication.",
+            "problemStatement": "Create a detection specification that correlates authentication, process, and network events while minimizing accidental cross-host matches. Include keys, windows, required fields, expected false positives, and escalation context.",
+            "objectives": [
+              "Define three ordered event stages.",
+              "Use explicit entity keys.",
+              "Set justified correlation windows.",
+              "Describe at least three benign alternatives."
+            ],
+            "requirements": [
+              "Access to a text editor.",
+              "Representative normalized event examples."
+            ],
+            "hint": "Start with the entities that must remain constant across the sequence: user, host, and where possible process/session identifiers.",
+            "solutionCode": "Detection chain:\n\nE1 Authentication:\noutcome=success AND remote_access=true\n\nE2 Execution:\nprocess starts on the same host within 10 minutes\nAND process is outside the approved remote-management baseline\n\nE3 Network:\nnew outbound connection from the same host within 10 minutes of E2\n\nCorrelation:\nhost must match E1/E2/E3; user must match E1/E2 where available; process_guid links E2 to network telemetry when supported.\n\nTriage context:\naccount role, destination reputation, process command line, asset criticality, and whether remote management is approved.",
+            "solutionExplanation": "The specification is intentionally platform-neutral. It demonstrates how sequence logic, entity consistency, and contextual enrichment create an analyst-ready detection."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Detection Engineering and Rule Authoring",
+        "description": "Turn detection hypotheses into maintainable analytics using Sigma, query languages, normalization, enrichment, and operational rule metadata.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Sigma as a Portable Detection Language",
+            "description": "Sigma provides a generic YAML format for describing detections against log data. This lesson teaches the core structure—metadata, log source, detection selections, condition logic, false positives, levels, and tags—and how portability differs from executable vendor queries.",
+            "learningObjectives": [
+              "Explain the purpose of Sigma.",
+              "Construct a syntactically coherent Sigma rule.",
+              "Use logsource and detection sections correctly.",
+              "Describe portability limits and the role of a backend translator."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Sigma rule anatomy"
+              },
+              {
+                "type": "code",
+                "text": "title: Suspicious PowerShell From Office Application\nid: 0e7f2f6e-7a3c-4d24-9a3d-b0b1a0c1d9a1\nstatus: test\ndescription: Detects a suspicious Office-to-PowerShell process relationship.\nlogsource:\n  product: windows\n  category: process_creation\ndetection:\n  selection_parent:\n    ParentImage|endswith:\n      - \"\\WINWORD.EXE\"\n      - \"\\EXCEL.EXE\"\n  selection_child:\n    Image|endswith: \"\\powershell.exe\"\n  condition: selection_parent and selection_child\nfalsepositives:\n  - Authorized automation or document-based administrative workflows\nlevel: high\ntags:\n  - attack.execution"
+              },
+              {
+                "type": "paragraph",
+                "text": "Sigma rules are declarative. The backend or SIEM integration translates the rule into product-specific query logic. Portability therefore depends on field mappings, supported modifiers, and the backend implementation."
+              },
+              {
+                "type": "warning",
+                "text": "Use UUID-format rule IDs and maintain rule status, references, and false-positive guidance. Do not copy a rule into production without validating field availability in your environment."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06",
+                "title": "Validate Sigma YAML Structure",
+                "description": "Create a small Sigma rule and verify the structure manually against the current Sigma specification.",
+                "steps": "1. Create a YAML rule containing title, id, status, description, logsource, detection, condition, falsepositives, level, and tags.\n2. Ensure the detection contains named selections and a condition.\n3. Confirm the rule has a stable UUID-style identifier.\n4. Review the logsource fields against the telemetry you actually have.\n5. Document two plausible false positives.\n6. Mark the rule as test until backend field mapping and behavior have been validated.",
+                "solution": "title: Unusual Script Interpreter From Office Parent\nid: 8b3a5c1e-6b87-4bb4-9d4e-8f3c8b1c27e9\nstatus: test\ndescription: Detects a script interpreter launched directly by an office application.\nlogsource:\n  product: windows\n  category: process_creation\ndetection:\n  parent_selection:\n    ParentImage|endswith:\n      - \"\\\\WINWORD.EXE\"\n      - \"\\\\EXCEL.EXE\"\n  child_selection:\n    Image|endswith:\n      - \"\\\\powershell.exe\"\n      - \"\\\\wscript.exe\"\n  condition: parent_selection and child_selection\nfalsepositives:\n  - Approved document automation\n  - Endpoint management software\nlevel: high\ntags:\n  - attack.execution",
+                "output": "A syntactically coherent rule document is produced, but the lab deliberately stops before production deployment because backend translation and field mapping must be tested."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "What does a Sigma rule primarily provide?",
+              "options": [
+                "A compiled endpoint agent",
+                "A portable description of log-based detection logic",
+                "A firewall firmware image",
+                "A malware binary"
+              ],
+              "answer": "A portable description of log-based detection logic",
+              "explanation": "Sigma describes detections in a generic form so they can be translated or adapted for SIEM and log-analysis backends."
+            },
+            "summary": [
+              "Sigma is a portable rule format, not a sensor.",
+              "Logsource and detection logic are central to rule behavior.",
+              "Translation and field mapping must be validated in the target platform."
+            ],
+            "resources": [
+              {
+                "title": "sigma_rules",
+                "url": "https://sigmahq.io/docs/basics/rules.html"
+              },
+              {
+                "title": "sigma_spec",
+                "url": "https://sigmahq.io/sigma-specification/specification/sigma-rules-specification.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "KQL-Oriented Hunting and Detection Queries",
+            "description": "Query-based hunting supports investigation and can become a detection when the query is stable enough to run on a schedule. This lesson introduces KQL-style filtering, projection, aggregation, joins, and time windows using Microsoft Defender Advanced Hunting concepts.",
+            "learningObjectives": [
+              "Read and write basic KQL-style filters and projections.",
+              "Aggregate events by relevant entities.",
+              "Use time windows and joins to express detection logic.",
+              "Explain the difference between exploratory hunting and a production custom detection."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "DeviceProcessEvents\n| where Timestamp > ago(1h)\n| where FileName =~ \"powershell.exe\"\n| project Timestamp, DeviceName, AccountName, ProcessCommandLine\n| order by Timestamp desc"
+              },
+              {
+                "type": "paragraph",
+                "text": "Microsoft Defender Advanced Hunting uses Kusto Query Language and can search raw data across supported Defender and Sentinel data sources. Hunting queries can be used to investigate known and potential threats and can also be used as the basis for custom detections."
+              },
+              {
+                "type": "warning",
+                "text": "Advanced Hunting uses UTC for queries. Validate the exact table schema, field names, permissions, retention, and execution limits in the platform before productionizing a query."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07",
+                "title": "Practice a KQL Detection Query",
+                "description": "Use a sample event table to filter process activity and summarize suspicious parent-child relationships.",
+                "steps": "1. In a Microsoft Defender or Sentinel lab with suitable access, open Advanced Hunting.\n2. Start with a time-bounded query.\n3. Filter for the relevant process name.\n4. Project timestamp, device, account, parent process, and command line fields that exist in your schema.\n5. Add an aggregation or join only after the base query returns expected results.\n6. Save the query as a hunting artifact before considering it for custom detection use.",
+                "solution": "DeviceProcessEvents\n| where Timestamp > ago(1h)\n| where FileName =~ \"powershell.exe\"\n| project Timestamp, DeviceName, AccountName, InitiatingProcessFileName, ProcessCommandLine\n| order by Timestamp desc",
+                "output": "The lab returns matching process events available to the tenant. Exact field availability depends on the connected data sources and current schema, so students must validate against their environment before production use."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "What is a key difference between hunting and a production detection?",
+              "options": [
+                "Hunting never uses queries.",
+                "A production detection needs operational ownership, schedule, alert semantics, and validated behavior—not just a query that finds something interesting.",
+                "Hunting cannot inspect logs.",
+                "A detection must be written in assembly."
+              ],
+              "answer": "A production detection needs operational ownership, schedule, alert semantics, and validated behavior—not just a query that finds something interesting.",
+              "explanation": "A query can be useful during investigation without being stable or appropriate for recurring alerting."
+            },
+            "summary": [
+              "Query languages support both investigation and detection engineering.",
+              "Production detections need operational configuration beyond query syntax.",
+              "Schema, time basis, permissions, and retention are part of technical correctness."
+            ],
+            "resources": [
+              {
+                "title": "ms_hunt",
+                "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-overview"
+              },
+              {
+                "title": "ms_threat",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/threat-detection"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Normalization and Common Schemas",
+            "description": "Normalization allows detection logic to reason about common concepts rather than vendor-specific field names. This lesson explains normalized fields, parsers, schema contracts, and how normalization supports portability and maintenance.",
+            "learningObjectives": [
+              "Explain why normalization improves detection maintainability.",
+              "Distinguish source fields from normalized fields.",
+              "Design a minimal normalized schema for a detection use case.",
+              "Recognize the trade-off between normalization and loss of source-specific detail."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft Sentinel’s Advanced Security Information Model (ASIM) places a normalization layer between diverse telemetry sources and analytics. Parsers transform proprietary fields into normalized schemas so rules can reason over common concepts."
+              },
+              {
+                "type": "code",
+                "text": "Source A: SrcIP, DstIP, UserName\nSource B: source.ip, destination.ip, user.name\n\nNormalized concept:\nSrcIpAddr, DstIpAddr, ActorUsername\n\nDetection logic uses the normalized contract.\nParser logic handles source differences."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Normalization reduces repeated source-specific logic.",
+                  "Keep source identifiers and raw fields available for investigation where policy and platform design allow.",
+                  "Treat schema changes as detection dependencies that require regression testing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "What is the main benefit of normalization?",
+              "options": [
+                "It deletes all raw data.",
+                "It lets detection logic use consistent concepts across different source formats.",
+                "It automatically proves incidents.",
+                "It removes the need for parsing."
+              ],
+              "answer": "It lets detection logic use consistent concepts across different source formats.",
+              "explanation": "Normalization translates diverse source representations into a common model that can be queried consistently."
+            },
+            "summary": [
+              "Normalization separates source-specific parsing from detection logic.",
+              "A stable schema contract improves portability and maintenance.",
+              "Raw/source detail remains useful for investigation."
+            ],
+            "resources": [
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              },
+              {
+                "title": "ms_threat",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/threat-detection"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Detection Enrichment and Context",
+            "description": "A raw match rarely contains enough context for a confident triage decision. Enrichment adds asset criticality, identity role, threat intelligence, ownership, geolocation where justified, and historical context. This lesson teaches how enrichment should raise or lower confidence without becoming uncontrolled automation.",
+            "learningObjectives": [
+              "Identify useful enrichment dimensions for incident detection.",
+              "Distinguish enrichment from primary evidence.",
+              "Use enrichment to prioritize rather than blindly convict.",
+              "Avoid enrichment sources that create privacy, drift, or reliability problems without operational value."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Asset context: production vs test, criticality, owner, exposure.",
+                  "Identity context: role, privilege level, service-account classification.",
+                  "Threat intelligence: indicator reputation, confidence, source, age, and scope.",
+                  "Historical context: prevalence, first seen, last seen, prior alert outcomes."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Enrichment should be traceable. An analyst should be able to understand why a score increased—for example, because a destination matched a high-confidence indicator—or decreased because a source belongs to an approved scanning service."
+              },
+              {
+                "type": "warning",
+                "text": "Do not treat external intelligence as infallible. Record source, timestamp, confidence, and relevant expiration or aging semantics where available."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "Which is the best use of enrichment?",
+              "options": [
+                "To replace primary evidence",
+                "To add context that helps prioritize and investigate a detection",
+                "To guarantee the event is malicious",
+                "To hide uncertainty"
+              ],
+              "answer": "To add context that helps prioritize and investigate a detection",
+              "explanation": "Enrichment improves context and prioritization but remains subject to source quality and interpretation."
+            },
+            "summary": [
+              "Enrichment improves the context of a detection.",
+              "Confidence should remain explainable and traceable.",
+              "Threat intelligence has source and aging considerations."
+            ],
+            "resources": [
+              {
+                "title": "ms_threat",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/threat-detection"
+              },
+              {
+                "title": "elastic_prebuilt",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/prebuilt-rules"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Author and Review a Sigma Rule",
+            "level": "Intermediate",
+            "description": "Create a portable Sigma detection for a suspicious endpoint execution pattern and review it for production readiness.",
+            "problemStatement": "Author a Sigma rule that detects a chosen suspicious process relationship using Windows process-creation telemetry. Then write a review checklist covering fields, condition logic, false positives, severity, ATT&CK mapping, and validation.",
+            "objectives": [
+              "Write valid YAML structure.",
+              "Use logsource and detection correctly.",
+              "Document at least three plausible false positives.",
+              "Include operational metadata and a validation plan."
+            ],
+            "requirements": [
+              "A text editor.",
+              "Current Sigma specification documentation."
+            ],
+            "hint": "Use the Sigma specification to verify field placement and remember that backend field mapping still needs validation.",
+            "solutionCode": "title: Suspicious Script Interpreter Spawned by Office Application\nid: 3e8cc2c8-b9f6-4fb8-9d0c-7e6bd57c2a31\nstatus: test\ndescription: Detects a script interpreter launched directly by a commonly used office application.\nreferences:\n  - https://sigmahq.io/sigma-specification/specification/sigma-rules-specification.html\nlogsource:\n  product: windows\n  category: process_creation\ndetection:\n  selection_parent:\n    ParentImage|endswith:\n      - '\\WINWORD.EXE'\n      - '\\EXCEL.EXE'\n      - '\\OUTLOOK.EXE'\n  selection_child:\n    Image|endswith:\n      - '\\powershell.exe'\n      - '\\wscript.exe'\n      - '\\cscript.exe'\n  condition: selection_parent and selection_child\nfalsepositives:\n  - Approved document automation\n  - Enterprise endpoint management workflows\n  - Security administration tools\nlevel: high\ntags:\n  - attack.execution",
+            "solutionExplanation": "The rule is deliberately marked test because field population and benign prevalence must be validated before production deployment. The review process is part of correctness: confirm the parent image field, child image field, path representation, translator behavior, and false positives in the actual environment."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Threat-Focused Detection Patterns",
+        "description": "Apply detection methods to identity, endpoint, network, and cloud behaviors while using threat-informed context and ATT&CK coverage.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "Identity Attack Patterns",
+            "description": "This lesson applies incident-detection methods to suspicious authentication patterns: brute force, password spraying, impossible or improbable source changes, abuse of privileged accounts, and unusual remote access. The emphasis is detection design rather than offensive execution.",
+            "learningObjectives": [
+              "Design detections for authentication failure bursts and password spraying.",
+              "Use distinct counting and account/source relationships.",
+              "Correlate successful access with preceding failures.",
+              "Add identity and asset context to triage."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Password spraying differs from brute force in its distribution: repeated attempts may target many accounts with relatively few attempts per account. Detection should therefore consider source-to-unique-user cardinality rather than only per-user failure counts."
+              },
+              {
+                "type": "code",
+                "text": "Source-centric spray signal:\nfor each source_ip in 10m:\n  failures = count(authentication where outcome=\"failure\")\n  users = distinct_count(user)\n  if failures >= 20 and users >= 8:\n      alert()"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Combine source reputation, account sensitivity, geographic/network context, and success events.",
+                  "Expect shared egress points and identity gateways to create false positives if not modeled.",
+                  "Prefer evidence chains that connect authentication to subsequent suspicious activity."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Which measure is particularly useful for password-spray detection?",
+              "options": [
+                "Only total failures for one account",
+                "Distinct number of targeted accounts per source over a short window",
+                "Only password length",
+                "Only destination port"
+              ],
+              "answer": "Distinct number of targeted accounts per source over a short window",
+              "explanation": "Spraying distributes attempts across accounts, so source-to-user cardinality is informative."
+            },
+            "summary": [
+              "Password spraying requires source-centric and cardinality-aware analysis.",
+              "Authentication patterns should be enriched with identity context.",
+              "A successful login after a failure burst increases investigative priority."
+            ],
+            "resources": [
+              {
+                "title": "ms_4624",
+                "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624"
+              },
+              {
+                "title": "attck_det",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Endpoint Execution and Persistence Signals",
+            "description": "Endpoint detections often focus on unusual process ancestry, script interpreters, services, scheduled execution, persistence locations, and security-control tampering. This lesson teaches how to model these as behaviors while limiting brittle filename-based rules.",
+            "learningObjectives": [
+              "Identify endpoint behaviors that commonly warrant detection engineering.",
+              "Use parent-child relationships and persistence changes as signals.",
+              "Build detections that distinguish suspicious behavior from administrative automation.",
+              "Map endpoint behavior to ATT&CK techniques for coverage tracking."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Process ancestry and command-line context can expose unusual execution chains.",
+                  "Service or scheduled-task creation can be legitimate or malicious; identity and change context matter.",
+                  "Security-control configuration changes can be high-priority when performed outside authorized maintenance.",
+                  "ATT&CK technique mapping helps organize coverage but does not substitute for local validation."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK detection strategies organize high-level approaches for detecting techniques and can connect to platform-specific analytics. Data sources and data components help identify what telemetry supports a detection concept."
+              },
+              {
+                "type": "warning",
+                "text": "ATT&CK IDs and mappings can change as the framework evolves. Treat external mappings as maintained metadata and review them periodically."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What is the role of ATT&CK in detection engineering?",
+              "options": [
+                "It is a packet decoder.",
+                "It organizes adversary behaviors and detection concepts to help reason about coverage and analytics.",
+                "It is a SIEM.",
+                "It guarantees that every mapped technique is detected."
+              ],
+              "answer": "It organizes adversary behaviors and detection concepts to help reason about coverage and analytics.",
+              "explanation": "ATT&CK provides a common behavioral framework; local telemetry and analytics are still required."
+            },
+            "summary": [
+              "Endpoint detections should emphasize behavior and context.",
+              "ATT&CK mapping supports coverage reasoning and prioritization.",
+              "Framework mappings require maintenance as versions evolve."
+            ],
+            "resources": [
+              {
+                "title": "attck_det",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              },
+              {
+                "title": "attck_ds",
+                "url": "https://attack.mitre.org/datasources/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Network Detection Patterns",
+            "description": "This lesson develops detections for suspicious DNS, outbound connectivity, service discovery, and unusual protocol behavior using network metadata. Students learn how to combine rate, rarity, destination context, and endpoint identity.",
+            "learningObjectives": [
+              "Describe detection ideas for DNS and network-session anomalies.",
+              "Use network metadata without assuming payload access.",
+              "Correlate destinations with internal hosts and process context.",
+              "Design network detections that account for legitimate infrastructure services."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "DNS example hypothesis:\nA workstation generates an unusually high number of unique subdomain queries to one parent domain within a short period, combined with other suspicious endpoint context.\n\nCandidate features:\n- unique_qname_count\n- query_rate\n- parent_domain\n- response_code\n- client_host\n- first_seen/last_seen"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "DNS rarity alone is weak because CDNs, software updates, and telemetry systems create legitimate high-cardinality patterns.",
+                  "Use response behavior, query frequency, destination age/reputation, and host process context when available.",
+                  "Connection logs can identify repeated outbound destinations even when payload content is encrypted."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "Why should a high-DNS-volume signal usually be correlated with other evidence?",
+              "options": [
+                "DNS is never useful.",
+                "Legitimate services can also generate high-cardinality or high-rate DNS traffic.",
+                "DNS has no timestamps.",
+                "Only malware uses subdomains."
+              ],
+              "answer": "Legitimate services can also generate high-cardinality or high-rate DNS traffic.",
+              "explanation": "Network patterns must be interpreted in context to avoid alerting on normal software, CDNs, and enterprise services."
+            },
+            "summary": [
+              "Network detection often uses metadata rather than payload.",
+              "Rarity and volume are valuable but noisy alone.",
+              "Process and asset context can improve network detection precision."
+            ],
+            "resources": [
+              {
+                "title": "suricata",
+                "url": "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html"
+              },
+              {
+                "title": "zeek",
+                "url": "https://docs.zeek.org/en/current/reference/logs/index.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "Cloud and SaaS Administrative Detections",
+            "description": "Administrative changes in cloud and SaaS environments can have large security impact. This lesson focuses on policy changes, privilege changes, new credentials, unusual API usage, and sensitive-resource access patterns.",
+            "learningObjectives": [
+              "Identify security-relevant cloud control-plane actions.",
+              "Design actor/resource/action-based detection logic.",
+              "Use expected automation and change-management context to reduce noise.",
+              "Escalate high-impact changes with the right asset and identity context."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Generic cloud control-plane model:\nactor != approved_deployment_identity\nAND action in sensitive_actions\nAND target_resource in protected_scope\nAND time not in approved_change_window\n=> elevated_priority"
+              },
+              {
+                "type": "paragraph",
+                "text": "The strongest cloud detections combine actor, action, target resource, result, and context. A privileged configuration change may be expected during deployment and suspicious outside an approved workflow; the event itself is not enough."
+              },
+              {
+                "type": "warning",
+                "text": "Store only the context required by the detection and organizational policy. Cloud audit data can contain sensitive identity and resource information."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "Which combination most directly supports detecting an unauthorized privileged cloud change?",
+              "options": [
+                "Only the action name",
+                "Actor identity + action + resource + result + timing/change context",
+                "Only the cloud region",
+                "Only the API version"
+              ],
+              "answer": "Actor identity + action + resource + result + timing/change context",
+              "explanation": "The combination allows the analyst to evaluate whether the change was authorized and impactful."
+            },
+            "summary": [
+              "Cloud administrative detections are actor/action/resource problems.",
+              "Change windows and automation identity are key tuning inputs.",
+              "High-impact control-plane actions deserve strong context and ownership."
+            ],
+            "resources": [
+              {
+                "title": "ms_threat",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/threat-detection"
+              },
+              {
+                "title": "attck_ds",
+                "url": "https://attack.mitre.org/datasources/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Develop a Threat-Informed Detection Use Case",
+            "level": "Intermediate",
+            "description": "Build a complete detection use case for a realistic enterprise behavior chain and align it to available telemetry.",
+            "problemStatement": "Choose one behavior chain such as credential abuse → remote access → suspicious execution, or suspicious cloud privilege change → new token use. Produce detection logic, required data, false positives, ATT&CK mapping, and analyst pivots.",
+            "objectives": [
+              "Define the behavior chain.",
+              "Map each stage to telemetry and a correlation key.",
+              "Specify tuning assumptions and false positives.",
+              "Provide analyst pivots for triage."
+            ],
+            "requirements": [
+              "Text editor.",
+              "MITRE ATT&CK resources from the course."
+            ],
+            "hint": "A useful use case has a narrow hypothesis and clear evidence at each stage.",
+            "solutionCode": "Use case: Suspicious remote access followed by execution\n\nHypothesis:\nA remote authentication that is unusual for the account is followed by a rare process launch on the same host within 10 minutes.\n\nTelemetry:\n- authentication: user, source_ip, target, logon_type\n- process: host, user, parent, image, command_line, timestamp\n\nTuning:\n- approved jump hosts\n- service accounts\n- known remote-management tools\n\nTriage pivots:\n1. Review source identity and prior login history.\n2. Inspect parent/child process chain.\n3. Check outbound connections from the host around the process start.\n4. Determine asset criticality and whether the action matches a change window.\n\nATT&CK alignment:\nSelect the current ATT&CK techniques that accurately describe the observed behavior at the time of implementation; verify mappings against the current ATT&CK site before publishing.",
+            "solutionExplanation": "The key skill is building a threat-informed, evidence-backed use case rather than simply copying an ATT&CK label. The mapping is maintained metadata; the local detection must still be validated against telemetry and benign activity."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Alert Triage and Investigation",
+        "description": "Turn detection output into defensible analyst decisions through structured triage, investigation pivots, tuning, and evidence-aware records.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Alert Triage and Severity",
+            "description": "Detection creates work for analysts, so alert quality must be considered from the start. This lesson teaches structured triage: verify the match, establish scope, determine confidence and impact, and decide whether to escalate.",
+            "learningObjectives": [
+              "Perform a structured first-pass alert triage.",
+              "Separate confidence, impact, and urgency.",
+              "Identify the minimum context needed for escalation.",
+              "Write concise, evidence-backed analyst notes."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful severity model separates at least three ideas: confidence that the detection represents suspicious behavior, impact if the behavior is malicious, and urgency based on time sensitivity. A critical asset with medium confidence can still warrant rapid investigation."
+              },
+              {
+                "type": "code",
+                "text": "Triage checklist:\n1. What exactly matched?\n2. Which entity or entities are affected?\n3. Is the telemetry trustworthy and complete?\n4. Is the behavior expected for this user/host/application?\n5. What happened immediately before and after?\n6. Is there evidence of impact or spread?\n7. What action is required now?"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Read the evidence before assigning a verdict.",
+                  "Preserve timestamps, query scope, and source identifiers.",
+                  "Document assumptions and unresolved questions.",
+                  "Escalate when evidence and potential impact justify it, not simply because a rule is labeled high."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Why should severity and confidence be treated separately?",
+              "options": [
+                "They are the same concept.",
+                "A low-confidence signal can still be urgent on a critical asset, while a high-confidence signal on a low-impact system may have different operational urgency.",
+                "Severity is only about log volume.",
+                "Confidence is irrelevant."
+              ],
+              "answer": "A low-confidence signal can still be urgent on a critical asset, while a high-confidence signal on a low-impact system may have different operational urgency.",
+              "explanation": "Separating dimensions produces more defensible triage decisions."
+            },
+            "summary": [
+              "Triage should be evidence-driven and structured.",
+              "Confidence, impact, and urgency are different dimensions.",
+              "Analyst notes should preserve evidence and uncertainty."
+            ],
+            "resources": [
+              {
+                "title": "nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "ms_threat",
+                "url": "https://learn.microsoft.com/en-us/azure/sentinel/threat-detection"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "Investigation Pivots and Scope Expansion",
+            "description": "Once an alert is validated, analysts pivot across entities and time to discover related activity. This lesson teaches host, user, process, network, cloud-resource, and indicator pivots and how to avoid confirmation bias.",
+            "learningObjectives": [
+              "Select pivots based on the alert’s strongest entities.",
+              "Expand time windows deliberately.",
+              "Trace relationships across identity, endpoint, network, and cloud data.",
+              "Record negative findings as part of an investigation."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Common pivots"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "User → recent authentications → accessed systems → privilege changes.",
+                  "Host → process tree → persistence changes → outbound connections.",
+                  "Process → parent/children → command line → related network activity.",
+                  "Destination/domain/IP → other internal clients → first/last seen → intelligence context.",
+                  "Cloud actor → API actions → impacted resources → credential/token changes."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A pivot should answer a question. For example: “Did the same account access other hosts after the suspicious login?” is better than “search everything.” Purposeful pivots reduce analyst time and confirmation bias."
+              },
+              {
+                "type": "warning",
+                "text": "Do not silently discard benign evidence. Absence of a signal can be meaningful when the expected sensor was known to be healthy."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08",
+                "title": "Run an Entity Pivot Worksheet",
+                "description": "Trace one alert through user, host, process, and network pivots using only the synthetic project events.",
+                "steps": "1. Start from one synthetic incident in `sample_events.jsonl`.\n2. Record its primary entities: user, host/source, and event IDs.\n3. Search the dataset for additional events involving the same user.\n4. Search for additional events involving the same host.\n5. Search for process or network events immediately around the alert time.\n6. Record both supporting and negative findings.\n7. Write one hypothesis that the additional evidence supports and one hypothesis that it weakens.",
+                "solution": "Worksheet example:\n\nStarting entity: source_ip=203.0.113.50\nRelated entity: user=user08\nSupporting events: auth failures auth-001..auth-008; success auth-009\nNegative finding: no process/network events are linked to this source in the authentication burst sample\n\nNext question: is the source an approved identity gateway, and did the successful login lead to activity on the target?",
+                "output": "The output is a traceable investigation worksheet rather than an automatic verdict. The student should be able to explain what was found, what was not found, and what should be investigated next."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "What makes a good investigative pivot?",
+              "options": [
+                "It broadens the search randomly.",
+                "It uses a relevant entity or relationship to answer a specific investigative question.",
+                "It always expands to the entire enterprise.",
+                "It ignores time boundaries."
+              ],
+              "answer": "It uses a relevant entity or relationship to answer a specific investigative question.",
+              "explanation": "Good pivots are hypothesis-driven and maintain a traceable relationship to the alert."
+            },
+            "summary": [
+              "Investigations progress through entity-based pivots.",
+              "Every pivot should answer a question.",
+              "Negative findings and data gaps are part of the evidence set."
+            ],
+            "resources": [
+              {
+                "title": "nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "ms_hunt",
+                "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-overview"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "False Positives and Detection Tuning",
+            "description": "False positives consume analyst capacity and can hide true incidents. This lesson teaches how to tune using exclusions, thresholds, allowlists, context, and sequence requirements without turning detections into blind spots.",
+            "learningObjectives": [
+              "Classify common false-positive causes.",
+              "Tune detections using specific, documented conditions.",
+              "Avoid broad exclusions that remove meaningful coverage.",
+              "Measure whether tuning improves signal quality without reducing desired detection coverage."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Overly broad matching: matching a tool or executable name without context.",
+                  "Expected administration: legitimate remote-management or deployment activity.",
+                  "Data quality issues: duplicated events, missing fields, parser changes.",
+                  "Threshold mis-sizing: values that are too low create noise; too high miss attacks.",
+                  "Context gaps: rules that ignore asset role, identity, maintenance windows, or approved sources."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Good tuning is narrow. Prefer “approved deployment identity on known automation hosts during the documented change window” over a global exclusion for the entire tool name."
+              },
+              {
+                "type": "warning",
+                "text": "Every suppression or exclusion should have an owner, rationale, scope, and review date where operationally feasible."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "Which tuning approach is safest?",
+              "options": [
+                "Exclude an entire executable globally.",
+                "Add narrowly scoped, documented conditions that model an approved behavior.",
+                "Raise every threshold until alerts disappear.",
+                "Disable the rule during business hours."
+              ],
+              "answer": "Add narrowly scoped, documented conditions that model an approved behavior.",
+              "explanation": "Narrow tuning preserves coverage while reducing known benign matches."
+            },
+            "summary": [
+              "False positives have identifiable causes and should be addressed deliberately.",
+              "Narrow, documented tuning is safer than broad suppression.",
+              "Every tuning change should be validated against detection coverage."
+            ],
+            "resources": [
+              {
+                "title": "sigma_rules",
+                "url": "https://sigmahq.io/docs/basics/rules.html"
+              },
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "Evidence Handling and Investigation Records",
+            "description": "Detection work often becomes part of an incident record. This lesson covers evidence integrity at an operational level: preserving raw event identifiers, query scope, timestamps, analyst actions, and uncertainty without contaminating the evidence set.",
+            "learningObjectives": [
+              "Record enough context to reproduce an alert decision.",
+              "Preserve original event identifiers and source references.",
+              "Distinguish observations from analyst conclusions.",
+              "Document evidence gaps and collection limitations."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Minimum investigation record"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Alert/rule identifier and version.",
+                  "Time range queried and time zone/time basis.",
+                  "Affected entities: user, host, IP, application, resource.",
+                  "Relevant raw event identifiers and source systems.",
+                  "Queries or pivots used to reach conclusions.",
+                  "Observed facts, hypotheses, actions taken, and unresolved questions."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A reproducible record helps a second analyst validate the decision and supports later incident review. For high-impact cases, follow organizational evidence-handling and legal/compliance procedures as applicable."
+              },
+              {
+                "type": "warning",
+                "text": "Do not alter raw records for convenience. Work from copies or platform views designed for analysis and preserve source references."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-04",
+              "question": "Which record detail most improves reproducibility?",
+              "options": [
+                "Only the analyst’s final opinion",
+                "The exact time range, source, rule/query version, and evidence references used in the decision",
+                "Only the alert color",
+                "Only the username"
+              ],
+              "answer": "The exact time range, source, rule/query version, and evidence references used in the decision",
+              "explanation": "Reproducibility depends on preserving the scope and evidence used to make the decision."
+            },
+            "summary": [
+              "Investigation notes should separate facts from conclusions.",
+              "Rule and query versions matter when reproducing decisions.",
+              "Evidence gaps should be documented rather than hidden."
+            ],
+            "resources": [
+              {
+                "title": "nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Triage a Correlated Detection Case",
+            "level": "Advanced",
+            "description": "Analyze a small cross-source event set and produce an evidence-backed triage decision.",
+            "problemStatement": "Using the supplied normalized events, determine whether a correlated authentication → process → network sequence warrants escalation. Identify supporting evidence, benign explanations, gaps, and recommended next pivots.",
+            "objectives": [
+              "Establish the detection match.",
+              "Correlate events by host/user/time.",
+              "Assess confidence and impact separately.",
+              "Document a triage conclusion and next actions."
+            ],
+            "requirements": [
+              "A text editor or Python-capable environment.",
+              "The normalized events supplied below."
+            ],
+            "hint": "Do not start with a verdict. First reconstruct the timeline and note which facts are observed versus inferred.",
+            "solutionCode": "Sample correlated events:\n1. 2026-09-07T10:01:00Z auth success user=ops01 source_ip=203.0.113.50 target=ws-14 remote=true\n2. 2026-09-07T10:03:10Z process start host=ws-14 user=ops01 parent=explorer.exe image=powershell.exe command_line=\"powershell.exe -NoProfile -Command Invoke-WebRequest ...\"\n3. 2026-09-07T10:03:18Z network host=ws-14 dst_ip=198.51.100.25 dst_port=443 process=powershell.exe\n\nTriage conclusion:\nEscalate for investigation with medium/high confidence depending on local baselines. The sequence is temporally consistent and shares host/user context. Before containment, pivot to determine whether source_ip is an approved remote-access gateway, whether the PowerShell command is authorized, what the destination is, and whether other suspicious activity exists.\n\nDo not claim compromise from these three records alone.",
+            "solutionExplanation": "The correct outcome is not a forced yes/no malicious verdict. The evidence supports escalation because a remote authentication is followed by scripting execution and outbound communication, but authorization and destination context still determine confidence and impact."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Validation, Metrics, and Detection Operations",
+        "description": "Operationalize detection through safe testing, scheduling, late-data handling, metrics, version control, and change management.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Detection Testing with Synthetic and Historical Data",
+            "description": "A detection should be tested before and after production deployment. This lesson explains positive tests, negative tests, regression sets, historical backtesting, and synthetic events that exercise rule logic without requiring live attacks.",
+            "learningObjectives": [
+              "Create positive and negative detection test cases.",
+              "Use historical or synthetic data to validate logic safely.",
+              "Explain why regression tests are needed after rule or parser changes.",
+              "Define expected results without fabricating production incidents."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Test matrix"
+              },
+              {
+                "type": "code",
+                "text": "Case A — positive:\n8 failures across several users + later success from same source -> alert\n\nCase B — negative:\n2 user typos -> no alert\n\nCase C — boundary:\n7 failures + success -> no alert if threshold is 8\n\nCase D — parser regression:\nSame semantic event represented with updated field mapping -> expected alert remains\n\nCase E — expected automation:\nApproved service source with known maintenance context -> suppressed or lower priority according to policy"
+              },
+              {
+                "type": "warning",
+                "text": "Use controlled or historical datasets for validation. Do not generate live malicious activity in a production environment merely to test a detector."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09",
+                "title": "Create a Positive/Negative Regression Set",
+                "description": "Build test fixtures for one detection so a future rule change can be checked consistently.",
+                "steps": "1. Create one JSONL fixture that should trigger the authentication-burst rule.\n2. Create one fixture with too few failures.\n3. Create one fixture with enough failures but only one targeted user.\n4. Create one fixture with a successful login outside the success window.\n5. Record the expected result for each fixture.\n6. Re-run the evaluator after any rule change and compare results.",
+                "solution": "Fixture expectations:\n\npositive.jsonl -> alert\nlow_count.jsonl -> no alert\none_user.jsonl -> no alert\noutside_success_window.jsonl -> no alert\n\nThe evaluator from the course can be reused as a reference, but the fixtures themselves should remain versioned with the rule.",
+                "output": "Students obtain a repeatable regression corpus that exposes threshold, cardinality, and time-window regressions."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Why are negative test cases essential?",
+              "options": [
+                "They increase JSON size.",
+                "They demonstrate that expected benign behavior does not trigger the rule and expose false-positive conditions.",
+                "They make every rule critical.",
+                "They replace positive tests."
+              ],
+              "answer": "They demonstrate that expected benign behavior does not trigger the rule and expose false-positive conditions.",
+              "explanation": "A detector needs both sensitivity and acceptable precision; negative cases exercise precision."
+            },
+            "summary": [
+              "Detection tests should include positive, negative, boundary, and regression cases.",
+              "Synthetic data can validate logic safely.",
+              "Parser and schema changes require regression testing."
+            ],
+            "resources": [
+              {
+                "title": "sigma_spec",
+                "url": "https://sigmahq.io/sigma-specification/specification/sigma-rules-specification.html"
+              },
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Rule Scheduling, Look-Back, and Late Data",
+            "description": "A correct query can still miss incidents if its schedule and look-back window do not account for ingestion behavior. This lesson covers execution cadence, search windows, duplicate matches, late-arriving data, and overlap strategies.",
+            "learningObjectives": [
+              "Explain schedule versus look-back window.",
+              "Identify how late data can create missed detections.",
+              "Design overlapping windows without uncontrolled duplicate alerting.",
+              "Validate detection latency against operational requirements."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Elastic detection rules explicitly combine query, schedule, and rule actions; their search interval determines when the rule runs and how much data it evaluates. A look-back extension can help account for late-arriving events."
+              },
+              {
+                "type": "code",
+                "text": "Example design:\nrun every 5 minutes\nsearch 10 minutes of data\n\nWhy overlap?\nEvents arriving a few minutes late may still be included.\n\nDuplicate control:\nUse event IDs, stable grouping keys, or platform-supported suppression/deduplication where available."
+              },
+              {
+                "type": "warning",
+                "text": "Do not confuse “runs every five minutes” with “detects within five minutes.” Data ingestion delay, query execution, scheduling, and alert routing all contribute to end-to-end detection latency."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10",
+                "title": "Measure Detection Window Behavior",
+                "description": "Use timestamps to demonstrate why schedule and look-back settings affect whether an event is evaluated.",
+                "steps": "1. Create two JSONL records representing the same semantic event with different ingestion delays.\n2. Choose a five-minute rule interval and a ten-minute search window.\n3. Determine which delayed events are still included.\n4. Increase the look-back window and repeat the reasoning.\n5. Identify where overlapping windows could produce duplicate matches.\n6. Record one deduplication key that could be used in the platform.",
+                "solution": "Example reasoning:\n\nRule interval: 5 minutes\nSearch window: 10 minutes\nEvent time: 12:00Z\nIngestion time A: 12:02Z -> inside the first evaluation window\nIngestion time B: 12:11Z -> may be missed by a 10-minute window depending on the evaluation timestamp\n\nDeduplication candidate: stable source event_id combined with rule identifier.",
+                "output": "The student sees that detection latency is affected by ingestion and scheduling, not only by the chosen rule interval."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "What problem does a look-back buffer primarily address?",
+              "options": [
+                "CPU naming",
+                "Late-arriving telemetry that may otherwise fall outside the search window",
+                "User passwords",
+                "Network encryption"
+              ],
+              "answer": "Late-arriving telemetry that may otherwise fall outside the search window",
+              "explanation": "A look-back window can compensate for ingestion delay, provided duplicate handling is designed correctly."
+            },
+            "summary": [
+              "Detection latency includes more than schedule frequency.",
+              "Look-back windows can improve completeness for late data.",
+              "Overlap creates a need for deduplication or stable alert grouping."
+            ],
+            "resources": [
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              },
+              {
+                "title": "ms_hunt",
+                "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-overview"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Detection Metrics and Coverage",
+            "description": "Detection programs need measurable outcomes. This lesson covers precision/recall concepts, alert volume, true/false positive rates, mean time to acknowledge, coverage by behavior, and operational health indicators.",
+            "learningObjectives": [
+              "Define useful metrics for a detection program.",
+              "Distinguish alert-volume metrics from quality metrics.",
+              "Use ATT&CK and data-source coverage as planning aids.",
+              "Avoid vanity metrics that encourage harmful tuning."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Precision: proportion of alerts that are relevant according to the chosen labeling process.",
+                  "Recall/sensitivity: proportion of known relevant cases surfaced by the detector or test corpus.",
+                  "Alert rate: alerts per unit time or asset population.",
+                  "Detection latency: elapsed time from activity to alert availability.",
+                  "Operational health: execution failures, missing telemetry, parser errors, and stale dependencies."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "No single metric describes a detection. For example, reducing alert volume can appear successful while hiding incidents if the reduction comes from overly broad suppression. Metrics should be reviewed together with known test cases and analyst feedback."
+              },
+              {
+                "type": "warning",
+                "text": "Coverage maps are indicators of what is addressed, not proof that an organization can detect every technique in scope."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "Why is alert volume alone a poor quality metric?",
+              "options": [
+                "Volume is mathematically invalid.",
+                "Lower volume can be achieved by disabling or suppressing useful detections, so relevance and coverage must also be measured.",
+                "Volume never changes.",
+                "Only ML systems produce volume."
+              ],
+              "answer": "Lower volume can be achieved by disabling or suppressing useful detections, so relevance and coverage must also be measured.",
+              "explanation": "Quality metrics must balance workload with useful detection coverage."
+            },
+            "summary": [
+              "Detection quality requires multiple metrics.",
+              "Coverage and analyst outcomes matter alongside volume.",
+              "Metrics should not reward blind suppression."
+            ],
+            "resources": [
+              {
+                "title": "attck_det",
+                "url": "https://attack.mitre.org/detectionstrategies/"
+              },
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-04",
+            "title": "Detection-as-Code, Versioning, and Change Control",
+            "description": "Production detection engineering benefits from source control, peer review, test fixtures, deployment automation, ownership, and rollback. This lesson teaches a practical lifecycle for maintaining rules as code artifacts.",
+            "learningObjectives": [
+              "Explain why detection rules benefit from version control.",
+              "Structure a detection change for peer review and regression testing.",
+              "Track rule ownership, status, dependencies, and rollback information.",
+              "Identify changes that require revalidation, such as parser or schema changes."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Minimal detection repository layout"
+              },
+              {
+                "type": "code",
+                "text": "detections/\n  identity/\n    password_spray.yml\n  endpoint/\n    suspicious_office_child.yml\n  network/\n    rare_outbound_destination.yml\ntests/\n  identity/\n    password_spray_positive.jsonl\n    password_spray_negative.jsonl\nmetadata/\n  ownership.yml"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Version the rule and its tests together.",
+                  "Review logic, data dependencies, false positives, and expected alert semantics.",
+                  "Use stable IDs and meaningful change history.",
+                  "Retest after schema/parser changes and major backend upgrades."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-04",
+              "question": "What should normally change together with a detection rule?",
+              "options": [
+                "Only the alert color",
+                "Relevant regression tests and metadata such as dependencies or expected behavior",
+                "Nothing else",
+                "The operating system kernel"
+              ],
+              "answer": "Relevant regression tests and metadata such as dependencies or expected behavior",
+              "explanation": "The test corpus and metadata provide the context needed to verify safe rule changes."
+            },
+            "summary": [
+              "Detection-as-code treats analytics as maintained software artifacts.",
+              "Tests and dependencies should be versioned with rule changes.",
+              "Change control reduces accidental coverage regressions."
+            ],
+            "resources": [
+              {
+                "title": "sigma_spec",
+                "url": "https://sigmahq.io/sigma-specification/specification/sigma-rules-specification.html"
+              },
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Create a Detection Regression Pack",
+            "level": "Advanced",
+            "description": "Build a small regression pack for one detection with positive, negative, boundary, and parser-change cases.",
+            "problemStatement": "Create a set of JSONL fixtures and a reference evaluation procedure for the authentication detection from earlier modules. Include expected alert/no-alert outcomes and explain how you would run the tests after a parser or rule change.",
+            "objectives": [
+              "Create at least four test cases.",
+              "Include one boundary case.",
+              "Include one expected automation case.",
+              "Define a repeatable test procedure."
+            ],
+            "requirements": [
+              "Python 3.11+ or another environment that can parse JSONL.",
+              "Text editor."
+            ],
+            "hint": "Treat test fixtures as executable specifications: each case should make the expected result unambiguous.",
+            "solutionCode": "# Minimal reference evaluator for a threshold test\nimport json\nfrom collections import defaultdict\nfrom datetime import datetime, timedelta, timezone\n\ndef parse_ts(value):\n    return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).astimezone(timezone.utc)\n\ndef detect(events, min_failures=8, min_users=3, failure_window=timedelta(minutes=10), success_window=timedelta(minutes=15)):\n    ordered = sorted(events, key=lambda e: parse_ts(e[\"timestamp\"]))\n    failures = defaultdict(list)\n    successes = defaultdict(list)\n    for e in ordered:\n        key = e[\"source_ip\"]\n        if e.get(\"outcome\") == \"failure\":\n            failures[key].append(e)\n        elif e.get(\"outcome\") == \"success\":\n            successes[key].append(e)\n\n    alerts = []\n    for source_ip, items in failures.items():\n        for start_event in items:\n            start = parse_ts(start_event[\"timestamp\"])\n            end = start + failure_window\n            window = [e for e in items if start <= parse_ts(e[\"timestamp\"]) <= end]\n            users = {e[\"user\"] for e in window}\n            if len(window) >= min_failures and len(users) >= min_users:\n                later_success = any(\n                    start <= parse_ts(s[\"timestamp\"]) <= start + success_window\n                    for s in successes.get(source_ip, [])\n                )\n                if later_success:\n                    alerts.append({\"source_ip\": source_ip, \"failure_count\": len(window), \"unique_users\": len(users)})\n                break\n    return alerts\n",
+            "solutionExplanation": "The regression pack should make it possible to tell whether a rule change altered intended behavior. In production, the test runner may be integrated with a detection-as-code pipeline; the essential requirement is that expected detections and non-detections remain explicit."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Final Real-World Project: Local Incident Detection Pipeline",
+        "description": "Build and assess a complete local incident-detection reference pipeline that integrates telemetry validation, rule logic, correlation, scoring, evidence tracking, and regression testing.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Operational Detection Architecture",
+            "description": "The final project begins by designing a small, vendor-neutral detection pipeline that ingests normalized JSONL events, evaluates deterministic rules, correlates related evidence, enriches findings, and emits analyst-readable incidents. The architecture intentionally uses Python standard-library components so students can run it locally without a cloud service or proprietary SIEM.",
+            "learningObjectives": [
+              "Design a simple end-to-end incident detection architecture.",
+              "Define normalized event contracts and correlation keys.",
+              "Separate data ingestion, detection logic, enrichment, scoring, and reporting.",
+              "Explain the trust boundaries and limitations of a local reference implementation."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Project architecture"
+              },
+              {
+                "type": "code",
+                "text": "JSONL events\n    |\n    v\nNormalization/validation\n    |\n    +--> Rule: authentication burst\n    +--> Rule: suspicious process context\n    +--> Rule: unusual outbound connection\n    |\n    v\nCorrelation + enrichment\n    |\n    v\nRisk scoring / incident grouping\n    |\n    v\nJSON incident report + analyst evidence"
+              },
+              {
+                "type": "paragraph",
+                "text": "The project is not a production SIEM. It is a transparent teaching reference for detection reasoning. Production systems add durable storage, streaming ingestion, identity/asset enrichment, access controls, distributed execution, monitoring, rule management, and formal incident workflows."
+              },
+              {
+                "type": "warning",
+                "text": "Use only synthetic or authorized telemetry in the project. The included event set is designed for local detection logic and does not execute or deliver malicious content."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Why does the project separate detection logic from reporting?",
+              "options": [
+                "Separation is unnecessary.",
+                "It makes rules easier to test, reuse, and maintain independently of presentation.",
+                "It prevents timestamps.",
+                "It removes the need for correlation."
+              ],
+              "answer": "It makes rules easier to test, reuse, and maintain independently of presentation.",
+              "explanation": "Layer separation improves testability and keeps detection semantics independent from output formatting."
+            },
+            "summary": [
+              "The final architecture is intentionally layered.",
+              "Normalized events allow rules to operate on stable concepts.",
+              "The reference implementation is a learning system, not a production SIEM."
+            ],
+            "resources": [
+              {
+                "title": "nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "nist92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "elastic_concepts",
+                "url": "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Capstone Readiness and Deployment Boundaries",
+            "description": "This lesson prepares students to implement and assess the final project. It covers input validation, safe test data, predictable outputs, limitations, and what must be added before a classroom detector could become a production service.",
+            "learningObjectives": [
+              "Validate input data before detection.",
+              "Run deterministic tests against synthetic data.",
+              "Identify production gaps in a local detection reference implementation.",
+              "Define measurable acceptance criteria for the capstone."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Input contract: required fields and valid event types.",
+                  "Determinism: the same test dataset should produce the same findings.",
+                  "Traceability: each incident should list supporting event IDs.",
+                  "Safety: project data and tests remain synthetic/authorized.",
+                  "Acceptance: expected test scenarios produce the intended detections and benign scenarios remain quiet."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Productionization would require secure deployment, authenticated data ingestion, access control, durable storage, alert routing, observability, key management, data retention policy, and integration with the organization’s incident-response process."
+              },
+              {
+                "type": "warning",
+                "text": "A local file-based detector must not be presented as equivalent to a managed enterprise SIEM or XDR platform."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "What is the most important acceptance criterion for the final detector?",
+              "options": [
+                "It has the largest codebase.",
+                "It produces expected findings on defined positive cases and avoids unintended findings on defined negative cases.",
+                "It uses the newest programming language.",
+                "It has the longest output."
+              ],
+              "answer": "It produces expected findings on defined positive cases and avoids unintended findings on defined negative cases.",
+              "explanation": "Detection correctness is evaluated by explicit, repeatable behavior—not by code size or novelty."
+            },
+            "summary": [
+              "Capstone success is defined by repeatable detection behavior.",
+              "Production boundaries and limitations should be explicit.",
+              "Synthetic/authorized data keeps the lab controlled."
+            ],
+            "resources": [
+              {
+                "title": "nist61",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "cisa_log",
+                "url": "https://www.cisa.gov/audiences/small-and-medium-sized-businesses/secure-your-business/use-logging-on-business-systems"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Local Incident Detection Pipeline",
+          "description": "A vendor-neutral reference detector that processes normalized JSONL telemetry, validates required fields, applies deterministic identity and endpoint rules, correlates process and network evidence, assigns explainable severity/confidence, and writes an analyst-readable incident report. All test data is synthetic and the implementation uses only the Python standard library.",
+          "conceptsCovered": [
+            "Normalized event contracts",
+            "Authentication threshold detection",
+            "Process-behavior detection",
+            "Cross-source correlation",
+            "Evidence references",
+            "Input validation",
+            "Risk/severity context",
+            "Regression testing",
+            "Explainable outputs",
+            "Detection-as-code boundaries"
+          ],
+          "steps": [
+            "Create a local project directory and save the provided detector.py, tests.py, sample_events.jsonl, and README.md contents as the corresponding files.",
+            "Run the unit tests and fix any environment-specific path issues before analyzing output.",
+            "Run detector.py against sample_events.jsonl and inspect the incident report.",
+            "Trace each incident back to the supporting event IDs in the JSONL input.",
+            "Modify one threshold in a controlled branch, add a regression fixture for the intended behavior, and rerun the tests.",
+            "Add one new benign fixture that should not trigger the authentication rule and verify the regression suite remains green.",
+            "Document one production limitation and one telemetry gap that would change the confidence of the detector in an enterprise environment.",
+            "Treat the final output as an analytical reference, not as automatic proof of compromise or an automated containment system."
+          ],
+          "code": {
+            "detector.py": "#!/usr/bin/env python3\n\"\"\"Local, deterministic incident-detection reference implementation.\n\nInput: normalized JSONL events\nOutput: JSON incidents with supporting evidence\nUses only the Python standard library.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport sys\nfrom collections import defaultdict\nfrom dataclasses import dataclass, asdict\nfrom datetime import datetime, timedelta, timezone\nfrom pathlib import Path\nfrom typing import Any, Iterable\n\nREQUIRED_BY_TYPE = {\n    \"authentication\": {\"timestamp\", \"event_id\", \"user\", \"source_ip\", \"target\", \"outcome\"},\n    \"process\": {\"timestamp\", \"event_id\", \"host\", \"user\", \"parent_image\", \"image\", \"command_line\"},\n    \"network\": {\"timestamp\", \"event_id\", \"host\", \"src_ip\", \"dst_ip\", \"dst_port\", \"process_image\"},\n}\n\nSCRIPT_INTERPRETERS = {\"powershell.exe\", \"pwsh\", \"wscript.exe\", \"cscript.exe\", \"bash\", \"sh\"}\nOFFICE_PARENTS = {\"winword.exe\", \"excel.exe\", \"outlook.exe\", \"powerpnt.exe\"}\n\n@dataclass(frozen=True)\nclass Event:\n    event_id: str\n    timestamp: datetime\n    event_type: str\n    raw: dict[str, Any]\n\n    @property\n    def host(self) -> str | None:\n        return self.raw.get(\"host\") or self.raw.get(\"target\")\n\n\ndef parse_timestamp(value: str) -> datetime:\n    try:\n        dt = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n    except ValueError as exc:\n        raise ValueError(f\"invalid timestamp: {value}\") from exc\n    if dt.tzinfo is None:\n        raise ValueError(f\"timestamp must include a timezone: {value}\")\n    return dt.astimezone(timezone.utc)\n\n\ndef load_events(path: Path) -> list[Event]:\n    events: list[Event] = []\n    with path.open(\"r\", encoding=\"utf-8\") as handle:\n        for line_number, line in enumerate(handle, start=1):\n            if not line.strip():\n                continue\n            try:\n                raw = json.loads(line)\n                event_type = raw[\"event_type\"]\n                event_id = raw[\"event_id\"]\n                required = REQUIRED_BY_TYPE.get(event_type, {\"timestamp\", \"event_id\", \"event_type\"})\n                missing = sorted(required - raw.keys())\n                if missing:\n                    raise ValueError(f\"missing fields: {', '.join(missing)}\")\n                ts = parse_timestamp(raw[\"timestamp\"])\n                events.append(Event(event_id=event_id, timestamp=ts, event_type=event_type, raw=raw))\n            except (KeyError, ValueError, json.JSONDecodeError) as exc:\n                raise ValueError(f\"invalid event on line {line_number}: {exc}\") from exc\n    return sorted(events, key=lambda e: e.timestamp)\n\n\ndef detect_authentication_burst(events: Iterable[Event]) -> list[dict[str, Any]]:\n    failures: dict[str, list[Event]] = defaultdict(list)\n    successes: dict[str, list[Event]] = defaultdict(list)\n    for e in events:\n        if e.event_type != \"authentication\":\n            continue\n        source = e.raw[\"source_ip\"]\n        if e.raw[\"outcome\"] == \"failure\":\n            failures[source].append(e)\n        elif e.raw[\"outcome\"] == \"success\":\n            successes[source].append(e)\n\n    findings: list[dict[str, Any]] = []\n    failure_window = timedelta(minutes=10)\n    success_window = timedelta(minutes=15)\n    for source, source_failures in failures.items():\n        source_failures.sort(key=lambda e: e.timestamp)\n        for start_index, start in enumerate(source_failures):\n            end = start.timestamp + failure_window\n            window = [e for e in source_failures[start_index:] if e.timestamp <= end]\n            users = sorted({e.raw[\"user\"] for e in window})\n            if len(window) < 8 or len(users) < 3:\n                continue\n            later_success = next(\n                (s for s in successes.get(source, []) if start.timestamp <= s.timestamp <= start.timestamp + success_window),\n                None,\n            )\n            if later_success:\n                evidence_ids = [e.event_id for e in window] + [later_success.event_id]\n                findings.append({\n                    \"rule\": \"authentication-burst-followed-by-success\",\n                    \"source_ip\": source,\n                    \"affected_users\": users,\n                    \"failure_count\": len(window),\n                    \"successful_event_id\": later_success.event_id,\n                    \"evidence_ids\": evidence_ids,\n                })\n                break\n    return findings\n\n\ndef detect_suspicious_process(events: Iterable[Event]) -> list[dict[str, Any]]:\n    findings: list[dict[str, Any]] = []\n    for e in events:\n        if e.event_type != \"process\":\n            continue\n        image = e.raw[\"image\"].lower().split(\"\\\\\")[-1]\n        parent = e.raw[\"parent_image\"].lower().split(\"\\\\\")[-1]\n        if image in SCRIPT_INTERPRETERS and parent in OFFICE_PARENTS:\n            findings.append({\n                \"rule\": \"office-to-script-interpreter\",\n                \"host\": e.raw[\"host\"],\n                \"user\": e.raw[\"user\"],\n                \"process_image\": e.raw[\"image\"],\n                \"parent_image\": e.raw[\"parent_image\"],\n                \"command_line\": e.raw[\"command_line\"],\n                \"evidence_ids\": [e.event_id],\n            })\n    return findings\n\n\ndef correlate_process_network(events: list[Event], process_findings: list[dict[str, Any]]) -> list[dict[str, Any]]:\n    networks = [e for e in events if e.event_type == \"network\"]\n    by_host: dict[str, list[Event]] = defaultdict(list)\n    for e in networks:\n        by_host[e.raw[\"host\"]].append(e)\n\n    findings: list[dict[str, Any]] = []\n    for pf in process_findings:\n        host = pf[\"host\"]\n        process_time = None\n        for e in events:\n            if e.event_id in pf[\"evidence_ids\"]:\n                process_time = e.timestamp\n                if e.event_type == \"process\":\n                    break\n        matching = [\n            n for n in by_host.get(host, [])\n            if n.raw[\"process_image\"].lower().endswith(pf[\"process_image\"].lower().split(\"\\\\\")[-1])\n            and process_time is not None\n            and abs(n.timestamp - process_time) <= timedelta(minutes=10)\n        ]\n        if matching:\n            findings.append({\n                \"rule\": \"suspicious-process-with-network-egress\",\n                \"host\": host,\n                \"user\": pf[\"user\"],\n                \"destination_count\": len(matching),\n                \"destinations\": [f\"{n.raw['dst_ip']}:{n.raw['dst_port']}\" for n in matching],\n                \"evidence_ids\": pf[\"evidence_ids\"] + [n.event_id for n in matching],\n            })\n    return findings\n\n\ndef build_incidents(events: list[Event]) -> list[dict[str, Any]]:\n    auth = detect_authentication_burst(events)\n    process = detect_suspicious_process(events)\n    proc_net = correlate_process_network(events, process)\n\n    incidents: list[dict[str, Any]] = []\n    for finding in auth:\n        score = 50\n        incidents.append({\n            \"incident_type\": finding[\"rule\"],\n            \"severity\": \"high\" if finding[\"failure_count\"] >= 15 else \"medium\",\n            \"confidence\": \"moderate\",\n            \"score\": score,\n            \"summary\": f\"Authentication failure burst from {finding['source_ip']} followed by success\",\n            \"evidence\": finding,\n        })\n    for finding in proc_net:\n        score = 70\n        incidents.append({\n            \"incident_type\": finding[\"rule\"],\n            \"severity\": \"high\",\n            \"confidence\": \"high\",\n            \"score\": score,\n            \"summary\": f\"Office-launched script interpreter generated network activity on {finding['host']}\",\n            \"evidence\": finding,\n        })\n    return incidents\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser(description=\"Run deterministic incident detections over normalized JSONL events\")\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"--output\", type=Path, default=Path(\"incidents.json\"))\n    args = parser.parse_args()\n\n    try:\n        events = load_events(args.input)\n        incidents = build_incidents(events)\n        report = {\n            \"generated_at\": datetime.now(timezone.utc).isoformat(),\n            \"event_count\": len(events),\n            \"incident_count\": len(incidents),\n            \"incidents\": incidents,\n        }\n        args.output.write_text(json.dumps(report, indent=2), encoding=\"utf-8\")\n        print(json.dumps({\"event_count\": len(events), \"incident_count\": len(incidents), \"output\": str(args.output)}, indent=2))\n        return 0\n    except (OSError, ValueError) as exc:\n        print(f\"error: {exc}\", file=sys.stderr)\n        return 2\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+            "sample_events.jsonl": "{\"event_id\":\"auth-001\",\"timestamp\":\"2026-09-07T10:01:00Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user01\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-01\"}\n{\"event_id\":\"auth-002\",\"timestamp\":\"2026-09-07T10:01:40Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user02\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-01\"}\n{\"event_id\":\"auth-003\",\"timestamp\":\"2026-09-07T10:02:20Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user03\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-01\"}\n{\"event_id\":\"auth-004\",\"timestamp\":\"2026-09-07T10:03:00Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user04\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-02\"}\n{\"event_id\":\"auth-005\",\"timestamp\":\"2026-09-07T10:03:40Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user05\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-02\"}\n{\"event_id\":\"auth-006\",\"timestamp\":\"2026-09-07T10:04:20Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user06\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-02\"}\n{\"event_id\":\"auth-007\",\"timestamp\":\"2026-09-07T10:05:00Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user07\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-03\"}\n{\"event_id\":\"auth-008\",\"timestamp\":\"2026-09-07T10:05:40Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"user08\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-03\"}\n{\"event_id\":\"auth-009\",\"timestamp\":\"2026-09-07T10:06:10Z\",\"event_type\":\"authentication\",\"outcome\":\"success\",\"user\":\"user08\",\"source_ip\":\"203.0.113.50\",\"target\":\"srv-03\"}\n{\"event_id\":\"proc-001\",\"timestamp\":\"2026-09-07T11:00:00Z\",\"event_type\":\"process\",\"host\":\"ws-14\",\"user\":\"analyst01\",\"parent_image\":\"C:\\\\Program Files\\\\Microsoft Office\\\\root\\\\Office16\\\\WINWORD.EXE\",\"image\":\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\",\"command_line\":\"powershell.exe -NoProfile -Command Write-Output test\"}\n{\"event_id\":\"net-001\",\"timestamp\":\"2026-09-07T11:00:03Z\",\"event_type\":\"network\",\"host\":\"ws-14\",\"src_ip\":\"192.0.2.14\",\"dst_ip\":\"198.51.100.25\",\"dst_port\":443,\"process_image\":\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\"}\n{\"event_id\":\"proc-002\",\"timestamp\":\"2026-09-07T12:00:00Z\",\"event_type\":\"process\",\"host\":\"ws-22\",\"user\":\"developer01\",\"parent_image\":\"C:\\\\Windows\\\\explorer.exe\",\"image\":\"C:\\\\Windows\\\\System32\\\\notepad.exe\",\"command_line\":\"notepad.exe\"}\n",
+            "tests.py": "import json\nimport tempfile\nimport unittest\nfrom pathlib import Path\nfrom detector import load_events, build_incidents\n\nclass DetectionTests(unittest.TestCase):\n    def test_sample_data_has_incidents(self):\n        data = Path(__file__).with_name(\"sample_events.jsonl\")\n        events = load_events(data)\n        incidents = build_incidents(events)\n        rules = {item[\"incident_type\"] for item in incidents}\n        self.assertIn(\"authentication-burst-followed-by-success\", rules)\n        self.assertIn(\"suspicious-process-with-network-egress\", rules)\n\n    def test_benign_two_failures_do_not_trigger_auth_burst(self):\n        lines = [\n            {\"event_id\":\"a1\",\"timestamp\":\"2026-09-07T13:00:00Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"u1\",\"source_ip\":\"192.0.2.8\",\"target\":\"srv\"},\n            {\"event_id\":\"a2\",\"timestamp\":\"2026-09-07T13:01:00Z\",\"event_type\":\"authentication\",\"outcome\":\"failure\",\"user\":\"u1\",\"source_ip\":\"192.0.2.8\",\"target\":\"srv\"},\n            {\"event_id\":\"a3\",\"timestamp\":\"2026-09-07T13:02:00Z\",\"event_type\":\"authentication\",\"outcome\":\"success\",\"user\":\"u1\",\"source_ip\":\"192.0.2.8\",\"target\":\"srv\"},\n        ]\n        with tempfile.TemporaryDirectory() as tmp:\n            p = Path(tmp) / \"events.jsonl\"\n            p.write_text(\"\\n\".join(json.dumps(x) for x in lines), encoding=\"utf-8\")\n            events = load_events(p)\n            incidents = build_incidents(events)\n            self.assertFalse(any(i[\"incident_type\"] == \"authentication-burst-followed-by-success\" for i in incidents))\n\nif __name__ == \"__main__\":\n    unittest.main()\n",
+            "README.md": "# Incident Detection Capstone\n\nThis reference implementation is a local, deterministic detector for synthetic normalized telemetry. It demonstrates ingestion, validation, rule evaluation, correlation, evidence collection, and incident reporting.\n\n## Requirements\n- Python 3.11 or newer is recommended.\n- No third-party packages are required.\n\n## Run\n\n```bash\npython detector.py sample_events.jsonl --output incidents.json\npython -m unittest tests.py\n```\n\nThe sample dataset includes an authentication burst followed by a successful login and an office-to-PowerShell process chain followed by a network event. These are synthetic teaching examples and do not execute any of the represented behaviors.\n\n## Production boundary\n\nThe project is not a production SIEM/XDR platform. Production use would require authenticated ingestion, durable storage, access control, secret management, monitoring, retention policy, rule deployment controls, alert routing, and integration with the organization’s incident-response process.\n"
+          },
+          "explanation": "The detector has five logical layers. First, load_events parses JSONL records, validates required fields by event type, and normalizes timestamps to UTC. Second, deterministic rules identify an authentication burst followed by a success and an office-launched script interpreter. Third, correlate_process_network links endpoint process evidence to matching network records on the same host and process context. Fourth, build_incidents turns findings into analyst-facing incident objects with severity and confidence labels and explicit supporting event IDs. Fifth, the tests encode expected positive and negative behavior. The design demonstrates the course principle that detection quality is a combination of data contracts, analytic logic, correlation, context, and regression testing. It intentionally avoids external packages so students can run it locally. A production implementation would need authenticated collection, resilient storage, access control, secrets handling, monitoring, rule lifecycle management, and integration with organizational incident response. The project does not execute any represented malicious behavior; all inputs are synthetic JSON records."
+        }
+      }
+    ]
+  }
+}

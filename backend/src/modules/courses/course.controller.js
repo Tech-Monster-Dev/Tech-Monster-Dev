@@ -21,7 +21,10 @@ import {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const coursesDir = path.resolve(__dirname, "../../../data/courses");
+const coursesDirs = [
+    path.resolve(__dirname, "../../../data/Courses"),
+    path.resolve(__dirname, "../../../data/courses"),
+];
 const TASK_DEADLINE_MS = 48 * 60 * 60 * 1000;
 
 const normalizeSlug = (slug) =>
@@ -34,35 +37,43 @@ const readCourseDataFromFile = async (courseSlug) => {
     if (!courseSlug) return null;
 
     try {
-        const folders = await (await import("fs/promises")).readdir(
-            coursesDir,
-            { withFileTypes: true }
-        );
-
         const normalizedTarget = normalizeSlug(courseSlug);
 
-        for (const folder of folders) {
-            if (!folder.isDirectory()) continue;
-
-            const filePath = path.join(
-                coursesDir,
-                folder.name,
-                "course.json"
-            );
+        for (const coursesDir of coursesDirs) {
+            let folders;
 
             try {
-                const raw = await readFile(filePath, "utf8");
-                const parsed = JSON.parse(raw);
-                const courseData = parsed?.course || parsed;
-
-                if (
-                    normalizeSlug(courseData?.slug) ===
-                    normalizedTarget
-                ) {
-                    return courseData;
-                }
+                folders = await (await import("fs/promises")).readdir(
+                    coursesDir,
+                    { withFileTypes: true }
+                );
             } catch {
                 continue;
+            }
+
+            for (const folder of folders) {
+                if (!folder.isDirectory()) continue;
+
+                const filePath = path.join(
+                    coursesDir,
+                    folder.name,
+                    "course.json"
+                );
+
+                try {
+                    const raw = await readFile(filePath, "utf8");
+                    const parsed = JSON.parse(raw);
+                    const courseData = parsed?.course || parsed;
+
+                    if (
+                        normalizeSlug(courseData?.slug) ===
+                        normalizedTarget
+                    ) {
+                        return courseData;
+                    }
+                } catch {
+                    continue;
+                }
             }
         }
 
@@ -239,20 +250,6 @@ const unlockFirstEligibleLessonTask = async ({
                 previousModule.id ||
                 ""
             ).trim();
-
-        const previousModuleTasks =
-            getOrderedCourseTasks(
-                {
-                    modules: [
-                        previousModule
-                    ]
-                },
-                courseSlug
-            );
-
-        if (!previousModuleTasks.length) {
-            return null;
-        }
 
         const previousModuleApproved =
             await areModuleTasksApproved({
@@ -479,7 +476,7 @@ const areModuleTasksApproved = async ({
     }
 
     if (taskIds.length === 0) {
-        return false;
+        return true;
     }
 
     const approvedCount =

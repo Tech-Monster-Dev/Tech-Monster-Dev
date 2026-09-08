@@ -1,0 +1,2342 @@
+{
+  "course": {
+    "id": "course-disk-forensics-001",
+    "title": "Disk Forensics",
+    "slug": "disk-forensics",
+    "description": "A research-grounded, practical course in disk forensics covering evidence handling, forensic acquisition, hashing and verification, partition and filesystem structures, NTFS/FAT/exFAT/ext4 analysis, The Sleuth Kit and Autopsy workflows, deleted-file recovery and carving, timeline correlation, Windows/Linux persistent artifacts, encryption constraints, SSD/TRIM limitations, anti-forensics, complex storage, tool validation, and professional reporting. The course is designed for serious learners who want to move from foundational storage knowledge to reproducible forensic examination of authorized training images. All practical work is framed for controlled, lawful laboratory use.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 72,
+    "prerequisites": [
+      "Basic computer architecture and operating-system concepts",
+      "Basic Linux or Windows command-line familiarity",
+      "Fundamental understanding of files, directories, storage devices, and permissions",
+      "Ability to work in a virtual machine or controlled forensic lab",
+      "Awareness that forensic acquisition and examination must be authorized and documented"
+    ],
+    "learningOutcomes": [
+      "Explain the evidence-preservation principles used in disk forensics and document a defensible chain of custody.",
+      "Choose and justify physical, logical, or live acquisition strategies based on scope, volatility, and encryption.",
+      "Calculate and interpret SHA-256 integrity digests and maintain a reproducible evidence manifest.",
+      "Reconstruct MBR and GPT partition layouts and calculate filesystem offsets accurately.",
+      "Analyze NTFS MFT records, timestamps, USN journal evidence, deleted files, and historical sources with appropriate caveats.",
+      "Analyze FAT/exFAT and ext4 metadata, allocation, deletion remnants, and journaling at a practical level.",
+      "Use The Sleuth Kit and Autopsy to trace files from disk images to filesystem metadata and extracted evidence.",
+      "Assess deleted-file and carved-file candidates for completeness, fragmentation, and provenance.",
+      "Build normalized timelines from multiple disk artifacts and distinguish observation from interpretation.",
+      "Recognize the forensic effects of full-disk encryption, SSD/TRIM, anti-forensics, RAID, and virtual disks.",
+      "Validate important forensic-tool results using known-answer tests, independent tools, and low-level inspection.",
+      "Produce an evidence-linked forensic report and package derived results with hashes and explicit limitations."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Foundations and Forensic Discipline",
+        "description": "Understand the scope of disk forensics, evidence handling, laboratory controls, and the difference between observations and conclusions.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "What Disk Forensics Is and What It Can Answer",
+            "description": "Establishes disk forensics as the examination of persistent storage and explains the kinds of questions that can be answered from a forensic image without treating artifacts as self-proving facts.",
+            "learningObjectives": [
+              "define disk forensics and distinguish it from live memory analysis",
+              "identify investigative questions that disk evidence can support",
+              "separate observations from interpretations and conclusions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence as a source of observations"
+              },
+              {
+                "type": "paragraph",
+                "text": "Disk forensics examines persistent storage—physical disks, SSDs, removable media, virtual disks, and forensic images—to recover, interpret, and correlate information relevant to an investigation. A file, timestamp, registry value, journal record, or deleted entry is an observation; its investigative meaning comes from context and corroboration."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A disk image is an acquisition artifact, not automatically the original device.",
+                  "A recovered item may be incomplete or partially overwritten.",
+                  "Tool output should be validated against the underlying evidence when the result is consequential."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which is the strongest forensic statement?",
+              "options": [
+                "A filename proves who created a file.",
+                "A single timestamp proves the exact human action.",
+                "A file-system record is an observation that must be interpreted in context.",
+                "A forensic tool output is automatically infallible."
+              ],
+              "answer": "A file-system record is an observation that must be interpreted in context.",
+              "explanation": "Artifacts can support conclusions, but their meaning and limitations must be assessed."
+            },
+            "summary": [
+              "Disk forensics focuses on persistent storage and its structures. Reliable conclusions require context, corroboration, and documented methods."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86 — Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://www.nist.gov/publications/guide-integrating-forensic-techniques-incident-response"
+              },
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Evidence Handling, Scope, and Chain of Custody",
+            "description": "Introduces the operational controls that preserve the integrity and defensibility of disk evidence from collection through analysis.",
+            "learningObjectives": [
+              "describe chain-of-custody information that should accompany evidence",
+              "explain why scope and legal authority matter before acquisition",
+              "document device state, identifiers, transfers, and acquisition actions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SWGDE recommends documenting evidence inventory and chain of custody, including a unique identifier, receipt date/time, and transfers. Collection planning should account for device state, encryption, volatile data, safety, and the investigative scope."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Establish authority and scope.",
+                  "Identify and document the source device.",
+                  "Record its state and connections before changing it.",
+                  "Control access and transfers.",
+                  "Document acquisition and verification.",
+                  "Preserve originals and work from verified copies."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is a core purpose of chain-of-custody documentation?",
+              "options": [
+                "To make the disk faster.",
+                "To record possession and handling of evidence.",
+                "To encrypt every file.",
+                "To recover deleted files automatically."
+              ],
+              "answer": "To record possession and handling of evidence.",
+              "explanation": "Chain of custody records who received or transferred evidence and when, supporting accountability and traceability."
+            },
+            "summary": [
+              "Scope and documentation are part of technical quality, not administrative decoration. The exact process should follow the organization’s policy and applicable law."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 18-F-002-2.0 — Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/18-f-002-2-0"
+              },
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Forensic Laboratory and Tooling Fundamentals",
+            "description": "Builds a safe lab model using isolated working copies, trusted storage, validated tools, and reproducible command records.",
+            "learningObjectives": [
+              "design a basic disk-forensics lab workflow",
+              "explain why analysis should normally occur on verified copies",
+              "record tool versions and commands so an examination can be repeated"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A minimal student lab"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use a dedicated analysis VM or workstation.",
+                  "Keep evidence images on storage with sufficient capacity and access control.",
+                  "Prefer read-only access to source media and avoid mounting evidence read-write.",
+                  "Record tool versions, commands, hashes, and case notes.",
+                  "Use synthetic or legally obtained training images for practice."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never experiment with destructive disk commands on an evidence device. Commands such as disk formatting, partition conversion, or filesystem repair can modify evidence."
+              },
+              {
+                "type": "code",
+                "text": "# Record the basic environment used for a case\nuname -a\npython3 --version\nsha256sum evidence.E01\n"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-03",
+                "title": "Create a forensic work log",
+                "description": "Create a small work log that captures the image identifier, hash, analyst environment, and commands used.",
+                "steps": [
+                  "Create a case directory outside the evidence image.",
+                  "Record the evidence filename and SHA-256 digest.",
+                  "Record the analysis host and tool versions.",
+                  "Append each important command and its result to the work log."
+                ],
+                "solution": "case_id=CASE-TRAINING-001\nevidence=image.E01\nsha256=<record the verified digest>\nanalyst_host=<record host identifier>\ntools=sha256sum, The Sleuth Kit, Autopsy\n",
+                "output": "The work log contains traceable metadata and does not modify the evidence image."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why should tool versions be recorded?",
+              "options": [
+                "Because version information helps reproduce and interpret results.",
+                "Because versions change the disk image.",
+                "Because it replaces hashing.",
+                "Because it is required to recover every deleted file."
+              ],
+              "answer": "Because version information helps reproduce and interpret results.",
+              "explanation": "Tool behavior can vary by version, so recording versions improves reproducibility and auditability."
+            },
+            "summary": [
+              "A controlled lab reduces accidental modification and makes analysis reproducible."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              },
+              {
+                "title": "Autopsy — Digital Forensics Platform",
+                "url": "https://github.com/sleuthkit/autopsy"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Build a Defensible Case Intake Checklist",
+            "level": "Easy",
+            "description": "Create a checklist for receiving a storage device or forensic image into a controlled examination.",
+            "problemStatement": "A lab receives a laptop drive and an accompanying image file. Produce a checklist that prevents uncontrolled handling and captures the minimum technical and custody information before analysis.",
+            "objectives": [
+              "capture evidence identifiers and device state",
+              "record authority/scope and custody events",
+              "define preservation and verification actions"
+            ],
+            "requirements": [
+              "A text editor or spreadsheet; your organization’s evidence SOP if available."
+            ],
+            "hint": "Use the SWGDE collection and acquisition principles as the checklist backbone.",
+            "solutionCode": "Case intake checklist:\n1. Confirm authority and scope.\n2. Assign unique evidence identifier.\n3. Record make/model/serial where available.\n4. Record powered-on/off state and connected media.\n5. Photograph or otherwise document state according to policy.\n6. Record date/time and custodian transfer.\n7. Isolate from unintended network access when appropriate.\n8. Preserve original and acquire a forensic image using an approved method.\n9. Compute and record verification hashes.\n10. Record tool versions and acquisition notes.\n11. Secure original and working copy separately.\n",
+            "solutionExplanation": "The checklist follows the principle that investigation needs drive acquisition, changes to source data should be minimized, and acquisition should be documented and auditable."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Acquisition, Preservation, and Verification",
+        "description": "Learn acquisition choices, source protection, image formats, and integrity verification before any substantive examination.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Disk Acquisition Strategies: Physical, Logical, and Live",
+            "description": "Compares full bitstream acquisition, logical acquisition, and live acquisition, including when encryption or system state can make one approach necessary.",
+            "learningObjectives": [
+              "distinguish physical, logical, and live acquisition",
+              "choose an acquisition strategy based on investigative goals and system state",
+              "identify limitations introduced by live acquisition"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SWGDE distinguishes physical acquisition as a bitstream duplicate that can include slack space, logical acquisition as structured files/folders, and live acquisition as acquisition from a running system. Live acquisition can alter timestamps and state, but may be necessary for data that becomes inaccessible after shutdown, such as mounted encrypted data."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Physical images provide broad access to disk structures and unallocated areas.",
+                  "Logical acquisition can be appropriate when full physical acquisition is unnecessary or unavailable.",
+                  "Live acquisition must document actions because the operating system continues changing state."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which acquisition is a bitstream duplicate of storage media?",
+              "options": [
+                "Physical acquisition",
+                "Logical acquisition only",
+                "Screenshot acquisition",
+                "Report generation"
+              ],
+              "answer": "Physical acquisition",
+              "explanation": "SWGDE describes physical acquisition as a bitstream duplicate that can include slack space."
+            },
+            "summary": [
+              "Choose the least-changing method that still answers the investigative question, while preserving access to volatile or decrypted data when necessary."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              },
+              {
+                "title": "SWGDE 18-F-002-2.0 — Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/18-f-002-2-0"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Write Blocking and Source Protection",
+            "description": "Explains hardware and software write blockers and why source protection is central to forensic acquisition.",
+            "learningObjectives": [
+              "explain the purpose of a write blocker",
+              "distinguish source media from destination media",
+              "recognize situations where software or hardware controls may be needed"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A write blocker is intended to prevent writes to the evidence source while permitting reads. SWGDE states that hardware or software write blockers should be used when possible for physical and logical acquisitions. The exact configuration must be tested and documented."
+              },
+              {
+                "type": "warning",
+                "text": "A normal operating-system read-only mount is not a universal substitute for a validated forensic write-blocking process. Verify the behavior of the platform and tool before relying on it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is the primary purpose of write blocking?",
+              "options": [
+                "Prevent the examiner from reading the source.",
+                "Prevent unintended writes to the evidence source.",
+                "Compress the forensic image.",
+                "Recover encrypted files."
+              ],
+              "answer": "Prevent unintended writes to the evidence source.",
+              "explanation": "Write blocking is intended to allow reading while preventing changes to the source."
+            },
+            "summary": [
+              "Write blocking is a control to reduce source modification; it does not replace validation, documentation, or careful handling."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Forensic Image Formats: Raw and EWF",
+            "description": "Introduces raw images and the Expert Witness Format family, emphasizing portability, metadata, segmentation, and validation rather than vendor lock-in.",
+            "learningObjectives": [
+              "describe raw image characteristics",
+              "explain why forensic containers can store metadata and integrity information",
+              "recognize EWF segment naming and the role of libewf"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SWGDE recommends acquiring data in raw format or a well-documented, widely used forensic container. Raw images are flat bitstream files and generally need metadata and integrity information stored separately. EWF can store media images in one or more segment files and can include acquisition metadata and integrity information."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Raw images are simple and widely interoperable.",
+                  "EWF/E01 commonly uses segmented files such as E01, E02, and so on.",
+                  "Do not infer authenticity from the extension; verify the image and its acquisition records."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-03",
+                "title": "Inspect an E01 image without mounting it",
+                "description": "Use libewf tooling to inspect metadata and verify an E01 training image.",
+                "steps": [
+                  "Install libewf or use a forensic VM where it is already installed.",
+                  "Run ewfinfo against the first E01 segment.",
+                  "Record media size, segment information, and available metadata.",
+                  "Run ewfverify if the image set is complete and the tool supports verification."
+                ],
+                "solution": "ewfinfo evidence.E01\newfverify evidence.E01\n",
+                "output": "ewfinfo reports image metadata and ewfverify performs format-level verification when supported by the image and tool."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "Image format affects storage, metadata, compression, and interoperability, but does not by itself establish evidentiary validity."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              },
+              {
+                "title": "libewf — Expert Witness Compression Format",
+                "url": "https://github.com/libyal/libewf"
+              },
+              {
+                "title": "libewf EWF format documentation",
+                "url": "https://github.com/libyal/libewf/blob/main/documentation/Expert%20Witness%20Compression%20Format%20%28EWF%29.asciidoc"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Hashing and Acquisition Verification",
+            "description": "Teaches cryptographic hashing as an integrity check and shows how acquisition and verification hashes should be interpreted.",
+            "learningObjectives": [
+              "calculate SHA-256 for a file",
+              "explain what a matching digest demonstrates",
+              "distinguish integrity verification from proof of authorship or intent"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST FIPS 180-4 defines secure hash algorithms that produce message digests; a change to the input is expected to produce a different digest with very high probability. In forensic work, hashes can verify that a file or image has not changed between two measurement points."
+              },
+              {
+                "type": "code",
+                "text": "# Linux\nsha256sum evidence.raw\n\n# Windows PowerShell\nGet-FileHash .\\evidence.raw -Algorithm SHA256"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-04",
+                "title": "Verify a training image with SHA-256",
+                "description": "Compute a SHA-256 digest before and after copying a training image and compare the results.",
+                "steps": [
+                  "Compute the source digest with sha256sum or Get-FileHash.",
+                  "Copy the training image to a separate working location.",
+                  "Compute the destination digest using the same algorithm.",
+                  "Record both values and compare them character-for-character."
+                ],
+                "solution": "sha256sum evidence.raw\ncp evidence.raw working/evidence.raw\nsha256sum working/evidence.raw\n",
+                "output": "If the copied file is byte-for-byte identical, the SHA-256 values should match. If they do not, investigate the copy and storage process rather than assuming the image is usable."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "Hash matching supports integrity claims about the measured bytes. It does not establish who created the bytes or what happened to the underlying system."
+            ],
+            "resources": [
+              {
+                "title": "NIST FIPS 180-4 — Secure Hash Standard",
+                "url": "https://www.nist.gov/publications/secure-hash-standard"
+              },
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Choose an Acquisition Strategy",
+            "level": "Intermediate",
+            "description": "Select and justify an acquisition approach for several evidence scenarios.",
+            "problemStatement": "For three scenarios—powered-off unencrypted laptop, powered-on BitLocker-protected workstation, and a single folder that is legally in scope—select physical, logical, or live acquisition and justify the choice.",
+            "objectives": [
+              "account for encryption and volatility",
+              "identify what data each method can miss",
+              "document preservation controls"
+            ],
+            "requirements": [
+              "SWGDE acquisition guidance; a text editor."
+            ],
+            "hint": "For the encrypted live system, consider whether shutdown would remove access to data or keys.",
+            "solutionCode": "Scenario A: Powered-off unencrypted laptop -> Physical acquisition is preferred when authorized because it preserves filesystem and unallocated-space access.\nScenario B: Powered-on BitLocker-protected workstation -> Consider live acquisition/triage first when necessary to preserve access to decrypted data or keys, then acquire according to the case plan.\nScenario C: Single in-scope folder -> Logical acquisition may be sufficient when the scope and investigative question do not require disk-wide artifacts.\n",
+            "solutionExplanation": "The correct method is driven by scope, volatility, encryption, and the evidence required—not by a universal rule that one acquisition type is always best."
+          },
+          {
+            "id": "task-02-02",
+            "title": "Create an Acquisition Verification Record",
+            "level": "Easy",
+            "description": "Produce a machine-readable record for a forensic image acquisition.",
+            "problemStatement": "Create a JSON record containing evidence ID, image filename, acquisition type, hash algorithm, hash value placeholder, tool name/version placeholder, source device identifier placeholder, date/time field, and verification status.",
+            "objectives": [
+              "use consistent fields",
+              "separate acquisition metadata from conclusions",
+              "make the record easy to audit"
+            ],
+            "requirements": [
+              "JSON-capable text editor."
+            ],
+            "hint": "Do not invent a hash value; use a placeholder that explicitly requires the real measured digest.",
+            "solutionCode": "{\n  \"evidenceId\": \"CASE-TRAINING-001-E01\",\n  \"image\": \"evidence.E01\",\n  \"acquisitionType\": \"physical\",\n  \"hashAlgorithm\": \"SHA-256\",\n  \"hash\": \"<record measured digest>\",\n  \"tool\": \"<record approved acquisition tool and version>\",\n  \"sourceDevice\": \"<record device identifier>\",\n  \"acquiredAt\": \"<record actual timestamp>\",\n  \"verification\": \"<pass/fail with method>\"\n}\n",
+            "solutionExplanation": "The record separates measured facts from values that must be supplied by the examiner and avoids fabricating forensic metadata."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Disk and File-System Structures",
+        "description": "Learn how disks are partitioned and how forensic tools locate and interpret file systems and their metadata.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Sectors, LBAs, Partitions, Volumes, and File Systems",
+            "description": "Builds the storage-layer mental model needed to move from a physical image to the files and metadata stored within it.",
+            "learningObjectives": [
+              "distinguish physical media, logical blocks, partitions, volumes, and file systems",
+              "explain why partition offsets matter during forensic analysis",
+              "trace the path from disk image to file-system object"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Physical storage exposes sectors/logical blocks.",
+                  "A partitioning scheme describes regions of the disk.",
+                  "A partition contains or maps to a volume/file system.",
+                  "The file system organizes files, directories, metadata, and allocation.",
+                  "Applications create artifacts inside that file-system environment."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Forensic tools must correctly identify the partition and file-system offset before interpreting file-system structures. A wrong offset can produce plausible-looking but incorrect results."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why is a partition offset important?",
+              "options": [
+                "It tells an examiner where file-system structures begin within the image.",
+                "It changes SHA-256 into MD5.",
+                "It identifies the human who used the computer.",
+                "It automatically decrypts the disk."
+              ],
+              "answer": "It tells an examiner where file-system structures begin within the image.",
+              "explanation": "Partition metadata locates the regions that contain volumes and file systems."
+            },
+            "summary": [
+              "Understanding layers prevents a common error: treating a file-system offset or partition entry as if it were a file itself."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              },
+              {
+                "title": "Microsoft Learn — Initialize New Disks / GPT and MBR",
+                "url": "https://learn.microsoft.com/en-us/windows-server/storage/disk-management/initialize-new-disks"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "MBR Partitioning",
+            "description": "Explains the legacy Master Boot Record layout and the forensic clues it provides when examining older disks or removable media.",
+            "learningObjectives": [
+              "identify the role of the MBR partition table",
+              "explain primary and extended partition concepts at a high level",
+              "recognize why partition boundaries are evidence-bearing metadata"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MBR stores partition information in the first disk sector and historically supports up to four primary partition entries, or combinations involving an extended partition. Microsoft documents MBR as the older partition style. In forensic work, partition type fields and start/length information help locate file systems and detect unusual layouts."
+              },
+              {
+                "type": "warning",
+                "text": "Do not convert an evidence disk between MBR and GPT. Disk conversion can modify the evidence and is a storage-administration operation, not an examination step."
+              },
+              {
+                "type": "code",
+                "text": "# Example: inspect the first 512 bytes of a training image\nxxd -g 1 -l 512 evidence.raw\n"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What does an MBR partition entry primarily help an examiner determine?",
+              "options": [
+                "Where a partition is located and its basic type information.",
+                "The user password.",
+                "The contents of RAM.",
+                "The exact intent of the user."
+              ],
+              "answer": "Where a partition is located and its basic type information.",
+              "explanation": "Partition metadata helps locate and characterize partitions; it does not directly reveal intent."
+            },
+            "summary": [
+              "MBR analysis is mainly about reconstructing where partitions begin and end and determining whether the layout is consistent with the file systems found there."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Learn — Initialize New Disks / GPT and MBR",
+                "url": "https://learn.microsoft.com/en-us/windows-server/storage/disk-management/initialize-new-disks"
+              },
+              {
+                "title": "UEFI Specification — GPT Disk Layout",
+                "url": "https://uefi.org/specs/UEFI/2.10/05_GUID_Partition_Table_Format.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "GPT and UEFI-Era Disk Layouts",
+            "description": "Covers GPT headers, partition entries, redundancy, GUIDs, and why GPT metadata can be used to validate disk layout.",
+            "learningObjectives": [
+              "identify primary and backup GPT headers",
+              "explain the role of CRC32 and partition GUIDs",
+              "use a forensic tool to inspect a GPT image without modifying it"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The UEFI specification describes GPT as using 64-bit logical block addresses, GUIDs for partitions, CRC32 integrity fields, and primary and backup partition metadata. The primary GPT header is at LBA 1 and the backup header is at the last LBA of the device."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "LBA 0 commonly contains a protective MBR on GPT media.",
+                  "The backup header provides a second copy for consistency checks.",
+                  "Unexpected disagreement between primary and backup metadata is a finding to investigate, not automatically proof of tampering."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-03",
+                "title": "Inspect a GPT image with Sleuth Kit",
+                "description": "Use mmls to identify partitions in a training disk image.",
+                "steps": [
+                  "Run mmls on the image.",
+                  "Record partition start sectors, end sectors, and types reported by the tool.",
+                  "Select the partition containing the target file system.",
+                  "Calculate the byte offset as start sector multiplied by the logical sector size when the sector size is known."
+                ],
+                "solution": "mmls evidence.raw\n# Example offset calculation when sector size is 512 bytes:\npython3 - <<'PY'\nstart_sector = 2048\nsector_size = 512\nprint(start_sector * sector_size)\nPY\n",
+                "output": "mmls reports partition-table structures and boundaries. The numeric offset in the Python example is illustrative and must be replaced with the actual partition start from the image."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "GPT provides structured metadata and redundancy that can help reconstruct and validate the partition layout."
+            ],
+            "resources": [
+              {
+                "title": "UEFI Specification — GPT Disk Layout",
+                "url": "https://uefi.org/specs/UEFI/2.10/05_GUID_Partition_Table_Format.html"
+              },
+              {
+                "title": "Microsoft Learn — Initialize New Disks / GPT and MBR",
+                "url": "https://learn.microsoft.com/en-us/windows-server/storage/disk-management/initialize-new-disks"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "File-System Identification and Metadata Layers",
+            "description": "Teaches how forensic analysts identify a file system and then reason about its superblocks, allocation structures, metadata records, and data blocks.",
+            "learningObjectives": [
+              "identify a file-system type using forensic tooling",
+              "explain the roles of metadata records and data allocation",
+              "distinguish allocated, unallocated, slack, and metadata regions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The file system is the layer that maps names and directories to metadata and storage locations. Forensic analysis often uses both high-level parsers and low-level views so that a result can be traced back to the structure that produced it."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Allocated space is currently associated with active file-system objects.",
+                  "Unallocated space is not necessarily empty; it can contain remnants of deleted data.",
+                  "Slack can contain bytes beyond the logical end of a file within an allocated unit."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which area can retain remnants of deleted data?",
+              "options": [
+                "Unallocated space",
+                "Only the desktop wallpaper",
+                "CPU registers after shutdown",
+                "A new empty directory name"
+              ],
+              "answer": "Unallocated space",
+              "explanation": "When allocation is released, previous bytes may remain until overwritten or otherwise altered."
+            },
+            "summary": [
+              "A strong examiner can move from a user-visible filename down to its metadata and storage blocks when necessary."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              },
+              {
+                "title": "Autopsy — Digital Forensics Platform",
+                "url": "https://github.com/sleuthkit/autopsy"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Reconstruct a Partition Layout",
+            "level": "Intermediate",
+            "description": "Interpret partition metadata from a training image and produce a concise layout table.",
+            "problemStatement": "Given the output of mmls or an equivalent forensic partition parser, create a table listing partition number, start sector, end sector, length, type, and calculated byte offset.",
+            "objectives": [
+              "map partitions accurately",
+              "calculate offsets without changing the image",
+              "flag unexpected gaps or overlaps for review"
+            ],
+            "requirements": [
+              "The Sleuth Kit mmls; a training image; Python or a calculator."
+            ],
+            "hint": "Do not assume every partition begins at a fixed sector. Use the parser output.",
+            "solutionCode": "# Example Python calculation using values read from the tool output\nstart_sector = 2048\nsector_size = 512\nbyte_offset = start_sector * sector_size\nprint({\"start_sector\": start_sector, \"byte_offset\": byte_offset})\n",
+            "solutionExplanation": "The key skill is translating partition metadata into offsets used by subsequent filesystem analysis while keeping the evidence read-only."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Windows NTFS Forensics",
+        "description": "Develop practical NTFS examination skills using MFT metadata, timestamps, NTFS journals, deleted files, and historical filesystem sources.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "NTFS Architecture and the Master File Table",
+            "description": "Introduces NTFS records, the MFT, attributes, resident/non-resident data, and the relationship between filenames and metadata.",
+            "learningObjectives": [
+              "explain why the MFT is central to NTFS analysis",
+              "distinguish metadata attributes from file content",
+              "use NTFS metadata to investigate a file without opening it normally"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft’s NTFSInfo documentation describes the Master File Table as a file made of fixed-size records describing files and directories. NTFS stores metadata as attributes; some small values can be resident in an MFT record while larger data may be represented by non-resident run information."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "$MFT is itself an NTFS metadata file.",
+                  "A filename is represented by a directory/file-name attribute; timestamps may appear in multiple metadata contexts.",
+                  "Forensic conclusions should specify which NTFS timestamp or attribute was examined."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is the MFT?",
+              "options": [
+                "A collection of fixed-size NTFS records describing files and directories.",
+                "A Windows password database only.",
+                "A network routing table.",
+                "A disk encryption key store."
+              ],
+              "answer": "A collection of fixed-size NTFS records describing files and directories.",
+              "explanation": "Microsoft describes the MFT as fixed-size records that describe the location and metadata of files and directories."
+            },
+            "summary": [
+              "The MFT is a primary source of NTFS metadata and can reveal deleted-file records, names, timestamps, and data-location information."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Sysinternals NTFSInfo",
+                "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/ntfsinfo"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "NTFS Timestamps and Interpretation",
+            "description": "Explains common NTFS timestamp sources and why timestamp names alone should never be treated as a complete narrative of user behavior.",
+            "learningObjectives": [
+              "identify important NTFS timestamp categories",
+              "explain why multiple timestamps can differ",
+              "correlate filesystem timestamps with independent artifacts"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NTFS analysis commonly examines timestamps associated with file metadata and filename records. Differences can arise from normal filesystem behavior, copying, metadata changes, tool interpretation, or system activity. A timestamp should therefore be reported with its source and timezone/representation when relevant."
+              },
+              {
+                "type": "warning",
+                "text": "Do not write conclusions such as “the user opened the file at exactly this time” solely from a single filesystem timestamp. Corroborate with application logs, shell history, event records, or other evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why should an NTFS timestamp be correlated with other artifacts?",
+              "options": [
+                "Because timestamps can have multiple meanings and can be changed by normal system activity.",
+                "Because NTFS has no timestamps.",
+                "Because hashes are timestamps.",
+                "Because correlation decrypts the disk."
+              ],
+              "answer": "Because timestamps can have multiple meanings and can be changed by normal system activity.",
+              "explanation": "Correlation reduces the risk of over-interpreting a single metadata field."
+            },
+            "summary": [
+              "Timestamps are useful temporal evidence only when their semantics, source, timezone, and limitations are understood."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Sysinternals NTFSInfo",
+                "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/ntfsinfo"
+              },
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "USN Journal, Alternate Data Streams, and NTFS-Specific Evidence",
+            "description": "Explores NTFS-specific artifacts that can add file activity context or reveal data that is not obvious from the primary filename alone.",
+            "learningObjectives": [
+              "describe the purpose of the NTFS USN Change Journal at a high level",
+              "explain alternate data streams and their forensic relevance",
+              "identify limitations such as journal rollover and artifact availability"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The NTFS USN Change Journal records changes to files and directories for filesystem management. Forensic tools can parse it to identify events such as file creation, deletion, rename, and data changes when records are available. Alternate Data Streams (ADS) allow additional named data streams associated with an NTFS file; they can be legitimate but are also worth examining when an investigation calls for hidden or non-obvious content."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A journal is not an immutable audit log. Records can roll over and can be absent.",
+                  "A USN event shows a filesystem change, not necessarily the human reason for the change.",
+                  "ADS analysis should distinguish normal application behavior from suspicious use."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What does a USN journal record primarily represent?",
+              "options": [
+                "Filesystem change information",
+                "The user’s thoughts",
+                "A cryptographic private key by definition",
+                "Only network packets"
+              ],
+              "answer": "Filesystem change information",
+              "explanation": "The USN Change Journal is a filesystem change-tracking mechanism."
+            },
+            "summary": [
+              "NTFS journals and ADS can enrich an examination, but they must be interpreted as filesystem artifacts with retention and semantic limits."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Sysinternals NTFSInfo",
+                "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/ntfsinfo"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Windows Recycle Bin and Volume Shadow Copies",
+            "description": "Introduces two Windows evidence sources that can preserve context about deleted files or historical filesystem states.",
+            "learningObjectives": [
+              "explain the purpose of the Windows Recycle Bin",
+              "describe how Volume Shadow Copies can provide historical views",
+              "avoid treating recovered historical copies as proof of a specific user action"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The Windows Recycle Bin can preserve deleted user files together with metadata used by Windows to manage the item. Volume Shadow Copy Service (VSS) snapshots can preserve earlier filesystem states when snapshots exist and are accessible. These sources can be valuable for recovery and temporal comparison."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Recycle Bin records and naming vary by Windows version and user context.",
+                  "VSS availability depends on system configuration and snapshot retention.",
+                  "Historical copies should be compared with the live filesystem to identify what changed."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-04",
+                "title": "Compare current and historical file presence",
+                "description": "Using an authorized training image with a VSS-capable dataset, compare a target file across the current filesystem and a historical snapshot.",
+                "steps": [
+                  "Locate the target path in the current filesystem.",
+                  "Locate the same path or file in an available snapshot.",
+                  "Record differences in existence, size, timestamps, and content hash.",
+                  "State which observations are directly supported and which require interpretation."
+                ],
+                "solution": "Document the comparison in a table: current state, historical state, hashes, timestamps, and examiner interpretation. Do not alter the evidence snapshot.",
+                "output": "The result is a documented comparison that can show that a file existed or differed at an earlier point when the snapshot actually contains it."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "Deleted-file analysis benefits from checking both current metadata and available historical sources such as Recycle Bin content and VSS snapshots."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              },
+              {
+                "title": "Autopsy — Digital Forensics Platform",
+                "url": "https://github.com/sleuthkit/autopsy"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Correlate an NTFS File Record",
+            "level": "Intermediate",
+            "description": "Build a short forensic finding from an NTFS file record and two corroborating artifacts.",
+            "problemStatement": "Given a file’s MFT metadata and two independent artifact observations, write a finding that separates facts, interpretation, and uncertainty.",
+            "objectives": [
+              "identify the exact artifact source",
+              "avoid overstating timestamps",
+              "state corroboration and limitations"
+            ],
+            "requirements": [
+              "A training NTFS image or pre-collected artifact output."
+            ],
+            "hint": "Use a three-part structure: Observed, Correlated, Conclusion/Limitations.",
+            "solutionCode": "Observed: NTFS metadata shows the target path, size, and recorded timestamp values.\nCorrelated: A separate artifact records activity involving the same path or content near the relevant time.\nConclusion: The evidence supports that the file existed and was involved in the recorded activity; it does not by itself establish the human actor or intent.\n",
+            "solutionExplanation": "The solution models evidence-based wording and avoids turning filesystem metadata into unsupported claims about a person."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "FAT, exFAT, and ext4 Analysis",
+        "description": "Understand common non-NTFS disk filesystems and the structures that support deleted-file recovery and low-level validation.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "FAT File Systems and Deleted Directory Entries",
+            "description": "Introduces FAT allocation tables, directory entries, short/long names, cluster chains, and the forensic meaning of deleted entries.",
+            "learningObjectives": [
+              "explain the role of the FAT allocation table",
+              "describe how directory entries relate to file allocation",
+              "identify why deleted-file recovery can be partial"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "FAT-family file systems use allocation structures and directory entries to map filenames to clusters. When a file is deleted, directory metadata and allocation information can change while portions of content remain until reused. Recovery depends on how much metadata survives and whether clusters have been overwritten."
+              },
+              {
+                "type": "warning",
+                "text": "A deleted filename or recovered cluster sequence is not enough to guarantee that a file is complete. Validate size, allocation, signatures, content consistency, and neighboring metadata."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What most threatens recovery of a deleted FAT file?",
+              "options": [
+                "Subsequent reuse or overwrite of its clusters",
+                "The existence of a directory",
+                "The use of SHA-256",
+                "A correct partition offset"
+              ],
+              "answer": "Subsequent reuse or overwrite of its clusters",
+              "explanation": "Once old clusters are reused, previous file content can be destroyed or mixed with newer data."
+            },
+            "summary": [
+              "FAT recovery is a reconstruction problem: the examiner must determine which metadata and clusters still belong together."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "exFAT and Removable-Media Considerations",
+            "description": "Covers exFAT as a modern removable-media filesystem and highlights why removable media deserves careful acquisition and contextual analysis.",
+            "learningObjectives": [
+              "recognize exFAT as a filesystem used on removable/storage media",
+              "identify why allocation metadata and directory records matter",
+              "plan examination around device context and acquisition provenance"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "exFAT is designed for large removable and flash-oriented storage. In forensics, the same broad principles apply: preserve the source, identify filesystem structures, parse metadata, recover deleted content where possible, and correlate timestamps and device context. The examiner should verify parser support and version-specific behavior rather than assuming FAT32 and exFAT are identical."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the source device and acquisition method because removable media can move between systems.",
+                  "Consider filesystem metadata together with host artifacts when the investigation concerns how the media was used."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why is host correlation useful for removable-media cases?",
+              "options": [
+                "The same media may have been connected to multiple systems.",
+                "It changes exFAT into NTFS.",
+                "It guarantees authorship.",
+                "It eliminates the need for hashing."
+              ],
+              "answer": "The same media may have been connected to multiple systems.",
+              "explanation": "Host artifacts can help establish when and where a removable device was observed or used, subject to artifact availability and interpretation."
+            },
+            "summary": [
+              "Removable-media forensics combines filesystem analysis with provenance and host correlation."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              },
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "ext4 Superblock, Inodes, and Allocation",
+            "description": "Introduces the ext4 structures that explain how Linux files are represented and located on disk.",
+            "learningObjectives": [
+              "describe the roles of the ext4 superblock and inodes",
+              "explain how allocation metadata points toward file data",
+              "identify why low-level ext4 knowledge improves forensic validation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ext4 uses a superblock for filesystem-wide information and inodes for file metadata and block mapping. The filesystem also uses block groups and allocation structures. Understanding these layers helps an examiner validate parser output and reason about deleted or damaged metadata."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "An inode is metadata for a filesystem object; filenames are associated through directory entries.",
+                  "The superblock contains filesystem parameters needed to interpret structures.",
+                  "Parser results should be checked against the image when an important finding depends on a low-level field."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which ext4 structure primarily stores metadata for a file object?",
+              "options": [
+                "Inode",
+                "DNS cache",
+                "GPT backup header",
+                "Windows registry hive"
+              ],
+              "answer": "Inode",
+              "explanation": "ext4 uses inodes to store metadata and block mapping information for filesystem objects."
+            },
+            "summary": [
+              "ext4 analysis requires understanding the difference between inode metadata, directory names, and allocated data blocks."
+            ],
+            "resources": [
+              {
+                "title": "Linux Kernel Documentation — ext4 journal",
+                "url": "https://www.kernel.org/doc/html/latest/filesystems/ext4/journal.html"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "ext4 Journaling and Crash-Recovery Evidence",
+            "description": "Explains the jbd2 journal and why journal contents can provide historical filesystem metadata while still having strict limits.",
+            "learningObjectives": [
+              "explain the purpose of ext4 journaling",
+              "distinguish metadata journaling from guaranteed file-content history",
+              "recognize journal transactions and commit records at a high level"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Linux kernel documentation states that ext4 commonly journals filesystem metadata and uses jbd2 for journaling. In the default data=ordered mode, metadata is journaled but file data blocks are not guaranteed to be in a crash-consistent state. Journal transactions use descriptor and commit structures, and incomplete or invalid transactions can be discarded during replay."
+              },
+              {
+                "type": "warning",
+                "text": "A journal is not a complete chronological recording of every user action. Retention, filesystem mode, crashes, and subsequent reuse limit what can be inferred."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-04",
+                "title": "Inspect ext4 metadata in a lab image",
+                "description": "Use Sleuth Kit or an equivalent parser to identify ext4 metadata and relate an inode to a filename.",
+                "steps": [
+                  "Identify the ext4 filesystem in the image.",
+                  "Use the filesystem listing tool to locate a target file.",
+                  "Record the file’s inode number and metadata.",
+                  "Explain how the directory entry links the name to the inode."
+                ],
+                "solution": "fls -o <partition_offset_sectors> evidence.raw\nistat -o <partition_offset_sectors> evidence.raw <inode_number>\n",
+                "output": "The tools show the directory/file metadata and inode details. Replace the placeholders with values from the actual training image and mmls output."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "ext4 journaling can preserve useful filesystem-state information, but it should be interpreted as filesystem recovery metadata rather than a user activity log."
+            ],
+            "resources": [
+              {
+                "title": "Linux Kernel Documentation — ext4 journal",
+                "url": "https://www.kernel.org/doc/html/latest/filesystems/ext4/journal.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Recover and Validate a Deleted-File Candidate",
+            "level": "Advanced",
+            "description": "Assess whether a deleted-file candidate is complete and attributable to a particular filesystem location.",
+            "problemStatement": "Given a recovered file candidate, determine whether its metadata, size, cluster/block continuity, and content are internally consistent.",
+            "objectives": [
+              "evaluate completeness",
+              "distinguish recovered evidence from reconstructed inference",
+              "document uncertainty"
+            ],
+            "requirements": [
+              "A synthetic or authorized forensic image containing a deleted-file scenario; Sleuth Kit or equivalent."
+            ],
+            "hint": "Check metadata first, then allocation continuity, then content consistency and hash the recovered output.",
+            "solutionCode": "# Example validation workflow\nfls -r -d -o <offset> evidence.raw\n# Inspect a candidate inode/file record\nistat -o <offset> evidence.raw <inode>\n# Extract only after documenting the source record\nicat -o <offset> evidence.raw <inode> > recovered.bin\nsha256sum recovered.bin\n",
+            "solutionExplanation": "A defensible recovery records where the candidate came from, what metadata survived, whether the data is contiguous/consistent, and the digest of the extracted copy."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Forensic Analysis Tools and Workflows",
+        "description": "Build repeatable workflows with The Sleuth Kit, Autopsy, read-only examination methods, and low-level validation tools.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "The Sleuth Kit Core Workflow",
+            "description": "Teaches a command-line workflow for partition discovery, filesystem listing, metadata inspection, and file extraction.",
+            "learningObjectives": [
+              "use mmls to inspect partition structures",
+              "use fls and istat to locate and inspect filesystem objects",
+              "use icat to extract a file object from an image"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "# Partition layout\nmmls evidence.raw\n\n# List files recursively using a partition offset reported by mmls\nfls -r -o <offset-sectors> evidence.raw\n\n# Inspect metadata for an inode/file entry\nistat -o <offset-sectors> evidence.raw <inode>\n\n# Extract an inode to a separate working file\nicat -o <offset-sectors> evidence.raw <inode> > extracted.bin"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-01",
+                "title": "Trace a file from partition to extracted bytes",
+                "description": "Perform a complete TSK trace on a training image.",
+                "steps": [
+                  "Run mmls and select the target partition.",
+                  "Run fls to identify a target path and inode/metadata address.",
+                  "Run istat on that object.",
+                  "Use icat to extract the object to the case working directory.",
+                  "Hash the extracted file and record the source object identifier."
+                ],
+                "solution": "Use the four-tool sequence mmls → fls → istat → icat, substituting the actual offset and inode from the image.",
+                "output": "The student produces a reproducible chain from disk layout to filesystem metadata to extracted bytes."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "The Sleuth Kit separates image/partition interpretation from filesystem object analysis, making the workflow transparent and scriptable."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "Autopsy Case Creation and Ingest",
+            "description": "Introduces Autopsy as a graphical forensic platform built around The Sleuth Kit and explains the case/data-source/ingest model.",
+            "learningObjectives": [
+              "create a forensic case in Autopsy",
+              "add a disk image as a data source",
+              "explain what ingest modules do and why module selection matters"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Autopsy is a digital forensics platform and graphical interface to The Sleuth Kit and other forensic tools. Its ingest framework analyzes data sources and files; examples include hash calculation, file-type identification, and artifact analysis. The examiner should choose modules based on the investigative question and validate important findings independently when appropriate."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A case is the organizational boundary for evidence and results.",
+                  "Ingest can be computationally expensive; enable only useful modules for the exercise.",
+                  "Tag or export findings with enough context to reproduce how they were obtained."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is an Autopsy ingest module used for?",
+              "options": [
+                "Analyzing a data source or its files and producing forensic results.",
+                "Physically repairing a hard disk.",
+                "Changing the evidence partition table.",
+                "Replacing chain of custody."
+              ],
+              "answer": "Analyzing a data source or its files and producing forensic results.",
+              "explanation": "Autopsy ingest modules perform analysis over added data sources and files."
+            },
+            "summary": [
+              "Autopsy accelerates examination but does not remove the examiner’s responsibility to understand the underlying artifacts."
+            ],
+            "resources": [
+              {
+                "title": "Autopsy — Digital Forensics Platform",
+                "url": "https://github.com/sleuthkit/autopsy"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Read-Only Mounting and Controlled Examination",
+            "description": "Shows how mounting a filesystem can expose evidence to normal tools while introducing modification risk, and presents safer alternatives for examination.",
+            "learningObjectives": [
+              "explain why normal mounting can modify metadata",
+              "use Linux loop-device read-only options in a lab",
+              "verify that an analysis mount is not intended for writing"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Mounting a filesystem through an ordinary operating-system path can trigger metadata updates or other writes. For a forensic workflow, use a validated read-only method or a forensic tool that parses the image without mounting it. If a lab requires mounting, document the exact options and confirm the operating system behavior."
+              },
+              {
+                "type": "code",
+                "text": "# Example lab-only read-only mount pattern; verify device/image handling first\nmkdir -p /mnt/forensic\nsudo mount -o ro,loop,show_sys_files evidence.raw /mnt/forensic\n# After examination\nsudo umount /mnt/forensic"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why is a forensic parser often preferable to normal mounting?",
+              "options": [
+                "It can interpret the image without exposing it to normal filesystem write behavior.",
+                "It always decrypts the image.",
+                "It changes evidence into RAM.",
+                "It guarantees a correct attribution."
+              ],
+              "answer": "It can interpret the image without exposing it to normal filesystem write behavior.",
+              "explanation": "Parsing an image directly can avoid filesystem writes associated with ordinary mounting, while still requiring tool validation."
+            },
+            "summary": [
+              "Read-only mounting reduces write risk but must be treated as a controlled technique rather than an assumption."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "File Signatures, Strings, and Hex-Level Validation",
+            "description": "Teaches low-level inspection methods that help validate file types and recover context when filenames or filesystem metadata are misleading.",
+            "learningObjectives": [
+              "distinguish filename extension from file signature",
+              "use file and strings on extracted evidence copies",
+              "use a hex viewer or xxd to inspect bytes without editing them"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A filename extension is a naming convention, while a file signature or magic value is evidence about the byte structure at the beginning of a file. Strings extraction can reveal readable fragments but is not proof that the strings are meaningful or complete. Hex inspection is useful when validating parser output or inspecting a suspicious header."
+              },
+              {
+                "type": "code",
+                "text": "file extracted.bin\nstrings -a -n 8 extracted.bin | head -n 40\nxxd -g 1 -l 64 extracted.bin"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why can a file extension be misleading?",
+              "options": [
+                "Extensions can be renamed without changing the underlying bytes.",
+                "Extensions are cryptographic hashes.",
+                "Extensions are stored only in RAM.",
+                "Extensions guarantee the file format."
+              ],
+              "answer": "Extensions can be renamed without changing the underlying bytes.",
+              "explanation": "A user or application can rename a file while leaving its content unchanged."
+            },
+            "summary": [
+              "Low-level views are validation tools: they can confirm or challenge higher-level interpretations without changing the evidence copy."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Build a Reproducible TSK Examination Script",
+            "level": "Intermediate",
+            "description": "Write a shell script that records the partition table and a recursive file listing for a supplied image.",
+            "problemStatement": "Create a script that accepts an image path and writes mmls and fls output into a case directory without modifying the image.",
+            "objectives": [
+              "validate input arguments",
+              "record commands and timestamps",
+              "separate evidence path from output path"
+            ],
+            "requirements": [
+              "Linux shell; The Sleuth Kit installed; a training image."
+            ],
+            "hint": "Use set -euo pipefail and never redirect output back into the evidence path.",
+            "solutionCode": "#!/usr/bin/env bash\nset -euo pipefail\nIMAGE=${1:?Usage: $0 image.raw}\nOUT=${2:-case-output}\nmkdir -p \"$OUT\"\n{\n  echo \"UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)\"\n  echo \"IMAGE=$IMAGE\"\n  echo \"COMMAND=mmls $IMAGE\"\n  mmls \"$IMAGE\"\n} | tee \"$OUT/mmls.txt\"\n\nOFFSET=${OFFSET:-0}\n{\n  echo \"COMMAND=fls -r -o $OFFSET $IMAGE\"\n  fls -r -o \"$OFFSET\" \"$IMAGE\"\n} | tee \"$OUT/fls.txt\"\n",
+            "solutionExplanation": "The script keeps evidence read-only, records execution context, and writes results to a separate directory. The OFFSET value must be selected from the actual partition layout rather than assumed."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Recovery, Carving, Timelines, and Artifact Correlation",
+        "description": "Recover deleted or partially referenced data, construct timelines, and correlate filesystem artifacts with operating-system and application evidence.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Deleted Files, Unallocated Space, and Slack",
+            "description": "Explains what deletion changes and how examiners distinguish metadata remnants, unallocated content, and slack-space artifacts.",
+            "learningObjectives": [
+              "define unallocated space and file slack",
+              "explain why deleted content may survive",
+              "assess whether a recovered file is complete or fragmented"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Deletion normally removes or changes filesystem references to a file rather than instantly erasing every byte. Recovery is possible when metadata and/or content remain and have not been overwritten. Slack space is the area between a file’s logical end and the end of its allocated storage unit and can contain residual bytes."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Recovery success depends on filesystem, allocation reuse, fragmentation, TRIM behavior, and acquisition timing.",
+                  "Recovered fragments can belong to different historical files if blocks were reused.",
+                  "Hashing a recovered file proves the integrity of the extracted copy, not its historical completeness."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is a major limitation of deleted-file recovery?",
+              "options": [
+                "Previous data may have been overwritten or fragmented.",
+                "All deleted files remain perfectly intact.",
+                "Hashing recreates overwritten sectors.",
+                "Partition tables always preserve file contents."
+              ],
+              "answer": "Previous data may have been overwritten or fragmented.",
+              "explanation": "Filesystem reuse can destroy or fragment remnants needed for recovery."
+            },
+            "summary": [
+              "Deleted-file recovery is reconstruction under uncertainty, not a guaranteed “undelete” operation."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              },
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "File Carving and Fragmentation",
+            "description": "Introduces carving from raw data using file signatures and structural validation, including why carving can produce false positives and incomplete files.",
+            "learningObjectives": [
+              "explain signature-based carving",
+              "identify common causes of false positives",
+              "validate carved files using internal structure and context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "File carving searches data outside normal filesystem allocation metadata for recognizable file structures. A carved object can be useful when directory metadata is missing, but carving can misidentify random bytes as headers and can fail on fragmented files. The examiner should validate file structure, size, internal consistency, and surrounding context."
+              },
+              {
+                "type": "warning",
+                "text": "Never treat a carved file’s existence as proof that the original filesystem contained that exact complete file at a particular time unless corroborating evidence supports that conclusion."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why can carving produce false positives?",
+              "options": [
+                "Random data can contain byte sequences resembling file signatures.",
+                "Carving only reads directory names.",
+                "Carving requires a valid MFT entry for every result.",
+                "Carving automatically knows the original filename."
+              ],
+              "answer": "Random data can contain byte sequences resembling file signatures.",
+              "explanation": "Signature matching alone cannot establish that a byte sequence is a valid complete file."
+            },
+            "summary": [
+              "Carving is a recovery technique of last resort or complement, and validation is essential because metadata relationships are absent or weakened."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Timeline Analysis and Timestamp Normalization",
+            "description": "Teaches event timelines as a correlation tool and explains normalization, time zones, clock skew, and the difference between filesystem and application events.",
+            "learningObjectives": [
+              "construct a timeline from multiple artifact sources",
+              "normalize timestamps to a documented timezone",
+              "identify clock and artifact limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A forensic timeline combines events from different sources—filesystem metadata, journals, operating-system logs, application databases, and other artifacts—to create a temporal view. Before correlating events, document the timezone and timestamp representation. Clock drift, daylight-saving changes, copying, virtualization, and parser interpretation can affect the apparent order."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Preserve the original timestamp value and source.",
+                  "Normalize into a common representation for comparison.",
+                  "Keep source and timezone metadata beside the normalized value.",
+                  "Correlate independent event types.",
+                  "State uncertainty when ordering is not reliable."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-03",
+                "title": "Build a small evidence timeline",
+                "description": "Create a CSV timeline from three artifact sources supplied in a training case.",
+                "steps": [
+                  "Create columns: timestamp_utc, source, artifact, observation, confidence.",
+                  "Convert all supplied times to UTC without deleting the original source value from notes.",
+                  "Sort by timestamp.",
+                  "Identify two correlations and one uncertainty."
+                ],
+                "solution": "timestamp_utc,source,artifact,observation,confidence\n2026-01-10T09:00:00Z,filesystem,NTFS metadata,target file record observed,medium\n2026-01-10T09:02:00Z,application,SQLite record,target item referenced,medium\n2026-01-10T09:04:00Z,system,event log,related process event,medium\n",
+                "output": "The CSV is a normalized analytical view. The sample timestamps are training data for the exercise and are not evidence of a real case."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "Timeline analysis is strongest when events from independent sources converge on the same hypothesis."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86 — Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://www.nist.gov/publications/guide-integrating-forensic-techniques-incident-response"
+              },
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-04",
+            "title": "Windows User and Application Artifacts on Disk",
+            "description": "Shows how disk forensics extends beyond raw files into registry hives, application databases, browser artifacts, and other persistent traces.",
+            "learningObjectives": [
+              "explain what Windows registry hives contain at a high level",
+              "identify why application artifacts can corroborate filesystem evidence",
+              "separate artifact presence from claims about user intent"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsoft describes registry hives as logical groups of keys, subkeys, and values backed by files loaded into memory. User profile hives contain information about application settings, desktop, environment, network connections, and printers. Other disk artifacts such as browser databases, shortcut records, application caches, and event logs can provide context when available."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Artifact paths and formats vary by operating-system and application version.",
+                  "Use a parser appropriate to the artifact and preserve the source database/hive for validation.",
+                  "Corroboration is more reliable than treating one application artifact as a complete activity history."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is a Windows registry hive?",
+              "options": [
+                "A logical group of registry keys, subkeys, and values backed by supporting files.",
+                "A partition table.",
+                "A disk image format.",
+                "A network packet capture."
+              ],
+              "answer": "A logical group of registry keys, subkeys, and values backed by supporting files.",
+              "explanation": "Microsoft documents registry hives as logical groups backed by supporting files."
+            },
+            "summary": [
+              "Disk forensics can reconstruct user and application context from persistent artifacts, but artifact semantics and retention must be understood."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Learn — Registry Hives",
+                "url": "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-hives"
+              },
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              },
+              {
+                "title": "Autopsy — Digital Forensics Platform",
+                "url": "https://github.com/sleuthkit/autopsy"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Produce a Correlated Timeline Finding",
+            "level": "Advanced",
+            "description": "Create a concise finding from three independent disk artifacts.",
+            "problemStatement": "Given a filesystem event, application database event, and system event, determine whether they support a common sequence and state the limitations.",
+            "objectives": [
+              "normalize timestamps",
+              "correlate independent artifacts",
+              "write a defensible conclusion"
+            ],
+            "requirements": [
+              "A supplied training CSV or forensic image; spreadsheet or Python."
+            ],
+            "hint": "Do not use the closest timestamps alone; compare artifact semantics and source reliability.",
+            "solutionCode": "finding = {\n  \"observation\": \"Three independent artifacts occur in a consistent temporal sequence.\",\n  \"interpretation\": \"The sequence supports a common activity window involving the target item.\",\n  \"limitation\": \"The artifacts do not independently identify the human actor or intent.\"\n}\nprint(finding)\n",
+            "solutionExplanation": "The solution separates observations from interpretation and avoids unsupported attribution."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Advanced Storage, Encryption, and Anti-Forensics",
+        "description": "Handle difficult cases involving encryption, SSD behavior, anti-forensics, RAID, and virtualized storage without overstating conclusions.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Full-Disk Encryption and Forensic Constraints",
+            "description": "Explains how full-disk, volume, and file/folder encryption change acquisition and examination strategy.",
+            "learningObjectives": [
+              "distinguish disk, volume, and file-level encryption",
+              "explain why a powered-off encrypted disk can be difficult to examine",
+              "identify lawful sources of keys or decrypted data in a case plan"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-111 distinguishes full-disk, volume/virtual-disk, and file/folder encryption. SWGDE notes that encryption can require live acquisition to preserve access to decrypted data or keys. Possible key sources include recovery material, enterprise management systems, paired devices, or other authorized sources; the exact approach depends on the case and legal authority."
+              },
+              {
+                "type": "warning",
+                "text": "Do not teach or use unauthorized key extraction against third-party systems. In a forensic case, acquisition and decryption must be authorized and documented."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why can live acquisition be important on an encrypted system?",
+              "options": [
+                "It may preserve access to data or keys that become unavailable after shutdown.",
+                "It guarantees a complete image without side effects.",
+                "It disables encryption permanently.",
+                "It proves who used the system."
+              ],
+              "answer": "It may preserve access to data or keys that become unavailable after shutdown.",
+              "explanation": "SWGDE explicitly notes live acquisition can be the only opportunity to obtain data from an encrypted system in some situations."
+            },
+            "summary": [
+              "Encryption can change the order and method of acquisition because shutting down a live system may remove access to decrypted data or keys."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-111 — Guide to Storage Encryption Technologies for End User Devices",
+                "url": "https://csrc.nist.gov/pubs/sp/800/111/final"
+              },
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "SSD, TRIM, and the Limits of Deleted-Data Recovery",
+            "description": "Explains why flash storage can reduce the reliability of traditional deleted-file recovery and why acquisition timing matters.",
+            "learningObjectives": [
+              "explain the purpose of TRIM at a high level",
+              "describe why SSD garbage collection can change remnants",
+              "avoid promising recovery of deleted SSD data"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TRIM allows an operating system to inform storage that blocks associated with deleted data are no longer needed. SSD controllers may also perform garbage collection and internal data movement. As a result, sectors that once held deleted data may no longer contain recoverable remnants when the examiner acquires the device."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "TRIM behavior depends on the operating system, filesystem, controller, and device state.",
+                  "A forensic image cannot recover bytes that were already discarded or overwritten before acquisition.",
+                  "Absence of recovered data is not proof that the data never existed."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is one reason SSD deleted-data recovery can fail?",
+              "options": [
+                "TRIM and controller garbage collection can remove or alter remnants.",
+                "SHA-256 destroys deleted sectors.",
+                "GPT automatically erases files.",
+                "MFT records cannot exist on SSDs."
+              ],
+              "answer": "TRIM and controller garbage collection can remove or alter remnants.",
+              "explanation": "Flash storage can make previously recoverable blocks unavailable through TRIM and controller behavior."
+            },
+            "summary": [
+              "Traditional magnetic-disk recovery assumptions do not transfer cleanly to SSDs because controller behavior can remove or relocate remnants."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              },
+              {
+                "title": "NIST SP 800-86 — Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://www.nist.gov/publications/guide-integrating-forensic-techniques-incident-response"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Anti-Forensics and Destructive Artifacts",
+            "description": "Introduces wiping, timestamp manipulation, file hiding, encryption, and log clearing as hypotheses to investigate rather than labels to apply casually.",
+            "learningObjectives": [
+              "identify common anti-forensic categories",
+              "recognize evidence that can suggest deliberate concealment",
+              "distinguish suspicious inconsistency from proof of anti-forensic intent"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Anti-forensic activity may include secure deletion/wiping, timestamp manipulation, concealment, encryption, log clearing, or deliberate corruption. SWGDE advises considering destructive activity and encryption during collection planning. A forensic examiner should document observable anomalies and seek corroborating evidence rather than declaring “anti-forensics” solely because an artifact is missing."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Look for inconsistencies across independent timestamps and metadata.",
+                  "Examine filesystem journals and historical sources when available.",
+                  "Document tool limitations and retention gaps before inferring deliberate deletion."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is the safest way to report a suspected anti-forensic action?",
+              "options": [
+                "Describe the observed anomaly, supporting artifacts, and limitations.",
+                "State that the suspect definitely wiped the disk.",
+                "Treat every missing file as evidence of wiping.",
+                "Ignore technical explanations."
+              ],
+              "answer": "Describe the observed anomaly, supporting artifacts, and limitations.",
+              "explanation": "Forensic reporting should distinguish observations from conclusions and alternative explanations."
+            },
+            "summary": [
+              "Anti-forensics is best handled as an evidence-based hypothesis supported by multiple artifacts and known technical behavior."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 18-F-002-2.0 — Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/18-f-002-2-0"
+              },
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-04",
+            "title": "RAID, Virtual Disks, and Complex Storage",
+            "description": "Introduces the additional reconstruction issues created by RAID, virtual machine disks, snapshots, and storage abstraction layers.",
+            "learningObjectives": [
+              "identify why RAID can require multiple source devices",
+              "explain how virtual disks add a translation layer",
+              "plan evidence collection so metadata and configuration are preserved"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Complex storage can separate logical data from the physical devices an examiner initially sees. RAID may require multiple member devices and controller/configuration metadata. Virtual disks can contain partition tables and filesystems inside another host filesystem or storage container. Snapshots and thin provisioning can create additional layers that must be documented."
+              },
+              {
+                "type": "warning",
+                "text": "Do not reconstruct an unknown RAID or virtual-storage layout by trial and error on original media. Work from verified copies and preserve configuration metadata."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why is RAID configuration metadata important?",
+              "options": [
+                "It can be required to reconstruct the logical storage view from member devices.",
+                "It contains the user’s password by definition.",
+                "It replaces forensic hashing.",
+                "It makes a disk image unnecessary."
+              ],
+              "answer": "It can be required to reconstruct the logical storage view from member devices.",
+              "explanation": "Without layout information, the logical byte sequence may not be reconstructable from individual members."
+            },
+            "summary": [
+              "Complex storage requires layer-by-layer reconstruction and careful preservation of controller, hypervisor, and snapshot metadata."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              },
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Assess a Difficult Recovery Scenario",
+            "level": "Advanced",
+            "description": "Write an acquisition and analysis plan for an encrypted SSD with possible deleted evidence.",
+            "problemStatement": "The system is powered on, storage is encrypted, and the investigation concerns a file deleted recently. Produce a plan that balances volatile/decrypted evidence with later disk examination.",
+            "objectives": [
+              "prioritize acquisition actions",
+              "explain SSD recovery limits",
+              "document legal and technical assumptions"
+            ],
+            "requirements": [
+              "SWGDE acquisition guidance; NIST SP 800-111; a written scenario."
+            ],
+            "hint": "Consider what becomes unavailable after shutdown and what evidence the SSD controller may already have discarded.",
+            "solutionCode": "Plan:\n1. Confirm authority and scope.\n2. Document live state and connected media.\n3. Consider live collection of volatile/decrypted data and authorized encryption keys before shutdown.\n4. Acquire storage using an approved, documented method with source protection.\n5. Hash and verify the acquisition.\n6. Examine current and historical filesystem artifacts.\n7. Attempt deleted-file recovery while explicitly documenting SSD/TRIM limitations.\n8. Correlate with host/application artifacts.\n9. Report both positive findings and meaningful non-findings.\n",
+            "solutionExplanation": "The plan reflects SWGDE guidance on live acquisition and encryption and acknowledges that SSD/TRIM behavior can make deleted-data recovery incomplete or impossible."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Validation, Reporting, and Quality Assurance",
+        "description": "Turn technical examination into reproducible, reviewable findings through validation, reporting, and evidence packaging.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Tool Validation and Cross-Checking",
+            "description": "Teaches how to validate forensic tools and important results through known test images, alternate tools, and low-level inspection.",
+            "learningObjectives": [
+              "explain why forensic tools should be validated",
+              "design a simple known-answer test",
+              "cross-check an important result with an independent method"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SWGDE recommends selecting tools with known limitations and validating them according to organizational policy. Validation is not the same as trusting a brand name; it means demonstrating that the tool performs the function required for the case on representative data."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Define the function being tested.",
+                  "Use a known test image with known expected results.",
+                  "Run the tool and compare the output.",
+                  "Record version, configuration, input, expected result, actual result, and deviations.",
+                  "Re-test after significant version or configuration changes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What is a known-answer test?",
+              "options": [
+                "A test dataset with a predetermined expected result used to evaluate a tool.",
+                "A random live computer.",
+                "A password list.",
+                "A disk repair operation."
+              ],
+              "answer": "A test dataset with a predetermined expected result used to evaluate a tool.",
+              "explanation": "Known-answer testing compares tool behavior against a controlled expected result."
+            },
+            "summary": [
+              "Tool validation makes results more defensible and exposes parser limitations before they affect a real investigation."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              },
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Forensic Reporting: From Artifact to Finding",
+            "description": "Shows how to convert technical observations into clear, reproducible findings without overstating certainty.",
+            "learningObjectives": [
+              "write findings that separate observation, interpretation, and conclusion",
+              "cite evidence locations and hashes",
+              "document methods, limitations, and alternative explanations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful forensic report lets another examiner understand what was examined, how it was examined, what was observed, and why the stated conclusion follows. Findings should identify evidence identifiers, artifact locations, relevant timestamps, extraction methods, hashes of exported items when appropriate, and limitations."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use precise artifact names and paths.",
+                  "State whether a timestamp is filesystem, application, or system-log derived.",
+                  "Do not infer identity or intent beyond what the evidence supports.",
+                  "Record negative findings carefully when absence is meaningful and the search method was sufficient."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "What should a strong finding include?",
+              "options": [
+                "Observed evidence, interpretation, conclusion, and relevant limitations.",
+                "Only a screenshot with no context.",
+                "Only the examiner’s opinion.",
+                "Only the tool name."
+              ],
+              "answer": "Observed evidence, interpretation, conclusion, and relevant limitations.",
+              "explanation": "The reader needs enough context to understand how the conclusion follows from the evidence and where uncertainty remains."
+            },
+            "summary": [
+              "A defensible report is reproducible, evidence-linked, and explicit about uncertainty."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              },
+              {
+                "title": "NIST SP 800-86 — Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://www.nist.gov/publications/guide-integrating-forensic-techniques-incident-response"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-03",
+            "title": "Case Review, Peer Verification, and Quality Control",
+            "description": "Introduces a structured review pass that checks hashes, source paths, tool outputs, timeline assumptions, and report wording before release.",
+            "learningObjectives": [
+              "perform a technical peer-review checklist",
+              "identify common report inconsistencies",
+              "verify that exported evidence can be traced back to the image"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Recalculate or verify image hashes.",
+                  "Confirm evidence identifiers match the report.",
+                  "Re-run critical commands where feasible.",
+                  "Trace each major finding to its source artifact.",
+                  "Check timestamps and timezone labels.",
+                  "Review screenshots/exports for context and integrity.",
+                  "Check that limitations are stated.",
+                  "Ensure no analysis output overwrote evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09-03",
+                "title": "Perform a case quality-control review",
+                "description": "Review a supplied mini-case report and evidence manifest for consistency.",
+                "steps": [
+                  "Compare the evidence manifest with report identifiers.",
+                  "Recalculate the provided hash values where files are available.",
+                  "Check one timeline entry against its source artifact.",
+                  "Flag any claim that lacks an evidence reference or overstates certainty."
+                ],
+                "solution": "Produce a review table with columns: issue, evidence reference, severity, correction, reviewer note.",
+                "output": "The completed review identifies traceability or wording defects and proposes concrete corrections."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "Quality control is the final technical barrier against transcription errors, unsupported claims, and unreproducible results."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              },
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-04",
+            "title": "Professional Reporting and Evidence Packaging",
+            "description": "Shows how to package a final case so the original evidence, working copies, exported artifacts, notes, and report remain distinguishable.",
+            "learningObjectives": [
+              "design a clean evidence package",
+              "separate original evidence from derived exports",
+              "prepare a reproducible evidence manifest"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A professional case package distinguishes original evidence from derived artifacts and reports. The package should include evidence identifiers, hashes, acquisition notes, tool versions, examination notes, exported artifacts, and the final report according to organizational policy."
+              },
+              {
+                "type": "code",
+                "text": "# Example manifest generation for a derived-results directory\nfind results -type f -print0 | sort -z | xargs -0 sha256sum > results-sha256.txt\n"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Why should derived exports be distinguished from original evidence?",
+              "options": [
+                "To preserve provenance and prevent a reviewer from confusing an extracted copy with the source.",
+                "Because exports are always less accurate.",
+                "Because hashes only work on originals.",
+                "Because reports cannot contain filenames."
+              ],
+              "answer": "To preserve provenance and prevent a reviewer from confusing an extracted copy with the source.",
+              "explanation": "Provenance requires knowing what was acquired and what was subsequently derived during analysis."
+            },
+            "summary": [
+              "Packaging is part of reproducibility: a reviewer should be able to see what was original, what was derived, and how derived material relates to the source."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              },
+              {
+                "title": "NIST FIPS 180-4 — Secure Hash Standard",
+                "url": "https://www.nist.gov/publications/secure-hash-standard"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Audit a Forensic Finding",
+            "level": "Advanced",
+            "description": "Review a deliberately flawed forensic finding and rewrite it into evidence-linked language.",
+            "problemStatement": "The supplied finding claims that a user deleted a file at an exact time based only on one filesystem timestamp. Rewrite it using source-specific language and identify missing corroboration.",
+            "objectives": [
+              "identify overclaiming",
+              "add artifact provenance",
+              "state limitations"
+            ],
+            "requirements": [
+              "A text editor; the flawed finding supplied by the instructor."
+            ],
+            "hint": "Replace identity/intent claims with observations unless independent evidence supports them.",
+            "solutionCode": "Original claim: \"The user deleted confidential.docx at 14:32.\"\nRewritten finding: \"The NTFS metadata for confidential.docx records a deletion-related filesystem state at 14:32 as interpreted by the examination tool. This observation alone does not establish which person performed the action or the reason for it. Additional corroboration would be required for attribution.\"\n",
+            "solutionExplanation": "The revision preserves the observable artifact while explicitly limiting the conclusion."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Final Real-World Project: Authorized Disk Image Examination",
+        "description": "Apply the complete disk-forensics workflow to an authorized training image and produce a professional, evidence-linked examination package.",
+        "lessons": [
+          {
+            "id": "lesson-10-01",
+            "title": "Capstone Case Brief and Examination Plan",
+            "description": "Translate an investigation question into a scoped, reproducible disk-forensics plan before touching the image.",
+            "learningObjectives": [
+              "define the question and scope",
+              "identify evidence sources and acquisition assumptions",
+              "create an examination plan with decision points"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Start the capstone by writing what must be established, what is out of scope, what evidence is available, and what technical assumptions are being made. The plan should identify preservation, hashing, partition analysis, filesystem examination, recovery, correlation, validation, and reporting steps."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "A good examination plan prevents tool-driven wandering and keeps analysis tied to the investigative question."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86 — Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://www.nist.gov/publications/guide-integrating-forensic-techniques-incident-response"
+              },
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-02",
+            "title": "Capstone Evidence Acquisition and Verification",
+            "description": "Execute the preservation and verification phase of the capstone using the supplied authorized image.",
+            "learningObjectives": [
+              "calculate and record image hashes",
+              "record tool versions and image metadata",
+              "separate evidence from derived results"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone uses an already supplied training image rather than asking the student to seize a live device. The student must still treat the image as evidence: calculate a digest, preserve the original, and perform all analysis on a separate output area."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "The capstone begins with a verified evidence baseline so later findings can be traced to a stable source."
+            ],
+            "resources": [
+              {
+                "title": "NIST FIPS 180-4 — Secure Hash Standard",
+                "url": "https://www.nist.gov/publications/secure-hash-standard"
+              },
+              {
+                "title": "SWGDE 17-F-002-2.1 — Best Practices for Computer Forensic Acquisition",
+                "url": "https://www.swgde.org/17-f-002-2-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-03",
+            "title": "Capstone Partition and File-System Examination",
+            "description": "Reconstruct the disk layout and trace selected files to filesystem metadata.",
+            "learningObjectives": [
+              "interpret partition output",
+              "identify the correct filesystem offset",
+              "trace files from names to metadata and extracted bytes"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use mmls, fls, istat, and icat as appropriate. Record every offset and metadata address used. If the image contains multiple partitions or filesystems, explain why the selected source is relevant to the investigative question."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "The capstone demonstrates that a forensic result should be traceable from a high-level finding to the underlying disk structures."
+            ],
+            "resources": [
+              {
+                "title": "The Sleuth Kit Documentation",
+                "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-04",
+            "title": "Capstone Recovery, Correlation, and Reporting",
+            "description": "Complete the capstone by testing recovery hypotheses, building a timeline, cross-checking findings, and producing the final report.",
+            "learningObjectives": [
+              "assess deleted or historical artifacts",
+              "correlate at least three independent observations",
+              "write and quality-check the final finding set"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Recovery and timeline analysis are hypothesis-driven. Report both successful recovery and meaningful non-recovery, explain technical limitations, and avoid attributing actions to a person unless the evidence actually supports that conclusion. Finish by hashing derived outputs and checking the report against the evidence manifest."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-1",
+              "question": "Which statement best matches this lesson?",
+              "options": [
+                "It concerns unrelated application development.",
+                "It concerns the disk-forensics concept taught here.",
+                "It replaces evidence handling with guesswork.",
+                "It requires inventing tool behavior."
+              ],
+              "answer": "It concerns the disk-forensics concept taught here.",
+              "explanation": "The correct choice directly reflects the lesson focus."
+            },
+            "summary": [
+              "The final deliverable is a defensible evidence-linked report and reproducible case package, not merely a list of recovered files."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE 18-F-001-2.0 — Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/18-f-001-2"
+              },
+              {
+                "title": "NIST SP 800-86 — Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://www.nist.gov/publications/guide-integrating-forensic-techniques-incident-response"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Authorized Disk Image Examination and Evidence Report",
+          "description": "A realistic capstone in which the student receives an authorized training disk image, preserves and verifies it, reconstructs the partition/filesystem layout, performs targeted filesystem analysis, extracts selected evidence, correlates artifacts into a timeline, and produces a concise evidence-linked report. The project is deliberately read-only and uses synthetic or legally obtained training data.",
+          "conceptsCovered": [
+            "evidence handling and scope",
+            "forensic imaging and SHA-256 verification",
+            "partition-table analysis",
+            "filesystem metadata analysis",
+            "The Sleuth Kit workflow",
+            "deleted-file/recovery reasoning",
+            "timeline correlation",
+            "artifact validation",
+            "limitations and uncertainty",
+            "evidence packaging and reporting"
+          ],
+          "steps": [
+            "1. Define the investigative question, scope, and evidence identifier.",
+            "2. Preserve the supplied image and calculate a SHA-256 digest before analysis.",
+            "3. Record tool versions and create a case output directory separate from the evidence image.",
+            "4. Run mmls and manually review the partition layout; record the chosen partition offset.",
+            "5. Use fls to locate relevant files and metadata addresses.",
+            "6. Use istat to inspect the metadata for at least two relevant objects.",
+            "7. Extract one authorized target object with icat and hash the derived copy.",
+            "8. Examine available deleted-file or historical artifacts and state recovery limitations.",
+            "9. Build a timeline from at least three independent artifact observations.",
+            "10. Cross-check one major finding with a second method or lower-level view.",
+            "11. Write a report containing observations, interpretations, conclusions, evidence references, hashes, and limitations.",
+            "12. Generate a manifest of derived results and verify the final case package."
+          ],
+          "code": "# Disk Forensics Case Assistant\n# Purpose: create a reproducible, read-only examination record for an authorized\n# training image using The Sleuth Kit and standard hashing tools.\n# This script does not modify the evidence image.\n\n#!/usr/bin/env bash\nset -euo pipefail\n\nIMAGE=${1:?Usage: $0 <image.raw> [output_dir]}\nOUT=${2:-case-output}\nmkdir -p \"$OUT\"\n\ncommand -v sha256sum >/dev/null || { echo \"sha256sum is required\" >&2; exit 1; }\ncommand -v mmls >/dev/null || { echo \"mmls (The Sleuth Kit) is required\" >&2; exit 1; }\ncommand -v fls >/dev/null || { echo \"fls (The Sleuth Kit) is required\" >&2; exit 1; }\n\nif [ ! -f \"$IMAGE\" ]; then\n  echo \"Evidence image not found: $IMAGE\" >&2\n  exit 1\nfi\n\n{\n  echo \"case_started_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)\"\n  echo \"image=$IMAGE\"\n  echo \"sha256=$(sha256sum \"$IMAGE\" | awk '{print $1}')\"\n  echo \"mmls_version=$(mmls -V 2>&1 || true)\"\n  echo \"fls_version=$(fls -V 2>&1 || true)\"\n} > \"$OUT/case-manifest.txt\"\n\n# Partition discovery. Review this output manually; do not assume an offset.\nmmls \"$IMAGE\" > \"$OUT/partition-layout.txt\"\n\n# The examiner supplies the verified partition offset from the reviewed mmls output.\nOFFSET=${OFFSET:?Set OFFSET to the partition start sector after reviewing partition-layout.txt}\n\n# File listing is read-only against the image.\nfls -r -o \"$OFFSET\" \"$IMAGE\" > \"$OUT/filesystem-list.txt\"\n\n# Optional targeted metadata extraction: supply an inode discovered from fls.\nif [ -n \"${INODE:-}\" ]; then\n  istat -o \"$OFFSET\" \"$IMAGE\" \"$INODE\" > \"$OUT/target-istat.txt\"\n  icat -o \"$OFFSET\" \"$IMAGE\" \"$INODE\" > \"$OUT/target-extracted.bin\"\n  sha256sum \"$OUT/target-extracted.bin\" > \"$OUT/target-extracted.sha256\"\nfi\n\n# Hash every derived result for the evidence manifest.\nfind \"$OUT\" -maxdepth 1 -type f ! -name '*-sha256.txt' -print0 | sort -z | xargs -0 sha256sum > \"$OUT/results-sha256.txt\"\n\necho \"Examination outputs written to $OUT\"\n",
+          "explanation": "Architecture: the supplied disk image is immutable evidence; the Bash case assistant reads it through The Sleuth Kit and writes all outputs to a separate case directory. Data flow: image → SHA-256 manifest → mmls partition layout → examiner-selected partition offset → fls filesystem listing → istat metadata review → optional icat extraction → hashes of derived evidence → report/timeline. The examiner, not the script, makes the critical partition-offset and relevance decisions. This prevents automation from silently interpreting an incorrect offset. The script also refuses to run until required tools are present and requires OFFSET to be explicitly supplied after manual review. The final report should distinguish direct observations from interpretations and should document any inability to recover deleted data, encryption limitations, SSD/TRIM limitations, or parser uncertainty."
+        }
+      }
+    ]
+  }
+}

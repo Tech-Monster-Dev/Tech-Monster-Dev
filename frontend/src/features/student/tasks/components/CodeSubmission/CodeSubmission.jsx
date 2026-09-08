@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 
 import highlightCode from "../../../lessons/components/LessonContent/components/LessonPage/components/TryItYourself/utils/highlightCode.js";
+import { inferCodeLanguage } from "../../../../../shared/utils/codeFormatting.js";
 
 import "./CodeSubmission.css";
 
@@ -25,10 +26,10 @@ export default function CodeSubmission({
     const textareaRef = useRef(null);
     const highlightRef = useRef(null);
 
-    const language =
-        task?.language ||
-        task?.programmingLanguage ||
-        "javascript";
+    const language = inferCodeLanguage(
+        code,
+        task?.language || task?.programmingLanguage || ""
+    );
 
     const highlightedCode =
         highlightCode(
@@ -52,6 +53,31 @@ export default function CodeSubmission({
 
         highlight.scrollLeft =
             textarea.scrollLeft;
+    };
+
+    const handlePaste = (event) => {
+        const textarea = textareaRef.current;
+        const pastedText = event.clipboardData?.getData("text/plain");
+
+        if (!textarea || pastedText === undefined) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const nextCode =
+            code.slice(0, start) +
+            pastedText +
+            code.slice(end);
+
+        setCode(nextCode);
+
+        requestAnimationFrame(() => {
+            const nextCursor = start + pastedText.length;
+            textarea.setSelectionRange(nextCursor, nextCursor);
+        });
     };
 
     const handleSubmit = (e) => {
@@ -120,6 +146,8 @@ export default function CodeSubmission({
                         )
                     }
                     onScroll={syncScroll}
+                    onPaste={handlePaste}
+                    wrap="off"
                     placeholder={
                         "// Paste your solution code here...\nfunction solve() { }\n\n// Write clean, well-commented code."
                     }

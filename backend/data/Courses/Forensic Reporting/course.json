@@ -1,0 +1,1229 @@
+{
+  "course": {
+    "id": "forensic-reporting",
+    "title": "Forensic Reporting",
+    "slug": "forensic-reporting",
+    "description": "A practical, standards-informed course on producing clear, traceable, reproducible, and defensible reports for digital and multimedia forensic examinations. It covers scope, evidence identity and continuity, integrity documentation, methods, findings, conclusions, limitations, exhibits, review, authorization, amendments, secure handling, and lightweight Python automation for structured reporting. It focuses on reporting and does not provide legal advice or replace validated forensic procedures.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 32,
+    "prerequisites": [
+      "Basic digital evidence concepts such as files, logs, timestamps, and hashes.",
+      "Basic command-line or scripting literacy.",
+      "Ability to read JSON and tabular evidence records.",
+      "Awareness that real forensic work follows law, policy, and validated procedures."
+    ],
+    "learningOutcomes": [
+      "Define bounded examination requests and scope.",
+      "Construct evidence inventories and chain-of-custody records.",
+      "Document methods, tools, configurations, integrity values, and deviations.",
+      "Distinguish observations, findings, interpretations, conclusions, and limitations.",
+      "Build traceable timelines with timezone assumptions.",
+      "Write bounded negative findings.",
+      "Produce readable results, conclusions, exhibits, disposition, and authorization sections.",
+      "Perform technical and editorial release review and controlled amendments.",
+      "Use Python standard-library tooling to validate case records, hash files, and render HTML.",
+      "Complete an end-to-end synthetic forensic reporting project."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Foundations of Forensic Reporting",
+        "description": "Purpose, scope, evidence identity, integrity, continuity, and disposition.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Purpose and Role of a Forensic Report",
+            "description": "Develop practical competence in purpose and role of a forensic report for defensible forensic reporting.",
+            "learningObjectives": [
+              "Explain reporting purpose; distinguish report from tool output; identify audience and scope"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Purpose and Role of a Forensic Report"
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE describes reporting as documentation of examination steps and results for review. Tool reports may support the examination report but normally do not document its entire scope."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A report should be concise, complete, traceable, and consistent with the underlying notes and evidence.",
+                  "Do not turn an allegation into a forensic finding."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand purpose and role of a forensic report in the context of forensic examination reporting.",
+              "Key reporting control: purpose and role of a forensic report must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Scope, Request, and Examination Questions",
+            "description": "Develop practical competence in scope, request, and examination questions for defensible forensic reporting.",
+            "learningObjectives": [
+              "Convert broad requests into bounded, testable examination questions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Scope, Request, and Examination Questions"
+              },
+              {
+                "type": "paragraph",
+                "text": "Record request date, requestor, purpose, scope, and authority when applicable."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "State evidence, timeframe, and exclusions explicitly.",
+                  "Do not promise conclusions that require evidence outside the defined scope."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand scope, request, and examination questions in the context of forensic examination reporting.",
+              "Key reporting control: scope, request, and examination questions must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Evidence Identity, Integrity, and Provenance",
+            "description": "Develop practical competence in evidence identity, integrity, and provenance for defensible forensic reporting.",
+            "learningObjectives": [
+              "Use stable identifiers and integrity metadata"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence Identity, Integrity, and Provenance"
+              },
+              {
+                "type": "paragraph",
+                "text": "An evidence ID answers which item is discussed; a cryptographic digest supports later integrity comparison."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record description, source, serial number when available, acquisition/derivative relationship, hash algorithm, and digest.",
+                  "A hash does not establish authorship, legality, or attribution."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q3",
+              "question": "What does a recorded SHA-256 digest primarily support?",
+              "options": [
+                "Attribution",
+                "Integrity comparison",
+                "Admissibility",
+                "Examiner qualification"
+              ],
+              "answer": "Integrity comparison",
+              "explanation": "A digest supports later comparison of content integrity."
+            },
+            "summary": [
+              "Understand evidence identity, integrity, and provenance in the context of forensic examination reporting.",
+              "Key reporting control: evidence identity, integrity, and provenance must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "ISO/IEC 27037: Identification, collection, acquisition and preservation of digital evidence",
+                "url": "https://www.iso.org/standard/44381.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Chain of Custody and Disposition",
+            "description": "Develop practical competence in chain of custody and disposition for defensible forensic reporting.",
+            "learningObjectives": [
+              "Document possession, transfers, and final disposition"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Chain of Custody and Disposition"
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE recommends contemporaneous custody documentation identifying the item, time, transfers, and persons taking possession."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use an explicit time standard and document deviations.",
+                  "Reports should state disposition of original and derivative works."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04",
+                "title": "Build a chain-of-custody record",
+                "description": "Create three synthetic transfers for one evidence item.",
+                "steps": "Add evidence ID, UTC timestamp, from/to parties, and action for each transfer.",
+                "solution": "from datetime import datetime, timezone\nrecords=[]\nfor a,b,action in [(\"Collector\",\"Examiner\",\"Examination\"),(\"Examiner\",\"Reviewer\",\"Technical review\"),(\"Reviewer\",\"Custodian\",\"Storage\")]:\n    records.append({\"timestamp_utc\":datetime.now(timezone.utc).isoformat(),\"from\":a,\"to\":b,\"action\":action})\nprint(records)\n",
+                "output": "A chronological custody record is produced."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Understand chain of custody and disposition in the context of forensic examination reporting.",
+              "Key reporting control: chain of custody and disposition must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Draft a Bounded Examination Plan",
+            "level": "Easy",
+            "description": "Turn a broad synthetic request into an auditable plan.",
+            "problemStatement": "Define a testable question, evidence scope, exclusions, and reporting records for a request to investigate a suspected event.",
+            "objectives": [
+              "state purpose and scope",
+              "identify evidence in scope",
+              "define exclusions",
+              "list required reporting records"
+            ],
+            "requirements": [
+              "Text editor",
+              "Synthetic case information"
+            ],
+            "hint": "Start with what the evidence can actually answer.",
+            "solutionCode": "plan={'purpose':'Determine whether the specified activity is represented in supplied evidence.','evidence':['supplied evidence image'],'exclusions':['unavailable systems','unsupported attribution claims'],'records':['evidence ID','hash','custody','methods','findings','limitations']}\nprint(plan)",
+            "solutionExplanation": "The plan is bounded and avoids promising attribution beyond the evidence."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Report Structure and Traceability",
+        "description": "Minimum report anatomy, inventories, methods, and reader-oriented structure.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Minimum Report Anatomy",
+            "description": "Develop practical competence in minimum report anatomy for defensible forensic reporting.",
+            "learningObjectives": [
+              "Identify the substantive components of a forensic examination report"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Minimum Report Anatomy"
+              },
+              {
+                "type": "paragraph",
+                "text": "Core sections include title/case identifiers, request and scope, submitted items, results and examination details, conclusions when included, disposition, and authorization."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "SWGDE defines minimum elements but does not prescribe one layout.",
+                  "Local policy, accreditation, contracts, and jurisdiction may add requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand minimum report anatomy in the context of forensic examination reporting.",
+              "Key reporting control: minimum report anatomy must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Evidence Inventory and Exhibit Mapping",
+            "description": "Develop practical competence in evidence inventory and exhibit mapping for defensible forensic reporting.",
+            "learningObjectives": [
+              "Map findings to evidence and supporting exhibits"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence Inventory and Exhibit Mapping"
+              },
+              {
+                "type": "paragraph",
+                "text": "Use stable evidence, finding, and exhibit IDs."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Distinguish original evidence from images, exports, screenshots, and other derivatives.",
+                  "A reviewer should be able to trace a finding back to source evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand evidence inventory and exhibit mapping in the context of forensic examination reporting.",
+              "Key reporting control: evidence inventory and exhibit mapping must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Methods, Tools, Versions, and Reproducibility",
+            "description": "Develop practical competence in methods, tools, versions, and reproducibility for defensible forensic reporting.",
+            "learningObjectives": [
+              "Document methods sufficiently for scrutiny and repeatability"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Methods, Tools, Versions, and Reproducibility"
+              },
+              {
+                "type": "paragraph",
+                "text": "ISO/IEC 27042 emphasizes continuity, validity, reproducibility, repeatability, and records sufficient for independent scrutiny."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record relevant tool/version, configuration, filters, time assumptions, and material deviations.",
+                  "Do not claim a tool proved a proposition; describe output and interpretation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand methods, tools, versions, and reproducibility in the context of forensic examination reporting.",
+              "Key reporting control: methods, tools, versions, and reproducibility must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "ISO/IEC 27042: Analysis and interpretation of digital evidence",
+                "url": "https://www.iso.org/standard/44406.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Writing for Technical and Non-Technical Readers",
+            "description": "Develop practical competence in writing for technical and non-technical readers for defensible forensic reporting.",
+            "learningObjectives": [
+              "Write precise language for mixed audiences"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Writing for Technical and Non-Technical Readers"
+              },
+              {
+                "type": "paragraph",
+                "text": "Define uncommon acronyms at first use."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer concrete artifact statements over unsupported claims about intent or attribution.",
+                  "Use tables for repeated data and appendices for dense technical output."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand writing for technical and non-technical readers in the context of forensic examination reporting.",
+              "Key reporting control: writing for technical and non-technical readers must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Design an Evidence Traceability Matrix",
+            "level": "Intermediate",
+            "description": "Map findings to evidence and exhibits.",
+            "problemStatement": "Four synthetic findings must be linked to evidence; identify unsupported findings before release.",
+            "objectives": [
+              "assign stable IDs",
+              "map findings to evidence",
+              "flag unsupported findings"
+            ],
+            "requirements": [
+              "Text editor or spreadsheet"
+            ],
+            "hint": "Use separate evidence, finding, and exhibit IDs.",
+            "solutionCode": "findings={'F-001':['E-001'],'F-002':['E-001','E-002'],'F-003':['E-003'],'F-004':[]}\nfor fid,refs in findings.items(): print(fid,'->',refs or 'REVIEW REQUIRED')",
+            "solutionExplanation": "F-004 is flagged because no evidence supports it."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Findings, Interpretation, and Evidentiary Reasoning",
+        "description": "Observations, timelines, hashes, limitations, and bounded conclusions.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Observation, Finding, Interpretation, Conclusion",
+            "description": "Develop practical competence in observation, finding, interpretation, conclusion for defensible forensic reporting.",
+            "learningObjectives": [
+              "Separate evidence statements from interpretation"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Observation, Finding, Interpretation, Conclusion"
+              },
+              {
+                "type": "paragraph",
+                "text": "Observation describes what was seen or measured."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Finding states a relevant result; interpretation explains meaning; conclusion answers the examination question.",
+                  "The report should show how conclusions follow from documented findings."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q9",
+              "question": "Which is the most bounded statement?",
+              "options": [
+                "The user intentionally deleted the file",
+                "The artifact records a deletion event",
+                "The suspect caused the deletion",
+                "The incident was malicious"
+              ],
+              "answer": "The artifact records a deletion event",
+              "explanation": "It describes the artifact without asserting intent or attribution."
+            },
+            "summary": [
+              "Understand observation, finding, interpretation, conclusion in the context of forensic examination reporting.",
+              "Key reporting control: observation, finding, interpretation, conclusion must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "ISO/IEC 27042: Analysis and interpretation of digital evidence",
+                "url": "https://www.iso.org/standard/44406.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Temporal Reasoning and Timelines",
+            "description": "Develop practical competence in temporal reasoning and timelines for defensible forensic reporting.",
+            "learningObjectives": [
+              "Build traceable timelines with time assumptions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Temporal Reasoning and Timelines"
+              },
+              {
+                "type": "paragraph",
+                "text": "Retain original timestamps and document normalized values."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "State timezone or conversion assumptions.",
+                  "Temporal proximity can support correlation but does not alone establish causation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand temporal reasoning and timelines in the context of forensic examination reporting.",
+              "Key reporting control: temporal reasoning and timelines must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-001-2/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Hashing and Integrity Statements",
+            "description": "Develop practical competence in hashing and integrity statements for defensible forensic reporting.",
+            "learningObjectives": [
+              "Calculate and report cryptographic digests accurately"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Hashing and Integrity Statements"
+              },
+              {
+                "type": "paragraph",
+                "text": "Record algorithm, item, stage, and digest."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use integrity language that states exactly what was compared.",
+                  "MD5 and SHA-1 have known collision weaknesses; stronger algorithms are appropriate for integrity-sensitive workflows."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p11",
+                "title": "Hash a training artifact",
+                "description": "Calculate SHA-256 before and after modifying a synthetic file.",
+                "steps": "Create a file; calculate its digest; modify it; calculate again; record both values.",
+                "solution": "from pathlib import Path\nimport hashlib\np=Path(\"lab.txt\"); p.write_text(\"training evidence\",encoding=\"utf-8\")\ndef sha256(path):\n    h=hashlib.sha256()\n    with path.open(\"rb\") as f:\n        for chunk in iter(lambda:f.read(1024*1024),b\"\"): h.update(chunk)\n    return h.hexdigest()\nprint(\"before\",sha256(p))\np.write_text(\"training evidence changed\",encoding=\"utf-8\")\nprint(\"after\",sha256(p))\n",
+                "output": "The digest changes after the file is modified."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Understand hashing and integrity statements in the context of forensic examination reporting.",
+              "Key reporting control: hashing and integrity statements must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "Python hashlib documentation",
+                "url": "https://docs.python.org/3.14/library/hashlib.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Limitations and Negative Findings",
+            "description": "Develop practical competence in limitations and negative findings for defensible forensic reporting.",
+            "learningObjectives": [
+              "Write bounded negative findings and meaningful limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Limitations and Negative Findings"
+              },
+              {
+                "type": "paragraph",
+                "text": "State what was searched and the method used."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Distinguish 'not identified in examined data' from 'did not occur.'",
+                  "Document gaps such as unavailable logs, encryption, overwritten data, or unsupported formats."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q12",
+              "question": "Which negative finding is safest?",
+              "options": [
+                "The event never happened",
+                "The suspect did not act",
+                "The event was not identified in the examined dataset using the documented method",
+                "There is no evidence anywhere"
+              ],
+              "answer": "The event was not identified in the examined dataset using the documented method",
+              "explanation": "It is limited to the searched data and method."
+            },
+            "summary": [
+              "Understand limitations and negative findings in the context of forensic examination reporting.",
+              "Key reporting control: limitations and negative findings must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-001-2/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Write Bounded Findings",
+            "level": "Intermediate",
+            "description": "Convert synthetic observations into findings without unsupported attribution.",
+            "problemStatement": "Write three findings and one limitation from supplied synthetic event records.",
+            "objectives": [
+              "separate observation and inference",
+              "cite evidence IDs",
+              "write a bounded negative",
+              "state a limitation"
+            ],
+            "requirements": [
+              "Text editor",
+              "Synthetic artifact records"
+            ],
+            "hint": "Ask what the artifact shows and what it cannot establish.",
+            "solutionCode": "finding={'id':'F-001','statement':'E-001 records the specified event.','basis':['E-001'],'limitation':'The record alone does not establish who initiated the event.'}\nprint(finding)",
+            "solutionExplanation": "The finding stays within the evidence and states an attribution limitation."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Professional Writing and Quality Review",
+        "description": "Results, conclusions, exhibits, technical review, authorization, and amendments.",
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "Writing the Results Section",
+            "description": "Develop practical competence in writing the results section for defensible forensic reporting.",
+            "learningObjectives": [
+              "Turn examination activity into traceable results"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Writing the Results Section"
+              },
+              {
+                "type": "paragraph",
+                "text": "Organize results by question or evidence source."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use tables for repeated structured fields.",
+                  "Cross-reference evidence and exhibits and disclose material deviations."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand writing the results section in the context of forensic examination reporting.",
+              "Key reporting control: writing the results section must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Conclusions and Opinions",
+            "description": "Develop practical competence in conclusions and opinions for defensible forensic reporting.",
+            "learningObjectives": [
+              "State conclusions with basis and limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Conclusions and Opinions"
+              },
+              {
+                "type": "paragraph",
+                "text": "Answer the examination question directly when possible."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Reference key findings supporting the conclusion.",
+                  "Use discipline-specific conclusion terminology only when the applicable standard or method supports it."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q14",
+              "question": "What should accompany an included conclusion?",
+              "options": [
+                "Only the examiner name",
+                "Its basis",
+                "A guarantee of admissibility",
+                "A marketing statement"
+              ],
+              "answer": "Its basis",
+              "explanation": "SWGDE requires the basis of included opinions/conclusions."
+            },
+            "summary": [
+              "Understand conclusions and opinions in the context of forensic examination reporting.",
+              "Key reporting control: conclusions and opinions must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Screenshots, Tables, and Supporting Exhibits",
+            "description": "Develop practical competence in screenshots, tables, and supporting exhibits for defensible forensic reporting.",
+            "learningObjectives": [
+              "Create useful, provenance-aware exhibits"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Screenshots, Tables, and Supporting Exhibits"
+              },
+              {
+                "type": "paragraph",
+                "text": "Assign exhibit IDs and captions."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identify source evidence and record location.",
+                  "Disclose cropping, annotation, or other transformation.",
+                  "A screenshot is a representation of a display state, not automatically the underlying artifact."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p15",
+                "title": "Create an exhibit caption",
+                "description": "Write provenance metadata for a synthetic screenshot.",
+                "steps": "Assign exhibit ID; describe content; identify source evidence and record; disclose processing.",
+                "solution": "exhibit={\"id\":\"X-001\",\"caption\":\"Synthetic screenshot of event record relevant to F-001\",\n\"source\":\"E-001, record 12\",\"processing\":\"Cropped only; record content not edited\"}\nprint(exhibit)\n",
+                "output": "The caption records source and processing."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Understand screenshots, tables, and supporting exhibits in the context of forensic examination reporting.",
+              "Key reporting control: screenshots, tables, and supporting exhibits must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Requirements for Report Writing in Digital and Multimedia Forensics",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Technical Review, Authorization, and Amendments",
+            "description": "Develop practical competence in technical review, authorization, and amendments for defensible forensic reporting.",
+            "learningObjectives": [
+              "Control report release and later changes"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Technical Review, Authorization, and Amendments"
+              },
+              {
+                "type": "paragraph",
+                "text": "Technical review checks methods, calculations, evidence references, findings, and conclusions."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Editorial review checks numbering, captions, clarity, and page accountability.",
+                  "Amendments should preserve version history and explain changes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand technical review, authorization, and amendments in the context of forensic examination reporting.",
+              "Key reporting control: technical review, authorization, and amendments must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "NIST/OSAC: Report of the Digital Evidence Task Group Quality Study",
+                "url": "https://www.nist.gov/publications/report-digital-evidence-task-group-quality-study"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Perform a Report Release Review",
+            "level": "Advanced",
+            "description": "Audit a synthetic draft for traceability and overclaiming.",
+            "problemStatement": "Identify inconsistent IDs, unsupported conclusion language, missing exhibit provenance, and missing limitations.",
+            "objectives": [
+              "identify release blockers",
+              "rewrite overclaiming language",
+              "repair exhibit provenance",
+              "add limitation"
+            ],
+            "requirements": [
+              "Text editor",
+              "Synthetic draft report"
+            ],
+            "hint": "Review each conclusion backward to evidence and method.",
+            "solutionCode": "draft={'conclusion':'The evidence definitely proves the allegation.','limitations':[],'exhibits':[]}\nissues=[]\nif 'definitely' in draft['conclusion'].lower(): issues.append('Overclaiming')\nif not draft['limitations']: issues.append('Missing limitations')\nif not draft['exhibits']: issues.append('Missing exhibit provenance')\nprint(issues)",
+            "solutionExplanation": "The checks expose release blockers before authorization."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Automation, Security, and Quality Assurance",
+        "description": "Structured data, safe automation, secure handling, and release gates.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Automation Boundaries",
+            "description": "Develop practical competence in automation boundaries for defensible forensic reporting.",
+            "learningObjectives": [
+              "Use automation for deterministic reporting work without replacing examiner judgment"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Automation Boundaries"
+              },
+              {
+                "type": "paragraph",
+                "text": "Automate schema checks, sorting, hashing, identifier validation, and rendering."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Keep interpretation and conclusions under examiner control.",
+                  "Fail clearly when required inputs are missing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand automation boundaries in the context of forensic examination reporting.",
+              "Key reporting control: automation boundaries must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "Python json documentation",
+                "url": "https://docs.python.org/3/library/json.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Structured JSON Case Records",
+            "description": "Develop practical competence in structured json case records for defensible forensic reporting.",
+            "learningObjectives": [
+              "Represent forensic case data in a machine-readable structure"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Structured JSON Case Records"
+              },
+              {
+                "type": "paragraph",
+                "text": "Use stable field names and arrays for repeated evidence/findings."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Validate required fields and types before rendering.",
+                  "Python warns that untrusted JSON can consume significant resources, so size and trust boundaries matter."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand structured json case records in the context of forensic examination reporting.",
+              "Key reporting control: structured json case records must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "Python json documentation",
+                "url": "https://docs.python.org/3/library/json.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Secure Handling of Report Data",
+            "description": "Develop practical competence in secure handling of report data for defensible forensic reporting.",
+            "learningObjectives": [
+              "Protect evidence-derived reports and working data"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Secure Handling of Report Data"
+              },
+              {
+                "type": "paragraph",
+                "text": "Minimize sensitive information to reporting purpose."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Control access to evidence, working files, reports, and archives.",
+                  "Never place credentials, private keys, or unrelated personal information into examples."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand secure handling of report data in the context of forensic examination reporting.",
+              "Key reporting control: secure handling of report data must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86: Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Quality Assurance and Defensibility",
+            "description": "Develop practical competence in quality assurance and defensibility for defensible forensic reporting.",
+            "learningObjectives": [
+              "Build a substantive release checklist"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Quality Assurance and Defensibility"
+              },
+              {
+                "type": "paragraph",
+                "text": "Check evidence IDs, hashes, methods, findings, conclusions, limitations, exhibits, authorization, and version status."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "NIST's quality study highlights quality practices and management systems in forensic laboratories.",
+                  "ISO/IEC 27042 emphasizes independent scrutiny and reproducibility."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p20",
+                "title": "Implement a release gate",
+                "description": "Block report release when a critical section is absent.",
+                "steps": "Create checks; collect failures; print PASS or BLOCKED.",
+                "solution": "checks={\"evidence\":True,\"methods\":True,\"findings\":True,\"limitations\":True,\"conclusion_basis\":True,\"authorization\":False}\nfailures=[k for k,v in checks.items() if not v]\nprint(\"PASS\" if not failures else \"BLOCKED\", failures)\n",
+                "output": "The gate blocks release because authorization is missing."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Understand quality assurance and defensibility in the context of forensic examination reporting.",
+              "Key reporting control: quality assurance and defensibility must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "NIST/OSAC: Report of the Digital Evidence Task Group Quality Study",
+                "url": "https://www.nist.gov/publications/report-digital-evidence-task-group-quality-study"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Build a Structured Report Validator",
+            "level": "Advanced",
+            "description": "Block rendering when critical case fields are missing.",
+            "problemStatement": "Validate evidence, methods, findings, limitations, conclusion, and authorization in a JSON case record.",
+            "objectives": [
+              "parse structured input",
+              "validate required fields",
+              "return actionable failures"
+            ],
+            "requirements": [
+              "Python 3",
+              "Standard library",
+              "JSON"
+            ],
+            "hint": "Check field presence and empty values.",
+            "solutionCode": "def validate(case):\n    required=['case_id','evidence','methods','findings','limitations','conclusion','authorization']\n    return [k for k in required if k not in case or case[k] in ('',None,[])]\ncase={'case_id':'LAB-001','evidence':['E-001'],'methods':['Review'],'findings':['F-001'],'limitations':['Synthetic'],'conclusion':'Bounded','authorization':{'authorized_by':'Training'}}\nprint('PASS' if not validate(case) else 'BLOCKED')",
+            "solutionExplanation": "The validator provides a deterministic release gate; production systems should add organization-specific checks."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Advanced Practice and Capstone Preparation",
+        "description": "Correlation, tool limitations, legal boundaries, and complete lifecycle assembly.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "Multi-Source Correlation",
+            "description": "Develop practical competence in multi-source correlation for defensible forensic reporting.",
+            "learningObjectives": [
+              "Correlate independent sources while preserving provenance"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Multi-Source Correlation"
+              },
+              {
+                "type": "paragraph",
+                "text": "Identify every source and correlation rule."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Retain original and normalized timestamps.",
+                  "Investigate discrepancies rather than silently discarding them."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand multi-source correlation in the context of forensic examination reporting.",
+              "Key reporting control: multi-source correlation must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "ISO/IEC 27042: Analysis and interpretation of digital evidence",
+                "url": "https://www.iso.org/standard/44406.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Tool Limitations and Validation",
+            "description": "Develop practical competence in tool limitations and validation for defensible forensic reporting.",
+            "learningObjectives": [
+              "Document software limitations and discrepancies"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Tool Limitations and Validation"
+              },
+              {
+                "type": "paragraph",
+                "text": "Record relevant versions/configuration."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use validated procedures or known test data where required.",
+                  "Material tool disagreement should be investigated and documented."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q22",
+              "question": "If two tools disagree on a material artifact, what should happen?",
+              "options": [
+                "Choose the result supporting the allegation",
+                "Hide the discrepancy",
+                "Investigate and document the discrepancy or limitation",
+                "Delete both"
+              ],
+              "answer": "Investigate and document the discrepancy or limitation",
+              "explanation": "Material disagreement must remain transparent."
+            },
+            "summary": [
+              "Understand tool limitations and validation in the context of forensic examination reporting.",
+              "Key reporting control: tool limitations and validation must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Best Practices for Computer Forensic Examinations",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-001-2/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Legal and Organizational Boundaries",
+            "description": "Develop practical competence in legal and organizational boundaries for defensible forensic reporting.",
+            "learningObjectives": [
+              "Recognize policy and jurisdictional dependencies"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Legal and Organizational Boundaries"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-86 is not legal advice and recommends consultation of applicable requirements."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record authority where applicable.",
+                  "Do not promise admissibility or legal sufficiency without a jurisdiction-specific basis."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Understand legal and organizational boundaries in the context of forensic examination reporting.",
+              "Key reporting control: legal and organizational boundaries must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86: Guide to Integrating Forensic Techniques into Incident Response",
+                "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "End-to-End Report Assembly",
+            "description": "Develop practical competence in end-to-end report assembly for defensible forensic reporting.",
+            "learningObjectives": [
+              "Integrate intake, evidence, analysis, reporting, review, authorization, and disposition"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "End-to-End Report Assembly"
+              },
+              {
+                "type": "paragraph",
+                "text": "Lifecycle: intake → scope → continuity → examination/analysis → results → draft → review → correction → authorization → disposition."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use the exact laboratory or organizational SOP for real cases.",
+                  "The capstone utility documents synthetic, already-examined data; it does not acquire evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p24",
+                "title": "Assemble a mini report",
+                "description": "Create a synthetic report with request, evidence, methods, findings, limitation, conclusion, disposition, and authorization.",
+                "steps": "Use stable IDs; link findings to evidence; write a bounded conclusion; review the package.",
+                "solution": "report={\"case_id\":\"LAB-MINI-001\",\"evidence\":[\"E-001\"],\"methods\":[\"Reviewed supplied training record\"],\n\"findings\":[{\"id\":\"F-001\",\"basis\":[\"E-001\"],\"statement\":\"Specified artifact is present\"}],\n\"limitations\":[\"Synthetic data; no attribution conclusion\"],\n\"conclusion\":\"Within scope, the artifact is present in the supplied data.\",\n\"disposition\":\"Retain training materials\",\"authorization\":\"Training Exercise\"}\nprint(report)\n",
+                "output": "A complete mini report is produced."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Understand end-to-end report assembly in the context of forensic examination reporting.",
+              "Key reporting control: end-to-end report assembly must remain traceable to the evidence, method, and scope actually examined."
+            ],
+            "resources": [
+              {
+                "title": "ISO/IEC 27043: Incident investigation principles and processes",
+                "url": "https://www.iso.org/standard/44407.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Controlled Digital Evidence Examination Reporting Pipeline",
+          "description": "A standard-library Python utility that validates a synthetic, already-examined case record and renders a traceable HTML forensic examination report.",
+          "conceptsCovered": [
+            "scope",
+            "evidence inventory",
+            "chain of custody",
+            "integrity metadata",
+            "methods",
+            "findings",
+            "limitations",
+            "conclusions",
+            "disposition",
+            "authorization",
+            "JSON validation",
+            "HTML escaping",
+            "report rendering"
+          ],
+          "steps": [
+            "Create report_generator.py and case.json.",
+            "Use only synthetic training data.",
+            "Validate required fields.",
+            "Record evidence and findings with stable IDs.",
+            "Generate a SHA-256 digest for a local training artifact.",
+            "Render the HTML report.",
+            "Review traceability, wording, limitations, and authorization.",
+            "Apply the release checklist."
+          ],
+          "code": {
+            "report_generator.py": "#!/usr/bin/env python3\n\"\"\"Render a structured synthetic forensic case record as an HTML report.\"\"\"\nfrom __future__ import annotations\nimport argparse, html, json\nfrom pathlib import Path\nfrom datetime import datetime, timezone\nREQUIRED={\"case_id\",\"report_title\",\"request\",\"evidence\",\"methods\",\"findings\",\"limitations\",\"conclusion\",\"disposition\",\"authorization\"}\ndef load_case(path):\n    with path.open(\"r\",encoding=\"utf-8\") as f: case=json.load(f)\n    missing=REQUIRED-set(case)\n    if missing: raise ValueError(f\"Missing required fields: {sorted(missing)}\")\n    return case\ndef esc(v): return html.escape(str(v))\ndef rows(items,cols):\n    return \"\\n\".join(\"<tr>\"+\"\".join(f\"<td>{esc(x.get(c,''))}</td>\" for c in cols)+\"</tr>\" for x in items)\ndef render(c):\n    ev=rows(c[\"evidence\"],[\"evidence_id\",\"description\",\"source\",\"hash_algorithm\",\"hash\",\"status\"])\n    cu=rows(c.get(\"chain_of_custody\",[]),[\"evidence_id\",\"timestamp_utc\",\"from\",\"to\",\"action\"])\n    fi=rows(c[\"findings\"],[\"finding_id\",\"statement\",\"basis\",\"confidence\"])\n    methods=\"\".join(f\"<li>{esc(x)}</li>\" for x in c[\"methods\"])\n    limitations=\"\".join(f\"<li>{esc(x)}</li>\" for x in c[\"limitations\"])\n    return f\"\"\"<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>{esc(c[\"report_title\"])}</title>\n<style>body{{font-family:system-ui,sans-serif;margin:40px;line-height:1.45}}table{{border-collapse:collapse;width:100%;margin:1rem 0}}th,td{{border:1px solid #aaa;padding:7px;text-align:left;vertical-align:top}}th{{background:#eee}}.notice{{border:1px solid #999;padding:10px}}</style></head><body>\n<h1>{esc(c[\"report_title\"])}</h1><p><b>Case ID:</b> {esc(c[\"case_id\"])}<br><b>Generated UTC:</b> {esc(datetime.now(timezone.utc).isoformat())}</p>\n<h2>Request</h2><p>{esc(c[\"request\"].get(\"details\",\"\"))}</p><p><b>Purpose:</b> {esc(c[\"request\"].get(\"purpose\",\"\"))}<br><b>Scope:</b> {esc(c[\"request\"].get(\"scope\",\"\"))}</p>\n<h2>Evidence Inventory</h2><table><tr><th>ID</th><th>Description</th><th>Source</th><th>Hash algorithm</th><th>Hash</th><th>Status</th></tr>{ev}</table>\n<h2>Chain of Custody</h2><table><tr><th>ID</th><th>Timestamp</th><th>From</th><th>To</th><th>Action</th></tr>{cu}</table>\n<h2>Methods</h2><ol>{methods}</ol><h2>Findings</h2><table><tr><th>ID</th><th>Finding</th><th>Basis</th><th>Confidence</th></tr>{fi}</table>\n<h2>Limitations</h2><ul>{limitations}</ul><h2>Conclusion</h2><p>{esc(c[\"conclusion\"])}</p>\n<h2>Disposition</h2><p>{esc(c[\"disposition\"])}</p><h2>Authorization</h2><p>{esc(c[\"authorization\"].get(\"authorized_by\",\"\"))}</p>\n<p class=\"notice\">Synthetic training report. This utility does not acquire evidence, replace validated forensic methods, or provide legal advice.</p></body></html>\"\"\"\ndef main():\n    ap=argparse.ArgumentParser(); ap.add_argument(\"case_json\",type=Path); ap.add_argument(\"-o\",\"--output\",type=Path,default=Path(\"forensic_report.html\"))\n    a=ap.parse_args(); c=load_case(a.case_json); a.output.write_text(render(c),encoding=\"utf-8\"); print(f\"Wrote {a.output}\")\nif __name__==\"__main__\": main()\n",
+            "case.json": "{\n  \"case_id\": \"LAB-REPORT-001\",\n  \"report_title\": \"Forensic Examination Report \\u2014 Controlled Training Case\",\n  \"request\": {\n    \"purpose\": \"Determine whether the supplied training evidence supports the stated activity.\",\n    \"scope\": \"Only the evidence listed and methods documented.\",\n    \"details\": \"Synthetic training case; facts are intentionally non-real.\"\n  },\n  \"evidence\": [\n    {\n      \"evidence_id\": \"E-001\",\n      \"description\": \"Synthetic exported event-log file\",\n      \"source\": \"Training dataset\",\n      \"hash_algorithm\": \"SHA-256\",\n      \"hash\": \"f06f19c130652d36e152e713dc049bb576fa85156066781b5f70755db257ef90\",\n      \"status\": \"Derivative working copy\"\n    }\n  ],\n  \"chain_of_custody\": [\n    {\n      \"evidence_id\": \"E-001\",\n      \"timestamp_utc\": \"2026-01-12T10:00:00Z\",\n      \"from\": \"Training custodian\",\n      \"to\": \"Examiner\",\n      \"action\": \"Transferred for examination\"\n    }\n  ],\n  \"methods\": [\n    \"Verified the supplied file was the designated training item.\",\n    \"Calculated SHA-256 for the exact UTF-8 bytes of the synthetic training string 'synthetic training evidence'.\",\n    \"Reviewed event records chronologically.\",\n    \"Recorded findings with supporting data and limitations.\"\n  ],\n  \"findings\": [\n    {\n      \"finding_id\": \"F-001\",\n      \"statement\": \"The training dataset contains the event specified by the exercise.\",\n      \"basis\": \"The event record in E-001.\",\n      \"confidence\": \"Within the stated scope\"\n    }\n  ],\n  \"limitations\": [\n    \"The dataset is synthetic.\",\n    \"No conclusion is made about events outside the supplied dataset.\",\n    \"The report does not establish attribution unless underlying evidence supports it.\"\n  ],\n  \"conclusion\": \"Within the stated scope, the supplied training evidence contains the documented event. The conclusion is limited to the data and methods described.\",\n  \"disposition\": \"Retain the synthetic case file and generated report according to course laboratory policy.\",\n  \"authorization\": {\n    \"authorized_by\": \"Training Exercise\"\n  }\n}"
+          },
+          "explanation": "The project separates case data from presentation. The JSON record holds reporting facts; the renderer validates fields, escapes inserted values, and produces evidence, custody, methods, findings, limitations, conclusion, disposition, and authorization sections. It deliberately does not acquire evidence or infer attribution. Real casework requires validated methods, laboratory controls, legal requirements, access control, retention rules, and local templates."
+        }
+      }
+    ]
+  }
+}

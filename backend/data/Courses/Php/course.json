@@ -1,0 +1,1138 @@
+{
+  "course": {
+    "id": "php-complete-2026",
+    "title": "Php",
+    "slug": "php",
+    "description": "A complete practical PHP course progressing from modern language foundations through object-oriented programming, HTTP applications, sessions, PDO, secure coding, Composer, testing, architecture, performance, deployment, and a final secure task API.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 95,
+    "prerequisites": [
+      "Basic computer and command-line familiarity",
+      "Basic programming logic is helpful but not mandatory",
+      "A local PHP development environment and text editor"
+    ],
+    "learningOutcomes": [
+      "Explain PHP execution in CLI and web environments.",
+      "Write typed maintainable PHP using functions, arrays, exceptions, and objects.",
+      "Build validated HTTP endpoints and JSON APIs.",
+      "Implement authentication state with sessions and password hashing.",
+      "Use PDO prepared statements and transactions with relational databases.",
+      "Apply output encoding, CSRF, upload, and secret-management controls.",
+      "Manage dependencies with Composer and write automated tests.",
+      "Reason about performance, deployment, and version maintenance.",
+      "Build and explain a realistic secure PHP application."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Foundations and Execution",
+        "description": "Start with the PHP runtime, syntax, types, control flow, and functions.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Runtime, Versions, and First Script",
+            "description": "Install a supported PHP runtime and understand CLI versus web execution.",
+            "learningObjectives": [
+              "install or select a supported PHP release",
+              "verify the runtime",
+              "run a PHP script from the CLI",
+              "distinguish development from production execution"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "PHP is a general-purpose scripting language especially suited to web development. The official site currently lists PHP 8.5 as the current stable branch; PHP 8.6 beta is a testing release, not a production target."
+              },
+              {
+                "type": "code",
+                "text": "Use php -v and php --ini to identify the CLI interpreter and its configuration."
+              },
+              {
+                "type": "warning",
+                "text": "The built-in development server is useful for local learning and testing; it is not a production deployment architecture."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "PHP can execute scripts from the command line and can also run as part of a web-server deployment."
+            ],
+            "resources": [
+              {
+                "title": "PHP official site",
+                "url": "https://www.php.net/"
+              },
+              {
+                "title": "Supported versions",
+                "url": "https://www.php.net/supported-versions.php"
+              },
+              {
+                "title": "Downloads",
+                "url": "https://www.php.net/downloads.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Syntax, Variables, and Types",
+            "description": "Build correct PHP expressions and understand the main PHP value types.",
+            "learningObjectives": [
+              "declare variables and constants",
+              "use scalar and compound types",
+              "use strict comparisons",
+              "write typed functions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Variables begin with $. PHP supports null, bool, int, float, string, arrays, objects and resources."
+              },
+              {
+                "type": "paragraph",
+                "text": "declare(strict_types=1) makes scalar type checking stricter for calls originating in that file; it does not turn every PHP operation into a statically typed operation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01",
+              "question": "Which operator performs strict equality?",
+              "options": [
+                "=",
+                "==",
+                "===",
+                "<>"
+              ],
+              "answer": "===",
+              "explanation": "=== compares both value and type."
+            },
+            "summary": [
+              "Types and explicit contracts make application behavior easier to reason about."
+            ],
+            "resources": [
+              {
+                "title": "PHP language reference",
+                "url": "https://www.php.net/manual/en/langref.php"
+              },
+              {
+                "title": "PHP types",
+                "url": "https://www.php.net/manual/en/language.types.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Operators and Control Flow",
+            "description": "Use comparisons, branches, loops, and match expressions.",
+            "learningObjectives": [
+              "choose comparison operators correctly",
+              "implement conditionals and loops",
+              "iterate arrays with foreach",
+              "use match expressions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "= assigns. == performs a non-strict comparison that can involve type juggling. === compares both type and value."
+              },
+              {
+                "type": "paragraph",
+                "text": "match is an expression and its arms use identity comparison."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Control flow expresses program decisions; choose the construct that makes the decision easiest to read."
+            ],
+            "resources": [
+              {
+                "title": "Control structures",
+                "url": "https://www.php.net/manual/en/language.control-structures.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Functions and Scope",
+            "description": "Create reusable functions with clear input and output contracts.",
+            "learningObjectives": [
+              "define typed functions",
+              "use parameters and return values",
+              "use defaults and variadics",
+              "avoid unnecessary global state"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "<?php\ndeclare(strict_types=1);\nfunction total(int ...$values): int {\n    return array_sum($values);\n}\necho total(10, 20, 30);"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Build a typed score analyzer",
+                "description": "Practice CLI input, validation, typed functions, and match.",
+                "steps": [
+                  "Create score.php.",
+                  "Read the first CLI argument.",
+                  "Reject non-numeric and out-of-range input.",
+                  "Return a grade with a typed function."
+                ],
+                "solution": "<?php\ndeclare(strict_types=1);\nfunction grade(int $s): string {\n    return match (true) {\n        $s >= 90 => 'A',\n        $s >= 80 => 'B',\n        $s >= 70 => 'C',\n        default => 'D',\n    };\n}\n$score=(int)($argv[1]??0);\necho grade($score),PHP_EOL;",
+                "output": "The program prints the calculated grade."
+              }
+            ],
+            "quiz": {},
+            "summary": [
+              "Functions should have focused responsibilities and explicit contracts."
+            ],
+            "resources": [
+              {
+                "title": "Functions",
+                "url": "https://www.php.net/manual/en/language.functions.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Typed score analyzer",
+            "level": "Easy",
+            "description": "Build a CLI score analyzer.",
+            "problemStatement": "Accept one score, validate 0–100, and print its grade.",
+            "objectives": [
+              "validate input",
+              "use a typed function",
+              "handle invalid input"
+            ],
+            "requirements": [
+              "PHP 8.5 or another supported PHP branch"
+            ],
+            "hint": "Keep validation separate from grading.",
+            "solutionCode": "<?php\ndeclare(strict_types=1);\n$raw=$argv[1]??'';\nif(!is_numeric($raw)){fwrite(STDERR,\"Score must be numeric\n\");exit(1);}\n$score=(int)$raw;\nif($score<0||$score>100){fwrite(STDERR,\"Score must be 0-100\n\");exit(1);}\nfunction grade(int $s):string{return match(true){$s>=90=>'A',$s>=80=>'B',$s>=70=>'C',default=>'D'};}\necho grade($score),PHP_EOL;",
+            "solutionExplanation": "The boundary is validated before the pure grading function is called."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Collections, Text, JSON, and Errors",
+        "description": "Transform arrays and strings, exchange JSON, handle files, and propagate failures.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Arrays and Iteration",
+            "description": "Use indexed and associative arrays and iterate safely.",
+            "learningObjectives": [
+              "create indexed and associative arrays",
+              "iterate key/value pairs",
+              "use array transformations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "PHP arrays are ordered maps and can be used as list-like or map-like structures."
+              },
+              {
+                "type": "code",
+                "text": "$users=[['id'=>1,'email'=>'a@example.test'],['id'=>2,'email'=>'b@example.test']];\nforeach($users as $user){ echo $user['email'],PHP_EOL; }"
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Choose array operations based on the data shape and keep key assumptions explicit."
+            ],
+            "resources": [
+              {
+                "title": "Arrays",
+                "url": "https://www.php.net/manual/en/language.types.array.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Strings and JSON",
+            "description": "Manipulate text and safely encode/decode JSON.",
+            "learningObjectives": [
+              "use string functions",
+              "encode structured values",
+              "decode JSON with JSON_THROW_ON_ERROR",
+              "validate decoded data"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "JSON_THROW_ON_ERROR makes JSON failures visible as JsonException rather than requiring silent return-value checking."
+              },
+              {
+                "type": "paragraph",
+                "text": "Decoded request data is still untrusted input and must be validated."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "JSON is a serialization boundary, not an authorization mechanism."
+            ],
+            "resources": [
+              {
+                "title": "JSON extension",
+                "url": "https://www.php.net/manual/en/book.json.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Files and Exceptions",
+            "description": "Work with filesystem APIs and structured error handling.",
+            "learningObjectives": [
+              "read and write files",
+              "throw and catch exceptions",
+              "separate user-facing errors from diagnostics"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Filesystem operations can fail because of paths, permissions, encoding, or missing files. Handle expected failure deliberately."
+              },
+              {
+                "type": "paragraph",
+                "text": "Production applications should log useful diagnostic details without returning stack traces or secrets to users."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Exceptions allow lower-level code to report failure while higher-level code decides how to recover."
+            ],
+            "resources": [
+              {
+                "title": "Filesystem functions",
+                "url": "https://www.php.net/manual/en/book.filesystem.php"
+              },
+              {
+                "title": "Exceptions",
+                "url": "https://www.php.net/manual/en/language.exceptions.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Safe JSON configuration reader",
+            "level": "Intermediate",
+            "description": "Read and validate a JSON configuration file.",
+            "problemStatement": "Distinguish missing files, invalid JSON, and valid configuration data.",
+            "objectives": [
+              "check file existence",
+              "decode with JSON_THROW_ON_ERROR",
+              "validate required keys"
+            ],
+            "requirements": [
+              "PHP 8.x",
+              "A local JSON configuration file"
+            ],
+            "hint": "Validate the decoded value before accessing keys.",
+            "solutionCode": "<?php\ndeclare(strict_types=1);\n$path=$argv[1]??'config.json';\nif(!is_file($path)){fwrite(STDERR,\"File not found\n\");exit(1);}\ntry{\n $data=json_decode(file_get_contents($path),true,512,JSON_THROW_ON_ERROR);\n if(!is_array($data)) throw new RuntimeException('Configuration must be an object');\n foreach(['app_name','environment'] as $k) if(!array_key_exists($k,$data)) throw new RuntimeException(\"Missing $k\");\n echo \"Configuration valid\n\";\n}catch(JsonException $e){fwrite(STDERR,\"Invalid JSON\n\");exit(1);}\ncatch(RuntimeException $e){fwrite(STDERR,$e->getMessage().\"\n\");exit(1);}",
+            "solutionExplanation": "The solution validates the filesystem boundary, JSON syntax, decoded shape, and required fields."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Object-Oriented PHP",
+        "description": "Model application behavior with classes, interfaces, inheritance, traits, namespaces, and exceptions.",
+        "lessons": [
+          {
+            "id": "lesson-08",
+            "title": "Classes, Properties, and Methods",
+            "description": "Design classes with typed properties, constructors, and encapsulation.",
+            "learningObjectives": [
+              "create objects",
+              "use typed properties",
+              "control visibility",
+              "design focused domain objects"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "final class Money {\n    public function __construct(\n        public readonly int $cents,\n        public readonly string $currency\n    ) {}\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Typed properties must be initialized before access."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Classes package state and behavior behind explicit contracts."
+            ],
+            "resources": [
+              {
+                "title": "Classes and objects",
+                "url": "https://www.php.net/manual/en/language.oop5.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09",
+            "title": "Interfaces, Inheritance, and Traits",
+            "description": "Use interfaces for contracts and inheritance or traits only where they fit the design.",
+            "learningObjectives": [
+              "define interfaces",
+              "implement contracts",
+              "recognize suitable inheritance",
+              "use traits for horizontal reuse"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Interfaces allow callers to depend on behavior rather than a specific implementation."
+              },
+              {
+                "type": "warning",
+                "text": "Composition is often preferable to inheritance when behavior can be assembled from collaborators."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Interfaces are useful dependency boundaries, especially for testing."
+            ],
+            "resources": [
+              {
+                "title": "Interfaces",
+                "url": "https://www.php.net/manual/en/language.oop5.interfaces.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Namespaces, Exceptions, and Autoloading",
+            "description": "Organize larger applications with namespaces and Composer autoloading.",
+            "learningObjectives": [
+              "define namespaces",
+              "use namespaced classes",
+              "understand Composer autoloading",
+              "design meaningful exception categories"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "namespace App\\Domain;\nfinal class User {\n    public function __construct(public readonly string $email) {}\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Composer can generate an autoloader from project configuration, reducing manual require statements."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Namespaces prevent naming collisions and Composer makes class loading predictable."
+            ],
+            "resources": [
+              {
+                "title": "Namespaces",
+                "url": "https://www.php.net/manual/en/language.namespaces.php"
+              },
+              {
+                "title": "Composer",
+                "url": "https://getcomposer.org/doc/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Interface-based notification service",
+            "level": "Intermediate",
+            "description": "Create a notification service that depends on an interface.",
+            "problemStatement": "Implement a NotificationSender interface and a log sender; inject it into a service.",
+            "objectives": "Use interfaces and constructor dependency injection.",
+            "requirements": "PHP 8.x",
+            "hint": "Program to the interface, not the concrete sender.",
+            "solutionCode": "<?php\ninterface NotificationSender { public function send(string $to,string $message):void; }\nfinal class LogSender implements NotificationSender {\n public function send(string $to,string $message):void { error_log(\"To $to: $message\"); }\n}\nfinal class NotificationService {\n public function __construct(private NotificationSender $sender){}\n public function notify(string $to,string $message):void{$this->sender->send($to,$message);}\n}\n$service=new NotificationService(new LogSender());\n$service->notify('user@example.test','Welcome');\n",
+            "solutionExplanation": "The service can be tested with another implementation of the same interface."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "HTTP, Forms, and Sessions",
+        "description": "Build server-side request handling, validation, authentication state, and session-safe workflows.",
+        "lessons": [
+          {
+            "id": "lesson-11",
+            "title": "HTTP Requests and Responses",
+            "description": "Read request metadata and construct appropriate HTTP responses.",
+            "learningObjectives": [
+              "distinguish GET and POST",
+              "read request data",
+              "set response status and headers",
+              "treat request data as untrusted"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Superglobals such as $_GET, $_POST, $_SERVER, and $_COOKIE expose request-related values. They are external input."
+              },
+              {
+                "type": "paragraph",
+                "text": "Headers must be sent before the response body."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "HTTP handling is a boundary: validate inputs and return deliberate status codes."
+            ],
+            "resources": [
+              {
+                "title": "Predefined variables",
+                "url": "https://www.php.net/manual/en/language.variables.predefined.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Forms and Input Validation",
+            "description": "Validate browser-submitted data on the server.",
+            "learningObjectives": [
+              "validate required fields",
+              "normalize values when appropriate",
+              "distinguish validation from output escaping",
+              "return useful but safe errors"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "filter_input can retrieve and filter external values, but validation rules remain application-specific."
+              },
+              {
+                "type": "paragraph",
+                "text": "Client-side validation improves usability; server-side validation is the security boundary."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Validation checks whether data satisfies the application's rules; escaping protects a specific output context."
+            ],
+            "resources": [
+              {
+                "title": "Filter extension",
+                "url": "https://www.php.net/manual/en/book.filter.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Sessions and Authentication State",
+            "description": "Use PHP sessions and understand fixation and cookie-security considerations.",
+            "learningObjectives": [
+              "start a session",
+              "store minimal auth state",
+              "regenerate session IDs after login",
+              "understand session security settings"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "PHP's documentation treats HTTP session management as a core web-security concern."
+              },
+              {
+                "type": "paragraph",
+                "text": "After authentication, session_regenerate_id(true) can prevent reuse of a pre-authentication session identifier."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Session state should contain only what the application needs to recognize the authenticated user."
+            ],
+            "resources": [
+              {
+                "title": "Sessions",
+                "url": "https://www.php.net/manual/en/book.session.php"
+              },
+              {
+                "title": "Session security",
+                "url": "https://www.php.net/manual/en/session.security.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Secure authentication flow",
+            "level": "Intermediate",
+            "description": "Implement the server-side authentication portion of a login endpoint.",
+            "problemStatement": "Verify a submitted password against a stored hash and regenerate the session ID after success.",
+            "objectives": "Sessions; password_verify; input validation",
+            "requirements": "PHP sessions enabled",
+            "hint": "Return a generic failure message.",
+            "solutionCode": "<?php\ndeclare(strict_types=1);\nsession_start();\n$email=trim((string)($_POST['email']??''));\n$password=(string)($_POST['password']??'');\n$hash=getenv('DEMO_PASSWORD_HASH')?:'';\nif(filter_var($email,FILTER_VALIDATE_EMAIL)&&$hash!==''&&password_verify($password,$hash)){\n session_regenerate_id(true);\n $_SESSION['user_email']=$email;\n echo 'Signed in'; exit;\n}\nhttp_response_code(401); echo 'Invalid credentials';\n",
+            "solutionExplanation": "Passwords are verified against a one-way hash and the session identifier changes after successful authentication."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Databases with PDO",
+        "description": "Connect to relational databases, execute parameterized queries, perform CRUD, and use transactions.",
+        "lessons": [
+          {
+            "id": "lesson-14",
+            "title": "PDO Connections and Configuration",
+            "description": "Create a PDO connection with externalized credentials.",
+            "learningObjectives": [
+              "build a DSN",
+              "use environment configuration",
+              "enable exception errors",
+              "avoid hard-coded secrets"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "$pdo=new PDO(\n 'mysql:host=127.0.0.1;dbname=app;charset=utf8mb4',\n getenv('DB_USER')?:'app_user',\n getenv('DB_PASSWORD')?:'',\n [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]\n);"
+              },
+              {
+                "type": "paragraph",
+                "text": "Credentials should not be committed into source code."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Database connection code should be centralized so configuration and error behavior remain consistent."
+            ],
+            "resources": [
+              {
+                "title": "PDO",
+                "url": "https://www.php.net/manual/en/book.pdo.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Prepared Statements and CRUD",
+            "description": "Implement database operations using parameters.",
+            "learningObjectives": [
+              "prepare SQL",
+              "execute with parameters",
+              "fetch rows",
+              "implement CRUD without SQL concatenation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Prepared statements separate SQL structure from parameter values and are a primary defense against SQL injection when used correctly."
+              },
+              {
+                "type": "code",
+                "text": "$stmt=$pdo->prepare('SELECT id,email FROM users WHERE email=:email');\n$stmt->execute(['email'=>$email]);\n$user=$stmt->fetch(PDO::FETCH_ASSOC);"
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Never concatenate untrusted values into SQL."
+            ],
+            "resources": [
+              {
+                "title": "PDO prepared statements",
+                "url": "https://www.php.net/manual/en/pdo.prepared-statements.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Transactions and Data Integrity",
+            "description": "Use transactions and database constraints to keep multi-step writes consistent.",
+            "learningObjectives": [
+              "begin and commit transactions",
+              "roll back failed work",
+              "understand foreign keys and unique constraints",
+              "design atomic workflows"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Transactions group database operations into a unit that can commit or roll back according to the database engine's transaction semantics."
+              },
+              {
+                "type": "paragraph",
+                "text": "Constraints provide durable data integrity; application checks alone can race with concurrent operations."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Use transactions when a business operation requires multiple related writes to succeed together."
+            ],
+            "resources": [
+              {
+                "title": "PDO transactions",
+                "url": "https://www.php.net/manual/en/pdo.transactions.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Transactional order workflow",
+            "level": "Advanced",
+            "description": "Create an order and its items atomically.",
+            "problemStatement": "Insert an order, insert all items, and roll back if any required write fails.",
+            "objectives": "PDO; relational database",
+            "requirements": "Use beginTransaction, commit, and rollBack.",
+            "hint": "Keep every related write inside the transaction.",
+            "solutionCode": "<?php\ntry{\n $pdo->beginTransaction();\n $s=$pdo->prepare('INSERT INTO orders(customer_id) VALUES(:customer_id)');\n $s->execute(['customer_id'=>$customerId]);\n $orderId=(int)$pdo->lastInsertId();\n $i=$pdo->prepare('INSERT INTO order_items(order_id,product_id,quantity) VALUES(:order_id,:product_id,:quantity)');\n foreach($items as $row){$i->execute(['order_id'=>$orderId,'product_id'=>$row['product_id'],'quantity'=>$row['quantity']]);}\n $pdo->commit();\n}catch(Throwable $e){\n if($pdo->inTransaction())$pdo->rollBack();\n throw $e;\n}\n",
+            "solutionExplanation": "The transaction prevents a partially created order when an item insert fails."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Security and Secure Coding",
+        "description": "Apply PHP security practices to credentials, output, SQL, CSRF, uploads, secrets, and errors.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Password Hashing",
+            "description": "Store and verify passwords using PHP's password API.",
+            "learningObjectives": [
+              "hash with password_hash",
+              "verify with password_verify",
+              "choose PASSWORD_DEFAULT",
+              "allow enough database storage for future hash lengths"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "password_hash creates a strong one-way password hash. PASSWORD_DEFAULT is designed to change over time as stronger algorithms become appropriate; the PHP manual recommends allowing a database field large enough for future values, such as VARCHAR(255)."
+              },
+              {
+                "type": "code",
+                "text": "$hash=password_hash($password,PASSWORD_DEFAULT);\nif(password_verify($password,$hash)){ /* authenticated */ }"
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Never store plaintext passwords or reversible password encryption for normal password storage."
+            ],
+            "resources": [
+              {
+                "title": "password_hash",
+                "url": "https://www.php.net/manual/en/function.password-hash.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Output Encoding, SQL Injection, and CSRF",
+            "description": "Separate validation from output encoding and protect state-changing browser requests.",
+            "learningObjectives": [
+              "encode HTML output in the correct context",
+              "use prepared SQL",
+              "understand CSRF defenses",
+              "avoid unsafe dynamic code"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "htmlspecialchars is an HTML output-encoding function; it is not a universal sanitizer for every output context."
+              },
+              {
+                "type": "paragraph",
+                "text": "SQL parameters protect values, but structural choices such as a sort column still need allow-list validation."
+              },
+              {
+                "type": "paragraph",
+                "text": "CSRF defenses are needed where a browser can be induced to make an authenticated state-changing request. A server-verified CSRF token is a common defense."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Security controls must match the context: SQL parameterization, output encoding, CSRF tokens, validation, and authorization solve different problems."
+            ],
+            "resources": [
+              {
+                "title": "PHP security",
+                "url": "https://www.php.net/manual/en/security.php"
+              },
+              {
+                "title": "OWASP CSRF guidance",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Safe File Uploads",
+            "description": "Handle uploaded files without trusting filenames or client metadata.",
+            "learningObjectives": [
+              "check upload errors",
+              "limit size",
+              "generate server-side filenames",
+              "validate file characteristics",
+              "avoid executable upload locations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Uploaded filenames are attacker-controlled metadata. Generate storage names server-side and treat the original name as untrusted data."
+              },
+              {
+                "type": "paragraph",
+                "text": "Extension checks alone are insufficient for high-risk uploads; validation should reflect the actual business requirement."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Upload handling is a security boundary and must not become an arbitrary file-write primitive."
+            ],
+            "resources": [
+              {
+                "title": "PHP file uploads",
+                "url": "https://www.php.net/manual/en/features.file-upload.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Secrets and Error Exposure",
+            "description": "Separate deployment configuration from code and prevent sensitive diagnostic leakage.",
+            "learningObjectives": [
+              "externalize secrets",
+              "configure production error reporting",
+              "log diagnostics safely",
+              "avoid exposing paths and SQL details"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "PHP's security documentation emphasizes that both runtime configuration and application code affect security."
+              },
+              {
+                "type": "paragraph",
+                "text": "Detailed exception traces belong in controlled server-side logs, not user-facing production responses."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Secure deployment includes configuration, permissions, logging, and dependency maintenance."
+            ],
+            "resources": [
+              {
+                "title": "PHP security introduction",
+                "url": "https://www.php.net/manual/en/security.intro.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Harden a login endpoint",
+            "level": "Advanced",
+            "description": "Review and implement a secure login flow.",
+            "problemStatement": "Use password_verify, session regeneration, validation, and generic failure handling.",
+            "objectives": "PHP sessions; password API",
+            "requirements": "Do not store or compare plaintext passwords.",
+            "hint": "Avoid account-enumeration-friendly error messages.",
+            "solutionCode": "<?php\ndeclare(strict_types=1);\nsession_start();\n$email=trim((string)($_POST['email']??''));\n$password=(string)($_POST['password']??'');\n$hash=lookupPasswordHash($email);\n$valid=filter_var($email,FILTER_VALIDATE_EMAIL)&&$hash!==null&&password_verify($password,$hash);\nif($valid){session_regenerate_id(true);$_SESSION['user_id']=1;echo 'Authenticated';exit;}\nhttp_response_code(401);echo 'Invalid credentials';\n",
+            "solutionExplanation": "The endpoint validates input, verifies a one-way hash, regenerates the session ID, and returns a generic failure."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Composer, Architecture, APIs, and Testing",
+        "description": "Manage dependencies, separate responsibilities, design JSON APIs, and test application logic.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "Composer and Autoloading",
+            "description": "Use Composer to manage dependencies and load project classes.",
+            "learningObjectives": [
+              "create composer.json",
+              "understand version constraints",
+              "use Composer autoloading",
+              "use the lock file for reproducible installs"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "composer.json describes project requirements and autoload rules. composer.lock records a resolved dependency set."
+              },
+              {
+                "type": "paragraph",
+                "text": "Review dependency changes and test them rather than blindly updating every package in production."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Dependency management is part of application maintenance and supply-chain security."
+            ],
+            "resources": [
+              {
+                "title": "Composer documentation",
+                "url": "https://getcomposer.org/doc/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Dependency Injection and Architecture",
+            "description": "Separate HTTP, domain, and persistence concerns and inject dependencies.",
+            "learningObjectives": [
+              "separate responsibilities",
+              "use constructor injection",
+              "define repository interfaces",
+              "design testable services"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A small application can separate request handling, application/domain services, and persistence without adopting unnecessary complexity."
+              },
+              {
+                "type": "code",
+                "text": "final class UserService {\n    public function __construct(private UserRepository $users) {}\n}"
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Dependency injection reduces hidden coupling and makes replacement in tests straightforward."
+            ],
+            "resources": [
+              {
+                "title": "PHP OOP",
+                "url": "https://www.php.net/manual/en/language.oop5.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "JSON APIs",
+            "description": "Design predictable JSON endpoints with validation and meaningful status codes.",
+            "learningObjectives": [
+              "define endpoint contracts",
+              "choose status codes",
+              "validate JSON input",
+              "return stable error shapes"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An API contract should define methods, request shape, response shape, status codes, and error semantics."
+              },
+              {
+                "type": "paragraph",
+                "text": "Do not expose internal exception messages in API responses."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Consistency and safe error boundaries are more important than clever endpoint design."
+            ],
+            "resources": [
+              {
+                "title": "JSON extension",
+                "url": "https://www.php.net/manual/en/book.json.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Testing with PHPUnit",
+            "description": "Write focused automated tests and understand unit versus integration tests.",
+            "learningObjectives": [
+              "write unit tests",
+              "test edge cases",
+              "use test doubles at dependency boundaries",
+              "run tests through Composer"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "use PHPUnit\\Framework\\TestCase;\nfinal class CalculatorTest extends TestCase {\n    public function testAdd(): void {\n        self::assertSame(5,2+3);\n    }\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Unit tests control dependencies; integration tests answer questions about real database, filesystem, or HTTP integration."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Tests are executable evidence about behavior, not a substitute for design or security review."
+            ],
+            "resources": [
+              {
+                "title": "PHPUnit documentation",
+                "url": "https://docs.phpunit.de/en/11.5/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Test a repository-backed service",
+            "level": "Advanced",
+            "description": "Create a service depending on a repository interface and test it without a database.",
+            "problemStatement": "Return a user for a known email and null for an unknown email using a test double.",
+            "objectives": "Interfaces; dependency injection; PHPUnit",
+            "requirements": "Stub the repository rather than connecting to a real database.",
+            "hint": "Keep database access outside the unit under test.",
+            "solutionCode": "<?php\ninterface UserRepository{public function findByEmail(string $email):?array;}\nfinal class UserService{\n public function __construct(private UserRepository $repo){}\n public function find(string $email):?array{return $this->repo->findByEmail($email);}\n}\n",
+            "solutionExplanation": "The service is isolated from database infrastructure and can therefore be tested deterministically."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Performance, Deployment, and Final Project",
+        "description": "Apply measurement-driven performance, supported-version maintenance, and production-oriented deployment practices in a complete project.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Performance and Reliability",
+            "description": "Reason about bottlenecks and optimize based on evidence.",
+            "learningObjectives": [
+              "distinguish CPU, I/O, database, and network bottlenecks",
+              "avoid repeated database work",
+              "measure before and after changes",
+              "design predictable failure behavior"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Performance work should be evidence-driven: measure representative workloads, identify a bottleneck, make a targeted change, then measure again."
+              },
+              {
+                "type": "paragraph",
+                "text": "Database query shape, indexes, remote calls, filesystem work, and serialization can dominate latency; micro-optimizing PHP syntax is rarely the first step."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Reliable systems optimize the actual bottleneck rather than a guessed one."
+            ],
+            "resources": [
+              {
+                "title": "PHP language reference",
+                "url": "https://www.php.net/manual/en/langref.php"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Deployment and Version Maintenance",
+            "description": "Prepare an application for a production-like environment and plan supported-version upgrades.",
+            "learningObjectives": [
+              "separate development and production configuration",
+              "deploy dependencies from a lock file",
+              "use supported PHP branches",
+              "consult migration guides before upgrades"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "As of September 2026, PHP 8.5 is actively supported. PHP 8.4 is also supported; PHP 8.2 is in security-support-only until 31 December 2026. PHP 8.6 beta is not a production target."
+              },
+              {
+                "type": "paragraph",
+                "text": "Version upgrades should be tested against the relevant migration guide and application dependencies."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Production maintenance includes supported versions, dependency review, configuration management, backups, logs, and monitoring."
+            ],
+            "resources": [
+              {
+                "title": "Supported versions",
+                "url": "https://www.php.net/supported-versions.php"
+              },
+              {
+                "title": "PHP 8.5 release announcement",
+                "url": "https://www.php.net/releases/8.5/en.php"
+              },
+              {
+                "title": "Migration guide 8.5",
+                "url": "https://www.php.net/manual/en/migration85.php"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Secure Task API",
+          "description": "A framework-free PHP task-management API combining typed PHP, validation, sessions, password hashing, PDO, prepared statements, JSON responses, CSRF protection for browser-based state changes, dependency injection, and tests.",
+          "conceptsCovered": [
+            "typed PHP",
+            "HTTP handling",
+            "JSON",
+            "sessions",
+            "password hashing",
+            "PDO",
+            "prepared statements",
+            "transactions",
+            "validation",
+            "CSRF",
+            "exception handling",
+            "dependency injection",
+            "Composer",
+            "PHPUnit",
+            "secure configuration"
+          ],
+          "steps": [
+            "Create a Composer project with PSR-4 autoloading.",
+            "Create users and tasks tables with unique and foreign-key constraints.",
+            "Load database credentials from deployment configuration.",
+            "Implement a PDO connection factory.",
+            "Implement user registration with password_hash.",
+            "Implement login with password_verify and session_regenerate_id.",
+            "Implement authenticated task CRUD with prepared statements.",
+            "Validate all request data server-side.",
+            "Issue and verify CSRF tokens for browser-based state-changing requests.",
+            "Return consistent JSON and HTTP status codes.",
+            "Log detailed exceptions server-side and return generic errors.",
+            "Add unit and integration tests.",
+            "Run the application on a supported PHP branch and document deployment configuration."
+          ],
+          "code": {
+            "composer.json": "{\n  \"require\": {\"php\": \"^8.4 || ^8.5\"},\n  \"require-dev\": {\"phpunit/phpunit\": \"^11.5\"},\n  \"autoload\": {\"psr-4\": {\"App\\\\\": \"src/\"}},\n  \"autoload-dev\": {\"psr-4\": {\"Tests\\\\\": \"tests/\"}}\n}",
+            "src/Validation.php": "<?php\ndeclare(strict_types=1);\nnamespace App;\nfinal class Validation {\n    public static function email(string $email): string {\n        $email=trim($email);\n        if(!filter_var($email,FILTER_VALIDATE_EMAIL)) throw new \\InvalidArgumentException('Invalid email.');\n        return $email;\n    }\n    public static function title(string $title): string {\n        $title=trim($title);\n        if($title===''||mb_strlen($title)>200) throw new \\InvalidArgumentException('Invalid title.');\n        return $title;\n    }\n}",
+            "src/Database.php": "<?php\ndeclare(strict_types=1);\nnamespace App;\nuse PDO;\nfinal class Database {\n    public static function connect(): PDO {\n        $dsn=getenv('DB_DSN'); $user=getenv('DB_USER'); $password=getenv('DB_PASSWORD');\n        if(!$dsn||$user===false||$password===false) throw new \\RuntimeException('Database configuration is missing.');\n        return new PDO($dsn,$user,$password,[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);\n    }\n}",
+            "public/index.php": "<?php\ndeclare(strict_types=1);\nrequire dirname(__DIR__).'/vendor/autoload.php';\nuse App\\Database; use App\\Validation;\nsession_start();\nfunction jsonResponse(array $body,int $status=200): never {\n    http_response_code($status);\n    header('Content-Type: application/json; charset=utf-8');\n    echo json_encode($body,JSON_THROW_ON_ERROR); exit;\n}\ntry {\n    $method=$_SERVER['REQUEST_METHOD']??'GET';\n    $path=parse_url($_SERVER['REQUEST_URI']??'/',PHP_URL_PATH);\n    if($method==='GET'&&$path==='/health') jsonResponse(['status'=>'ok']);\n    if($method==='POST'&&$path==='/register'){\n        $data=json_decode(file_get_contents('php://input'),true,512,JSON_THROW_ON_ERROR);\n        $email=Validation::email((string)($data['email']??''));\n        $password=(string)($data['password']??'');\n        if(strlen($password)<12) jsonResponse(['error'=>'Invalid registration data'],422);\n        $pdo=Database::connect();\n        $s=$pdo->prepare('INSERT INTO users(email,password_hash) VALUES(:email,:hash)');\n        $s->execute(['email'=>$email,'hash'=>password_hash($password,PASSWORD_DEFAULT)]);\n        jsonResponse(['message'=>'Registered'],201);\n    }\n    if($method==='POST'&&$path==='/login'){\n        $data=json_decode(file_get_contents('php://input'),true,512,JSON_THROW_ON_ERROR);\n        $email=Validation::email((string)($data['email']??''));\n        $password=(string)($data['password']??'');\n        $pdo=Database::connect();\n        $s=$pdo->prepare('SELECT id,email,password_hash FROM users WHERE email=:email');\n        $s->execute(['email'=>$email]); $user=$s->fetch();\n        if(!$user||!password_verify($password,$user['password_hash'])) jsonResponse(['error'=>'Invalid credentials'],401);\n        session_regenerate_id(true); $_SESSION['user_id']=(int)$user['id'];\n        jsonResponse(['message'=>'Authenticated']);\n    }\n    jsonResponse(['error'=>'Not found'],404);\n} catch(JsonException|InvalidArgumentException $e) {\n    jsonResponse(['error'=>'Invalid request'],400);\n} catch(Throwable $e) {\n    error_log((string)$e); jsonResponse(['error'=>'Internal server error'],500);\n}",
+            "schema.sql": "CREATE TABLE users (\n id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,\n email VARCHAR(255) NOT NULL UNIQUE,\n password_hash VARCHAR(255) NOT NULL,\n created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\nCREATE TABLE tasks (\n id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,\n user_id BIGINT UNSIGNED NOT NULL,\n title VARCHAR(200) NOT NULL,\n completed BOOLEAN NOT NULL DEFAULT FALSE,\n created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n CONSTRAINT fk_tasks_user FOREIGN KEY(user_id) REFERENCES users(id)\n);",
+            "tests/ValidationTest.php": "<?php\ndeclare(strict_types=1);\nnamespace Tests;\nuse App\\Validation; use PHPUnit\\Framework\\TestCase;\nfinal class ValidationTest extends TestCase {\n public function testValidEmailIsReturned():void {self::assertSame('user@example.test',Validation::email(' user@example.test '));}\n public function testInvalidEmailThrows():void {$this->expectException(\\InvalidArgumentException::class);Validation::email('not-an-email');}\n public function testTitleIsTrimmed():void {self::assertSame('Read PHP',Validation::title(' Read PHP '));}\n}"
+          },
+          "explanation": "The project intentionally exposes core PHP behavior rather than hiding it behind a framework. Registration uses password_hash; login uses password_verify and session_regenerate_id. Database values use PDO parameters. Validation is isolated for unit testing. Detailed exceptions are logged server-side and generic errors are returned. For a browser deployment, add CSRF token issuance and verification to every authenticated state-changing request, enforce HTTPS, configure secure session cookies, protect database credentials, and deploy only supported PHP versions. Task CRUD should use the authenticated user ID in every query so one user cannot address another user's records."
+        }
+      }
+    ]
+  }
+}
