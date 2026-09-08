@@ -42,6 +42,14 @@ export const API = {
 
   },
 
+  NOTICE: {
+    BASE: "/notices",
+    BY_ID: (id) => "/notices/" + id
+  },
+
+
+
+
   FEEDBACK: {
     WEBSITE: "/feedback/website",
     MY_COURSE: "/feedback/my/course",

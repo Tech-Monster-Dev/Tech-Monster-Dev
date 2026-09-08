@@ -16,6 +16,7 @@ import Landing from "../pages/landing/Landing";
 import LearnMore from "../pages/landing/LearnMore";
 
 import Contact from "../pages/landing/Contact";
+import PublicNotice from "../pages/notice";
 
 import TermsAndConditions from "../components/common/TermsAndConditions";
 import PrivacyPolicy from "../components/common/PrivacyPolicy";
@@ -68,6 +69,7 @@ import TaskApprovalDetails from "../features/admin/tasks/TaskApprovalDetails";
 import CertificateApproval from '../features/admin/certificates';
 import SupportInbox from '../features/admin/support';
 import InternshipsForm from '../features/admin/internships/components/InternshipsForm';
+import Notice from '../features/admin/notices';
 
 
 
@@ -83,6 +85,7 @@ function AppRoutes() {
                 <Route path='/' element={<Landing />} />
                 <Route path='/learn-more' element={<LearnMore />} />
                 <Route path='/contact' element={<Contact />} />
+                <Route path='/notice' element={<PublicNotice />} />
 
                 <Route path='/login' element={<Login />} />
                 <Route path='/admin_login' element={<AdminLogin />} />
@@ -203,6 +206,7 @@ function AppRoutes() {
                     <Route path='reports' element={<Reports />} />
                     <Route path='certificates' element={<CertificateApproval />} />
                     <Route path='support' element={<SupportInbox />} />
+                    <Route path='notice' element={<Notice />} />
                     <Route path='settings' element={<StudentSetting />} />
                     <Route
                         path="notification"
