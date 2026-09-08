@@ -1,5 +1,5 @@
 /* NAVBAR */
-#navbar{
+.navbar{
     position: fixed;
     top: 0;
     z-index: 1000;
@@ -18,7 +18,7 @@
 
 
 /* CONTAINER */
-#navbar-container{
+.navbar-container{
     width: 100%;
     height: 100%;
     display: flex;
@@ -28,38 +28,43 @@
 
 
 /* LOGO */
-#navLogo{
+.nav-logo{
     display: flex;
     align-items: center;
     gap: 1.5rem;
     text-decoration: none;
     padding: 0.5rem 1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
 }
 
-#navLogo img{
+.nav-logo img{
     width: 70px;
     border-radius: 50%;
     animation: blueNeon 6s linear infinite;
     transition: all 0.3s ease;
 }
 
-#navLogo img:hover{
+.nav-logo img:hover{
     box-shadow: 0 0 20px var(--neon);
     transform: scale(1.2);
 }
 
-#navLogo-text h2{
+.nav-logo-text h2{
     color: var(--text);
     font-size: 1.5rem;
     font-weight: 700;
 }
 
-#navLogo-text h2 span{
+.nav-logo-text h2 span{
     color: var(--neon);
     font-size: 1.5rem;
 }
 
-#navlink{
+.nav-links{
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -67,16 +72,19 @@
     padding: 0;
 }
 
-#navlink a {
+.nav-links .nav-link {
     text-decoration: none;
     color: var(--text);
     border: 1px solid transparent;
     padding: 0.7rem;
     position: relative;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
     transition: 0.3s ease;
 }
 
-#navlink #navlinkPageBtn::after{
+.nav-links .nav-link::after{
     content: "";
     position: absolute;
     bottom: 0;
@@ -88,26 +96,26 @@
     box-shadow: 0 5px 10px var(--neon);
     transition: width 0.5s ease-in;
 }
-#navlink #navlinkPageBtn:hover,
-#navlink #navlinkPageBtn.active{
+.nav-links .nav-link:hover,
+.nav-links .nav-link.active{
     color: var(--neon);
     text-shadow: 0 0 12px var(--neon);
 }
 
-#navlink #navlinkPageBtn:hover::after,
-#navlink #navlinkPageBtn.active::after {
+.nav-links .nav-link:hover::after,
+.nav-links .nav-link.active::after {
     width: 100%;
 }
+.auth-buttons{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-
-
-
-
-
-#toggleBar{
+.toggle-bar{
     display: none;
 }
-#toggleBar button{
+.toggle-bar button{
     font-size: 1.5rem;
     margin: 0;
     padding: 0.7rem 0.7rem 0.3rem 0.7rem;
@@ -116,38 +124,46 @@
     border-radius: 0.3rem;
     background-color: var(--surface);
 }
-#toggleBar button:hover,
-#toggleBar button.active{
+.toggle-bar button:hover,
+.toggle-bar button.active{
     color: var(--dark);
     text-shadow: var(--neon);
 }
 
 
 /* After toggle */
-#sidebarOverlay {
+.sidebar-overlay {
+    z-index: 1001;
     position: fixed;
     inset: 0;
-    background-color: rgba(255, 255, 255, 0.18);
+    background-color: rgba(2, 6, 23, 0.62);
     backdrop-filter: blur(5px);
 }
 
-#navSidebar {
+.nav-sidebar {
     position: fixed;
     top: 0;
     right: 0;
     width: 75%;
-    max-width: 280px;
+    max-width: 350px;
     height: 100vh;
     background-color: var(--dark);
     z-index: 999999;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     padding: 1.2rem;
     gap: 0.8rem;
     box-shadow: -8px 0 15px var(--neon);
 }
 
-#navSidebar a {
+.nav-sidebar-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.nav-sidebar .sidebar-link, .nav-sidebar .signup-btn {
     text-decoration: none;
     color: var(--neon);
     padding: 0.9rem 0.8rem;
@@ -156,14 +172,15 @@
     transition: 0.3s ease;
 }
 
-#navSidebar a:hover,
-#navSidebar a.active {
+.nav-sidebar .sidebar-link:hover,
+.nav-sidebar .sidebar-link.active,
+.nav-sidebar .signup-btn:hover {
     color: var(--neon);
     background-color: var(--glow);
     text-shadow: 0 0 12px var(--neon);
 }
 
-#closeBtn {
+.close-btn {
     align-self: flex-end;
     font-size: 1.5rem;
     background-color: var(--surface);
@@ -176,34 +193,31 @@
     transition: all 0.3s ease-in-out;
 }
 
-
-/* AUTH BUTTONS */
-
-#auth-buttons{
+.nav-sidebar-btn {
     display: flex;
-    gap: 1rem;
-    margin-left: 1.25rem;
+    flex-direction: column;
+    gap: 0.8rem;
 }
 
 
 /* RESPONSIVE */
 /* Mobile (Portrait + Small Phones) */
 @media (max-width: 439px) {
-    #navbar{
+    .navbar{
         height: 80px;
         padding: 0 1rem;
     }
-    #navLogo img{
+    .nav-logo img{
         width: 50px;
     }
 }
 
 /* Tablet */
 @media(max-width: 991px) {
-    #navlink{
+    .nav-links{
         display: none;
     }
-    #toggleBar{
+    .toggle-bar{
         display: block;
     }
 }

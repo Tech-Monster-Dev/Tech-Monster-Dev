@@ -2,76 +2,114 @@
    ABOUT SECTION
 ========================================== */
 
-#aboutPage {
-  padding: 1.5rem;
-  background: transparent;
-  backdrop-filter: blur(5px);
-  border-radius: 1rem;
-  animation: blueNeon 6s linear infinite;
-  transition: .3s;
-}
+.about-page {
+    --about-content-width: min(100%, 1400px);
+    --about-layout-columns: minmax(320px, .9fr) minmax(0, 1.1fr);
+    --about-gap: clamp(2rem, 5vw, 5rem);
+    --about-image-width: min(100%, 440px);
+    --about-value-columns: repeat(4, minmax(0, 1fr));
+    --about-value-gap: clamp(1rem, 2vw, 1.5rem);
+    --about-heading-size: clamp(1.8rem, 3vw, 2.5rem);
+    --about-body-size: clamp(.9rem, 1.2vw, 1rem);
 
-#about-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
+    width: 100%;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    background: transparent;
+    backdrop-filter: blur(5px);
+    border-radius: 1rem;
+    animation: blueNeon 3s linear infinite;
+    transition: .3s;
+
+    @media (max-width: 991px) {
+        --about-layout-columns: 1fr;
+        --about-gap: 2rem;
+        --about-image-width: min(100%, 360px);
+        --about-value-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 767px) {
+        --about-gap: 1.5rem;
+        --about-value-gap: 1rem;
+        --about-heading-size: clamp(1.5rem, 6vw, 2rem);
+    }
+
+    @media (max-width: 439px) {
+        --about-gap: 1.25rem;
+        --about-value-columns: 1fr;
+        --about-value-gap: .75rem;
+        --about-heading-size: 1.35rem;
+    }
 }
 
 /* ==========================================
-   LEFT IMAGE
+   MAIN CONTENT
 ========================================== */
 
-#about-image {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+.about-container {
+    width: min(100%, 1400px);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: var(--about-layout-columns);
+    align-items: center;
+    gap: var(--about-gap);
 }
 
-#about-image img {
-  width: 60%;
-  border-radius: 3rem;
-  box-shadow: 0 0 10px var(--glow);
-  transition: all .4s ease;
+.about-image {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#about-image img:hover {
-  transform: scale(1.1);
-  border-radius: 50%;
-  box-shadow: 0 0 10px var(--neon);
+.about-image img {
+    display: block;
+    width: var(--about-image-width);
+    height: auto;
+    border-radius: 3rem;
+    box-shadow: 0 0 10px var(--glow);
+    transition:
+        transform .4s ease,
+        border-radius .4s ease,
+        box-shadow .4s ease;
 }
 
-/* ==========================================
-   RIGHT CONTENT
-========================================== */
-
-#about-content {
-  flex: 1;
+.about-image img:hover {
+    transform: scale(1.05);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--neon);
 }
 
-#about-badge {
-  display: inline-block;
-  padding: 0.7rem 1.2rem;
-  border-radius: 3rem;
-  background: rgba(37, 99, 235, .15);
-  border: 1px solid rgba(37, 99, 235, .3);
-  color: var(--neon);
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 1.3rem;
+.about-content {
+    min-width: 0;
 }
 
-#about-content h2 {
-  font-size: 2rem;
-  line-height: 1.3;
-  margin-bottom: 1.2rem;
+.about-badge {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: .7rem 1.2rem;
+    border-radius: 3rem;
+    background: rgba(37, 99, 235, .15);
+    border: 1px solid rgba(37, 99, 235, .3);
+    color: var(--neon);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.3rem;
 }
 
-#about-content>p {
-  color: var(--muted);
-  line-height: 1.5;
-  margin-bottom: 2rem;
+.about-content h2 {
+    font-size: var(--about-heading-size);
+    line-height: 1.3;
+    margin-bottom: 1.2rem;
+    text-wrap: balance;
+}
+
+.about-content > p {
+    max-width: 760px;
+    color: var(--muted);
+    font-size: var(--about-body-size);
+    line-height: 1.6;
+    margin-bottom: 2rem;
 }
 
 /* ==========================================
@@ -80,40 +118,43 @@
 
 .mission,
 .vision {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.2rem;
-  margin-bottom: 1rem;
-  border-radius: 1rem;
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, .08);
-  transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, .08);
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        box-shadow .3s ease;
 }
 
 .mission:hover,
 .vision:hover {
-  transform: translateY(-6px);
-  border-color: var(--primary);
-  box-shadow: 0 0 10px var(--neon);
+    transform: translateY(-6px);
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--neon);
 }
 
 .mission svg,
 .vision svg {
-  font-size: 1.5rem;
-  color: var(--primary);
-  flex-shrink: 0;
+    flex-shrink: 0;
+    font-size: 1.5rem;
+    color: var(--primary);
 }
 
 .mission h3,
 .vision h3 {
-  margin-bottom: 8px;
+    margin-bottom: .5rem;
 }
 
 .mission p,
 .vision p {
-  color: var(--muted);
-  line-height: 1.7;
+    color: var(--muted);
+    line-height: 1.7;
 }
 
 /* ==========================================
@@ -121,184 +162,158 @@
 ========================================== */
 
 .values {
-  margin: 3rem auto 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+    width: min(100%, 1400px);
+    margin: clamp(2rem, 4vw, 3rem) auto 0;
+    display: grid;
+    grid-template-columns: var(--about-value-columns);
+    gap: var(--about-value-gap);
 }
 
 .value-card {
-  text-align: center;
-  background: var(--surface) !important;
-  border: 1px solid rgba(255, 255, 255, .08);
-  transition: all .35s ease;
+    min-width: 0;
+    height: 100%;
+    text-align: center;
+    background: var(--surface) !important;
+    border: 1px solid rgba(255, 255, 255, .08);
+    transition:
+        transform .35s ease,
+        border-color .35s ease,
+        box-shadow .35s ease;
 }
 
 .value-card:hover {
-  transform: translateY(-10px);
-  border-color: var(--neon);
-  box-shadow: 0 0 20px var(--neon) !important;
+    transform: translateY(-8px);
+    border-color: var(--neon);
+    box-shadow: 0 0 20px var(--neon) !important;
 }
 
 .value-card svg {
-  font-size: 2rem;
-  color: var(--golden);
-  margin-bottom: 18px;
-  transition: 0.3s ease;
+    margin-bottom: 1.1rem;
+    color: var(--golden);
+    font-size: 2rem;
+    transition: transform .3s ease, filter .3s ease;
 }
 
 .value-card:hover svg {
-  filter: drop-shadow(0 0 10px var(--golden));
-  transform: scale(1.1);
+    filter: drop-shadow(0 0 10px var(--golden));
+    transform: scale(1.1);
 }
 
 .value-card h3 {
-  margin-bottom: 0.8rem;
-  font-size: 1.2rem;
+    margin-bottom: .8rem;
+    font-size: 1.2rem;
 }
 
 .value-card p {
-  color: var(--muted);
-  line-height: 1.5;
+    color: var(--muted);
+    line-height: 1.5;
 }
 
 /* ==========================================
-   RESPONSIVE
+   SMALL SCREENS
 ========================================== */
 
-/* RESPONSIVE */
-@media(max-width: 439px) {
-  #about-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  #about-image img {
-    display: none;
-  }
-
-  #about-content h2 {
-    font-size: 1.2rem;
-  }
-
-  #about-content>p {
-    font-size: 0.7rem;
-  }
-
-  .mission,
-  .vision {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
-
-  .mission p,
-  .vision p {
-    font-size: 0.8rem;
-  }
-
-  .mission svg,
-  .vision svg {
-    display: none;
-  }
-
-
-  .values {
-    grid-template-columns: repeat(1, 1fr);
-    gap: 0.6rem;
-  }
-
-  .value-card p {
-    display: none;
-  }
-
+@media (max-width: 991px) {
+    .about-image {
+        display: none;
+    }
 }
 
-/* Mobile (Portrait + Small Phones) */
-@media(min-width: 440px) and (max-width: 767px) {
-  #about-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+@media (max-width: 767px) {
+    .about-container {
+        text-align: center;
+    }
 
-  #about-image img {
-    display: none;
-  }
+    .about-image img {
+        width: min(100%, 360px);
+    }
 
-  .mission,
-  .vision {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
+    .about-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-  .mission svg,
-  .vision svg {
-    display: none;
-  }
+    .about-content > p {
+        margin-bottom: 1.5rem;
+    }
 
+    .mission,
+    .vision {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 
-  .values {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
+    .mission svg,
+    .vision svg {
+        font-size: 1.35rem;
+    }
 
-  .value-card h3 {
-    font-size: 1rem;
-  }
-
-  .value-card p {
-    display: none;
-  }
+    .value-card h3 {
+        font-size: 1.05rem;
+    }
 }
 
+@media (max-width: 439px) {
+    .about-page {
+        padding: 1rem;
+    }
 
-/* Tablet */
-@media (min-width: 768px) and (max-width: 991px) {
+    .about-image {
+        display: none;
+    }
 
-  #about-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+    .about-badge {
+        padding: .6rem 1rem;
+        font-size: .85rem;
+    }
 
-  #about-image img {
-    display: none;
-  }
+    .about-content > p {
+        font-size: .82rem;
+    }
 
-  .mission,
-  .vision {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
+    .mission,
+    .vision {
+        padding: 1rem;
+    }
 
-  .mission svg,
-  .vision svg {
-    display: none;
-  }
+    .mission p,
+    .vision p {
+        font-size: .82rem;
+    }
 
-  .values {
-    gap: 1rem;
-  }
+    .value-card {
+        padding: 1.1rem;
+    }
 
-  .value-card p {
-    display: none;
-  }
+    .value-card svg {
+        margin-bottom: .8rem;
+        font-size: 1.75rem;
+    }
+
+    .value-card h3 {
+        font-size: 1rem;
+    }
+
+    .value-card p {
+        font-size: .82rem;
+    }
 }
 
-@media (min-width: 992px) and (max-width: 1200px) {
-  #about-image img {
-    width: 70%;
-  }
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
 
-  .value-card p {
-    display: none;
-  }
-
+@media (prefers-reduced-motion: reduce) {
+    .about-page,
+    .about-image img,
+    .mission,
+    .vision,
+    .value-card,
+    .value-card svg {
+        animation: none;
+        transition: none;
+    }
 }

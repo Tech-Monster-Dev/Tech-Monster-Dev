@@ -129,8 +129,8 @@ function Contact() {
 
   return (
 
-    <section className="section" id="contact">
-      <div id="contactPage">
+    <section className="section" data-section="contact">
+      <div className="contact-page">
 
         {location.pathname === "/contact" && (
           <BackButton
@@ -146,10 +146,10 @@ function Contact() {
           description="Have questions? Contact our team. We are always happy to help."
         />
 
-        <div id="contact-container">
+        <div className="contact-container">
 
           <motion.div
-            id="contact-info"
+            className="contact-info"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -163,11 +163,11 @@ function Contact() {
 
                 <div
                   key={item.id}
-                  id="info-card"
+                  className="info-card"
                   onClick={() => window.open(item.action, "_blank", "noopener,noreferrer")}
                 >
 
-                  <Icon id="info-icon" />
+                  <Icon className="info-icon" />
 
                   <div>
 
@@ -186,7 +186,7 @@ function Contact() {
           </motion.div>
 
           <motion.form
-            id="contact-form"
+            className="contact-form"
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
