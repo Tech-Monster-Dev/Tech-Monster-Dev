@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import Input from "../../../../../components/ui/Input";
 import Select from "../../../../../components/ui/Select";
-import Textarea from "../../../../../components/ui/Textarea";
+import TextArea from "../../../../../components/ui/TextArea";
 import Button from "../../../../../components/ui/Button";
 import FeedbackRating from "../FeedbackRating";
 import { submitFeedback } from "../../../../../services/api/feedback.service";
@@ -136,7 +136,7 @@ export default function FeedbackForm({
                 disabled={submitting}
             />
 
-            <Textarea
+            <TextArea
                 label="Feedback"
                 name="message"
                 value={form.message}
