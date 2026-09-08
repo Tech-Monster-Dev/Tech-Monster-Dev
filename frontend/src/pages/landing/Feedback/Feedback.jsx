@@ -7,6 +7,8 @@ import { FaArrowRight } from "react-icons/fa";
 import SectionHeader from "../../../components/ui/SectionHeader";
 import FeedbackCard from "./components/FeedbackCard";
 import PublicButton from "../../../components/ui/Button/PublicButton/PublicButton";
+import EmptyState from "../../../components/ui/EmptyState";
+import Spinner from "../../../features/dashboard/common/LoaderPage/Spinner";
 
 import { getWebsiteFeedback } from "../../../services/api/feedback.service";
 import { socket } from "../../../services/socket/socket";
@@ -69,30 +71,27 @@ function Feedback() {
     }, []);
 
     return (
-        <section className="section" id="feedback">
-            <div id="feedback-page">
+        <section className="section" data-section="feedback">
+            <div className="landing-feedback-page">
                 <SectionHeader
                     badge="FEEDBACK"
                     title="What Our Students Say"
                     description="Real feedback from students helps us improve the Tech Monster experience."
                 />
 
-                <div id="feedback-content">
-                    <div id="feedback-cards" ref={cardsRef}>
+                <div className="feedback-content">
+                    <div className="feedback-cards" ref={cardsRef}>
                         {loading && (
-                            <p className="feedback-status">
-                                Loading feedback...
-                            </p>
+                            <Spinner message="Loading feedback..." size={60} />
                         )}
-
                         {!loading && feedback.length === 0 && (
-                            <p className="feedback-status">
-                                No public feedback available yet.
-                            </p>
+                            <EmptyState
+                                paragraph="No public feedback available yet." 
+                            />
                         )}
 
                         {feedback.length > 0 && (
-                            <div id="feedback-track">
+                            <div className="feedback-track">
                                 <div className={`feedback-track-group ${feedback.length === 1 ? "single-feedback-group" : ""}`}>
                                     {feedback.map((item) => (
                                         <FeedbackCard
@@ -133,7 +132,7 @@ function Feedback() {
                     </div>
 
                     <motion.div
-                        id="feedback-cta"
+                        className="feedback-cta"
                         initial={{ opacity: 0, y: 25 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}

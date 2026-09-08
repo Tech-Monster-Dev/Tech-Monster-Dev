@@ -15,40 +15,48 @@ import PublicButton from '../../components/ui/Button/PublicButton';
 
 
 function Footer() {
+    const scrollToSection = (section) => {
+        const target = document.querySelector("[data-section=\"" + section + "\"]");
+        const navbar = document.querySelector(".navbar");
+        if (target == null) return;
+        const navbarHeight = navbar?.getBoundingClientRect().height ?? 0;
+        const targetTop = target.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: Math.max(0, targetTop - navbarHeight), behavior: "smooth" });
+    };
     const navigate = useNavigate();
 
     return (
 
-        <footer id="footer">
-            <div id="footer-container">
+        <footer className="footer">
+            <div className="footer-container">
                 {/* Brand Section */}
-                <div id="footer-brand">
+                <div className="footer-brand">
                     <h2>Tech <span>Monster</span></h2>
                     <p>Building technical skills through real-world projects, mentorship and practical learning programs.</p>
 
 
-                    <div id="social">
+                    <div className="social">
 
-                        <a><FaGithub /></a>
-                        <a><FaLinkedin /></a>
-                        <a><FaTwitter /></a>
+                        <a className="social-link" aria-label="GitHub"><FaGithub /></a>
+                        <a className="social-link" aria-label="LinkedIn"><FaLinkedin /></a>
+                        <a className="social-link" aria-label="Twitter"><FaTwitter /></a>
 
-                        <a href="https://www.instagram.com/tech_m0nster?igsh=MTdnanFlOG00YnJuNw==" target="_blank"><FaInstagram /></a>
+                        <a className="social-link" href="https://www.instagram.com/tech_m0nster?igsh=MTdnanFlOG00YnJuNw==" target="_blank" rel="noreferrer" aria-label="Instagram"><FaInstagram /></a>
                     </div>
                 </div>
 
                 {/* Links */}
-                <div id="footer-links">
+                <div className="footer-links">
                     <h3>Platform</h3>
-                    <a href="#">Home</a>
+                    <button type="button" onClick={() => scrollToSection("home")}>Home</button>
 
-                    <a href="#about">About</a>
+                    <button type="button" onClick={() => scrollToSection("about")}>About</button>
 
-                    <a href="#contact">Contact</a>
+                    <button type="button" onClick={() => scrollToSection("contact")}>Contact</button>
                 </div>
 
                 {/* Legal */}
-                <div id="footer-legal">
+                <div className="footer-legal">
                     <h3>Legal</h3>
                     <a href="/terms-and-conditions">Terms & Conditions</a>
                     <a href="/privacy-policy">Privacy Policy</a>
@@ -57,7 +65,7 @@ function Footer() {
                 </div>
 
                 {/* Newsletter */}
-                <div id="footer-news">
+                <div className="footer-news">
                     <h3>Join Us</h3>
                     <p>Get learning & training updates</p>
                     <PublicButton
@@ -69,14 +77,14 @@ function Footer() {
                     </PublicButton>
                 </div>
 
-                <div id="footerLogo" style={{ marginLeft: "5rem" }}>
+                <div className="footer-logo">
                     <img src={logoImg} alt="Footer logo" />
                 </div>
             </div>
 
-            <div id="footer-bottom">
+            <div className="footer-bottom">
                 <p>© 2026 Tech Monster. All Rights Reserved.</p>
-                <div id="vrLine"></div>
+                <div className="footer-divider" aria-hidden="true"></div>
                 <p>Code. Secure. Solve.</p>
             </div>
 

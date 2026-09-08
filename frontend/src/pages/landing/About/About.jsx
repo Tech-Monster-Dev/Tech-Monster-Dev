@@ -12,16 +12,15 @@ function About() {
 
   return (
     <>
-      <section className="section" id='about'>
-        <div id="aboutPage">
-
-          <div id="about-container">
-            <motion.div id='about-image' initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}>
+      <section className="section" data-section="about">
+        <div className="about-page">
+          <div className="about-container">
+            <motion.div className='about-image' initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}>
               <img src={AboutImage} alt="About" />
             </motion.div>
 
-            <motion.div id="about-content" initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}>
-              <span id="about-badge">
+            <motion.div className="about-content" initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}>
+              <span className="about-badge">
                 {aboutData.badge}
               </span>
 

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 export default function useFeedbackAutoScroll(ref, itemCount) {
     useEffect(() => {
         const container = ref.current;
-        const track = container?.querySelector("#feedback-track");
+        const track = container?.querySelector(".feedback-track");
         const firstGroup = track?.querySelector(".feedback-track-group");
 
         if (container == null || track == null || firstGroup == null || itemCount < 2) {

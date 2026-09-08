@@ -83,16 +83,16 @@ function Hero() {
 
     return (
         <>
-            <section className='hero' id='home'>
+            <section className='hero' data-section='home'>
 
 
-                <div id="hero-container">
+                <div className="hero-container">
                     {/* LEFT */}
-                    <div id="hero-left">
-                        <motion.span id='hero-badge' variants={fadeUp} initial='hidden' animate='show' custom={0}>{heroContent.badge}</motion.span>
-                        <motion.h1 id='hero-title' variants={fadeUp} initial='hidden' animate='show' custom={0.2}>{heroContent.title} <span> <FaShieldAlt /></span> <span>{heroContent.highlight}</span></motion.h1>
-                        <motion.p id='hero-description' variants={fadeUp} initial='hidden' animate='show' custom={0.4}>{heroContent.description}</motion.p>
-                        <motion.div id='hero-buttons' variants={fadeUp} initial='hidden' animate='show' custom={0.6}>
+                    <div className="hero-left">
+                        <motion.span className='hero-badge' variants={fadeUp} initial='hidden' animate='show' custom={0}>{heroContent.badge}</motion.span>
+                        <motion.h1 className='hero-title' variants={fadeUp} initial='hidden' animate='show' custom={0.2}>{heroContent.title} <span> <FaShieldAlt /></span> <span>{heroContent.highlight}</span></motion.h1>
+                        <motion.p className='hero-description' variants={fadeUp} initial='hidden' animate='show' custom={0.4}>{heroContent.description}</motion.p>
+                        <motion.div className='hero-buttons' variants={fadeUp} initial='hidden' animate='show' custom={0.6}>
                             <PublicButton
                                 variant="primary"
                                 size="medium"
@@ -155,7 +155,7 @@ function Hero() {
                     </div>
 
                     {/* RIGHT */}
-                    <motion.div id='hero-right' initial={{ opacity: 0, x: 80 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
+                    <motion.div className='hero-right' initial={{ opacity: 0, x: 80 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
                         <motion.img src={HeroImage} alt='Hero image' animate={{ y: [0, -30, 0] }} transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }} />
                     </motion.div>
                 </div>

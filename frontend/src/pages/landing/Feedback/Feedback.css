@@ -1,46 +1,54 @@
-#feedback-page {
+/* ==========================================
+   LANDING FEEDBACK SECTION
+========================================== */
+
+.landing-feedback-page {
     width: 100%;
-    padding: 2rem;
+    padding: clamp(1rem, 2vw, 2rem);
     background: transparent;
     backdrop-filter: blur(5px);
     border-radius: 1rem;
+    animation: blueNeon 3s linear infinite;
+    transition: .3s;
 }
 
-#feedback-content {
+.feedback-content {
     width: 100%;
-    margin-top: 2rem;
+    margin-top: clamp(1.5rem, 3vw, 2rem);
 }
 
-#feedback-cards {
-    cursor: grab;
+.feedback-cards {
     width: 100%;
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     padding: 1rem 0.5rem 1.5rem;
+    cursor: grab;
     scroll-behavior: auto;
     scrollbar-width: none;
+    overscroll-behavior-x: contain;
 }
 
-#feedback-track {
+.feedback-cards:active {
+    cursor: grabbing;
+}
+
+.feedback-cards::-webkit-scrollbar {
+    display: none;
+}
+
+.feedback-track {
     display: flex;
     flex-shrink: 0;
     width: max-content;
     gap: 1rem;
-}
-
-#feedback-cards:active {
-    cursor: grabbing;
-}
-
-#feedback-cards::-webkit-scrollbar {
-    display: none;
+    will-change: transform;
 }
 
 .feedback-track-group {
     display: flex;
     flex-shrink: 0;
-    gap: 1.3rem;
+    gap: clamp(1rem, 1.5vw, 1.3rem);
 }
 
 .feedback-card {
@@ -76,6 +84,7 @@
     color: var(--primary);
     font-size: 1.05rem;
     line-height: 1.4;
+    overflow-wrap: anywhere;
 }
 
 .feedback-message {
@@ -86,6 +95,7 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 4;
     overflow: hidden;
+    overflow-wrap: anywhere;
 }
 
 .feedback-student {
@@ -96,6 +106,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    min-width: 0;
 }
 
 .feedback-student-avatar {
@@ -110,6 +121,7 @@
 .feedback-student-name {
     color: var(--text);
     font-weight: 700;
+    overflow-wrap: anywhere;
 }
 
 .feedback-status {
@@ -119,31 +131,30 @@
     padding: 2rem 1rem;
 }
 
-#feedback-cta {
+.feedback-cta {
     margin-top: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0;
-    padding: 1.5rem;
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
     background: var(--surface);
     border: 1px solid rgba(0, 217, 255, 0.12);
     border-radius: 1rem;
 }
 
-#feedback-cta p {
+.feedback-cta p {
     margin: 0;
     color: var(--muted);
     line-height: 1.5;
 }
 
 @media (max-width: 767px) {
-    #feedback-page {
+    .landing-feedback-page {
         padding: 1rem;
     }
 
-    #feedback-cards {
-        gap: 1rem;
+    .feedback-cards {
         padding-inline: 0.25rem;
     }
 
@@ -152,7 +163,7 @@
         min-width: 82vw;
     }
 
-    #feedback-cta {
+    .feedback-cta {
         flex-direction: column;
         align-items: stretch;
         text-align: center;
@@ -160,6 +171,15 @@
 }
 
 @media (max-width: 439px) {
+    .landing-feedback-page {
+        padding: 0.75rem;
+    }
+
+    .feedback-cards {
+        padding-top: 0.75rem;
+        padding-bottom: 1rem;
+    }
+
     .feedback-card {
         min-height: 220px;
     }
@@ -168,7 +188,14 @@
         -webkit-line-clamp: 3;
     }
 
-    #feedback-cta {
+    .feedback-cta {
         padding: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .feedback-card,
+    .feedback-track {
+        transition: none;
     }
 }

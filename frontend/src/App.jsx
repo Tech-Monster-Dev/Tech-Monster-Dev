@@ -6,6 +6,7 @@ import AppRoutes from "./routes/AppRoutes";
 import api from "./services/api/axios";
 import usePageTitle from "./shared/hooks/usePageTitle";
 import useScrollToTop from "./shared/hooks/useScrollToTop";
+import useScrollbarVisibility from "./shared/hooks/useScrollbarVisibility";
 
 function App() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function App() {
   // Dynamically update the browser tab title on every route change.
   usePageTitle();
   useScrollToTop();
+  useScrollbarVisibility();
 
   useEffect(() => {
 
