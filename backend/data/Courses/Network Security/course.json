@@ -1,0 +1,2148 @@
+{
+  "course": {
+    "id": "network-security",
+    "title": "Network Security",
+    "slug": "network-security",
+    "description": "A complete, practical Network Security course that builds from network-security fundamentals through secure protocols, firewall and proxy policy, VPN and zero-trust access, wireless and LAN security, packet and flow analysis, Zeek and IDS concepts, internal service exposure, cloud and modern service architectures, hardening, logging, resilience, incident containment, testing, and a defensive capstone. The course emphasizes authorized, non-destructive practice and evidence-based security engineering.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 78,
+    "prerequisites": [
+      "Basic computer and operating-system familiarity.",
+      "Basic command-line familiarity is helpful but taught as needed.",
+      "An understanding that all practical testing must be authorized and limited to approved systems, networks, captures, and credentials."
+    ],
+    "learningOutcomes": [
+      "Explain core network-security goals, threats, vulnerabilities, exposure, trust boundaries, and defense-in-depth.",
+      "Interpret IPv4/IPv6 addressing, routing, TCP, UDP, DNS, HTTP, and TLS from a security perspective.",
+      "Design and audit least-privilege firewall, proxy, VPN, and zero-trust access policies.",
+      "Apply VLAN, wireless, and management-plane security principles.",
+      "Analyze authorized packet captures, flow telemetry, and protocol-aware network logs.",
+      "Explain IDS/IPS detection, tuning, and network-monitoring workflows.",
+      "Secure privileged network access and reduce east-west service exposure.",
+      "Apply network-security principles to cloud, microsegmented, and identity-aware architectures.",
+      "Develop hardening baselines, logging practices, resilience plans, and incident-response runbooks.",
+      "Validate network-security controls with safe positive and negative testing and complete a defensive policy-validation capstone."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Network Security Foundations",
+        "description": "Establish a threat-aware model of networks, assets, trust, and controls.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Security Properties and Network Trust",
+            "description": "Connect confidentiality, integrity, availability, authenticity, and accountability to network controls.",
+            "learningObjectives": [
+              "Explain core network-security properties.",
+              "Identify trust boundaries in a simple topology.",
+              "Relate controls to business outcomes."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Network security protects communications, infrastructure, services, and identities from unauthorized access, disclosure, modification, and disruption."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A network segment is not automatically a trust boundary.",
+                  "A control should have an explicit purpose and owner.",
+                  "Defense in depth addresses different failure modes."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Asset -> boundary -> policy -> enforcement -> monitoring"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01",
+              "question": "Which statement is most accurate?",
+              "options": [
+                "A LAN is always trusted",
+                "A network location alone does not establish trust.",
+                "Encryption replaces authorization",
+                "Firewalls eliminate all risk"
+              ],
+              "answer": "A network location alone does not establish trust.",
+              "explanation": "Zero-trust principles explicitly reject implicit trust based solely on network location."
+            },
+            "summary": [
+              "Connect confidentiality, integrity, availability, authenticity, and accountability to network controls.",
+              "A network segment is not automatically a trust boundary.",
+              "A control should have an explicit purpose and owner."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Threats, Vulnerabilities, Exposure, and Risk",
+            "description": "Use precise risk terminology when analyzing network weaknesses.",
+            "learningObjectives": [
+              "Differentiate threat, vulnerability, exposure, and exploit.",
+              "Describe how reachability changes risk.",
+              "Write a contextual risk statement."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A vulnerability is a weakness; exposure describes reachable attack paths; a threat is a potential source of harm; exploitation uses a weakness."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Public exposure can increase opportunity without determining total business impact.",
+                  "Compensating controls can reduce practical risk.",
+                  "Risk statements should include asset, scenario, impact, and assumptions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02",
+              "question": "What is the key distinction between vulnerability and exposure?",
+              "options": [
+                "They are identical",
+                "Vulnerability is a weakness; exposure describes how reachable that weakness is.",
+                "Exposure means a confirmed breach",
+                "Vulnerability means a business loss"
+              ],
+              "answer": "Vulnerability is a weakness; exposure describes how reachable that weakness is.",
+              "explanation": "The terms describe different dimensions of the problem."
+            },
+            "summary": [
+              "Use precise risk terminology when analyzing network weaknesses.",
+              "Public exposure can increase opportunity without determining total business impact.",
+              "Compensating controls can reduce practical risk."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Network Assets and Attack Surface",
+            "description": "Inventory network-facing assets and identify why unmanaged components create security blind spots.",
+            "learningObjectives": [
+              "Classify network assets by role.",
+              "Identify internet-facing and internal attack surface.",
+              "Explain why inventory must include management interfaces."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Attack surface includes reachable interfaces, services, protocols, devices, and identities. Unknown or unmanaged assets are difficult to patch, monitor, or constrain."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Include routers, switches, firewalls, wireless infrastructure, virtual appliances, cloud interfaces, and administrative paths.",
+                  "Ownership and business criticality make inventory actionable."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Inventory -> ownership -> exposure -> control coverage"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03",
+              "question": "Why are unmanaged network devices risky?",
+              "options": [
+                "They are faster",
+                "They may fall outside patching, monitoring, and access-control processes.",
+                "They cannot be attacked",
+                "They are always malicious"
+              ],
+              "answer": "They may fall outside patching, monitoring, and access-control processes.",
+              "explanation": "Unmanaged assets create visibility and control gaps."
+            },
+            "summary": [
+              "Inventory network-facing assets and identify why unmanaged components create security blind spots.",
+              "Include routers, switches, firewalls, wireless infrastructure, virtual appliances, cloud interfaces, and administrative paths.",
+              "Ownership and business criticality make inventory actionable."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Defense in Depth and Security Architecture",
+            "description": "Design layered controls instead of relying on a single perimeter device.",
+            "learningObjectives": [
+              "Map preventive, detective, and corrective controls.",
+              "Place controls at different network layers.",
+              "Explain single-control failure scenarios."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful architecture combines segmentation, secure protocols, identity controls, endpoint defenses, logging, monitoring, and recovery."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Independent layers should have different failure modes.",
+                  "Architecture reviews should include operational processes and recovery dependencies."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Internet -> edge controls -> service tier -> data tier\n             |\n         monitoring"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04",
+              "question": "Why is defense in depth useful?",
+              "options": [
+                "It guarantees security",
+                "Different control layers can reduce the impact of an individual control failure.",
+                "It removes the need for authentication",
+                "It only adds cost"
+              ],
+              "answer": "Different control layers can reduce the impact of an individual control failure.",
+              "explanation": "Security is a system of controls, not one appliance."
+            },
+            "summary": [
+              "Design layered controls instead of relying on a single perimeter device.",
+              "Independent layers should have different failure modes.",
+              "Architecture reviews should include operational processes and recovery dependencies."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Build a Network Security Zone Model",
+            "level": "Easy",
+            "description": "Model a small enterprise as security zones and specify trust assumptions.",
+            "problemStatement": "Create internet, public-service, user, management, and protected-data zones with allowed and denied communication.",
+            "objectives": [
+              "Identify assets and boundaries.",
+              "Specify allowed flows.",
+              "Explain one compensating control for each critical boundary."
+            ],
+            "requirements": [
+              "Text editor is sufficient.",
+              "Use fictional private address ranges."
+            ],
+            "hint": "Start from protected assets and required business flows.",
+            "solutionCode": "internet -> public-service tcp/443; public-service -> app tcp/8443; app -> db tcp/5432; user -> app only; mgmt -> admin interfaces.",
+            "solutionExplanation": "The task demonstrates how architecture becomes a security policy."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Secure Network Protocols",
+        "description": "Understand how IP, TCP, UDP, DNS, HTTP, and TLS behave and where security decisions apply.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "IPv4 Subnets and Routing",
+            "description": "Use CIDR and routing concepts to reason about reachability and segmentation.",
+            "learningObjectives": [
+              "Calculate simple subnet boundaries.",
+              "Explain default gateways and routes.",
+              "Trace a packet between two subnets."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A CIDR prefix describes the network portion of an address. Routers forward traffic based on routing tables and policy."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Security policy should match actual routes and interfaces.",
+                  "Smaller segments can reduce unnecessary broadcast and trust scope."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "192.168.10.0/24 -> 192.168.10.0 network\n192.168.10.42 -> host example"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05",
+              "question": "What does /24 describe?",
+              "options": [
+                "24 hosts exactly",
+                "A 24-bit network prefix.",
+                "24 routers",
+                "24 bytes"
+              ],
+              "answer": "A 24-bit network prefix.",
+              "explanation": "CIDR prefix length is measured in bits."
+            },
+            "summary": [
+              "Use CIDR and routing concepts to reason about reachability and segmentation.",
+              "Security policy should match actual routes and interfaces.",
+              "Smaller segments can reduce unnecessary broadcast and trust scope."
+            ],
+            "resources": [
+              {
+                "title": "RFC 8200 — IPv6",
+                "url": "https://www.rfc-editor.org/rfc/rfc8200.html"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "TCP and UDP Security Considerations",
+            "description": "Interpret transport semantics and explain why port rules need context.",
+            "learningObjectives": [
+              "Contrast TCP and UDP.",
+              "Explain source and destination ports.",
+              "Describe stateful filtering at a high level."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TCP provides a reliable ordered byte stream. UDP provides datagrams with less transport machinery."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Port numbers are endpoint identifiers, not proof of application identity.",
+                  "Stateful filtering tracks connections and related traffic according to firewall implementation."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "allow tcp/443 from internet to web-tier\nallow tcp/22 from mgmt to admin-hosts"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06",
+              "question": "Why should port numbers not be treated as application proof?",
+              "options": [
+                "Ports are meaningless",
+                "Services can be configured differently, so port evidence should be correlated with application behavior.",
+                "TCP has no ports",
+                "HTTPS cannot use TCP"
+              ],
+              "answer": "Services can be configured differently, so port evidence should be correlated with application behavior.",
+              "explanation": "Ports are conventions and configuration choices."
+            },
+            "summary": [
+              "Interpret transport semantics and explain why port rules need context.",
+              "Port numbers are endpoint identifiers, not proof of application identity.",
+              "Stateful filtering tracks connections and related traffic according to firewall implementation."
+            ],
+            "resources": [
+              {
+                "title": "RFC 9293 — Transmission Control Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc9293.html"
+              },
+              {
+                "title": "RFC 768 — User Datagram Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc768.html"
+              },
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "DNS Security and Telemetry",
+            "description": "Explain name resolution and how DNS data supports network defense.",
+            "learningObjectives": [
+              "Describe recursive and authoritative roles.",
+              "Identify A, AAAA, CNAME, and MX records.",
+              "Explain DNS logging value."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "DNS provides a distributed naming system. Recursive resolvers obtain answers on behalf of clients; authoritative servers publish records for zones."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "DNS logs can reveal unusual domain lookups and resolution patterns.",
+                  "DNSSEC can add integrity and origin authentication for signed data, but deployment requires validation support."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "A = IPv4\nAAAA = IPv6\nCNAME = alias\nMX = mail exchange"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07",
+              "question": "Which record maps a hostname to IPv6?",
+              "options": [
+                "A",
+                "AAAA",
+                "MX",
+                "PTR"
+              ],
+              "answer": "AAAA",
+              "explanation": "AAAA records carry IPv6 addresses."
+            },
+            "summary": [
+              "Explain name resolution and how DNS data supports network defense.",
+              "DNS logs can reveal unusual domain lookups and resolution patterns.",
+              "DNSSEC can add integrity and origin authentication for signed data, but deployment requires validation support."
+            ],
+            "resources": [
+              {
+                "title": "RFC 1034 — Domain Names",
+                "url": "https://www.rfc-editor.org/rfc/rfc1034.html"
+              },
+              {
+                "title": "RFC 8200 — IPv6",
+                "url": "https://www.rfc-editor.org/rfc/rfc8200.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "HTTP and TLS for Secure Applications",
+            "description": "Separate application-layer HTTP semantics from TLS channel protections.",
+            "learningObjectives": [
+              "Read a simple HTTP request.",
+              "Explain TLS confidentiality, integrity, and certificate validation.",
+              "Identify application risks not solved by HTTPS."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "HTTP is a stateless application-level request/response protocol. TLS protects the communication channel and authenticates peers using certificate-based trust."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "HTTPS does not grant authorization.",
+                  "TLS configuration and certificate validation are essential to secure transport."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "GET /api/status HTTP/1.1\nHost: service.example.test\nAccept: application/json"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Inspect an HTTPS Connection",
+                "description": "Observe the separation between HTTP semantics and TLS transport protection using an authorized site.",
+                "steps": [
+                  "Open an HTTPS site you are authorized to inspect.",
+                  "Inspect the certificate details.",
+                  "Use browser developer tools to review request and response headers.",
+                  "Document which observations belong to HTTP and which belong to TLS."
+                ],
+                "solution": "The student records HTTP methods/headers separately from TLS certificate and connection information.",
+                "output": "A comparison table of DNS, HTTP, TLS, certificate validation, and application authorization."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-08",
+              "question": "What does TLS primarily provide?",
+              "options": [
+                "Database authorization",
+                "A protected communication channel plus peer authentication through certificates.",
+                "User provisioning",
+                "Source-code review"
+              ],
+              "answer": "A protected communication channel plus peer authentication through certificates.",
+              "explanation": "TLS protects transport; application controls still matter."
+            },
+            "summary": [
+              "Separate application-layer HTTP semantics from TLS channel protections.",
+              "HTTPS does not grant authorization.",
+              "TLS configuration and certificate validation are essential to secure transport."
+            ],
+            "resources": [
+              {
+                "title": "RFC 9110 — HTTP Semantics",
+                "url": "https://www.rfc-editor.org/rfc/rfc9110.html"
+              },
+              {
+                "title": "RFC 8446 — TLS 1.3",
+                "url": "https://www.rfc-editor.org/rfc/rfc8446.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Trace a Secure Application Flow",
+            "level": "Intermediate",
+            "description": "Document the network path of an HTTPS application from client to database.",
+            "problemStatement": "For each hop, specify protocol, trust boundary, security control, logging source, and failure mode.",
+            "objectives": [
+              "Map protocol layers.",
+              "Identify three trust boundaries.",
+              "Specify monitoring points."
+            ],
+            "requirements": [
+              "Use a fictional application.",
+              "No live testing required."
+            ],
+            "hint": "Separate transport protection from application authorization.",
+            "solutionCode": "Client -> DNS -> TLS endpoint -> reverse proxy -> app -> database; document which component enforces each security decision.",
+            "solutionExplanation": "The exercise connects protocol knowledge to architecture and monitoring."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Firewalls, Proxies, and Remote Access",
+        "description": "Turn security requirements into traffic policy, proxy architecture, and controlled remote administration.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Firewall Policy Design",
+            "description": "Create least-privilege rules with explicit intent and safe defaults.",
+            "learningObjectives": [
+              "Write source/destination/service rules.",
+              "Explain default-deny.",
+              "Identify shadowed and overbroad rules."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A firewall is a device or program that controls traffic between systems with differing security postures. Policies should be explicit, documented, testable, and reviewed."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Rules need ownership and business purpose.",
+                  "Ordering and state handling can affect outcomes."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "1 allow internet -> web tcp/443\n2 allow app -> db tcp/5432\n3 deny any -> db any"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09",
+              "question": "What is a strong general default?",
+              "options": [
+                "Allow any-to-any",
+                "Default deny with explicitly justified exceptions.",
+                "Disable logs",
+                "Open all internal ports"
+              ],
+              "answer": "Default deny with explicitly justified exceptions.",
+              "explanation": "Default-deny reduces unintended paths when paired with well-managed exceptions."
+            },
+            "summary": [
+              "Create least-privilege rules with explicit intent and safe defaults.",
+              "Rules need ownership and business purpose.",
+              "Ordering and state handling can affect outcomes."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              },
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "NAT and Reverse Proxies",
+            "description": "Understand address translation and proxy mediation without confusing them with authorization.",
+            "learningObjectives": [
+              "Differentiate NAT and proxying.",
+              "Describe reverse-proxy security benefits.",
+              "Explain logging implications of translation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NAT modifies addressing information; a reverse proxy terminates or mediates application connections."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Proxying can centralize TLS and application controls.",
+                  "NAT does not prove identity or permission."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "client -> reverse proxy -> app\nNAT changes addresses at a network edge"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-10",
+              "question": "Which control should never be replaced by NAT?",
+              "options": [
+                "Authorization",
+                "Encryption",
+                "Routing",
+                "DNS"
+              ],
+              "answer": "Authorization",
+              "explanation": "NAT changes addresses; authorization decides who may access a resource."
+            },
+            "summary": [
+              "Understand address translation and proxy mediation without confusing them with authorization.",
+              "Proxying can centralize TLS and application controls.",
+              "NAT does not prove identity or permission."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "VPNs and Secure Remote Administration",
+            "description": "Design restricted remote-access paths using strong identity and limited reachability.",
+            "learningObjectives": [
+              "Explain what a VPN protects.",
+              "Design a privileged admin path.",
+              "Identify post-VPN authorization needs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A VPN can protect traffic and provide an authenticated path, but access after connection should still be constrained."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Privileged access benefits from dedicated identities, restricted sources, logging, and stronger authentication.",
+                  "A VPN is not a blanket trust grant."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "admin -> VPN -> bastion -> target"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-11",
+              "question": "What does a VPN not guarantee?",
+              "options": [
+                "It encrypts traffic",
+                "That the user is authorized to access every internal resource.",
+                "It creates passwords",
+                "It replaces logging"
+              ],
+              "answer": "That the user is authorized to access every internal resource.",
+              "explanation": "VPN transport security does not replace authorization."
+            },
+            "summary": [
+              "Design restricted remote-access paths using strong identity and limited reachability.",
+              "Privileged access benefits from dedicated identities, restricted sources, logging, and stronger authentication.",
+              "A VPN is not a blanket trust grant."
+            ],
+            "resources": [
+              {
+                "title": "OpenVPN Community Resources",
+                "url": "https://openvpn.net/community-resources/"
+              },
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              },
+              {
+                "title": "OpenSSH Manual",
+                "url": "https://man.openbsd.org/ssh"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Zero Trust Network Access",
+            "description": "Apply NIST zero-trust concepts to resource access.",
+            "learningObjectives": [
+              "Explain implicit trust.",
+              "Describe identity-aware access.",
+              "Relate segmentation to zero trust."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST describes zero trust as removing implicit trust based solely on network location or ownership."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authentication and authorization are separate decisions.",
+                  "Resources and services are protected directly rather than relying only on a perimeter."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-12",
+              "question": "What should not be the sole trust signal?",
+              "options": [
+                "Network location",
+                "Resource sensitivity",
+                "Explicit authorization",
+                "Device identity"
+              ],
+              "answer": "Network location",
+              "explanation": "Zero trust explicitly rejects location-only trust."
+            },
+            "summary": [
+              "Apply NIST zero-trust concepts to resource access.",
+              "Authentication and authorization are separate decisions.",
+              "Resources and services are protected directly rather than relying only on a perimeter."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Audit a Firewall Policy",
+            "level": "Advanced",
+            "description": "Review a fictional firewall rule table and correct policy weaknesses.",
+            "problemStatement": "Find overbroad rules, shadowing, missing logging, and unclear ownership, then propose corrected entries.",
+            "objectives": [
+              "Identify four defects.",
+              "Produce corrected rules.",
+              "Explain operational risk."
+            ],
+            "requirements": [
+              "No vendor-specific syntax required."
+            ],
+            "hint": "Check broad rules after specific rules and look for any-to-any access.",
+            "solutionCode": "Replace broad rules with narrowly scoped sources, destinations, and services; add owner and review metadata.",
+            "solutionExplanation": "The exercise tests policy analysis and maintainability."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "LAN and Wireless Security",
+        "description": "Protect switching, VLANs, wireless access, and network-device management planes.",
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "Switching, VLANs, and Segmentation",
+            "description": "Use VLANs and routed boundaries to reduce unnecessary trust.",
+            "learningObjectives": [
+              "Explain VLAN purpose.",
+              "Differentiate tagged trunks from access ports conceptually.",
+              "Identify segmentation failure modes."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "VLANs create logical Layer-2 broadcast domains. Security still depends on routing, policy enforcement, and correct configuration."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Management traffic should be separated where practical.",
+                  "Inter-VLAN routing requires explicit policy."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "user-vlan -> app-vlan -> db-vlan\nmanagement-vlan -> network devices"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-13",
+              "question": "What is a VLAN primarily for?",
+              "options": [
+                "Encrypting traffic",
+                "Logical Layer-2 segmentation",
+                "User authentication",
+                "Routing internet traffic"
+              ],
+              "answer": "Logical Layer-2 segmentation",
+              "explanation": "VLANs segment Layer-2 domains; they are not encryption or identity controls."
+            },
+            "summary": [
+              "Use VLANs and routed boundaries to reduce unnecessary trust.",
+              "Management traffic should be separated where practical.",
+              "Inter-VLAN routing requires explicit policy."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "ARP Security and Local Network Threats",
+            "description": "Explain ARP trust assumptions and defensive monitoring.",
+            "learningObjectives": [
+              "Explain ARP resolution.",
+              "Describe ARP spoofing conceptually.",
+              "Identify monitoring and mitigation options."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ARP resolves IPv4 addresses to link-layer addresses on local networks and does not inherently authenticate the claimed mapping."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Managed switch protections can reduce spoofing opportunities.",
+                  "Unexpected gateway-to-MAC changes can be useful investigation clues."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-14",
+              "question": "Why is ARP spoofing mainly a local-network threat?",
+              "options": [
+                "It routes internet traffic",
+                "ARP is a local link-resolution protocol.",
+                "It is an application protocol",
+                "It is encrypted"
+              ],
+              "answer": "ARP is a local link-resolution protocol.",
+              "explanation": "The attack targets local neighbor-resolution trust."
+            },
+            "summary": [
+              "Explain ARP trust assumptions and defensive monitoring.",
+              "Managed switch protections can reduce spoofing opportunities.",
+              "Unexpected gateway-to-MAC changes can be useful investigation clues."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              },
+              {
+                "title": "Wireshark Documentation",
+                "url": "https://www.wireshark.org/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Wireless Network Security",
+            "description": "Design secure Wi-Fi separation, authentication, and management.",
+            "learningObjectives": [
+              "Explain the role of WPA-family security.",
+              "Separate guest and corporate access.",
+              "Protect wireless management."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Wireless expands the physical and radio attack surface. Strong authentication, encryption, segmentation, and management protection are complementary controls."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Guest networks should not inherit corporate trust.",
+                  "Management interfaces deserve restricted sources and strong authentication."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-15",
+              "question": "Why isolate guest wireless?",
+              "options": [
+                "To increase signal strength",
+                "To limit guest-to-corporate reachability.",
+                "To avoid encryption",
+                "To remove IPs"
+              ],
+              "answer": "To limit guest-to-corporate reachability.",
+              "explanation": "Isolation reduces unnecessary trust and lateral exposure."
+            },
+            "summary": [
+              "Design secure Wi-Fi separation, authentication, and management.",
+              "Guest networks should not inherit corporate trust.",
+              "Management interfaces deserve restricted sources and strong authentication."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Network Device Management Plane",
+            "description": "Secure routers, switches, firewalls, and access points as privileged assets.",
+            "learningObjectives": [
+              "Design a restricted management network.",
+              "Prefer secure administration protocols.",
+              "Explain configuration backup risks."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Network infrastructure devices can enforce or bypass large portions of an organization’s security policy."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use encrypted administration such as SSH.",
+                  "Protect backups because they can expose topology and secrets."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "mgmt-net -> network-devices tcp/22 allow\nuser-net -> network-devices management deny"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-16",
+              "question": "Why isolate management interfaces?",
+              "options": [
+                "It makes packets smaller",
+                "To reduce exposure of high-privilege administrative functions.",
+                "It removes logging",
+                "It replaces authentication"
+              ],
+              "answer": "To reduce exposure of high-privilege administrative functions.",
+              "explanation": "Management-plane compromise can undermine other controls."
+            },
+            "summary": [
+              "Secure routers, switches, firewalls, and access points as privileged assets.",
+              "Use encrypted administration such as SSH.",
+              "Protect backups because they can expose topology and secrets."
+            ],
+            "resources": [
+              {
+                "title": "OpenSSH Manual",
+                "url": "https://man.openbsd.org/ssh"
+              },
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Design a Secure Wireless and Management Layout",
+            "level": "Intermediate",
+            "description": "Create a segmented wireless and infrastructure-management design.",
+            "problemStatement": "Specify corporate, guest, server, and management networks and define allowed flows.",
+            "objectives": [
+              "Apply isolation.",
+              "Restrict management access.",
+              "Define monitoring points."
+            ],
+            "requirements": [
+              "Use fictional addressing.",
+              "Technology-neutral output is acceptable."
+            ],
+            "hint": "Management interfaces should never be broadly reachable from user segments.",
+            "solutionCode": "Use dedicated VLANs and explicit routing/firewall rules; log management access and configuration changes.",
+            "solutionExplanation": "The task integrates LAN segmentation with privileged management."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Traffic Analysis and Network Monitoring",
+        "description": "Use packet capture, flow metadata, Zeek, and IDS concepts to investigate network behavior.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Wireshark Packet Analysis",
+            "description": "Adopt a repeatable method for answering security questions from packet captures.",
+            "learningObjectives": [
+              "Filter by host and protocol.",
+              "Inspect packet fields and conversations.",
+              "Separate observation from inference."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Packet capture can preserve addresses, ports, flags, and protocol fields that support detailed analysis."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Start with a question.",
+                  "Use filters to reduce noise but preserve the original capture."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "ip.addr == 192.168.1.10\ntcp.port == 443\ndns"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Analyze a Training PCAP",
+                "description": "Use Wireshark on a supplied or locally generated training capture.",
+                "steps": [
+                  "Open an authorized PCAP.",
+                  "Filter on one host or protocol.",
+                  "Inspect a representative conversation.",
+                  "Record three observable facts and one uncertainty."
+                ],
+                "solution": "Use filters to isolate relevant traffic and write evidence statements tied to packet fields and timestamps.",
+                "output": "A concise evidence table with packet/flow references and observations."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-17",
+              "question": "What should you do before reading a large PCAP manually?",
+              "options": [
+                "Read every packet",
+                "Define the question and narrow the capture with filters.",
+                "Delete traffic",
+                "Rewrite timestamps"
+              ],
+              "answer": "Define the question and narrow the capture with filters.",
+              "explanation": "Focused questions make packet analysis repeatable and efficient."
+            },
+            "summary": [
+              "Adopt a repeatable method for answering security questions from packet captures.",
+              "Start with a question.",
+              "Use filters to reduce noise but preserve the original capture."
+            ],
+            "resources": [
+              {
+                "title": "Wireshark Documentation",
+                "url": "https://www.wireshark.org/docs/"
+              },
+              {
+                "title": "RFC 9110 — HTTP Semantics",
+                "url": "https://www.rfc-editor.org/rfc/rfc9110.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Flow Telemetry and Behavioral Baselines",
+            "description": "Use summarized network telemetry to identify deviations from normal behavior.",
+            "learningObjectives": [
+              "Contrast flow data with full packet capture.",
+              "Choose useful baseline dimensions.",
+              "Describe anomaly interpretation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Flow records summarize communication such as source, destination, ports, packets, bytes, and time."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Baselines should account for business cycles.",
+                  "An anomaly is a signal, not proof of compromise."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-18",
+              "question": "What is a common advantage of flow records?",
+              "options": [
+                "They expose all encrypted payloads",
+                "Lower-volume summary data that can scale more easily than full packet capture.",
+                "They replace all endpoint logs",
+                "They guarantee attribution"
+              ],
+              "answer": "Lower-volume summary data that can scale more easily than full packet capture.",
+              "explanation": "Flow data trades packet-level detail for scale and summarization."
+            },
+            "summary": [
+              "Use summarized network telemetry to identify deviations from normal behavior.",
+              "Baselines should account for business cycles.",
+              "An anomaly is a signal, not proof of compromise."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Zeek Network Monitoring",
+            "description": "Interpret protocol-aware network logs for security investigations.",
+            "learningObjectives": [
+              "Explain Zeek’s role.",
+              "Identify common network log categories.",
+              "Use connection and DNS metadata in an investigation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Zeek analyzes network traffic and produces structured logs with protocol-aware metadata and extensibility."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Connection metadata can reveal relationships even when payloads are encrypted.",
+                  "Logs should be correlated with other evidence before conclusions are made."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "id.orig_h\nid.resp_h\nid.resp_p\nservice\nconn_state"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-19",
+              "question": "What is a core strength of Zeek?",
+              "options": [
+                "It is only a firewall",
+                "Structured protocol-aware network telemetry.",
+                "It replaces endpoint agents",
+                "It encrypts packets"
+              ],
+              "answer": "Structured protocol-aware network telemetry.",
+              "explanation": "Zeek is a network security monitor and analysis platform."
+            },
+            "summary": [
+              "Interpret protocol-aware network logs for security investigations.",
+              "Connection metadata can reveal relationships even when payloads are encrypted.",
+              "Logs should be correlated with other evidence before conclusions are made."
+            ],
+            "resources": [
+              {
+                "title": "Zeek Documentation",
+                "url": "https://docs.zeek.org/en/current/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "IDS/IPS Detection and Tuning",
+            "description": "Understand network detection signatures, alerting, and tuning.",
+            "learningObjectives": [
+              "Differentiate IDS and IPS.",
+              "Explain signature-based detection.",
+              "Tune false positives without destroying coverage."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An IDS commonly detects and alerts; an IPS can enforce preventive actions depending on deployment."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Rules need scope, intent, and validation.",
+                  "Suppression should be evidence-based and documented."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-20",
+              "question": "What makes IPS different from a passive IDS?",
+              "options": [
+                "It is always host-based",
+                "IPS can take preventive enforcement action.",
+                "It cannot alert",
+                "It never needs tuning"
+              ],
+              "answer": "IPS can take preventive enforcement action.",
+              "explanation": "Detection and prevention have different operational consequences."
+            },
+            "summary": [
+              "Understand network detection signatures, alerting, and tuning.",
+              "Rules need scope, intent, and validation.",
+              "Suppression should be evidence-based and documented."
+            ],
+            "resources": [
+              {
+                "title": "Suricata Documentation",
+                "url": "https://docs.suricata.io/en/latest/"
+              },
+              {
+                "title": "NIST SP 800-115 — Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Investigate an Authorized PCAP",
+            "level": "Advanced",
+            "description": "Analyze a training PCAP and produce an evidence-based security finding.",
+            "problemStatement": "Identify hosts, protocols, time sequence, unusual behavior, supporting evidence, and next investigative steps.",
+            "objectives": [
+              "Use packet fields accurately.",
+              "Document uncertainty.",
+              "Correlate multiple observations."
+            ],
+            "requirements": [
+              "Use only an authorized training capture.",
+              "Do not attack live systems."
+            ],
+            "hint": "Begin with observable facts and then test hypotheses.",
+            "solutionCode": "A strong report cites packets or flows, timestamps, and corroborating indicators before making a conclusion.",
+            "solutionExplanation": "The task teaches disciplined network forensics rather than exploit execution."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Network Access Control and Service Exposure",
+        "description": "Control internal reachability, privileged services, and device admission.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "SSH Hardening and Bastion Architecture",
+            "description": "Secure privileged remote administration using protected paths and identities.",
+            "learningObjectives": [
+              "Explain SSH key-based authentication.",
+              "Design a bastion path.",
+              "Identify key-management risks."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SSH provides an encrypted remote administration channel. Security still depends on key protection, host verification, account controls, and logging."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Dedicated admin paths reduce broad exposure.",
+                  "Compromised keys require rotation and incident handling."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-21",
+              "question": "Why use a bastion host?",
+              "options": [
+                "To expose all hosts",
+                "To concentrate and constrain administrative reachability.",
+                "To disable logging",
+                "To replace authorization"
+              ],
+              "answer": "To concentrate and constrain administrative reachability.",
+              "explanation": "A bastion reduces the number of directly reachable privileged endpoints."
+            },
+            "summary": [
+              "Secure privileged remote administration using protected paths and identities.",
+              "Dedicated admin paths reduce broad exposure.",
+              "Compromised keys require rotation and incident handling."
+            ],
+            "resources": [
+              {
+                "title": "OpenSSH Manual",
+                "url": "https://man.openbsd.org/ssh"
+              },
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Network Access Control and Device Posture",
+            "description": "Understand NAC decisions using identity and device context.",
+            "learningObjectives": [
+              "Explain NAC at a high level.",
+              "Describe admission decisions.",
+              "Discuss posture signals and limitations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NAC can place devices into network segments or restrict access based on identity and device context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Unknown devices should not automatically inherit enterprise trust.",
+                  "Posture is one signal and can become stale."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-22",
+              "question": "What problem does NAC primarily address?",
+              "options": [
+                "DNS availability",
+                "Controlling network admission or segment placement using identity and device context.",
+                "File compression",
+                "Backup encryption"
+              ],
+              "answer": "Controlling network admission or segment placement using identity and device context.",
+              "explanation": "NAC addresses admission and access context."
+            },
+            "summary": [
+              "Understand NAC decisions using identity and device context.",
+              "Unknown devices should not automatically inherit enterprise trust.",
+              "Posture is one signal and can become stale."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Internal Service Exposure and East-West Traffic",
+            "description": "Reduce lateral attack paths by controlling internal service reachability.",
+            "learningObjectives": [
+              "Inventory listening services.",
+              "Map service dependencies.",
+              "Apply east-west least privilege."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Internal services can be exploited after initial access. Controlling lateral paths limits blast radius."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Administrative and database services should be reachable only from authorized sources.",
+                  "Service inventories should be linked to ownership."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "user -> db: deny\napp -> db: allow tcp/5432"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-23",
+              "question": "Why secure internal traffic?",
+              "options": [
+                "Internal traffic is safe",
+                "Compromise can spread through unnecessarily reachable services.",
+                "Databases are unreachable",
+                "Only internet services matter"
+              ],
+              "answer": "Compromise can spread through unnecessarily reachable services.",
+              "explanation": "Internal attack paths matter during lateral movement."
+            },
+            "summary": [
+              "Reduce lateral attack paths by controlling internal service reachability.",
+              "Administrative and database services should be reachable only from authorized sources.",
+              "Service inventories should be linked to ownership."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Segmentation Testing and Control Validation",
+            "description": "Validate both allowed and denied communication paths safely.",
+            "learningObjectives": [
+              "Define positive and negative test cases.",
+              "Collect evidence of enforcement.",
+              "Document rollback considerations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Security architecture should be tested rather than assumed. Testing should minimize disruption and occur inside authorized scope."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Test representative sources and destinations.",
+                  "Record expected and observed behavior plus evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-24",
+              "question": "What should a segmentation validation include?",
+              "options": [
+                "Only allowed paths",
+                "Both expected allowed flows and prohibited paths.",
+                "Only port scans",
+                "Only application tests"
+              ],
+              "answer": "Both expected allowed flows and prohibited paths.",
+              "explanation": "Negative tests show whether the boundary actually blocks unwanted communication."
+            },
+            "summary": [
+              "Validate both allowed and denied communication paths safely.",
+              "Test representative sources and destinations.",
+              "Record expected and observed behavior plus evidence."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115 — Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Validate East-West Segmentation",
+            "level": "Advanced",
+            "description": "Create a safe test plan for user, application, database, and management paths.",
+            "problemStatement": "Specify test cases, expected results, evidence, and success criteria without destructive activity.",
+            "objectives": [
+              "Cover positive and negative cases.",
+              "Identify evidence sources.",
+              "Define escalation if controls fail."
+            ],
+            "requirements": [
+              "Authorized lab or test environment only.",
+              "No destructive tests."
+            ],
+            "hint": "Make expected outcomes explicit before executing tests.",
+            "solutionCode": "For each flow record source role, destination, protocol, expected action, actual observation, and evidence.",
+            "solutionExplanation": "The plan makes network segmentation measurable and auditable."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Cloud, Modern Architecture, and Network Resilience",
+        "description": "Adapt network-security thinking to cloud, service-based, and resilient environments.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Cloud Network Security Responsibilities",
+            "description": "Apply shared-responsibility reasoning to network controls in cloud services.",
+            "learningObjectives": [
+              "Identify customer-controlled network settings.",
+              "Describe provider/customer boundaries.",
+              "Avoid universal responsibility assumptions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Cloud responsibility varies by service model and provider. Customers still control many identities, configurations, workloads, data paths, and monitoring choices."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Always verify the exact service documentation.",
+                  "A managed service can reduce infrastructure work without removing customer security duties."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-25",
+              "question": "What is the safest general cloud-security statement?",
+              "options": [
+                "Providers manage everything",
+                "Security responsibilities are divided and depend on the service.",
+                "Customers have no duties",
+                "Cloud is automatically zero trust"
+              ],
+              "answer": "Security responsibilities are divided and depend on the service.",
+              "explanation": "Cloud architecture requires service-specific responsibility analysis."
+            },
+            "summary": [
+              "Apply shared-responsibility reasoning to network controls in cloud services.",
+              "Always verify the exact service documentation.",
+              "A managed service can reduce infrastructure work without removing customer security duties."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Microsegmentation and Service Identity",
+            "description": "Use identity-aware policy to control east-west communications in distributed systems.",
+            "learningObjectives": [
+              "Explain microsegmentation.",
+              "Apply service identity to network policy.",
+              "Describe policy for east-west traffic."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Microsegmentation narrows workload-to-workload communication. Identity-aware controls can complement IP/subnet policy."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Service identities need lifecycle management.",
+                  "Network policy and application authorization should reinforce one another."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "service-a -> service-b: allow\nservice-a -> admin-db: deny"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Build a Logging Timeline",
+                "description": "Correlate fictional firewall, VPN, DNS, and configuration events.",
+                "steps": [
+                  "Normalize all timestamps to one timezone.",
+                  "Sort events chronologically.",
+                  "Group by user or host.",
+                  "Identify one suspicious sequence and cite the contributing records."
+                ],
+                "solution": "A correct timeline preserves source fields, timestamps, and evidence before drawing conclusions.",
+                "output": "A sorted timeline plus an evidence-based observation."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-26",
+              "question": "What is a microsegmentation goal?",
+              "options": [
+                "Make all workloads reachable",
+                "Reduce unnecessary east-west reachability.",
+                "Disable logs",
+                "Remove authentication"
+              ],
+              "answer": "Reduce unnecessary east-west reachability.",
+              "explanation": "Microsegmentation limits lateral movement paths."
+            },
+            "summary": [
+              "Use identity-aware policy to control east-west communications in distributed systems.",
+              "Service identities need lifecycle management.",
+              "Network policy and application authorization should reinforce one another."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Egress Control and API Gateways",
+            "description": "Protect outbound paths and centralize selected application network controls.",
+            "learningObjectives": [
+              "Explain egress filtering.",
+              "Describe API gateway functions.",
+              "Identify limits of gateway controls."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Egress controls restrict unnecessary outbound communication. API gateways can mediate routing, authentication, rate controls, and logging depending on architecture."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Backend authorization remains necessary.",
+                  "Egress policies should account for legitimate dependencies."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-27",
+              "question": "Why control egress from sensitive workloads?",
+              "options": [
+                "To block all updates",
+                "To reduce unauthorized outbound paths and improve visibility.",
+                "To disable DNS",
+                "To remove logs"
+              ],
+              "answer": "To reduce unauthorized outbound paths and improve visibility.",
+              "explanation": "Egress control reduces exfiltration and unapproved communication paths."
+            },
+            "summary": [
+              "Protect outbound paths and centralize selected application network controls.",
+              "Backend authorization remains necessary.",
+              "Egress policies should account for legitimate dependencies."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-207 — Zero Trust Architecture",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Network Resilience and Availability",
+            "description": "Plan redundancy, capacity, and recovery around network availability requirements.",
+            "learningObjectives": [
+              "Identify availability dependencies.",
+              "Differentiate RTO and RPO.",
+              "Design a controlled resilience exercise."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Availability requires capacity, redundancy, failure planning, and tested recovery."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "RTO expresses restoration-time objectives; RPO addresses acceptable data-loss window.",
+                  "Recovery plans should define ownership and escalation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-28",
+              "question": "What does RPO describe?",
+              "options": [
+                "Recovery speed",
+                "The acceptable amount of recent data loss.",
+                "Password strength",
+                "Network latency"
+              ],
+              "answer": "The acceptable amount of recent data loss.",
+              "explanation": "RPO is a recovery-point requirement."
+            },
+            "summary": [
+              "Plan redundancy, capacity, and recovery around network availability requirements.",
+              "RTO expresses restoration-time objectives; RPO addresses acceptable data-loss window.",
+              "Recovery plans should define ownership and escalation."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Design a Zero-Trust Service Graph",
+            "level": "Advanced",
+            "description": "Model identity-aware communication for a modern multi-tier service.",
+            "problemStatement": "List services, identities, allowed calls, denied calls, egress policy, and telemetry.",
+            "objectives": [
+              "Apply least privilege.",
+              "Include service identities.",
+              "Define monitoring."
+            ],
+            "requirements": [
+              "Use fictional components."
+            ],
+            "hint": "For every flow ask who calls what resource, why, and under which policy.",
+            "solutionCode": "Each allowed edge has identity, destination, action, rationale, and monitoring; unneeded edges are denied.",
+            "solutionExplanation": "The task applies zero-trust ideas to real service communication."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Hardening, Logging, Incident Response, and Testing",
+        "description": "Operate network security as a lifecycle of configuration, evidence, response, and continuous validation.",
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Network Device Hardening and Baselines",
+            "description": "Build secure configuration baselines for network infrastructure.",
+            "learningObjectives": [
+              "Define secure baseline elements.",
+              "Identify configuration drift.",
+              "Explain supported software and secure defaults."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A baseline defines an intended target state that can be measured and reviewed."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Remove unnecessary services and default credentials.",
+                  "Protect configuration backups.",
+                  "Review supported versions and vendor guidance."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Review a Network Device Baseline",
+                "description": "Compare a fictional device configuration to a written security baseline.",
+                "steps": [
+                  "List required management interfaces.",
+                  "Compare services and accounts to the baseline.",
+                  "Identify drift.",
+                  "Write remediation and rollback notes."
+                ],
+                "solution": "The student maps each deviation to a baseline requirement and recommends a controlled correction.",
+                "output": "A deviation register with owner, severity, remediation, and verification."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-29",
+              "question": "Why maintain a network security baseline?",
+              "options": [
+                "To freeze configuration forever",
+                "To define a measurable target and detect drift.",
+                "To eliminate change control",
+                "To disable monitoring"
+              ],
+              "answer": "To define a measurable target and detect drift.",
+              "explanation": "Baselines make hardening repeatable and auditable."
+            },
+            "summary": [
+              "Build secure configuration baselines for network infrastructure.",
+              "Remove unnecessary services and default credentials.",
+              "Protect configuration backups."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "Logging, Time Synchronization, and Evidence",
+            "description": "Collect network evidence that supports correlation and incident investigation.",
+            "learningObjectives": [
+              "Identify high-value network logs.",
+              "Explain synchronized time.",
+              "Protect logs against unauthorized change."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Firewall, VPN, DNS, authentication, configuration, and network-monitoring logs can provide complementary evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Time synchronization improves event ordering.",
+                  "Log access must be controlled because logs can contain sensitive network information."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "firewall decision + VPN login + DNS query + config change -> timeline"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-30",
+              "question": "Why does time synchronization matter?",
+              "options": [
+                "It encrypts packets",
+                "It improves cross-system event correlation.",
+                "It prevents malware",
+                "It removes the need for logs"
+              ],
+              "answer": "It improves cross-system event correlation.",
+              "explanation": "Accurate timestamps reduce false event ordering."
+            },
+            "summary": [
+              "Collect network evidence that supports correlation and incident investigation.",
+              "Time synchronization improves event ordering.",
+              "Log access must be controlled because logs can contain sensitive network information."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-115 — Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Network Incident Containment",
+            "description": "Use network controls to limit ongoing harm while preserving evidence.",
+            "learningObjectives": [
+              "Distinguish detection from containment.",
+              "Choose reversible containment where practical.",
+              "Identify evidence sources before disruption."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Containment limits ongoing harm; eradication removes the cause; recovery restores trustworthy service."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Blocking a single indicator can be safer than disabling an entire service when evidence and business needs allow.",
+                  "Containment decisions need authorized ownership."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-31",
+              "question": "What is the purpose of containment?",
+              "options": [
+                "To attribute the attacker",
+                "To limit ongoing harm while response proceeds.",
+                "To delete all evidence",
+                "To publish indicators"
+              ],
+              "answer": "To limit ongoing harm while response proceeds.",
+              "explanation": "Containment is an operational response goal, not attribution."
+            },
+            "summary": [
+              "Use network controls to limit ongoing harm while preserving evidence.",
+              "Blocking a single indicator can be safer than disabling an entire service when evidence and business needs allow.",
+              "Containment decisions need authorized ownership."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115 — Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          },
+          {
+            "id": "lesson-32",
+            "title": "Network Security Testing and Control Validation",
+            "description": "Use safe technical testing to verify policy and architecture.",
+            "learningObjectives": [
+              "Define scope and rules of engagement.",
+              "Select low-risk validation methods.",
+              "Document evidence and remediation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-115 provides practical guidance for planning and conducting technical security testing and assessment."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Testing must be authorized.",
+                  "A useful report connects finding, evidence, impact, and mitigation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-32",
+              "question": "What must be established before technical security testing?",
+              "options": [
+                "Only a scanner",
+                "Authorization and scope.",
+                "A public IP",
+                "An exploit"
+              ],
+              "answer": "Authorization and scope.",
+              "explanation": "Testing without authorization can create legal, operational, and safety problems."
+            },
+            "summary": [
+              "Use safe technical testing to verify policy and architecture.",
+              "Testing must be authorized.",
+              "A useful report connects finding, evidence, impact, and mitigation."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115 — Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "NIST SP 800-41 Rev. 1 — Guidelines on Firewalls and Firewall Policy",
+                "url": "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Write a Network Incident Runbook",
+            "level": "Advanced",
+            "description": "Create a runbook for suspected compromise of a public service and internal pivot.",
+            "problemStatement": "Include validation, scoping, containment, evidence preservation, recovery, and lessons learned.",
+            "objectives": [
+              "Identify decision points.",
+              "Name evidence sources.",
+              "Include escalation and recovery checks."
+            ],
+            "requirements": [
+              "Fictional environment.",
+              "No destructive commands."
+            ],
+            "hint": "Separate evidence collection from assumptions about attribution.",
+            "solutionCode": "A strong runbook starts with signal validation, maps affected assets, selects reversible containment, preserves logs, coordinates owners, and verifies recovery.",
+            "solutionExplanation": "The task converts network-security knowledge into an operational procedure."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Real-World Project — Network Security Control Validator",
+        "description": "Build, test, and explain a local defensive policy-validation tool.",
+        "lessons": [
+          {
+            "id": "lesson-33",
+            "title": "Capstone Architecture and Policy Model",
+            "description": "Translate network segmentation and allow-policy ideas into machine-checkable records.",
+            "learningObjectives": [
+              "Define capstone inputs and outputs.",
+              "Model an explicit allow policy.",
+              "Keep the tool offline and defensive."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The validator is an analytical aid: an uncovered flow is a policy gap or possible unauthorized path requiring review, not automatic proof of compromise."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Rules describe approved source zone, destination zone, protocol, and destination port.",
+                  "Observed flow data is evidence to compare with intended policy."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "flow -> rule match -> finding"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-33",
+              "question": "What is an uncovered flow?",
+              "options": [
+                "Proof of compromise",
+                "A review finding that lacks a matching explicit allow rule.",
+                "A successful exploit",
+                "An attribution verdict"
+              ],
+              "answer": "A review finding that lacks a matching explicit allow rule.",
+              "explanation": "The tool supports policy validation, not automatic incident attribution."
+            },
+            "summary": [
+              "Translate network segmentation and allow-policy ideas into machine-checkable records.",
+              "Rules describe approved source zone, destination zone, protocol, and destination port.",
+              "Observed flow data is evidence to compare with intended policy."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 12 — Network Infrastructure Management",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management"
+              },
+              {
+                "title": "NIST SP 800-115 — Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-34",
+            "title": "Capstone Testing and Operational Use",
+            "description": "Validate the completed tool and explain how it fits into a control-review workflow.",
+            "learningObjectives": [
+              "Run syntax checks and tests.",
+              "Review a generated finding.",
+              "Document limitations and safe extensions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Automated validation checks repeatable behavior; analysts still interpret whether a path is intentional, documented, or risky."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Good operational integration needs ownership, change control, and test coverage.",
+                  "The tool deliberately does not perform network actions."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "python -m py_compile validator.py\npytest -q\npython validator.py rules.json flows.json"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-34",
+              "question": "Why should the tool not label every uncovered flow malicious?",
+              "options": [
+                "Because JSON is unsafe",
+                "An uncovered path may be legitimate but undocumented or the policy may be incomplete.",
+                "Because firewalls do not use rules",
+                "Because ports never matter"
+              ],
+              "answer": "An uncovered path may be legitimate but undocumented or the policy may be incomplete.",
+              "explanation": "Policy validation identifies discrepancies that require human review."
+            },
+            "summary": [
+              "Validate the completed tool and explain how it fits into a control-review workflow.",
+              "Good operational integration needs ownership, change control, and test coverage.",
+              "The tool deliberately does not perform network actions."
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              },
+              {
+                "title": "NIST SP 800-115 — Technical Guide to Information Security Testing and Assessment",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Network Security Control Validator",
+          "description": "A local, offline defensive tool that compares observed flow metadata with explicit allow-policy rules and produces explainable review findings.",
+          "conceptsCovered": [
+            "Security policy",
+            "Network segmentation",
+            "Least privilege",
+            "Flow telemetry",
+            "Control validation",
+            "Evidence-based analysis",
+            "Testing"
+          ],
+          "steps": [
+            "Create the project directory and save the supplied JSON and Python files.",
+            "Define an explicit allow policy for the intended network paths.",
+            "Load and validate rules and observed flows.",
+            "Match each flow against the allow policy.",
+            "Generate findings for uncovered flows without claiming maliciousness.",
+            "Run syntax checks and automated tests.",
+            "Review the output against the intended network architecture.",
+            "Document limitations and safe future improvements."
+          ],
+          "code": {
+            "README.md": "# Network Security Control Validator\n\nLocal-only defensive project. It compares observed network-flow records against an explicit allow-policy dataset and reports uncovered flows for analyst review.\n",
+            "rules.json": "{\"rules\":[{\"name\":\"web-https\",\"src_zone\":\"internet\",\"dst_zone\":\"web\",\"protocol\":\"tcp\",\"dst_port\":443},{\"name\":\"app-db\",\"src_zone\":\"app\",\"dst_zone\":\"db\",\"protocol\":\"tcp\",\"dst_port\":5432},{\"name\":\"mgmt-ssh\",\"src_zone\":\"mgmt\",\"dst_zone\":\"server\",\"protocol\":\"tcp\",\"dst_port\":22}]}",
+            "flows.json": "[{\"src_zone\":\"internet\",\"dst_zone\":\"web\",\"protocol\":\"tcp\",\"dst_port\":443},{\"src_zone\":\"app\",\"dst_zone\":\"db\",\"protocol\":\"tcp\",\"dst_port\":5432},{\"src_zone\":\"user\",\"dst_zone\":\"db\",\"protocol\":\"tcp\",\"dst_port\":5432},{\"src_zone\":\"mgmt\",\"dst_zone\":\"server\",\"protocol\":\"tcp\",\"dst_port\":22}]",
+            "validator.py": "#!/usr/bin/env python3\nimport argparse, json\nfrom pathlib import Path\n\ndef load(path):\n    with Path(path).open(encoding=\"utf-8\") as fh:\n        return json.load(fh)\n\ndef matches(rule, flow):\n    return (rule.get(\"src_zone\")==flow.get(\"src_zone\") and rule.get(\"dst_zone\")==flow.get(\"dst_zone\")\n            and rule.get(\"protocol\")==flow.get(\"protocol\") and int(rule.get(\"dst_port\"))==int(flow.get(\"dst_port\")))\n\ndef main():\n    ap=argparse.ArgumentParser(description=\"Offline network-policy validator\")\n    ap.add_argument(\"rules\"); ap.add_argument(\"flows\")\n    args=ap.parse_args()\n    rules=load(args.rules).get(\"rules\"); flows=load(args.flows)\n    if not isinstance(rules,list) or not isinstance(flows,list):\n        raise ValueError(\"Invalid input structure\")\n    findings=[f for f in flows if not any(matches(r,f) for r in rules)]\n    print(json.dumps({\"flow_count\":len(flows),\"uncovered_count\":len(findings),\"findings\":findings},indent=2))\n\nif __name__==\"__main__\": main()\n",
+            "test_validator.py": "import json, subprocess, sys\nfrom pathlib import Path\nROOT=Path(__file__).parent\n\ndef test_validator_cli():\n    p=subprocess.run([sys.executable,str(ROOT/\"validator.py\"),str(ROOT/\"rules.json\"),str(ROOT/\"flows.json\")],capture_output=True,text=True,check=True)\n    report=json.loads(p.stdout)\n    assert report[\"flow_count\"]==4\n    assert report[\"uncovered_count\"]==1\n"
+          },
+          "explanation": "The capstone models a common defensive control-validation workflow: intended policy is represented explicitly, observed traffic metadata is compared to that policy, and discrepancies become review items. The matching logic uses source zone, destination zone, protocol, and destination port. This is intentionally not a network scanner or exploit tool. Its value is repeatable verification of whether observed paths align with documented policy, which connects architecture, segmentation, monitoring, and operational review."
+        }
+      }
+    ]
+  }
+}

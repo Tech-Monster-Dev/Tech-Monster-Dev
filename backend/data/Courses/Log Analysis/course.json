@@ -1,0 +1,2210 @@
+{
+  "course": {
+    "id": "log-analysis",
+    "title": "Log Analysis",
+    "slug": "log-analysis",
+    "description": "A practical, evidence-driven course for learning how to parse, normalize, search, correlate, investigate and securely handle logs across endpoints, operating systems, network sensors, web and applications, cloud services and containers. Students build toward defensible timelines, detection hypotheses, threat-hunting pivots, data-quality monitoring and reproducible evidence packages.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 74,
+    "prerequisites": [
+      "Basic operating-system concepts",
+      "Basic networking concepts (IP, TCP/UDP, DNS, HTTP)",
+      "Basic command-line familiarity",
+      "Basic Python is helpful for the automation sections"
+    ],
+    "learningOutcomes": [
+      "Parse unstructured text and structured JSONL logs into reliable fields.",
+      "Normalize heterogeneous records while retaining provenance.",
+      "Handle timestamps, time zones and bounded correlation windows correctly.",
+      "Analyze Windows, Linux, web, cloud, container, Zeek and Suricata telemetry.",
+      "Use jq, shell tools and KQL-style queries for repeatable analysis.",
+      "Correlate events and reconstruct source-linked timelines.",
+      "Write and reason about Sigma detections and ATT&CK-aligned analytics.",
+      "Identify parser failures, missing fields and telemetry gaps.",
+      "Protect logging data and produce integrity-aware evidence exports.",
+      "Complete a multi-source investigation with tested analysis tooling."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Log Analysis Foundations",
+        "description": "Learn what logs represent, how source visibility works, why time semantics matter, and how logging fits into an evidence lifecycle.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Log Records as Evidence",
+            "description": "Build a precise mental model for reading a log event as evidence rather than as a raw string.",
+            "learningObjectives": [
+              "define a log record and distinguish event time from collection time",
+              "identify actor, action, object, outcome, source and context",
+              "state what a single record can and cannot prove"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A log record is an observation emitted by a system, application, service, sensor, or control. Analysis turns that observation into a defensible claim by preserving context and uncertainty."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Event time describes when the source says the event occurred; observed or ingest time may be later.",
+                  "Severity is a prioritization field, not proof of maliciousness.",
+                  "A record becomes more useful when identity, host, process, network and outcome are available."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-001",
+              "question": "Which timestamp most directly represents when the source says the event occurred?",
+              "options": [
+                "Event timestamp",
+                "Ingest timestamp",
+                "Dashboard refresh",
+                "Rule creation time"
+              ],
+              "answer": "Event timestamp",
+              "explanation": "The event timestamp is associated with the occurrence; ingest can happen later."
+            },
+            "summary": [
+              "Logs are evidence with provenance and uncertainty.",
+              "A single event should usually be treated as a pivot, not a verdict."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Log Sources and Visibility",
+            "description": "Map endpoint, identity, application, network, cloud and security-control sources to investigative questions.",
+            "learningObjectives": [
+              "classify major log-source families",
+              "select complementary sources for an investigation",
+              "identify blind spots caused by missing telemetry"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Endpoint logs can expose process, service, file and authentication activity.",
+                  "Network logs expose relationships and protocol metadata.",
+                  "Application logs often contain business actions unavailable elsewhere.",
+                  "Identity and cloud audit logs can be authoritative for account and control-plane operations."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Source selection should follow the investigative question.",
+              "No single source gives complete visibility."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "CIS Control 8",
+                "url": "https://www.cisecurity.org/controls/audit-log-management"
+              },
+              {
+                "title": "MITRE ATT&CK data sources",
+                "url": "https://attack.mitre.org/datasources/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Time Semantics and Clock Drift",
+            "description": "Build trustworthy time handling for multi-source timelines.",
+            "learningObjectives": [
+              "normalize timestamps while preserving originals",
+              "convert timezone-aware values to UTC",
+              "explain clock drift and ingestion latency"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "from datetime import datetime\nfrom zoneinfo import ZoneInfo\ns = \"2026-09-07T19:30:00+05:30\"\ndt = datetime.fromisoformat(s)\nprint(dt.astimezone(ZoneInfo(\"UTC\")).isoformat())"
+              },
+              {
+                "type": "warning",
+                "text": "Do not silently interpret a naive timestamp as local time. Unknown timezone context is an analytical limitation."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Normalize for comparison, retain originals for auditability.",
+              "A timeline is an ordered reconstruction, not automatically a perfect clock order."
+            ],
+            "resources": [
+              {
+                "title": "Python datetime",
+                "url": "https://docs.python.org/3/library/datetime.html"
+              },
+              {
+                "title": "Python zoneinfo",
+                "url": "https://docs.python.org/3/library/zoneinfo.html"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Syslog and Structured Logging",
+            "description": "Read RFC 5424 structure and recognize where older BSD syslog conventions differ.",
+            "learningObjectives": [
+              "identify the main RFC 5424 fields",
+              "distinguish structured data from free-form message text",
+              "recognize the legacy role of RFC 3164"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "<34>1 2026-09-07T14:15:00Z host sshd 1234 ID47 [meta@32473 iut=\"3\"] Failed password"
+              },
+              {
+                "type": "paragraph",
+                "text": "RFC 5424 defines a standardized syslog message format. RFC 3164 documents observed BSD syslog behavior and is informational rather than a modern Internet Standard."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Use structure-aware parsing when possible.",
+              "Know which source conventions are strict format rules and which are historical practice."
+            ],
+            "resources": [
+              {
+                "title": "RFC 5424",
+                "url": "https://www.rfc-editor.org/rfc/rfc5424.html"
+              },
+              {
+                "title": "RFC 3164",
+                "url": "https://www.rfc-editor.org/rfc/rfc3164.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05",
+            "title": "Log Management Lifecycle",
+            "description": "Connect collection, transport, storage, analysis, retention and disposal into one operational lifecycle.",
+            "learningObjectives": [
+              "describe an end-to-end log lifecycle",
+              "identify failure points from source to analyst",
+              "explain why retention and integrity affect investigations"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Collection determines what evidence exists.",
+                  "Transport can introduce loss, duplication or delay.",
+                  "Storage must support search, retention and appropriate access.",
+                  "Disposal should follow documented requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Logging is an operational system, not just a file.",
+              "A lost or untrusted record cannot be recovered by better querying later."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "CIS Control 8",
+                "url": "https://www.cisecurity.org/controls/audit-log-management"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Normalize Mixed Authentication Records",
+            "level": "Easy",
+            "description": "Normalize two differently shaped authentication records into one canonical structure.",
+            "problemStatement": "Parse one key=value record and one JSON record and emit timestamp, user, source_ip, action and outcome fields.",
+            "objectives": [
+              "parse each format",
+              "normalize field names",
+              "retain source format"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "standard library only"
+            ],
+            "hint": "Parse each format separately, then map to a common dictionary.",
+            "solutionCode": "import json\nraw_a=\"ts=2026-09-07T14:00:00Z user=alice src=203.0.113.10 action=login result=failure\"\nraw_b='{\"timestamp\":\"2026-09-07T14:02:00Z\",\"principal\":\"alice\",\"source\":\"203.0.113.10\",\"event\":\"login\",\"outcome\":\"success\"}'\ndef kv(s):\n p=dict(x.split(\"=\",1) for x in s.split())\n return {\"timestamp\":p[\"ts\"],\"user\":p[\"user\"],\"source_ip\":p[\"src\"],\"action\":p[\"action\"],\"outcome\":p[\"result\"],\"source_format\":\"kv\"}\ndef js(s):\n p=json.loads(s)\n return {\"timestamp\":p[\"timestamp\"],\"user\":p[\"principal\"],\"source_ip\":p[\"source\"],\"action\":p[\"event\"],\"outcome\":p[\"outcome\"],\"source_format\":\"json\"}\nprint(kv(raw_a)); print(js(raw_b))",
+            "solutionExplanation": "Each parser understands its own field names while emitting the same analytical vocabulary."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Parsing and Extraction",
+        "description": "Convert unstructured and structured records into fields using Python, regex, shell tools and jq.",
+        "lessons": [
+          {
+            "id": "lesson-06",
+            "title": "Parsing Key=Value and Semi-Structured Text",
+            "description": "Extract fields from semi-structured messages while preserving raw records.",
+            "learningObjectives": [
+              "recognize key=value grammar",
+              "use bounded parsing rather than greedy matching",
+              "retain the raw record for replay"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import re\nline = \"Failed login user=alice src=203.0.113.10 service=ssh\"\nm = re.search(r\"user=(\\S+)\\s+src=(\\S+)\\s+service=(\\S+)\", line)\nprint(m.groupdict() if m else None)"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Parse Mixed Authentication Inputs",
+                "description": "Build canonical JSONL records from one KV line and one JSON record.",
+                "steps": [
+                  "Create sample KV and JSON input.",
+                  "Implement source-specific parsers.",
+                  "Validate timestamps and output common fields.",
+                  "Retain a source_format field."
+                ],
+                "solution": "import json\nraw_a=\"ts=2026-09-07T14:00:00Z user=alice src=203.0.113.10 action=login result=failure\"\nraw_b='{\"timestamp\":\"2026-09-07T14:02:00Z\",\"principal\":\"alice\",\"source\":\"203.0.113.10\",\"event\":\"login\",\"outcome\":\"success\"}'\ndef kv(s):\n p=dict(x.split(\"=\",1) for x in s.split())\n return {\"timestamp\":p[\"ts\"],\"user\":p[\"user\"],\"source_ip\":p[\"src\"],\"action\":p[\"action\"],\"outcome\":p[\"result\"],\"source_format\":\"kv\"}\ndef js(s):\n p=json.loads(s)\n return {\"timestamp\":p[\"timestamp\"],\"user\":p[\"principal\"],\"source_ip\":p[\"source\"],\"action\":p[\"event\"],\"outcome\":p[\"outcome\"],\"source_format\":\"json\"}\nprint(kv(raw_a)); print(js(raw_b))",
+                "output": "Canonical records containing timestamp, user, source_ip, action, outcome and source_format."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Identify the source grammar before writing a parser.",
+              "Prefer explicit field boundaries and named groups."
+            ],
+            "resources": [
+              {
+                "title": "Python re",
+                "url": "https://docs.python.org/3/library/re.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "JSONL and Structured Records",
+            "description": "Process line-oriented JSON safely and distinguish syntax validity from semantic validity.",
+            "learningObjectives": [
+              "load JSON records incrementally",
+              "validate required fields and types",
+              "handle malformed lines explicitly"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import json\nwith open(\"events.jsonl\", encoding=\"utf-8\") as f:\n    for line in f:\n        event = json.loads(line)\n        if event.get(\"event\", {}).get(\"outcome\") == \"failure\":\n            print(event)"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "JSONL supports streaming because each line is an independent JSON value.",
+              "A valid JSON document can still have wrong types, missing fields or invalid timestamps."
+            ],
+            "resources": [
+              {
+                "title": "jq manual",
+                "url": "https://jqlang.org/manual/"
+              },
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Regex for Extraction and Detection",
+            "description": "Use regular expressions precisely without making detection logic unreadable.",
+            "learningObjectives": [
+              "use anchors, groups and bounded quantifiers",
+              "extract named fields",
+              "test positive and negative examples"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import re\npat = re.compile(r\"(?P<user>[A-Za-z0-9_.-]+)@(?P<domain>[A-Za-z0-9.-]+)\")\nm = pat.search(\"login for alice@example.org\")\nprint(m.groupdict()) if m else None"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Regex should reduce ambiguity, not conceal it.",
+              "A formal parser is preferable when the source has a stable grammar."
+            ],
+            "resources": [
+              {
+                "title": "Python re",
+                "url": "https://docs.python.org/3/library/re.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09",
+            "title": "Shell Analysis with grep and awk",
+            "description": "Build fast, reproducible command-line investigations over text streams.",
+            "learningObjectives": [
+              "filter records with grep",
+              "transform fields with awk",
+              "aggregate values with sort and uniq"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "grep \"Failed login\" auth.log | awk '{print $NF}' | sort | uniq -c | sort -nr | head"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Use shell pipelines for focused inspection.",
+              "Save important or complex commands so the analysis can be reproduced."
+            ],
+            "resources": [
+              {
+                "title": "jq manual",
+                "url": "https://jqlang.org/manual/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "jq for JSON Logs",
+            "description": "Use structure-aware querying for JSON security logs.",
+            "learningObjectives": [
+              "filter nested JSON objects",
+              "select and rename fields",
+              "aggregate JSON values"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "jq 'select(.event.outcome==\"failure\") | {ts:.timestamp, user:.user.name, ip:.source.ip}' events.jsonl"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Use jq rather than substring matching when the source is JSON.",
+              "Keep filters small and composable."
+            ],
+            "resources": [
+              {
+                "title": "jq manual",
+                "url": "https://jqlang.org/manual/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Schema Validation and Parser Testing",
+            "description": "Turn parsing into tested software so schema drift is detected rather than silently absorbed.",
+            "learningObjectives": [
+              "define required fields",
+              "test malformed and changed records",
+              "measure parser error rates"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Test missing keys, nulls, changed separators and invalid timestamps.",
+                  "Keep raw input available so a parser change can be replayed.",
+                  "Treat parser errors as data-quality events with monitoring."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Parser failures can become security blind spots.",
+              "Automated tests should fail when the source grammar changes unexpectedly."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Detect an Authentication Failure Burst",
+            "level": "Intermediate",
+            "description": "Identify sources with repeated failures in a bounded window.",
+            "problemStatement": "Report any source IP with at least three failures within five minutes.",
+            "objectives": [
+              "parse JSONL",
+              "group by source",
+              "evaluate rolling windows"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "events.jsonl"
+            ],
+            "hint": "Sort timestamps by source and use a two-pointer window.",
+            "solutionCode": "import json\nfrom datetime import datetime,timedelta\nfrom collections import defaultdict\nby=defaultdict(list)\nwith open(\"events.jsonl\",encoding=\"utf-8\") as f:\n for line in f:\n  e=json.loads(line)\n  if e.get(\"outcome\")==\"failure\": by[e[\"source_ip\"]].append(datetime.fromisoformat(e[\"timestamp\"].replace(\"Z\",\"+00:00\")))\nfor ip,t in by.items():\n t.sort(); left=0\n for right in range(len(t)):\n  while t[right]-t[left]>timedelta(minutes=5): left+=1\n  if right-left+1>=3: print(ip,t[left].isoformat()); break",
+            "solutionExplanation": "The window includes the full five-minute interval and moves its left edge only when necessary."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Normalization and Data Quality",
+        "description": "Normalize heterogeneous data, preserve provenance, enrich carefully and quantify data quality.",
+        "lessons": [
+          {
+            "id": "lesson-12",
+            "title": "Canonical Fields and Schema Mapping",
+            "description": "Create a shared vocabulary across unlike log sources.",
+            "learningObjectives": [
+              "map source-specific fields to canonical names",
+              "preserve source-specific extensions",
+              "explain the value of ECS and OpenTelemetry semantics"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "event = {\n  \"@timestamp\":\"2026-09-07T14:15:00Z\",\n  \"user.name\":\"alice\",\n  \"source.ip\":\"203.0.113.10\",\n  \"event.action\":\"login\",\n  \"event.outcome\":\"failure\"\n}"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Normalization translates meaning; it should not erase original evidence.",
+              "Use established semantic models when practical instead of inventing inconsistent aliases."
+            ],
+            "resources": [
+              {
+                "title": "Elastic ECS",
+                "url": "https://www.elastic.co/docs/reference/ecs/ecs-field-reference"
+              },
+              {
+                "title": "OpenTelemetry Logs",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Deduplication and Event Identity",
+            "description": "Prevent double-counting while avoiding destructive deduplication.",
+            "learningObjectives": [
+              "recognize duplicate events from collectors",
+              "design safe fallback fingerprints",
+              "explain when identical events are legitimately repeated"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Stable producer event IDs are preferable to constructed fingerprints.",
+                  "Fallback fingerprints can use source, timestamp, host and message but have collision risks.",
+                  "Repeated authentication failures may be distinct events even when message text matches."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Deduplicate only when source semantics support it.",
+              "Keep enough provenance to explain why records were merged."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Enrichment with Identity and Asset Context",
+            "description": "Add context that helps the analyst interpret who and what generated an event.",
+            "learningObjectives": [
+              "enrich with user and asset metadata",
+              "record enrichment provenance and freshness",
+              "separate enrichment from original evidence"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identity enrichment can map an account to role or ownership.",
+                  "Asset enrichment can classify host roles.",
+                  "Threat-intelligence and DNS enrichment should carry source and freshness context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Enrichment raises analytical value but introduces staleness and dependency risks.",
+              "Keep original source fields separate from derived context."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "STIX 2.1",
+                "url": "https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Data Quality and Missingness",
+            "description": "Measure data quality before making strong conclusions.",
+            "learningObjectives": [
+              "distinguish missing, null and placeholder values",
+              "calculate field completeness",
+              "treat missingness as evidence of a telemetry limitation"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "required = [\"timestamp\", \"event_type\", \"source_ip\"]\nmissing = [f for f in required if not event.get(f)]\nprint(missing)"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Data quality is part of detection quality.",
+              "Unknown should not be confused with not-applicable or not-collected."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "OWASP Logging",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Retention, Integrity and Access",
+            "description": "Understand how logs remain useful as evidence over time.",
+            "learningObjectives": [
+              "explain retention trade-offs",
+              "describe least-privilege access for logs",
+              "identify integrity and tampering risks"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Retention supports historical investigations but increases storage and privacy costs.",
+                  "Raw logs should be protected from unauthorized modification.",
+                  "Administrative access to logs should itself be auditable."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "The value of logs depends on availability, trustworthiness and appropriate access.",
+              "Retention should be driven by documented risk and requirements."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 8",
+                "url": "https://www.cisecurity.org/controls/audit-log-management"
+              },
+              {
+                "title": "OWASP Logging",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Merge Evidence into a Timeline",
+            "level": "Intermediate",
+            "description": "Merge two differently shaped JSONL sources into one chronological evidence timeline.",
+            "problemStatement": "Create a timeline that preserves source identity and normalized time.",
+            "objectives": [
+              "normalize schemas",
+              "parse timezone-aware timestamps",
+              "sort events"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "auth.jsonl and endpoint.jsonl"
+            ],
+            "hint": "Use source-specific parsing functions and a common event structure.",
+            "solutionCode": "import json\nfrom datetime import datetime\ndef dt(s): return datetime.fromisoformat(s.replace(\"Z\",\"+00:00\"))\nitems=[]\nfor path,source,timefield in [(\"auth.jsonl\",\"auth\",\"ts\"),(\"endpoint.jsonl\",\"endpoint\",\"timestamp\")]:\n with open(path,encoding=\"utf-8\") as f:\n  for line in f:\n   e=json.loads(line); items.append({\"timestamp\":dt(e[timefield]),\"source\":source,\"user\":e.get(\"user\"),\"action\":e.get(\"action\") or e.get(\"process_name\")})\nfor e in sorted(items,key=lambda x:x[\"timestamp\"]): print(e)",
+            "solutionExplanation": "The combined list uses a consistent timestamp type and retains the source label for each event."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Host and OS Log Analysis",
+        "description": "Investigate Windows and Linux authentication, process, service and system evidence.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Windows Authentication Events",
+            "description": "Analyze Windows authentication events with contextual pivots.",
+            "learningObjectives": [
+              "interpret Event IDs 4624 and 4625 at a high level",
+              "use account, source address and logon context as pivots",
+              "avoid concluding compromise from a single event"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "4624 records a successful account logon; 4625 records a failed logon.",
+                  "Logon type, account, source address and workstation context can change interpretation.",
+                  "Correlate with adjacent process, network and account-management events."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Event IDs are pivots, not verdicts.",
+              "Always validate whether the behavior fits the asset and user context."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Event 4624",
+                "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624"
+              },
+              {
+                "title": "Microsoft Event 4625",
+                "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4625"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Windows Process Creation and Services",
+            "description": "Use process and service installation events for endpoint pivots.",
+            "learningObjectives": [
+              "analyze Event 4688 process creation",
+              "explain the value of command-line and parent context",
+              "use Event 7045 as a service-installation pivot"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Event 4688 can record process creation when the relevant audit policy is configured.",
+                  "Command line and parent process context help distinguish expected activity from suspicious execution.",
+                  "Service installation may be legitimate administration or persistence; validate against change context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Endpoint evidence is strongest as a chain: user → parent → process → network/file/service activity."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Event 4688",
+                "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4688"
+              },
+              {
+                "title": "Microsoft Event 7045",
+                "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-7045"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Linux journalctl",
+            "description": "Query systemd journal data using narrow, explicit filters.",
+            "learningObjectives": [
+              "filter journal entries by unit and time",
+              "use severity filters",
+              "export bounded slices for analysis"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "journalctl --since \"2026-09-07 14:00:00\" --until \"2026-09-07 15:00:00\" -u sshd\njournalctl -p warning..alert --since today"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Start narrow and widen the window only when evidence requires it.",
+              "Record commands and time ranges for reproducibility."
+            ],
+            "resources": [
+              {
+                "title": "journalctl",
+                "url": "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Linux Authentication and Audit Evidence",
+            "description": "Correlate authentication records with privileged actions and audit telemetry.",
+            "learningObjectives": [
+              "recognize distribution-dependent authentication logging",
+              "use auditd evidence conceptually",
+              "bridge account sessions to actions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authentication log paths and formats vary by distribution and configuration.",
+                  "auditd produces security-audit records distinct from ordinary application messages.",
+                  "Correlate identity with process, privilege and file evidence where available."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Linux logging is configuration-dependent.",
+              "A missing log source must be reported as a limitation, not ignored."
+            ],
+            "resources": [
+              {
+                "title": "Red Hat audit documentation",
+                "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/auditing-the-system_security-hardening"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Extract Suricata Alerts with jq",
+            "level": "Easy",
+            "description": "Extract alert evidence from EVE JSON without treating JSON as raw text.",
+            "problemStatement": "Print timestamp, source, destination and signature for alert records.",
+            "objectives": [
+              "filter event_type",
+              "select nested alert fields",
+              "avoid fragile text matching"
+            ],
+            "requirements": [
+              "jq 1.6+",
+              "eve.json"
+            ],
+            "hint": "Filter on `.event_type == \"alert\"` first.",
+            "solutionCode": "jq 'select(.event_type==\"alert\") | {timestamp, src:.src_ip, dst:.dest_ip, signature:.alert.signature}' eve.json",
+            "solutionExplanation": "The filter uses the JSON structure and preserves the nested alert semantics."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Network Log Analysis",
+        "description": "Analyze Zeek and Suricata telemetry and reason about network context, metadata and baselines.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "Zeek conn.log",
+            "description": "Use Zeek connection records to reconstruct network relationships.",
+            "learningObjectives": [
+              "interpret connection metadata",
+              "group connections by source and destination",
+              "state limitations of network metadata"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Zeek conn.log records TCP, UDP and ICMP connection metadata.",
+                  "Connection records support relationship and timing questions.",
+                  "Metadata may not expose application payload, especially for encrypted protocols."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Connection logs are strong for relationships, not full content visibility."
+            ],
+            "resources": [
+              {
+                "title": "Zeek Log Files",
+                "url": "https://docs.zeek.org/en/current/reference/logs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Zeek DNS, HTTP and TLS Metadata",
+            "description": "Use protocol-specific logs for pivots and anomaly analysis.",
+            "learningObjectives": [
+              "pivot from DNS names to hosts",
+              "analyze HTTP metadata where available",
+              "state visibility limitations for HTTPS"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "DNS can expose queried names and response context.",
+                  "Zeek HTTP logging is less active for end-to-end encrypted HTTPS unless visibility is otherwise provided.",
+                  "TLS metadata can still support endpoint and timing analysis."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Protocol metadata often remains useful even when payloads are unavailable."
+            ],
+            "resources": [
+              {
+                "title": "Zeek Log Files",
+                "url": "https://docs.zeek.org/en/current/reference/logs/"
+              },
+              {
+                "title": "Zeek HTTP",
+                "url": "https://docs.zeek.org/en/current/reference/logs/http.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Suricata EVE JSON",
+            "description": "Read IDS/IPS output as a stream of typed JSON events.",
+            "learningObjectives": [
+              "distinguish Suricata alert records from other EVE event types",
+              "extract nested alert fields",
+              "correlate an alert with flow and protocol records"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "jq 'select(.event_type==\"alert\") | {timestamp, src:.src_ip, dst:.dest_ip, signature:.alert.signature}' eve.json"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Extract and Pivot Network Alerts",
+                "description": "Use jq and simple Python aggregation to inspect Suricata and connection evidence.",
+                "steps": [
+                  "Extract Suricata alerts with jq.",
+                  "Count connections by source.",
+                  "Pivot from alert source IP into connection records.",
+                  "Record the exact filters used."
+                ],
+                "solution": "jq 'select(.event_type==\"alert\") | {timestamp,src:.src_ip,dst:.dest_ip,signature:.alert.signature}' eve.json\npython - <<'PY'\nimport json\nfrom collections import Counter\nc=Counter()\nwith open('conn.jsonl',encoding='utf-8') as f:\n    for line in f: c[json.loads(line)['src_ip']]+=1\nprint(c)\nPY",
+                "output": "Alert field output plus per-source connection counts suitable for further pivots."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "An alert is evidence that a detection rule matched telemetry; it is not automatically proof that a payload succeeded."
+            ],
+            "resources": [
+              {
+                "title": "Suricata EVE JSON",
+                "url": "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Ports, Services and Network Context",
+            "description": "Use IANA and endpoint context without assuming port number equals protocol identity.",
+            "learningObjectives": [
+              "use IANA as a service-name reference",
+              "explain non-standard port usage",
+              "validate service identity with stronger evidence when available"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "IANA maintains the service-name and port-number registry. A port number is a hint, not conclusive proof of the application protocol because software can listen on non-standard ports and proxies can change apparent endpoints."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Validate unexpected services using process, protocol or asset context."
+            ],
+            "resources": [
+              {
+                "title": "IANA Service Names and Port Numbers",
+                "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml"
+              }
+            ]
+          },
+          {
+            "id": "lesson-25",
+            "title": "Network Baselines and Rare Behavior",
+            "description": "Create simple behavioral baselines and interpret outliers carefully.",
+            "learningObjectives": [
+              "aggregate connection behavior by host",
+              "identify low-frequency ports or destinations",
+              "distinguish unusual from malicious"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "from collections import Counter\nports=[443,443,53,22,443,8080]\nprint(Counter(ports).most_common())"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Rare activity creates candidates for investigation.",
+              "Segment baselines by role and time when justified."
+            ],
+            "resources": [
+              {
+                "title": "Zeek Log Files",
+                "url": "https://docs.zeek.org/en/current/reference/logs/"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Write a KQL Authentication Pivot",
+            "level": "Advanced",
+            "description": "Find sources that have both failures and a later success in a bounded interval.",
+            "problemStatement": "Build a KQL query for a five-minute authentication investigation window.",
+            "objectives": [
+              "bound time",
+              "summarize failures and successes",
+              "join by source IP"
+            ],
+            "requirements": [
+              "KQL/Sentinel-compatible sample schema"
+            ],
+            "hint": "Create filtered datasets and join or summarize on SourceIP.",
+            "solutionCode": "let failures = AuthLogs | where TimeGenerated between (datetime(2026-09-07 14:00:00)..datetime(2026-09-07 14:05:00)) | where Outcome == \"failure\" | summarize Failures=count(), LastFailure=max(TimeGenerated) by SourceIP;\nlet successes = AuthLogs | where TimeGenerated between (datetime(2026-09-07 14:00:00)..datetime(2026-09-07 14:05:00)) | where Outcome == \"success\" | summarize Successes=count(), FirstSuccess=min(TimeGenerated) by SourceIP;\nfailures | join kind=inner successes on SourceIP | where FirstSuccess >= LastFailure | project SourceIP,Failures,Successes,LastFailure,FirstSuccess",
+            "solutionExplanation": "The query keeps the correlation window explicit and exposes the timestamps needed for validation."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Application, Web, Cloud and Container Logs",
+        "description": "Extend log analysis into distributed application, web, cloud and Kubernetes environments.",
+        "lessons": [
+          {
+            "id": "lesson-26",
+            "title": "Web Access Logs",
+            "description": "Analyze web request logs for probing, abuse and errors.",
+            "learningObjectives": [
+              "parse source IP, method, URI and status",
+              "pivot on URI and source",
+              "distinguish server response from security outcome"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "log = '203.0.113.10 - - [07/Sep/2026:14:20:00 +0000] \"GET /admin HTTP/1.1\" 404 512'\nimport re\nm=re.match(r'(?P<ip>\\S+) .* \"\\S+ (?P<uri>\\S+) HTTP/[^\"]+\" (?P<status>\\d+)',log)\nprint(m.groupdict())"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "404/403/5xx patterns need contextual interpretation.",
+              "Combine web data with authentication and application logs."
+            ],
+            "resources": [
+              {
+                "title": "Apache mod_log_config",
+                "url": "https://httpd.apache.org/docs/current/mod/mod_log_config.html"
+              },
+              {
+                "title": "OWASP Logging",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Application and API Logs",
+            "description": "Use business-level context and correlation IDs to follow actions across services.",
+            "learningObjectives": [
+              "identify actor/action/resource fields",
+              "trace a request using a correlation ID",
+              "avoid logging secrets or unnecessary sensitive data"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Business events such as role changes or exports may exist only in application logs.",
+                  "Correlation IDs link gateway and service records.",
+                  "OWASP recommends excluding sensitive authentication material and protecting log access."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Application logs can explain the business action that infrastructure logs merely hint at."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Logging",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Cloud Audit Logs",
+            "description": "Analyze cloud control-plane records using principal, action and resource context.",
+            "learningObjectives": [
+              "pivot from principal to action and resource",
+              "keep account/project/subscription and region in scope",
+              "separate control-plane context from workload events"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Cloud audit records commonly include actor/principal, API action, resource, result and source context.",
+                  "Scope boundaries matter because the same user identity can operate across accounts or subscriptions.",
+                  "Correlate cloud control-plane records with endpoint and application evidence when possible."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Cloud logs require explicit account and tenant scope."
+            ],
+            "resources": [
+              {
+                "title": "AWS CloudTrail",
+                "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+              },
+              {
+                "title": "Azure Activity Log",
+                "url": "https://learn.microsoft.com/en-us/azure/azure-monitor/platform/activity-log"
+              }
+            ]
+          },
+          {
+            "id": "lesson-29",
+            "title": "Kubernetes and Container Logs",
+            "description": "Analyze ephemeral workloads with workload and orchestration context.",
+            "learningObjectives": [
+              "differentiate application container logs from audit events",
+              "correlate pod, namespace and node context",
+              "account for short-lived workloads"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Container stdout/stderr is different from Kubernetes API audit activity.",
+                  "Workloads can move or restart, so pod identity and lifecycle context matter.",
+                  "Centralized collection is especially important for ephemeral resources."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Do not assume a pod name is a durable host identity."
+            ],
+            "resources": [
+              {
+                "title": "Kubernetes Auditing",
+                "url": "https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/"
+              },
+              {
+                "title": "OpenTelemetry Logs",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Create a Sigma Authentication Rule",
+            "level": "Intermediate",
+            "description": "Write a portable event-level detection for authentication failures.",
+            "problemStatement": "Create a valid Sigma-style YAML rule with metadata, logsource, detection and false-positive guidance.",
+            "objectives": [
+              "define source",
+              "state detection condition",
+              "document benign explanations"
+            ],
+            "requirements": [
+              "Sigma rule syntax"
+            ],
+            "hint": "Keep the semantics generic and document backend mapping assumptions.",
+            "solutionCode": "title: Authentication Failure Review\nid: 44444444-4444-4444-8444-444444444444\nstatus: experimental\ndescription: Detects authentication failure events for analyst review.\nlogsource:\n  category: authentication\ndetection:\n  selection:\n    outcome: failure\n  condition: selection\nfalsepositives:\n  - User mistakes\nlevel: low",
+            "solutionExplanation": "The rule is event-level and can be extended with correlation or thresholding appropriate to the target backend."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Correlation and Timeline Analysis",
+        "description": "Join evidence across systems, reason with bounded time windows and reconstruct multi-step event sequences.",
+        "lessons": [
+          {
+            "id": "lesson-30",
+            "title": "Correlation Keys and Joins",
+            "description": "Build cross-source joins using strong identifiers and bounded fallback keys.",
+            "learningObjectives": [
+              "select stable correlation keys",
+              "reason about join cardinality",
+              "bound fallback joins by time"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Useful keys include event IDs, request IDs, user, host, process ID, source IP and time.",
+                  "Weak joins should combine multiple fields and a narrow time window.",
+                  "Document the key and scope used for reproducibility."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Correlation is hypothesis building, not automatic truth."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft KQL common tasks",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/tutorials/common-tasks-microsoft-sentinel"
+              },
+              {
+                "title": "OpenTelemetry Logs",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Time-Window Correlation",
+            "description": "Detect related activity without requiring exact timestamp equality.",
+            "learningObjectives": [
+              "design bounded windows",
+              "account for clock skew and ingestion delay",
+              "avoid overlapping-window confusion"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "from datetime import datetime, timedelta\nbase=datetime.fromisoformat(\"2026-09-07T14:00:00+00:00\")\nfor minutes in (2,8):\n    ts=base+timedelta(minutes=minutes)\n    print(minutes, ts-base <= timedelta(minutes=5))"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Wider windows increase recall and can increase false correlations.",
+              "Choose the smallest window justified by system behavior."
+            ],
+            "resources": [
+              {
+                "title": "Python datetime",
+                "url": "https://docs.python.org/3/library/datetime.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-32",
+            "title": "Timeline Reconstruction",
+            "description": "Create evidence-linked timelines and label uncertainty.",
+            "learningObjectives": [
+              "merge heterogeneous events into a canonical timeline",
+              "mark gaps and uncertainties",
+              "separate observed evidence from inference"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A useful timeline carries timestamp, source, actor, action, outcome and evidence reference.",
+                  "Gaps should be visible rather than silently filled.",
+                  "Precision should not exceed the source precision."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Reconstruct a Cross-Source Timeline",
+                "description": "Merge authentication and endpoint logs into a source-linked UTC timeline.",
+                "steps": [
+                  "Prepare two JSONL files with different field names.",
+                  "Normalize each source into a shared structure.",
+                  "Sort by normalized event time.",
+                  "Review gaps and provenance."
+                ],
+                "solution": "import json\nfrom datetime import datetime\ndef dt(s): return datetime.fromisoformat(s.replace(\"Z\",\"+00:00\"))\nitems=[]\nfor path,source,timefield in [(\"auth.jsonl\",\"auth\",\"ts\"),(\"endpoint.jsonl\",\"endpoint\",\"timestamp\")]:\n with open(path,encoding=\"utf-8\") as f:\n  for line in f:\n   e=json.loads(line); items.append({\"timestamp\":dt(e[timefield]),\"source\":source,\"user\":e.get(\"user\"),\"action\":e.get(\"action\") or e.get(\"process_name\")})\nfor e in sorted(items,key=lambda x:x[\"timestamp\"]): print(e)",
+                "output": "A chronological timeline with normalized timestamps and source labels."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "A good timeline makes multiple sources understandable without hiding uncertainty."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-33",
+            "title": "Sequence Detection",
+            "description": "Model multi-step behaviors as explicit state transitions.",
+            "learningObjectives": [
+              "define an ordered sequence",
+              "enforce scope and maximum gap",
+              "identify missing stages"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "events=[\"login_failure\",\"login_failure\",\"login_success\",\"privilege_change\"]\npattern=[\"login_failure\",\"login_success\",\"privilege_change\"]\ni=0\nfor e in events:\n    if i<len(pattern) and e==pattern[i]: i+=1\nprint(i==len(pattern))"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Sequence detection makes assumptions about ordering and allowable gaps explicit.",
+              "A sequence match should trigger investigation, not automatic attribution."
+            ],
+            "resources": [
+              {
+                "title": "MITRE Detection and Analytics",
+                "url": "https://attack.mitre.org/resources/get-started/detections-and-analytics/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Measure Parser Completeness",
+            "level": "Easy",
+            "description": "Report missing rates for required fields in a JSONL source.",
+            "problemStatement": "Calculate how many records miss each required field and the percentage of the dataset affected.",
+            "objectives": [
+              "count records",
+              "count missing fields",
+              "compute rates"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "JSONL input"
+            ],
+            "hint": "Count records and missing occurrences in one pass.",
+            "solutionCode": "import json\nfrom collections import Counter\nreq=[\"timestamp\",\"event_type\",\"source_ip\"]; total=0; miss=Counter()\nwith open(\"events.jsonl\",encoding=\"utf-8\") as f:\n for line in f:\n  e=json.loads(line); total+=1\n  for k in req:\n   if not e.get(k): miss[k]+=1\nfor k in req: print(k,miss[k],f\"{miss[k]*100/total:.2f}%\" if total else \"0%\")",
+            "solutionExplanation": "This produces a measurable data-quality report instead of silently discarding malformed data."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "SIEM Search and KQL",
+        "description": "Use KQL-style querying for investigation, aggregation, extraction, correlation and query optimization.",
+        "lessons": [
+          {
+            "id": "lesson-34",
+            "title": "KQL Query Structure",
+            "description": "Use the Kusto pipeline model to filter, project, sort and summarize log data.",
+            "learningObjectives": [
+              "bound a time range",
+              "filter on event fields",
+              "summarize by useful dimensions"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SecurityEvent\n| where TimeGenerated > ago(1h)\n| where EventID in (4624,4625)\n| summarize Count=count() by Account, EventID\n| order by Count desc"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-034",
+              "question": "Which KQL operator filters records?",
+              "options": [
+                "where",
+                "extend",
+                "project",
+                "order by"
+              ],
+              "answer": "where",
+              "explanation": "`where` evaluates a predicate and keeps matching records."
+            },
+            "summary": [
+              "Start with time bounds.",
+              "Filter early and project only the columns needed for the question."
+            ],
+            "resources": [
+              {
+                "title": "KQL overview",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/"
+              },
+              {
+                "title": "Microsoft Sentinel KQL tasks",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/tutorials/common-tasks-microsoft-sentinel"
+              }
+            ]
+          },
+          {
+            "id": "lesson-35",
+            "title": "KQL String Extraction",
+            "description": "Turn unstructured log fields into queryable values with KQL extraction functions.",
+            "learningObjectives": [
+              "extract values from strings",
+              "build calculated fields",
+              "avoid repeated expensive parsing when upstream normalization is available"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "MyLogs\n| extend User = extract(@\"user=([^ ]+)\", 1, RawMessage)\n| where isnotempty(User)\n| summarize Events=count() by User"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Extraction is useful for legacy unstructured sources.",
+              "Durable normalization can be preferable when the same field is queried repeatedly."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft KQL",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/"
+              },
+              {
+                "title": "Microsoft Sentinel KQL training",
+                "url": "https://learn.microsoft.com/en-us/training/modules/work-with-data-kusto-query-language/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-36",
+            "title": "KQL Aggregation and Joins",
+            "description": "Move from row-by-row inspection to population analysis.",
+            "learningObjectives": [
+              "aggregate by user, host or IP",
+              "join filtered datasets",
+              "use let for maintainable queries"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "let failures = AuthLogs\n| where Outcome == \"failure\"\n| summarize Failures=count() by SourceIP;\nfailures\n| top 20 by Failures desc"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Aggregations reveal distributions and outliers.",
+              "Joins should use intentional keys and bounded populations."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Sentinel KQL tasks",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/tutorials/common-tasks-microsoft-sentinel"
+              }
+            ]
+          },
+          {
+            "id": "lesson-37",
+            "title": "Search Design and Query Performance",
+            "description": "Design searches that are correct, explainable and economical.",
+            "learningObjectives": [
+              "apply early filters",
+              "avoid unnecessarily wide projections",
+              "separate exploratory searches from production analytics"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Time bounding is a correctness and performance control.",
+                  "Keep exploratory queries readable enough to validate their semantics.",
+                  "Document assumptions, exclusions and data sources before deploying a query as a detection."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "A fast query that answers the wrong question is still wrong."
+            ],
+            "resources": [
+              {
+                "title": "KQL overview",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Build a Rare-Port Baseline",
+            "level": "Intermediate",
+            "description": "Summarize destination-port frequency by host and identify rare values.",
+            "problemStatement": "Flag ports used fewer than three times by each source host.",
+            "objectives": [
+              "aggregate by host",
+              "count ports",
+              "flag low-frequency values"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "JSONL connection records"
+            ],
+            "hint": "Use nested counters keyed by source host and destination port.",
+            "solutionCode": "import json\nfrom collections import defaultdict,Counter\nc=defaultdict(Counter)\nwith open(\"conn.jsonl\",encoding=\"utf-8\") as f:\n for line in f:\n  e=json.loads(line); c[e[\"src_ip\"]][int(e[\"dest_port\"])]+=1\nfor host,ports in c.items(): print(host,[p for p,n in ports.items() if n<3])",
+            "solutionExplanation": "The result is a candidate baseline. Rare does not imply malicious."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Detection Engineering and Hunting",
+        "description": "Turn log observations into detections, Sigma rules, hunts and disciplined triage decisions.",
+        "lessons": [
+          {
+            "id": "lesson-38",
+            "title": "Detection Hypotheses",
+            "description": "Translate an analytical observation into explicit detection logic.",
+            "learningObjectives": [
+              "state a behavioral hypothesis",
+              "identify required telemetry",
+              "define false-positive and validation behavior"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A useful detection states the suspicious behavior, evidence source, scope and known benign explanations.",
+                  "Thresholds and windows are assumptions that must be tested.",
+                  "Every detection should have a validation and tuning plan."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Detection quality depends on telemetry quality and context."
+            ],
+            "resources": [
+              {
+                "title": "MITRE Detection and Analytics",
+                "url": "https://attack.mitre.org/resources/get-started/detections-and-analytics/"
+              },
+              {
+                "title": "CIS Control 8",
+                "url": "https://www.cisecurity.org/controls/audit-log-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-39",
+            "title": "Sigma Rules",
+            "description": "Create portable YAML detections and document their operational context.",
+            "learningObjectives": [
+              "identify Sigma metadata sections",
+              "write a detection condition",
+              "document false positives and severity"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "title: Authentication Failure Review\nid: 33333333-3333-4333-8333-333333333333\nstatus: experimental\ndescription: Detects authentication failure events for investigation.\nlogsource:\n  category: authentication\ndetection:\n  selection:\n    outcome: failure\n  condition: selection\nfalsepositives:\n  - User mistakes\nlevel: low"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-039",
+              "question": "Which Sigma sections define the source and matching logic?",
+              "options": [
+                "logsource and detection",
+                "title and level",
+                "falsepositives only",
+                "author only"
+              ],
+              "answer": "logsource and detection",
+              "explanation": "`logsource` identifies the event source and `detection` specifies matching logic."
+            },
+            "summary": [
+              "Sigma is a portable detection format; backend field mapping still matters.",
+              "Good rules document scope, intent and false positives."
+            ],
+            "resources": [
+              {
+                "title": "Sigma Rules",
+                "url": "https://sigmahq.io/docs/basics/rules.html"
+              },
+              {
+                "title": "Sigma Specification",
+                "url": "https://sigmahq.io/sigma-specification/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-40",
+            "title": "Threat Hunting from Logs",
+            "description": "Perform hypothesis-driven searches for behavior that did not trigger an alert.",
+            "learningObjectives": [
+              "write a hunt hypothesis",
+              "choose telemetry and pivots",
+              "record findings and dead ends"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Start with a behavior hypothesis, not a random search.",
+                  "Use users, hosts, processes, IPs, domains and timestamps as pivots.",
+                  "A negative result is meaningful only when telemetry coverage is understood."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Write and Review a Sigma Rule",
+                "description": "Author an event-level Sigma rule and evaluate its assumptions.",
+                "steps": [
+                  "Choose an authentication log source.",
+                  "Define the behavior the rule matches.",
+                  "Add false-positive guidance.",
+                  "Review whether fields exist in the target schema."
+                ],
+                "solution": "title: Authentication Failure Review\nid: 44444444-4444-4444-8444-444444444444\nstatus: experimental\ndescription: Detects authentication failure events for analyst review.\nlogsource:\n  category: authentication\ndetection:\n  selection:\n    outcome: failure\n  condition: selection\nfalsepositives:\n  - User mistakes\nlevel: low",
+                "output": "A portable detection rule with explicit source assumptions and false positives."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Hunting is iterative: hypothesis → query → evidence → refinement → conclusion."
+            ],
+            "resources": [
+              {
+                "title": "MITRE Detection and Analytics",
+                "url": "https://attack.mitre.org/resources/get-started/detections-and-analytics/"
+              },
+              {
+                "title": "KQL overview",
+                "url": "https://learn.microsoft.com/en-us/kusto/query/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-41",
+            "title": "ATT&CK Mapping for Log Evidence",
+            "description": "Map observed behavior to ATT&CK concepts without turning the framework into an attribution engine.",
+            "learningObjectives": [
+              "use ATT&CK to organize behaviors and analytics",
+              "understand current data-component terminology",
+              "state evidence limitations"
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "MITRE ATT&CK deprecated the legacy data-source model for new additions in v18 and is moving toward more specific data-component and detection-analytics concepts. Legacy data-source pages remain useful for reference."
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "ATT&CK describes adversary behavior; it does not prove actor identity."
+            ],
+            "resources": [
+              {
+                "title": "MITRE Detection and Analytics",
+                "url": "https://attack.mitre.org/resources/get-started/detections-and-analytics/"
+              },
+              {
+                "title": "MITRE Data Sources",
+                "url": "https://attack.mitre.org/datasources/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-42",
+            "title": "Alert Triage and Tuning",
+            "description": "Turn a detection match into a consistent analyst decision and improve signal quality.",
+            "learningObjectives": [
+              "validate source evidence",
+              "classify outcomes",
+              "design narrow suppressions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Pivot from the alert into adjacent telemetry.",
+                  "Check expected asset, user and time context.",
+                  "Prefer narrow exclusions over broad suppression."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Triage is evidence gathering under time pressure.",
+              "Good tuning lowers noise without deleting the behavior of interest."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "CIS Control 8",
+                "url": "https://www.cisecurity.org/controls/audit-log-management"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09",
+            "title": "Build an Evidence Manifest",
+            "level": "Advanced",
+            "description": "Create a manifest containing SHA-256 hashes and metadata for exported log evidence.",
+            "problemStatement": "Write a JSON manifest with file path, size, hash and generation timestamp.",
+            "objectives": [
+              "hash files in chunks",
+              "record metadata",
+              "write reproducible JSON"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "standard library only"
+            ],
+            "hint": "Hash in bounded chunks rather than loading the whole file into memory.",
+            "solutionCode": "import hashlib,json\nfrom datetime import datetime,timezone\nfrom pathlib import Path\np=Path(\"events.jsonl\"); h=hashlib.sha256()\nwith open(p,\"rb\") as f:\n for chunk in iter(lambda:f.read(1024*1024),b\"\"): h.update(chunk)\nmanifest={\"generated_at\":datetime.now(timezone.utc).isoformat(),\"files\":[{\"name\":str(p),\"size\":p.stat().st_size,\"sha256\":h.hexdigest()}]}\nPath(\"manifest.json\").write_text(json.dumps(manifest,indent=2),encoding=\"utf-8\")\nprint(json.dumps(manifest,indent=2))",
+            "solutionExplanation": "The manifest documents the analyzed copy and gives a reproducible integrity value."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Investigation Workflows",
+        "description": "Apply log analysis to authentication, web, endpoint and DNS investigations and produce reproducible evidence packages.",
+        "lessons": [
+          {
+            "id": "lesson-43",
+            "title": "Authentication Investigation",
+            "description": "Investigate account activity from the initial event through corroborating evidence.",
+            "learningObjectives": [
+              "build an authentication timeline",
+              "pivot on account, device and source",
+              "identify useful next evidence"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Review failures, successes, source addresses and authentication methods.",
+                  "Pivot from account to endpoint, VPN or cloud events where available.",
+                  "Do not declare credential compromise from one anomaly alone."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Authentication investigation is a correlation problem, not an Event-ID lookup."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "Microsoft Event 4624",
+                "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624"
+              }
+            ]
+          },
+          {
+            "id": "lesson-44",
+            "title": "Web Attack Investigation",
+            "description": "Correlate web, application and detection logs to assess suspected web abuse.",
+            "learningObjectives": [
+              "trace a request across layers",
+              "separate probing from impact",
+              "build an evidence chain"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Pivot on source IP, URI, request ID, identity and response status.",
+                  "Correlate errors with application exceptions and downstream actions.",
+                  "A successful HTTP response is not itself proof of a sensitive action succeeding."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Layered correlation is what distinguishes reconnaissance from confirmed impact."
+            ],
+            "resources": [
+              {
+                "title": "Apache Logging",
+                "url": "https://httpd.apache.org/docs/current/logs.html"
+              },
+              {
+                "title": "OWASP Logging",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-45",
+            "title": "Endpoint Process Investigation",
+            "description": "Use process trees, users, command lines and network pivots to assess suspicious execution.",
+            "learningObjectives": [
+              "construct a parent-child hypothesis",
+              "correlate process with user and network evidence",
+              "identify missing telemetry"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Command-line data can be highly useful but may be absent or truncated.",
+                  "Parent-child context is more informative than a process name alone.",
+                  "Network connections near process start can provide strong pivots."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Process investigation works best as a chain of related evidence."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Event 4688",
+                "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4688"
+              },
+              {
+                "title": "MITRE Detection and Analytics",
+                "url": "https://attack.mitre.org/resources/get-started/detections-and-analytics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-46",
+            "title": "DNS and Beaconing Investigation",
+            "description": "Use DNS and network metadata to test suspicious-domain and periodic-communication hypotheses.",
+            "learningObjectives": [
+              "analyze query frequency and periodicity",
+              "pivot from domain to hosts",
+              "consider benign automation"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Periodicity is interesting but not unique to command-and-control.",
+                  "Validate domain context with trustworthy enrichment.",
+                  "Correlate DNS with processes and connections."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Behavioral signals become stronger when alternate explanations are tested."
+            ],
+            "resources": [
+              {
+                "title": "Zeek Logs",
+                "url": "https://docs.zeek.org/en/current/reference/logs/"
+              },
+              {
+                "title": "MITRE Detection and Analytics",
+                "url": "https://attack.mitre.org/resources/get-started/detections-and-analytics/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-47",
+            "title": "Evidence Packages and Reproducibility",
+            "description": "Produce a concise, source-linked package another analyst can reproduce.",
+            "learningObjectives": [
+              "record query scope and time bounds",
+              "separate facts, inference and unknowns",
+              "preserve parser and enrichment provenance"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Each major claim should point to source records or query output.",
+                  "Record data-source limitations.",
+                  "A useful report includes summary, timeline, evidence, interpretation, confidence and next actions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Reproducibility is a quality property of investigation work."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-10",
+            "title": "Triage a Multi-Source Authentication Case",
+            "level": "Advanced",
+            "description": "Use a successful login as an anchor and pivot across related evidence.",
+            "problemStatement": "Find nearby events sharing the user, host or source IP and report the evidence chain.",
+            "objectives": [
+              "build a time-bounded pivot",
+              "collect related events",
+              "separate facts from inference"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "normalized JSONL evidence"
+            ],
+            "hint": "Start with the anchor event, then widen to user/host/IP pivots within a fixed window.",
+            "solutionCode": "import json\nfrom datetime import datetime,timedelta\ndef dt(s): return datetime.fromisoformat(s.replace(\"Z\",\"+00:00\"))\nwith open(\"events.jsonl\",encoding=\"utf-8\") as f: events=[json.loads(x) for x in f]\nfor e in events:\n if e.get(\"event_type\")==\"authentication\" and e.get(\"outcome\")==\"success\":\n  t=dt(e[\"timestamp\"]); start,end=t-timedelta(minutes=10),t+timedelta(minutes=10)\n  related=[x for x in events if start<=dt(x[\"timestamp\"])<=end and (x.get(\"user\")==e.get(\"user\") or x.get(\"host\")==e.get(\"host\") or x.get(\"source_ip\")==e.get(\"source_ip\"))]\n  print(\"ANCHOR\",e); [print(\" \",x) for x in related]",
+            "solutionExplanation": "The pivot is intentionally evidence-focused and leaves the final maliciousness decision to the analyst."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Scale, Security and Evidence Handling",
+        "description": "Handle production-scale constraints, telemetry health, secure logging, modern semantic models and integrity-aware evidence export.",
+        "lessons": [
+          {
+            "id": "lesson-48",
+            "title": "Volume, Cardinality and Retention Tiers",
+            "description": "Reason about field choices, volume and retention without sacrificing investigation value.",
+            "learningObjectives": [
+              "identify high-cardinality fields",
+              "distinguish useful detail from duplication",
+              "design conceptual retention tiers"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "High-cardinality fields can increase storage and query cost.",
+                  "Summaries can reduce repetitive query work but should not replace required raw evidence.",
+                  "Retention tiers should reflect investigative and business requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Cost optimization must not silently remove fields needed for future investigations."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "Elastic ECS",
+                "url": "https://www.elastic.co/docs/reference/ecs/ecs-field-reference"
+              }
+            ]
+          },
+          {
+            "id": "lesson-49",
+            "title": "Telemetry Health and Pipeline Monitoring",
+            "description": "Detect broken collection before it creates an invisible security gap.",
+            "learningObjectives": [
+              "monitor freshness and event rates",
+              "identify parser and transport failures",
+              "define health indicators for critical sources"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Useful health signals include last-seen time, event rate, parser error rate and volume anomalies.",
+                  "A sudden drop in logs can indicate failure or interference.",
+                  "Health monitoring should remain visible when a monitored pipeline fails."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Detection availability depends on telemetry availability."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "CIS Control 8",
+                "url": "https://www.cisecurity.org/controls/audit-log-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-50",
+            "title": "Secure Logging and Sensitive Data",
+            "description": "Protect log confidentiality and integrity while preserving enough detail for analysis.",
+            "learningObjectives": [
+              "identify secrets that should not be logged",
+              "apply access-control and transport principles",
+              "recognize log injection and unsafe message handling"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "OWASP recommends excluding sensitive authentication material from logs.",
+                  "Structured logging reduces ambiguity and injection risk.",
+                  "Logs may contain sensitive infrastructure and identity data and should be protected accordingly."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Logging creates another security-sensitive data store; design it intentionally."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Logging",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-51",
+            "title": "OpenTelemetry Log Model",
+            "description": "Understand modern semantic log models and mapping from legacy sources.",
+            "learningObjectives": [
+              "describe LogRecord timestamps, body, resource and attributes",
+              "explain semantic conventions",
+              "map legacy records conceptually into a common model"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "OpenTelemetry defines a stable Logs Data Model intended to provide common semantics across system, third-party and first-party application logs. It distinguishes event timestamp from observed timestamp and provides resource and attribute concepts."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05",
+                "title": "Generate an Evidence Manifest",
+                "description": "Create a SHA-256 manifest for a bounded log export.",
+                "steps": [
+                  "Select an evidence file.",
+                  "Hash it in chunks.",
+                  "Record size and UTC generation time.",
+                  "Write JSON and verify the hash again."
+                ],
+                "solution": "import hashlib,json\nfrom datetime import datetime,timezone\nfrom pathlib import Path\np=Path(\"events.jsonl\"); h=hashlib.sha256()\nwith open(p,\"rb\") as f:\n for chunk in iter(lambda:f.read(1024*1024),b\"\"): h.update(chunk)\nmanifest={\"generated_at\":datetime.now(timezone.utc).isoformat(),\"files\":[{\"name\":str(p),\"size\":p.stat().st_size,\"sha256\":h.hexdigest()}]}\nPath(\"manifest.json\").write_text(json.dumps(manifest,indent=2),encoding=\"utf-8\")\nprint(json.dumps(manifest,indent=2))",
+                "output": "A JSON manifest containing file identity, size, generation time and SHA-256 hash."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Semantic models allow tools to agree on meaning while original formats remain diverse."
+            ],
+            "resources": [
+              {
+                "title": "OpenTelemetry Logs Data Model",
+                "url": "https://opentelemetry.io/docs/specs/otel/logs/data-model/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-52",
+            "title": "Evidence Export and Integrity",
+            "description": "Export bounded log subsets while preserving analysis context and file integrity.",
+            "learningObjectives": [
+              "select a bounded evidence scope",
+              "record source and query metadata",
+              "compute SHA-256 hashes for exported files"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import hashlib\ndef sha256(path):\n    h=hashlib.sha256()\n    with open(path,\"rb\") as f:\n        for chunk in iter(lambda:f.read(1024*1024),b\"\"):\n            h.update(chunk)\n    return h.hexdigest()"
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Hashing demonstrates integrity of an exported copy after collection; it does not prove the source itself was trustworthy."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-12",
+        "title": "Final Project: Cross-Source Log Investigation Toolkit",
+        "description": "Apply the complete log-analysis workflow to a reproducible multi-source investigation.",
+        "lessons": [
+          {
+            "id": "lesson-53",
+            "title": "Project Architecture and Evidence Flow",
+            "description": "Plan the capstone before implementation and identify where validation, normalization, correlation and integrity fit.",
+            "learningObjectives": [
+              "describe the input-to-report flow",
+              "identify evidence-preservation boundaries",
+              "define tests for the key analytical behavior"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Input: source-specific JSONL evidence.",
+                  "Processing: parse → validate → normalize → correlate → report.",
+                  "Integrity: hashes accompany exported evidence.",
+                  "Testing: timestamp rejection and burst detection are unit-tested."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "The capstone is modular so every transformation can be inspected.",
+              "Data-quality failures are reported instead of silently hidden."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-92",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Cross-Source Log Investigation Toolkit",
+          "description": "A reproducible Python CLI that ingests authentication, endpoint and network JSONL evidence, validates required fields, normalizes time, reconstructs a source-linked timeline, detects a bounded authentication-failure burst followed by success, and produces an integrity manifest and limitations section.",
+          "conceptsCovered": [
+            "JSONL parsing",
+            "schema validation",
+            "timezone-aware timestamps",
+            "field provenance",
+            "bounded time-window correlation",
+            "timeline reconstruction",
+            "data-quality reporting",
+            "SHA-256 evidence hashing",
+            "reproducible reporting"
+          ],
+          "steps": [
+            "Prepare synthetic auth.jsonl, endpoint.jsonl and network.jsonl evidence.",
+            "Validate required fields and timestamps before analysis.",
+            "Merge valid events into a UTC-normalized timeline.",
+            "Detect repeated authentication failures from one source within five minutes and check for a later success.",
+            "Generate a report separating findings from limitations.",
+            "Generate SHA-256 hashes for the exported evidence inputs.",
+            "Run the unit tests and preserve the exact query/input scope used."
+          ],
+          "code": {
+            "files": {
+              "analyze_logs.py": "# analyze_logs.py\nimport argparse\nimport hashlib\nimport json\nfrom collections import Counter, defaultdict\nfrom datetime import datetime, timedelta, timezone\nfrom pathlib import Path\n\nREQUIRED = {\n    \"auth\": [\"timestamp\", \"event_type\", \"user\", \"source_ip\", \"outcome\"],\n    \"endpoint\": [\"timestamp\", \"event_type\", \"user\", \"host\", \"action\"],\n    \"network\": [\"timestamp\", \"event_type\", \"source_ip\", \"dest_ip\", \"action\"],\n}\n\ndef parse_ts(value):\n    dt = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n    if dt.tzinfo is None:\n        raise ValueError(\"naive timestamp: \" + value)\n    return dt.astimezone(timezone.utc)\n\ndef read_jsonl(path, source):\n    events, errors = [], []\n    with open(path, encoding=\"utf-8\") as fh:\n        for line_no, line in enumerate(fh, 1):\n            if not line.strip():\n                continue\n            try:\n                event = json.loads(line)\n                missing = [k for k in REQUIRED[source] if not event.get(k)]\n                if missing:\n                    errors.append(f\"{path}:{line_no}: missing {','.join(missing)}\")\n                    continue\n                event[\"_source\"] = source\n                event[\"_line\"] = line_no\n                event[\"_event_time\"] = parse_ts(event[\"timestamp\"])\n                events.append(event)\n            except Exception as exc:\n                errors.append(f\"{path}:{line_no}: {exc}\")\n    return events, errors\n\ndef sha256(path):\n    h = hashlib.sha256()\n    with open(path, \"rb\") as fh:\n        for chunk in iter(lambda: fh.read(1024 * 1024), b\"\"):\n            h.update(chunk)\n    return h.hexdigest()\n\ndef find_auth_bursts(events, window_minutes=5, minimum_failures=3):\n    failures = defaultdict(list)\n    successes = defaultdict(list)\n    for e in events:\n        if e.get(\"event_type\") != \"auth\":\n            continue\n        ip = e.get(\"source_ip\")\n        if e.get(\"outcome\") == \"failure\":\n            failures[ip].append(e)\n        elif e.get(\"outcome\") == \"success\":\n            successes[ip].append(e)\n    findings=[]\n    window=timedelta(minutes=window_minutes)\n    for ip, items in failures.items():\n        items.sort(key=lambda e:e[\"_event_time\"])\n        for right in range(len(items)):\n            left=right\n            while left>0 and items[right][\"_event_time\"]-items[left-1][\"_event_time\"]<=window:\n                left-=1\n            if right-left+1>=minimum_failures:\n                start=items[left][\"_event_time\"]\n                end=items[right][\"_event_time\"]\n                later=[s for s in successes.get(ip,[]) if end <= s[\"_event_time\"] <= end+window]\n                findings.append({\"type\":\"auth_failure_burst\",\"source_ip\":ip,\"failure_count\":right-left+1,\"start\":start.isoformat(),\"end\":end.isoformat(),\"later_successes\":len(later)})\n                break\n    return findings\n\ndef main():\n    ap=argparse.ArgumentParser()\n    ap.add_argument(\"--auth\"); ap.add_argument(\"--endpoint\"); ap.add_argument(\"--network\"); ap.add_argument(\"--output\",default=\"report.json\")\n    args=ap.parse_args()\n    inputs=[(\"auth\",args.auth),(\"endpoint\",args.endpoint),(\"network\",args.network)]\n    all_events=[]; errors=[]; used=[]\n    for source,path in inputs:\n        if not path: continue\n        events,errs=read_jsonl(path,source); all_events.extend(events); errors.extend(errs); used.append((source,path))\n    all_events.sort(key=lambda e:(e[\"_event_time\"],e[\"_source\"],e[\"_line\"]))\n    counts=Counter(e[\"_source\"] for e in all_events)\n    report={\n        \"generated_at\":datetime.now(timezone.utc).isoformat(),\n        \"quality\":{\"event_counts\":dict(counts),\"error_count\":len(errors),\"errors\":errors},\n        \"findings\":find_auth_bursts(all_events),\n        \"timeline\":[{\"timestamp\":e[\"_event_time\"].isoformat(),\"source\":e[\"_source\"],\"event_type\":e[\"event_type\"],\"user\":e.get(\"user\"),\"host\":e.get(\"host\"),\"source_ip\":e.get(\"source_ip\"),\"dest_ip\":e.get(\"dest_ip\"),\"action\":e.get(\"action\"),\"outcome\":e.get(\"outcome\"),\"line\":e[\"_line\"]} for e in all_events],\n        \"evidence_manifest\":[{\"path\":path,\"sha256\":sha256(path),\"size\":Path(path).stat().st_size} for _,path in used],\n        \"limitations\":[\"Synthetic lab data does not prove real-world maliciousness.\",\"Correlation matches are candidate findings requiring validation.\",\"Missing telemetry reduces confidence and is reported rather than silently ignored.\"]\n    }\n    Path(args.output).write_text(json.dumps(report,indent=2),encoding=\"utf-8\")\n    print(json.dumps(report,indent=2))\n\nif __name__ == \"__main__\": main()\n",
+              "test_analyze_logs.py": "import unittest\nfrom datetime import datetime, timezone\nfrom analyze_logs import parse_ts, find_auth_bursts\n\nclass TestAnalysis(unittest.TestCase):\n    def test_naive_timestamp_rejected(self):\n        with self.assertRaises(ValueError): parse_ts(\"2026-09-07T14:00:00\")\n    def test_burst_and_later_success(self):\n        base=datetime(2026,9,7,14,0,tzinfo=timezone.utc)\n        ev=[]\n        from datetime import timedelta\n        for i in [0,1,2]:\n            ev.append({\"_event_time\":base+timedelta(minutes=i),\"event_type\":\"auth\",\"source_ip\":\"203.0.113.5\",\"outcome\":\"failure\"})\n        ev.append({\"_event_time\":base+timedelta(minutes=4),\"event_type\":\"auth\",\"source_ip\":\"203.0.113.5\",\"outcome\":\"success\"})\n        f=find_auth_bursts(ev)\n        self.assertEqual(f[0][\"failure_count\"],3)\n        self.assertEqual(f[0][\"later_successes\"],1)\nif __name__ == '__main__': unittest.main()\n"
+            }
+          },
+          "explanation": "The toolkit is intentionally standard-library based so students can inspect each transformation. It rejects naive timestamps, reports schema problems rather than dropping them silently, keeps source and line provenance, uses a bounded rolling-window detector, and hashes evidence copies. The report explicitly states limitations so a rule match is not mistaken for proof of compromise."
+        }
+      }
+    ]
+  }
+}

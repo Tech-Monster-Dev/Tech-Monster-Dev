@@ -1,0 +1,2094 @@
+{
+  "course": {
+    "id": "iam-fundamentals-practice",
+    "title": "Identity & Access Management",
+    "slug": "identity-access-management",
+    "description": "A complete, practical Identity & Access Management course covering the lifecycle and security engineering of digital identities. Students learn identity concepts, account governance, authentication and assurance, password security, phishing-resistant MFA, authorization models, RBAC and ABAC, least privilege, separation of duties, SAML and OAuth/OIDC federation, SCIM provisioning, deprovisioning, privileged access, service/workload identity, token and session protection, access reviews, identity monitoring, zero-trust architecture, contextual access policy, and a defensive IAM governance capstone. The course is designed for learners who need both conceptual understanding and practical ability to design, review, and operate IAM controls in enterprise and application environments.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 72,
+    "prerequisites": [
+      "Basic computer and networking concepts.",
+      "Familiarity with HTTP, JSON, and web applications is helpful.",
+      "Basic command-line use is recommended for the capstone but is not required for the conceptual lessons."
+    ],
+    "learningOutcomes": [
+      "Explain digital identity, authentication, authorization, federation, provisioning, and lifecycle-management concepts.",
+      "Design joiner-mover-leaver processes for human and non-human identities.",
+      "Choose authentication methods using assurance, phishing-resistance, and recovery considerations.",
+      "Design RBAC and ABAC authorization policies using least privilege and separation of duties.",
+      "Explain and safely reason about SAML, OAuth 2.0, OpenID Connect, and SCIM.",
+      "Protect sessions, access tokens, privileged accounts, and workload identities.",
+      "Design privileged-access and emergency-access controls with monitoring and review.",
+      "Create access-review and reconciliation processes that detect identity drift.",
+      "Apply zero-trust and contextual access principles to identity-centric architectures.",
+      "Build and test a read-only IAM access-governance analyzer and interpret its findings responsibly."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Identity Foundations and Lifecycle",
+        "description": "Build the vocabulary and lifecycle model required to design and operate identity systems safely.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Digital Identity, Subjects, Claims, and Attributes",
+            "description": "Learn how digital systems represent subjects, identifiers, attributes, and claims.",
+            "learningObjectives": [
+              "Explain the difference between a subject, identifier, attribute, and claim.",
+              "Describe why an identifier does not automatically prove identity.",
+              "Model a simple identity record without over-collecting personal data."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Identity is contextual"
+              },
+              {
+                "type": "paragraph",
+                "text": "A digital identity is a representation of a subject within a service. An identifier can name the subject, while claims and attributes provide additional information. Authentication establishes control of an authenticator associated with an identity; identity proofing establishes evidence about a real-world subject when that level of assurance is required."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer stable internal identifiers over predictable public database keys.",
+                  "Minimize attributes collected and exposed to relying applications.",
+                  "Document which claims are authoritative and how recently they were verified."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which statement best distinguishes an identifier from authentication?",
+              "options": [
+                "An identifier proves the person owns an account",
+                "An identifier names a subject; authentication verifies control of an authenticator",
+                "Authentication only creates a username",
+                "An identifier is always personally identifying"
+              ],
+              "answer": "An identifier names a subject; authentication verifies control of an authenticator",
+              "explanation": "Names and authentication evidence serve different purposes."
+            },
+            "summary": [
+              "Identity data should be modeled separately from authentication evidence.",
+              "Claims need an issuer and context when they cross trust boundaries."
+            ],
+            "resources": [
+              {
+                "title": "NIST Digital Identity Guidelines",
+                "url": "https://pages.nist.gov/800-63-4/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Identity Lifecycle: Joiner, Mover, Leaver",
+            "description": "Design account and access changes around the employee or contractor lifecycle.",
+            "learningObjectives": [
+              "Map joiner, mover, and leaver events to identity actions.",
+              "Explain why deprovisioning speed matters.",
+              "Identify stale-account and orphaned-access risks."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Identity lifecycle management connects authoritative personnel or business events to digital access. Joining creates accounts and baseline access; moving changes access when duties change; leaving removes or disables access and retrieves or rotates credentials and tokens as appropriate."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use authoritative sources for employment or supplier status.",
+                  "Avoid leaving former role memberships attached after a transfer.",
+                  "Treat shared or service accounts as separate lifecycle objects with owners."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Joiner-Mover-Leaver Access Review",
+                "description": "Translate three lifecycle events into additions, removals, approvals, and evidence.",
+                "steps": [
+                  "Create fictional joiner, mover, and leaver records.",
+                  "For each record, list current access and the desired final access.",
+                  "Mark access to add, remove, or review, and identify the accountable owner.",
+                  "Record the evidence required to prove the action occurred."
+                ],
+                "solution": "Example: joiner -> create baseline account and approved role; mover -> remove obsolete role and add new approved role; leaver -> disable account, revoke active sessions/tokens, and review downstream access.",
+                "output": "An auditable lifecycle table with access changes, owners, approvals, and evidence."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "What is the main security risk when a mover event is not reflected in access systems?",
+              "options": [
+                "Only slower login",
+                "Accumulated or inappropriate privileges from the previous role",
+                "Loss of encryption",
+                "DNS failure"
+              ],
+              "answer": "Accumulated or inappropriate privileges from the previous role",
+              "explanation": "Role changes can leave users with access they no longer need."
+            },
+            "summary": [
+              "Lifecycle automation reduces access drift.",
+              "Transfers require removal as well as addition of access."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 5: Account Management",
+                "url": "https://www.cisecurity.org/controls/account-management"
+              },
+              {
+                "title": "CIS Control 6: Access Control Management",
+                "url": "https://www.cisecurity.org/controls/access-control-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Account Types: Workforce, External, Service, and Emergency",
+            "description": "Differentiate human and non-human account classes and their control needs.",
+            "learningObjectives": [
+              "Classify common account types.",
+              "Assign ownership and lifecycle requirements to service accounts.",
+              "Design emergency access controls and review expectations."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Workforce accounts normally map to a person.",
+                  "External accounts require sponsor and expiration controls.",
+                  "Service identities represent software or workloads and should be constrained by purpose.",
+                  "Emergency or break-glass accounts are exceptional paths requiring stronger monitoring and controlled storage."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not solve shared-account problems by simply adding more people to one privileged identity. Prefer individually attributable identities plus delegated roles where practical."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "Which account type most clearly requires an explicit non-human owner and rotation/credential-management process?",
+              "options": [
+                "Service account",
+                "Guest browser session",
+                "Personal email alias",
+                "Public website visitor"
+              ],
+              "answer": "Service account",
+              "explanation": "Non-human identities need accountable ownership and lifecycle management."
+            },
+            "summary": [
+              "Account taxonomy drives appropriate lifecycle controls.",
+              "Attribution and ownership are essential for privileged and non-human identities."
+            ],
+            "resources": [
+              {
+                "title": "CIS Account Management",
+                "url": "https://www.cisecurity.org/controls/account-management"
+              },
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Identity Governance and Policy",
+            "description": "Connect organizational policy to access standards and reviewable decisions.",
+            "learningObjectives": [
+              "Define identity governance in operational terms.",
+              "Translate policy statements into measurable controls.",
+              "Identify ownership, evidence, exception, and review requirements."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Identity governance defines who may request, approve, receive, use, review, and revoke access. A good policy distinguishes mandatory controls from risk-based exceptions and identifies evidence needed for audit or investigation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Policy should define role ownership and approval authority.",
+                  "Exceptions require rationale, compensating controls, owner, and review date.",
+                  "Metrics should measure control effectiveness, not merely the number of accounts."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-04",
+              "question": "Which artifact best demonstrates that an access exception is being governed?",
+              "options": [
+                "A hidden spreadsheet with no owner",
+                "A documented exception with business rationale, owner, controls, and review date",
+                "A longer password",
+                "An antivirus scan"
+              ],
+              "answer": "A documented exception with business rationale, owner, controls, and review date",
+              "explanation": "Governed exceptions are traceable and reviewable."
+            },
+            "summary": [
+              "Governance makes technical access decisions accountable.",
+              "Evidence should show how decisions were made, not just the final state."
+            ],
+            "resources": [
+              {
+                "title": "NIST CSF 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              },
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Design a Joiner-Mover-Leaver Control Matrix",
+            "level": "Easy",
+            "description": "Create a control matrix linking HR events to account and access actions.",
+            "problemStatement": "A fictional organization has workforce members changing roles, joining, or leaving. Define the access actions, owners, evidence, and timing expectations for each lifecycle event.",
+            "objectives": [
+              "Map lifecycle events to identity actions.",
+              "Identify approval and revocation responsibilities.",
+              "Define evidence that can be audited."
+            ],
+            "requirements": [
+              "Text editor or spreadsheet.",
+              "Use neutral fictional identities and no real personal data."
+            ],
+            "hint": "Start with authoritative lifecycle events, then define the minimum digital changes needed.",
+            "solutionCode": "event,identity_action,owner,evidence\njoiner,create account and baseline access,identity team,provisioning record\nmover,remove old role and grant new approved role,identity + manager,approval and change record\nleaver,disable account and revoke sessions/tokens,identity team,deprovisioning record",
+            "solutionExplanation": "The matrix separates lifecycle triggers from access operations and identifies accountability and evidence for each transition."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Authentication and Assurance",
+        "description": "Learn authenticators, assurance levels, password security, MFA, phishing resistance, and recovery.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Authentication Factors and Assurance",
+            "description": "Understand the categories of authentication factors and why assurance level matters.",
+            "learningObjectives": [
+              "Differentiate knowledge, possession, and inherence factors.",
+              "Explain authentication assurance levels at a high level.",
+              "Select an authenticator strategy based on threat and assurance needs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Authentication verifies that a claimant controls one or more authenticators bound to an identity. NIST SP 800-63B defines AAL1, AAL2, and AAL3 with increasing requirements for authentication strength, replay resistance, phishing resistance, and hardware protections."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "AAL is about the authentication process, not the importance of the account by itself.",
+                  "Riskier systems may need stronger authenticators or additional transaction controls.",
+                  "Do not confuse identity proofing assurance with authentication assurance."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "Which NIST assurance concept specifically measures the strength of the authentication transaction?",
+              "options": [
+                "IAL",
+                "AAL",
+                "FAL",
+                "RPO"
+              ],
+              "answer": "AAL",
+              "explanation": "AAL means Authenticator Assurance Level."
+            },
+            "summary": [
+              "Authentication assurance and identity proofing are distinct dimensions.",
+              "Choose assurance based on the protected action and threat model."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-63B Authentication",
+                "url": "https://pages.nist.gov/800-63-4/sp800-63b/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Passwords and Password Storage",
+            "description": "Apply current password-management and password-storage guidance.",
+            "learningObjectives": [
+              "Explain why plaintext password storage is unacceptable.",
+              "Describe password hashing and verifier-side protections.",
+              "Identify risky password-policy patterns."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Passwords are memorized secrets. Systems should avoid storing them in recoverable form; instead, use a suitable password-hashing approach and a trusted verification API. Modern guidance focuses on password length, screening against known-compromised values, rate limiting, and secure recovery rather than arbitrary complexity rules alone."
+              },
+              {
+                "type": "code",
+                "text": "Conceptual storage flow:\npassword -> password hashing function -> stored verifier\nlogin password -> same verifier API -> compare"
+              },
+              {
+                "type": "warning",
+                "text": "Never design a custom password-hashing scheme or store reversible password encryption as a substitute for password hashing."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "What is the purpose of a password verifier?",
+              "options": [
+                "To decrypt stored passwords",
+                "To compare a supplied password against a securely stored verifier representation",
+                "To generate DNS records",
+                "To replace MFA"
+              ],
+              "answer": "To compare a supplied password against a securely stored verifier representation",
+              "explanation": "Verification should not require recovering the original password."
+            },
+            "summary": [
+              "Password storage should be one-way and resistant to offline guessing.",
+              "Secure recovery is part of password security."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authentication Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+              },
+              {
+                "title": "NIST SP 800-63B",
+                "url": "https://pages.nist.gov/800-63-4/sp800-63b/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Multi-Factor Authentication and Phishing Resistance",
+            "description": "Compare OTP, push, hardware, and public-key authenticators with emphasis on phishing resistance.",
+            "learningObjectives": [
+              "Explain why two factors are stronger than one.",
+              "Distinguish replay-resistant and phishing-resistant authentication.",
+              "Explain why manually entered OTPs are not generally phishing-resistant."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-63B defines phishing resistance as preventing disclosure of authentication secrets or valid authenticator outputs to an impostor verifier without relying on user vigilance. Public-key mechanisms such as WebAuthn can bind credentials to the verifier context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "MFA improves security but not all factors resist phishing equally.",
+                  "Push-based methods can still be abused through fatigue attacks if poorly designed.",
+                  "Phishing-resistant authenticators should be preferred for high-value access where practical."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Compare MFA Methods",
+                "description": "Compare common authentication methods using assurance and phishing-resistance criteria.",
+                "steps": [
+                  "Create a comparison table for password-only, OTP MFA, push MFA, and public-key phishing-resistant authentication.",
+                  "Rate phishing resistance, replay resistance, recovery risk, and operational considerations.",
+                  "Recommend an approach for a privileged administrator and justify it with NIST assurance concepts."
+                ],
+                "solution": "A strong recommendation uses phishing-resistant cryptographic authentication for the privileged role where practical, while acknowledging deployment and recovery constraints.",
+                "output": "A comparison table plus a short risk-based recommendation."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "Which is generally a phishing-resistant approach?",
+              "options": [
+                "A manually entered one-time code",
+                "A public-key authenticator bound to the verifier context",
+                "A security question",
+                "A reusable password"
+              ],
+              "answer": "A public-key authenticator bound to the verifier context",
+              "explanation": "Public-key authenticators can bind authentication to the legitimate verifier."
+            },
+            "summary": [
+              "MFA strength depends on the authenticator and protocol.",
+              "Phishing resistance is about the protocol binding, not simply the number of factors."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-63B Authenticator Requirements",
+                "url": "https://pages.nist.gov/800-63-4/sp800-63b/"
+              },
+              {
+                "title": "W3C WebAuthn Level 3",
+                "url": "https://www.w3.org/TR/webauthn-3/"
+              },
+              {
+                "title": "CISA MFA Guidance",
+                "url": "https://www.cisa.gov/resources-tools/resources/implementing-phishing-resistant-multi-factor-authentication"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Account Recovery, Reauthentication, and Session Risk",
+            "description": "Secure the pathways used when a user loses a factor or changes a sensitive credential.",
+            "learningObjectives": [
+              "Identify the risks in account-recovery flows.",
+              "Explain why sensitive actions may require reauthentication.",
+              "Design recovery controls that preserve assurance."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Recovery can become the weakest authentication path. Recovery methods should not silently downgrade the security of the account. OWASP recommends context-aware reauthentication for sensitive operations and secure session handling after reauthentication."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Avoid knowledge-based questions whose answers are easily discoverable.",
+                  "Invalidate or rotate affected sessions and credentials after high-risk recovery events.",
+                  "Require stronger verification when changing authenticators or privileged credentials."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "Why should sensitive authenticator changes often trigger reauthentication?",
+              "options": [
+                "Because reauthentication improves DNS",
+                "Because a compromised active session should not automatically authorize a new high-value authenticator",
+                "Because passwords stop working",
+                "Because browsers require it"
+              ],
+              "answer": "Because a compromised active session should not automatically authorize a new high-value authenticator",
+              "explanation": "Reauthentication helps protect high-impact changes from session compromise."
+            },
+            "summary": [
+              "Recovery must preserve the intended assurance level.",
+              "Session invalidation and token rotation matter after security-sensitive changes."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authentication Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+              },
+              {
+                "title": "OWASP Session Management Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Create an MFA Assurance Recommendation",
+            "level": "Intermediate",
+            "description": "Recommend authentication methods for three system roles with different risk levels.",
+            "problemStatement": "Choose authentication approaches for a public user, a finance administrator, and a privileged infrastructure administrator. Explain the assurance rationale and recovery requirements.",
+            "objectives": [
+              "Compare authenticators by phishing resistance and assurance.",
+              "Define recovery expectations.",
+              "Explain why the choices differ."
+            ],
+            "requirements": [
+              "NIST SP 800-63B is the primary reference.",
+              "Do not claim that any specific vendor product is automatically compliant."
+            ],
+            "hint": "Prioritize the attack consequences of credential compromise before choosing the authenticator.",
+            "solutionCode": "Role:public-user\nRecommended: password plus optional phishing-resistant MFA\nRecovery: protected email/second factor with risk controls\n\nRole:finance-admin\nRecommended: phishing-resistant MFA\nRecovery: stronger verification and admin review\n\nRole:privileged-infrastructure-admin\nRecommended: phishing-resistant, replay-resistant cryptographic authentication\nRecovery: controlled break-glass process and credential rotation",
+            "solutionExplanation": "The recommendation scales authentication strength and recovery controls with privilege and impact, while avoiding unsupported claims about vendor implementations."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Authorization and Access Models",
+        "description": "Design least-privilege authorization using roles, attributes, resource policies, and separation of duties.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Authentication vs Authorization",
+            "description": "Make the foundational distinction between proving identity and deciding permissions.",
+            "learningObjectives": [
+              "Explain AuthN versus AuthZ.",
+              "Trace an authorization decision through principal, action, resource, and context.",
+              "Identify where server-side authorization must be enforced."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Authentication answers who or what is acting. Authorization determines whether that principal may perform the requested action on a specific resource in a particular context."
+              },
+              {
+                "type": "code",
+                "text": "Authorization decision:\nprincipal + action + resource + context -> policy decision"
+              },
+              {
+                "type": "warning",
+                "text": "Successful login does not imply access to every object or action in an application."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "A logged-in user changes an object identifier and can read another customer's record. What failed?",
+              "options": [
+                "Authentication",
+                "Authorization",
+                "TLS negotiation",
+                "DNS"
+              ],
+              "answer": "Authorization",
+              "explanation": "The system failed to enforce whether the authenticated principal was permitted to access that object."
+            },
+            "summary": [
+              "Authentication establishes identity context; authorization must still be evaluated.",
+              "Fine-grained decisions often depend on the resource being accessed."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authorization Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+              },
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "RBAC: Role-Based Access Control",
+            "description": "Use roles to express stable job functions without turning roles into uncontrolled permission bundles.",
+            "learningObjectives": [
+              "Explain role and permission relationships.",
+              "Design roles with cohesive responsibilities.",
+              "Detect role explosion and overly broad roles."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "RBAC groups permissions around roles such as analyst, reviewer, or administrator. Roles are useful when responsibilities are relatively stable; badly designed roles can become giant bundles of unrelated authority."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use least privilege when mapping permissions into roles.",
+                  "Prefer narrowly scoped roles over a universal administrator role.",
+                  "Review role membership and permission contents separately."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "What is a common RBAC design problem?",
+              "options": [
+                "Role explosion or overly broad roles",
+                "TLS downgrade",
+                "Missing DNS records",
+                "Compression"
+              ],
+              "answer": "Role explosion or overly broad roles",
+              "explanation": "RBAC quality depends on appropriately scoped roles and maintainable role design."
+            },
+            "summary": [
+              "Roles are abstractions for permissions, not identities themselves.",
+              "Good roles align to real responsibilities."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53 AC-6 / Least Privilege",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              },
+              {
+                "title": "Microsoft Entra RBAC",
+                "url": "https://learn.microsoft.com/en-us/entra/identity/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "ABAC and Context-Aware Authorization",
+            "description": "Model access decisions using attributes and context when roles alone are insufficient.",
+            "learningObjectives": [
+              "Explain attribute-based authorization.",
+              "Combine subject, resource, action, and environment attributes.",
+              "Design policies that fail closed when required attributes are missing."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ABAC evaluates attributes such as department, resource classification, device state, time, or transaction risk. It can express policies that would require many narrowly specialized roles in an RBAC-only design."
+              },
+              {
+                "type": "code",
+                "text": "Example policy:\nallow if subject.department == resource.department\n   and resource.classification != \"restricted\"\n   and device.compliant == true"
+              },
+              {
+                "type": "warning",
+                "text": "Attribute-based policies depend on trustworthy attribute sources. An attacker who can modify an authorization attribute may influence the decision."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Write an ABAC Policy",
+                "description": "Turn subject, resource, and device attributes into a deny-by-default authorization policy.",
+                "steps": [
+                  "Define subject.department, resource.classification, action, and device.compliant attributes.",
+                  "Allow same-department access to non-restricted records only from compliant devices.",
+                  "Define the deny behavior for missing or invalid attributes."
+                ],
+                "solution": "ALLOW when subject.department equals resource.department AND resource.classification is not restricted AND device.compliant is true; otherwise DENY.",
+                "output": "A policy expression that fails closed when required attributes are absent or untrusted."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "Why is ABAC useful when role membership alone is insufficient?",
+              "options": [
+                "It can incorporate resource and context attributes into the decision",
+                "It eliminates identity systems",
+                "It guarantees no misconfiguration",
+                "It replaces encryption"
+              ],
+              "answer": "It can incorporate resource and context attributes into the decision",
+              "explanation": "ABAC can combine multiple attributes and context signals."
+            },
+            "summary": [
+              "Authorization policy quality depends on trustworthy attributes and explicit deny behavior.",
+              "Context can increase precision without creating huge numbers of roles."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              },
+              {
+                "title": "Microsoft Conditional Access concepts",
+                "url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Least Privilege and Separation of Duties",
+            "description": "Reduce the impact of compromise and insider error by constraining privileges and conflicting duties.",
+            "learningObjectives": [
+              "Apply least privilege to users and services.",
+              "Identify toxic combinations of duties.",
+              "Explain why separation of duties can require more than one approval or principal."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Least privilege gives subjects only the permissions needed for assigned work. Separation of duties reduces fraud or error by ensuring that a sensitive process cannot be completed by one principal alone."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Separate request, approval, and execution for high-risk changes where practical.",
+                  "Apply least privilege to administrators and automation accounts.",
+                  "Review temporary privileges for scope and expiry."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-04",
+              "question": "What does separation of duties primarily reduce?",
+              "options": [
+                "The chance that one principal can complete a sensitive conflicting process alone",
+                "Network latency",
+                "Password length requirements",
+                "DNS cache size"
+              ],
+              "answer": "The chance that one principal can complete a sensitive conflicting process alone",
+              "explanation": "Separating duties reduces concentrated authority and abuse opportunities."
+            },
+            "summary": [
+              "Least privilege and separation of duties solve different but complementary risks.",
+              "Temporary privilege can reduce standing access."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 6",
+                "url": "https://www.cisecurity.org/controls/access-control-management"
+              },
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Review an Access Matrix for Toxic Combinations",
+            "level": "Intermediate",
+            "description": "Analyze a fictional access matrix and identify excessive privileges and separation-of-duties conflicts.",
+            "problemStatement": "Given roles for procurement, approval, payment, and reconciliation, identify users who can both initiate and approve the same financial action.",
+            "objectives": [
+              "Identify least-privilege gaps.",
+              "Detect at least two conflicting permission combinations.",
+              "Recommend remediations."
+            ],
+            "requirements": [
+              "Use only fictional identities.",
+              "Present the matrix as CSV, Markdown, or JSON."
+            ],
+            "hint": "Look for combinations that let one principal initiate, approve, and reconcile the same transaction.",
+            "solutionCode": "Example remediation:\n- purchasing users may create purchase orders\n- supervisors may approve purchase orders\n- finance may release payment\n- reconciliation staff may review completed payments\nNo single role should combine all four capabilities.",
+            "solutionExplanation": "The solution breaks a high-risk transaction into distinct authority domains and illustrates separation of duties."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Federation and Identity Protocols",
+        "description": "Understand SAML, OAuth 2.0, OpenID Connect, tokens, and modern federation security patterns.",
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "Identity Federation and Trust Relationships",
+            "description": "Understand why federation lets one security domain provide identity information to another.",
+            "learningObjectives": [
+              "Explain identity-provider and relying-party roles.",
+              "Describe trust relationships and assertion validation.",
+              "Identify federation lifecycle and termination concerns."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Federation lets a relying party accept identity information from an identity provider under a defined trust relationship. Trust includes issuer identity, signing keys, endpoints, audience restrictions, and operational agreements."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Federation does not remove authorization responsibility from the relying party.",
+                  "Trust metadata and keys need lifecycle management.",
+                  "Federation termination must revoke or stop accepting the former trust relationship."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "What is a core responsibility of a relying party in a federated system?",
+              "options": [
+                "Accept any assertion without checks",
+                "Validate the assertion and enforce its own authorization rules",
+                "Store the IdP private key",
+                "Disable all local logging"
+              ],
+              "answer": "Validate the assertion and enforce its own authorization rules",
+              "explanation": "The relying party must validate incoming federation data and still authorize access."
+            },
+            "summary": [
+              "Federation shifts authentication authority, not all authorization responsibility.",
+              "Trust relationships require key and metadata management."
+            ],
+            "resources": [
+              {
+                "title": "OASIS SAML Technical Overview",
+                "url": "https://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html"
+              },
+              {
+                "title": "NIST SP 800-63C Federation",
+                "url": "https://pages.nist.gov/800-63-4/sp800-63c/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "SAML 2.0 and Enterprise SSO",
+            "description": "Read the major components of SAML-based browser SSO without treating SAML as an authorization protocol.",
+            "learningObjectives": [
+              "Describe IdP, SP, assertion, and audience concepts.",
+              "Explain why signing and audience/recipient validation matter.",
+              "Recognize SP-initiated and IdP-initiated patterns at a high level."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SAML defines a framework for exchanging security information. In browser SSO, an identity provider issues a SAML assertion to a service provider. The service provider should validate the signature, issuer, time conditions, audience, and other relevant constraints before using claims."
+              },
+              {
+                "type": "warning",
+                "text": "A validly signed SAML assertion does not automatically mean the user should receive every permission in the application."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "Which SAML property helps prevent an assertion intended for one service from being reused by another?",
+              "options": [
+                "Audience restriction",
+                "Screen brightness",
+                "Password length",
+                "DNS TTL"
+              ],
+              "answer": "Audience restriction",
+              "explanation": "Audience checks bind the assertion to the intended relying party context."
+            },
+            "summary": [
+              "SAML is widely used for enterprise federation and browser SSO.",
+              "Assertion validation should be strict and policy-driven."
+            ],
+            "resources": [
+              {
+                "title": "OASIS SAML Technical Overview",
+                "url": "https://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "OAuth 2.0: Delegated Authorization",
+            "description": "Understand OAuth as an authorization framework for obtaining limited access to HTTP services.",
+            "learningObjectives": [
+              "Identify the roles in OAuth 2.0.",
+              "Distinguish access tokens from user authentication.",
+              "Explain why scopes should be narrow."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "OAuth 2.0 enables a client to obtain limited access to an HTTP service. Its core abstraction is delegated authorization. OAuth by itself does not define an end-user identity layer equivalent to OpenID Connect."
+              },
+              {
+                "type": "code",
+                "text": "Conceptual OAuth roles:\nresource owner -> authorizes client\nclient -> requests access\nauthorization server -> issues token\nresource server -> accepts token"
+              },
+              {
+                "type": "warning",
+                "text": "Do not use the presence of an OAuth access token as proof of human identity without validating the identity layer and protocol context."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "What is OAuth 2.0 primarily designed to provide?",
+              "options": [
+                "Delegated authorization to access protected resources",
+                "Password storage",
+                "Host-based firewalling",
+                "Filesystem permissions"
+              ],
+              "answer": "Delegated authorization to access protected resources",
+              "explanation": "OAuth defines an authorization framework rather than a password database or firewall."
+            },
+            "summary": [
+              "OAuth access tokens represent delegated authority.",
+              "Identity assertions are a separate concern handled by protocols such as OIDC."
+            ],
+            "resources": [
+              {
+                "title": "RFC 6749 OAuth 2.0",
+                "url": "https://www.rfc-editor.org/rfc/rfc6749"
+              },
+              {
+                "title": "RFC 9700 OAuth 2.0 Security BCP",
+                "url": "https://www.rfc-editor.org/info/rfc9700/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "OpenID Connect, ID Tokens, and Claims",
+            "description": "Use OpenID Connect correctly as an identity layer on OAuth 2.0.",
+            "learningObjectives": [
+              "Explain the role of the ID Token.",
+              "Distinguish ID Token claims from access-token authorization scope.",
+              "Validate issuer, audience, signature, and nonce/context as appropriate."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "OpenID Connect adds an identity layer on top of OAuth 2.0. It allows clients to verify the end-user identity based on authentication performed by an authorization server and receive claims about that user."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "ID Tokens are intended for the client; access tokens are for protected resource access.",
+                  "Validate token claims and issuer/audience relationships before trusting them.",
+                  "Nonce and authorization-response binding help defend the authentication flow."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "OIDC Token Validation Checklist",
+                "description": "Build a protocol-aware checklist for validating identity tokens before trusting claims.",
+                "steps": [
+                  "List signature and trusted-key checks.",
+                  "List issuer and audience checks.",
+                  "List time-validity checks.",
+                  "Add nonce or transaction-binding checks when required by the flow.",
+                  "Write explicit rejection conditions for failed validation."
+                ],
+                "solution": "Reject invalid signatures, unexpected issuer or audience, expired tokens, and nonce mismatches when nonce is required.",
+                "output": "A checklist separating cryptographic validation from semantic and protocol validation."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "Which token is specifically defined by OIDC to convey identity claims to the client?",
+              "options": [
+                "ID Token",
+                "DNSSEC key",
+                "SSH host key",
+                "Password reset token"
+              ],
+              "answer": "ID Token",
+              "explanation": "OIDC defines the ID Token as the identity layer artifact."
+            },
+            "summary": [
+              "OIDC adds authentication semantics to OAuth.",
+              "Token validation is part of relying-party security."
+            ],
+            "resources": [
+              {
+                "title": "OpenID Connect Core 1.0",
+                "url": "https://openid.net/specs/openid-connect-core-1_0-18.html"
+              },
+              {
+                "title": "RFC 9700 OAuth Security BCP",
+                "url": "https://www.rfc-editor.org/info/rfc9700/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Choose SAML, OAuth 2.0, or OIDC",
+            "level": "Advanced",
+            "description": "Select the appropriate protocol for three federation scenarios.",
+            "problemStatement": "Choose between SAML SSO, OAuth 2.0 delegated authorization, and OpenID Connect authentication for three architecture cases. Explain what the selected protocol does and what it does not do.",
+            "objectives": [
+              "Match protocol purpose to scenario.",
+              "Identify the principal security validation steps.",
+              "Avoid conflating authentication with authorization."
+            ],
+            "requirements": [
+              "Use the protocol standards linked in the lesson resources."
+            ],
+            "hint": "Ask first whether the requirement is SSO/federation, delegated API authorization, or user authentication.",
+            "solutionCode": "Scenario A: Enterprise browser SSO -> SAML\nScenario B: Mobile client needs scoped API access -> OAuth 2.0\nScenario C: Web application needs user sign-in and identity claims -> OpenID Connect",
+            "solutionExplanation": "The mapping is based on protocol purpose: federation/SSO, delegated resource authorization, and identity on top of OAuth respectively."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Provisioning, Directory Services, and Access Automation",
+        "description": "Manage identity data and access changes across directories and applications with reliable automation.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "Directory Services and Group Management",
+            "description": "Understand directory concepts, group nesting, and authoritative identity attributes.",
+            "learningObjectives": [
+              "Explain directory users, groups, and attributes.",
+              "Identify risks from nested groups and uncontrolled membership.",
+              "Separate identity-source authority from application-local roles."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Directory services provide centralized identity and group information. Applications may map groups or attributes into local roles, but the mapping should be explicit and reviewed."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Nested groups can create surprising transitive privilege.",
+                  "Protect authoritative attributes from unauthorized modification.",
+                  "Avoid using one directory group to represent unrelated business and technical permissions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "What is a common security problem with deeply nested groups?",
+              "options": [
+                "Transitive membership can create unexpected privilege",
+                "Users cannot authenticate",
+                "TLS cannot work",
+                "Logs become encrypted"
+              ],
+              "answer": "Transitive membership can create unexpected privilege",
+              "explanation": "Nested membership can make effective authorization difficult to reason about."
+            },
+            "summary": [
+              "Group design should remain understandable and auditable.",
+              "Effective access must account for inherited membership."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 6",
+                "url": "https://www.cisecurity.org/controls/access-control-management"
+              },
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "SCIM and Lifecycle Provisioning",
+            "description": "Use SCIM concepts to automate account and group provisioning between identity systems and applications.",
+            "learningObjectives": [
+              "Explain SCIM as a provisioning protocol.",
+              "Describe create, update, disable, and group-membership synchronization.",
+              "Identify idempotency and error-handling concerns in provisioning workflows."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "SCIM standardizes HTTP-based provisioning of identity resources such as Users and Groups. Provisioning integrations should cope with retries, partial failures, duplicate requests, and out-of-order lifecycle events."
+              },
+              {
+                "type": "code",
+                "text": "Provisioning flow:\nHR/authoritative source -> IdP -> SCIM service -> application identity store"
+              },
+              {
+                "type": "warning",
+                "text": "Provisioning success does not prove authorization correctness. The target application still needs safe role mapping and enforcement."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05",
+                "title": "SCIM Reconciliation Exercise",
+                "description": "Find provisioning drift between an authoritative identity source and an application target.",
+                "steps": [
+                  "Create a fictional source list and target list.",
+                  "Match identities using a stable identifier.",
+                  "Classify missing, changed, duplicate, stale, and identical records.",
+                  "Assign a safe reconciliation action to each difference."
+                ],
+                "solution": "Missing target record -> create; changed attributes -> update; stale target status -> disable or update to match source; duplicate stable identifiers -> manual review; identical records -> no-op.",
+                "output": "A deterministic reconciliation table covering every source-target difference."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What is a key benefit of SCIM?",
+              "options": [
+                "Standardized identity provisioning between systems",
+                "Automatic vulnerability exploitation",
+                "Replacing TLS",
+                "Eliminating authorization checks"
+              ],
+              "answer": "Standardized identity provisioning between systems",
+              "explanation": "SCIM provides a standard way to provision identity resources across systems."
+            },
+            "summary": [
+              "SCIM improves lifecycle interoperability.",
+              "Provisioning integrations need retry and reconciliation strategies."
+            ],
+            "resources": [
+              {
+                "title": "RFC 7644 SCIM Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc7644"
+              },
+              {
+                "title": "CIS Control 5",
+                "url": "https://www.cisecurity.org/controls/account-management"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Access Requests, Approvals, and Reconciliation",
+            "description": "Design a controlled access-request workflow and periodic reconciliation.",
+            "learningObjectives": [
+              "Model request, approval, provisioning, review, and revocation states.",
+              "Explain reconciliation against authoritative access records.",
+              "Identify drift between intended and effective access."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Requests should identify requested resource, action, duration, and business purpose.",
+                  "Approvals should come from an accountable owner.",
+                  "Reconciliation compares intended grants with actual technical state.",
+                  "Temporary access should have an explicit expiry."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "State model:\nrequested -> approved -> provisioned -> reviewed -> revoked/expired"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "What does reconciliation primarily detect?",
+              "options": [
+                "Differences between intended access and actual technical state",
+                "Only password length",
+                "DNS misconfiguration",
+                "Disk fragmentation"
+              ],
+              "answer": "Differences between intended access and actual technical state",
+              "explanation": "Reconciliation looks for access drift and synchronization failures."
+            },
+            "summary": [
+              "Access workflows need traceability across request and technical enforcement.",
+              "Reconciliation is necessary even when provisioning is automated."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 6",
+                "url": "https://www.cisecurity.org/controls/access-control-management"
+              },
+              {
+                "title": "NIST SP 800-53A",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53a/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Deprovisioning, Orphaned Accounts, and Token Revocation",
+            "description": "Make access removal reliable across accounts, sessions, groups, and application credentials.",
+            "learningObjectives": [
+              "Identify deprovisioning failure modes.",
+              "Describe token/session revocation considerations.",
+              "Create a containment checklist for a high-risk identity departure."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Disabling a primary account may not remove downstream sessions, API tokens, group memberships, local accounts, or application-specific credentials. Effective deprovisioning therefore needs both identity-provider actions and target-system cleanup."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Track high-value application sessions and refresh tokens.",
+                  "Remove privileged group memberships promptly.",
+                  "Rotate or revoke non-human credentials owned by the departing operator when appropriate."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "Why may disabling an identity account be insufficient on its own?",
+              "options": [
+                "Existing sessions, tokens, or downstream accounts may remain active",
+                "Because passwords become longer",
+                "Because DNS caches users",
+                "Because SAML stops working"
+              ],
+              "answer": "Existing sessions, tokens, or downstream accounts may remain active",
+              "explanation": "Deprovisioning must address active and delegated credentials beyond the primary account."
+            },
+            "summary": [
+              "Deprovisioning is a distributed control problem.",
+              "Credential and session inventories improve response speed."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Session Management",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+              },
+              {
+                "title": "CIS Controls",
+                "url": "https://www.cisecurity.org/controls"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Design a SCIM Reconciliation Strategy",
+            "level": "Intermediate",
+            "description": "Create a reconciliation plan for a provisioning integration.",
+            "problemStatement": "Define how to detect and resolve duplicates, failed updates, stale accounts, and membership drift between an IdP and application.",
+            "objectives": [
+              "Define a reconciliation schedule or trigger.",
+              "Specify identity matching keys.",
+              "Define safe retry and manual-review conditions."
+            ],
+            "requirements": [
+              "SCIM 2.0 concepts.",
+              "Use deterministic fictional IDs."
+            ],
+            "hint": "Keep the authoritative identity identifier separate from a mutable display name.",
+            "solutionCode": "Reconciliation outline:\n1. Pull authoritative users by stable external identifier.\n2. Compare target records by that identifier.\n3. Queue missing/changed records for deterministic update.\n4. Flag duplicate identifiers for manual review.\n5. Mark stale target records for disable/revocation workflow.\n6. Emit an audit record for every correction.",
+            "solutionExplanation": "The strategy uses stable identifiers, deterministic comparison, explicit duplicate handling, and auditability."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Privileged Access and Non-Human Identities",
+        "description": "Protect administrator access, service identities, workload credentials, and emergency paths.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "Privileged Access Management Concepts",
+            "description": "Reduce standing administrative exposure and improve accountability.",
+            "learningObjectives": [
+              "Explain standing privilege versus just-in-time privilege.",
+              "Design privileged account separation.",
+              "Identify approval, monitoring, and expiry controls for high-risk access."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Privileged access management limits the blast radius of administrative credentials. Common patterns include separate admin identities, just-in-time elevation, session monitoring, approval, and strong authentication."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use ordinary accounts for routine work and separate privileged identities for administration.",
+                  "Limit elevation duration and scope.",
+                  "Monitor privileged operations and retain evidence appropriate to policy."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06",
+                "title": "Privileged Access Review",
+                "description": "Identify standing administrative privilege and design safer elevation controls.",
+                "steps": [
+                  "Review a fictional administrator access list.",
+                  "Identify assignments without expiry, recent review, or documented purpose.",
+                  "Replace unnecessary standing privilege with time-bound elevation where appropriate.",
+                  "Define monitoring and post-use review."
+                ],
+                "solution": "Use separate privileged identities, strong authentication, time-bound elevation, approval, activity logging, and a controlled emergency path.",
+                "output": "A prioritized privileged-access remediation list."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "What is the main advantage of just-in-time privilege?",
+              "options": [
+                "It reduces the duration of standing administrative authority",
+                "It removes the need for authentication",
+                "It disables logging",
+                "It guarantees no insider risk"
+              ],
+              "answer": "It reduces the duration of standing administrative authority",
+              "explanation": "Temporary privilege reduces persistent exposure."
+            },
+            "summary": [
+              "Privileged access deserves stronger controls than routine access.",
+              "JIT access does not replace authorization or monitoring."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Entra PIM",
+                "url": "https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/pim-configure"
+              },
+              {
+                "title": "NIST SP 800-53 AC-6",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Service Accounts and Workload Identity",
+            "description": "Secure identities used by applications, jobs, and services.",
+            "learningObjectives": [
+              "Explain why static service credentials are risky.",
+              "Identify workload-identity patterns.",
+              "Apply least privilege and credential rotation principles to non-human identities."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Non-human identities often outlive individual people and may operate with powerful permissions. Prefer short-lived or platform-managed credentials where supported, minimize permissions, and assign accountable owners."
+              },
+              {
+                "type": "warning",
+                "text": "Do not hard-code long-lived production credentials in source repositories or deployment manifests."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "Which design most reduces the exposure of a long-lived service credential?",
+              "options": [
+                "Use a short-lived or platform-issued workload credential with narrowly scoped permissions",
+                "Put the same password in every service",
+                "Store the credential in source code",
+                "Disable logging"
+              ],
+              "answer": "Use a short-lived or platform-issued workload credential with narrowly scoped permissions",
+              "explanation": "Shorter-lived, scoped credentials reduce blast radius and persistence."
+            },
+            "summary": [
+              "Non-human identities need owners, inventory, and lifecycle controls.",
+              "Prefer workload identity over static shared secrets where supported."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              },
+              {
+                "title": "NIST Zero Trust",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Secrets, Keys, and Credential Rotation",
+            "description": "Establish secure handling and rotation processes for identity secrets and keys.",
+            "learningObjectives": [
+              "Distinguish password verifiers, API secrets, signing keys, and encryption keys.",
+              "Describe safe secret storage.",
+              "Plan rotation and compromise response."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Store secrets in protected secret-management systems or platform mechanisms appropriate to the environment.",
+                  "Separate key access from application data access where practical.",
+                  "Rotation without revocation can fail if old credentials remain valid.",
+                  "Compromise response should include scope assessment and rotation/revocation."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not log passwords, access tokens, private keys, or other authentication secrets."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "What is a weakness of rotating a secret without revoking the old credential when supported?",
+              "options": [
+                "The old credential may remain usable",
+                "The new credential becomes public",
+                "TLS stops working",
+                "Users lose usernames"
+              ],
+              "answer": "The old credential may remain usable",
+              "explanation": "Rotation must ensure previous credentials are invalidated where the system supports it."
+            },
+            "summary": [
+              "Credential lifecycle includes creation, storage, use, rotation, and revocation.",
+              "Secret management should be integrated with incident response."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-57 Key Management",
+                "url": "https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final"
+              },
+              {
+                "title": "OWASP Cryptographic Storage",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Break-Glass and Emergency Access",
+            "description": "Design emergency access that is available when normal identity systems fail but remains heavily controlled.",
+            "learningObjectives": [
+              "Explain when emergency access is justified.",
+              "Design safeguards around emergency credentials.",
+              "Specify logging, notification, review, and post-use rotation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Emergency access exists for exceptional conditions such as identity-provider outages. It should be rare, tightly controlled, monitored, and reviewed after use."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use separate credentials and storage controls.",
+                  "Alert when emergency credentials are used.",
+                  "Rotate or replace credentials after use where appropriate.",
+                  "Test the process periodically without creating unnecessary routine use."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-04",
+              "question": "What should normally happen after an emergency privileged credential is used?",
+              "options": [
+                "Post-use review and credential rotation/replacement as appropriate",
+                "The credential should become the routine admin account",
+                "Logging should be deleted",
+                "All other admin accounts should be disabled"
+              ],
+              "answer": "Post-use review and credential rotation/replacement as appropriate",
+              "explanation": "Emergency use should trigger review and restoration of the intended secure state."
+            },
+            "summary": [
+              "Break-glass access is an exception, not a convenience path.",
+              "Operational resilience requires testing the emergency procedure."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              },
+              {
+                "title": "CIS Controls",
+                "url": "https://www.cisecurity.org/controls"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Create a Privileged Access Design",
+            "level": "Advanced",
+            "description": "Design privileged access for infrastructure administrators without relying on permanent broad admin rights.",
+            "problemStatement": "Define normal identity, privileged identity, elevation, approval, session monitoring, and emergency access patterns for a fictional infrastructure team.",
+            "objectives": [
+              "Separate normal and privileged identities.",
+              "Define temporary elevation controls.",
+              "Specify monitoring and emergency procedures."
+            ],
+            "requirements": [
+              "Use least privilege and separation of duties.",
+              "Avoid depending on one vendor product."
+            ],
+            "hint": "Create separate paths for routine work, approved elevation, and emergency recovery.",
+            "solutionCode": "Design:\n- normal account: email, documentation, non-admin work\n- privileged account: separate identity, phishing-resistant MFA\n- elevation: approved, time-bound role assignment\n- monitoring: privileged activity logged centrally\n- emergency: protected break-glass credential, alert on use, post-use rotation",
+            "solutionExplanation": "The design reduces standing privilege while maintaining a resilient emergency path and strong attribution."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Sessions, Tokens, and Access Enforcement",
+        "description": "Protect web sessions, bearer tokens, and application authorization boundaries.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Session Management Fundamentals",
+            "description": "Understand how applications maintain authenticated state across requests.",
+            "learningObjectives": [
+              "Explain session identifiers and server-side session state.",
+              "Identify session fixation and theft risks.",
+              "Apply secure session lifecycle concepts."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "HTTP is stateless, so applications use session mechanisms to associate subsequent requests with an authenticated principal. The session identifier effectively represents the authenticated state and therefore requires strong protection."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Generate unpredictable session identifiers.",
+                  "Regenerate or rotate identifiers after authentication or privilege changes where appropriate.",
+                  "Expire sessions according to risk and user expectations."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Why should session identifiers be treated as sensitive?",
+              "options": [
+                "They can represent the authenticated session and its associated authorization",
+                "They are only UI labels",
+                "They replace TLS certificates",
+                "They are DNS records"
+              ],
+              "answer": "They can represent the authenticated session and its associated authorization",
+              "explanation": "A stolen session identifier may allow use of the active session."
+            },
+            "summary": [
+              "Session security is part of authentication security.",
+              "Protect session identifiers as carefully as other authenticators."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Session Management Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Cookies and Browser Session Controls",
+            "description": "Use Secure, HttpOnly, SameSite, and related controls appropriately.",
+            "learningObjectives": [
+              "Explain Secure, HttpOnly, and SameSite cookie attributes.",
+              "Select cookie behavior for cross-site requirements.",
+              "Identify cookie scope risks."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Set-Cookie: session=opaque-id; Secure; HttpOnly; SameSite=Lax; Path=/"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Secure limits transmission to HTTPS connections.",
+                  "HttpOnly prevents direct JavaScript access through document.cookie in supporting browsers.",
+                  "SameSite controls cross-site cookie sending behavior.",
+                  "Domain and Path should be as narrow as practical."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "Which cookie attribute primarily prevents JavaScript from reading a session cookie?",
+              "options": [
+                "HttpOnly",
+                "Secure",
+                "Path",
+                "Expires"
+              ],
+              "answer": "HttpOnly",
+              "explanation": "HttpOnly restricts document.cookie access from scripts."
+            },
+            "summary": [
+              "Cookie settings are defense in depth; they do not replace authorization.",
+              "Cross-site application requirements should be considered when selecting SameSite behavior."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Session Management",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Bearer Tokens, JWTs, and Validation",
+            "description": "Understand the security properties and pitfalls of bearer access tokens and JWTs.",
+            "learningObjectives": [
+              "Explain why bearer tokens need protection in transit and storage.",
+              "Describe JWT signature and claim validation.",
+              "Identify risks from accepting tokens without issuer/audience/algorithm checks."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A bearer token grants authority to whoever possesses it. JWT is a token format, not an authorization policy. Signed JWTs can carry claims, but consumers still need to validate signature, issuer, audience, time, and relevant application-specific claims."
+              },
+              {
+                "type": "warning",
+                "text": "Do not accept a JWT merely because it is syntactically valid or decodes successfully."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "Why is decoding a JWT not sufficient validation?",
+              "options": [
+                "Decoding does not prove the signature, issuer, audience, or validity constraints",
+                "JWTs cannot contain claims",
+                "TLS prevents decoding",
+                "JWTs are only passwords"
+              ],
+              "answer": "Decoding does not prove the signature, issuer, audience, or validity constraints",
+              "explanation": "A token must be cryptographically and semantically validated."
+            },
+            "summary": [
+              "Token format and token security are separate concerns.",
+              "Bearer tokens increase the importance of secure storage and transmission."
+            ],
+            "resources": [
+              {
+                "title": "RFC 7519 JWT",
+                "url": "https://www.rfc-editor.org/rfc/rfc7519"
+              },
+              {
+                "title": "RFC 9700 OAuth Security BCP",
+                "url": "https://www.rfc-editor.org/info/rfc9700/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Authorization Enforcement at Resource Boundaries",
+            "description": "Apply object-level and action-level authorization consistently across APIs and services.",
+            "learningObjectives": [
+              "Design authorization checks around resource ownership or permissions.",
+              "Prevent insecure direct object reference patterns.",
+              "Use centralized policy logic without bypassing resource-specific decisions."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Request:\nGET /accounts/482\n\nServer checks:\n1. authenticate caller\n2. load account 482\n3. authorize caller for account 482\n4. return only permitted fields"
+              },
+              {
+                "type": "warning",
+                "text": "Client-side route hiding or UI checks are not security boundaries. The server that owns the resource must enforce authorization."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-04",
+              "question": "Where should access to a protected resource ultimately be enforced?",
+              "options": [
+                "At the server/resource boundary that controls the resource",
+                "Only in the browser UI",
+                "Only in DNS",
+                "Only in the network cable"
+              ],
+              "answer": "At the server/resource boundary that controls the resource",
+              "explanation": "The authoritative resource server must enforce authorization."
+            },
+            "summary": [
+              "Resource ownership and permission checks belong at the enforcement point.",
+              "UI restrictions can improve UX but do not establish security."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authorization Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+              },
+              {
+                "title": "OWASP API Security Top 10",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Review a Token Validation Checklist",
+            "level": "Intermediate",
+            "description": "Build a checklist for validating an OIDC ID Token or JWT-like signed assertion before trusting its identity claims.",
+            "problemStatement": "Create a checklist that covers signature, algorithm policy, issuer, audience, time claims, nonce/context when applicable, and error handling.",
+            "objectives": [
+              "Distinguish cryptographic validation from semantic validation.",
+              "Identify fail-closed conditions.",
+              "Explain why token decoding is not enough."
+            ],
+            "requirements": [
+              "Use OIDC/JWT references from the lesson."
+            ],
+            "hint": "Think in two layers: cryptographic validity and protocol/application validity.",
+            "solutionCode": "Checklist:\n- verify signature with trusted key\n- restrict accepted algorithms\n- verify issuer\n- verify audience\n- verify time validity\n- verify nonce/state binding when the flow requires it\n- reject malformed or ambiguous inputs\n- log a safe validation failure without exposing token contents",
+            "solutionExplanation": "The checklist separates trust in the signing material from the protocol context in which the token is accepted."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Identity Governance, Monitoring, and Zero Trust",
+        "description": "Turn IAM into a continuously reviewed security capability using access reviews, policy engines, and identity telemetry.",
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Access Reviews and Certification",
+            "description": "Design periodic review of high-risk access and role memberships.",
+            "learningObjectives": [
+              "Explain the purpose of access certification.",
+              "Prioritize reviews by risk and privilege.",
+              "Define evidence for approve/revoke decisions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Access reviews validate whether current access remains justified. A useful certification process gives reviewers the context needed to make a decision and records the decision and resulting action."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prioritize privileged and sensitive access.",
+                  "Make reviewers accountable for business context.",
+                  "Separate certification from automatic renewal when possible."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "What is the primary objective of an access review?",
+              "options": [
+                "Confirm that current access remains justified and appropriate",
+                "Increase the number of accounts",
+                "Replace MFA",
+                "Reduce log retention"
+              ],
+              "answer": "Confirm that current access remains justified and appropriate",
+              "explanation": "Reviews detect stale or unjustified access."
+            },
+            "summary": [
+              "Certification closes the loop on lifecycle drift.",
+              "High-risk access deserves more frequent or deeper review."
+            ],
+            "resources": [
+              {
+                "title": "CIS Control 6",
+                "url": "https://www.cisecurity.org/controls/access-control-management"
+              },
+              {
+                "title": "NIST SP 800-53A",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53a/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "Identity Monitoring and Detection Signals",
+            "description": "Detect suspicious authentication and privilege behavior using identity telemetry.",
+            "learningObjectives": [
+              "Identify high-value identity events.",
+              "Design simple detection hypotheses.",
+              "Correlate login, device, location, and privilege-change signals."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "High-value telemetry may include authentication outcomes, MFA changes, group membership changes, privileged role activation, token issuance, and recovery events.",
+                  "Detections should distinguish expected maintenance from suspicious behavior.",
+                  "Centralized logging improves correlation across identity systems and applications."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Avoid treating one anomalous login signal as proof of compromise; scope and corroborating evidence matter."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07",
+                "title": "Identity Monitoring Detection Exercise",
+                "description": "Design a detection for unexpected privileged-role activation.",
+                "steps": [
+                  "Define the event source and required context fields.",
+                  "State normal administration behavior.",
+                  "Define suspicious patterns such as missing approval context or unusual timing.",
+                  "Write a triage checklist to validate the event."
+                ],
+                "solution": "Alert on privileged-role activation that lacks expected approval context or occurs outside the documented administration window; validate the activity before escalating.",
+                "output": "A detection hypothesis and analyst triage checklist."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "Which identity event is particularly useful for privileged-access monitoring?",
+              "options": [
+                "Unexpected privileged-role activation",
+                "Wallpaper change",
+                "Browser font size",
+                "Screen resolution"
+              ],
+              "answer": "Unexpected privileged-role activation",
+              "explanation": "Privilege changes can materially alter what an identity can do."
+            },
+            "summary": [
+              "Identity monitoring should focus on events that change trust or authority.",
+              "Detection quality improves when identity events are correlated with context."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Zero Trust and Identity-Centric Access",
+            "description": "Apply zero-trust principles to identity, device, application, and resource decisions.",
+            "learningObjectives": [
+              "Explain why network location is insufficient as a trust signal.",
+              "Describe identity-centric and resource-centric policy decisions.",
+              "Relate least privilege to zero-trust architecture."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-207 describes zero trust as avoiding implicit trust based solely on network location and focusing policy decisions on users, assets, resources, and context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authenticate and authorize before access to protected resources.",
+                  "Use device and contextual signals when they materially improve the decision.",
+                  "Continuously evaluate access in systems where risk can change during a session."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Which statement best matches zero-trust architecture?",
+              "options": [
+                "Trust is automatically granted to anything on the internal network",
+                "Network location alone is not sufficient to establish trust",
+                "VPN access eliminates authorization",
+                "Passwords are unnecessary"
+              ],
+              "answer": "Network location alone is not sufficient to establish trust",
+              "explanation": "Zero trust removes implicit trust based solely on network position."
+            },
+            "summary": [
+              "Zero trust is an architectural strategy, not one product.",
+              "Identity and resource policy are central decision inputs."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-207",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-32",
+            "title": "Conditional Access and Contextual Policy",
+            "description": "Use conditional policy concepts to express identity-aware access requirements.",
+            "learningObjectives": [
+              "Model if-then access policies.",
+              "Choose signals such as user, device, application, or risk.",
+              "Explain why staged testing is important for deny/block policies."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Conditional access uses contextual signals to decide whether to allow, require stronger authentication, restrict access, or block a request. Microsoft Entra documentation describes conditions and grant/block controls and recommends report-only testing for policy changes."
+              },
+              {
+                "type": "code",
+                "text": "Conceptual rule:\nIF privileged_user AND unmanaged_device\nTHEN require strong authentication or block"
+              },
+              {
+                "type": "warning",
+                "text": "A poorly scoped block policy can lock out legitimate administrators. Stage and test high-impact policy changes before broad enforcement."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-04",
+              "question": "Why is staged testing important for conditional-access block policies?",
+              "options": [
+                "An overly broad policy can unintentionally deny legitimate access",
+                "Because encryption stops working",
+                "Because DNS needs a reboot",
+                "Because MFA cannot be logged"
+              ],
+              "answer": "An overly broad policy can unintentionally deny legitimate access",
+              "explanation": "Block policies can have wide operational impact and should be tested carefully."
+            },
+            "summary": [
+              "Context-aware access is policy engineering, not just feature activation.",
+              "Report-only modes and what-if analysis can reduce rollout risk."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Entra Conditional Access",
+                "url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/"
+              },
+              {
+                "title": "NIST SP 800-207",
+                "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Build an Identity Detection Use-Case Set",
+            "level": "Advanced",
+            "description": "Create four detection use cases centered on identity compromise and privilege abuse.",
+            "problemStatement": "Define detections for suspicious MFA-factor changes, impossible-to-explain sign-in context, privileged-role activation outside expected windows, and account-recovery abuse.",
+            "objectives": [
+              "Define event sources.",
+              "State the detection hypothesis.",
+              "Define triage evidence and false-positive considerations."
+            ],
+            "requirements": [
+              "Use identity events rather than generic malware detections.",
+              "Do not claim geolocation certainty from a single IP address."
+            ],
+            "hint": "For each use case specify signal, context, expected behavior, suspicious behavior, and analyst action.",
+            "solutionCode": "Use case: unexpected MFA change\nSignals: factor-registration event + identity + time\nTriage: verify change request, device context, recent recovery\n\nUse case: privileged role activation outside expected window\nSignals: role activation + identity + time + ticket reference\nTriage: validate authorized change, inspect related activity",
+            "solutionExplanation": "The design ties detections to identity-state changes and provides an analyst path rather than simply labeling the event malicious."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Real-World Project — IAM Access Governance Analyzer",
+        "description": "Final assessment combining identity lifecycle, authorization, privileged access, access review, and defensive automation concepts. No module tasks are included in the capstone module.",
+        "lessons": [
+          {
+            "id": "lesson-33",
+            "title": "Capstone Design and Control Mapping",
+            "description": "Translate IAM requirements into a small auditable analysis application.",
+            "learningObjectives": [
+              "Map IAM controls to deterministic analysis rules.",
+              "Define inputs, outputs, assumptions, and safe operational boundaries.",
+              "Create acceptance criteria before implementation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone is deliberately read-only. It analyzes an exported identity/access dataset and identifies governance gaps. A real deployment would need authoritative data sources, stronger policy integration, access controls, and organization-specific approvals."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Each finding category must have a clear rationale.",
+                  "The report should contain enough evidence for a reviewer to investigate further.",
+                  "The tool must not silently modify identity state."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "Why is the capstone read-only?",
+              "options": [
+                "To preserve an explicit separation between analysis and account-changing actions",
+                "Because JSON cannot be edited",
+                "Because identity systems never allow changes",
+                "Because reports require encryption"
+              ],
+              "answer": "To preserve an explicit separation between analysis and account-changing actions",
+              "explanation": "The course focuses on evidence-based governance while avoiding unsafe real-system modification."
+            },
+            "summary": [
+              "Good security automation is predictable, scoped, and auditable.",
+              "Control findings should map back to IAM objectives."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final"
+              },
+              {
+                "title": "NIST SP 800-53A",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53a/r5/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-34",
+            "title": "Capstone Validation and Operational Review",
+            "description": "Test the project and evaluate whether its findings are useful and explainable.",
+            "learningObjectives": [
+              "Run syntax and automated tests.",
+              "Interpret findings without overclaiming compromise.",
+              "Identify limitations and safe next improvements."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Validation commands:\npython -m py_compile iam_audit.py\npython -m pytest -q\npython iam_audit.py data.json"
+              },
+              {
+                "type": "warning",
+                "text": "Passing unit tests demonstrates the tested requirements, not universal correctness for every identity system."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What is an appropriate limitation to document for the capstone?",
+              "options": [
+                "It operates on a local export and cannot prove the live state of an external identity system",
+                "It can never detect any finding",
+                "JSON is not secure",
+                "RBAC is always unsafe"
+              ],
+              "answer": "It operates on a local export and cannot prove the live state of an external identity system",
+              "explanation": "Documenting scope and limitations is part of trustworthy security engineering."
+            },
+            "summary": [
+              "Validate both code behavior and analytical limitations.",
+              "A governance finding is an investigation lead, not automatically proof of abuse."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-53A",
+                "url": "https://csrc.nist.gov/pubs/sp/800/53a/r5/final"
+              },
+              {
+                "title": "CIS Controls v8.1",
+                "url": "https://www.cisecurity.org/controls/v8-1"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "IAM Access Governance Analyzer",
+          "description": "Build a local, read-only analyzer that turns a small identity/access export into actionable governance findings. The project combines account lifecycle thinking, role-based access, MFA coverage, separation of duties, access reviews, structured reporting, and automated testing.",
+          "conceptsCovered": [
+            "Identity lifecycle",
+            "Least privilege",
+            "RBAC",
+            "MFA coverage",
+            "Separation of duties",
+            "Access reviews",
+            "Audit evidence",
+            "Defensive automation",
+            "Testing"
+          ],
+          "steps": [
+            "Create a local project directory and place the supplied data.json beside the analyzer.",
+            "Implement strict JSON shape validation for the expected users array.",
+            "Evaluate disabled identities that still carry role assignments.",
+            "Flag privileged identities that lack MFA.",
+            "Detect role combinations that violate documented separation-of-duties rules.",
+            "Flag reviews older than the configured review period.",
+            "Produce a structured JSON report containing counts, highest severity, findings, and safe next-step recommendations.",
+            "Run automated tests for normal findings and privileged-account MFA coverage.",
+            "Keep the application read-only; do not connect to real identity providers or modify accounts."
+          ],
+          "code": {
+            "README.md": "# IAM Access Governance Analyzer\n\nA local, defensive training application that analyzes a JSON export of identities,\nroles, permissions, and review metadata. It reports stale identities, excessive\nrole assignments, missing MFA for privileged users, and simple separation-of-duties conflicts.\n\nThe tool is read-only: it never changes accounts or access.\n",
+            "data.json": "{\n  \"users\": [\n    {\"id\":\"u-100\",\"status\":\"active\",\"roles\":[\"analyst\"],\"mfa\":true,\"last_review\":\"2026-08-20\"},\n    {\"id\":\"u-101\",\"status\":\"active\",\"roles\":[\"approver\",\"payer\"],\"mfa\":false,\"last_review\":\"2026-04-01\"},\n    {\"id\":\"u-102\",\"status\":\"disabled\",\"roles\":[\"admin\"],\"mfa\":true,\"last_review\":\"2026-08-01\"}\n  ],\n  \"role_permissions\": {\n    \"analyst\":[\"case.read\"],\n    \"approver\":[\"payment.approve\"],\n    \"payer\":[\"payment.create\"],\n    \"admin\":[\"user.manage\",\"role.manage\",\"audit.read\"]\n  },\n  \"sod_conflicts\":[[\"approver\",\"payer\"]]\n}",
+            "iam_audit.py": "#!/usr/bin/env python3\nimport argparse\nimport json\nfrom dataclasses import dataclass, asdict\nfrom datetime import date, datetime, timedelta\nfrom pathlib import Path\n\n@dataclass(frozen=True)\nclass Finding:\n    user_id: str\n    category: str\n    severity: str\n    detail: str\n\nSEVERITY_RANK = {\"low\": 1, \"medium\": 2, \"high\": 3, \"critical\": 4}\n\ndef parse_date(value: str) -> date:\n    return datetime.strptime(value, \"%Y-%m-%d\").date()\n\ndef analyze(document: dict, review_days: int = 180) -> list[Finding]:\n    findings: list[Finding] = []\n    today = date.today()\n    stale_cutoff = today - timedelta(days=review_days)\n\n    conflict_pairs = {frozenset(pair) for pair in document.get(\"sod_conflicts\", [])}\n    for user in document.get(\"users\", []):\n        uid = user[\"id\"]\n        roles = set(user.get(\"roles\", []))\n\n        if user.get(\"status\") == \"disabled\" and roles:\n            findings.append(Finding(uid, \"disabled_with_access\", \"high\",\n                                    \"Disabled identity still has role assignments.\"))\n\n        if \"admin\" in roles and not user.get(\"mfa\", False):\n            findings.append(Finding(uid, \"privileged_without_mfa\", \"critical\",\n                                    \"Privileged role is assigned without MFA.\"))\n\n        review_value = user.get(\"last_review\")\n        if review_value and parse_date(review_value) < stale_cutoff:\n            findings.append(Finding(uid, \"stale_review\", \"medium\",\n                                    f\"Access review is older than {review_days} days.\"))\n\n        for pair in conflict_pairs:\n            if pair.issubset(roles):\n                findings.append(Finding(uid, \"sod_conflict\", \"high\",\n                                        f\"Conflicting roles assigned: {', '.join(sorted(pair))}.\"))\n    return findings\n\ndef build_report(document: dict, review_days: int) -> dict:\n    findings = analyze(document, review_days)\n    highest = \"low\"\n    if findings:\n        highest = max((f.severity for f in findings), key=lambda s: SEVERITY_RANK[s])\n    return {\n        \"user_count\": len(document.get(\"users\", [])),\n        \"finding_count\": len(findings),\n        \"highest_severity\": highest,\n        \"findings\": [asdict(f) for f in findings],\n        \"recommended_actions\": [\n            \"Validate findings against authoritative identity records.\",\n            \"Remove or expire unnecessary privileged access.\",\n            \"Review stale access and document business justification.\",\n            \"Preserve audit evidence before making high-impact changes.\"\n        ]\n    }\n\ndef main() -> int:\n    parser = argparse.ArgumentParser(description=\"Local IAM access-governance analyzer\")\n    parser.add_argument(\"input\", type=Path)\n    parser.add_argument(\"--review-days\", type=int, default=180)\n    parser.add_argument(\"--output\", type=Path)\n    args = parser.parse_args()\n\n    with args.input.open(\"r\", encoding=\"utf-8\") as handle:\n        document = json.load(handle)\n    if not isinstance(document, dict) or not isinstance(document.get(\"users\"), list):\n        raise ValueError(\"Input must contain a users array\")\n\n    report = build_report(document, args.review_days)\n    text = json.dumps(report, indent=2)\n    if args.output:\n        args.output.write_text(text + \"\\n\", encoding=\"utf-8\")\n    else:\n        print(text)\n    return 0\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+            "test_iam_audit.py": "import json\nimport subprocess\nimport sys\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parent\n\ndef test_detects_expected_findings():\n    result = subprocess.run(\n        [sys.executable, str(ROOT / \"iam_audit.py\"), str(ROOT / \"data.json\"), \"--review-days\", \"180\"],\n        capture_output=True, text=True, check=True\n    )\n    report = json.loads(result.stdout)\n    categories = {item[\"category\"] for item in report[\"findings\"]}\n    assert \"disabled_with_access\" in categories\n    assert \"privileged_without_mfa\" not in categories\n    assert \"sod_conflict\" in categories\n\ndef test_mfa_finding():\n    doc = {\n        \"users\":[{\"id\":\"x\",\"status\":\"active\",\"roles\":[\"admin\"],\"mfa\":False,\"last_review\":\"2026-09-01\"}],\n        \"role_permissions\":{\"admin\":[\"role.manage\"]},\n        \"sod_conflicts\":[]\n    }\n    path = ROOT / \"mfa.json\"\n    path.write_text(json.dumps(doc), encoding=\"utf-8\")\n    try:\n        result = subprocess.run([sys.executable, str(ROOT / \"iam_audit.py\"), str(path)], capture_output=True, text=True, check=True)\n        report = json.loads(result.stdout)\n        assert any(f[\"category\"] == \"privileged_without_mfa\" for f in report[\"findings\"])\n    finally:\n        path.unlink()\n"
+          },
+          "explanation": "The capstone uses a deterministic analysis pipeline: identity/access export -> input validation -> governance rules -> severity aggregation -> report. Each rule maps to an IAM control objective taught earlier. The application does not disable users or change roles; this is deliberate so students learn to distinguish analysis from authorized change execution. The tests verify both expected findings and an explicit privileged-MFA rule, giving students a repeatable baseline for extending the analyzer safely."
+        }
+      }
+    ]
+  }
+}

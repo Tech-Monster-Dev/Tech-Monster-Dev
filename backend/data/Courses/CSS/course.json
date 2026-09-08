@@ -1,0 +1,2299 @@
+{
+  "course": {
+    "id": "css-complete",
+    "title": "CSS",
+    "slug": "css",
+    "description": "A complete practical CSS course progressing from syntax, cascade, selectors, and the box model through Flexbox, Grid, responsive and container queries, custom properties, accessibility, motion, debugging, performance, compatibility, and modern positioning. The course culminates in a realistic accessible documentation portal built with platform CSS.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 55,
+    "prerequisites": [
+      "Basic familiarity with HTML elements and document structure",
+      "A modern web browser with developer tools",
+      "A text or code editor"
+    ],
+    "learningOutcomes": [
+      "Explain CSS syntax, matching, inheritance, cascade, specificity, and layers.",
+      "Design maintainable selectors and component boundaries.",
+      "Use units, logical properties, box sizing, intrinsic sizing, and CSS math to create predictable dimensions.",
+      "Build robust one-dimensional Flexbox and two-dimensional Grid layouts.",
+      "Create responsive interfaces with fluid sizing, media queries, container queries, and user preference features.",
+      "Build themeable CSS systems with custom properties and semantic tokens.",
+      "Implement accessible focus, reduced-motion, forced-colors, color-scheme, and print behavior.",
+      "Use transitions, keyframes, and scroll-driven effects as progressive enhancements.",
+      "Debug CSS systematically using developer tools and clear hypotheses.",
+      "Apply containment and rendering hints cautiously based on real performance needs.",
+      "Use feature detection and progressive enhancement for newer CSS capabilities.",
+      "Design and implement a production-style CSS architecture in a realistic final project."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "CSS Foundations and the Cascade",
+        "description": "Build the mental model needed to understand CSS syntax, declarations, inheritance, cascade, layers, and specificity.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "Rules, Declarations, and Values",
+            "description": "Learn the grammar of ordinary CSS rules and how declarations are matched to elements.",
+            "learningObjectives": [
+              "identify selectors, properties, values, and declaration blocks",
+              "write valid rulesets",
+              "recognize invalid declarations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A CSS rule combines a selector with a declaration block. Each declaration supplies a property and value. CSS is intentionally error-tolerant: an invalid declaration can be discarded while other valid declarations continue to participate in the stylesheet."
+              },
+              {
+                "type": "code",
+                "text": "article {\n  max-inline-size: 70ch;\n  margin-inline: auto;\n  line-height: 1.6;\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A selector determines which elements may match.",
+                  "A property names the feature being assigned.",
+                  "A value supplies the requested result and must satisfy that property’s grammar."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-01",
+                "title": "Style a semantic article",
+                "description": "Apply readable typography and spacing to a semantic article without changing its HTML meaning.",
+                "steps": [
+                  "Create an article with a heading, paragraphs, and a list.",
+                  "Constrain the article measure and center it with logical margins.",
+                  "Set a readable line-height and heading spacing.",
+                  "Inspect the result in browser developer tools."
+                ],
+                "solution": "article {\n  max-inline-size: 70ch;\n  margin-inline: auto;\n  padding: 2rem;\n}\narticle p { line-height: 1.6; }\narticle h1 { margin-block-end: .75em; }",
+                "output": "The article becomes a readable, centered content block with consistent spacing."
+              }
+            ],
+            "quiz": {
+              "id": "q-01-01",
+              "question": "What identifies the elements to which a declaration block may apply?",
+              "options": [
+                "The selector",
+                "The property",
+                "The value",
+                "The semicolon"
+              ],
+              "answer": "The selector",
+              "explanation": "Selectors perform matching; declarations provide property values."
+            },
+            "summary": [
+              "CSS rules are composed from selectors and declarations.",
+              "Valid CSS should be debugged with developer tools rather than by guessing."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Syntax"
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Inheritance and the Cascade",
+            "description": "Understand why one declaration wins when multiple declarations can style the same property.",
+            "learningObjectives": [
+              "explain inheritance",
+              "describe the main cascade decision stages",
+              "use inherit, initial, unset, and revert intentionally"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The cascade is a conflict-resolution algorithm. Relevance is considered first, then origin and importance, cascade layer precedence, specificity, scoping proximity where applicable, and source order. Inheritance supplies values when an inherited property has no closer winning declaration."
+              },
+              {
+                "type": "code",
+                "text": ":root { font-family: system-ui, sans-serif; }\narticle { color: #1f2937; }\narticle a { color: inherit; }"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Specificity is not the first decision in the cascade.",
+                  "Custom properties inherit by default.",
+                  "`revert-layer` can hand a declaration back to an earlier cascade layer."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-02",
+              "question": "Which is considered before specificity in the cascade?",
+              "options": [
+                "Origin and importance",
+                "DOM depth",
+                "Box size",
+                "Font metrics"
+              ],
+              "answer": "Origin and importance",
+              "explanation": "Specificity is compared after the applicable origin/importance and layer precedence have been resolved."
+            },
+            "summary": [
+              "Inheritance is property-specific.",
+              "Cascade layers can reduce specificity escalation."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity",
+              "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers"
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Specificity and Selector Strategy",
+            "description": "Calculate common specificity relationships and design selectors that remain easy to override.",
+            "learningObjectives": [
+              "calculate common selector specificity",
+              "use :where and :is appropriately",
+              "avoid ID-driven component styling"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Specificity is compared among declarations that have already survived the higher-precedence cascade decisions. `:where()` contributes zero specificity, while `:is()` takes the specificity of its most specific argument."
+              },
+              {
+                "type": "code",
+                "text": ":where(.card) h2 { margin-block-end: .5rem; }\n:is(.card, #featured) h2 { color: currentColor; }"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer stable class contracts for components.",
+                  "Avoid encoding page ancestry into reusable selectors.",
+                  "Use low specificity as an architectural choice."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-03",
+              "question": "What is special about :where()?",
+              "options": [
+                "Its argument contributes zero specificity",
+                "It always has ID specificity",
+                "It disables inheritance",
+                "It only matches IDs"
+              ],
+              "answer": "Its argument contributes zero specificity",
+              "explanation": "The selectors inside `:where()` contribute zero specificity."
+            },
+            "summary": [
+              "Specificity is a tie-breaker inside an already-selected cascade context.",
+              "Low-specificity CSS is easier to evolve."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity"
+            ]
+          },
+          {
+            "id": "lesson-01-04",
+            "title": "Cascade Layers and Native Nesting",
+            "description": "Use modern CSS architecture features to express precedence and component ownership.",
+            "learningObjectives": [
+              "define a layer order",
+              "write native nested rules",
+              "explain the purpose of @scope"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@layer reset, base, components, utilities;\n\n@layer components {\n  .card {\n    & > h2 { margin: 0; }\n    &:focus-within { outline: 2px solid currentColor; }\n  }\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Cascade layers create named precedence groups. Native nesting reduces repeated selectors. `@scope` limits matching to a DOM subtree and can reduce coupling to global structure."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Layer order should be established deliberately.",
+                  "Nesting is CSS syntax, not inherently a preprocessor feature.",
+                  "Scoped styling is useful when a component should not affect unrelated subtrees."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-01-04",
+              "question": "What is a primary purpose of cascade layers?",
+              "options": [
+                "To make precedence between style groups explicit",
+                "To remove selectors",
+                "To replace HTML",
+                "To run JavaScript"
+              ],
+              "answer": "To make precedence between style groups explicit",
+              "explanation": "Layers provide named, ordered buckets in the cascade."
+            },
+            "summary": [
+              "Layers make precedence explicit.",
+              "Nesting can reduce repetition without increasing page coupling."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Nesting",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@scope"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Replace a specificity escalation chain",
+            "level": "Intermediate",
+            "description": "Refactor deeply nested component rules into a predictable layer and component contract.",
+            "problemStatement": "A button can only be overridden with increasingly specific page selectors. Rebuild the styling with layers and a root component class.",
+            "objectives": [
+              "create an explicit layer order",
+              "reduce selector specificity",
+              "preserve the visual states"
+            ],
+            "requirements": [
+              "HTML button markup",
+              "Modern CSS browser"
+            ],
+            "hint": [
+              "Start from the component boundary and make precedence explicit."
+            ],
+            "solutionCode": "@layer base, components, utilities;\n@layer base { button { font: inherit; } }\n@layer components { .button { padding: .65rem 1rem; border: 1px solid #94a3b8; } .button:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; } }\n@layer utilities { .muted { color: #64748b; } }",
+            "solutionExplanation": "The component owns its styles and the utility layer provides a deliberate override without selector escalation."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Box Model, Values, Sizing, and Overflow",
+        "description": "Learn units, logical properties, box sizing, intrinsic sizing, overflow, and CSS math.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Units and Logical Properties",
+            "description": "Choose units according to the relationship a value should have to its context.",
+            "learningObjectives": [
+              "distinguish rem, em, percentages, viewport units, and logical units",
+              "use block/inline terminology",
+              "choose units for responsive components"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".page { inline-size: min(100% - 2rem, 72rem); }\n.hero { min-block-size: 60svh; }\n.card { padding-inline: 1rem; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "`rem` is based on the root font size; `em` is relative to the relevant font size. Viewport units relate to viewport dimensions, while logical properties and units follow the writing-mode axes."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use logical properties for reusable internationalized components.",
+                  "Use viewport units as part of a constraint system, not as a replacement for content sizing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-02-01",
+              "question": "Which unit is based on the root element font size?",
+              "options": [
+                "rem",
+                "em",
+                "ch",
+                "svh"
+              ],
+              "answer": "rem",
+              "explanation": "`rem` is relative to the root element’s computed font size."
+            },
+            "summary": [
+              "Unit choice expresses a relationship.",
+              "Logical properties reduce left/right assumptions."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Values_and_units"
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "The Box Model and box-sizing",
+            "description": "Predict dimensions and spacing using content, padding, border, and margin.",
+            "learningObjectives": [
+              "explain the box model",
+              "use border-box predictably",
+              "recognize margin collapse"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "*, *::before, *::after { box-sizing: border-box; }\n.card { inline-size: 20rem; padding: 1rem; border: 2px solid; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "With `border-box`, the specified size includes content, padding, and border. Margin is outside the border. Vertical margins can collapse in certain block formatting situations, which is distinct from padding and border spacing."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-02",
+                "title": "Make card dimensions predictable",
+                "description": "Use border-box sizing so padding and borders do not unexpectedly expand a declared card size.",
+                "steps": [
+                  "Apply border-box to elements and pseudo-elements.",
+                  "Create a card with a constrained inline size, padding, and border.",
+                  "Inspect the box model in developer tools.",
+                  "Change padding and verify the declared outer size remains bounded."
+                ],
+                "solution": "*, *::before, *::after { box-sizing: border-box; }\n.card { inline-size: min(100%, 22rem); padding: 1rem; border: 2px solid; }",
+                "output": "The card’s declared size includes its padding and border."
+              }
+            ],
+            "quiz": {
+              "id": "q-02-02",
+              "question": "What does border-box include in the declared size?",
+              "options": [
+                "Content, padding, and border",
+                "Margin only",
+                "Content only",
+                "Padding only"
+              ],
+              "answer": "Content, padding, and border",
+              "explanation": "The border-box sizing model includes content, padding, and border in the specified size."
+            },
+            "summary": [
+              "Border-box makes declared dimensions easier to reason about.",
+              "Margin collapse is context-dependent."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Box_model"
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Intrinsic Sizing and Overflow",
+            "description": "Prevent content from forcing brittle fixed-size layouts.",
+            "learningObjectives": [
+              "use min/max constraints",
+              "explain intrinsic sizing",
+              "diagnose common overflow sources"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".content { min-inline-size: 0; max-inline-size: 70ch; }\nimg { max-inline-size: 100%; block-size: auto; }\n.code { overflow: auto; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Intrinsic sizing lets content contribute to an element’s dimensions. Constraints bound that contribution. Flex and grid items can retain automatic minimum sizes, so `min-inline-size: 0` is often an important escape hatch for long content."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Constrain replaced elements such as images.",
+                  "Give code or long data an intentional overflow policy.",
+                  "Do not hide overflow globally just to make a symptom disappear."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-02-03",
+              "question": "Why can min-inline-size: 0 help a flex/grid child?",
+              "options": [
+                "It allows the item to shrink below an automatic minimum",
+                "It disables layout",
+                "It fixes the item at zero width",
+                "It changes specificity"
+              ],
+              "answer": "It allows the item to shrink below an automatic minimum",
+              "explanation": "Flex/grid automatic minimum sizing can otherwise prevent a content column from shrinking enough."
+            },
+            "summary": [
+              "Intrinsic sizing is a major part of responsive design.",
+              "Overflow should be handled at the component that owns it."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Values_and_units",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Box_model"
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "CSS Math with min, max, clamp, and calc",
+            "description": "Build fluid constraints without a large breakpoint matrix.",
+            "learningObjectives": [
+              "use calc for relationships",
+              "use min/max for constraints",
+              "use clamp for bounded fluid values"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "main { inline-size: min(100% - 2rem, 72rem); }\nh1 { font-size: clamp(2rem, 5vw, 4.5rem); }\n.panel { padding: clamp(1rem, 3vw, 3rem); }"
+              },
+              {
+                "type": "paragraph",
+                "text": "`min()` selects the smallest candidate, `max()` selects the largest, and `clamp()` bounds a preferred value between a minimum and maximum. These functions are useful for fluid typography, spacing, and container constraints."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-02-04",
+              "question": "Which function bounds a preferred value between a minimum and maximum?",
+              "options": [
+                "clamp()",
+                "color-mix()",
+                "anchor()",
+                "url()"
+              ],
+              "answer": "clamp()",
+              "explanation": "`clamp(min, preferred, max)` returns a value bounded by its minimum and maximum."
+            },
+            "summary": [
+              "Math functions can reduce breakpoint dependence.",
+              "Always test the resulting values at intermediate sizes."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Values_and_units/Using_CSS_math_functions"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Build a fluid reading shell",
+            "level": "Intermediate",
+            "description": "Create a documentation shell that stays readable from phone to desktop widths.",
+            "problemStatement": "Use a bounded container, fluid heading, logical spacing, and no horizontal overflow.",
+            "objectives": [
+              "use min and clamp",
+              "keep the text measure readable",
+              "constrain media"
+            ],
+            "requirements": [
+              "HTML document",
+              "CSS"
+            ],
+            "hint": [
+              "Let content define the minimum; let the viewport supply the available maximum."
+            ],
+            "solutionCode": "main { inline-size: min(100% - 2rem, 72rem); margin-inline: auto; padding-block: clamp(2rem, 5vw, 5rem); }\narticle { max-inline-size: 70ch; }\nh1 { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.05; }\nimg { max-inline-size: 100%; block-size: auto; }",
+            "solutionExplanation": "The shell grows fluidly but remains bounded, while the article and media avoid runaway widths."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Typography, Color, Backgrounds, and Themes",
+        "description": "Build readable and coherent visual systems with modern color functions, typography controls, and system-aware themes.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Typography and Text Layout",
+            "description": "Control font stacks, line-height, measure, wrapping, and hierarchy.",
+            "learningObjectives": [
+              "build robust font stacks",
+              "choose readable measure and line-height",
+              "use text-wrap where appropriate"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "body { font-family: system-ui, sans-serif; line-height: 1.5; }\n.prose { max-inline-size: 70ch; }\nh1 { font-size: clamp(2rem, 5vw, 4rem); text-wrap: balance; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Typography depends on font metrics, size, line height, language, and measure. A resilient stylesheet avoids assuming a particular font will always be available or have identical metrics."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-01",
+              "question": "Why should a font stack include fallbacks?",
+              "options": [
+                "The preferred font may be unavailable",
+                "Fallbacks disable substitution",
+                "Fallbacks guarantee identical metrics",
+                "They remove the need for font loading"
+              ],
+              "answer": "The preferred font may be unavailable",
+              "explanation": "A fallback stack gives the browser usable alternatives when the preferred face is unavailable."
+            },
+            "summary": [
+              "Typography must be tested with real content.",
+              "Readable measure is often more important than maximizing line length."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Text_and_fonts"
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "Modern CSS Color",
+            "description": "Use color spaces and functions while keeping accessibility in view.",
+            "learningObjectives": [
+              "use rgb/hsl and modern color spaces",
+              "use color-mix",
+              "understand that color choice must be checked in context"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ":root {\n  --brand: oklch(58% 0.18 250);\n  --brand-soft: color-mix(in oklch, var(--brand), white 82%);\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "CSS supports sRGB functions as well as Lab, LCH, OKLab, OKLCH, relative colors, and mixing functions. The color model affects interpolation and the resulting appearance, but accessibility still depends on the final colors and their context."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-02",
+              "question": "Which function combines colors in a chosen interpolation color space?",
+              "options": [
+                "color-mix()",
+                "clamp()",
+                "calc()",
+                "anchor()"
+              ],
+              "answer": "color-mix()",
+              "explanation": "`color-mix()` mixes colors using the specified interpolation space."
+            },
+            "summary": [
+              "Color functions enable systematic palettes.",
+              "Never treat color alone as the only state indicator."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Colors"
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Backgrounds, Borders, Radius, and Shadows",
+            "description": "Compose surfaces and hierarchy without using decoration as structural layout.",
+            "learningObjectives": [
+              "layer backgrounds",
+              "use borders and outlines appropriately",
+              "apply shadows as supporting visual cues"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".panel {\n  border: 1px solid color-mix(in srgb, currentColor 15%, transparent);\n  border-radius: 1rem;\n  background: linear-gradient(135deg, rgb(255 255 255 / .8), rgb(255 255 255 / .45)), Canvas;\n  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / .12);\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Multiple backgrounds are layered in order. Borders participate in layout; outlines are painted outside the border and are commonly useful for focus indicators. Shadows can communicate elevation but should not be the only way to convey important boundaries."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-03-03",
+              "question": "Which background layer is closest to the user?",
+              "options": [
+                "The first listed layer",
+                "The last listed layer",
+                "The largest gradient",
+                "The solid color only"
+              ],
+              "answer": "The first listed layer",
+              "explanation": "The first listed background layer is painted closest to the user."
+            },
+            "summary": [
+              "Background layers are visual composition tools.",
+              "Focus indicators should not depend on subtle shadows alone."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Colors"
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "Color Scheme and light-dark()",
+            "description": "Support user light/dark preferences and browser-provided UI colors.",
+            "learningObjectives": [
+              "use color-scheme",
+              "use light-dark",
+              "design semantic theme tokens"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ":root {\n  color-scheme: light dark;\n  --surface: light-dark(#fff, #111827);\n  --text: light-dark(#111827, #f9fafb);\n}\nbody { background: var(--surface); color: var(--text); }"
+              },
+              {
+                "type": "paragraph",
+                "text": "`color-scheme` communicates supported schemes to the user agent and can affect browser UI such as form controls. `light-dark()` chooses between two values based on the used color scheme in supporting browsers."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-04",
+                "title": "Build a system-aware theme",
+                "description": "Use color-scheme and light-dark() to create semantic light and dark surface tokens.",
+                "steps": [
+                  "Declare supported color schemes on :root.",
+                  "Create surface and text custom properties with light-dark().",
+                  "Use the tokens on the page and a card.",
+                  "Switch the browser color-scheme preference and inspect the result."
+                ],
+                "solution": ":root {\n  color-scheme: light dark;\n  --surface: light-dark(#fff, #111827);\n  --text: light-dark(#111827, #f9fafb);\n}\nbody { background: var(--surface); color: var(--text); }",
+                "output": "The semantic tokens resolve to different values when the active color scheme changes."
+              }
+            ],
+            "quiz": {
+              "id": "q-03-04",
+              "question": "What does color-scheme communicate?",
+              "options": [
+                "Which color schemes the UI supports",
+                "Which CSS file to compile",
+                "Which font to load",
+                "Which viewport width to use"
+              ],
+              "answer": "Which color schemes the UI supports",
+              "explanation": "The property informs the user agent about supported light/dark schemes and affects relevant browser UI."
+            },
+            "summary": [
+              "Themes should be token-driven.",
+              "Dark mode is a separate contrast and surface design problem, not a simple inversion."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/color-scheme",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Create a semantic theme foundation",
+            "level": "Advanced",
+            "description": "Build a small light/dark token system for a reusable component library.",
+            "problemStatement": "Define surface, text, muted, border, accent, and focus tokens and use them without duplicating the component stylesheet for each theme.",
+            "objectives": [
+              "define semantic variables",
+              "support light/dark",
+              "keep focus visible"
+            ],
+            "requirements": [
+              "Modern CSS browser",
+              "Semantic component markup"
+            ],
+            "hint": [
+              "Name tokens by role, not by literal color."
+            ],
+            "solutionCode": " :root {\n  color-scheme: light dark;\n  --surface: light-dark(#fff, #111827);\n  --surface-raised: light-dark(#f8fafc, #1f2937);\n  --text: light-dark(#0f172a, #f8fafc);\n  --muted: light-dark(#475569, #cbd5e1);\n  --border: light-dark(#cbd5e1, #475569);\n  --accent: light-dark(#075985, #7dd3fc);\n  --focus: light-dark(#7c3aed, #c4b5fd);\n}\n.card { background: var(--surface-raised); color: var(--text); border: 1px solid var(--border); padding: 1rem; border-radius: .75rem; }\n.card a { color: var(--accent); }\n.card:focus-within { outline: 3px solid var(--focus); outline-offset: 3px; }",
+            "solutionExplanation": "Semantic roles let the visual values change without rewriting component structure."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Normal Flow, Positioning, and Layering",
+        "description": "Understand normal flow, containing blocks, positioned layout, stacking contexts, and logical axes.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Normal Flow and Formatting Contexts",
+            "description": "Use normal flow as the default layout model and understand when formatting contexts change behavior.",
+            "learningObjectives": [
+              "explain normal flow",
+              "recognize block and inline formatting",
+              "use flow-root when appropriate"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".stack { display: flow-root; }\n.stack > * + * { margin-block-start: 1rem; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Normal flow lays out content according to the document formatting model. Flex and grid create their own layout contexts. `display: flow-root` establishes a new block formatting context and can isolate certain float and margin interactions."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-01",
+              "question": "Why might display: flow-root be useful?",
+              "options": [
+                "To establish a new block formatting context",
+                "To make an element fixed",
+                "To disable inheritance",
+                "To increase specificity"
+              ],
+              "answer": "To establish a new block formatting context",
+              "explanation": "A new block formatting context can isolate layout effects such as floats and margin behavior."
+            },
+            "summary": [
+              "Prefer flow and layout systems before positioning hacks.",
+              "Formatting contexts are a diagnostic tool as well as a layout mechanism."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout"
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Positioned Layout",
+            "description": "Use relative, absolute, fixed, and sticky positioning with explicit containing-block relationships.",
+            "learningObjectives": [
+              "distinguish positioning modes",
+              "identify containing blocks",
+              "build local overlays and sticky UI"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".card { position: relative; }\n.badge { position: absolute; inset-block-start: .75rem; inset-inline-end: .75rem; }\n.toolbar { position: sticky; inset-block-start: 0; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Absolute positioning removes an element from normal flow and positions it relative to its containing block. Sticky positioning remains in flow and becomes offset within its scroll context when its threshold is reached."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-02",
+                "title": "Build a local badge overlay",
+                "description": "Position a badge relative to its card instead of the page.",
+                "steps": [
+                  "Make the card a positioned ancestor.",
+                  "Create a badge element.",
+                  "Position the badge with logical inset properties.",
+                  "Resize and move the card to verify the badge follows it."
+                ],
+                "solution": ".card { position: relative; }\n.badge { position: absolute; inset-block-start: .75rem; inset-inline-end: .75rem; }",
+                "output": "The badge stays attached to the card’s corner while the card moves."
+              }
+            ],
+            "quiz": {
+              "id": "q-04-02",
+              "question": "What common declaration establishes a containing block for an absolutely positioned child?",
+              "options": [
+                "position: relative",
+                "display: inline",
+                "float: none",
+                "visibility: hidden"
+              ],
+              "answer": "position: relative",
+              "explanation": "A positioned ancestor such as `position: relative` commonly establishes the containing block for an absolute descendant."
+            },
+            "summary": [
+              "Position overlays relative to a component boundary.",
+              "Sticky behavior depends on the scroll container and inset threshold."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout"
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Stacking Contexts and z-index",
+            "description": "Debug layering by understanding stacking contexts rather than escalating numbers.",
+            "learningObjectives": [
+              "explain stacking contexts",
+              "use z-index within a context",
+              "identify common context-creating properties"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "`z-index` does not create one global ordering across the entire page. Stacking contexts are nested painting contexts. A descendant cannot escape the overall stacking order of its ancestor context."
+              },
+              {
+                "type": "code",
+                "text": ".overlay { position: fixed; inset: 0; z-index: 1000; }\n.modal { position: relative; z-index: 1; }"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Transforms and certain opacity/containment configurations can create stacking contexts.",
+                  "When z-index appears ineffective, inspect ancestors first."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-03",
+              "question": "Why can a huge z-index still lose?",
+              "options": [
+                "Its ancestor stacking context may be below another context",
+                "z-index only supports values below 1000",
+                "z-index works only on images",
+                "CSS ignores z-index"
+              ],
+              "answer": "Its ancestor stacking context may be below another context",
+              "explanation": "Nested stacking contexts constrain how descendants can be ordered relative to outside contexts."
+            },
+            "summary": [
+              "Layering bugs are usually structural.",
+              "Keep a deliberate small z-index scale."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout"
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Logical Layout and Writing Modes",
+            "description": "Write reusable layout rules that follow block and inline axes.",
+            "learningObjectives": [
+              "use logical spacing and inset properties",
+              "understand block and inline axes",
+              "reduce physical-direction assumptions"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".card { padding-block: 1rem; padding-inline: 1.25rem; margin-inline: auto; border-inline-start: .25rem solid currentColor; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Logical properties describe the relationship to the current writing mode. They are valuable for reusable components because the same CSS can adapt to right-to-left and non-horizontal writing modes."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-04-04",
+              "question": "What axis does margin-inline affect?",
+              "options": [
+                "The inline axis",
+                "The block axis",
+                "Only the left side",
+                "Only the top side"
+              ],
+              "answer": "The inline axis",
+              "explanation": "Logical inline properties follow the document’s inline axis."
+            },
+            "summary": [
+              "Logical properties encode intent.",
+              "Use them consistently inside component systems."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Values_and_units"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Repair a broken modal layer",
+            "level": "Intermediate",
+            "description": "Fix a modal that remains behind a transformed application shell.",
+            "problemStatement": "The modal has a large z-index but is still visually behind the app. Move the overlay into an appropriate stacking context and remove unnecessary context creation.",
+            "objectives": [
+              "inspect ancestor contexts",
+              "place overlay at a suitable level",
+              "use a modest z-index scale"
+            ],
+            "requirements": [
+              "HTML app shell",
+              "CSS developer tools"
+            ],
+            "hint": [
+              "Inspect stacking contexts before changing numbers."
+            ],
+            "solutionCode": " .overlay { position: fixed; inset: 0; z-index: 1000; }\n.modal { position: relative; z-index: 1; }",
+            "solutionExplanation": "The overlay participates in a top-level context rather than trying to escape a lower ancestor stacking context."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Flexbox",
+        "description": "Master one-dimensional flexible layout, free-space distribution, alignment, wrapping, and common component patterns.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "Flex Container and Axes",
+            "description": "Understand main/cross axes, direction, wrapping, and gaps.",
+            "learningObjectives": [
+              "identify flex axes",
+              "use flex-direction and flex-wrap",
+              "use gap for inter-item spacing"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Flexbox is one-dimensional: items are arranged along a main axis and aligned on a cross axis. The axes depend on flex-direction and writing mode, so they should not be memorized as horizontal and vertical."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-05-01",
+              "question": "What determines the flex main axis?",
+              "options": [
+                "flex-direction and the writing mode",
+                "viewport width only",
+                "font size",
+                "z-index"
+              ],
+              "answer": "flex-direction and the writing mode",
+              "explanation": "The main axis follows the flex direction in the current writing mode."
+            },
+            "summary": [
+              "Think in logical axes.",
+              "Flexbox is excellent for toolbars, navigation, and local component arrangements."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout"
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Flex Sizing and the flex Shorthand",
+            "description": "Understand basis, growth, shrinkage, and automatic minimum sizing.",
+            "learningObjectives": [
+              "use flex-basis, flex-grow, flex-shrink",
+              "use the flex shorthand",
+              "diagnose shrinking failures"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".sidebar { flex: 0 1 18rem; }\n.content { flex: 1 1 auto; min-inline-size: 0; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "The flexing algorithm starts from flex base sizes and resolves free space using grow or shrink factors. Automatic minimum sizes can prevent content columns from shrinking, which is why `min-inline-size: 0` is a common fix."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-05-02",
+              "question": "Why is min-inline-size: 0 often added to a flex content column?",
+              "options": [
+                "To allow it to shrink below its automatic minimum",
+                "To make it fixed width",
+                "To disable wrapping",
+                "To increase specificity"
+              ],
+              "answer": "To allow it to shrink below its automatic minimum",
+              "explanation": "The automatic minimum size can otherwise keep long content from shrinking enough."
+            },
+            "summary": [
+              "Flexbox distributes space algorithmically.",
+              "Inspect basis and minimum size before forcing widths."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout"
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Alignment and Auto Margins",
+            "description": "Use alignment properties and auto margins to express layout intent.",
+            "learningObjectives": [
+              "use justify-content and align-items",
+              "distinguish align-items from align-content",
+              "use auto margins for asymmetric groups"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".nav { display: flex; align-items: center; gap: 1rem; }\n.nav__account { margin-inline-start: auto; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Auto margins can absorb free space on a flex axis. This often gives a clean way to push a control group to an edge without adding spacer elements."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-03",
+                "title": "Split a navigation bar",
+                "description": "Use an auto margin to push account actions to the inline end of a flex navigation bar.",
+                "steps": [
+                  "Create a flex navigation container.",
+                  "Add a group of primary links.",
+                  "Add an account link after the primary links.",
+                  "Apply an inline-start auto margin to the account link."
+                ],
+                "solution": ".nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }\n.nav__account { margin-inline-start: auto; }",
+                "output": "When space permits, the account action is pushed to the inline end without a spacer element."
+              }
+            ],
+            "quiz": {
+              "id": "q-05-03",
+              "question": "What can margin-inline-start:auto do in a flex row?",
+              "options": [
+                "Absorb free space and push an item toward the inline end",
+                "Center the viewport",
+                "Disable wrapping",
+                "Set the item to fixed width"
+              ],
+              "answer": "Absorb free space and push an item toward the inline end",
+              "explanation": "Auto margins absorb available free space along the relevant axis."
+            },
+            "summary": [
+              "Alignment properties describe groups.",
+              "Auto margins are useful when one group should consume remaining space."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout"
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "Responsive Flex Patterns",
+            "description": "Build media objects and toolbars that survive changing content.",
+            "learningObjectives": [
+              "combine flex and intrinsic sizing",
+              "handle wrapping",
+              "diagnose overflow"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".media { display: flex; flex-wrap: wrap; gap: 1rem; }\n.media > img { inline-size: min(12rem, 100%); }\n.media__body { flex: 1 1 20rem; min-inline-size: 0; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "A robust flex component gives content permission to wrap and shrink. Fixed heights are especially risky for text-heavy components."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-05-04",
+              "question": "When is Grid usually a better primary layout model than Flexbox?",
+              "options": [
+                "When independent row and column relationships matter",
+                "When styling a single paragraph",
+                "When adding a border",
+                "When changing font weight"
+              ],
+              "answer": "When independent row and column relationships matter",
+              "explanation": "Grid is designed for two-dimensional track-based layout."
+            },
+            "summary": [
+              "Use Flexbox for one-dimensional relationships.",
+              "When both row and column tracks must align independently, consider Grid."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Build a resilient media card",
+            "level": "Intermediate",
+            "description": "Create a media component that wraps naturally without fixed heights.",
+            "problemStatement": "A card contains an image, title, metadata, description, and action and must remain readable in narrow containers.",
+            "objectives": [
+              "use flexbox",
+              "allow text to shrink",
+              "avoid fixed height",
+              "use gap"
+            ],
+            "requirements": [
+              "Semantic HTML",
+              "CSS"
+            ],
+            "hint": [
+              "Give the text column a flexible basis and zero automatic minimum."
+            ],
+            "solutionCode": " .media-card { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; }\n.media-card > img { inline-size: min(12rem, 100%); aspect-ratio: 4 / 3; object-fit: cover; }\n.media-card__body { flex: 1 1 20rem; min-inline-size: 0; }",
+            "solutionExplanation": "The image has a bounded basis and the text column can shrink and wrap without forcing overflow."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "CSS Grid and Subgrid",
+        "description": "Build two-dimensional layouts, responsive card grids, named areas, and cross-component alignment.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Grid Tracks and Lines",
+            "description": "Use explicit tracks, line placement, gaps, and fractional sizing.",
+            "learningObjectives": [
+              "create columns and rows",
+              "place items by line",
+              "explain fr"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".layout { display: grid; grid-template-columns: 16rem minmax(0, 1fr); gap: 2rem; }\n.main { grid-column: 2; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Grid tracks are rows or columns. Grid lines surround those tracks and provide placement coordinates. The `fr` unit distributes flexible space after other track contributions are resolved."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-06-01",
+              "question": "What does 1fr represent in a grid track?",
+              "options": [
+                "A fraction of available flexible space",
+                "One rem",
+                "One viewport width",
+                "One font size"
+              ],
+              "answer": "A fraction of available flexible space",
+              "explanation": "`fr` distributes flexible space among tracks after other contributions are considered."
+            },
+            "summary": [
+              "Grid is two-dimensional.",
+              "Use minmax(0,1fr) for content columns that must be allowed to shrink."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout"
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "Responsive Grids with minmax and auto-fit",
+            "description": "Create card grids that respond to available width without device breakpoints.",
+            "learningObjectives": [
+              "use minmax",
+              "use repeat(auto-fit,...)",
+              "test narrow containers"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "`minmax()` supplies lower and upper sizing limits. `auto-fit` can collapse empty repeated tracks and allow existing items to expand, producing a useful content-driven grid."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-02",
+                "title": "Create an auto-fitting card grid",
+                "description": "Build a responsive grid that changes its column count according to available width.",
+                "steps": [
+                  "Create a grid container.",
+                  "Use repeat(auto-fit, minmax(...)).",
+                  "Add a consistent gap.",
+                  "Resize the viewport and an enclosing container."
+                ],
+                "solution": ".cards {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));\n  gap: 1rem;\n}",
+                "output": "Cards form as many columns as the available width can support without requiring device-specific breakpoints."
+              }
+            ],
+            "quiz": {
+              "id": "q-06-02",
+              "question": "What does minmax(16rem,1fr) provide?",
+              "options": [
+                "A 16rem minimum and flexible maximum",
+                "A fixed 16rem width",
+                "A 1fr minimum and 16rem maximum",
+                "A viewport-based width"
+              ],
+              "answer": "A 16rem minimum and flexible maximum",
+              "explanation": "The track has a lower bound and can grow flexibly."
+            },
+            "summary": [
+              "Responsive grids should be tested at intermediate widths.",
+              "Container width, not device identity, should determine card fit."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout"
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Named Grid Areas",
+            "description": "Express a page shell as readable regions.",
+            "learningObjectives": [
+              "define grid-template-areas",
+              "map semantic regions",
+              "combine fixed and flexible tracks"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".page { display: grid; grid-template: \"header header\" auto \"nav main\" 1fr \"footer footer\" auto / 16rem minmax(0, 1fr); }\nheader { grid-area: header; }\nnav { grid-area: nav; }\nmain { grid-area: main; }\nfooter { grid-area: footer; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Named areas make the relationship between semantic regions and layout visible in the stylesheet. They are useful for stable page shells."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-06-03",
+              "question": "What is the main benefit of named grid areas?",
+              "options": [
+                "They make page-region relationships explicit",
+                "They replace semantic HTML",
+                "They force equal tracks",
+                "They remove the cascade"
+              ],
+              "answer": "They make page-region relationships explicit",
+              "explanation": "Named areas create a readable mapping between semantic regions and grid placement."
+            },
+            "summary": [
+              "Named areas improve readability for page-level layout.",
+              "Repeated content usually benefits from auto-placement instead of manual coordinates."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout"
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "Subgrid for Shared Alignment",
+            "description": "Use parent tracks inside nested components when repeated content must align.",
+            "learningObjectives": [
+              "explain subgrid",
+              "use subgrid for shared rows/columns",
+              "identify appropriate fallback strategies"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }\n.card { display: grid; grid-template-rows: subgrid; grid-row: span 3; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Subgrid allows a nested grid to participate in its parent’s track sizing. It is particularly useful for repeated cards whose titles, bodies, and actions need cross-card alignment."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-06-04",
+              "question": "What does subgrid allow?",
+              "options": [
+                "A nested grid to use its parent grid tracks",
+                "A grid to become a flex container",
+                "A stylesheet to execute JavaScript",
+                "A selector to ignore specificity"
+              ],
+              "answer": "A nested grid to use its parent grid tracks",
+              "explanation": "Subgrid exposes parent tracks to the nested grid for alignment."
+            },
+            "summary": [
+              "Subgrid is about shared track sizing, not simply shorter CSS.",
+              "Guard optional enhancements with feature detection when compatibility requires it."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Subgrid"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Build a responsive dashboard shell",
+            "level": "Advanced",
+            "description": "Create a two-dimensional dashboard with adaptive metric cards.",
+            "problemStatement": "Use Grid for the page shell and auto-fit/minmax for metrics. Where useful, use subgrid for repeated card alignment.",
+            "objectives": [
+              "use grid areas",
+              "use intrinsic card sizing",
+              "avoid fixed card heights"
+            ],
+            "requirements": [
+              "Semantic HTML",
+              "Modern CSS browser"
+            ],
+            "hint": [
+              "Separate page-shell layout from repeated card layout."
+            ],
+            "solutionCode": " .dashboard { display: grid; grid-template-columns: minmax(12rem,18rem) minmax(0,1fr); grid-template-areas: \"nav main\"; min-block-size: 100svh; }\n.dashboard__nav { grid-area: nav; }\n.dashboard__main { grid-area: main; min-inline-size: 0; padding: clamp(1rem,3vw,2rem); }\n.metrics { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,16rem),1fr)); gap: 1rem; }\n.metric { padding: 1rem; border: 1px solid #cbd5e1; border-radius: .75rem; }",
+            "solutionExplanation": "The page shell and repeated card system respond independently to available space."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Responsive Design and Container Queries",
+        "description": "Design around available space, user preferences, and component context rather than device labels.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Mobile-First Media Queries",
+            "description": "Use breakpoints when the current layout fails, not because a device has a particular name.",
+            "learningObjectives": [
+              "write mobile-first media queries",
+              "choose content-driven breakpoints",
+              "combine fluid sizing with queries"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@media (width >= 48rem) { .page { grid-template-columns: 16rem minmax(0,1fr); } }"
+              },
+              {
+                "type": "paragraph",
+                "text": "A mobile-first stylesheet starts with a usable narrow baseline and adds layout changes when available space makes them useful. Breakpoints should be discovered from content and layout constraints."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-07-01",
+              "question": "What is a durable reason to add a breakpoint?",
+              "options": [
+                "The current layout no longer works at that width",
+                "A device is popular",
+                "Every page should have three breakpoints",
+                "More CSS is desired"
+              ],
+              "answer": "The current layout no longer works at that width",
+              "explanation": "Content and layout constraints are more stable than device names."
+            },
+            "summary": [
+              "Breakpoints are layout decisions.",
+              "Test between named widths, not only at them."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Media_queries"
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "User Preference Media Features",
+            "description": "Respect reduced motion, color scheme, pointer, contrast, and related preferences.",
+            "learningObjectives": [
+              "use prefers-reduced-motion",
+              "use prefers-color-scheme",
+              "distinguish preferences from viewport queries"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@media (prefers-reduced-motion: reduce) {\n  .card { transition: none; transform: none; }\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Media queries can evaluate user preferences and device capabilities. Reduced motion is especially important for decorative transitions and animations. Forced colors is an accessibility environment that should generally be respected rather than overridden."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-07-02",
+              "question": "Which media feature detects a request for less motion?",
+              "options": [
+                "prefers-reduced-motion",
+                "pointer",
+                "resolution",
+                "orientation"
+              ],
+              "answer": "prefers-reduced-motion",
+              "explanation": "The feature exposes the user’s reduced-motion preference."
+            },
+            "summary": [
+              "Preference queries adapt the experience, not just the geometry.",
+              "Do not hide essential meaning when motion is removed."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Media_queries",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Accessibility"
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Container Queries and Container Units",
+            "description": "Make reusable components respond to their own containing context.",
+            "learningObjectives": [
+              "establish a query container",
+              "write @container rules",
+              "use cqi and related units appropriately"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".card-region { container-type: inline-size; }\n@container (width >= 36rem) { .card { grid-template-columns: 12rem minmax(0,1fr); } }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Container queries evaluate conditions against a query container rather than the viewport. This makes components portable across sidebars, grids, and main content areas. Container query length units such as `cqi` are relative to the query container’s inline size."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-03",
+                "title": "Make a component container-aware",
+                "description": "Use a query container and @container so a card changes layout based on its own available width.",
+                "steps": [
+                  "Create a wrapper around the card.",
+                  "Set container-type: inline-size on the wrapper.",
+                  "Write a container query for a wide card state.",
+                  "Resize the wrapper independently of the viewport."
+                ],
+                "solution": ".card-region { container-type: inline-size; }\n.card { display: grid; gap: 1rem; }\n@container (width >= 36rem) { .card { grid-template-columns: 12rem minmax(0, 1fr); } }",
+                "output": "The card switches layout when its containing region becomes wide enough."
+              }
+            ],
+            "quiz": {
+              "id": "q-07-03",
+              "question": "What does a container query evaluate?",
+              "options": [
+                "A query container’s size or condition",
+                "Only the viewport width",
+                "Only JavaScript state",
+                "Only the screen resolution"
+              ],
+              "answer": "A query container’s size or condition",
+              "explanation": "Container queries make component behavior depend on its containing context."
+            },
+            "summary": [
+              "Container queries solve component-level responsive problems.",
+              "Media queries remain useful for page-level or environment-level conditions."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries"
+            ]
+          },
+          {
+            "id": "lesson-07-04",
+            "title": "Print and Responsive Delivery",
+            "description": "Adapt CSS to print and understand the boundary between image resource selection and presentation.",
+            "learningObjectives": [
+              "write print styles",
+              "preserve meaningful content",
+              "distinguish HTML responsive image selection from CSS display sizing"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@media print {\n  nav, .screen-only { display: none !important; }\n  main { inline-size: auto; }\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "CSS can target print media and the `@page` rule can influence printed page properties. HTML features such as `srcset` and `sizes` select image resources; CSS controls how the chosen resource is displayed."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-07-04",
+              "question": "Which at-rule targets print presentation?",
+              "options": [
+                "@media print",
+                "@screen print",
+                "@page-only",
+                "@paper"
+              ],
+              "answer": "@media print",
+              "explanation": "`@media print` applies CSS rules for print media."
+            },
+            "summary": [
+              "Print is a real output medium.",
+              "Essential information should remain in document content rather than decorative backgrounds."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Media_queries/Printing",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Media_queries"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Make a reusable card container-aware",
+            "level": "Advanced",
+            "description": "Use container queries so the same component works in a sidebar and main content.",
+            "problemStatement": "The card is stacked in narrow containers and becomes a two-column media layout when its own container is wide enough.",
+            "objectives": [
+              "establish inline-size containment",
+              "write @container",
+              "avoid viewport-specific component logic"
+            ],
+            "requirements": [
+              "Modern browser",
+              "Component HTML"
+            ],
+            "hint": [
+              "Ask which box actually controls the card’s available width."
+            ],
+            "solutionCode": " .card-region { container-type: inline-size; }\n.card { display: grid; gap: 1rem; }\n@container (width >= 36rem) { .card { grid-template-columns: 12rem minmax(0,1fr); } }\n.card img { inline-size: 100%; aspect-ratio: 4 / 3; object-fit: cover; }",
+            "solutionExplanation": "The card adapts to its container and remains reusable in different page contexts."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Custom Properties and CSS Architecture",
+        "description": "Create scalable CSS with semantic tokens, component contracts, layers, nesting, and scoped styling.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Custom Properties and var()",
+            "description": "Use custom properties as runtime-resolved CSS values.",
+            "learningObjectives": [
+              "declare and consume custom properties",
+              "use var fallbacks",
+              "explain inheritance of custom properties"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ":root { --space-4: 1rem; --radius-card: .75rem; }\n.card { padding: var(--space-4); border-radius: var(--radius-card); }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Custom properties participate in the cascade and inherit by default. `var()` substitutes them at computed-value time. They can therefore form theme values and component inputs without a build step."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-01",
+              "question": "What is a notable property of custom properties?",
+              "options": [
+                "They participate in the cascade and normally inherit",
+                "They are compile-time constants only",
+                "They can only store colors",
+                "They cannot change at runtime"
+              ],
+              "answer": "They participate in the cascade and normally inherit",
+              "explanation": "Custom properties are CSS declarations that participate in cascading and inheritance."
+            },
+            "summary": [
+              "Custom properties are part of the cascade.",
+              "Choose semantic names when the value represents a role."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables"
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Semantic Tokens and Component APIs",
+            "description": "Separate design roles from literal implementation values.",
+            "learningObjectives": [
+              "design semantic tokens",
+              "distinguish global and component-local variables",
+              "create stable customization points"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ":root { --color-surface: #fff; --color-text: #0f172a; --color-accent: #075985; }\n.button { --button-bg: var(--color-accent); background: var(--button-bg); }"
+              },
+              {
+                "type": "paragraph",
+                "text": "A semantic token names a purpose such as surface, text, accent, or focus. Component variables can form a deliberate customization API while hiding internal implementation details that consumers should not depend on."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-02",
+              "question": "Why is --color-accent often better than --blue-600 as a public token?",
+              "options": [
+                "It describes role rather than implementation",
+                "It always has better contrast",
+                "It cannot inherit",
+                "It disables themes"
+              ],
+              "answer": "It describes role rather than implementation",
+              "explanation": "Semantic names allow the underlying color to change without renaming consumers."
+            },
+            "summary": [
+              "Token names are an API design decision.",
+              "Avoid exposing every private implementation value."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables"
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Layered CSS Architecture",
+            "description": "Use reset, base, component, utility, and override layers deliberately.",
+            "learningObjectives": [
+              "define a layer order",
+              "explain layer precedence",
+              "avoid !important as routine architecture"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@layer reset, base, components, utilities, overrides;\n@layer reset { *,*::before,*::after { box-sizing: border-box; } }\n@layer components { .button { padding: .6rem 1rem; } }\n@layer utilities { .hidden { display: none; } }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Layers let a stylesheet encode architectural precedence. Once the layer order is defined, selector specificity does not need to carry the entire burden of maintainability."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-03",
+              "question": "What do cascade layers primarily organize?",
+              "options": [
+                "Precedence between groups of author styles",
+                "HTML structure",
+                "JavaScript execution",
+                "Font loading"
+              ],
+              "answer": "Precedence between groups of author styles",
+              "explanation": "Layers create named, ordered groups in the cascade."
+            },
+            "summary": [
+              "Layers reduce accidental precedence fights.",
+              "Define the layer order early."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade"
+            ]
+          },
+          {
+            "id": "lesson-08-04",
+            "title": "Nesting and Scoped Component Styles",
+            "description": "Combine native nesting with @scope to keep component CSS local and readable.",
+            "learningObjectives": [
+              "write nested CSS",
+              "use the nesting selector",
+              "use @scope for subtree boundaries"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".card {\n  padding: 1rem;\n  & > h2 { margin: 0; }\n  &:hover { box-shadow: 0 8px 24px rgb(0 0 0 / .12); }\n}"
+              },
+              {
+                "type": "code",
+                "text": "@scope (.profile) {\n  img { border-radius: 50%; }\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Nesting expresses relationships close to the root selector. `@scope` limits where a style can match and can make a component boundary explicit without relying on very specific descendant chains."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-08-04",
+              "question": "What is @scope designed to do?",
+              "options": [
+                "Limit style matching to a DOM subtree",
+                "Increase all specificity",
+                "Replace media queries",
+                "Create JavaScript variables"
+              ],
+              "answer": "Limit style matching to a DOM subtree",
+              "explanation": "`@scope` establishes a scoped styling context for selectors."
+            },
+            "summary": [
+              "Nesting is useful when it clarifies ownership.",
+              "Scope can reduce global selector coupling."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Nesting",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@scope"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Create a maintainable component system",
+            "level": "Advanced",
+            "description": "Build a small token and layer foundation for buttons and cards.",
+            "problemStatement": "The system must support themes, focus states, utilities, and component ownership without deep page selectors.",
+            "objectives": [
+              "define semantic tokens",
+              "define layers",
+              "write low-specificity component rules",
+              "include focus-visible"
+            ],
+            "requirements": [
+              "Modern CSS browser",
+              "Semantic HTML"
+            ],
+            "hint": [
+              "Treat tokens and layers as APIs with explicit contracts."
+            ],
+            "solutionCode": " :root { --surface: Canvas; --text: CanvasText; --accent: LinkText; --focus: Highlight; }\n@layer reset, base, components, utilities;\n@layer reset { *,*::before,*::after { box-sizing: border-box; } }\n@layer components { .button { padding: .6rem 1rem; background: var(--surface); color: var(--text); border: 1px solid currentColor; } .button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; } }\n@layer utilities { .hidden { display: none; } }",
+            "solutionExplanation": "The system establishes explicit precedence and a small public component surface."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Motion, Accessibility, and UI States",
+        "description": "Use transitions and animations responsibly while preserving focus, reduced-motion, forced-colors, and native-control usability.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Transitions and Transforms",
+            "description": "Animate state changes without making layout depend on motion.",
+            "learningObjectives": [
+              "use transition correctly",
+              "animate transform and opacity for common effects",
+              "distinguish state from interpolation"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".button { transition: transform 160ms ease, background-color 160ms ease; }\n.button:hover { transform: translateY(-1px); }"
+              },
+              {
+                "type": "paragraph",
+                "text": "A transition describes interpolation when a property value changes. It does not create the state change. Transforms can often provide motion without changing layout geometry."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-09-01",
+              "question": "What does a transition define?",
+              "options": [
+                "How a property change is interpolated over time",
+                "The HTML state itself",
+                "The cascade origin",
+                "The element’s semantic role"
+              ],
+              "answer": "How a property change is interpolated over time",
+              "explanation": "Transitions describe the interpolation between computed values."
+            },
+            "summary": [
+              "Motion should communicate interaction.",
+              "Keep decorative motion short and optional."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Using_CSS_transitions",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Transforms"
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Keyframes and Animation Control",
+            "description": "Build multi-step animations with explicit timing and iteration.",
+            "learningObjectives": [
+              "write @keyframes",
+              "configure animation timing",
+              "control iteration and fill"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }\n.badge { animation: pulse 1.6s ease-in-out infinite; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Keyframes define stages of an animation. Animation properties control duration, timing, delay, iteration, direction, fill behavior, and play state."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-09-02",
+              "question": "Where are animation stages declared?",
+              "options": [
+                "@keyframes",
+                "@media only",
+                "HTML title",
+                "z-index"
+              ],
+              "answer": "@keyframes",
+              "explanation": "`@keyframes` defines the property values at stages of a CSS animation."
+            },
+            "summary": [
+              "Avoid infinite motion unless it has a clear purpose.",
+              "Provide reduced-motion behavior for non-essential animation."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Animations"
+            ]
+          },
+          {
+            "id": "lesson-09-03",
+            "title": "Focus, Keyboard States, and Forced Colors",
+            "description": "Preserve visible interaction cues across input methods and system color environments.",
+            "learningObjectives": [
+              "style :focus-visible",
+              "avoid hover-only meaning",
+              "respect forced-colors"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "button:focus-visible, a:focus-visible { outline: 3px solid Highlight; outline-offset: 3px; }\n@media (forced-colors: active) { .custom-control { border: 1px solid ButtonText; } }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Keyboard users need a visible focus indicator. Forced-colors mode can replace author colors with a restricted palette, so authors should generally preserve that mode and make only targeted adjustments where necessary."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not remove native focus without a replacement.",
+                  "Do not use color as the sole representation of validation or state.",
+                  "System colors such as Highlight and ButtonText can integrate custom UI with forced-color palettes."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09-03",
+                "title": "Add accessible focus states",
+                "description": "Provide visible focus for keyboard users while using system-friendly colors.",
+                "steps": [
+                  "Create a link and button.",
+                  "Add :focus-visible styling with a visible outline.",
+                  "Do not remove the native focus indicator without replacement.",
+                  "Test using only the keyboard."
+                ],
+                "solution": "a:focus-visible, button:focus-visible {\n  outline: 3px solid Highlight;\n  outline-offset: 3px;\n}",
+                "output": "Keyboard navigation produces a clear focus indicator."
+              }
+            ],
+            "quiz": {
+              "id": "q-09-03",
+              "question": "What is the recommended approach to forced-colors mode?",
+              "options": [
+                "Respect the user’s restricted palette and make targeted usability fixes",
+                "Disable it",
+                "Replace every system color",
+                "Hide controls"
+              ],
+              "answer": "Respect the user’s restricted palette and make targeted usability fixes",
+              "explanation": "Forced colors exists to improve accessibility; authors should avoid fighting the system palette."
+            },
+            "summary": [
+              "Focus is an interaction requirement.",
+              "Forced colors is an accessibility environment, not a theme to override."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Accessibility"
+            ]
+          },
+          {
+            "id": "lesson-09-04",
+            "title": "Reduced Motion and Scroll-Driven Effects",
+            "description": "Use scroll-driven animation as an enhancement with an accessible baseline.",
+            "learningObjectives": [
+              "use prefers-reduced-motion",
+              "understand scroll and view progress",
+              "guard modern motion features"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "@supports (animation-timeline: view()) {\n  @keyframes reveal { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: none; } }\n  .card { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% cover 35%; }\n}\n@media (prefers-reduced-motion: reduce) { .card { animation: none; opacity: 1; transform: none; } }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Scroll-driven animations tie keyframes to scroll or view progress rather than elapsed time. The baseline should remain visible and usable even when the feature is unsupported or motion is reduced."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-09-04",
+              "question": "What drives a scroll-driven animation?",
+              "options": [
+                "A scroll or view progress timeline",
+                "Only elapsed time",
+                "CSS specificity",
+                "The DOM parser"
+              ],
+              "answer": "A scroll or view progress timeline",
+              "explanation": "The animation timeline is linked to scroll or element visibility progress."
+            },
+            "summary": [
+              "Progressive motion should never hide essential content.",
+              "Use feature detection for newer animation capabilities."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Accessibility"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Harden an interactive component",
+            "level": "Advanced",
+            "description": "Audit and repair focus, reduced-motion, and forced-colors behavior.",
+            "problemStatement": "A card has hover-only feedback and a decorative infinite animation. Make it usable by keyboard users and people who request reduced motion.",
+            "objectives": [
+              "add focus-visible",
+              "respect reduced motion",
+              "keep content visible without animation"
+            ],
+            "requirements": [
+              "Semantic component",
+              "Modern CSS browser"
+            ],
+            "hint": [
+              "Make the static state correct first, then enhance it."
+            ],
+            "solutionCode": " .card { opacity: 1; transform: none; }\n.card:focus-within { outline: 3px solid Highlight; outline-offset: 3px; }\n@media (prefers-reduced-motion: no-preference) { .card { transition: transform 180ms ease; } .card:hover { transform: translateY(-2px); } }\n@media (forced-colors: active) { .card:focus-within { outline-color: Highlight; } }",
+            "solutionExplanation": "The component remains fully usable without motion and provides a visible keyboard focus state."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Debugging, Performance, Compatibility, and Modern CSS",
+        "description": "Develop a production workflow for diagnosing CSS, optimizing measured bottlenecks, and adopting newer platform features responsibly.",
+        "lessons": [
+          {
+            "id": "lesson-10-01",
+            "title": "Systematic CSS Debugging",
+            "description": "Turn a visual symptom into a testable CSS hypothesis.",
+            "learningObjectives": [
+              "inspect matched rules",
+              "use computed styles and box-model tools",
+              "separate cascade, sizing, layout, and rendering problems"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Confirm the actual element and state.",
+                  "Inspect matched rules and the winning declaration.",
+                  "Check computed and inherited values.",
+                  "Inspect layout overlays and box metrics.",
+                  "Trace containing blocks and stacking contexts for positioned UI.",
+                  "Change one hypothesis at a time."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not respond to every conflict with !important or every overflow with overflow-x:hidden. Find the actual cause first."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10-01",
+                "title": "Diagnose an overflow bug",
+                "description": "Use developer tools to identify the actual source of horizontal overflow instead of hiding it globally.",
+                "steps": [
+                  "Inspect the document scrollable width.",
+                  "Check flex/grid children for automatic minimum sizes.",
+                  "Check images for unconstrained dimensions.",
+                  "Check long unbroken text or code.",
+                  "Apply the smallest fix that addresses the source."
+                ],
+                "solution": ".content-column { min-inline-size: 0; }\nimg { max-inline-size: 100%; block-size: auto; }\n.code { overflow: auto; }",
+                "output": "The component becomes able to shrink or scroll the specific content that requires it, without globally hiding page overflow."
+              }
+            ],
+            "quiz": {
+              "id": "q-10-01",
+              "question": "What is a strong first step when a declaration appears not to work?",
+              "options": [
+                "Inspect whether it is matched, valid, and winning",
+                "Add !important",
+                "Delete the stylesheet",
+                "Increase z-index"
+              ],
+              "answer": "Inspect whether it is matched, valid, and winning",
+              "explanation": "Developer tools can distinguish selector, syntax, cascade, and computed-value problems."
+            },
+            "summary": [
+              "Developer tools make CSS debugging observable.",
+              "Debug by category instead of random property changes."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS"
+            ]
+          },
+          {
+            "id": "lesson-10-02",
+            "title": "Containment, content-visibility, and will-change",
+            "description": "Use rendering optimizations only when they address real costs.",
+            "learningObjectives": [
+              "explain containment",
+              "use content-visibility for suitable offscreen content",
+              "avoid premature will-change"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".article-section { content-visibility: auto; contain-intrinsic-size: auto 600px; }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Containment can limit how changes propagate through layout and painting. `content-visibility:auto` allows suitable offscreen content to defer rendering work. `will-change` is a rendering hint and should be used sparingly for known changes rather than as a generic speed flag."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-10-02",
+              "question": "What is a suitable use of content-visibility:auto?",
+              "options": [
+                "Large offscreen sections whose rendering can be deferred",
+                "Every button",
+                "Essential content that must always render immediately",
+                "Replacing Grid"
+              ],
+              "answer": "Large offscreen sections whose rendering can be deferred",
+              "explanation": "The property can allow browsers to skip rendering work for offscreen content until needed."
+            },
+            "summary": [
+              "Performance optimization should follow measurement.",
+              "Overusing will-change can increase resource use and create worse performance."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Using",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/content-visibility",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/will-change"
+            ]
+          },
+          {
+            "id": "lesson-10-03",
+            "title": "Progressive Enhancement and @supports",
+            "description": "Adopt newer CSS without making essential functionality depend on it.",
+            "learningObjectives": [
+              "use @supports",
+              "design useful fallbacks",
+              "distinguish specification status from target-browser support"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".card { display: flex; gap: 1rem; }\n@supports (grid-template-rows: subgrid) { .card { display: grid; grid-template-rows: subgrid; } }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Progressive enhancement starts from a working baseline and adds capabilities when supported. A feature can be standardized while still having incomplete support in the browsers a product targets, so compatibility data and testing matter."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-10-03",
+              "question": "What does @supports provide?",
+              "options": [
+                "CSS feature detection for conditional rules",
+                "A database connection",
+                "A JavaScript event loop",
+                "A replacement for selectors"
+              ],
+              "answer": "CSS feature detection for conditional rules",
+              "explanation": "`@supports` conditionally applies CSS based on feature support."
+            },
+            "summary": [
+              "Fallbacks should preserve content and task completion.",
+              "Feature detection is better than guessing from browser names."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Subgrid",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS"
+            ]
+          },
+          {
+            "id": "lesson-10-04",
+            "title": "Anchor Positioning",
+            "description": "Use modern anchor positioning for UI that must remain tethered to a trigger.",
+            "learningObjectives": [
+              "explain anchor association",
+              "use anchor-name and position-anchor",
+              "use anchor() for relative offsets and understand support limits"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": ".trigger { anchor-name: --trigger; }\n.tooltip { position: fixed; position-anchor: --trigger; inset-block-start: anchor(bottom); inset-inline-start: anchor(start); }"
+              },
+              {
+                "type": "paragraph",
+                "text": "Anchor positioning lets a positioned element be associated with an anchor element and positioned or sized relative to it. It is suited to tooltips, popovers, and other tethered UI where ordinary fixed offsets become fragile."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-10-04",
+              "question": "What is the main purpose of anchor positioning?",
+              "options": [
+                "Tether a positioned element to an anchor element",
+                "Replace Grid",
+                "Create HTML elements",
+                "Animate every element"
+              ],
+              "answer": "Tether a positioned element to an anchor element",
+              "explanation": "Anchor positioning provides CSS mechanisms for associating and positioning one element relative to another."
+            },
+            "summary": [
+              "Anchor positioning is a newer platform capability.",
+              "Provide a functional fallback for critical UI when target support requires it."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-10-01",
+            "title": "Perform a production CSS audit",
+            "level": "Advanced",
+            "description": "Refactor a component for cascade, responsiveness, accessibility, and performance readiness.",
+            "problemStatement": "The component has deep selectors, fixed widths, missing focus styles, and an unnecessary will-change declaration. Produce a production-ready stylesheet.",
+            "objectives": [
+              "reduce selector coupling",
+              "use intrinsic sizing",
+              "add focus-visible",
+              "remove premature optimization",
+              "add progressive enhancement"
+            ],
+            "requirements": [
+              "Semantic HTML",
+              "Developer tools",
+              "Modern CSS browser"
+            ],
+            "hint": [
+              "Audit by cascade, sizing, interaction, accessibility, performance, and compatibility."
+            ],
+            "solutionCode": "@layer components { .component { inline-size: min(100%, 42rem); min-inline-size: 0; padding: clamp(1rem,3vw,2rem); border: 1px solid #cbd5e1; border-radius: .75rem; } .component__action:focus-visible { outline: 3px solid Highlight; outline-offset: 3px; } }\n@supports (container-type: inline-size) { .component-region { container-type: inline-size; } @container (width >= 36rem) { .component { display: grid; grid-template-columns: 12rem minmax(0,1fr); gap: 1rem; } } }\n@media (prefers-reduced-motion: reduce) { .component * { transition: none !important; animation: none !important; } }",
+            "solutionExplanation": "The refactoring addresses actual maintainability and usability problems while treating newer CSS as progressive enhancement."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Final Project: Accessible Responsive Documentation Portal",
+        "description": "Build a realistic CSS-only documentation portal combining cascade architecture, responsive layout, themes, accessibility, and progressive enhancement.",
+        "lessons": [
+          {
+            "id": "lesson-11-01",
+            "title": "Project Architecture and Requirements",
+            "description": "Plan the final portal before writing CSS so each platform feature has a clear purpose.",
+            "learningObjectives": [
+              "define page and component boundaries",
+              "choose layout systems deliberately",
+              "define accessibility and responsive requirements"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The final project is an accessible documentation portal with a global header, sidebar navigation, article content, callouts, related links, and footer. It must support narrow and wide layouts, system color schemes, visible keyboard focus, reduced motion, print, and progressive enhancement."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Grid owns page-level two-dimensional relationships.",
+                  "Flexbox owns local navigation groups.",
+                  "Container queries own callout behavior when its own width changes.",
+                  "Cascade layers and semantic tokens provide architecture."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-11-01",
+              "question": "Which layout model best fits a page shell with explicit rows and columns?",
+              "options": [
+                "Grid",
+                "Only absolute positioning",
+                "Only floats",
+                "Inline styles"
+              ],
+              "answer": "Grid",
+              "explanation": "Grid is designed for two-dimensional track relationships."
+            },
+            "summary": [
+              "Plan CSS around responsibilities instead of properties."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries",
+              "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers"
+            ]
+          },
+          {
+            "id": "lesson-11-02",
+            "title": "Implement and Verify the Portal",
+            "description": "Use the reference implementation as a complete target and audit it across responsive and user-preference states.",
+            "learningObjectives": [
+              "implement the CSS architecture",
+              "verify responsive behavior",
+              "test accessibility and progressive enhancement"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Create semantic HTML for the portal.",
+                  "Add the layer and token foundation.",
+                  "Build the page shell with Grid.",
+                  "Add Flexbox navigation and local groups.",
+                  "Make the callout region a query container.",
+                  "Add focus, reduced-motion, and print behavior.",
+                  "Test narrow, medium, wide, dark, reduced-motion, forced-color, and print states.",
+                  "Inspect computed styles and remove accidental overflow or specificity problems."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The reference project below is complete CSS and HTML rather than a framework abstraction. Students should first attempt the project independently, then compare their architecture and behavior against the reference."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q-11-02",
+              "question": "What should progressive enhancement preserve?",
+              "options": [
+                "A usable baseline experience without the optional feature",
+                "Only the newest browser behavior",
+                "A JavaScript-only fallback",
+                "A fixed desktop screenshot"
+              ],
+              "answer": "A usable baseline experience without the optional feature",
+              "explanation": "Enhancements should add capability without making essential content depend on them."
+            },
+            "summary": [
+              "A production CSS project is verified by behavior and maintainability, not only screenshot similarity."
+            ],
+            "resources": [
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Accessibility",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Media_queries",
+              "https://developer.mozilla.org/en-US/docs/Web/CSS"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Accessible Responsive Documentation Portal",
+          "description": "A production-style CSS system for a documentation portal combining semantic styling, responsive Grid and Flexbox, container queries, semantic tokens, color schemes, focus states, reduced motion, print, and progressive enhancement.",
+          "conceptsCovered": [
+            "CSS syntax and cascade",
+            "specificity and layers",
+            "custom properties",
+            "box model and intrinsic sizing",
+            "Flexbox",
+            "Grid",
+            "subgrid and feature detection",
+            "responsive media queries",
+            "container queries",
+            "typography and color",
+            "positioning",
+            "focus-visible",
+            "forced colors",
+            "reduced motion",
+            "print styles",
+            "progressive enhancement",
+            "modern anchor positioning awareness"
+          ],
+          "steps": [
+            "Create semantic HTML containing header, navigation, main article, callouts, related links, and footer.",
+            "Create the cascade layer order and semantic design tokens.",
+            "Apply a minimal reset and readable base typography.",
+            "Build the page shell with Grid and a narrow baseline.",
+            "Add Flexbox for local navigation groups.",
+            "Make the callout region a query container and adapt it with @container.",
+            "Add visible keyboard focus and system-aware colors.",
+            "Add reduced-motion and print behavior.",
+            "Test narrow, medium, wide, dark, print, and accessibility preference states.",
+            "Use developer tools to audit matched rules, computed values, layout, and overflow."
+          ],
+          "code": {
+            "index.html": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>CSS Documentation Portal</title>\n<link rel=\"stylesheet\" href=\"styles.css\">\n</head>\n<body>\n<div class=\"site-shell\">\n<header class=\"site-header\"><a class=\"brand\" href=\"#\">CSS Docs</a><nav class=\"site-nav\" aria-label=\"Primary\"><a href=\"#cascade\">Cascade</a><a href=\"#layout\">Layout</a><a href=\"#responsive\">Responsive</a><a href=\"#accessibility\">Accessibility</a></nav></header>\n<aside class=\"sidebar\" aria-label=\"Documentation\"><h2>On this page</h2><nav><a href=\"#cascade\">Cascade</a><a href=\"#layout\">Layout</a><a href=\"#responsive\">Responsive design</a><a href=\"#accessibility\">Accessibility</a></nav></aside>\n<main class=\"content\"><article class=\"article\"><header class=\"article__header\"><p class=\"eyebrow\">CSS guide</p><h1>Building resilient interfaces with modern CSS</h1><p class=\"lede\">A practical documentation portal demonstrating maintainable CSS architecture, responsive layout, theming, accessibility, and progressive enhancement.</p></header>\n<section id=\"cascade\" class=\"section\"><h2>Understanding the cascade</h2><p>CSS resolves competing declarations through a defined cascade. Layers and low-specificity selectors make that process easier to reason about as a project grows.</p><div class=\"callout-region\"><aside class=\"callout\"><h3>Design principle</h3><p>The component should own its styles while the cascade architecture owns precedence.</p><a href=\"#layout\">Continue to layout</a></aside></div></section>\n<section id=\"layout\" class=\"section\"><h2>Layout</h2><div class=\"example-grid\"><article class=\"example-card\"><h3>Grid</h3><p>Use Grid when relationships span rows and columns.</p><a href=\"#responsive\">Read more</a></article><article class=\"example-card\"><h3>Flexbox</h3><p>Use Flexbox for one-dimensional component arrangements.</p><a href=\"#responsive\">Read more</a></article><article class=\"example-card\"><h3>Container queries</h3><p>Let components respond to the space their container provides.</p><a href=\"#responsive\">Read more</a></article></div></section>\n<section id=\"responsive\" class=\"section\"><h2>Responsive design</h2><p>Build a useful narrow baseline, then enhance when available space or user preferences warrant a different presentation.</p></section>\n<section id=\"accessibility\" class=\"section\"><h2>Accessibility</h2><p>Keep keyboard focus visible, avoid color-only meaning, respect reduced motion, and preserve readability in system color modes.</p></section></article>\n<aside class=\"related\" aria-label=\"Related\"><h2>Related</h2><ul><li><a href=\"#cascade\">Cascade layers</a></li><li><a href=\"#layout\">Grid and Flexbox</a></li><li><a href=\"#responsive\">Container queries</a></li></ul></aside></main>\n<footer class=\"site-footer\"><p>CSS Documentation Portal</p></footer>\n</div>\n</body>\n</html>",
+            "styles.css": "@layer reset, base, components, utilities;\n@layer reset { *,*::before,*::after { box-sizing:border-box; } body,h1,h2,h3,p,ul { margin:0; } img,svg { max-inline-size:100%; block-size:auto; } }\n@layer base { :root { color-scheme:light dark; --surface:light-dark(#fff,#0f172a); --surface-raised:light-dark(#f8fafc,#1e293b); --surface-accent:light-dark(#eff6ff,#172554); --text:light-dark(#0f172a,#f8fafc); --muted:light-dark(#475569,#cbd5e1); --border:light-dark(#cbd5e1,#475569); --accent:light-dark(#075985,#7dd3fc); --focus:light-dark(#7c3aed,#c4b5fd); } body { min-block-size:100svh; background:var(--surface); color:var(--text); font-family:system-ui,sans-serif; line-height:1.6; } a { color:var(--accent); text-underline-offset:.2em; } a:focus-visible { outline:3px solid var(--focus); outline-offset:3px; } h1,h2,h3 { line-height:1.15; text-wrap:balance; } }\n@layer components { .site-header { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; padding:1rem clamp(1rem,4vw,3rem); border-block-end:1px solid var(--border); position:sticky; inset-block-start:0; z-index:10; background:var(--surface); } .brand { color:var(--text); font-weight:800; text-decoration:none; } .site-nav { display:flex; flex-wrap:wrap; gap:.75rem; margin-inline-start:auto; } .sidebar { padding:1.5rem clamp(1rem,3vw,2rem); border-block-end:1px solid var(--border); } .sidebar nav { display:flex; flex-wrap:wrap; gap:.5rem; margin-block-start:.75rem; } .content { display:grid; gap:2rem; inline-size:min(100% - 2rem,90rem); margin-inline:auto; padding-block:clamp(2rem,5vw,5rem); } .article { min-inline-size:0; } .article__header { max-inline-size:70ch; margin-block-end:3rem; } .eyebrow { color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.04em; } .article h1 { margin-block-start:.5rem; font-size:clamp(2.2rem,6vw,4.5rem); } .lede { margin-block-start:1rem; color:var(--muted); font-size:clamp(1.05rem,1.5vw,1.25rem); } .section { max-inline-size:70ch; scroll-margin-block-start:6rem; } .section + .section { margin-block-start:3rem; } .section > p { margin-block-start:.75rem; } .callout-region { container-type:inline-size; margin-block-start:1.5rem; } .callout { display:grid; gap:.75rem; padding:1.5rem; background:var(--surface-accent); border:1px solid var(--border); border-inline-start:.35rem solid var(--accent); border-radius:1rem; } .callout p { color:var(--muted); } .callout a { justify-self:start; } .example-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr)); gap:1rem; margin-block-start:1.5rem; } .example-card { display:grid; grid-template-rows:auto 1fr auto; gap:.75rem; min-inline-size:0; padding:1rem; background:var(--surface-raised); border:1px solid var(--border); border-radius:1rem; } .example-card p { color:var(--muted); } .related { align-self:start; padding:1rem; background:var(--surface-raised); border:1px solid var(--border); border-radius:1rem; } .related ul { display:grid; gap:.5rem; margin-block-start:.75rem; padding-inline-start:1.25rem; } .site-footer { padding:2rem clamp(1rem,4vw,3rem); border-block-start:1px solid var(--border); color:var(--muted); } @container (width >= 36rem) { .callout { grid-template-columns:minmax(0,1fr) auto; align-items:center; } .callout a { grid-column:2; grid-row:1 / span 2; align-self:center; } } @media (width >= 60rem) { .content { grid-template-columns:minmax(0,1fr) minmax(14rem,20rem); align-items:start; } .sidebar { position:sticky; inset-block-start:5rem; border:0; } .sidebar nav { display:grid; } } @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition:none !important; animation:none !important; } } @media print { .site-header,.sidebar,.related { display:none !important; } .content { inline-size:auto; padding-block:0; } a { color:black; } } }\n@layer utilities { .visually-hidden { position:absolute; inline-size:1px; block-size:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; } }"
+          },
+          "explanation": "The project separates reset/base/component/utility concerns with cascade layers. Semantic custom properties form a theme API. Grid controls page-level relationships, Flexbox controls local one-dimensional groups, and container queries make the callout component respond to its own available width. The baseline remains usable without the optional enhancements, while focus-visible, reduced-motion, color-scheme, and print rules adapt the experience to different users and media. Verification should include keyboard-only focus traversal, reduced-motion, light/dark schemes, forced-colors where available, print preview, intermediate widths, and browser support for optional features."
+        }
+      }
+    ]
+  }
+}

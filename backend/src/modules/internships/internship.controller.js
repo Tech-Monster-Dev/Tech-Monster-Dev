@@ -29,7 +29,10 @@ import { generateOfferLetterPDF } from "./services/generateOfferLetterPDF.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const internshipsDir = path.resolve(__dirname, "../../../data/internships");
+const internshipsDirs = [
+    path.resolve(__dirname, "../../../data/Internships"),
+    path.resolve(__dirname, "../../../data/internships"),
+];
 const TASK_DEADLINE_MS = 48 * 60 * 60 * 1000;
 
 const readInternshipDataFromFile = async (internshipSlug) => {
@@ -40,34 +43,42 @@ const readInternshipDataFromFile = async (internshipSlug) => {
     const normalizedTarget = normalizeSlug(internshipSlug);
 
     try {
-        const folders = await (await import("fs/promises")).readdir(
-            internshipsDir,
-            { withFileTypes: true }
-        );
-
-        for (const folder of folders) {
-            if (!folder.isDirectory()) continue;
-
-            const filePath = path.join(
-                internshipsDir,
-                folder.name,
-                "internship.json"
-            );
+        for (const internshipsDir of internshipsDirs) {
+            let folders;
 
             try {
-                const raw = await readFile(filePath, "utf8");
-                const parsed = JSON.parse(raw);
-                const internshipData =
-                    parsed?.internship || parsed;
-
-                if (
-                    normalizeSlug(internshipData?.slug) ===
-                    normalizedTarget
-                ) {
-                    return internshipData;
-                }
+                folders = await (await import("fs/promises")).readdir(
+                    internshipsDir,
+                    { withFileTypes: true }
+                );
             } catch {
                 continue;
+            }
+
+            for (const folder of folders) {
+                if (!folder.isDirectory()) continue;
+
+                const filePath = path.join(
+                    internshipsDir,
+                    folder.name,
+                    "internship.json"
+                );
+
+                try {
+                    const raw = await readFile(filePath, "utf8");
+                    const parsed = JSON.parse(raw);
+                    const internshipData =
+                        parsed?.internship || parsed;
+
+                    if (
+                        normalizeSlug(internshipData?.slug) ===
+                        normalizedTarget
+                    ) {
+                        return internshipData;
+                    }
+                } catch {
+                    continue;
+                }
             }
         }
 
@@ -102,6 +113,22 @@ const getOrderedCourseTasks = (courseData, courseSlug) => {
         const moduleId = module.moduleId || "";
         const seen = new Set();
         const tasks = [];
+
+        (module.tasks || []).forEach((task) => {
+            const taskId = task.taskId || task.id || "";
+            if (!taskId || seen.has(taskId)) return;
+            seen.add(taskId);
+
+            tasks.push({
+                courseSlug,
+                moduleId,
+                moduleTitle: module.moduleTitle || module.title || "",
+                lessonId: task.lessonId || "",
+                taskId,
+                taskTitle: task.title || task.taskTitle || "Task",
+                problemStatement: task.problemStatement || task.description || "",
+            });
+        });
 
         (module.lessons || []).forEach((lesson) => {
             (lesson.tasks || []).forEach((task) => {
@@ -239,10 +266,6 @@ const unlockFirstEligibleLessonTask = async ({
                 },
                 courseSlug
             );
-
-        if (!previousModuleTasks.length) {
-            return null;
-        }
 
         const approvedCount =
             await Submission.countDocuments({
@@ -960,7 +983,7 @@ export const completeLesson = asyncHandler(async (req, res) => {
 
 
     // Compute the total number of lessons from the course JSON file.
-    const courseData = await readCourseDataFromFile(normalizedSlug);
+    const courseData = await readInternshipDataFromFile(normalizedSlug);
 
     const unlockedSubmission = await unlockFirstEligibleLessonTask({
             student: req.user._id,

@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./CodeBlock.css";
 
 import highlightCode from "../TryItYourself/utils/highlightCode.js";
-import formatDisplayCode from "./formatDisplayCode.js";
+import {
+    formatCodeForDisplay,
+    inferCodeLanguage,
+} from "../../../../../../../../../shared/utils/codeFormatting.js";
 
 export default function CodeBlock({
     code,
@@ -11,14 +14,28 @@ export default function CodeBlock({
     filename = "",
 }) {
     const [copied, setCopied] = useState(false);
+    const [displayCode, setDisplayCode] = useState(code || "");
+
+    const resolvedLanguage = inferCodeLanguage(code, language);
+
+    useEffect(() => {
+        let active = true;
+
+        formatCodeForDisplay(code, language).then((formattedCode) => {
+            if (active) {
+                setDisplayCode(formattedCode);
+            }
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [code, language]);
 
     if (!code) return null;
 
-    const displayCode =
-        formatDisplayCode(code, language);
-
     const highlightedCode =
-        highlightCode(displayCode, language);
+        highlightCode(displayCode, resolvedLanguage);
 
     const handleCopy = async () => {
         try {
@@ -48,7 +65,7 @@ export default function CodeBlock({
                     ) : null}
 
                     <span className="lesson-codeblock__language">
-                        {language}
+                        {resolvedLanguage}
                     </span>
 
                 </div>

@@ -1,0 +1,1959 @@
+{
+  "course": {
+    "id": "threat-intelligence-fundamentals",
+    "title": "Threat Intelligence Fundamentals",
+    "slug": "threat-intelligence-fundamentals",
+    "description": "A research-driven, practice-oriented course that teaches how to collect, evaluate, analyze, structure, share, operationalize, and measure cyber threat intelligence. Learners progress from intelligence requirements and source evaluation through indicators, TTPs, STIX/TAXII, analytic hypotheses, attribution caution, vulnerability/exploit intelligence, dissemination, automation safety, and a defensive CTI fusion capstone.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 88,
+    "prerequisites": [
+      "Basic computer and networking concepts.",
+      "Familiarity with security logs, IP addresses, domains, and common cybersecurity terminology.",
+      "A willingness to work only with data and systems that are authorized for training or operational use."
+    ],
+    "learningOutcomes": [
+      "Write decision-focused intelligence requirements and map them to collection plans.",
+      "Evaluate threat-intelligence sources for provenance, reliability, relevance, timeliness, and bias.",
+      "Interpret indicators and TTPs without treating an observable as proof of maliciousness.",
+      "Use MITRE ATT&CK terminology to describe adversary behavior and support detection reasoning.",
+      "Explain STIX 2.1 and TAXII 2.1 roles in structured CTI representation and exchange.",
+      "Build evidence-based analytic hypotheses and communicate confidence and uncertainty.",
+      "Assess vulnerability intelligence with CVSS, EPSS, CISA KEV, asset criticality, and exposure context.",
+      "Produce concise intelligence products tailored to security consumers and operational decisions.",
+      "Design safer CTI automation pipelines with validation, provenance, quarantine, deduplication, scoring, and rollback.",
+      "Complete a defensive CTI fusion project with tests, traceable evidence, and explainable prioritization."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Threat Intelligence Foundations",
+        "description": "Build a precise mental model of cyber threat intelligence, its consumers, and how it differs from raw data, indicators, and general security monitoring.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "What Cyber Threat Intelligence Is",
+            "description": "Define CTI as analyzed information that helps decision-makers understand and act on cyber threats.",
+            "learningObjectives": [
+              "Define cyber threat intelligence, threat information, intelligence requirements, and consumers.",
+              "Distinguish raw observations from analyzed intelligence.",
+              "Explain why intelligence must be tied to decisions or actions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST describes cyber threat information broadly enough to include indicators, adversary TTPs, defensive recommendations, and incident-analysis findings. Intelligence adds context, interpretation, and relevance for a consumer."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Strategic intelligence supports leadership and risk decisions.",
+                  "Operational intelligence supports campaigns, incidents, and planning.",
+                  "Tactical intelligence focuses on adversary behaviors and detection implications.",
+                  "Technical intelligence often deals with machine-usable artifacts such as domains, hashes, URLs, and IP addresses."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q1",
+              "question": "Which statement best distinguishes intelligence from a raw indicator?",
+              "options": [
+                "An indicator is already a complete risk decision.",
+                "Intelligence adds context and analysis so a consumer can make or support a decision.",
+                "Indicators are never useful for detection.",
+                "Intelligence contains only IP addresses."
+              ],
+              "answer": "Intelligence adds context and analysis so a consumer can make or support a decision.",
+              "explanation": "A raw indicator is an observable artifact; intelligence adds context, confidence, relevance, and implications."
+            },
+            "summary": [
+              "CTI is decision-support information, not just a feed of observables.",
+              "Useful intelligence is contextual, timely, and relevant to a specific consumer."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Intelligence Requirements and the Intelligence Cycle",
+            "description": "Turn business and security questions into explicit intelligence requirements and measurable collection needs.",
+            "learningObjectives": [
+              "Write a primary intelligence requirement and supporting questions.",
+              "Separate what must be known from how it will be collected.",
+              "Explain the iterative cycle of requirements, collection, processing, analysis, production, dissemination, and feedback."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful intelligence requirement states the decision-relevant question, not a preferred source or tool. The lifecycle is iterative: feedback can change requirements and collection priorities."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Requirements should have an owner and intended consumer.",
+                  "Collection should be proportional to the question being answered.",
+                  "Feedback is necessary to prevent intelligence from becoming a one-way feed."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Build an Intelligence Requirement Matrix",
+                "description": "Turn three decision questions into a collection matrix with consumer, priority, source class, cadence, and explicit gaps.",
+                "steps": [
+                  "Write three decision-focused intelligence requirements for a fictional organization.",
+                  "Assign a consumer and decision for each requirement.",
+                  "Select at least two source classes per requirement.",
+                  "Record collection cadence and one known limitation for each source.",
+                  "Identify one gap and a fallback collection path for each requirement."
+                ],
+                "solution": "Example solution:\nRQ1: Which identity threats should influence MFA investment? Consumer: security leadership. Sources: internal authentication telemetry + government/sector reporting. Gap: limited external visibility.\nRQ2: Which behaviors are active in the current phishing campaign? Consumer: incident response. Sources: email telemetry + incident artifacts. Gap: unknown external infrastructure.\nRQ3: Which TTPs should become endpoint detections? Consumer: detection engineering. Sources: internal endpoint telemetry + ATT&CK behavioral references. Gap: weak process telemetry.",
+                "output": "A requirement-to-source matrix where every requirement has a consumer, decision, sources, cadence, limitation, and documented gap."
+              }
+            ],
+            "quiz": {
+              "id": "q2",
+              "question": "Which is the best intelligence requirement?",
+              "options": [
+                "Collect every threat report available.",
+                "List all malicious IPs.",
+                "Which threat behaviors are most relevant to our internet-facing identity infrastructure this quarter?",
+                "Install a threat-feed client."
+              ],
+              "answer": "Which threat behaviors are most relevant to our internet-facing identity infrastructure this quarter?",
+              "explanation": "It is a decision-relevant question with a defined scope and time period."
+            },
+            "summary": [
+              "Start from decisions and questions, then select sources.",
+              "Requirements should be revisited as the environment and threat landscape change."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Intelligence Types and Their Consumers",
+            "description": "Choose intelligence products based on audience, time horizon, and decision impact.",
+            "learningObjectives": [
+              "Compare strategic, operational, tactical, and technical intelligence.",
+              "Map a consumer to an appropriate product type.",
+              "Explain why the same underlying event may need different presentations for different audiences."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Executives need implications, trends, risk, and decisions.",
+                  "Incident responders need campaign context, scope, and investigative leads.",
+                  "Detection engineers need behaviors, telemetry requirements, and testable hypotheses.",
+                  "Security tooling may consume normalized machine-readable observables."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q3",
+              "question": "Which consumer is most likely to need a strategic intelligence product?",
+              "options": [
+                "A SOC analyst triaging one alert",
+                "An executive deciding whether to fund additional identity controls",
+                "A firewall administrator adding one temporary block",
+                "A malware sandbox engineer inspecting one sample"
+              ],
+              "answer": "An executive deciding whether to fund additional identity controls",
+              "explanation": "Strategic intelligence is designed for higher-level decisions about risk and priorities."
+            },
+            "summary": [
+              "Intelligence is shaped by the consumer.",
+              "A technically accurate product can still fail if it is delivered in the wrong form."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Confidence, Relevance, Timeliness, and Uncertainty",
+            "description": "Use structured confidence and caveats instead of overstating incomplete evidence.",
+            "learningObjectives": [
+              "Explain confidence, relevance, timeliness, and source quality.",
+              "Write uncertainty statements that distinguish fact from inference.",
+              "Avoid false precision in assessments."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Confidence should reflect the quality and quantity of evidence, not analyst enthusiasm. A good product explicitly identifies what is known, inferred, disputed, and unknown."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Source reliability and claim confidence are related but not identical.",
+                  "Stale information can lose operational value even if it remains factually correct.",
+                  "Confidence can be updated as corroborating or contradictory evidence appears."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q4",
+              "question": "What is the safest way to communicate an uncertain attribution assessment?",
+              "options": [
+                "State the suspected actor as a proven fact.",
+                "Omit all uncertainty.",
+                "State the assessment, supporting evidence, confidence, and what evidence would change the assessment.",
+                "Use a high severity label instead."
+              ],
+              "answer": "State the assessment, supporting evidence, confidence, and what evidence would change the assessment.",
+              "explanation": "This preserves analytical value without overstating evidence."
+            },
+            "summary": [
+              "Good intelligence makes uncertainty visible.",
+              "Confidence statements should be tied to evidence and revisited when evidence changes."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Write Three Intelligence Requirements",
+            "level": "Easy",
+            "description": "Create three intelligence requirements for a fictional mid-sized organization.",
+            "problemStatement": "Produce one strategic, one operational, and one technical requirement, each tied to a named consumer and a decision.",
+            "objectives": [
+              "Write decision-focused questions.",
+              "Assign an intended consumer and time horizon.",
+              "List two supporting questions for each requirement."
+            ],
+            "requirements": [
+              "Avoid requirements such as “collect threat feeds.” Start with a decision the consumer needs to make."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "Requirement 1: Which threat trends create the greatest identity risk over the next two quarters? Consumer: security leadership.",
+              "Requirement 2: Which attacker behaviors are associated with the ongoing phishing campaign? Consumer: incident response lead.",
+              "Requirement 3: Which observable behaviors should be converted into endpoint detections? Consumer: detection engineering."
+            ],
+            "solutionExplanation": "The task demonstrates that collection starts with an information need, and that the same environment may generate different requirements for different consumers."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Collection, Sources, and Source Evaluation",
+        "description": "Build a disciplined collection strategy across public, commercial, internal, and partner sources while evaluating source quality and bias.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Threat Intelligence Sources",
+            "description": "Survey open-source, internal telemetry, vendor, government, partner, and community sources.",
+            "learningObjectives": [
+              "Classify intelligence sources by provenance.",
+              "Match source types to intelligence requirements.",
+              "Identify access, licensing, reliability, and coverage constraints."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Internal sources often provide the strongest environment-specific relevance.",
+                  "Government and sector-sharing sources may add broader campaigns and warnings.",
+                  "Commercial reporting can provide specialist analysis but may have product or collection biases.",
+                  "Community sources can be useful but need stronger validation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q5",
+              "question": "Which source is usually most directly relevant to a specific organization’s environment?",
+              "options": [
+                "An unrelated public blog",
+                "Internal incident and telemetry data",
+                "A generic threat list",
+                "A random social-media post"
+              ],
+              "answer": "Internal incident and telemetry data",
+              "explanation": "Internal evidence directly reflects the organization’s assets, activity, and controls."
+            },
+            "summary": [
+              "Source diversity reduces blind spots.",
+              "No source should be trusted without considering provenance, collection method, scope, and incentives."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "CISA Cyber Threat Information Sharing",
+                "url": "https://www.cisa.gov/topics/cyber-threats-and-advisories/information-sharing"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Source Reliability and Analytic Bias",
+            "description": "Evaluate sources and recognize collection and reporting biases.",
+            "learningObjectives": [
+              "Differentiate source reliability from claim confidence.",
+              "Identify confirmation, availability, and anchoring biases.",
+              "Document contradictory evidence rather than forcing consensus."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A highly reputable publisher can still publish a claim that is wrong, incomplete, or outside the publisher’s normal expertise. Analysts should score or narrate both source reliability and confidence in the specific claim."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Search results are not evidence quality ratings.",
+                  "Multiple copies of the same report are not independent corroboration.",
+                  "Contradictory evidence should be preserved and analyzed, not silently discarded."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q6",
+              "question": "Why are five websites repeating the same sentence not necessarily five independent sources?",
+              "options": [
+                "Because websites cannot contain facts",
+                "They may all derive the statement from the same original report",
+                "Because sources never matter",
+                "Because intelligence is always subjective"
+              ],
+              "answer": "They may all derive the statement from the same original report",
+              "explanation": "Common-source repetition is not independent corroboration."
+            },
+            "summary": [
+              "Evaluate provenance, not just volume of reporting.",
+              "Analysts should actively seek disconfirming evidence for important claims."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Collection Planning and Source Gaps",
+            "description": "Turn requirements into a collection plan with explicit gaps and priorities.",
+            "learningObjectives": [
+              "Create a source-to-question mapping.",
+              "Identify collection gaps and fallback sources.",
+              "Set collection cadence based on decision urgency."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Requirement -> Source -> Collection cadence -> Gap -> Fallback\nRQ-01 -> internal identity telemetry -> daily -> limited partner visibility -> sector-sharing source"
+              },
+              {
+                "type": "paragraph",
+                "text": "Collection plans are living artifacts. When one source becomes unavailable, the plan should show which requirement is affected and what alternative evidence can reduce the gap."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q7",
+              "question": "What is the purpose of a collection gap statement?",
+              "options": [
+                "To hide missing information",
+                "To make uncertainty and missing evidence explicit so decisions can account for it",
+                "To replace analysis",
+                "To assign blame"
+              ],
+              "answer": "To make uncertainty and missing evidence explicit so decisions can account for it",
+              "explanation": "A gap statement records what cannot currently be known or collected reliably."
+            },
+            "summary": [
+              "Collection should be requirement-driven.",
+              "A documented gap is more useful than an unspoken assumption."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Legal, Privacy, and Handling Considerations",
+            "description": "Introduce safe handling, licensing, privacy, and dissemination constraints for CTI.",
+            "learningObjectives": [
+              "Identify common handling concerns for intelligence data.",
+              "Explain why collection authority and sharing rules matter.",
+              "Describe the difference between technical utility and permission to collect or share."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Threat intelligence may contain personal data, internal identifiers, or information subject to contracts and sharing restrictions. Handling requirements depend on law, policy, agreements, and context."
+              },
+              {
+                "type": "warning",
+                "text": "Use only data you are authorized to collect, store, analyze, and share. A technically useful source may still be impermissible for a particular use."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q8",
+              "question": "What should an analyst do before importing a third-party intelligence dataset into a production system?",
+              "options": [
+                "Assume it is unrestricted",
+                "Check authorization, licensing, privacy, handling, and integration requirements",
+                "Ignore provenance",
+                "Disable logging"
+              ],
+              "answer": "Check authorization, licensing, privacy, handling, and integration requirements",
+              "explanation": "Operational use requires both technical suitability and appropriate permissions/handling."
+            },
+            "summary": [
+              "Handling constraints are part of intelligence quality.",
+              "Do not assume that availability on the internet implies unrestricted reuse."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "CISA Cyber Threat Information Sharing",
+                "url": "https://www.cisa.gov/topics/cyber-threats-and-advisories/information-sharing"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build a Collection Plan",
+            "level": "Intermediate",
+            "description": "Map four intelligence requirements to appropriate sources and collection cadences.",
+            "problemStatement": "For each requirement, identify at least two sources, their strengths, one gap, and a fallback source.",
+            "objectives": [
+              "Create a requirement-to-source matrix.",
+              "Document at least one likely bias or coverage limitation per source.",
+              "Define a review cadence."
+            ],
+            "requirements": [
+              "Use only source categories, not fabricated vendor claims."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "A strong plan uses different source classes where feasible and records what each source cannot answer."
+            ],
+            "solutionExplanation": "The task tests requirement-driven collection and gap management rather than feed accumulation."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Indicators, Observables, and TTPs",
+        "description": "Learn how to work with technical observables without confusing an indicator with proof of maliciousness.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "IOCs, Observables, and Context",
+            "description": "Understand IPs, domains, URLs, hashes, file paths, certificates, email artifacts, and other observables.",
+            "learningObjectives": [
+              "Define an IOC and a broader observable.",
+              "Explain why an observable needs context and provenance.",
+              "Identify common reasons an indicator may be benign or stale."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "An IP address can represent shared hosting, cloud infrastructure, NAT, or a benign user.",
+                  "A file hash identifies a specific byte sequence, not intent.",
+                  "A domain may be legitimate infrastructure that was abused temporarily.",
+                  "Context such as timestamp, role, campaign, and observed behavior changes interpretation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q9",
+              "question": "Why is an IP address alone weak evidence of malicious activity?",
+              "options": [
+                "IPs never identify systems",
+                "An IP can be shared, reassigned, or legitimately used for many services",
+                "IPs are not logged",
+                "Threat actors never use IPs"
+              ],
+              "answer": "An IP can be shared, reassigned, or legitimately used for many services",
+              "explanation": "The same IP can have multiple legitimate or malicious contexts over time."
+            },
+            "summary": [
+              "Indicators are hypotheses or leads, not automatic proof.",
+              "Context and time are essential to interpretation."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/enterprise/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Tactics, Techniques, and Procedures",
+            "description": "Use TTPs to describe adversary behavior at a more durable level than individual indicators.",
+            "learningObjectives": [
+              "Differentiate tactics, techniques, and procedures.",
+              "Explain why TTPs may remain useful when infrastructure changes.",
+              "Map observed behaviors to ATT&CK carefully."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK organizes adversary behavior into tactics and techniques. Tactics represent goals; techniques describe ways to achieve them. ATT&CK mappings support a shared language for analysis and detection engineering."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "TTP analysis is generally more durable than a single IP or hash.",
+                  "Technique mapping is evidence about behavior, not proof of attribution."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Enrich and Lifecycle Five Indicators",
+                "description": "Create analyst-ready indicator records using context, provenance, confidence, sightings, and review/expiration metadata.",
+                "steps": [
+                  "Create five synthetic indicators using documentation-safe example domains/IPs or synthetic hashes.",
+                  "Record source, first-seen, last-seen, confidence, related behavior, and intended use.",
+                  "Add one enrichment field for each indicator such as hosting context, sighting, or related TTP.",
+                  "Assign lifecycle state: new, validated, active, expired-review, or retired.",
+                  "Write one sentence explaining why each indicator should or should not be promoted to an operational control."
+                ],
+                "solution": "A correct solution keeps raw value, provenance, timing, and analyst judgment separate. High-confidence, recently sighted indicators with corroborating behavior can be considered for operational use; stale or weakly contextualized records remain investigative leads until validated.",
+                "output": "Five complete indicator records with explicit provenance, confidence, lifecycle state, and an action recommendation."
+              }
+            ],
+            "quiz": {
+              "id": "q10",
+              "question": "In ATT&CK, a tactic represents:",
+              "options": [
+                "A specific file hash",
+                "An adversary objective or goal",
+                "A firewall rule",
+                "A DNS record"
+              ],
+              "answer": "An adversary objective or goal",
+              "explanation": "Tactics describe the why; techniques describe how."
+            },
+            "summary": [
+              "Behavioral intelligence can outlast infrastructure changes.",
+              "Map techniques from observed evidence, not from assumptions about the actor."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Enterprise Tactics",
+                "url": "https://attack.mitre.org/tactics/enterprise/"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/enterprise/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Indicator Enrichment and Pivoting",
+            "description": "Learn a repeatable method for adding context to a technical indicator.",
+            "learningObjectives": [
+              "Define enrichment fields such as passive DNS, ASN, WHOIS/RDAP, reputation, malware relationships, and sightings.",
+              "Prioritize pivots based on the intelligence question.",
+              "Track which enrichment results are facts versus derived assessments."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Indicator\n  -> time context\n  -> infrastructure context\n  -> sightings\n  -> related observables\n  -> TTP/campaign context\n  -> assessment"
+              },
+              {
+                "type": "paragraph",
+                "text": "Enrichment should answer a question. Gathering every available field can create noise and analyst fatigue."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q11",
+              "question": "What is the best reason to enrich an indicator?",
+              "options": [
+                "To make the record larger",
+                "To add decision-relevant context that changes interpretation or action",
+                "To guarantee attribution",
+                "To avoid documenting uncertainty"
+              ],
+              "answer": "To add decision-relevant context that changes interpretation or action",
+              "explanation": "Enrichment is valuable when it reduces uncertainty or supports a decision."
+            },
+            "summary": [
+              "Enrichment should be purposeful and provenance-aware.",
+              "Record when the enrichment was obtained because infrastructure and reputation change."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "Indicator Lifecycle and Expiration",
+            "description": "Manage indicator freshness, confidence, sighting history, and retirement.",
+            "learningObjectives": [
+              "Explain why indicators need time-to-live or review logic.",
+              "Design lifecycle states such as new, validated, active, expired, and retired.",
+              "Avoid permanent blocking of stale infrastructure."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Indicators change meaning over time.",
+                  "Expiration should depend on indicator type and collection context, not a universal timer.",
+                  "Sighting history can justify renewed relevance.",
+                  "Retired indicators should remain available for historical investigations where policy permits."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q12",
+              "question": "Why should many indicators have an expiration or review date?",
+              "options": [
+                "Because all indicators are false",
+                "Because their relevance and ownership can change over time",
+                "Because storage is impossible",
+                "Because ATT&CK requires deletion"
+              ],
+              "answer": "Because their relevance and ownership can change over time",
+              "explanation": "Indicator usefulness and risk can change as infrastructure is reassigned or campaigns end."
+            },
+            "summary": [
+              "Indicator management is a lifecycle process.",
+              "Historical retention can remain useful even when operational blocking expires."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Create an Indicator Enrichment Record",
+            "level": "Intermediate",
+            "description": "Take five fictional indicators and create analyst-ready records with context and lifecycle metadata.",
+            "problemStatement": "For each indicator, record type, value, first seen, last seen, source, confidence, related behavior, disposition, and expiration/review date.",
+            "objectives": [
+              "Separate raw value from analyst assessment.",
+              "Record provenance and timestamps.",
+              "Choose a defensible disposition."
+            ],
+            "requirements": [
+              "Do not use real personal data or real credentials.",
+              "Use synthetic indicators such as example domains and documentation-safe IP ranges."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "A strong record makes it possible for another analyst to understand why the indicator matters and when it should be reconsidered."
+            ],
+            "solutionExplanation": "The task develops indicator hygiene and prevents uncontrolled IOC accumulation."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "STIX, TAXII, and Threat-Intel Data Modeling",
+        "description": "Learn standards-based threat-information representation and exchange.",
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "STIX 2.1 Concepts",
+            "description": "Understand STIX objects, relationships, bundles, and machine-readable CTI.",
+            "learningObjectives": [
+              "Explain why STIX exists.",
+              "Identify common STIX object categories.",
+              "Describe relationships between observables, indicators, identities, malware, threat actors, and sightings."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "OASIS STIX 2.1 defines a language and serialization model for expressing cyber threat and observable information in a structured, machine-readable way."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "STIX represents more than indicators; it can model relationships and context.",
+                  "A STIX object should preserve enough context for consumers to understand the claim."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Inspect a STIX 2.1 Indicator Bundle",
+                "description": "Read a small STIX bundle and explain what is represented, what is observed, and what remains an analyst assessment.",
+                "steps": [
+                  "Create a minimal STIX 2.1 bundle containing one indicator object, one identity object, and one relationship.",
+                  "Read the object types and identifiers without assuming that the indicator is malicious in your environment.",
+                  "Record which fields establish provenance and validity dates.",
+                  "Explain how a sighting would add local operational evidence."
+                ],
+                "solution": "A correct analysis identifies the STIX object types, preserves object IDs and timestamps, distinguishes the indicator pattern from a local sighting, and states that schema validity does not prove the underlying claim is true.",
+                "output": "A short interpretation that maps each object to its role and clearly separates structured representation from analyst conclusions."
+              }
+            ],
+            "quiz": {
+              "id": "q13",
+              "question": "What is a primary advantage of STIX?",
+              "options": [
+                "It is a faster network protocol",
+                "It provides a structured language for representing CTI consistently and machine-readably",
+                "It guarantees indicator accuracy",
+                "It replaces all SIEMs"
+              ],
+              "answer": "It provides a structured language for representing CTI consistently and machine-readably",
+              "explanation": "STIX is a structured language/format for CTI exchange."
+            },
+            "summary": [
+              "Structured CTI improves interoperability.",
+              "The schema does not guarantee that the content itself is accurate."
+            ],
+            "resources": [
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              },
+              {
+                "title": "OASIS Cyber Threat Intelligence Technical Committee",
+                "url": "https://www.oasis-open.org/committees/cti/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "STIX Indicators, Observed Data, and Sightings",
+            "description": "Distinguish a rule-like indicator from observed activity and sightings.",
+            "learningObjectives": [
+              "Explain the conceptual difference between indicator content and observations.",
+              "Describe why sightings add valuable operational context.",
+              "Avoid treating an indicator object as proof that activity occurred in your environment."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "An indicator expresses a pattern or observable associated with a condition.",
+                  "Observed data describes data that was actually observed.",
+                  "Sightings communicate that an entity or indicator was observed or used, depending on the modeled object and context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q14",
+              "question": "Why are sightings valuable in CTI?",
+              "options": [
+                "They make every indicator true",
+                "They show that an indicator or entity was observed, adding operational context",
+                "They eliminate the need for provenance",
+                "They change hashes"
+              ],
+              "answer": "They show that an indicator or entity was observed, adding operational context",
+              "explanation": "Sightings provide evidence of observation and can improve relevance assessment."
+            },
+            "summary": [
+              "Separate predicted/associated indicators from observed activity.",
+              "Operational sightings can increase confidence and help prioritize response."
+            ],
+            "resources": [
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "TAXII 2.1 and Automated Exchange",
+            "description": "Understand how TAXII transports CTI between compatible producers and consumers.",
+            "learningObjectives": [
+              "Explain the relationship between STIX and TAXII.",
+              "Describe collections, discovery, and client/server exchange at a high level.",
+              "Identify authentication, trust, and filtering concerns in automation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "OASIS TAXII 2.1 defines an application-layer protocol for communicating cyber threat information, commonly carrying STIX content over RESTful APIs."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "STIX defines how CTI is represented; TAXII defines how CTI is exchanged.",
+                  "Automation needs trust, authentication, authorization, rate controls, and validation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q15",
+              "question": "Which statement is correct?",
+              "options": [
+                "STIX is the transport protocol and TAXII is the data model",
+                "STIX is the CTI language/model and TAXII is an exchange protocol",
+                "They are identical",
+                "TAXII replaces JSON"
+              ],
+              "answer": "STIX is the CTI language/model and TAXII is an exchange protocol",
+              "explanation": "STIX represents information; TAXII transports it between systems."
+            },
+            "summary": [
+              "Interoperability has both data-model and transport components.",
+              "Automation must validate incoming data before using it operationally."
+            ],
+            "resources": [
+              {
+                "title": "OASIS TAXII 2.1",
+                "url": "https://www.oasis-open.org/standard/taxii-version-2-1/"
+              },
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Data Quality, Normalization, and Validation",
+            "description": "Prepare CTI for downstream use without silently altering meaning.",
+            "learningObjectives": [
+              "Identify normalization issues in indicators and metadata.",
+              "Validate required fields before ingestion.",
+              "Preserve original source content or provenance where policy permits."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Validation checklist\n- type and syntax\n- source/provenance\n- timestamp\n- confidence\n- expiration\n- handling label\n- duplicate status"
+              },
+              {
+                "type": "warning",
+                "text": "Never normalize away information that changes interpretation, such as original timestamps, source identity, or caveats."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q16",
+              "question": "Why should original provenance be preserved when CTI is normalized?",
+              "options": [
+                "To make the database slower",
+                "So analysts can trace the normalized record back to its source and evaluate trust",
+                "Because provenance is only cosmetic",
+                "To avoid expiration"
+              ],
+              "answer": "So analysts can trace the normalized record back to its source and evaluate trust",
+              "explanation": "Traceability is required for later validation and investigation."
+            },
+            "summary": [
+              "Normalization should improve interoperability without destroying context.",
+              "Validation should include semantic and operational checks, not only syntax."
+            ],
+            "resources": [
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              },
+              {
+                "title": "OASIS TAXII 2.1",
+                "url": "https://www.oasis-open.org/standard/taxii-version-2-1/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Design a STIX/TAXII Intake Checklist",
+            "level": "Intermediate",
+            "description": "Create a checklist for safely ingesting a new machine-readable CTI source.",
+            "problemStatement": "The checklist must validate structure, provenance, handling, duplicates, freshness, confidence, and downstream actionability.",
+            "objectives": [
+              "Include pre-ingestion and post-ingestion checks.",
+              "Define what causes a record to be quarantined.",
+              "Include a human-review path for ambiguous data."
+            ],
+            "requirements": [
+              "The transport can succeed while the content is still untrustworthy or unsuitable."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "Quarantine malformed or policy-violating data rather than auto-promoting it to blocking controls."
+            ],
+            "solutionExplanation": "The task connects CTI standards to operational data-quality controls."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Analysis, Attribution, and Campaign Assessment",
+        "description": "Develop disciplined analytical methods for linking evidence, campaigns, and actor hypotheses.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "From Data to Analytic Hypothesis",
+            "description": "Move from observables and reports to testable analytic questions.",
+            "learningObjectives": [
+              "Separate observation, inference, hypothesis, and assessment.",
+              "Write an explicit analytic hypothesis.",
+              "Identify evidence that would confirm or disconfirm it."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Observation -> hypothesis -> evidence needed -> competing explanation -> assessment -> confidence"
+              },
+              {
+                "type": "paragraph",
+                "text": "The strongest analytical products make the reasoning path visible enough for another analyst to challenge it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q17",
+              "question": "What makes an analytic hypothesis useful?",
+              "options": [
+                "It cannot be disproved",
+                "It states a claim that can be tested against available evidence and competing explanations",
+                "It always names an actor",
+                "It contains only indicators"
+              ],
+              "answer": "It states a claim that can be tested against available evidence and competing explanations",
+              "explanation": "Testability helps analysts avoid premature conclusions."
+            },
+            "summary": [
+              "Make reasoning explicit and challengeable.",
+              "Always consider at least one plausible alternative explanation for consequential claims."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Campaign and Cluster Analysis",
+            "description": "Group related events or infrastructure using shared evidence without overfitting.",
+            "learningObjectives": [
+              "Define clustering features such as timing, infrastructure, malware, TTPs, targeting, and language.",
+              "Explain why one shared feature is rarely enough for a strong cluster.",
+              "Document inclusion and exclusion criteria."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Clusters are analytical constructs, not necessarily named actor identities.",
+                  "Shared infrastructure may reflect common hosting rather than common control.",
+                  "Timing and behavioral consistency can strengthen a cluster when independently observed."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q18",
+              "question": "Which is strongest for campaign clustering?",
+              "options": [
+                "One reused IP address alone",
+                "Multiple independent features that align across incidents and time",
+                "A similar country name",
+                "One social-media rumor"
+              ],
+              "answer": "Multiple independent features that align across incidents and time",
+              "explanation": "Converging independent evidence is more persuasive than one weak commonality."
+            },
+            "summary": [
+              "Clusters should have explicit criteria.",
+              "Avoid circular reasoning where the same report is used both to define and prove the cluster."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/enterprise/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "Attribution: Capabilities, Infrastructure, and Intent",
+            "description": "Understand the limits of actor attribution and how evidence is layered.",
+            "learningObjectives": [
+              "Differentiate capability, infrastructure, behavior, targeting, and intent.",
+              "Explain why attribution should be expressed probabilistically.",
+              "Identify common attribution traps."
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Attribution is a high-uncertainty analytical task. Do not convert tool or infrastructure overlap into identity without corroborating evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Capability overlap is common because tools are reused or publicly available.",
+                  "Infrastructure can be compromised or rented.",
+                  "False flags and reused malware complicate attribution."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q19",
+              "question": "Which is the best practice for actor attribution?",
+              "options": [
+                "Treat one malware family as proof of actor identity",
+                "State the attribution assessment with confidence and evidence, including alternatives",
+                "Never discuss confidence",
+                "Use the loudest report as truth"
+              ],
+              "answer": "State the attribution assessment with confidence and evidence, including alternatives",
+              "explanation": "Attribution should be evidence-based and uncertainty-aware."
+            },
+            "summary": [
+              "Attribution is an assessment, not a default label.",
+              "Analysts should explain what evidence is decisive and what remains ambiguous."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/enterprise/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Threat Actor Profiles and Behavior Mapping",
+            "description": "Build concise profiles that emphasize behaviors and operational relevance.",
+            "learningObjectives": [
+              "Create a behavior-oriented actor profile.",
+              "Map reported behaviors to ATT&CK without confusing mapping with attribution.",
+              "Connect actor behaviors to detection and defensive implications."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK software and group pages document publicly reported behavior relationships. These entries represent reported associations rather than exhaustive or infallible coverage."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q20",
+              "question": "What should a useful actor profile emphasize?",
+              "options": [
+                "Only a nickname",
+                "Evidence-backed behaviors, targeting, capabilities, confidence, and defensive implications",
+                "Only malware hashes",
+                "Unverified rumors"
+              ],
+              "answer": "Evidence-backed behaviors, targeting, capabilities, confidence, and defensive implications",
+              "explanation": "A useful profile supports action and keeps evidence visible."
+            },
+            "summary": [
+              "Behavior mapping is more operationally useful than labels alone.",
+              "Actor names and aliases can change; behavior remains central."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/enterprise/"
+              },
+              {
+                "title": "MITRE ATT&CK Enterprise Tactics",
+                "url": "https://attack.mitre.org/tactics/enterprise/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Produce an Attribution Assessment",
+            "level": "Advanced",
+            "description": "Write an evidence-based assessment about two competing actor hypotheses using a fictional incident set.",
+            "problemStatement": "Assess which hypothesis is better supported, list corroborating evidence, contradictory evidence, confidence, and what new collection would reduce uncertainty.",
+            "objectives": [
+              "Use at least three independent evidence categories.",
+              "Include a competing explanation.",
+              "Do not claim certainty unless the scenario supports it."
+            ],
+            "requirements": [
+              "Use synthetic evidence only.",
+              "Treat ATT&CK mapping as behavioral evidence, not automatic attribution."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "A defensible assessment might conclude “Hypothesis A is more consistent with the evidence” while explicitly preserving uncertainty."
+            ],
+            "solutionExplanation": "The task tests analytical tradecraft, competing hypotheses, and disciplined attribution language."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Vulnerability and Exploit Intelligence",
+        "description": "Integrate vulnerability intelligence with threat context and asset criticality.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "CVE, CWE, and Vulnerability Language",
+            "description": "Understand common vulnerability identifiers and weakness taxonomies.",
+            "learningObjectives": [
+              "Define CVE and CWE at a practical level.",
+              "Explain why a vulnerability identifier does not itself determine business risk.",
+              "Connect weakness classes to defensive analysis."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "CVE identifiers track specific publicly known vulnerabilities.",
+                  "CWE describes categories of software and design weaknesses.",
+                  "Vulnerability records require affected-product, version, configuration, and remediation context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q21",
+              "question": "What does CWE primarily describe?",
+              "options": [
+                "A specific IP address",
+                "A category of software or design weakness",
+                "A threat actor",
+                "A CVSS score"
+              ],
+              "answer": "A category of software or design weakness",
+              "explanation": "CWE organizes recurring weakness types."
+            },
+            "summary": [
+              "Identifiers improve communication but do not replace contextual assessment.",
+              "Use affected-version and deployment evidence before claiming exposure."
+            ],
+            "resources": [
+              {
+                "title": "MITRE CWE",
+                "url": "https://cwe.mitre.org/"
+              },
+              {
+                "title": "FIRST CVSS v4.0",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "CVSS v4.0 and Severity",
+            "description": "Interpret standardized vulnerability severity without treating it as a complete organizational risk score.",
+            "learningObjectives": [
+              "Explain Base, Threat, Environmental, and Supplemental metric groups at a high level.",
+              "Use CVSS terminology accurately.",
+              "Distinguish standardized severity from business risk."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "CVSS provides standardized severity scoring. Environmental context can change how a vulnerability should be understood, while organizational prioritization should also consider asset criticality, exposure, exploitation evidence, and available mitigations."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q22",
+              "question": "Which CVSS metric group is intended to reflect characteristics specific to an organization’s deployment?",
+              "options": [
+                "Base",
+                "Environmental",
+                "Transport",
+                "Tactical"
+              ],
+              "answer": "Environmental",
+              "explanation": "Environmental metrics are designed to adjust for deployment context."
+            },
+            "summary": [
+              "CVSS is a severity framework, not a universal remediation priority algorithm.",
+              "Combine CVSS with asset and threat context."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CVSS v4.0",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "EPSS and Exploitation Likelihood",
+            "description": "Use EPSS as probabilistic evidence about exploitation likelihood while recognizing its scope and limitations.",
+            "learningObjectives": [
+              "Explain what an exploitation-probability estimate is.",
+              "Use EPSS alongside other risk signals.",
+              "Avoid interpreting probability as certainty of exploitation in a specific environment."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "EPSS estimates the probability that a vulnerability will be exploited in the wild over a defined time horizon, based on observed data and modeling. It is a predictive signal, not evidence that your organization is currently being exploited."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q23",
+              "question": "What is the best use of EPSS in vulnerability prioritization?",
+              "options": [
+                "As proof that an asset is compromised",
+                "As one predictive signal about exploitation likelihood alongside exposure and asset context",
+                "As a replacement for patch testing",
+                "As a CVE identifier"
+              ],
+              "answer": "As one predictive signal about exploitation likelihood alongside exposure and asset context",
+              "explanation": "EPSS contributes probabilistic context; it is not a compromise detector."
+            },
+            "summary": [
+              "Probabilistic threat signals should be combined with local evidence.",
+              "Do not confuse population-level exploitation likelihood with local compromise evidence."
+            ],
+            "resources": [
+              {
+                "title": "FIRST EPSS",
+                "url": "https://www.first.org/epss/"
+              },
+              {
+                "title": "FIRST CVSS v4.0",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "CISA KEV and Threat-Informed Prioritization",
+            "description": "Use known-exploitation evidence to raise the priority of vulnerabilities that matter to defenders.",
+            "learningObjectives": [
+              "Explain the purpose of the KEV catalog.",
+              "Use KEV status as one input to remediation prioritization.",
+              "Combine exploitation evidence with exposure, asset criticality, and mitigations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "CISA describes the Known Exploited Vulnerabilities catalog as an authoritative source of vulnerabilities exploited in the wild and recommends using it as an input to vulnerability-management prioritization."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q24",
+              "question": "What does inclusion in CISA KEV primarily tell a defender?",
+              "options": [
+                "The vulnerability is always critical in every environment",
+                "The vulnerability is known to have been exploited in the wild and should inform prioritization",
+                "The organization is compromised",
+                "A patch is guaranteed safe"
+              ],
+              "answer": "The vulnerability is known to have been exploited in the wild and should inform prioritization",
+              "explanation": "KEV provides evidence of real-world exploitation, which can raise urgency."
+            },
+            "summary": [
+              "Exploit evidence can be decisive when combined with exposure and asset value.",
+              "KEV is not a substitute for local vulnerability validation."
+            ],
+            "resources": [
+              {
+                "title": "CISA Known Exploited Vulnerabilities Catalog",
+                "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+              },
+              {
+                "title": "FIRST CVSS v4.0",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              },
+              {
+                "title": "FIRST EPSS",
+                "url": "https://www.first.org/epss/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Build a Threat-Informed Vulnerability Priority Model",
+            "level": "Advanced",
+            "description": "Prioritize a fictional vulnerability backlog using severity, exploit evidence, exposure, and asset criticality.",
+            "problemStatement": "Rank at least six vulnerabilities and justify the order with explicit evidence rather than CVSS alone.",
+            "objectives": [
+              "Use CVSS, KEV/EPSS-style context, exposure, asset criticality, and compensating controls.",
+              "Document uncertainties.",
+              "Separate technical severity from organizational priority."
+            ],
+            "requirements": [
+              "No real exploit code is required.",
+              "Use only scenario facts provided by the instructor or dataset."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "A lower CVSS item may outrank another when it is actively exploited and affects a critical internet-facing asset."
+            ],
+            "solutionExplanation": "The task develops risk-based prioritization and prevents score-only decision making."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Sharing, Dissemination, and Operationalization",
+        "description": "Turn analyzed intelligence into actionable products and machine-consumable outputs while controlling dissemination risk.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Intelligence Production and Writing",
+            "description": "Write concise intelligence that makes the assessment and implications easy to act on.",
+            "learningObjectives": [
+              "Structure an intelligence report around the consumer’s decision.",
+              "Separate assessment, evidence, implications, and recommendations.",
+              "Write concise confidence and caveat statements."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Product structure\n1. Executive assessment\n2. Key evidence\n3. Confidence / caveats\n4. Operational implications\n5. Recommended actions\n6. Sources / provenance"
+              },
+              {
+                "type": "paragraph",
+                "text": "The product should answer “so what?” and “what should we do next?” without hiding uncertainty."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Write a CTI-to-Action Brief",
+                "description": "Convert a fictional threat report into a one-page operational brief for a SOC lead.",
+                "steps": [
+                  "State the assessment in one paragraph.",
+                  "List three evidence items and their provenance.",
+                  "State confidence and one important uncertainty.",
+                  "Map one observed behavior to an ATT&CK technique where justified.",
+                  "Recommend two defensive actions and one collection action that would reduce uncertainty."
+                ],
+                "solution": "The brief should lead with the assessment, then evidence, confidence, operational implications, and actions. It should avoid unverified actor attribution and make clear which evidence is direct versus inferred.",
+                "output": "A concise analyst-ready brief that supports a decision while preserving uncertainty and provenance."
+              }
+            ],
+            "quiz": {
+              "id": "q25",
+              "question": "Which section should make the analyst’s conclusion easiest to understand?",
+              "options": [
+                "Only raw data",
+                "A clear assessment with evidence and implications",
+                "A list of tool names",
+                "A source dump"
+              ],
+              "answer": "A clear assessment with evidence and implications",
+              "explanation": "Decision-makers need the conclusion and why it is supported."
+            },
+            "summary": [
+              "Good intelligence is written for a consumer, not for the analyst alone.",
+              "Evidence and confidence make the assessment auditable."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Dissemination and Handling Labels",
+            "description": "Choose recipients and channels that match sensitivity, sharing agreements, and operational need.",
+            "learningObjectives": [
+              "Explain need-to-know and least dissemination.",
+              "Identify handling restrictions that can affect onward sharing.",
+              "Document recipient scope and intended use."
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Dissemination should follow policy, agreements, law, and applicable handling markings. Never infer sharing permission solely from the fact that intelligence exists."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The smallest useful audience reduces accidental exposure.",
+                  "Recipients should understand handling restrictions and whether redistribution is permitted."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q26",
+              "question": "Why is recipient scope part of intelligence production?",
+              "options": [
+                "Because every report must be public",
+                "Because the sensitivity and permitted use of information can depend on who receives it",
+                "Because sources are irrelevant",
+                "Because CTI has no privacy concerns"
+              ],
+              "answer": "Because the sensitivity and permitted use of information can depend on who receives it",
+              "explanation": "Dissemination is a governance and risk decision."
+            },
+            "summary": [
+              "Need-to-know and handling controls are operational security controls.",
+              "Document sharing constraints explicitly."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Turning Intelligence into Detection Requirements",
+            "description": "Translate CTI into telemetry, hypotheses, and testable detection logic.",
+            "learningObjectives": [
+              "Convert a TTP or intelligence claim into observable behaviors.",
+              "Identify required telemetry and possible detection gaps.",
+              "Write a detection hypothesis that can be validated."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CTI claim -> behavior -> observable -> telemetry source -> detection hypothesis -> validation plan"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Intelligence should not become a block rule automatically.",
+                  "A good detection requirement identifies the signal, context, and likely false-positive conditions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q27",
+              "question": "What is the best first step when converting a TTP into a detection?",
+              "options": [
+                "Block every IP associated with the TTP",
+                "Identify the observable behavior and required telemetry",
+                "Delete the intelligence",
+                "Assign an actor name"
+              ],
+              "answer": "Identify the observable behavior and required telemetry",
+              "explanation": "Detection engineering begins with observable behavior and visibility requirements."
+            },
+            "summary": [
+              "Threat intelligence becomes operational when it changes detection, prevention, prioritization, or investigation.",
+              "Every detection should have a validation plan."
+            ],
+            "resources": [
+              {
+                "title": "MITRE ATT&CK Enterprise Techniques",
+                "url": "https://attack.mitre.org/techniques/enterprise/"
+              },
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Sharing Communities and Collaboration",
+            "description": "Understand sector and community sharing as a way to improve collective defense.",
+            "learningObjectives": [
+              "Explain benefits and risks of CTI sharing.",
+              "Identify why common formats and agreements matter.",
+              "Describe feedback loops between sharing communities and internal defenders."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-150 describes goals, sources, scope, rules, communities, and effective use of threat information sharing."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Sharing can increase visibility into threats that one organization would not see alone.",
+                  "Participation requires governance, trust, handling rules, and useful contribution."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q28",
+              "question": "Why do common standards help CTI sharing?",
+              "options": [
+                "They guarantee truthful intelligence",
+                "They reduce friction in representing and exchanging information",
+                "They eliminate the need for human analysis",
+                "They make all feeds free"
+              ],
+              "answer": "They reduce friction in representing and exchanging information",
+              "explanation": "Standards improve interoperability but do not guarantee content quality."
+            },
+            "summary": [
+              "Sharing is both a technical and governance problem.",
+              "Contribution quality influences community value."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              },
+              {
+                "title": "OASIS TAXII 2.1",
+                "url": "https://www.oasis-open.org/standard/taxii-version-2-1/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Create an Intelligence-to-Action Brief",
+            "level": "Intermediate",
+            "description": "Turn a fictional campaign report into a one-page operational brief for defenders.",
+            "problemStatement": "Produce a concise brief containing assessment, confidence, key evidence, impacted assets, detection implications, and recommended actions.",
+            "objectives": [
+              "Tailor the product to a SOC lead audience.",
+              "Include at least two detection requirements.",
+              "State what remains unknown."
+            ],
+            "requirements": [
+              "Use synthetic evidence.",
+              "Do not prescribe unauthorized offensive action."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "Keep raw indicator detail in an appendix-like section and lead with decisions and implications."
+            ],
+            "solutionExplanation": "The task tests whether intelligence can be transformed into a usable operational product."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Automation, Quality, and CTI Operations",
+        "description": "Learn practical automation patterns, feed hygiene, metrics, and lifecycle management.",
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Feed Ingestion Pipelines",
+            "description": "Design a safe ingestion pipeline from source to downstream system.",
+            "learningObjectives": [
+              "Describe stages of an automated CTI pipeline.",
+              "Identify validation, deduplication, enrichment, and quarantine controls.",
+              "Explain why downstream blocking should be decoupled from untrusted intake."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Source -> intake -> schema validation -> provenance checks -> normalization -> deduplication -> enrichment -> scoring -> review/automation"
+              },
+              {
+                "type": "warning",
+                "text": "Do not directly convert unvalidated third-party intelligence into high-impact controls. Use staged promotion and clear rollback paths."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q29",
+              "question": "Why should untrusted CTI pass through validation before affecting production controls?",
+              "options": [
+                "Automation is never useful",
+                "Malformed, stale, or misleading data can cause operational harm",
+                "Validation removes all threats",
+                "TAXII forbids automation"
+              ],
+              "answer": "Malformed, stale, or misleading data can cause operational harm",
+              "explanation": "Staged validation reduces unintended impact."
+            },
+            "summary": [
+              "Automation should reduce repetitive work while preserving safety checks.",
+              "Quarantine and rollback are core operational controls."
+            ],
+            "resources": [
+              {
+                "title": "OASIS TAXII 2.1",
+                "url": "https://www.oasis-open.org/standard/taxii-version-2-1/"
+              },
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              },
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "Deduplication, Scoring, and Confidence Propagation",
+            "description": "Keep CTI usable at scale by merging duplicates and preserving uncertainty.",
+            "learningObjectives": [
+              "Define duplicate and near-duplicate indicators.",
+              "Design a scoring approach using source and context without implying certainty.",
+              "Propagate confidence cautiously when records are merged."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A single indicator may arrive from multiple sources.",
+                  "Merging should preserve provenance and source-specific timestamps.",
+                  "Scores should be explainable and recalculable as evidence changes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q30",
+              "question": "What should happen to source provenance when duplicate indicators are merged?",
+              "options": [
+                "Delete it",
+                "Preserve the source lineage so the merged record remains auditable",
+                "Replace it with a guessed source",
+                "Keep only the newest value"
+              ],
+              "answer": "Preserve the source lineage so the merged record remains auditable",
+              "explanation": "Multiple-source provenance can explain why confidence increased or conflicted."
+            },
+            "summary": [
+              "Scoring should remain interpretable.",
+              "Never hide conflicting sources merely to simplify a record."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Metrics and Intelligence Effectiveness",
+            "description": "Measure whether CTI improves outcomes, not just how many indicators are ingested.",
+            "learningObjectives": [
+              "Distinguish activity metrics from outcome metrics.",
+              "Define useful CTI program measures.",
+              "Avoid vanity metrics that reward feed volume rather than value."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Activity metric: number of indicators ingested.",
+                  "Quality metric: proportion of records with complete provenance and freshness.",
+                  "Outcome metric: number of validated detections or remediation decisions improved by CTI.",
+                  "Feedback metric: percentage of consumers who report that products answered their requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q31",
+              "question": "Which is the strongest outcome metric for a CTI program?",
+              "options": [
+                "Number of feeds connected",
+                "Number of indicators stored",
+                "Number of decisions or detections materially improved by intelligence",
+                "Number of analyst logins"
+              ],
+              "answer": "Number of decisions or detections materially improved by intelligence",
+              "explanation": "Outcome metrics connect intelligence work to defensive value."
+            },
+            "summary": [
+              "Measure usefulness, not volume.",
+              "Metrics should map back to requirements and consumers."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "NIST Cybersecurity Framework 2.0",
+                "url": "https://www.nist.gov/cyberframework"
+              }
+            ]
+          },
+          {
+            "id": "lesson-32",
+            "title": "Operational Runbooks and Analyst Handoffs",
+            "description": "Make CTI repeatable across analysts and shifts.",
+            "learningObjectives": [
+              "Create a runbook for common CTI workflows.",
+              "Define inputs, outputs, escalation, and evidence requirements.",
+              "Design handoffs that preserve context and uncertainty."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Runbooks reduce variation in repetitive workflows such as indicator triage, enrichment, watchlist review, and intelligence-product updates."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Every runbook should define exit conditions.",
+                  "Handoffs should state what was checked, what remains unknown, and what next action is expected."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q32",
+              "question": "Why are explicit exit conditions useful in CTI runbooks?",
+              "options": [
+                "They force analysts to stop regardless of evidence",
+                "They define when the workflow is complete or requires escalation",
+                "They remove the need for analysts",
+                "They guarantee attribution"
+              ],
+              "answer": "They define when the workflow is complete or requires escalation",
+              "explanation": "Clear exit conditions prevent both premature closure and endless analysis."
+            },
+            "summary": [
+              "Operational quality depends on repeatability and clear escalation.",
+              "Runbooks should be maintained as systems and threats change."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Design a Safe CTI Automation Pipeline",
+            "level": "Advanced",
+            "description": "Design an architecture for automatically ingesting and scoring CTI before promotion to a defensive control.",
+            "problemStatement": "Include validation, provenance, deduplication, confidence scoring, quarantine, human review, rollback, and monitoring.",
+            "objectives": [
+              "Identify trust boundaries.",
+              "Define at least three failure modes and mitigations.",
+              "Separate ingestion from high-impact enforcement."
+            ],
+            "requirements": [
+              "Keep the architecture technology-neutral.",
+              "Use staged promotion instead of direct blocking."
+            ],
+            "hint": "Document your reasoning and keep the evidence traceable.",
+            "solutionCode": [
+              "A good solution uses intake and quarantine first, then promotion based on policy and confidence. It logs every transformation and supports rollback."
+            ],
+            "solutionExplanation": "The task combines CTI data quality with safe automation design."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Project — Intelligence Fusion and Prioritization Desk",
+        "description": "Build a realistic defensive CTI workflow that fuses multiple source types into analyst-ready assessments and prioritized actions. The project is the final practical assessment and has no separate module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-33",
+            "title": "Capstone Requirements and Architecture",
+            "description": "Define the final project’s data model, workflow, validation boundaries, and acceptance criteria.",
+            "learningObjectives": [
+              "Design the project flow from requirements to collection, fusion, prioritization, and reporting.",
+              "Define acceptance criteria for traceability and safe automation.",
+              "Keep synthetic or openly licensed data in the lab."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Requirement -> sources -> normalized events -> evidence links -> assessment -> priority -> product -> feedback"
+              },
+              {
+                "type": "paragraph",
+                "text": "The capstone is intentionally defensive: it prioritizes intelligence and supports analyst decisions; it does not exploit systems or perform unauthorized actions."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q33",
+              "question": "What must remain traceable in the capstone?",
+              "options": [
+                "Only the final priority score",
+                "The connection from output back to evidence and source provenance",
+                "Only UI clicks",
+                "Nothing"
+              ],
+              "answer": "The connection from output back to evidence and source provenance",
+              "explanation": "Traceability allows an analyst to review and challenge the result."
+            },
+            "summary": [
+              "The capstone is built around evidence lineage.",
+              "Safe automation requires explicit boundaries and explainable outputs."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              },
+              {
+                "title": "OASIS TAXII 2.1",
+                "url": "https://www.oasis-open.org/standard/taxii-version-2-1/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-34",
+            "title": "Capstone Validation and Analyst Review",
+            "description": "Validate the capstone with structured test cases, edge cases, and human review.",
+            "learningObjectives": [
+              "Test malformed indicators, duplicates, stale data, and conflicting sources.",
+              "Verify that uncertainty is retained.",
+              "Evaluate whether outputs are useful to a security consumer."
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "A passing software test suite does not prove an intelligence assessment is correct. Technical validation and analytical review are separate quality gates."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q34",
+              "question": "Which scenario is most important to test in a CTI fusion pipeline?",
+              "options": [
+                "Only the happy path",
+                "Conflicting, stale, malformed, duplicated, and high-impact inputs",
+                "Only UI colors",
+                "Only startup time"
+              ],
+              "answer": "Conflicting, stale, malformed, duplicated, and high-impact inputs",
+              "explanation": "These are common failure modes that can distort downstream decisions."
+            },
+            "summary": [
+              "Technical tests verify behavior; analyst review verifies meaning and usefulness.",
+              "The final assessment should preserve evidence and uncertainty."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-150 — Guide to Cyber Threat Information Sharing",
+                "url": "https://csrc.nist.gov/pubs/sp/800/150/final"
+              },
+              {
+                "title": "OASIS STIX 2.1",
+                "url": "https://www.oasis-open.org/standard/stix2-1/"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Intelligence Fusion and Prioritization Desk",
+          "description": "A defensive local tool that fuses synthetic threat-intelligence records, preserves provenance during deduplication, applies transparent prioritization rules, and emits an analyst-oriented report. It demonstrates requirements-driven CTI, indicator lifecycle, confidence, enrichment, vulnerability/threat context, safe automation, and operational reporting.",
+          "conceptsCovered": [
+            "Intelligence requirements",
+            "Source evaluation",
+            "Indicator lifecycle",
+            "STIX/TAXII concepts",
+            "TTP analysis",
+            "Attribution caution",
+            "Vulnerability and exploit intelligence",
+            "Prioritization",
+            "Automation safety",
+            "Analyst reporting",
+            "Testing and validation"
+          ],
+          "steps": [
+            "Define the project data contract and trust boundaries.",
+            "Validate incoming records and reject malformed or policy-invalid data.",
+            "Normalize indicator fields while preserving source provenance and timestamps.",
+            "Deduplicate indicators while retaining all source lineage and the strongest relevant context.",
+            "Apply explainable prioritization rules using exploitation context, exposure, asset criticality, confidence, and behavioral context.",
+            "Generate a report that contains evidence, priority, reasons, and analyst notes.",
+            "Test normal input, duplicates, low-confidence records, high-priority records, and malformed confidence values.",
+            "Review the final report manually for analytical usefulness and uncertainty."
+          ],
+          "code": {
+            "README.md": "# Intelligence Fusion and Prioritization Desk\n\nA local defensive training project. It reads synthetic CTI records, normalizes fields,\ndeduplicates indicators, applies explainable prioritization rules, and emits an analyst report.\n\nIt does not scan networks, exploit systems, test credentials, or contact external targets.\n",
+            "cti_tool.py": "#!/usr/bin/env python3\nimport argparse\nimport json\nfrom collections import defaultdict\nfrom datetime import datetime, timezone, timedelta\nfrom pathlib import Path\n\nSEVERITY = {\"low\": 1, \"medium\": 2, \"high\": 3, \"critical\": 4}\n\ndef parse_time(value):\n    return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).astimezone(timezone.utc)\n\ndef normalize(record):\n    required = [\"id\", \"indicator_type\", \"value\", \"source\", \"confidence\", \"first_seen\", \"last_seen\"]\n    missing = [k for k in required if k not in record]\n    if missing:\n        raise ValueError(f\"missing required fields: {', '.join(missing)}\")\n    confidence = float(record[\"confidence\"])\n    if not 0 <= confidence <= 1:\n        raise ValueError(\"confidence must be between 0 and 1\")\n    return {\n        \"id\": str(record[\"id\"]),\n        \"indicator_type\": str(record[\"indicator_type\"]).lower(),\n        \"value\": str(record[\"value\"]).strip(),\n        \"source\": str(record[\"source\"]),\n        \"confidence\": confidence,\n        \"first_seen\": parse_time(record[\"first_seen\"]).isoformat(),\n        \"last_seen\": parse_time(record[\"last_seen\"]).isoformat(),\n        \"kev\": bool(record.get(\"kev\", False)),\n        \"asset_criticality\": int(record.get(\"asset_criticality\", 1)),\n        \"internet_exposed\": bool(record.get(\"internet_exposed\", False)),\n        \"ttp\": record.get(\"ttp\", None),\n    }\n\ndef dedupe(records):\n    merged = {}\n    for r in records:\n        key = (r[\"indicator_type\"], r[\"value\"])\n        if key not in merged:\n            merged[key] = dict(r)\n            merged[key][\"sources\"] = [r[\"source\"]]\n        else:\n            current = merged[key]\n            current[\"confidence\"] = max(current[\"confidence\"], r[\"confidence\"])\n            if r[\"source\"] not in current[\"sources\"]:\n                current[\"sources\"].append(r[\"source\"])\n            current[\"kev\"] = current[\"kev\"] or r[\"kev\"]\n            current[\"asset_criticality\"] = max(current[\"asset_criticality\"], r[\"asset_criticality\"])\n            current[\"internet_exposed\"] = current[\"internet_exposed\"] or r[\"internet_exposed\"]\n            if current.get(\"ttp\") is None and r.get(\"ttp\") is not None:\n                current[\"ttp\"] = r[\"ttp\"]\n    return list(merged.values())\n\ndef prioritize(record):\n    score = 0\n    reasons = []\n    if record[\"kev\"]:\n        score += 4\n        reasons.append(\"known exploited vulnerability context\")\n    if record[\"internet_exposed\"]:\n        score += 3\n        reasons.append(\"internet-exposed asset\")\n    score += min(record[\"asset_criticality\"], 5)\n    if record[\"asset_criticality\"] >= 4:\n        reasons.append(\"high asset criticality\")\n    if record[\"confidence\"] >= 0.8:\n        score += 2\n        reasons.append(\"high-confidence intelligence\")\n    elif record[\"confidence\"] < 0.4:\n        reasons.append(\"low-confidence intelligence; review before high-impact action\")\n    if record.get(\"ttp\"):\n        score += 1\n        reasons.append(\"behavioral context available\")\n    level = \"low\"\n    if score >= 9: level = \"critical\"\n    elif score >= 7: level = \"high\"\n    elif score >= 4: level = \"medium\"\n    return level, score, reasons\n\ndef build_report(records):\n    normalized = [normalize(r) for r in records]\n    deduped = dedupe(normalized)\n    ranked = []\n    for r in deduped:\n        level, score, reasons = prioritize(r)\n        ranked.append({**r, \"priority\": level, \"priority_score\": score, \"reasons\": reasons})\n    ranked.sort(key=lambda x: (-x[\"priority_score\"], x[\"indicator_type\"], x[\"value\"]))\n    return {\n        \"record_count\": len(records),\n        \"unique_indicator_count\": len(ranked),\n        \"records\": ranked,\n        \"analyst_notes\": [\n            \"Validate high-impact indicators before enforcement.\",\n            \"Preserve source provenance and timestamps when records are merged.\",\n            \"Use low-confidence records as investigative leads rather than automatic blocking decisions.\"\n        ]\n    }\n\ndef main():\n    p = argparse.ArgumentParser(description=\"Local defensive CTI fusion tool\")\n    p.add_argument(\"input\", type=Path)\n    p.add_argument(\"--output\", type=Path, default=None)\n    args = p.parse_args()\n    data = json.loads(args.input.read_text(encoding=\"utf-8\"))\n    if not isinstance(data, list) or not all(isinstance(x, dict) for x in data):\n        raise ValueError(\"input must be a JSON array of objects\")\n    report = build_report(data)\n    rendered = json.dumps(report, indent=2)\n    if args.output:\n        args.output.write_text(rendered + \"\\n\", encoding=\"utf-8\")\n    else:\n        print(rendered)\n\nif __name__ == \"__main__\":\n    main()\n",
+            "sample_cti.json": "[\n  {\"id\":\"r1\",\"indicator_type\":\"domain\",\"value\":\"alpha.example\",\"source\":\"internal-ir\",\"confidence\":0.92,\"first_seen\":\"2026-09-01T10:00:00Z\",\"last_seen\":\"2026-09-01T10:10:00Z\",\"kev\":false,\"asset_criticality\":5,\"internet_exposed\":true,\"ttp\":\"T1566\"},\n  {\"id\":\"r2\",\"indicator_type\":\"domain\",\"value\":\"alpha.example\",\"source\":\"sector-sharing\",\"confidence\":0.88,\"first_seen\":\"2026-09-01T10:05:00Z\",\"last_seen\":\"2026-09-01T10:20:00Z\",\"kev\":false,\"asset_criticality\":5,\"internet_exposed\":true,\"ttp\":\"T1566\"},\n  {\"id\":\"r3\",\"indicator_type\":\"ipv4\",\"value\":\"203.0.113.44\",\"source\":\"threat-report\",\"confidence\":0.65,\"first_seen\":\"2026-09-01T09:00:00Z\",\"last_seen\":\"2026-09-01T09:30:00Z\",\"kev\":true,\"asset_criticality\":4,\"internet_exposed\":true,\"ttp\":\"T1190\"},\n  {\"id\":\"r4\",\"indicator_type\":\"sha256\",\"value\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"source\":\"sandbox\",\"confidence\":0.30,\"first_seen\":\"2026-08-01T12:00:00Z\",\"last_seen\":\"2026-08-01T12:05:00Z\",\"kev\":false,\"asset_criticality\":2,\"internet_exposed\":false}\n]\n",
+            "test_cti_tool.py": "import json\nimport subprocess\nimport sys\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parent\n\ndef test_cli_and_dedupe():\n    p = subprocess.run([sys.executable, str(ROOT/'cti_tool.py'), str(ROOT/'sample_cti.json')], capture_output=True, text=True)\n    assert p.returncode == 0, p.stderr\n    report = json.loads(p.stdout)\n    assert report['record_count'] == 4\n    assert report['unique_indicator_count'] == 3\n    assert report['records'][0]['priority'] in {'high','critical'}\n    assert len(report['records'][0]['sources']) >= 1\n\ndef test_rejects_bad_confidence(tmp_path):\n    bad = tmp_path/'bad.json'\n    bad.write_text(json.dumps([{\n        'id':'bad','indicator_type':'domain','value':'bad.example','source':'x','confidence':2,\n        'first_seen':'2026-09-01T00:00:00Z','last_seen':'2026-09-01T00:01:00Z'\n    }]), encoding='utf-8')\n    p = subprocess.run([sys.executable, str(ROOT/'cti_tool.py'), str(bad)], capture_output=True, text=True)\n    assert p.returncode != 0\n"
+          },
+          "explanation": "The architecture separates intake from action. Incoming records are validated before normalization. Deduplication merges identical observable keys while keeping source lineage and selected contextual fields. Prioritization is intentionally transparent: each point has an explicit reason so analysts can challenge the output. The report does not claim that a priority score proves compromise or maliciousness; it is a triage aid. The tests cover both expected processing and invalid data. This mirrors a safe CTI program pattern where machine processing accelerates analysts but does not silently replace analytical judgment."
+        }
+      }
+    ]
+  }
+}

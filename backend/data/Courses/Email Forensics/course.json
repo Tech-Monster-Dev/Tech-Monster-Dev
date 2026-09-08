@@ -1,0 +1,1763 @@
+{
+  "course": {
+    "id": "email-forensics-001",
+    "title": "Email Forensics",
+    "slug": "email-forensics",
+    "description": "A standards-aware, practical course on acquiring, preserving, parsing, reconstructing, correlating, and reporting email evidence. It covers Internet email architecture, RFC 5322 structure, MIME, routing and Received fields, SPF/DKIM/DMARC, Authentication-Results, EML/MSG/PST/MBOX artifacts, attachment and URL triage, Python automation, timelines, hosted-mail trace and audit evidence, incident-response integration, and a complete defensive capstone.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 52,
+    "prerequisites": [
+      "Basic computer and filesystem skills",
+      "Basic networking concepts including IP, DNS, and client/server communication",
+      "Basic cybersecurity and incident-response terminology",
+      "Comfort using a command line",
+      "Python fundamentals are recommended for automation lessons"
+    ],
+    "learningOutcomes": [
+      "Explain how Internet email moves through submission, SMTP relays, DNS, gateways, and mailbox systems.",
+      "Differentiate SMTP envelope identities from RFC 5322 message headers.",
+      "Parse raw .eml evidence with Python's standards-aware email package.",
+      "Interpret RFC 5322 headers, Message-ID relationships, Received fields, and MIME structures.",
+      "Reconstruct mail paths and normalize timestamps while documenting uncertainty.",
+      "Interpret SPF, DKIM, DMARC, and Authentication-Results without confusing domain authentication with human attribution.",
+      "Explain the forensic roles and limitations of EML, MSG, PST, and MBOX artifacts.",
+      "Extract and hash attachments and URLs without executing or visiting suspicious content.",
+      "Automate repeatable email evidence processing and produce structured reports.",
+      "Correlate message evidence with provider trace, audit, endpoint, identity, and DNS records.",
+      "Construct source-preserving timelines and evidence relationships.",
+      "Write professional findings that distinguish observations, inference, confidence, and limitations.",
+      "Complete an authorized end-to-end email-forensics investigation."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Forensic Foundations and Evidence Handling",
+        "description": "Establish the forensic mindset: scope, authority, preservation, hashing, provenance, chain of custody, and the limits of email evidence.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "What Email Forensics Can Prove",
+            "description": "Learn to distinguish observable message facts, receiver-generated evidence, inference, and unsupported attribution.",
+            "learningObjectives": [
+              "Define email forensics.",
+              "Map common investigative questions to email evidence.",
+              "Distinguish evidence from inference."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Core idea"
+              },
+              {
+                "type": "paragraph",
+                "text": "Email forensics reconstructs events from preserved message artifacts and related records. A visible From field is a claim in the message; it is not by itself proof that a person authored the message."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use recipient-side evidence when reconstructing delivery.",
+                  "Treat IP addresses as infrastructure clues, not human identities.",
+                  "Corroborate strong conclusions with independent records."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never convert a header clue directly into a human attribution without independent evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "What does a From field establish by itself?",
+              "options": [
+                "Human authorship",
+                "A claimed author address",
+                "The sending IP",
+                "Mailbox compromise"
+              ],
+              "answer": "A claimed author address",
+              "explanation": "RFC 5322 defines From as an originator field; it is not a human identity proof."
+            },
+            "summary": [
+              "Email evidence is layered.",
+              "Attribution normally requires correlation."
+            ],
+            "resources": [
+              {
+                "title": "RFC 5322 — Internet Message Format",
+                "url": "https://www.rfc-editor.org/rfc/rfc5322.html",
+                "type": "IETF"
+              },
+              {
+                "title": "NIST SP 800-86 — Forensic Techniques in Incident Response",
+                "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+                "type": "NIST"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Preservation, Hashing, and Chain of Custody",
+            "description": "Create reproducible evidence records before analysis.",
+            "learningObjectives": [
+              "Hash preserved evidence.",
+              "Document collection and transfer events.",
+              "Separate original evidence from working copies."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Minimum record"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence ID and description",
+                  "Source and acquisition method",
+                  "UTC timestamp",
+                  "Tool/version",
+                  "File size and SHA-256",
+                  "Operator and transfers"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-86 emphasizes forensically sound procedures and documentation; SWGDE recommends contemporaneous collection notes, hashes, and chain-of-custody records."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-01-02",
+                "title": "Hash an evidence file",
+                "description": "Create a reproducible manifest for a laboratory .eml file.",
+                "steps": [
+                  "Place a lab .eml file under evidence/.",
+                  "Run the solution.",
+                  "Recalculate the hash and compare it."
+                ],
+                "solution": "from pathlib import Path\nimport hashlib, json\nfrom datetime import datetime, timezone\n\np = Path(\"evidence/sample.eml\")\ndigest = hashlib.sha256(p.read_bytes()).hexdigest()\nmanifest = {\n    \"evidence_id\": \"EF-LAB-001\",\n    \"filename\": p.name,\n    \"size_bytes\": p.stat().st_size,\n    \"sha256\": digest,\n    \"recorded_utc\": datetime.now(timezone.utc).isoformat()\n}\nPath(\"manifest.json\").write_text(json.dumps(manifest, indent=2), encoding=\"utf-8\")\nprint(json.dumps(manifest, indent=2))\n",
+                "output": "The manifest contains the actual file size and SHA-256 digest; unchanged bytes produce the same digest."
+              }
+            ],
+            "quiz": {},
+            "summary": [
+              "Hash what you actually analyze.",
+              "Document actions contemporaneously."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86 — Forensic Techniques in Incident Response",
+                "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+                "type": "NIST"
+              },
+              {
+                "title": "SWGDE Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+                "type": "SWGDE"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Evidence Sources and Scope",
+            "description": "Plan collections around concrete questions rather than gathering data without purpose.",
+            "learningObjectives": [
+              "Select message, mailbox, provider, identity, endpoint, and DNS sources appropriately.",
+              "Identify gaps a message alone cannot answer.",
+              "Minimize unnecessary data collection."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Source map"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  ".eml/.msg: message content and metadata",
+                  "Mailbox store: context and state",
+                  "Message trace: delivery lifecycle",
+                  "Audit logs: mailbox actions",
+                  "DNS: authentication policy",
+                  "Endpoint/identity logs: user and system correlation"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Record which source is intended to answer each investigative question."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "Why combine a raw message with provider trace?",
+              "options": [
+                "Trace proves authorship",
+                "Trace can add lifecycle information absent from the message",
+                "Trace replaces preservation",
+                "Trace decrypts content"
+              ],
+              "answer": "Trace can add lifecycle information absent from the message",
+              "explanation": "Provider records can corroborate delivery and processing events."
+            },
+            "summary": [
+              "Scope should be question-driven.",
+              "Independent sources strengthen conclusions."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Graph — Exchange messageTrace",
+                "url": "https://learn.microsoft.com/en-us/graph/api/resources/exchangemessagetrace?view=graph-rest-1.0",
+                "type": "Microsoft"
+              },
+              {
+                "title": "Microsoft Purview — mailbox audit search",
+                "url": "https://learn.microsoft.com/en-us/purview/audit-log-search-for-mailbox-activities",
+                "type": "Microsoft"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Create an Evidence Intake Record",
+            "level": "Easy",
+            "description": "Build a structured intake record for one laboratory email.",
+            "problemStatement": "Record evidence ID, hash, size, UTC time, and actions.",
+            "objectives": "Hash the file; create the record; verify the hash again.",
+            "requirements": [
+              "Python 3.11+",
+              "Laboratory .eml",
+              "Standard library"
+            ],
+            "hint": "Use hashlib.sha256() and UTC timestamps.",
+            "solutionCode": "from pathlib import Path\nimport hashlib\nimport json\nfrom datetime import datetime, timezone\n\nsource = Path(\"sample.eml\")\nrecord = {\n    \"evidence_id\": \"CASE-EF-001\",\n    \"source_path\": str(source),\n    \"byte_length\": source.stat().st_size,\n    \"sha256\": hashlib.file_digest(source.open(\"rb\"), \"sha256\").hexdigest(),\n    \"recorded_utc\": datetime.now(timezone.utc).isoformat(),\n    \"actions\": [\"hashed source\", \"created intake record\"]\n}\nPath(\"evidence_intake.json\").write_text(json.dumps(record, indent=2), encoding=\"utf-8\")\nprint(record[\"evidence_id\"], record[\"sha256\"])\n",
+            "solutionExplanation": "The solution records reproducible file-level facts without altering the evidence."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Email Architecture, SMTP, DNS, and Time",
+        "description": "Understand mail transport, envelope identities, DNS routing, and timestamp semantics before interpreting headers.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "How Internet Email Moves",
+            "description": "Model MUA, submission, MTA, relay, MX, receiving service, and mailbox delivery.",
+            "learningObjectives": [
+              "Explain MUA/MSA/MTA roles.",
+              "Explain MX routing.",
+              "Identify where trace evidence can be added."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Simplified path"
+              },
+              {
+                "type": "paragraph",
+                "text": "MUA → submission → sending MTA → relays/gateways → receiving MTA → mailbox store → recipient client. Real deployments can add filtering and journaling services."
+              },
+              {
+                "type": "paragraph",
+                "text": "Each stage can have different logs and trust properties."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "Which protocol specifies basic Internet mail transport?",
+              "options": [
+                "HTTP",
+                "SMTP",
+                "IMAP",
+                "DNS"
+              ],
+              "answer": "SMTP",
+              "explanation": "RFC 5321 specifies SMTP."
+            },
+            "summary": [
+              "Transport and mailbox access are distinct layers."
+            ],
+            "resources": [
+              {
+                "title": "RFC 5321 — Simple Mail Transfer Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc5321.html",
+                "type": "IETF"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "SMTP Envelope vs Message Headers",
+            "description": "Separate MAIL FROM/RCPT TO from From/To/Cc.",
+            "learningObjectives": [
+              "Differentiate envelope and header identities.",
+              "Explain why they can differ.",
+              "Recognize BCC implications."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "MAIL FROM is envelope-level.",
+                  "RCPT TO is envelope-level.",
+                  "From/To/Cc are message headers.",
+                  "BCC is not delivered as a normal visible destination header."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not equate From with MAIL FROM without evidence of the envelope."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-02-02",
+                "title": "Compare identity layers",
+                "description": "Document differences between header and envelope values.",
+                "steps": [
+                  "Create header.json and envelope.json with laboratory values.",
+                  "Compare them.",
+                  "Write one question requiring provider logs."
+                ],
+                "solution": "import json\nheaders={\"From\":\"displayed-sender@example.test\",\"To\":\"recipient@example.test\"}\nenvelope={\"mail_from\":\"bounce@example.test\",\"rcpt_to\":[\"recipient@example.test\"]}\nprint(\"From:\",headers[\"From\"])\nprint(\"MAIL FROM:\",envelope[\"mail_from\"])\nprint(\"match:\",headers[\"From\"].lower()==envelope[\"mail_from\"].lower())\n",
+                "output": "The exercise demonstrates that the two identity layers can differ without automatically proving maliciousness."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "Which pair is SMTP envelope data?",
+              "options": [
+                "From/Subject",
+                "MAIL FROM/RCPT TO",
+                "To/Cc",
+                "Message-ID/Date"
+              ],
+              "answer": "MAIL FROM/RCPT TO",
+              "explanation": "Those values belong to the SMTP transaction."
+            },
+            "summary": [
+              "Identity has transport and message layers."
+            ],
+            "resources": [
+              {
+                "title": "RFC 5321 — Simple Mail Transfer Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc5321.html",
+                "type": "IETF"
+              },
+              {
+                "title": "RFC 5322 — Internet Message Format",
+                "url": "https://www.rfc-editor.org/rfc/rfc5322.html",
+                "type": "IETF"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "DNS, MX, and Time Normalization",
+            "description": "Interpret routing and chronology without confusing Date, Received, UI display time, and provider timestamps.",
+            "learningObjectives": [
+              "Explain MX routing.",
+              "Normalize timestamps to UTC.",
+              "Identify clock and forwarding complications."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Date is a message field.",
+                  "Received records transport observations.",
+                  "Client displays may convert timezones.",
+                  "Clock skew and queueing can affect chronology."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Preserve the original timestamp string and add a normalized UTC view."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "Which field is directly tied to a server processing observation?",
+              "options": [
+                "Subject",
+                "Received",
+                "Reply-To",
+                "Message-ID"
+              ],
+              "answer": "Received",
+              "explanation": "Received is a trace field added by transport systems."
+            },
+            "summary": [
+              "Timeline reconstruction uses multiple observations."
+            ],
+            "resources": [
+              {
+                "title": "RFC 5322 — Internet Message Format",
+                "url": "https://www.rfc-editor.org/rfc/rfc5322.html",
+                "type": "IETF"
+              },
+              {
+                "title": "RFC 5321 — Simple Mail Transfer Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc5321.html",
+                "type": "IETF"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Reconstruct a Mail Transport Path",
+            "level": "Intermediate",
+            "description": "Build a hop table from Received fields and a laboratory MX snapshot.",
+            "problemStatement": "Normalize timestamps; preserve raw fields; identify uncertainty.",
+            "objectives": [
+              "Parse all Received fields",
+              "Normalize time",
+              "Compare with MX evidence",
+              "Document uncertainty"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Lab header and DNS snapshot"
+            ],
+            "hint": "Analyze Received fields from the recipient side and retain raw values.",
+            "solutionCode": "from email import policy\nfrom email.parser import BytesParser\nfrom email.utils import parsedate_to_datetime\nimport json\n\nmsg = BytesParser(policy=policy.default).parse(open(\"message.eml\", \"rb\"))\nhops = []\nfor index, value in enumerate(msg.get_all(\"Received\", []), start=1):\n    stamp = None\n    if \";\" in value:\n        try:\n            stamp = parsedate_to_datetime(value.rsplit(\";\", 1)[1].strip()).isoformat()\n        except (TypeError, ValueError):\n            stamp = \"UNPARSED\"\n    hops.append({\"header_position\": index, \"timestamp\": stamp, \"raw\": value})\n\nprint(json.dumps({\"received_hops\": hops}, indent=2))\n",
+            "solutionExplanation": "The solution keeps raw trace data and only normalizes timestamps when parsing succeeds."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "RFC 5322 Message Structure and MIME",
+        "description": "Parse message syntax, headers, identifiers, MIME trees, attachments, encodings, and internationalized headers.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "RFC 5322 Message Structure",
+            "description": "Understand header/body separation, folding, and message identifiers.",
+            "learningObjectives": [
+              "Identify the header/body boundary.",
+              "Explain field syntax and folding.",
+              "Use Message-ID relationships for correlation."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Anatomy"
+              },
+              {
+                "type": "paragraph",
+                "text": "RFC 5322 defines header fields followed by an optional body, separated by an empty line. Header fields can be folded and unfolded according to the specification."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Message-ID identifies a message instance.",
+                  "In-Reply-To and References support thread reconstruction.",
+                  "Headers can be repeated."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-03-01",
+                "title": "Parse a raw message",
+                "description": "Inventory key headers and parser defects.",
+                "steps": [
+                  "Read bytes.",
+                  "Parse with BytesParser(policy.default).",
+                  "Print selected headers and defects."
+                ],
+                "solution": "from email import policy\nfrom email.parser import BytesParser\nfrom pathlib import Path\n\nraw = Path(\"message.eml\").read_bytes()\nmsg = BytesParser(policy=policy.default).parsebytes(raw)\n\nfor name in [\"From\", \"To\", \"Date\", \"Subject\", \"Message-ID\"]:\n    print(name, \":\", msg.get(name))\nprint(\"defects:\", [type(x).__name__ for x in msg.defects])\n",
+                "output": "The output reports actual parsed fields and parser-level defects."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "What separates headers from the body?",
+              "options": [
+                "MIME boundary",
+                "Blank line",
+                "Message-ID",
+                "Received"
+              ],
+              "answer": "Blank line",
+              "explanation": "RFC 5322 defines the header/body separation as an empty line."
+            },
+            "summary": [
+              "Preserve raw bytes and parse standards-aware."
+            ],
+            "resources": [
+              {
+                "title": "RFC 5322 — Internet Message Format",
+                "url": "https://www.rfc-editor.org/rfc/rfc5322.html",
+                "type": "IETF"
+              },
+              {
+                "title": "Python email.parser documentation",
+                "url": "https://docs.python.org/3/library/email.parser.html",
+                "type": "Python"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "MIME and Attachments",
+            "description": "Understand multipart boundaries, content types, transfer encodings, nested messages, and attachment extraction.",
+            "learningObjectives": [
+              "Explain multipart MIME.",
+              "Decode transfer encodings safely.",
+              "Extract and hash attachments.",
+              "Recognize nested message/rfc822 content."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "MIME is representation"
+              },
+              {
+                "type": "paragraph",
+                "text": "MIME describes how message content is divided and encoded. Base64 is a transfer encoding, not authentication or malware detection."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record original part headers.",
+                  "Hash decoded payload bytes.",
+                  "Do not trust extensions as file-type proof."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never execute an attachment merely to identify it."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-03-02",
+                "title": "Extract and hash attachments",
+                "description": "Create a metadata and SHA-256 inventory.",
+                "steps": [
+                  "Walk MIME parts.",
+                  "Decode named attachments.",
+                  "Write them to an analysis directory.",
+                  "Hash the resulting bytes."
+                ],
+                "solution": "from email import policy\nfrom email.parser import BytesParser\nfrom pathlib import Path\nimport hashlib, json\n\nmsg = BytesParser(policy=policy.default).parse(open(\"message.eml\", \"rb\"))\nout = Path(\"attachments\"); out.mkdir(exist_ok=True)\nrecords = []\nfor idx, part in enumerate(msg.walk()):\n    filename = part.get_filename()\n    data = part.get_payload(decode=True)\n    if not filename or data is None:\n        continue\n    target = out / f\"{idx:03d}_{Path(filename).name}\"\n    target.write_bytes(data)\n    records.append({\n        \"filename\": filename,\n        \"content_type\": part.get_content_type(),\n        \"size\": len(data),\n        \"sha256\": hashlib.sha256(data).hexdigest(),\n        \"path\": str(target)\n    })\nPath(\"attachments.json\").write_text(json.dumps(records, indent=2), encoding=\"utf-8\")\nprint(json.dumps(records, indent=2))\n",
+                "output": "The inventory ties decoded bytes to their source filename, MIME type, and hash."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "What is base64 in MIME primarily?",
+              "options": [
+                "Malware detection",
+                "Transport encoding",
+                "Cryptographic signature",
+                "Sender authentication"
+              ],
+              "answer": "Transport encoding",
+              "explanation": "Content-transfer-encoding describes representation during transport."
+            },
+            "summary": [
+              "MIME parsing precedes attachment analysis.",
+              "Hash extracted bytes."
+            ],
+            "resources": [
+              {
+                "title": "RFC 2045 — MIME Part One",
+                "url": "https://www.rfc-editor.org/rfc/rfc2045.html",
+                "type": "IETF"
+              },
+              {
+                "title": "Python email.message documentation",
+                "url": "https://docs.python.org/3/library/email.message.html",
+                "type": "Python"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Internationalized Email",
+            "description": "Handle Unicode headers and addresses without lossy manual decoding.",
+            "learningObjectives": [
+              "Explain RFC 6532 at a high level.",
+              "Parse Unicode-capable messages.",
+              "Preserve raw and decoded representations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "RFC 6532 extends Internet Message Format and MIME for Unicode in many header contexts. A forensic workflow should preserve the raw representation and separately present decoded values."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "Best reporting pattern for Unicode headers?",
+              "options": [
+                "Retype them",
+                "Discard raw form",
+                "Preserve raw and show decoded interpretation",
+                "Force ASCII"
+              ],
+              "answer": "Preserve raw and show decoded interpretation",
+              "explanation": "This preserves evidence while improving readability."
+            },
+            "summary": [
+              "Avoid lossy normalization."
+            ],
+            "resources": [
+              {
+                "title": "RFC 6532 — Internationalized Email Headers",
+                "url": "https://www.rfc-editor.org/rfc/rfc6532.html",
+                "type": "IETF"
+              },
+              {
+                "title": "Python email.parser documentation",
+                "url": "https://docs.python.org/3/library/email.parser.html",
+                "type": "Python"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Build a MIME Evidence Inventory",
+            "level": "Intermediate",
+            "description": "Generate a JSON inventory of MIME parts and extracted attachment hashes.",
+            "problemStatement": "Record MIME index, type, filename, size, hash, and extraction path.",
+            "objectives": [
+              "Parse message",
+              "Extract attachments",
+              "Hash payloads",
+              "Preserve source metadata"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Lab .eml"
+            ],
+            "hint": "Use part.walk(), get_filename(), get_payload(decode=True), and hashlib.",
+            "solutionCode": "from email import policy\nfrom email.parser import BytesParser\nfrom pathlib import Path\nimport hashlib\nimport json\n\nmessage_path = Path(\"message.eml\")\nmessage = BytesParser(policy=policy.default).parsebytes(message_path.read_bytes())\ninventory = []\n\nfor part_no, part in enumerate(message.walk()):\n    payload = part.get_payload(decode=True)\n    inventory.append({\n        \"part\": part_no,\n        \"content_type\": part.get_content_type(),\n        \"filename\": part.get_filename(),\n        \"decoded_size\": len(payload) if payload is not None else None,\n        \"sha256\": hashlib.sha256(payload).hexdigest() if payload is not None else None\n    })\n\nPath(\"mime_inventory.json\").write_text(\n    json.dumps(inventory, indent=2, ensure_ascii=False),\n    encoding=\"utf-8\"\n)\nprint(\"parts:\", len(inventory))\n",
+            "solutionExplanation": "The solution produces a machine-readable attachment inventory and does not execute content."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Header Reconstruction and Email Authentication",
+        "description": "Analyze Received fields, SPF, DKIM, DMARC, and Authentication-Results while maintaining trust boundaries.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Received Fields and Hop Reconstruction",
+            "description": "Reconstruct likely mail paths from trace fields.",
+            "learningObjectives": [
+              "Explain Received trace semantics.",
+              "Build a recipient-side hop table.",
+              "Document trust and timestamp limitations."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Trace discipline"
+              },
+              {
+                "type": "paragraph",
+                "text": "In a delivered message, newer receiving observations are commonly nearer the top of the header block. Reconstruct chronology from the receiving side while retaining original order and raw values."
+              },
+              {
+                "type": "warning",
+                "text": "Not every Received field is equally trustworthy; consider which system inserted it."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-04-01",
+                "title": "Build a Received hop table",
+                "description": "Extract timestamps without losing raw trace.",
+                "steps": [
+                  "Read all Received fields.",
+                  "Parse the portion after the final semicolon.",
+                  "Flag failures.",
+                  "Create a derived chronological view."
+                ],
+                "solution": "from email import policy\nfrom email.parser import BytesParser\nfrom email.utils import parsedate_to_datetime\n\nmsg = BytesParser(policy=policy.default).parse(open(\"message.eml\", \"rb\"))\nfor n, raw in enumerate(msg.get_all(\"Received\", []), 1):\n    stamp = \"UNPARSED\"\n    if \";\" in raw:\n        try:\n            stamp = parsedate_to_datetime(raw.rsplit(\";\", 1)[1].strip()).isoformat()\n        except (TypeError, ValueError):\n            pass\n    print(n, stamp, raw)\n",
+                "output": "Unparseable values remain visible rather than being guessed."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "What should happen to an unparseable Received timestamp?",
+              "options": [
+                "Guess",
+                "Discard field",
+                "Retain raw field and flag it",
+                "Assume UTC"
+              ],
+              "answer": "Retain raw field and flag it",
+              "explanation": "Forensic analysis preserves uncertainty."
+            },
+            "summary": [
+              "Trace reconstruction is evidence interpretation, not simple sorting."
+            ],
+            "resources": [
+              {
+                "title": "RFC 5322 — Internet Message Format",
+                "url": "https://www.rfc-editor.org/rfc/rfc5322.html",
+                "type": "IETF"
+              },
+              {
+                "title": "NIST SP 800-86 — Forensic Techniques in Incident Response",
+                "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+                "type": "NIST"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "SPF, DKIM, DMARC, Authentication-Results",
+            "description": "Interpret SPF, DKIM, DMARC, and Authentication-Results without overstating what they prove. The DMARC standards were updated in May 2026: RFC 9989 defines the core DMARC protocol and RFC 9990/9991 cover aggregate and failure reporting; these replace RFC 7489.",
+            "learningObjectives": [
+              "Explain SPF authorization.",
+              "Explain DKIM signing.",
+              "Explain DMARC alignment at a high level.",
+              "Interpret Authentication-Results within a trust boundary."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Distinct roles"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "SPF evaluates authorization for an SMTP envelope identity.",
+                  "DKIM cryptographically associates selected message data with a signing domain.",
+                  "DMARC evaluates alignment between authenticated identifiers and the visible From domain and applies policy.",
+                  "Authentication-Results reports receiver-side authentication outcomes."
+                ],
+                "text": "SPF evaluates authorization for an SMTP envelope identity against DNS policy. DKIM cryptographically associates selected message data with a signing domain. Current DMARC is defined by RFC 9989, with aggregate reporting in RFC 9990 and failure reporting in RFC 9991. These mechanisms are valuable but do not, by themselves, establish the physical human who authored a message."
+              },
+              {
+                "type": "warning",
+                "text": "A DKIM pass is not proof that a particular human authored the message."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "What does DKIM primarily provide?",
+              "options": [
+                "Full-message encryption",
+                "A verifiable association with a signing domain",
+                "Human identity proof",
+                "DNS replacement"
+              ],
+              "answer": "A verifiable association with a signing domain",
+              "explanation": "DKIM provides a cryptographic signing-domain association."
+            },
+            "summary": [
+              "Authentication is domain/system evidence, not automatic human attribution."
+            ],
+            "resources": [
+              {
+                "title": "RFC 7208 — SPF",
+                "url": "https://www.rfc-editor.org/rfc/rfc7208.html",
+                "type": "IETF"
+              },
+              {
+                "title": "RFC 6376 — DKIM Signatures",
+                "url": "https://www.rfc-editor.org/rfc/rfc6376.html",
+                "type": "IETF"
+              },
+              {
+                "title": "RFC 9989 — DMARC",
+                "url": "https://www.rfc-editor.org/rfc/rfc9989.html",
+                "type": "IETF Standards Track"
+              },
+              {
+                "title": "RFC 9990 — DMARC Aggregate Reporting",
+                "url": "https://www.rfc-editor.org/rfc/rfc9990.html",
+                "type": "IETF Standards Track"
+              },
+              {
+                "title": "RFC 9991 — DMARC Failure Reporting",
+                "url": "https://www.rfc-editor.org/rfc/rfc9991.html",
+                "type": "IETF Standards Track"
+              },
+              {
+                "title": "RFC 8601 — Authentication-Results",
+                "url": "https://www.rfc-editor.org/rfc/rfc8601.html",
+                "type": "IETF"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Header Forgery and Trust Boundaries",
+            "description": "Separate sender-controlled fields from receiver-generated evidence.",
+            "learningObjectives": [
+              "Identify easily constructed message fields.",
+              "Explain why trusted receiver evidence matters.",
+              "Design a correlation strategy."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "From and Subject are message claims.",
+                  "Received is normally added by transport systems.",
+                  "Authentication-Results has value when inserted by a trusted receiver.",
+                  "Forwarding can alter authentication context."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Correlate headers with provider logs and preserve the receiving trust boundary in the report."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "Why does Authentication-Results require a trust boundary?",
+              "options": [
+                "It is encrypted",
+                "A sender can construct a header with that name",
+                "SPF has no DNS",
+                "DKIM cannot be checked"
+              ],
+              "answer": "A sender can construct a header with that name",
+              "explanation": "Header names alone do not establish provenance."
+            },
+            "summary": [
+              "Provenance matters as much as field content."
+            ],
+            "resources": [
+              {
+                "title": "RFC 8601 — Authentication-Results",
+                "url": "https://www.rfc-editor.org/rfc/rfc8601.html",
+                "type": "IETF"
+              },
+              {
+                "title": "RFC 6376 — DKIM Signatures",
+                "url": "https://www.rfc-editor.org/rfc/rfc6376.html",
+                "type": "IETF"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Classify a Suspicious Header",
+            "level": "Intermediate",
+            "description": "Produce an evidence matrix for sender claims, routing, and authentication results.",
+            "problemStatement": "Separate observations, confidence, and unresolved attribution.",
+            "objectives": [
+              "Extract relevant fields",
+              "Normalize trace",
+              "Interpret authentication",
+              "List limitations"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Lab .eml"
+            ],
+            "hint": "Use claim → evidence → confidence → limitation.",
+            "solutionCode": "from email import policy\nfrom email.parser import BytesParser\n\nmessage = BytesParser(policy=policy.default).parse(open(\"suspicious.eml\", \"rb\"))\nmatrix = [\n    (\"From\", str(message.get(\"From\")), \"sender-controlled claim\"),\n    (\"Return-Path\", str(message.get(\"Return-Path\")), \"envelope-related evidence if preserved\"),\n    (\"Authentication-Results\", message.get_all(\"Authentication-Results\", []), \"receiver-reported result; trust boundary required\"),\n    (\"DKIM-Signature\", message.get_all(\"DKIM-Signature\", []), \"cryptographic signing evidence\"),\n    (\"Received\", message.get_all(\"Received\", []), \"transport trace evidence\")\n]\nfor field, value, interpretation in matrix:\n    print(field, \"=>\", value)\n    print(\"  interpretation:\", interpretation)\n",
+            "solutionExplanation": "The solution gathers evidence but deliberately leaves interpretation to the analyst."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Email Evidence Formats and Acquisition",
+        "description": "Understand EML, MSG, PST, MBOX, mailbox context, and defensible acquisition of local and hosted email.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "EML, MSG, PST, and MBOX",
+            "description": "Compare individual-message files and mailbox containers.",
+            "learningObjectives": [
+              "Differentiate message files from mailbox stores.",
+              "Explain conversion/provenance risks.",
+              "Recognize mbox variation."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  ".eml: common single-message serialization.",
+                  ".msg: Microsoft Outlook Item format.",
+                  ".pst: Outlook Personal Folders container.",
+                  "mbox: family of mailbox formats; RFC 4155 defines a default format but notes variation."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Exports and conversions may change metadata or representation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Which statement about mbox is correct?",
+              "options": [
+                "All implementations identical",
+                "RFC 4155 defines a default format and implementations vary",
+                "It is a signature format",
+                "It stores one message"
+              ],
+              "answer": "RFC 4155 defines a default format and implementations vary",
+              "explanation": "RFC 4155 explicitly discusses format variation."
+            },
+            "summary": [
+              "Know the container before choosing extraction methods."
+            ],
+            "resources": [
+              {
+                "title": "RFC 4155 — application/mbox Media Type",
+                "url": "https://www.rfc-editor.org/rfc/rfc4155.html",
+                "type": "IETF"
+              },
+              {
+                "title": "Microsoft MS-OXMSG — Outlook Item File Format",
+                "url": "https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxmsg/b046868c-9fbf-41ae-9ffb-8de2bd4eec82",
+                "type": "Microsoft"
+              },
+              {
+                "title": "Microsoft MS-PST — Outlook Personal Folders File Format",
+                "url": "https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/ad1e6f1a-575d-47e7-be9c-9433247d496c",
+                "type": "Microsoft"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Mailbox Acquisition and Preservation",
+            "description": "Plan local and hosted mailbox acquisition with provenance.",
+            "learningObjectives": [
+              "Choose source-appropriate collection methods.",
+              "Preserve exports and metadata separately.",
+              "Document query scope and limitations."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Hosted mail"
+              },
+              {
+                "type": "paragraph",
+                "text": "Authorized provider exports, message trace, audit, journaling, or eDiscovery may each answer different questions. Record scope, permissions, time window, query, export identifier, and hash."
+              },
+              {
+                "type": "warning",
+                "text": "A cloud export is a derived representation, not automatically a byte-for-byte copy of provider storage."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What should accompany a hosted-mail export?",
+              "options": [
+                "Only screenshots",
+                "Only message body",
+                "Collection metadata and relevant provider records",
+                "Only sender"
+              ],
+              "answer": "Collection metadata and relevant provider records",
+              "explanation": "Provenance and provider-side context are essential."
+            },
+            "summary": [
+              "Treat each export as its own evidence object."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+                "type": "SWGDE"
+              },
+              {
+                "title": "Microsoft Graph — Exchange messageTrace",
+                "url": "https://learn.microsoft.com/en-us/graph/api/resources/exchangemessagetrace?view=graph-rest-1.0",
+                "type": "Microsoft"
+              },
+              {
+                "title": "Microsoft Purview — eDiscovery audit activities",
+                "url": "https://learn.microsoft.com/en-us/purview/edisc-ref-audit-log",
+                "type": "Microsoft"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Mailbox Context and Deleted Items",
+            "description": "Use folders, conversation state, and audit records carefully.",
+            "learningObjectives": [
+              "Use mailbox context to enrich message analysis.",
+              "Distinguish content from mailbox state.",
+              "Avoid overinterpreting UI state."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Folder placement, flags, conversation relationships, and deletion state can help reconstruct events. But client display is not necessarily the authoritative source; provider audit and retention systems may provide stronger evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {},
+            "summary": [
+              "Mailbox state is contextual evidence."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Purview — mailbox audit search",
+                "url": "https://learn.microsoft.com/en-us/purview/audit-log-search-for-mailbox-activities",
+                "type": "Microsoft"
+              },
+              {
+                "title": "Microsoft MS-PST — Outlook Personal Folders File Format",
+                "url": "https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/ad1e6f1a-575d-47e7-be9c-9433247d496c",
+                "type": "Microsoft"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Plan a Defensible Email Acquisition",
+            "level": "Advanced",
+            "description": "Design collection for a local MSG, PST, and hosted mailbox.",
+            "problemStatement": "Specify evidence IDs, preservation, hashing, provenance, and limitations.",
+            "objectives": [
+              "Source-specific method",
+              "Hash requirements",
+              "Chain of custody",
+              "Provider limitations"
+            ],
+            "requirements": [
+              "Microsoft format specs",
+              "SWGDE guidance"
+            ],
+            "hint": "Treat each source as a distinct evidence object.",
+            "solutionCode": "import json\n\nsources = [\n    {\"id\":\"EF-MSG-001\",\"kind\":\"MSG\",\"preserve\":\"original bytes\",\"analysis\":\"working copy\",\"hash\":\"SHA-256\"},\n    {\"id\":\"EF-PST-001\",\"kind\":\"PST\",\"preserve\":\"container\",\"analysis\":\"forensic copy\",\"hash\":\"SHA-256\"},\n    {\"id\":\"EF-CLOUD-001\",\"kind\":\"Hosted mailbox export\",\"preserve\":\"provider export + query metadata\",\n     \"analysis\":\"derived dataset\",\"hash\":\"SHA-256\"}\n]\nfor item in sources:\n    item[\"required_records\"] = [\"scope\", \"operator\", \"timestamp_utc\", \"acquisition_method\", \"limitations\"]\nprint(json.dumps(sources, indent=2))\n",
+            "solutionExplanation": "The plan avoids treating all email artifacts as equivalent and documents the limitations of provider-derived evidence."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Attachment, URL, and Content Triage",
+        "description": "Perform safe static analysis of attachments and URLs with hashing, metadata, privacy controls, and controlled enrichment.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Static Attachment Analysis",
+            "description": "Hash and triage attachments without execution.",
+            "learningObjectives": [
+              "Hash extracted payloads.",
+              "Separate MIME type, extension, and file type clues.",
+              "Record static metadata."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve filename and MIME headers.",
+                  "Hash extracted bytes.",
+                  "Use approved file-identification tools in a lab.",
+                  "Inspect archives statically."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not execute attachments during routine triage."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Why hash extracted attachments?",
+              "options": [
+                "Make them executable",
+                "Identify exact bytes",
+                "Guarantee safety",
+                "Prove authorship"
+              ],
+              "answer": "Identify exact bytes",
+              "explanation": "A cryptographic digest is a reproducible identifier for the byte sequence."
+            },
+            "summary": [
+              "Static analysis precedes execution.",
+              "Hash the bytes actually analyzed."
+            ],
+            "resources": [
+              {
+                "title": "Python email.message documentation",
+                "url": "https://docs.python.org/3/library/email.message.html",
+                "type": "Python"
+              },
+              {
+                "title": "SWGDE Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+                "type": "SWGDE"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "URL Extraction Without Network Access",
+            "description": "Extract suspicious URLs while preserving exact source strings.",
+            "learningObjectives": [
+              "Extract URLs locally.",
+              "Separate static URL evidence from network behavior.",
+              "Preserve original strings before enrichment."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A URL in a message is a static artifact. Preserve the exact original string before normalization or enrichment. Network behavior is a separate observation."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "prac-06-02",
+                "title": "Extract URLs offline",
+                "description": "Find HTTP(S) URLs in text parts without network access.",
+                "steps": [
+                  "Parse the message.",
+                  "Inspect text/plain and text/html.",
+                  "Apply a conservative regex.",
+                  "Write exact strings to JSON."
+                ],
+                "solution": "import re, json\nfrom email import policy\nfrom email.parser import BytesParser\n\nmsg = BytesParser(policy=policy.default).parse(open(\"message.eml\", \"rb\"))\npattern = re.compile(r\"https?://[^\\\\s<>\\\"']+\")\nurls = set()\n\nfor part in msg.walk():\n    if part.get_content_type() in {\"text/plain\", \"text/html\"}:\n        try:\n            urls.update(pattern.findall(part.get_content()))\n        except Exception:\n            pass\n\nprint(json.dumps(sorted(urls), indent=2))\n",
+                "output": "The script performs no DNS, HTTP, or browser activity."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "What should be preserved before URL enrichment?",
+              "options": [
+                "Only domain",
+                "Exact original URL and context",
+                "Only title",
+                "Only status"
+              ],
+              "answer": "Exact original URL and context",
+              "explanation": "The original string is primary evidence; enrichment is a separate observation."
+            },
+            "summary": [
+              "Preserve static URL evidence before enrichment."
+            ],
+            "resources": [
+              {
+                "title": "Python email.parser documentation",
+                "url": "https://docs.python.org/3/library/email.parser.html",
+                "type": "Python"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Malware Triage and External Scanning",
+            "description": "Use safe enrichment while considering privacy and authorization.",
+            "learningObjectives": [
+              "Prioritize suspicious artifacts.",
+              "Understand public/private scanning implications.",
+              "Document external-service results."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Safe sequence"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve → hash → identify → static inspect → approved enrichment → isolated detonation if authorized."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "VirusTotal documents private scanning capabilities for eligible users. Organizational policy must be checked before submitting confidential attachments to any external service."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "Before uploading a confidential attachment to an external scanner, what comes first?",
+              "options": [
+                "Rename it",
+                "Check authorization and privacy policy",
+                "Open it",
+                "Remove extension"
+              ],
+              "answer": "Check authorization and privacy policy",
+              "explanation": "External submission can disclose evidence."
+            },
+            "summary": [
+              "External enrichment is policy-dependent."
+            ],
+            "resources": [
+              {
+                "title": "VirusTotal API documentation",
+                "url": "https://docs.virustotal.com/reference/intro/getting-started",
+                "type": "Vendor"
+              },
+              {
+                "title": "VirusTotal Private Scanning API",
+                "url": "https://docs.virustotal.com/reference/private-files-api",
+                "type": "Vendor"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Create a Safe Artifact Triage Report",
+            "level": "Intermediate",
+            "description": "Rank extracted attachments and URLs using static evidence and approved metadata.",
+            "problemStatement": "Produce hashes, MIME metadata, URL strings, indicators, and recommended next action.",
+            "objectives": [
+              "No execution",
+              "Hash artifacts",
+              "Offline URL extraction",
+              "Source provenance"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Lab .eml"
+            ],
+            "hint": "Indicators are reasons for review, not proof of maliciousness.",
+            "solutionCode": "from pathlib import Path\nimport hashlib\nimport json\n\nrows = []\nfor path in sorted(Path(\"attachments\").iterdir()):\n    if not path.is_file():\n        continue\n    data = path.read_bytes()\n    rows.append({\n        \"artifact\": path.name,\n        \"sha256\": hashlib.sha256(data).hexdigest(),\n        \"size_bytes\": len(data),\n        \"triage_status\": \"analyst_review\",\n        \"reason\": \"Static evidence recorded; execution not performed.\"\n    })\n\nPath(\"triage.json\").write_text(json.dumps(rows, indent=2), encoding=\"utf-8\")\nprint(\"triaged:\", len(rows))\n",
+            "solutionExplanation": "The workflow produces reproducible artifact identifiers without making a maliciousness claim."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Automation, Timelines, and Reporting",
+        "description": "Automate parsing, construct UTC timelines, and write evidence-backed forensic findings.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Python Email Parsing",
+            "description": "Use Python's email package for repeatable parsing.",
+            "learningObjectives": [
+              "Parse bytes with BytesParser.",
+              "Traverse MIME parts.",
+              "Record parser defects and missing fields."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Standards-aware parsing"
+              },
+              {
+                "type": "paragraph",
+                "text": "Use BytesParser on preserved bytes with policy.default. Record selected headers and parser defects, and keep the raw message as the primary evidence object."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Why parse preserved bytes?",
+              "options": [
+                "Proves authenticity",
+                "Preserves exact encoded representation for standards-aware parsing",
+                "Removes malware",
+                "Creates a database"
+              ],
+              "answer": "Preserves exact encoded representation for standards-aware parsing",
+              "explanation": "The parser can interpret the original message representation."
+            },
+            "summary": [
+              "Automation should preserve provenance."
+            ],
+            "resources": [
+              {
+                "title": "Python email.parser documentation",
+                "url": "https://docs.python.org/3/library/email.parser.html",
+                "type": "Python"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Timeline Construction and Correlation",
+            "description": "Merge message, provider, and endpoint observations into a source-preserving UTC timeline.",
+            "learningObjectives": [
+              "Normalize timestamps.",
+              "Keep source provenance.",
+              "Handle conflicting clocks without averaging them."
+            ],
+            "notes": [
+              {
+                "id": "prac-07-02",
+                "title": "Merge event records",
+                "description": "Sort message and provider JSON events by UTC.",
+                "steps": [
+                  "Load records.",
+                  "Parse timezone-aware ISO timestamps.",
+                  "Sort by normalized UTC.",
+                  "Retain source and event type."
+                ],
+                "solution": "import json\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nevents = []\nfor name in [\"message_events.json\", \"provider_events.json\"]:\n    for e in json.loads(Path(name).read_text(encoding=\"utf-8\")):\n        dt = datetime.fromisoformat(e[\"event_time_utc\"].replace(\"Z\", \"+00:00\"))\n        e[\"parsed\"] = dt.astimezone(timezone.utc)\n        events.append(e)\nfor e in sorted(events, key=lambda x: x[\"parsed\"]):\n    print(e[\"parsed\"].isoformat(), e.get(\"source\"), e.get(\"event_type\"))\n",
+                "output": "The timeline is a derived view; source events remain intact."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "How should conflicting timestamps be handled?",
+              "options": [
+                "Delete one",
+                "Choose convenient time",
+                "Retain both and investigate source/time differences",
+                "Average"
+              ],
+              "answer": "Retain both and investigate source/time differences",
+              "explanation": "Averaging destroys provenance."
+            },
+            "summary": [
+              "Timeline views must remain traceable to source records."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86 — Forensic Techniques in Incident Response",
+                "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+                "type": "NIST"
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 2 — Incident Handling Guide",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r2/final",
+                "type": "NIST"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Forensic Reporting",
+            "description": "Write findings that separate observation, interpretation, confidence, and limitation.",
+            "learningObjectives": [
+              "Cite evidence identifiers.",
+              "Separate facts from inference.",
+              "Document limitations.",
+              "Produce reproducibility details."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Finding pattern"
+              },
+              {
+                "type": "paragraph",
+                "text": "Observation → evidence → interpretation → limitation. Avoid statements such as 'this IP proves the attacker' unless independent evidence supports attribution."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Scope",
+                  "Evidence inventory",
+                  "Methods",
+                  "Findings",
+                  "Timeline",
+                  "Artifact analysis",
+                  "Limitations",
+                  "Conclusion"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "Which finding is most defensible?",
+              "options": [
+                "The IP proves the attacker",
+                "The email is obviously fake",
+                "Recipient-side Received and provider trace corroborate delivery; human authorship remains unresolved",
+                "The sender is guilty"
+              ],
+              "answer": "Recipient-side Received and provider trace corroborate delivery; human authorship remains unresolved",
+              "explanation": "It separates observations and limits."
+            },
+            "summary": [
+              "A strong report is reproducible and conservative."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+                "type": "SWGDE"
+              },
+              {
+                "title": "NIST SP 800-86 — Forensic Techniques in Incident Response",
+                "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+                "type": "NIST"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Automate an Email Case Summary",
+            "level": "Advanced",
+            "description": "Build a standard-library-only case summarizer for multiple .eml files.",
+            "problemStatement": "Hash messages, inventory headers, hash attachments, preserve Received fields, and write deterministic JSON.",
+            "objectives": [
+              "Hash source messages",
+              "Inventory headers",
+              "Hash attachments",
+              "Preserve Received fields",
+              "Write deterministic JSON"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Directory of .eml files"
+            ],
+            "hint": "Hash source bytes before parsing and sort filenames for deterministic output.",
+            "solutionCode": "from email import policy\nfrom email.parser import BytesParser\nfrom pathlib import Path\nimport hashlib, json\n\ndef summarize(path: Path):\n    raw = path.read_bytes()\n    msg = BytesParser(policy=policy.default).parsebytes(raw)\n    return {\n        \"file\": path.name,\n        \"sha256\": hashlib.sha256(raw).hexdigest(),\n        \"message_id\": msg.get(\"Message-ID\"),\n        \"received_count\": len(msg.get_all(\"Received\", [])),\n        \"attachment_names\": [p.get_filename() for p in msg.walk() if p.get_filename()],\n        \"defects\": [type(d).__name__ for d in msg.defects]\n    }\n\ncase = Path(\"case\")\nresult = [summarize(p) for p in sorted(case.glob(\"*.eml\"))]\nPath(\"case_summary.json\").write_text(json.dumps(result, indent=2), encoding=\"utf-8\")\nprint(\"case messages:\", len(result))\n",
+            "solutionExplanation": "The workflow is offline, source-preserving, and deterministic."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Enterprise Investigations and Incident Response",
+        "description": "Correlate raw email with hosted message trace, audit records, endpoint and identity evidence, and incident-response actions.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Message Trace and Audit Evidence",
+            "description": "Use provider-side lifecycle and mailbox records to complement raw messages.",
+            "learningObjectives": [
+              "Explain message trace.",
+              "Identify useful audit events.",
+              "Document retention and permission limits."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Exchange message trace can report lifecycle and delivery state. Audit records can document mailbox activities subject to configuration, permissions, retention, and service capabilities."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "What does message trace add?",
+              "options": [
+                "Human authorship proof",
+                "Provider-side lifecycle/delivery information",
+                "Decryption",
+                "Evidence replacement"
+              ],
+              "answer": "Provider-side lifecycle/delivery information",
+              "explanation": "Trace provides provider-side observations."
+            },
+            "summary": [
+              "Different questions require different provider records."
+            ],
+            "resources": [
+              {
+                "title": "Microsoft Graph — Exchange messageTrace",
+                "url": "https://learn.microsoft.com/en-us/graph/api/resources/exchangemessagetrace?view=graph-rest-1.0",
+                "type": "Microsoft"
+              },
+              {
+                "title": "Microsoft Purview — mailbox audit search",
+                "url": "https://learn.microsoft.com/en-us/purview/audit-log-search-for-mailbox-activities",
+                "type": "Microsoft"
+              },
+              {
+                "title": "Microsoft Purview — eDiscovery audit activities",
+                "url": "https://learn.microsoft.com/en-us/purview/edisc-ref-audit-log",
+                "type": "Microsoft"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Email Incident Response",
+            "description": "Integrate email evidence with containment, identity, endpoint, and follow-on investigation.",
+            "learningObjectives": [
+              "Place email forensics into incident response.",
+              "Identify follow-on evidence.",
+              "Document remediation changes that affect evidence."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Follow-on sources"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identity sign-ins",
+                  "Mailbox rules/forwarding",
+                  "Endpoint browser/process telemetry",
+                  "Network telemetry",
+                  "Additional messages",
+                  "Cloud audit events"
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Containment can alter evidence; coordinate collection and remediation under incident-response authority."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "Why coordinate containment with collection?",
+              "options": [
+                "Containment never changes systems",
+                "Remediation can alter or destroy artifacts",
+                "Email is unrelated",
+                "Disable controls"
+              ],
+              "answer": "Remediation can alter or destroy artifacts",
+              "explanation": "Collection timing matters."
+            },
+            "summary": [
+              "Preserve time-sensitive evidence before destructive remediation when feasible."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-61 Rev. 2 — Incident Handling Guide",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r2/final",
+                "type": "NIST"
+              },
+              {
+                "title": "NIST SP 800-86 — Forensic Techniques in Incident Response",
+                "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+                "type": "NIST"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Advanced Cross-Source Correlation",
+            "description": "Build hypotheses across mail, identity, endpoint, and DNS without collapsing uncertainty.",
+            "learningObjectives": [
+              "Select correlation keys.",
+              "Build direct versus inferred relationships.",
+              "Document alternative explanations."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Message-ID",
+                  "Attachment SHA-256",
+                  "Account/mailbox ID",
+                  "IP + time",
+                  "URL/domain",
+                  "Authentication results"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Use qualitative labels such as direct, corroborated, plausible inference, and unresolved unless a validated statistical model exists."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Best key for exact attachment bytes?",
+              "options": [
+                "Display name",
+                "SHA-256",
+                "Subject",
+                "Mailbox color"
+              ],
+              "answer": "SHA-256",
+              "explanation": "The digest identifies the exact byte sequence."
+            },
+            "summary": [
+              "Correlation is stronger when identifiers are independent and source-preserved."
+            ],
+            "resources": [
+              {
+                "title": "SWGDE Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+                "type": "SWGDE"
+              },
+              {
+                "title": "Microsoft Graph — Exchange messageTrace",
+                "url": "https://learn.microsoft.com/en-us/graph/api/resources/exchangemessagetrace?view=graph-rest-1.0",
+                "type": "Microsoft"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Investigate a Multi-Source Email Incident",
+            "level": "Advanced",
+            "description": "Correlate message, trace, audit, attachment, and endpoint evidence into one defensible timeline.",
+            "problemStatement": "Establish what can be supported about delivery, mailbox actions, artifact handling, and possible user impact without overclaiming.",
+            "objectives": [
+              "Correlate Message-ID, time, account, and attachment hash",
+              "Build a UTC timeline",
+              "Document alternative explanations",
+              "State limitations"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Laboratory JSON evidence"
+            ],
+            "hint": "Start with strong identifiers, then use timestamps and context.",
+            "solutionCode": "import json\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\ndef utc(value):\n    dt = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n    return dt.astimezone(timezone.utc)\n\nrecords = []\nfor source_file in (\"message.json\", \"trace.json\", \"audit.json\", \"endpoint.json\"):\n    path = Path(source_file)\n    if not path.exists():\n        continue\n    value = json.loads(path.read_text(encoding=\"utf-8\"))\n    values = value if isinstance(value, list) else [value]\n    for item in values:\n        if item.get(\"event_time_utc\"):\n            records.append({\n                \"time_utc\": utc(item[\"event_time_utc\"]).isoformat(),\n                \"source\": source_file,\n                \"event_type\": item.get(\"event_type\"),\n                \"evidence_id\": item.get(\"evidence_id\")\n            })\n\nrecords.sort(key=lambda x: x[\"time_utc\"])\nPath(\"incident_timeline.json\").write_text(json.dumps(records, indent=2), encoding=\"utf-8\")\nprint(\"events:\", len(records))\n",
+            "solutionExplanation": "The solution constructs a source-preserving timeline; the narrative conclusion must remain analyst-reviewed."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Real-World Project: Reconstruct and Report a Suspicious Email Incident",
+        "description": "Complete an authorized end-to-end laboratory investigation using preserved email, MIME artifacts, authentication evidence, provider records, timelines, automation, and forensic reporting. The project itself is the final practical assessment and has no separate module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Capstone Brief and Investigation Method",
+            "description": "Apply the complete evidence lifecycle to one realistic suspicious-email case.",
+            "learningObjectives": [
+              "Prepare the case boundary.",
+              "Run the offline analysis workflow.",
+              "Produce evidence-backed findings and limitations."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Required deliverables"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence manifest and hashes",
+                  "Message/MIME inventory",
+                  "Attachment and URL inventory",
+                  "Authentication analysis",
+                  "UTC timeline",
+                  "Provider correlation",
+                  "Final narrative report",
+                  "Unit-test results"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The goal is not to force a malicious verdict. The goal is to determine what the evidence supports, what it does not support, and what should be investigated next."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "What is the primary quality criterion?",
+              "options": [
+                "Dramatic attribution",
+                "Many screenshots",
+                "Traceable evidence-backed findings with limitations",
+                "Calling every suspicious email malicious"
+              ],
+              "answer": "Traceable evidence-backed findings with limitations",
+              "explanation": "Forensic quality depends on provenance and defensible interpretation."
+            },
+            "summary": [
+              "The capstone integrates the course.",
+              "Do not overclaim attribution."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-86 — Forensic Techniques in Incident Response",
+                "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-86.pdf",
+                "type": "NIST"
+              },
+              {
+                "title": "SWGDE Best Practices for Digital Evidence Collection",
+                "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+                "type": "SWGDE"
+              },
+              {
+                "title": "RFC 5322 — Internet Message Format",
+                "url": "https://www.rfc-editor.org/rfc/rfc5322.html",
+                "type": "IETF"
+              },
+              {
+                "title": "Python email.parser documentation",
+                "url": "https://docs.python.org/3/library/email.parser.html",
+                "type": "Python"
+              },
+              {
+                "title": "Microsoft Graph — Exchange messageTrace",
+                "url": "https://learn.microsoft.com/en-us/graph/api/resources/exchangemessagetrace?view=graph-rest-1.0",
+                "type": "Microsoft"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Reconstruct and Report a Suspicious Email Incident",
+          "description": "Investigate a preserved suspicious email and optional provider/endpoint records using an offline, reproducible Python workflow. The case combines evidence preservation, RFC 5322/MIME parsing, header reconstruction, authentication interpretation, artifact hashing, URL extraction, provider correlation, timeline construction, testing, and reporting.",
+          "conceptsCovered": [
+            "Evidence preservation and SHA-256",
+            "RFC 5322 headers and trace fields",
+            "MIME parsing",
+            "SPF/DKIM/DMARC and Authentication-Results",
+            "Attachment and URL triage",
+            "Hosted mail trace/audit",
+            "Timeline correlation",
+            "Python automation",
+            "Forensic reporting",
+            "Testing and reproducibility"
+          ],
+          "steps": [
+            "Create an authorized laboratory case directory with messages/*.eml and optional provider JSON records.",
+            "Hash and preserve source messages before parsing.",
+            "Inventory headers, Received fields, authentication headers, MIME parts, and parser defects.",
+            "Extract and hash attachments without executing them.",
+            "Extract URL strings without making network requests.",
+            "Interpret authentication results within the receiving trust boundary.",
+            "Correlate message and provider records using strong identifiers and timestamps.",
+            "Build a UTC timeline and preserve conflicting observations.",
+            "Run the included unit tests and add tests for message parsing and MIME extraction.",
+            "Write findings as observation → evidence → interpretation → limitation."
+          ],
+          "code": {
+            "README.md": "# Email Forensics Case Laboratory\nUse only authorized laboratory evidence. The workflow is offline: it parses `.eml` files, hashes source and attachment bytes, inventories headers/MIME structure, and correlates optional JSON records. It does not execute attachments or visit URLs.\n",
+            "email_forensics.py": "from __future__ import annotations\nimport argparse, hashlib, json\nfrom datetime import timezone\nfrom email import policy\nfrom email.parser import BytesParser\nfrom email.utils import parsedate_to_datetime\nfrom pathlib import Path\n\ndef sha256_bytes(data: bytes) -> str:\n    return hashlib.sha256(data).hexdigest()\n\ndef parse_timestamp(value: str | None) -> str | None:\n    if not value:\n        return None\n    try:\n        dt = parsedate_to_datetime(value)\n        if dt is None or dt.tzinfo is None:\n            return \"UNPARSED\"\n        return dt.astimezone(timezone.utc).isoformat()\n    except (TypeError, ValueError):\n        return \"UNPARSED\"\n\ndef analyze_message(path: Path, outdir: Path) -> dict:\n    raw = path.read_bytes()\n    msg = BytesParser(policy=policy.default).parsebytes(raw)\n    outdir.mkdir(parents=True, exist_ok=True)\n    attachments = []\n    for index, part in enumerate(msg.walk()):\n        filename = part.get_filename()\n        data = part.get_payload(decode=True)\n        if not filename or data is None:\n            continue\n        target = outdir / f\"{index:03d}_{Path(filename).name}\"\n        target.write_bytes(data)\n        attachments.append({\n            \"part_index\": index,\n            \"filename\": filename,\n            \"content_type\": part.get_content_type(),\n            \"size_bytes\": len(data),\n            \"sha256\": sha256_bytes(data),\n            \"path\": str(target)\n        })\n    return {\n        \"file\": path.name,\n        \"sha256\": sha256_bytes(raw),\n        \"size_bytes\": len(raw),\n        \"headers\": {\n            \"From\": str(msg.get(\"From\")) if msg.get(\"From\") else None,\n            \"To\": str(msg.get(\"To\")) if msg.get(\"To\") else None,\n            \"Subject\": str(msg.get(\"Subject\")) if msg.get(\"Subject\") else None,\n            \"Date\": str(msg.get(\"Date\")) if msg.get(\"Date\") else None,\n            \"Date_UTC\": parse_timestamp(msg.get(\"Date\")),\n            \"Message-ID\": str(msg.get(\"Message-ID\")) if msg.get(\"Message-ID\") else None,\n            \"Authentication-Results\": msg.get_all(\"Authentication-Results\", []),\n            \"DKIM-Signature\": msg.get_all(\"DKIM-Signature\", []),\n            \"Received\": msg.get_all(\"Received\", [])\n        },\n        \"mime_parts\": sum(1 for _ in msg.walk()),\n        \"attachments\": attachments,\n        \"parser_defects\": [type(x).__name__ for x in msg.defects]\n    }\n\ndef load_records(path: Path) -> list[dict]:\n    if not path.exists():\n        return []\n    value = json.loads(path.read_text(encoding=\"utf-8\"))\n    if isinstance(value, dict):\n        return [value]\n    if isinstance(value, list):\n        return value\n    raise ValueError(f\"{path} must contain an object or array\")\n\ndef main() -> None:\n    parser = argparse.ArgumentParser(description=\"Offline email-forensics case analyzer\")\n    parser.add_argument(\"case_dir\", type=Path)\n    parser.add_argument(\"--output\", type=Path, default=Path(\"case_report.json\"))\n    args = parser.parse_args()\n    messages = args.case_dir / \"messages\"\n    extracts = args.case_dir / \"extracted_attachments\"\n    reports = [analyze_message(p, extracts) for p in sorted(messages.glob(\"*.eml\"))]\n    external = []\n    for name in (\"trace.json\", \"audit.json\", \"endpoint.json\"):\n        external.extend(load_records(args.case_dir / \"provider\" / name))\n    report = {\n        \"message_count\": len(reports),\n        \"messages\": reports,\n        \"provider_records\": external,\n        \"method_notes\": [\n            \"Source bytes are hashed before parsing.\",\n            \"Attachments are decoded and hashed but never executed.\",\n            \"No network requests are made.\"\n        ]\n    }\n    args.output.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\nif __name__ == \"__main__\":\n    main()\n",
+            "test_email_forensics.py": "import unittest\nfrom email_forensics import sha256_bytes, parse_timestamp\n\nclass TestEmailForensics(unittest.TestCase):\n    def test_hash(self):\n        self.assertEqual(\n            sha256_bytes(b\"abc\"),\n            \"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"\n        )\n    def test_time(self):\n        self.assertEqual(\n            parse_timestamp(\"Tue, 08 Sep 2026 12:00:00 +0000\"),\n            \"2026-09-08T12:00:00+00:00\"\n        )\n    def test_bad_time(self):\n        self.assertEqual(parse_timestamp(\"not a date\"), \"UNPARSED\")\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+          },
+          "explanation": "The architecture treats source messages as preserved evidence and every parsed result as a derived view. Source bytes are hashed before parsing. Attachments are extracted only for static analysis and are never executed. URL extraction is offline. Provider records remain separate source objects. Authentication fields are reported for analyst interpretation rather than converted into an automatic verdict. The final report should contain scope, evidence inventory, methods, findings, timeline, artifact analysis, limitations, conclusion, and reproducibility notes."
+        }
+      }
+    ]
+  }
+}

@@ -12,6 +12,7 @@ import Quiz from "./components/Quiz";
 import LearningObjectives from "./components/LearningObjectives/LearningObjectives.jsx";
 import LessonSummary from "./components/LessonSummary";
 import LessonResources from "./components/LessonResources";
+import LessonExamples from "./components/LessonExamples/LessonExamples";
 
 
 export default function LessonPage({ lesson }) {
@@ -26,11 +27,15 @@ export default function LessonPage({ lesson }) {
 
     const practicals = Array.isArray(rawLesson?.practicals)
         ? rawLesson.practicals
-        : [];
+        : rawLesson?.practicals
+            ? [rawLesson.practicals]
+            : [];
 
     const quiz = Array.isArray(rawLesson?.quiz)
         ? rawLesson.quiz
-        : [];
+        : rawLesson?.quiz
+            ? [rawLesson.quiz]
+            : [];
 
     const getSemanticTone = (index) => {
         for (let i = index - 1; i >= 0; i -= 1) {
@@ -135,7 +140,7 @@ export default function LessonPage({ lesson }) {
                 return (
                     <CodeBlock
                         key={key}
-                        code={note.code}
+                        code={note.code || note.text}
                         language={note.language}
                         filename={note.filename}
                     />
@@ -162,6 +167,7 @@ export default function LessonPage({ lesson }) {
                 );
 
             case "checklist":
+            case "notePoints":
                 return (
                     <NotePoint
                         key={key}
@@ -191,7 +197,20 @@ export default function LessonPage({ lesson }) {
                     objectives={rawLesson.learningObjectives}
                 />
 
+                {rawLesson.description ? (
+                    <Paragraph text={rawLesson.description} />
+                ) : null}
+
                 {notes.map(renderNote)}
+
+                {rawLesson.code ? (
+                    <CodeBlock
+                        code={rawLesson.code}
+                        language={rawLesson.language}
+                    />
+                ) : null}
+
+                <LessonExamples examples={rawLesson.examples} />
 
                 {practicals.length > 0 ? (
                     <div className="lesson-practicals">
@@ -211,6 +230,11 @@ export default function LessonPage({ lesson }) {
                 ) : null}
                 {quiz.length > 0 ? (
                     <Quiz
+                        key={
+                            rawLesson.id ||
+                            rawLesson.lessonId ||
+                            lesson.id
+                        }
                         questions={quiz}
                     />
                 ) : null}

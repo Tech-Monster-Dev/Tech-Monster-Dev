@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { readdir, readFile } from "fs/promises";
+import { access, readdir, readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -12,8 +12,26 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env"), quiet: true });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const coursesDir = path.resolve(__dirname, "../data/courses");
-const internshipsDir = path.resolve(__dirname, "../data/internships");
+const dataRoots = [
+    {
+        directories: [
+            path.resolve(__dirname, "../data/Courses"),
+            path.resolve(__dirname, "../data/courses"),
+        ],
+        fileName: "course.json",
+        key: "course",
+        label: "course",
+    },
+    {
+        directories: [
+            path.resolve(__dirname, "../data/Internships"),
+            path.resolve(__dirname, "../data/internships"),
+        ],
+        fileName: "internship.json",
+        key: "internship",
+        label: "internship",
+    },
+];
 
 const normalizeLevel = (level) => {
     const value = String(level || "").trim().toLowerCase();
@@ -29,14 +47,26 @@ const normalizeLevel = (level) => {
     return "Beginner";
 };
 
+const fileExists = async (filePath) => {
+    try {
+        await access(filePath);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 const countLearningData = (modules = []) => {
     const lessons = modules.flatMap(
         (module) => Array.isArray(module.lessons) ? module.lessons : []
     );
 
-    const tasks = lessons.flatMap(
-        (lesson) => Array.isArray(lesson.tasks) ? lesson.tasks : []
-    );
+    const tasks = modules.flatMap((module) => [
+        ...(Array.isArray(module.tasks) ? module.tasks : []),
+        ...lessons
+            .filter((lesson) => module.lessons?.includes(lesson))
+            .flatMap((lesson) => Array.isArray(lesson.tasks) ? lesson.tasks : []),
+    ]);
 
     const notes = lessons.flatMap(
         (lesson) => Array.isArray(lesson.notes) ? lesson.notes : []
@@ -49,51 +79,94 @@ const countLearningData = (modules = []) => {
 };
 
 const readProgramFiles = async (rootDir, fileName, key) => {
-    const folders = await readdir(rootDir, {
-        withFileTypes: true
-    });
+    const programsBySlug = new Map();
 
-    const programs = [];
+    const visitDirectory = async (directory) => {
+        const folders = await readdir(directory, {
+            withFileTypes: true
+        });
 
-    for (const folder of folders) {
-        if (!folder.isDirectory()) {
-            continue;
-        }
-
-        const filePath = path.join(
-            rootDir,
-            folder.name,
-            fileName
-        );
-
-        try {
-            const raw = await readFile(
-                filePath,
-                "utf8"
-            );
-
-            const parsed = JSON.parse(raw);
-            const program = parsed?.[key] || parsed;
-
-            if (!program?.slug) {
-                throw new Error("Missing slug");
+        for (const folder of folders) {
+            if (!folder.isDirectory()) {
+                continue;
             }
 
-            programs.push({
-                folder: folder.name,
-                program
-            });
+            const programDirectory = path.join(
+                directory,
+                folder.name
+            );
+
+            const filePath = path.join(
+                programDirectory,
+                fileName
+            );
+
+            if (!await fileExists(filePath)) {
+                await visitDirectory(programDirectory);
+                continue;
+            }
+
+            try {
+                const raw = await readFile(
+                    filePath,
+                    "utf8"
+                );
+
+                const parsed = JSON.parse(raw);
+                const program = parsed?.[key] || parsed;
+
+                if (!program?.slug) {
+                    throw new Error("Missing slug");
+                }
+
+                const slug = normalizeSlug(program.slug);
+
+                if (!programsBySlug.has(slug)) {
+                    programsBySlug.set(slug, {
+                        folder: path.relative(directory, programDirectory),
+                        program
+                    });
+                }
+            } catch (error) {
+                throw new Error(
+                    `${filePath}: ${error.message}`
+                );
+            }
+        }
+    };
+
+    for (const directory of rootDir) {
+        try {
+            await visitDirectory(directory);
         } catch (error) {
             throw new Error(
-                `${filePath}: ${error.message}`
+                `${directory}: ${error.message}`
             );
         }
     }
 
-    return programs;
+    return [...programsBySlug.values()];
 };
 
-const buildCatalogData = (program) => {
+const normalizeSlug = (slug) =>
+    String(slug || "")
+        .trim()
+        .toLowerCase()
+        .replace(/_/g, "-");
+
+const toModelString = (value) => {
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return typeof value === "string"
+        ? value
+        : typeof value === "object"
+            ? JSON.stringify(value)
+            : String(value);
+};
+
+const buildCatalogData = (program, type) => {
     const modules = Array.isArray(program.modules)
         ? program.modules
         : [];
@@ -103,13 +176,16 @@ const buildCatalogData = (program) => {
 
     return {
         title: program.title || "",
-        slug: String(program.slug).trim().toLowerCase().replace(/_/g, "-"),
-        category: Array.isArray(program.technology) ? (program.technology[0] || "General") : (program.technology?.name || "General"),
+        slug: normalizeSlug(program.slug),
+        category: type === "internship"
+            ? program.domain || "General"
+            : "General",
         level: normalizeLevel(program.level),
-        description: program.description || "",
-        thumbnail: "",
-        duration: program.duration || program.estimatedDuration || "",
-        price: 0,
+        description: program.description ||
+            (Array.isArray(program.objectives)
+                ? program.objectives.join(" ")
+                : ""),
+        duration: toModelString(program.duration || program.estimatedDuration),
         totalTasks,
         totalNotes,
         certificate: true,
@@ -127,7 +203,7 @@ const upsertPrograms = async ({
     let updated = 0;
 
     for (const { folder, program } of programs) {
-        const data = buildCatalogData(program);
+        const data = buildCatalogData(program, label.toLowerCase());
 
         const existing = await Model.findOne({
             slug: data.slug
@@ -144,7 +220,11 @@ const upsertPrograms = async ({
                 `UPDATED ${label}: ${folder} -> ${data.slug}`
             );
         } else {
-            await Model.create(data);
+            await Model.create({
+                ...data,
+                thumbnail: "",
+                price: 0,
+            });
 
             created++;
             console.log(
@@ -171,16 +251,16 @@ const main = async () => {
 
         const courses =
             await readProgramFiles(
-                coursesDir,
-                "course.json",
-                "course"
+                dataRoots[0].directories,
+                dataRoots[0].fileName,
+                dataRoots[0].key
             );
 
         const internships =
             await readProgramFiles(
-                internshipsDir,
-                "internship.json",
-                "internship"
+                dataRoots[1].directories,
+                dataRoots[1].fileName,
+                dataRoots[1].key
             );
 
         console.log(

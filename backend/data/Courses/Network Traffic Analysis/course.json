@@ -1,0 +1,2431 @@
+{
+  "course": {
+    "id": "network-traffic-analysis",
+    "title": "Network Traffic Analysis",
+    "slug": "network-traffic-analysis",
+    "description": "A practical, analyst-focused course for learning how to capture, decode, filter, summarize, and investigate network traffic. Students progress from packet and protocol fundamentals through TCP/IP behavior, DNS/HTTP/TLS analysis, packet capture with Wireshark and TShark, network telemetry with Zeek and Suricata, flow analysis, detection engineering, encrypted-traffic reasoning, threat hunting, and repeatable incident investigations. The course emphasizes evidence-driven analysis, safe lab practice, time normalization, baselining, false-positive control, and production-minded workflows.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 78,
+    "prerequisites": [
+      "Basic computer and command-line skills (Windows PowerShell or a Unix-like shell).",
+      "Basic networking concepts: IP addresses, ports, DNS, TCP/UDP, and the OSI/TCP-IP model.",
+      "A lab environment where packet captures can be analyzed safely and legally.",
+      "Optional but helpful: basic Python for automating text/JSON analysis."
+    ],
+    "learningOutcomes": [
+      "Explain how Ethernet, IP, TCP, UDP, ICMP, DNS, HTTP, and TLS behaviors appear in packet captures.",
+      "Capture and filter traffic safely with Wireshark and TShark using both capture and display filters.",
+      "Reconstruct TCP conversations and interpret connection setup, retransmissions, resets, and termination.",
+      "Analyze DNS, HTTP, TLS, QUIC, and common application-layer indicators without relying on payload alone.",
+      "Use Zeek logs and Suricata EVE JSON as structured network-security telemetry.",
+      "Analyze flow records and distinguish volume, duration, directionality, periodicity, and scan-like behavior.",
+      "Build and tune network detections using evidence, context, thresholds, and false-positive analysis.",
+      "Reason about encrypted traffic using metadata, protocol handshakes, timing, destinations, and certificate context.",
+      "Perform a defensible network investigation from initial signal to hypothesis, evidence, conclusion, and documented timeline.",
+      "Automate repeatable network-triage tasks with Python while preserving data provenance and analyst traceability."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Traffic Analysis Foundations",
+        "description": "Establish the evidence model, collection architecture, and safe operating practices required for defensible network analysis.",
+        "lessons": [
+          {
+            "id": "module-01-lesson-01",
+            "title": "What Network Traffic Analysis Is",
+            "description": "Define the analyst’s role, telemetry types, and the distinction between packets, flows, logs, and alerts.",
+            "learningObjectives": [
+              "Explain what network traffic analysis measures and what it cannot prove by itself.",
+              "Distinguish packet captures, flow records, protocol logs, and IDS alerts."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Network traffic analysis is the disciplined interpretation of communications observed between systems. A packet capture preserves wire-level details; a flow record compresses conversations into metadata; Zeek and IDS logs add structured interpretation. Analysts should treat each source as evidence with different resolution, cost, and blind spots."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Packet capture: strongest detail, largest volume, payload may be unavailable or encrypted.",
+                  "Flow telemetry: excellent for who/when/how much, weak for application content.",
+                  "Alerts: fast signal but may be noisy and rule-dependent.",
+                  "Context sources—asset inventory, identity, DNS, endpoint telemetry—often determine whether network evidence is meaningful."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-01-quiz-01",
+              "question": "Which source normally preserves the greatest amount of wire-level detail?",
+              "options": [
+                "Flow record",
+                "Packet capture",
+                "Single IDS alert",
+                "DNS summary"
+              ],
+              "answer": "Packet capture",
+              "explanation": "A packet capture can retain headers and, when available, payload bytes; flow and alert data are derived summaries."
+            },
+            "summary": [
+              "Network traffic analysis is the disciplined interpretation of communications observed between systems. A packet capture preserves wire-level details; a flow record compresses conversations into metadata; Zeek and IDS logs add structured interpretation. Analysts should treat each source as evidence with different resolution, cost, and blind spots."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/",
+              "https://csrc.nist.gov/pubs/sp/800/94/final"
+            ]
+          },
+          {
+            "id": "module-01-lesson-02",
+            "title": "Observation Points and Collection Architecture",
+            "description": "Understand where traffic can be observed: endpoints, taps, SPAN/mirror ports, gateways, cloud flow logs, and sensors.",
+            "learningObjectives": [
+              "Compare common traffic observation points and their trade-offs.",
+              "Select a collection point appropriate to a stated investigative question."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Visibility depends on placement. A sensor at an internet edge sees north-south traffic but may miss east-west traffic inside a flat network. A mirror port can duplicate selected switch traffic, while a physical or virtual tap can provide dedicated monitoring paths. Cloud environments often expose metadata through provider flow logs rather than raw packets."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Ask what traffic path contains the evidence before collecting.",
+                  "Document the observation point, interface, VLAN/VPC/subnet, and capture filters.",
+                  "Treat dropped packets and sampling as explicit limitations."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-01-quiz-02",
+              "question": "An analyst needs visibility into east-west traffic between internal application servers. Which placement is most directly aligned?",
+              "options": [
+                "Internet gateway sensor",
+                "Internal network sensor at a mirror/tap point",
+                "Public DNS resolver",
+                "External web browser"
+              ],
+              "answer": "Internal network sensor at a mirror/tap point",
+              "explanation": "East-west traffic stays inside the environment, so an internal observation point is required."
+            },
+            "summary": [
+              "Visibility depends on placement. A sensor at an internet edge sees north-south traffic but may miss east-west traffic inside a flat network. A mirror port can duplicate selected switch traffic, while a physical or virtual tap can provide dedicated monitoring paths. Cloud environments often expose metadata through provider flow logs rather than raw packets."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/94/final",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"
+            ]
+          },
+          {
+            "id": "module-01-lesson-03",
+            "title": "Packet, Flow, and Session Semantics",
+            "description": "Build the vocabulary needed to discuss network evidence precisely.",
+            "learningObjectives": [
+              "Define packet, segment, datagram, flow, session, and transaction in practical terms.",
+              "Explain why the same event can look different across telemetry layers."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A packet is an IP-layer unit; TCP commonly carries a byte stream in segments, while UDP transports datagrams. A flow typically groups traffic by a tuple such as source/destination IP, source/destination port, protocol, and a time window. A session is an application or protocol interaction whose boundaries may not map cleanly to one flow."
+              },
+              {
+                "type": "code",
+                "text": "Example flow key (conceptual):\n(src_ip, dst_ip, src_port, dst_port, protocol)"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-01-quiz-03",
+              "question": "Why can one application session produce multiple network flows?",
+              "options": [
+                "Because flows may be grouped by different 5-tuples or connection lifetimes",
+                "Because packets cannot carry ports",
+                "Because IP has no direction",
+                "Because sessions are always encrypted"
+              ],
+              "answer": "Because flows may be grouped by different 5-tuples or connection lifetimes",
+              "explanation": "Applications often open multiple connections, and flow records are typically scoped to specific transport tuples and time windows."
+            },
+            "summary": [
+              "A packet is an IP-layer unit; TCP commonly carries a byte stream in segments, while UDP transports datagrams. A flow typically groups traffic by a tuple such as source/destination IP, source/destination port, protocol, and a time window. A session is an application or protocol interaction whose boundaries may not map cleanly to one flow."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc9293.html",
+              "https://www.rfc-editor.org/rfc/rfc768.html"
+            ]
+          },
+          {
+            "id": "module-01-lesson-04",
+            "title": "Ethical and Safe Lab Practice",
+            "description": "Set boundaries for capture, storage, sharing, and handling of potentially sensitive traffic.",
+            "learningObjectives": [
+              "Identify legal and organizational authorization requirements before capture.",
+              "Apply safe handling practices to packet captures and extracted artifacts."
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Only capture and analyze traffic you are authorized to inspect. Packet captures can contain credentials, tokens, personal data, and confidential business information."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use isolated labs or explicitly authorized production collection.",
+                  "Minimize collection when the investigative question does not require full payloads.",
+                  "Restrict access and document retention for captures.",
+                  "When sharing samples for training, sanitize sensitive content and preserve the original evidence separately."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-01-quiz-04",
+              "question": "Why is a packet capture more sensitive than a simple flow summary?",
+              "options": [
+                "It can contain application payloads and secrets",
+                "It is always encrypted",
+                "It contains no IP addresses",
+                "It cannot be copied"
+              ],
+              "answer": "It can contain application payloads and secrets",
+              "explanation": "Payloads can expose credentials, tokens, documents, or personal data that a basic flow record does not retain."
+            },
+            "summary": [
+              "Set boundaries for capture, storage, sharing, and handling of potentially sensitive traffic."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Choose the Right Evidence Source",
+            "level": "Easy",
+            "description": "Select the minimum useful telemetry for three investigative questions.",
+            "problemStatement": "For each scenario—port scan, large file transfer, and DNS-based suspicious domain activity—choose packet, flow, DNS log, Zeek log, or IDS telemetry and justify the choice.",
+            "objectives": [
+              "Match investigative questions to telemetry types.",
+              "State known blind spots and collection assumptions."
+            ],
+            "requirements": [
+              "A written answer table; course concepts from Module 1."
+            ],
+            "hint": "Start from the question: content, volume, protocol behavior, or alert context?",
+            "solutionCode": "Scenarios: port scan → flow or packet evidence; large file transfer → flow plus endpoint context; suspicious DNS domain → DNS/Zeek DNS log plus flow for follow-on traffic. Record one limitation for each.",
+            "solutionExplanation": "The exercise reinforces that telemetry should be selected based on the question rather than by habit."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Network Protocol Foundations",
+        "description": "Build packet-reading confidence by moving from Ethernet and IP to transport-layer behavior and reliability clues.",
+        "lessons": [
+          {
+            "id": "module-02-lesson-01",
+            "title": "Ethernet, ARP, and Layer-2 Clues",
+            "description": "Read Ethernet and ARP behavior that often explains local-network anomalies.",
+            "learningObjectives": [
+              "Identify source/destination MAC addresses and EtherType at a high level.",
+              "Recognize ARP request/reply patterns and basic ARP anomalies."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Ethernet frames provide local-link context before an IP packet is interpreted. ARP maps IPv4 addresses to MAC addresses on a local broadcast domain. In captures, repeated ARP probes, conflicting replies, or a sudden change in the observed MAC for an IP can be investigative clues, although they require corroboration."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Broadcast ARP requests commonly ask who owns an IPv4 address.",
+                  "ARP is local-segment behavior; routers do not forward ARP broadcasts.",
+                  "Do not equate an ARP anomaly with compromise without checking normal network behavior and device changes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-02-quiz-01",
+              "question": "What does an ARP reply primarily associate?",
+              "options": [
+                "IPv6 address with a hostname",
+                "IPv4 address with a MAC address",
+                "TCP port with a process",
+                "DNS name with a certificate"
+              ],
+              "answer": "IPv4 address with a MAC address",
+              "explanation": "ARP is used on IPv4 local networks to discover the MAC address associated with an IPv4 address."
+            },
+            "summary": [
+              "Ethernet frames provide local-link context before an IP packet is interpreted. ARP maps IPv4 addresses to MAC addresses on a local broadcast domain. In captures, repeated ARP probes, conflicting replies, or a sudden change in the observed MAC for an IP can be investigative clues, although they require corroboration."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-02-lesson-02",
+            "title": "IPv4, IPv6, and Routing Evidence",
+            "description": "Interpret IP headers and route-related context without overfitting to addresses alone.",
+            "learningObjectives": [
+              "Interpret source/destination IPs, TTL/hop-limit, protocol, and fragmentation indicators.",
+              "Use subnet and routing context to distinguish local, internal, and external traffic."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "IP metadata gives direction and addressing context. TTL in IPv4 and Hop Limit in IPv6 decreases as packets traverse routers, making it useful as a clue but not a reliable fingerprint by itself. Fragmentation can complicate reassembly and filtering, so analysts should note when packets are incomplete or fragmented."
+              },
+              {
+                "type": "code",
+                "text": "IPv4 quick fields: src, dst, ttl, protocol, total_length\nIPv6 quick fields: src, dst, hop_limit, next_header, payload_length"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-02-quiz-02",
+              "question": "Which field identifies the transport or upper-layer protocol carried by IPv4?",
+              "options": [
+                "TTL",
+                "Protocol",
+                "Header checksum",
+                "IHL"
+              ],
+              "answer": "Protocol",
+              "explanation": "The IPv4 Protocol field identifies the next protocol, such as TCP, UDP, or ICMP."
+            },
+            "summary": [
+              "IP metadata gives direction and addressing context. TTL in IPv4 and Hop Limit in IPv6 decreases as packets traverse routers, making it useful as a clue but not a reliable fingerprint by itself. Fragmentation can complicate reassembly and filtering, so analysts should note when packets are incomplete or fragmented."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-02-lesson-03",
+            "title": "TCP Deep Dive: Three-Way Handshake",
+            "description": "Understand SYN, SYN-ACK, ACK, ports, sequence numbers, and connection establishment.",
+            "learningObjectives": [
+              "Trace a normal TCP three-way handshake.",
+              "Identify half-open attempts, resets, and handshake failures in captures."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TCP provides a reliable byte-stream service. Connection establishment commonly uses SYN, SYN-ACK, and ACK. Sequence and acknowledgment numbers are central to tracking bytes. A burst of SYNs without completed handshakes can be a symptom of scanning or service stress, but analysts should compare with expected traffic and server-side evidence."
+              },
+              {
+                "type": "code",
+                "text": "Client → Server: SYN\nServer → Client: SYN, ACK\nClient → Server: ACK"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-02-quiz-03",
+              "question": "Which packet completes the standard three-way TCP handshake?",
+              "options": [
+                "SYN",
+                "SYN-ACK",
+                "ACK",
+                "RST"
+              ],
+              "answer": "ACK",
+              "explanation": "The client acknowledges the server’s SYN-ACK with an ACK, completing the common handshake sequence."
+            },
+            "summary": [
+              "TCP provides a reliable byte-stream service. Connection establishment commonly uses SYN, SYN-ACK, and ACK. Sequence and acknowledgment numbers are central to tracking bytes. A burst of SYNs without completed handshakes can be a symptom of scanning or service stress, but analysts should compare with expected traffic and server-side evidence."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc9293.html"
+            ]
+          },
+          {
+            "id": "module-02-lesson-04",
+            "title": "TCP Reliability, Retransmissions, and Resets",
+            "description": "Differentiate loss, congestion, application behavior, and abrupt termination.",
+            "learningObjectives": [
+              "Recognize retransmissions, duplicate ACKs, out-of-order packets, and RSTs.",
+              "Avoid labeling every retransmission as malicious or every RST as an attack."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TCP analysis frequently requires sequence-aware reasoning. Retransmissions may arise from packet loss or timing issues; duplicate acknowledgments can indicate missing data; RST closes a connection abruptly. Wireshark’s TCP analysis flags are useful hints, but they are interpretations built from the observed trace and should be checked against the capture environment."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Look at direction, timing, sequence numbers, and packet loss together.",
+                  "A reset can be sent by an application, kernel, firewall, or intermediary depending on path and policy.",
+                  "Correlate with server logs when possible."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-02-quiz-04",
+              "question": "Why should a retransmission not automatically be classified as an attack indicator?",
+              "options": [
+                "Retransmissions can occur during normal loss or congestion",
+                "TCP never retransmits",
+                "Retransmissions only happen with UDP",
+                "Retransmissions prove encryption"
+              ],
+              "answer": "Retransmissions can occur during normal loss or congestion",
+              "explanation": "Loss, congestion, and path conditions can produce retransmissions without malicious intent."
+            },
+            "summary": [
+              "TCP analysis frequently requires sequence-aware reasoning. Retransmissions may arise from packet loss or timing issues; duplicate acknowledgments can indicate missing data; RST closes a connection abruptly. Wireshark’s TCP analysis flags are useful hints, but they are interpretations built from the observed trace and should be checked against the capture environment."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc9293.html",
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Reconstruct a TCP Handshake",
+            "level": "Easy",
+            "description": "Analyze a supplied capture and annotate a complete TCP connection establishment.",
+            "problemStatement": "Identify the client/server 4-tuple, locate SYN, SYN-ACK, and ACK, and note any handshake failures or resets nearby.",
+            "objectives": [
+              "Track the TCP 4-tuple.",
+              "Explain each handshake packet.",
+              "Document anomalies without overclaiming."
+            ],
+            "requirements": [
+              "Wireshark and an authorized PCAP."
+            ],
+            "hint": "Use tcp.flags and follow the stream only after identifying the connection.",
+            "solutionCode": "Use display filter tcp, identify the SYN packet without ACK, match the reversed tuple SYN-ACK, then the final ACK. If absent, record the handshake as incomplete and investigate retransmissions or resets.",
+            "solutionExplanation": "The student should produce a short evidence table rather than a binary “good/bad” verdict."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "UDP, ICMP, and DNS Analysis",
+        "description": "Learn the most common stateless protocols and build reliable reasoning around DNS as a primary network pivot.",
+        "lessons": [
+          {
+            "id": "module-03-lesson-01",
+            "title": "UDP and Stateless Conversation Patterns",
+            "description": "Analyze UDP traffic as request/response or one-way datagrams without TCP session semantics.",
+            "learningObjectives": [
+              "Explain what UDP does not guarantee compared with TCP.",
+              "Recognize UDP request/response patterns and common diagnostic pitfalls."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "UDP is a minimal datagram transport. It does not provide TCP-style connection establishment, retransmission, or ordering guarantees. Analysts often infer an application exchange from timing and matching source/destination fields rather than a formal session handshake."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "DNS commonly uses UDP, but other transports can be used when needed.",
+                  "A missing UDP response is not automatically a dropped packet; the server may have rejected, rate-limited, or simply not answered."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-03-quiz-01",
+              "question": "Which statement best describes UDP?",
+              "options": [
+                "It guarantees ordered delivery",
+                "It performs a three-way handshake",
+                "It provides a datagram service without guaranteed delivery",
+                "It retransmits missing data automatically"
+              ],
+              "answer": "It provides a datagram service without guaranteed delivery",
+              "explanation": "RFC 768 defines UDP as a minimal transaction-oriented datagram protocol without guaranteed delivery or duplicate protection."
+            },
+            "summary": [
+              "UDP is a minimal datagram transport. It does not provide TCP-style connection establishment, retransmission, or ordering guarantees. Analysts often infer an application exchange from timing and matching source/destination fields rather than a formal session handshake."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc768.html"
+            ]
+          },
+          {
+            "id": "module-03-lesson-02",
+            "title": "ICMP and Reachability Analysis",
+            "description": "Use ICMP types and timing to reason about reachability, errors, and network troubleshooting.",
+            "learningObjectives": [
+              "Recognize common ICMP echo and unreachable behavior.",
+              "Separate reachability evidence from security conclusions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ICMP communicates network-layer control and error information. Echo request/reply is often used for reachability tests, while unreachable messages can indicate routing or filtering conditions. ICMP observations are contextual: a host can be reachable over one protocol while another service is blocked."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Ping success proves a particular ICMP path works, not that an application is healthy.",
+                  "ICMP may be filtered or rate-limited, so absence of reply is ambiguous."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-03-quiz-02",
+              "question": "What does a successful ICMP echo reply demonstrate most directly?",
+              "options": [
+                "The target has SSH enabled",
+                "A specific ICMP exchange completed",
+                "The target is malware-free",
+                "All ports are open"
+              ],
+              "answer": "A specific ICMP exchange completed",
+              "explanation": "Echo reply is evidence that the corresponding ICMP exchange succeeded, not proof of application availability."
+            },
+            "summary": [
+              "ICMP communicates network-layer control and error information. Echo request/reply is often used for reachability tests, while unreachable messages can indicate routing or filtering conditions. ICMP observations are contextual: a host can be reachable over one protocol while another service is blocked."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-03-lesson-03",
+            "title": "DNS Transactions and Resolver Behavior",
+            "description": "Trace DNS queries, responses, record types, response codes, and resolver relationships.",
+            "learningObjectives": [
+              "Identify DNS client/server roles, query names, types, and response codes.",
+              "Explain why resolver telemetry can be more informative than raw destination IPs alone."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "DNS translates names to records and often acts as a key pivot for traffic analysis. Analysts should record the querying host, resolver, queried name, record type, response code, answer values, and timing. Zeek’s dns.log exposes many of these fields in structured form."
+              },
+              {
+                "type": "code",
+                "text": "Common DNS fields: query, qtype, rcode, answers, id.orig_h, id.resp_h, ts"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-03-quiz-03",
+              "question": "Which field in a DNS record tells you the requested record type, such as A or AAAA?",
+              "options": [
+                "qtype",
+                "rcode",
+                "TTL",
+                "MAC"
+              ],
+              "answer": "qtype",
+              "explanation": "The query type identifies what record type the client requested."
+            },
+            "summary": [
+              "DNS translates names to records and often acts as a key pivot for traffic analysis. Analysts should record the querying host, resolver, queried name, record type, response code, answer values, and timing. Zeek’s dns.log exposes many of these fields in structured form."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/reference/logs/dns.html",
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-03-lesson-04",
+            "title": "DNS Abuse Clues and Analytical Limits",
+            "description": "Study suspicious-domain, tunneling, fast-flux-like, and high-entropy clues while avoiding overclaiming.",
+            "learningObjectives": [
+              "Use DNS frequency, entropy-like properties, and response patterns as hypotheses.",
+              "Combine DNS evidence with follow-on connections and asset context."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Suspicious DNS behavior can include unusually long labels, high query volume, many unique subdomains, rare destinations, or short-lived infrastructure. None is conclusive alone. Legitimate CDNs, software update systems, security tooling, and telemetry services can produce similarly unusual patterns."
+              },
+              {
+                "type": "warning",
+                "text": "Do not treat a long or random-looking DNS label as proof of tunneling. Validate with volume, destination behavior, timing, known software, and endpoint context."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-03-quiz-04",
+              "question": "Why is DNS-based suspicion strongest when correlated with other telemetry?",
+              "options": [
+                "DNS is always encrypted",
+                "Similar DNS patterns can be produced by benign systems",
+                "DNS never contains domains",
+                "Flow records cannot show IPs"
+              ],
+              "answer": "Similar DNS patterns can be produced by benign systems",
+              "explanation": "Many legitimate services use dynamic names, CDNs, or telemetry subdomains, so correlation reduces false positives."
+            },
+            "summary": [
+              "Suspicious DNS behavior can include unusually long labels, high query volume, many unique subdomains, rare destinations, or short-lived infrastructure. None is conclusive alone. Legitimate CDNs, software update systems, security tooling, and telemetry services can produce similarly unusual patterns."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/reference/logs/dns.html",
+              "https://attack.mitre.org/detectionstrategies/DET0817/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "DNS Triage Worksheet",
+            "level": "Intermediate",
+            "description": "Turn DNS observations into an evidence-based hypothesis.",
+            "problemStatement": "Given a list of DNS query metadata, identify unusual query volume, rare names, and follow-on destination patterns, then state two benign explanations and two malicious hypotheses.",
+            "objectives": [
+              "Calculate simple frequency metrics.",
+              "Correlate DNS with destination IPs.",
+              "Document alternative explanations."
+            ],
+            "requirements": [
+              "Spreadsheet, Python, or shell tooling; synthetic DNS dataset."
+            ],
+            "hint": "Start with per-host query count, unique domains, and unique destination IPs before inspecting strings.",
+            "solutionCode": "For each source host, compute count, unique query count, and unique destination count; flag outliers; then inspect whether the flagged domains lead to consistent external connections. Explicitly separate “suspicious” from “confirmed malicious.”",
+            "solutionExplanation": "The expected result is a ranked analyst hypothesis with supporting and contradictory evidence."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "HTTP, TLS, and Modern Web Traffic",
+        "description": "Move from raw packet fields to application-layer reasoning, encrypted-traffic limitations, and modern QUIC-based web visibility.",
+        "lessons": [
+          {
+            "id": "module-04-lesson-01",
+            "title": "HTTP Request and Response Anatomy",
+            "description": "Interpret HTTP methods, hosts, status codes, headers, content lengths, and timing.",
+            "learningObjectives": [
+              "Identify key HTTP request and response fields in packet captures.",
+              "Use HTTP metadata to reconstruct a high-level transaction timeline."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "HTTP exposes application semantics that often make packet analysis much easier when payloads are visible. Analysts can correlate request method, host, URI, status code, response size, and timing. Even without payloads, these fields can sometimes survive in sensor logs or proxies."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "GET/POST describe common request intent, not necessarily benign/malicious purpose.",
+                  "Host and URI should be analyzed with destination, user-agent, and timing context.",
+                  "Large responses and repeated requests are hypotheses, not verdicts."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-04-quiz-01",
+              "question": "Which HTTP response element is most directly used to indicate whether a request succeeded at the application layer?",
+              "options": [
+                "EtherType",
+                "Status code",
+                "MAC address",
+                "TCP window"
+              ],
+              "answer": "Status code",
+              "explanation": "HTTP status codes communicate the response outcome category, such as success, redirection, client error, or server error."
+            },
+            "summary": [
+              "HTTP exposes application semantics that often make packet analysis much easier when payloads are visible. Analysts can correlate request method, host, URI, status code, response size, and timing. Even without payloads, these fields can sometimes survive in sensor logs or proxies."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-04-lesson-02",
+            "title": "TLS Handshake and Metadata",
+            "description": "Understand ClientHello, ServerHello, certificates, SNI/related metadata, and the limits of encrypted payload visibility.",
+            "learningObjectives": [
+              "Identify the major stages of a modern TLS handshake at a conceptual level.",
+              "Extract useful metadata without claiming access to encrypted content."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TLS encrypts application data, but the handshake still exposes useful metadata depending on protocol version, deployment, and visibility point. Analysts commonly inspect the client/server addresses, handshake timing, certificate context, negotiated parameters, and available hostname metadata. Encryption reduces content visibility; it does not eliminate network evidence."
+              },
+              {
+                "type": "warning",
+                "text": "Never infer exact application behavior from a destination IP alone when TLS is in use. CDN and shared-hosting infrastructure can host many unrelated services."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-04-quiz-02",
+              "question": "What is the analyst’s most important limitation when inspecting standard TLS-protected application traffic?",
+              "options": [
+                "The TCP handshake disappears",
+                "Application payloads are generally not readable from the capture alone",
+                "DNS cannot be used",
+                "IP addresses are hidden"
+              ],
+              "answer": "Application payloads are generally not readable from the capture alone",
+              "explanation": "TLS protects application payloads, so packet analysis shifts toward metadata, endpoints, timing, certificates, and corroborating telemetry."
+            },
+            "summary": [
+              "TLS encrypts application data, but the handshake still exposes useful metadata depending on protocol version, deployment, and visibility point. Analysts commonly inspect the client/server addresses, handshake timing, certificate context, negotiated parameters, and available hostname metadata. Encryption reduces content visibility; it does not eliminate network evidence."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-04-lesson-03",
+            "title": "QUIC and HTTP/3 Visibility",
+            "description": "Recognize QUIC over UDP and understand why transport analysis differs from TCP-based HTTPS.",
+            "learningObjectives": [
+              "Identify QUIC traffic patterns and the role of UDP.",
+              "Explain why TCP-centric filters miss HTTP/3 traffic."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "QUIC runs over UDP and provides transport features such as reliable streams and connection management above UDP. HTTP/3 uses QUIC, so analysts need UDP-aware tooling and protocol support. This matters operationally because a monitor designed around TCP/443 alone can undercount modern web traffic."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Look for UDP flows commonly associated with QUIC, but avoid relying solely on port numbers.",
+                  "Use protocol-aware dissectors or sensor logs when available."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-04-quiz-03",
+              "question": "Why can a monitoring rule limited to tcp.port == 443 miss some modern web traffic?",
+              "options": [
+                "Because HTTP/3 uses QUIC over UDP",
+                "Because DNS uses TCP",
+                "Because TLS uses ICMP",
+                "Because HTTPS never uses ports"
+              ],
+              "answer": "Because HTTP/3 uses QUIC over UDP",
+              "explanation": "HTTP/3 uses QUIC, which runs over UDP, so TCP-only filters can miss it."
+            },
+            "summary": [
+              "QUIC runs over UDP and provides transport features such as reliable streams and connection management above UDP. HTTP/3 uses QUIC, so analysts need UDP-aware tooling and protocol support. This matters operationally because a monitor designed around TCP/443 alone can undercount modern web traffic."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/",
+              "https://www.rfc-editor.org/rfc/rfc768.html"
+            ]
+          },
+          {
+            "id": "module-04-lesson-04",
+            "title": "User-Agent, Content, and Behavioral Clues",
+            "description": "Use application metadata and timing patterns to form hypotheses about clients, downloads, automation, and anomalies.",
+            "learningObjectives": [
+              "Compare client metadata across HTTP observations.",
+              "Identify behavioral clues that deserve endpoint or reputation checks."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "User-Agent strings, request cadence, response sizes, and content types can distinguish browsers, scripted clients, update agents, and unusual automation. These fields are mutable and can be forged, so they should be used as context rather than identity proof."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Rare user agents may warrant inspection when paired with unusual destination or request behavior.",
+                  "Repeated small requests can indicate API polling; repeated large responses may indicate synchronization or downloads."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-04-quiz-04",
+              "question": "What is a key limitation of using User-Agent as an identity signal?",
+              "options": [
+                "It is always encrypted",
+                "It can be changed by the client",
+                "It contains the source MAC",
+                "It is unique globally"
+              ],
+              "answer": "It can be changed by the client",
+              "explanation": "User-Agent is client-supplied metadata and can be customized or spoofed."
+            },
+            "summary": [
+              "User-Agent strings, request cadence, response sizes, and content types can distinguish browsers, scripted clients, update agents, and unusual automation. These fields are mutable and can be forged, so they should be used as context rather than identity proof."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Encrypted Web Traffic Triage",
+            "level": "Intermediate",
+            "description": "Investigate suspicious HTTPS without decrypting payloads.",
+            "problemStatement": "From synthetic connection metadata, rank three destinations using SNI/certificate context, JA3-like or fingerprint-style fields if available, timing, byte counts, and asset role.",
+            "objectives": [
+              "Build a multi-signal score.",
+              "Document uncertainty caused by encryption.",
+              "Separate infrastructure reputation from traffic behavior."
+            ],
+            "requirements": [
+              "Synthetic TLS/flow dataset; spreadsheet or Python."
+            ],
+            "hint": "Do not make reputation the only signal; examine periodicity, volume, and destination prevalence.",
+            "solutionCode": "Create a scoring table where each signal contributes evidence, then write a narrative explaining why the top-ranked flow deserves deeper review and what additional telemetry is needed.",
+            "solutionExplanation": "A ranked shortlist plus explicit data gaps."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Wireshark and TShark Practice",
+        "description": "Build practical packet-analysis workflows using filters, stream reconstruction, and CLI extraction.",
+        "lessons": [
+          {
+            "id": "module-05-lesson-01",
+            "title": "Wireshark Workspace and Packet Dissection",
+            "description": "Learn the core Wireshark views used during packet-level investigations.",
+            "learningObjectives": [
+              "Navigate packet list, packet details, and packet bytes.",
+              "Move between protocol layers without losing the original packet context."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Wireshark provides a packet list, a structured protocol tree, and raw bytes. A strong workflow starts broad, narrows with filters, then inspects a small number of packets in context. Analysts should record the exact filter and packet scope used so another person can reproduce the observation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Coloring rules are visual aids, not evidence by themselves.",
+                  "Packet comments and saved display filters improve repeatability."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-05-quiz-01",
+              "question": "Which Wireshark view exposes decoded protocol fields as a tree?",
+              "options": [
+                "Packet bytes pane",
+                "Packet details pane",
+                "Interface list",
+                "Capture statistics only"
+              ],
+              "answer": "Packet details pane",
+              "explanation": "The packet details pane presents decoded protocol fields hierarchically."
+            },
+            "summary": [
+              "Wireshark provides a packet list, a structured protocol tree, and raw bytes. A strong workflow starts broad, narrows with filters, then inspects a small number of packets in context. Analysts should record the exact filter and packet scope used so another person can reproduce the observation."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-05-lesson-02",
+            "title": "Capture Filters vs Display Filters",
+            "description": "Understand when a filter controls collection versus presentation.",
+            "learningObjectives": [
+              "Distinguish capture-filter syntax from display-filter syntax.",
+              "Choose the safer point to apply filtering for a given use case."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Capture filters constrain what is collected and can reduce volume before packets are written. Display filters act after capture and determine which packets are shown. The syntaxes differ, so analysts must not assume one can be substituted for the other."
+              },
+              {
+                "type": "code",
+                "text": "Example display filters:\nip.addr == 192.0.2.10\ntcp.flags.syn == 1 && tcp.flags.ack == 0\ndns"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-02",
+                "title": "Filter a PCAP by TCP Handshake State",
+                "description": "Use Wireshark to isolate initial TCP SYN packets and compare them with completed handshakes in an authorized capture.",
+                "steps": [
+                  "Open the authorized PCAP in Wireshark.",
+                  "Apply `tcp.flags.syn == 1 && tcp.flags.ack == 0` as a display filter.",
+                  "Record source/destination addresses and ports.",
+                  "Clear the filter and identify SYN-ACK and final ACK packets.",
+                  "Document one complete handshake and one incomplete attempt if present."
+                ],
+                "solution": "Use the filter `tcp.flags.syn == 1 && tcp.flags.ack == 0`, then follow the four-tuple to identify the related SYN-ACK and client ACK. Record packet numbers and timestamps.",
+                "output": "A traceable handshake annotation and a short evidence table."
+              }
+            ],
+            "quiz": {
+              "id": "module-05-quiz-02",
+              "question": "Which statement is correct?",
+              "options": [
+                "Capture filters and display filters use identical syntax",
+                "Display filters control which captured packets are shown",
+                "Display filters prevent packets from being captured",
+                "Capture filters only work after capture"
+              ],
+              "answer": "Display filters control which captured packets are shown",
+              "explanation": "Wireshark documentation describes capture filters as capture-time constraints and display filters as view-time expressions."
+            },
+            "summary": [
+              "Capture filters constrain what is collected and can reduce volume before packets are written. Display filters act after capture and determine which packets are shown. The syntaxes differ, so analysts must not assume one can be substituted for the other."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-05-lesson-03",
+            "title": "Following Conversations and Streams",
+            "description": "Reconstruct a conversation, inspect directionality, and avoid being misled by a single packet.",
+            "learningObjectives": [
+              "Use stream/conversation views to pivot from a packet to related traffic.",
+              "Explain why stream reconstruction is useful for application-level context."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A single packet rarely answers an investigation. Conversation tables, Follow TCP Stream, and endpoint statistics let analysts pivot from one packet to the surrounding exchange. Stream reconstruction should be combined with timestamps, retransmission analysis, and the full capture boundaries."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the stream index or flow identifiers when documenting evidence.",
+                  "Check both directions before drawing conclusions from one side of a conversation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-05-quiz-03",
+              "question": "Why is following a TCP stream often more useful than inspecting one packet?",
+              "options": [
+                "It removes timestamps",
+                "It reconstructs the broader byte exchange",
+                "It changes the IP addresses",
+                "It disables encryption"
+              ],
+              "answer": "It reconstructs the broader byte exchange",
+              "explanation": "Following a stream groups related packets so the analyst can inspect the sequence of the conversation."
+            },
+            "summary": [
+              "A single packet rarely answers an investigation. Conversation tables, Follow TCP Stream, and endpoint statistics let analysts pivot from one packet to the surrounding exchange. Stream reconstruction should be combined with timestamps, retransmission analysis, and the full capture boundaries."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-05-lesson-04",
+            "title": "TShark for Repeatable CLI Analysis",
+            "description": "Use TShark to read captures, filter packets, and extract fields into pipelines.",
+            "learningObjectives": [
+              "Run TShark against saved PCAP/pcapng files.",
+              "Extract protocol fields suitable for repeatable scripts and reports."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TShark is Wireshark’s command-line protocol analyzer. It is especially useful when analysts need repeatable extraction across many captures. The -r option reads a saved capture; display filters can select packets, and field extraction can produce machine-readable output for scripting."
+              },
+              {
+                "type": "code",
+                "text": "tshark -r sample.pcapng -Y \"dns\"\ntshark -r sample.pcapng -Y \"tcp.flags.syn==1 && tcp.flags.ack==0\""
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-05-quiz-04",
+              "question": "Which TShark option reads an existing capture file?",
+              "options": [
+                "-i",
+                "-r",
+                "-w",
+                "-f"
+              ],
+              "answer": "-r",
+              "explanation": "The TShark manual documents -r for reading a capture file."
+            },
+            "summary": [
+              "TShark is Wireshark’s command-line protocol analyzer. It is especially useful when analysts need repeatable extraction across many captures. The -r option reads a saved capture; display filters can select packets, and field extraction can produce machine-readable output for scripting."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/man-pages/tshark.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Create a Reproducible TShark Extractor",
+            "level": "Intermediate",
+            "description": "Extract DNS and TCP handshake indicators from a PCAP using a repeatable shell command set.",
+            "problemStatement": "Produce a small report containing packet number, timestamp, source/destination IP, transport protocol, and DNS query or SYN state where relevant.",
+            "objectives": [
+              "Use display filters correctly.",
+              "Extract fields with TShark.",
+              "Preserve commands in the report."
+            ],
+            "requirements": [
+              "Wireshark/TShark installed; authorized PCAP."
+            ],
+            "hint": "Start with `-Y` filters, then add field extraction only after the filter is correct.",
+            "solutionCode": "Example approach:\n`tshark -r sample.pcapng -Y \"dns\" -T fields -e frame.number -e frame.time_epoch -e ip.src -e ip.dst -e dns.qry.name`\nFor SYNs use `-Y \"tcp.flags.syn==1 && tcp.flags.ack==0\"` and appropriate TCP fields.",
+            "solutionExplanation": "A reproducible command transcript and CSV-like output suitable for later analysis."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Zeek Network Telemetry",
+        "description": "Learn to use Zeek as a structured network-evidence layer, including connection, DNS, HTTP, and scripted analytics.",
+        "lessons": [
+          {
+            "id": "module-06-lesson-01",
+            "title": "Zeek as a Network Security Monitor",
+            "description": "Understand Zeek’s event-driven metadata generation and where it fits versus packet analyzers.",
+            "learningObjectives": [
+              "Explain Zeek’s role in producing structured network logs.",
+              "Describe why Zeek complements packet inspection instead of replacing it."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Zeek transforms observed traffic into structured logs representing connections and protocol events. Its strength is scalable metadata and behavioral visibility: analysts can start with conn.log or dns.log and pivot toward richer protocol logs when needed. It can process live traffic or stored captures."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Zeek logs are evidence derived from traffic, not raw packets.",
+                  "Different analyzers generate different log families; availability depends on observed traffic and configuration."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-06-quiz-01",
+              "question": "What is Zeek best known for in a network-analysis workflow?",
+              "options": [
+                "Rendering desktop screenshots",
+                "Generating structured network telemetry from observed traffic",
+                "Replacing all endpoint telemetry",
+                "Encrypting packet captures"
+              ],
+              "answer": "Generating structured network telemetry from observed traffic",
+              "explanation": "Zeek is a network analysis framework that generates structured logs and supports custom scripting."
+            },
+            "summary": [
+              "Zeek transforms observed traffic into structured logs representing connections and protocol events. Its strength is scalable metadata and behavioral visibility: analysts can start with conn.log or dns.log and pivot toward richer protocol logs when needed. It can process live traffic or stored captures."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/"
+            ]
+          },
+          {
+            "id": "module-06-lesson-02",
+            "title": "conn.log and Network Conversation Summaries",
+            "description": "Use conn.log to reason about source/destination, ports, duration, bytes, and connection state.",
+            "learningObjectives": [
+              "Interpret the most important conn.log fields.",
+              "Use connection metadata to form triage hypotheses."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Zeek’s conn.log is a foundational network dataset. Depending on configuration and version, fields commonly include timestamps, a connection UID, originator/responder addresses and ports, protocol, duration, bytes, and state indicators. Analysts can use it to baseline normal traffic and identify outliers."
+              },
+              {
+                "type": "code",
+                "text": "Useful conceptual fields:\nts, uid, id.orig_h, id.orig_p, id.resp_h, id.resp_p, proto, duration, orig_bytes, resp_bytes, conn_state"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-02",
+                "title": "Analyze Zeek conn.log",
+                "description": "Use a Zeek connection log to calculate host-level traffic metrics.",
+                "steps": [
+                  "Load a conn.log export.",
+                  "Group records by `id.orig_h`.",
+                  "Calculate connection count, unique responder count, and originator bytes.",
+                  "Sort by unique responders.",
+                  "Write one benign explanation and one follow-up question for the top candidate."
+                ],
+                "solution": "Use `pd.read_csv('conn.log', sep='\\t', comment='#')` and `groupby('id.orig_h').agg(connections=('uid','count'), unique_responders=('id.resp_h','nunique'), originator_bytes=('orig_bytes','sum'))`.",
+                "output": "A ranked host summary plus analyst notes."
+              }
+            ],
+            "quiz": {
+              "id": "module-06-quiz-02",
+              "question": "Which conn.log concept is most useful for linking related Zeek records?",
+              "options": [
+                "UID",
+                "MAC vendor",
+                "Screen resolution",
+                "Keyboard layout"
+              ],
+              "answer": "UID",
+              "explanation": "The connection UID can associate records that refer to the same observed connection across Zeek logs."
+            },
+            "summary": [
+              "Zeek’s conn.log is a foundational network dataset. Depending on configuration and version, fields commonly include timestamps, a connection UID, originator/responder addresses and ports, protocol, duration, bytes, and state indicators. Analysts can use it to baseline normal traffic and identify outliers."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/reference/logs/index.html"
+            ]
+          },
+          {
+            "id": "module-06-lesson-03",
+            "title": "Zeek DNS and HTTP Logs",
+            "description": "Pivot from connections to DNS and HTTP metadata using shared identifiers.",
+            "learningObjectives": [
+              "Correlate DNS/HTTP records with connection records.",
+              "Use Zeek logs to build a protocol-level timeline."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Zeek’s protocol logs provide application-aware fields without requiring analysts to hand-decode every packet. dns.log can expose query names, types, response codes, and resolver roles. HTTP logs can expose hosts, URIs, methods, status codes, and user agents when the traffic is visible to the analyzer."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use timestamps and UID fields to pivot.",
+                  "Be aware that encrypted traffic changes which application logs are available."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-06-quiz-03",
+              "question": "Which field is especially useful for linking a Zeek DNS event back to a connection?",
+              "options": [
+                "uid",
+                "qclass_name",
+                "rcode_name",
+                "query length"
+              ],
+              "answer": "uid",
+              "explanation": "Zeek connection-related logs can share the same UID to support correlation."
+            },
+            "summary": [
+              "Zeek’s protocol logs provide application-aware fields without requiring analysts to hand-decode every packet. dns.log can expose query names, types, response codes, and resolver roles. HTTP logs can expose hosts, URIs, methods, status codes, and user agents when the traffic is visible to the analyzer."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/reference/logs/index.html",
+              "https://docs.zeek.org/en/current/reference/logs/dns.html"
+            ]
+          },
+          {
+            "id": "module-06-lesson-04",
+            "title": "Zeek Scripting and Notice Concepts",
+            "description": "Learn how Zeek scripts can turn observed behavior into analyst-facing notices.",
+            "learningObjectives": [
+              "Explain the purpose of Zeek scripting at a high level.",
+              "Distinguish raw protocol observations from higher-level notices."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Zeek scripting lets defenders express logic over events and protocol records. A notice is a higher-level signal that something deserves attention. The best detections are grounded in observable behavior and tuned for local context rather than broad assumptions."
+              },
+              {
+                "type": "code",
+                "text": "Conceptual Zeek workflow:\ntraffic → protocol event → script logic → notice/log enrichment"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-06-quiz-04",
+              "question": "What is the main value of a Zeek notice?",
+              "options": [
+                "It is a replacement for packet capture",
+                "It raises a higher-level analytic signal from observed behavior",
+                "It decrypts all traffic",
+                "It changes source IPs"
+              ],
+              "answer": "It raises a higher-level analytic signal from observed behavior",
+              "explanation": "Notices summarize or elevate behavior for investigation based on scripted logic and observed events."
+            },
+            "summary": [
+              "Zeek scripting lets defenders express logic over events and protocol records. A notice is a higher-level signal that something deserves attention. The best detections are grounded in observable behavior and tuned for local context rather than broad assumptions."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Zeek Connection Hunt",
+            "level": "Intermediate",
+            "description": "Identify an unusual internal host using Zeek conn.log.",
+            "problemStatement": "Find hosts with unusually high unique destination counts, long-lived external connections, or large outbound byte totals, then explain why each is or is not suspicious.",
+            "objectives": [
+              "Aggregate conn.log by source host.",
+              "Compare distributions instead of fixed assumptions.",
+              "Write a defensible conclusion."
+            ],
+            "requirements": [
+              "Zeek conn.log in TSV or JSON; jq/Python/pandas optional."
+            ],
+            "hint": "Start with per-host counts and quantiles before setting thresholds.",
+            "solutionCode": "Compute count of unique responders, total orig_bytes, total duration, and external destination ratio by source. Rank outliers and manually inspect their common destinations and ports.",
+            "solutionExplanation": "A ranked set of candidate hosts plus evidence and benign explanations."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Suricata IDS and Network Detection",
+        "description": "Use Suricata as a rule-based detection layer, interpret EVE JSON, and build disciplined alert validation and tuning workflows.",
+        "lessons": [
+          {
+            "id": "module-07-lesson-01",
+            "title": "Suricata Detection Model",
+            "description": "Understand signatures, alerts, protocol metadata, and the role of Suricata in NSM/IDS workflows.",
+            "learningObjectives": [
+              "Explain how Suricata uses rules and protocol inspection.",
+              "Differentiate an IDS alert from proof of successful compromise."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Suricata combines packet processing, protocol analysis, and rules to generate alerts and structured events. An alert indicates that observed traffic matched a detection condition; it does not by itself prove exploit success, persistence, or intent."
+              },
+              {
+                "type": "warning",
+                "text": "Treat IDS alerts as leads. Validate source/destination context, timing, asset role, and related telemetry before escalating."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-07-quiz-01",
+              "question": "What does a Suricata alert most directly prove?",
+              "options": [
+                "The attacker gained persistence",
+                "Observed traffic matched a detection condition",
+                "The endpoint was reimaged",
+                "A credential was stolen"
+              ],
+              "answer": "Observed traffic matched a detection condition",
+              "explanation": "An alert is evidence of a rule match or detection event; additional evidence is needed to establish impact."
+            },
+            "summary": [
+              "Suricata combines packet processing, protocol analysis, and rules to generate alerts and structured events. An alert indicates that observed traffic matched a detection condition; it does not by itself prove exploit success, persistence, or intent."
+            ],
+            "resources": [
+              "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html"
+            ]
+          },
+          {
+            "id": "module-07-lesson-02",
+            "title": "EVE JSON Structure",
+            "description": "Read Suricata EVE JSON alert and protocol events as structured telemetry.",
+            "learningObjectives": [
+              "Identify common EVE JSON top-level fields.",
+              "Parse event_type-specific fields without assuming every record has the same schema."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Suricata EVE outputs alerts, anomalies, metadata, file information, and protocol-specific records in JSON. The event_type field determines which nested structure is expected, so parsers should handle records by type rather than hard-coding one universal shape."
+              },
+              {
+                "type": "code",
+                "text": "{\"timestamp\":\"...\",\"event_type\":\"alert\", \"src_ip\":\"...\", \"dest_ip\":\"...\", \"alert\":{...}}"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-02",
+                "title": "Parse Suricata EVE Alerts",
+                "description": "Extract alert records from Suricata EVE JSON and summarize recurring signatures.",
+                "steps": [
+                  "Prepare an authorized or synthetic eve.json file.",
+                  "Read one JSON object per line.",
+                  "Keep only `event_type == \"alert\"`.",
+                  "Extract signature and endpoints.",
+                  "Count signatures and inspect recurring rules."
+                ],
+                "solution": "Use `json.loads(line)` and `Counter`; when `event.get('event_type') == 'alert'`, increment `counts[event.get('alert',{}).get('signature','unknown')]`.",
+                "output": "A signature-frequency report with alert context."
+              }
+            ],
+            "quiz": {
+              "id": "module-07-quiz-02",
+              "question": "Why should a parser branch on EVE `event_type`?",
+              "options": [
+                "All EVE records have identical nested fields",
+                "Different event types expose different schemas",
+                "event_type is only cosmetic",
+                "It contains the TCP sequence number"
+              ],
+              "answer": "Different event types expose different schemas",
+              "explanation": "Suricata documents multiple EVE event categories, each with event-specific content."
+            },
+            "summary": [
+              "Suricata EVE outputs alerts, anomalies, metadata, file information, and protocol-specific records in JSON. The event_type field determines which nested structure is expected, so parsers should handle records by type rather than hard-coding one universal shape."
+            ],
+            "resources": [
+              "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html",
+              "https://docs.suricata.io/en/latest/appendix/eve-schema.html"
+            ]
+          },
+          {
+            "id": "module-07-lesson-03",
+            "title": "Writing and Tuning Suricata Rules",
+            "description": "Design rule logic that is specific, testable, and resistant to obvious noise.",
+            "learningObjectives": [
+              "Explain rule action, protocol, direction, addresses, ports, and content conditions.",
+              "Use context and false-positive analysis to tune a rule."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful Suricata rule expresses a concrete detection hypothesis. Start with the narrowest observable that maps to the behavior you care about, then add protocol, direction, and context constraints. Tuning should be based on representative benign traffic as well as known-positive tests."
+              },
+              {
+                "type": "code",
+                "text": "Conceptual rule shape:\naction protocol src_addr src_port -> dst_addr dst_port (msg:\"...\"; content:\"...\"; sid:1000001;)"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-07-quiz-03",
+              "question": "What is the best first step when a rule fires too often?",
+              "options": [
+                "Increase severity blindly",
+                "Inspect representative false positives and refine the detection logic",
+                "Disable logging",
+                "Delete the rule permanently"
+              ],
+              "answer": "Inspect representative false positives and refine the detection logic",
+              "explanation": "Tuning should be evidence-driven: inspect why benign traffic matches and change the conditions that create the ambiguity."
+            },
+            "summary": [
+              "A useful Suricata rule expresses a concrete detection hypothesis. Start with the narrowest observable that maps to the behavior you care about, then add protocol, direction, and context constraints. Tuning should be based on representative benign traffic as well as known-positive tests."
+            ],
+            "resources": [
+              "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html"
+            ]
+          },
+          {
+            "id": "module-07-lesson-04",
+            "title": "Alert Correlation and Validation",
+            "description": "Correlate IDS alerts with packet and flow evidence before assigning severity.",
+            "learningObjectives": [
+              "Validate alerts with surrounding packet context.",
+              "Explain how duplicate or chained alerts can be normalized during triage."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A single network event can trigger several signatures or produce repeated alerts. Correlation can reduce analyst fatigue by grouping events around a connection, source/destination pair, rule family, and time window. The goal is to preserve the raw evidence while presenting a normalized investigation unit."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Compare alert time with the first packet and connection duration.",
+                  "Look for preceding DNS and following connections to understand the wider sequence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-07-quiz-04",
+              "question": "Why correlate an IDS alert with packet/flow evidence?",
+              "options": [
+                "To prove every alert is malicious",
+                "To understand whether the alert is isolated, repeated, or part of a larger behavior",
+                "To remove timestamps",
+                "To hide false positives"
+              ],
+              "answer": "To understand whether the alert is isolated, repeated, or part of a larger behavior",
+              "explanation": "Correlation adds context and can distinguish one-off matches from sustained or chained activity."
+            },
+            "summary": [
+              "A single network event can trigger several signatures or produce repeated alerts. Correlation can reduce analyst fatigue by grouping events around a connection, source/destination pair, rule family, and time window. The goal is to preserve the raw evidence while presenting a normalized investigation unit."
+            ],
+            "resources": [
+              "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Tune a Noisy IDS Rule",
+            "level": "Advanced",
+            "description": "Reduce false positives without losing the intended behavior.",
+            "problemStatement": "Given synthetic alert examples and benign traffic context, refine a detection rule so routine software updates no longer trigger while the suspicious pattern remains detectable.",
+            "objectives": [
+              "Identify the noisy condition.",
+              "Add a meaningful constraint.",
+              "Explain expected false-negative trade-offs."
+            ],
+            "requirements": [
+              "Suricata rule syntax; synthetic test traffic or rule test data."
+            ],
+            "hint": "Prefer constraints grounded in protocol behavior or asset context over arbitrary IP exclusions.",
+            "solutionCode": "Document the original rule, example false positives, the refined rule, and why each changed condition narrows the match. Include a test case that still triggers the refined rule.",
+            "solutionExplanation": "A before/after rule comparison with explicit validation cases."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Network Flow Analysis",
+        "description": "Turn summarized flow telemetry into baselines, scan detection, periodicity analysis, and cloud-network investigations.",
+        "lessons": [
+          {
+            "id": "module-08-lesson-01",
+            "title": "Flow Records and 5-Tuple Reasoning",
+            "description": "Analyze NetFlow/IPFIX/VPC-flow style metadata without packets.",
+            "learningObjectives": [
+              "Explain the value and limitations of flow records.",
+              "Use 5-tuple, bytes, packets, duration, and action fields for triage."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Flow telemetry summarizes network conversations and is often cheaper to retain than raw packet captures. Common fields include source/destination addresses and ports, protocol, timestamps, byte/packet counts, and disposition. Cloud flow logs add provider-specific fields and do not represent packet payloads."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Flow records are excellent for volume and direction analysis.",
+                  "Sampling or aggregation can hide short or low-volume events.",
+                  "Provider flow logs may be delivered asynchronously and should not be treated as packet-by-packet timelines."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-08-quiz-01",
+              "question": "What is a major blind spot of flow records?",
+              "options": [
+                "They always contain full payloads",
+                "They usually lack application payload content",
+                "They have no timestamps",
+                "They cannot show direction"
+              ],
+              "answer": "They usually lack application payload content",
+              "explanation": "Flow records are metadata summaries; payload-level evidence requires packet capture or other application telemetry."
+            },
+            "summary": [
+              "Flow telemetry summarizes network conversations and is often cheaper to retain than raw packet captures. Common fields include source/destination addresses and ports, protocol, timestamps, byte/packet counts, and disposition. Cloud flow logs add provider-specific fields and do not represent packet payloads."
+            ],
+            "resources": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"
+            ]
+          },
+          {
+            "id": "module-08-lesson-02",
+            "title": "Baselining and Percentiles",
+            "description": "Build baselines for destination counts, bytes, ports, and connection frequency without relying on arbitrary thresholds.",
+            "learningObjectives": [
+              "Use distributions and percentiles for network baselines.",
+              "Explain why a single global threshold can be misleading."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Baselining turns “unusual” into a measurable deviation from a relevant peer group. A database server and a developer workstation should not share the same normal profile. Percentiles are often more robust than fixed limits when traffic volume varies significantly across assets or time windows."
+              },
+              {
+                "type": "code",
+                "text": "Conceptual baseline: threshold = percentile(metric, 99) within peer group and time window"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-08-quiz-02",
+              "question": "Why is a peer-group baseline usually better than one threshold for every host?",
+              "options": [
+                "All hosts behave identically",
+                "Different roles have different expected traffic patterns",
+                "Peer groups remove timestamps",
+                "Thresholds become encrypted"
+              ],
+              "answer": "Different roles have different expected traffic patterns",
+              "explanation": "Role-aware baselines reduce false positives by comparing an asset with similar systems."
+            },
+            "summary": [
+              "Baselining turns “unusual” into a measurable deviation from a relevant peer group. A database server and a developer workstation should not share the same normal profile. Percentiles are often more robust than fixed limits when traffic volume varies significantly across assets or time windows."
+            ],
+            "resources": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
+              "https://learn.microsoft.com/en-us/azure/network-watcher/traffic-analytics"
+            ]
+          },
+          {
+            "id": "module-08-lesson-03",
+            "title": "Scanning and Service Discovery Patterns",
+            "description": "Detect scanning behavior using destination breadth, sequential probing, and time windows.",
+            "learningObjectives": [
+              "Describe flow-based indicators of scanning.",
+              "Implement a simple unique-destination/port window analysis."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Scanning can manifest as one source contacting many destinations or many ports in a short period. MITRE ATT&CK’s Network Service Discovery technique and detection strategies emphasize correlating network connection activity with process or network telemetry rather than relying on a single packet pattern."
+              },
+              {
+                "type": "code",
+                "text": "Conceptual metric:\nunique_destinations(src, 5m)\nunique_ports(src, 5m)\nprobe_rate = attempts / minute"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08-03",
+                "title": "Detect a Small Scan in Flow Data",
+                "description": "Identify a source that contacts many destinations in a short time window.",
+                "steps": [
+                  "Create a CSV with timestamp, source, destination, and destination port.",
+                  "Normalize timestamps to UTC.",
+                  "Group rows by source.",
+                  "Evaluate five-minute windows.",
+                  "Review candidates against known administrative activity."
+                ],
+                "solution": "For each source, sort events by time; build five-minute windows; calculate unique destinations and ports; flag windows meeting the selected threshold; preserve the window start and counts.",
+                "output": "A ranked list of scan candidates with supporting counts."
+              }
+            ],
+            "quiz": {
+              "id": "module-08-quiz-03",
+              "question": "Which observation most strongly suggests horizontal scanning?",
+              "options": [
+                "One host makes one DNS query",
+                "One source contacts many unique destination IPs in a short window",
+                "One web request returns 200",
+                "A host opens a single SSH connection"
+              ],
+              "answer": "One source contacts many unique destination IPs in a short window",
+              "explanation": "Horizontal scanning targets multiple hosts; breadth across destination IPs is a key signal."
+            },
+            "summary": [
+              "Scanning can manifest as one source contacting many destinations or many ports in a short period. MITRE ATT&CK’s Network Service Discovery technique and detection strategies emphasize correlating network connection activity with process or network telemetry rather than relying on a single packet pattern."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/T1046/",
+              "https://attack.mitre.org/detectionstrategies/DET0817/"
+            ]
+          },
+          {
+            "id": "module-08-lesson-04",
+            "title": "Beaconing, Periodicity, and Long-Running Sessions",
+            "description": "Analyze repeated outbound communications and distinguish periodic behavior from ordinary scheduled activity.",
+            "learningObjectives": [
+              "Measure inter-arrival times for repeated connections.",
+              "Combine periodicity with destination rarity, bytes, and asset role."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Beacon-like traffic can exhibit regular intervals, low byte counts, long duration patterns, or repeated destination targeting. Periodicity also occurs in backups, health checks, update agents, and monitoring systems, so the strongest analysis combines timing with destination context and software ownership."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Look for low variance in inter-arrival times across multiple observations.",
+                  "Test whether the same pattern appears across known-benign peers."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-08-quiz-04",
+              "question": "Why is periodicity alone insufficient to classify beaconing as malicious?",
+              "options": [
+                "Scheduled services can also be periodic",
+                "TCP cannot repeat connections",
+                "DNS blocks all periodic traffic",
+                "Periodic traffic contains no timestamps"
+              ],
+              "answer": "Scheduled services can also be periodic",
+              "explanation": "Many legitimate systems communicate on timers, so context and corroboration are required."
+            },
+            "summary": [
+              "Beacon-like traffic can exhibit regular intervals, low byte counts, long duration patterns, or repeated destination targeting. Periodicity also occurs in backups, health checks, update agents, and monitoring systems, so the strongest analysis combines timing with destination context and software ownership."
+            ],
+            "resources": [
+              "https://attack.mitre.org/detectionstrategies/DET0817/",
+              "https://learn.microsoft.com/en-us/azure/network-watcher/traffic-analytics"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Detect a Scan from Flow Data",
+            "level": "Advanced",
+            "description": "Build a sliding-window scan detector using synthetic flow records.",
+            "problemStatement": "Flag sources that contact at least 20 unique destinations or 20 unique destination ports within five minutes, then tune the threshold using known administrative scanner activity.",
+            "objectives": [
+              "Implement a time-window aggregation.",
+              "Whitelist authorized scanner assets based on context.",
+              "Report false positives."
+            ],
+            "requirements": [
+              "Python 3; CSV flow data."
+            ],
+            "hint": "Keep the raw data and produce a second field explaining why a row/window was flagged.",
+            "solutionCode": "Implement a five-minute sliding window grouped by source. Calculate unique destination IPs/ports and compare to the chosen threshold. Exclude explicitly documented authorized scanner addresses from the alert output, while still recording that they were observed.",
+            "solutionExplanation": "A detector report containing flagged windows, source, counts, and tuning notes."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Encrypted and Cloud Network Analysis",
+        "description": "Develop stronger evidence handling for encrypted traffic, certificates, fingerprints, and cloud/shared-network architectures.",
+        "lessons": [
+          {
+            "id": "module-09-lesson-01",
+            "title": "Encrypted Traffic Without Decryption",
+            "description": "Build a methodology for investigating encrypted sessions using metadata.",
+            "learningObjectives": [
+              "Identify useful fields available without payload decryption.",
+              "State the confidence and limitations of encrypted-traffic inferences."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "When payloads are encrypted, analysts can still inspect endpoints, ports, timing, packet sizes, directionality, handshake metadata, certificates, DNS, and flow patterns. These signals support probabilistic conclusions, not exact content reconstruction."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Start from asset role and expected destination categories.",
+                  "Compare suspicious traffic with historical behavior from the same host.",
+                  "Use endpoint telemetry when network evidence is insufficient."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-09-quiz-01",
+              "question": "Which combination is generally most useful for encrypted-traffic triage?",
+              "options": [
+                "Only destination port",
+                "Only packet size",
+                "Metadata plus DNS, timing, endpoints, and asset context",
+                "Only MAC address"
+              ],
+              "answer": "Metadata plus DNS, timing, endpoints, and asset context",
+              "explanation": "Encrypted-traffic investigations benefit from combining multiple independent signals."
+            },
+            "summary": [
+              "When payloads are encrypted, analysts can still inspect endpoints, ports, timing, packet sizes, directionality, handshake metadata, certificates, DNS, and flow patterns. These signals support probabilistic conclusions, not exact content reconstruction."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/",
+              "https://docs.zeek.org/en/current/reference/logs/index.html"
+            ]
+          },
+          {
+            "id": "module-09-lesson-02",
+            "title": "Certificates and TLS Trust Context",
+            "description": "Use certificate names, issuer chains, validity, and reuse as investigative context.",
+            "learningObjectives": [
+              "Explain what a certificate can reveal and what it cannot.",
+              "Use certificate metadata as a pivot across connections."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TLS certificates can contain names, issuers, validity windows, public-key parameters, and chain information. Shared certificates can appear across hosted services, so certificate reuse is useful as a pivot but not proof of common ownership or maliciousness."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Compare certificate subject/SAN context with DNS names and destination infrastructure.",
+                  "Check time validity against the observed timestamp."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-09-quiz-02",
+              "question": "What is a safe use of certificate metadata in an investigation?",
+              "options": [
+                "Treat certificate issuer as proof of legitimacy",
+                "Use certificate names and reuse as a pivot for related observations",
+                "Assume every shared certificate belongs to one organization",
+                "Ignore the observed timestamp"
+              ],
+              "answer": "Use certificate names and reuse as a pivot for related observations",
+              "explanation": "Certificate metadata is useful context but must be correlated with DNS, infrastructure, and timing."
+            },
+            "summary": [
+              "TLS certificates can contain names, issuers, validity windows, public-key parameters, and chain information. Shared certificates can appear across hosted services, so certificate reuse is useful as a pivot but not proof of common ownership or maliciousness."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/"
+            ]
+          },
+          {
+            "id": "module-09-lesson-03",
+            "title": "Traffic Classification and Fingerprinting Limits",
+            "description": "Understand statistical and protocol fingerprints while avoiding brittle attribution claims.",
+            "learningObjectives": [
+              "Describe the idea of traffic fingerprinting.",
+              "Explain why fingerprints should support, not replace, behavioral evidence."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Traffic fingerprints can use packet sizes, directionality, timing, protocol features, and handshake characteristics to classify applications or clients. Fingerprints can change with software updates, middleboxes, privacy tooling, and protocol evolution, making them probabilistic rather than identity proofs."
+              },
+              {
+                "type": "warning",
+                "text": "Do not state “this fingerprint equals malware X” without independent validation. Fingerprints can overlap across unrelated software and infrastructure."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-09-quiz-03",
+              "question": "Why can a fingerprint be useful but still not prove application identity?",
+              "options": [
+                "Fingerprints never use network data",
+                "Different applications can share or change observable characteristics",
+                "Fingerprints reveal passwords",
+                "Fingerprints eliminate encryption"
+              ],
+              "answer": "Different applications can share or change observable characteristics",
+              "explanation": "Observed network characteristics are not always unique and can change with environment or software version."
+            },
+            "summary": [
+              "Traffic fingerprints can use packet sizes, directionality, timing, protocol features, and handshake characteristics to classify applications or clients. Fingerprints can change with software updates, middleboxes, privacy tooling, and protocol evolution, making them probabilistic rather than identity proofs."
+            ],
+            "resources": [
+              "https://www.wireshark.org/docs/wsug_html/",
+              "https://docs.zeek.org/en/current/"
+            ]
+          },
+          {
+            "id": "module-09-lesson-04",
+            "title": "Cloud Flow Telemetry and Shared Infrastructure",
+            "description": "Interpret cloud flow logs and shared service infrastructure without assuming one-to-one host ownership.",
+            "learningObjectives": [
+              "Explain what VPC/VNet-style flow logs can and cannot tell you.",
+              "Account for load balancers, NAT, CDN, and shared infrastructure during attribution."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Cloud flow logs expose IP traffic metadata associated with network interfaces or cloud constructs, but cloud architectures often insert NAT, load balancers, gateways, and shared services. Attribution therefore requires mapping the observed interface, route path, resource identity, and cloud-native logging context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the exact cloud resource/interface represented by the flow source or destination.",
+                  "Correlate with provider audit logs when identity or configuration changes matter."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-09-quiz-04",
+              "question": "Why can a public destination IP be a poor attribution anchor in cloud environments?",
+              "options": [
+                "Public IPs are impossible to observe",
+                "Shared services and load balancers can host multiple applications",
+                "Cloud traffic has no ports",
+                "Flow logs include full payloads"
+              ],
+              "answer": "Shared services and load balancers can host multiple applications",
+              "explanation": "Cloud and hosted infrastructure often multiplexes services behind shared IPs, so attribution needs additional context."
+            },
+            "summary": [
+              "Cloud flow logs expose IP traffic metadata associated with network interfaces or cloud constructs, but cloud architectures often insert NAT, load balancers, gateways, and shared services. Attribution therefore requires mapping the observed interface, route path, resource identity, and cloud-native logging context."
+            ],
+            "resources": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
+              "https://learn.microsoft.com/en-us/azure/network-watcher/traffic-analytics"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Build an Encrypted-Traffic Evidence Matrix",
+            "level": "Advanced",
+            "description": "Create a confidence-rated evidence matrix for three suspicious encrypted flows.",
+            "problemStatement": "For each flow, score endpoint context, DNS, certificate context, timing, periodicity, byte ratios, and asset role; identify what evidence would raise or lower confidence.",
+            "objectives": [
+              "Separate observation from inference.",
+              "Use a confidence rubric.",
+              "State missing evidence."
+            ],
+            "requirements": [
+              "Synthetic TLS/flow metadata; spreadsheet or Python."
+            ],
+            "hint": "Write each observation as a fact before interpreting it.",
+            "solutionCode": "Create columns for observed fact, interpretation, confidence (low/medium/high), alternative explanation, and next data source. Do not use a single reputation score as the final verdict.",
+            "solutionExplanation": "A defensible analyst matrix showing why some encrypted sessions deserve escalation and others do not."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Threat Hunting and Detection Engineering",
+        "description": "Convert traffic observations into behavioral hunts, portable detections, ATT&CK-aligned coverage, and sustainable tuning processes.",
+        "lessons": [
+          {
+            "id": "module-10-lesson-01",
+            "title": "From Hypothesis to Network Hunt",
+            "description": "Turn suspicious observations into repeatable hunting questions.",
+            "learningObjectives": [
+              "Write testable network-hunting hypotheses.",
+              "Define required fields and expected benign/malicious contrasts before querying data."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A hunt starts with a hypothesis such as “hosts that never contact external DNS resolvers began contacting one rare resolver at regular intervals.” The analyst then defines the data required, a time window, a peer group, expected benign explanations, and the evidence that would support or falsify the hypothesis."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Hypothesis → dataset → query → validation → pivot → conclusion.",
+                  "Avoid hunts that only search for a named IOC without behavioral context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-10-quiz-01",
+              "question": "Which is the strongest hunting hypothesis?",
+              "options": [
+                "Find bad traffic",
+                "Search for every external IP",
+                "Identify workstations with new periodic outbound connections to rare destinations and compare against baseline",
+                "Look at all packets"
+              ],
+              "answer": "Identify workstations with new periodic outbound connections to rare destinations and compare against baseline",
+              "explanation": "It specifies a behavior, peer group, novelty condition, and comparison strategy."
+            },
+            "summary": [
+              "A hunt starts with a hypothesis such as “hosts that never contact external DNS resolvers began contacting one rare resolver at regular intervals.” The analyst then defines the data required, a time window, a peer group, expected benign explanations, and the evidence that would support or falsify the hypothesis."
+            ],
+            "resources": [
+              "https://attack.mitre.org/detectionstrategies/DET0817/"
+            ]
+          },
+          {
+            "id": "module-10-lesson-02",
+            "title": "Detection Engineering with Sigma Concepts",
+            "description": "Use Sigma-style logic to express portable event-based detection concepts while respecting field differences.",
+            "learningObjectives": [
+              "Explain the role of logsource, detection, condition, and metadata in Sigma.",
+              "Recognize why field mapping is required across platforms."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Sigma is a generic signature format for SIEM-style logs. A Sigma rule describes the source log context and a detection condition in a platform-neutral way, but the target system still needs field mapping and backend-specific translation. Current Sigma specification versioning matters when designing or validating rules."
+              },
+              {
+                "type": "code",
+                "text": "Simplified Sigma shape:\ntitle: Unusual Network Event\nlogsource:\n  product: ...\ndetection:\n  selection:\n    field: value\n  condition: selection"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-10-quiz-02",
+              "question": "Why does a Sigma rule still need backend-specific field mapping?",
+              "options": [
+                "Because Sigma rules are encrypted",
+                "Because source systems name and represent fields differently",
+                "Because Sigma cannot contain conditions",
+                "Because rules only support Windows"
+              ],
+              "answer": "Because source systems name and represent fields differently",
+              "explanation": "Sigma provides a generic detection format, but target data schemas and query languages differ."
+            },
+            "summary": [
+              "Sigma is a generic signature format for SIEM-style logs. A Sigma rule describes the source log context and a detection condition in a platform-neutral way, but the target system still needs field mapping and backend-specific translation. Current Sigma specification versioning matters when designing or validating rules."
+            ],
+            "resources": [
+              "https://sigmahq.io/sigma-specification/specification/sigma-rules-specification.html",
+              "https://sigmahq.io/sigma-specification/"
+            ]
+          },
+          {
+            "id": "module-10-lesson-03",
+            "title": "MITRE ATT&CK-Aligned Network Detections",
+            "description": "Map network observations to adversary behaviors and detection analytics without overclaiming attribution.",
+            "learningObjectives": [
+              "Use ATT&CK as a behavior taxonomy rather than proof of actor identity.",
+              "Map scanning and discovery signals to network-service-discovery behaviors."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK can organize network detections around adversary behaviors such as Network Service Discovery (T1046). Current ATT&CK detection strategy material emphasizes behavioral analytics and relevant data components. Analysts should use mappings to communicate what behavior a detection covers, not to claim who performed it."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Behavior mapping improves consistency across detections.",
+                  "Track the data sources required to make the behavior observable."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-10-quiz-03",
+              "question": "What is the safest interpretation of an ATT&CK technique mapping in a network alert?",
+              "options": [
+                "Proof of a specific threat actor",
+                "A label describing the behavior the detection is intended to cover",
+                "Proof of successful compromise",
+                "A replacement for evidence"
+              ],
+              "answer": "A label describing the behavior the detection is intended to cover",
+              "explanation": "ATT&CK is a knowledge base and behavioral taxonomy; the observation still needs evidence and context."
+            },
+            "summary": [
+              "MITRE ATT&CK can organize network detections around adversary behaviors such as Network Service Discovery (T1046). Current ATT&CK detection strategy material emphasizes behavioral analytics and relevant data components. Analysts should use mappings to communicate what behavior a detection covers, not to claim who performed it."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/T1046/",
+              "https://attack.mitre.org/detectionstrategies/DET0817/"
+            ]
+          },
+          {
+            "id": "module-10-lesson-04",
+            "title": "False Positives, Precision, and Detection Lifecycle",
+            "description": "Tune detections using representative traffic, ownership, and measurable outcomes.",
+            "learningObjectives": [
+              "Explain precision/false-positive trade-offs for network detections.",
+              "Design a rule-review lifecycle with ownership and retirement criteria."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A detection is an operational product. Good detections have a clear purpose, owner, data dependencies, validation cases, known false positives, severity guidance, and a review cadence. Rules should be adjusted as systems, protocols, and normal behavior change."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Measure alert volume and true-positive rate where possible.",
+                  "Document exceptions and their scope; avoid permanent blind spots without review.",
+                  "Retire detections whose data sources or behaviors are no longer relevant."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-10-quiz-04",
+              "question": "What is the best reason to document known false positives for a detection?",
+              "options": [
+                "To make the rule look longer",
+                "To help analysts interpret expected matches and support controlled tuning",
+                "To hide alerts",
+                "To remove timestamps"
+              ],
+              "answer": "To help analysts interpret expected matches and support controlled tuning",
+              "explanation": "Known false positives reduce confusion and guide safe tuning and triage."
+            },
+            "summary": [
+              "A detection is an operational product. Good detections have a clear purpose, owner, data dependencies, validation cases, known false positives, severity guidance, and a review cadence. Rules should be adjusted as systems, protocols, and normal behavior change."
+            ],
+            "resources": [
+              "https://sigmahq.io/sigma-specification/specification/sigma-rules-specification.html",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-10-01",
+            "title": "Write a Portable Network Detection",
+            "level": "Advanced",
+            "description": "Create a Sigma-style rule concept for a suspicious network behavior observable in logs.",
+            "problemStatement": "Define the behavior, log source, selection fields, condition, false positives, and ATT&CK mapping for a detection such as network service discovery.",
+            "objectives": [
+              "Write a precise detection hypothesis.",
+              "Document false positives.",
+              "Identify the minimum required data components."
+            ],
+            "requirements": [
+              "Sigma specification; network log schema."
+            ],
+            "hint": "Choose a behavior that is observable without requiring a specific vendor query language.",
+            "solutionCode": "Example concept: detect a host making connections to many unique destination IPs or ports within a short window; document scan thresholds, authorized scanners, required network-connection fields, and a T1046 mapping.",
+            "solutionExplanation": "A reviewable, portable detection specification rather than vendor-specific syntax."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Network Incident Investigation",
+        "description": "Apply a repeatable, evidence-driven investigation workflow with time normalization, provenance, and clear incident communication.",
+        "lessons": [
+          {
+            "id": "module-11-lesson-01",
+            "title": "Network Investigation Workflow",
+            "description": "Run an investigation from alert intake through evidence collection, pivoting, and conclusions.",
+            "learningObjectives": [
+              "Follow a repeatable investigation sequence.",
+              "Record hypotheses, evidence, pivots, and unresolved questions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A strong investigation is chronological and explicit: validate the initial signal, identify involved assets, define the time window, collect relevant network evidence, reconstruct the sequence, pivot into related telemetry, and document the confidence of the conclusion. The workflow should align with organizational incident-response processes."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve the original evidence and record derived artifacts separately.",
+                  "Use exact timestamps and timezone assumptions.",
+                  "Document what would disprove your current hypothesis."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-11-quiz-01",
+              "question": "What should happen immediately after validating that an alert is based on real network data?",
+              "options": [
+                "Declare attribution",
+                "Define affected assets and the relevant time window",
+                "Delete the capture",
+                "Close the case"
+              ],
+              "answer": "Define affected assets and the relevant time window",
+              "explanation": "Scope and timeline establish the frame for the next pivots and evidence collection."
+            },
+            "summary": [
+              "A strong investigation is chronological and explicit: validate the initial signal, identify involved assets, define the time window, collect relevant network evidence, reconstruct the sequence, pivot into related telemetry, and document the confidence of the conclusion. The workflow should align with organizational incident-response processes."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/94/final"
+            ]
+          },
+          {
+            "id": "module-11-lesson-02",
+            "title": "Timeline Construction and Time Normalization",
+            "description": "Build reliable event timelines across packet captures, Zeek, IDS, endpoint, and cloud timestamps.",
+            "learningObjectives": [
+              "Normalize timestamps to a common reference.",
+              "Explain why capture and log clock differences can create false sequence assumptions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Network investigations often combine sources with different timestamp precision, timezone display, clock drift, and ingestion delays. Analysts should record the source timestamp, normalized timestamp, timezone/offset, and any known delay before ordering events."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer UTC in shared investigative artifacts.",
+                  "Do not assume delivery time equals event time in asynchronous cloud logs."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-11-quiz-02",
+              "question": "Why can an event’s ingestion time differ from the actual event time?",
+              "options": [
+                "Logs can be buffered or delivered asynchronously",
+                "IP packets have no timestamps",
+                "TCP changes all timestamps",
+                "DNS removes timestamps"
+              ],
+              "answer": "Logs can be buffered or delivered asynchronously",
+              "explanation": "Telemetry systems may queue, batch, or transport events after the underlying activity occurred."
+            },
+            "summary": [
+              "Network investigations often combine sources with different timestamp precision, timezone display, clock drift, and ingestion delays. Analysts should record the source timestamp, normalized timestamp, timezone/offset, and any known delay before ordering events."
+            ],
+            "resources": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
+              "https://docs.zeek.org/en/current/reference/logs/index.html"
+            ]
+          },
+          {
+            "id": "module-11-lesson-03",
+            "title": "Evidence Handling and Reproducibility",
+            "description": "Create a defensible record of captures, extracts, hashes, and analysis steps.",
+            "learningObjectives": [
+              "Document source, acquisition time, and transformations for network evidence.",
+              "Use hashes and command transcripts to support reproducibility."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Reproducibility means another analyst can understand what source data was used, what transformations occurred, and how a conclusion was reached. For sensitive evidence, keep originals immutable where possible and record hashes for important files."
+              },
+              {
+                "type": "code",
+                "text": "Example provenance record:\nsource=case01.pcapng\nsha256=<hash>\nanalysis=tshark -r case01.pcapng -Y \"dns\""
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-11-quiz-03",
+              "question": "What does a file hash contribute to evidence handling?",
+              "options": [
+                "It proves maliciousness",
+                "It helps verify that the analyzed file has not changed",
+                "It decrypts the capture",
+                "It identifies the attacker"
+              ],
+              "answer": "It helps verify that the analyzed file has not changed",
+              "explanation": "A cryptographic hash provides a content fingerprint that can be compared later."
+            },
+            "summary": [
+              "Reproducibility means another analyst can understand what source data was used, what transformations occurred, and how a conclusion was reached. For sensitive evidence, keep originals immutable where possible and record hashes for important files."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "module-11-lesson-04",
+            "title": "Communicating Findings to Incident Responders",
+            "description": "Write concise findings that responders can act on without losing analytical nuance.",
+            "learningObjectives": [
+              "Summarize findings, confidence, affected assets, and next actions.",
+              "Avoid unsupported claims and ambiguous language."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A useful network-investigation handoff identifies what happened, when, where, why it matters, and what evidence supports it. It should distinguish observed facts from inferences and call out data gaps. Responders need concrete pivots such as source IP, asset identity, timestamps, domains, flow IDs, alert IDs, or capture references."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Lead with the operational impact.",
+                  "State confidence and uncertainty explicitly.",
+                  "Provide next evidence requests, not only a conclusion."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-11-quiz-04",
+              "question": "Which statement is most appropriate in an incident handoff?",
+              "options": [
+                "“The host is definitely compromised.”",
+                "“At 14:03 UTC, workstation A made 31 new connections to rare external IPs; endpoint telemetry is needed to confirm the process involved.”",
+                "“Bad traffic occurred.”",
+                "“The attacker used malware.”"
+              ],
+              "answer": "“At 14:03 UTC, workstation A made 31 new connections to rare external IPs; endpoint telemetry is needed to confirm the process involved.”",
+              "explanation": "It separates observed network facts from the unresolved process attribution and defines the next useful evidence source."
+            },
+            "summary": [
+              "A useful network-investigation handoff identifies what happened, when, where, why it matters, and what evidence supports it. It should distinguish observed facts from inferences and call out data gaps. Responders need concrete pivots such as source IP, asset identity, timestamps, domains, flow IDs, alert IDs, or capture references."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-11-01",
+            "title": "Produce an Investigation Timeline",
+            "level": "Intermediate",
+            "description": "Create a normalized timeline from mixed packet, Zeek, and IDS records.",
+            "problemStatement": "Merge at least 15 synthetic events into one ordered timeline and annotate each event as observation, inference, or unresolved.",
+            "objectives": [
+              "Normalize timestamps to UTC.",
+              "Deduplicate related alerts.",
+              "Cite source fields for each conclusion."
+            ],
+            "requirements": [
+              "CSV/JSON source data; Python or spreadsheet."
+            ],
+            "hint": "Separate event time from ingestion time before sorting.",
+            "solutionCode": "Parse each source, normalize timestamps, sort by event time, group duplicate IDS alerts by flow and window, and add an evidence_type column with observation/inference/unresolved.",
+            "solutionExplanation": "A single timeline with traceable source references and explicit uncertainty."
+          }
+        ]
+      },
+      {
+        "id": "module-12",
+        "title": "Capstone: Offline Network Traffic Triage Toolkit",
+        "description": "Integrate network evidence modeling, transparent heuristics, validation, reproducibility, and incident reporting into one defensible offline project.",
+        "lessons": [
+          {
+            "id": "module-12-lesson-01",
+            "title": "Capstone Architecture and Data Model",
+            "description": "Design a small local network-analysis toolkit that can ingest flow and alert data safely.",
+            "learningObjectives": [
+              "Design a normalized event schema for network triage.",
+              "Separate raw evidence from derived detections and analyst summaries."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone uses JSON Lines or CSV-style normalized network events so the same logic can operate across synthetic flow, DNS, and IDS exports. The code is designed for local lab data and intentionally avoids active scanning or live interception."
+              },
+              {
+                "type": "code",
+                "text": "Normalized event fields:\ntime, src_ip, dst_ip, src_port, dst_port, proto, bytes, packets, event_type, signature, domain"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-12-quiz-01",
+              "question": "Why should raw evidence and derived detections be kept conceptually separate?",
+              "options": [
+                "To make the report prettier",
+                "To preserve traceability and allow detections to be re-run when logic changes",
+                "To remove timestamps",
+                "Because JSON cannot contain both"
+              ],
+              "answer": "To preserve traceability and allow detections to be re-run when logic changes",
+              "explanation": "Separating source evidence from derived findings improves reproducibility and auditability."
+            },
+            "summary": [
+              "The capstone uses JSON Lines or CSV-style normalized network events so the same logic can operate across synthetic flow, DNS, and IDS exports. The code is designed for local lab data and intentionally avoids active scanning or live interception."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "module-12-lesson-02",
+            "title": "Implementing Scan and Beacon Heuristics",
+            "description": "Build transparent heuristics for scan breadth, connection periodicity, and unusual external destinations.",
+            "learningObjectives": [
+              "Implement simple explainable network heuristics.",
+              "Return evidence fields that show why a heuristic fired."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Explainable heuristics are appropriate for teaching because the analyst can inspect every contributing observation. A scan detector can count unique destinations and ports in a time window; a beacon detector can examine repeated intervals; rarity can be estimated against a baseline dataset. These signals are triage aids, not final verdicts."
+              },
+              {
+                "type": "code",
+                "text": "scan_score = unique_destinations + unique_ports\nperiodicity = low variance of inter-arrival time"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-12-quiz-02",
+              "question": "What should a good heuristic return besides a boolean alert?",
+              "options": [
+                "Only a severity",
+                "Evidence features that explain the score or trigger",
+                "An attacker name",
+                "A password"
+              ],
+              "answer": "Evidence features that explain the score or trigger",
+              "explanation": "Explainability lets an analyst validate the underlying observation rather than trusting a black-box score."
+            },
+            "summary": [
+              "Explainable heuristics are appropriate for teaching because the analyst can inspect every contributing observation. A scan detector can count unique destinations and ports in a time window; a beacon detector can examine repeated intervals; rarity can be estimated against a baseline dataset. These signals are triage aids, not final verdicts."
+            ],
+            "resources": [
+              "https://attack.mitre.org/detectionstrategies/DET0817/"
+            ]
+          },
+          {
+            "id": "module-12-lesson-03",
+            "title": "Testing, Edge Cases, and Failure Modes",
+            "description": "Validate the capstone against missing fields, malformed rows, clock issues, and empty datasets.",
+            "learningObjectives": [
+              "Write tests for normal, suspicious, and malformed inputs.",
+              "Handle empty or incomplete data without silent corruption."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Network data is messy: fields may be absent, timestamps malformed, byte counts unknown, or duplicated by retransmission and sensor pipelines. A robust analyst tool must fail visibly, preserve original values, and state when a metric could not be computed."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Test empty files and partial rows.",
+                  "Test multiple timestamp formats used by your synthetic input schema.",
+                  "Prefer explicit error messages over silent row drops."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-12-quiz-03",
+              "question": "What is the safest behavior when a required timestamp field is malformed?",
+              "options": [
+                "Silently replace it with the current time",
+                "Drop the entire case without notice",
+                "Reject or quarantine the row and report the parsing error",
+                "Guess a timestamp from the destination IP"
+              ],
+              "answer": "Reject or quarantine the row and report the parsing error",
+              "explanation": "Inventing timestamps can corrupt an investigation timeline; the error should be visible and traceable."
+            },
+            "summary": [
+              "Network data is messy: fields may be absent, timestamps malformed, byte counts unknown, or duplicated by retransmission and sensor pipelines. A robust analyst tool must fail visibly, preserve original values, and state when a metric could not be computed."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "module-12-lesson-04",
+            "title": "Capstone Investigation Walkthrough and Reporting",
+            "description": "Turn automated findings into a human-reviewed network investigation report.",
+            "learningObjectives": [
+              "Interpret detector output in context.",
+              "Produce an evidence-backed incident summary and next-step plan."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone ends with analyst review. Automated heuristics rank network behaviors, but the analyst must inspect raw rows, identify asset role, check expected software patterns, and decide which additional telemetry is required. The final report should include scope, timeline, findings, confidence, false-positive analysis, and recommended next actions."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A detector finding is a starting point, not a verdict.",
+                  "Document what the tool cannot observe so responders can request the next source."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-12-04",
+                "title": "Run and Document the Offline Triage Toolkit",
+                "description": "Execute the capstone against the supplied synthetic JSONL dataset and create a reproducible analyst record.",
+                "steps": [
+                  "Save the JSONL dataset locally.",
+                  "Run `python3 network_traffic_tool.py sample-events.jsonl`.",
+                  "Record the exact command and output.",
+                  "Trace one scan and one periodic finding back to input rows.",
+                  "Write a confidence-rated conclusion and next telemetry request."
+                ],
+                "solution": "Run the included program unchanged first. Record the command, terminal output, and a SHA-256 hash of the input dataset using a local hashing utility.",
+                "output": "A reproducible transcript plus a concise evidence-based report."
+              }
+            ],
+            "quiz": {
+              "id": "module-12-quiz-04",
+              "question": "What is the correct final step after a detector identifies a suspicious host?",
+              "options": [
+                "Automatically isolate it regardless of context",
+                "Review supporting evidence and document a confidence-rated conclusion",
+                "Delete the flagged records",
+                "Publish the source IP publicly"
+              ],
+              "answer": "Review supporting evidence and document a confidence-rated conclusion",
+              "explanation": "Human validation and context are necessary before operational action."
+            },
+            "summary": [
+              "The capstone ends with analyst review. Automated heuristics rank network behaviors, but the analyst must inspect raw rows, identify asset role, check expected software patterns, and decide which additional telemetry is required. The final report should include scope, timeline, findings, confidence, false-positive analysis, and recommended next actions."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/94/final"
+            ]
+          },
+          {
+            "id": "module-12-lesson-05",
+            "title": "Capstone Project Execution",
+            "description": "Execute the offline toolkit against the supplied synthetic dataset and document the findings from start to finish.",
+            "learningObjectives": [
+              "Run the capstone tool end-to-end.",
+              "Interpret scan, periodicity, and rarity findings.",
+              "Write a concise evidence-based report."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The final exercise combines the course’s major reasoning patterns: normalize time, preserve raw data, calculate transparent features, review detector findings, consider benign explanations, and document next steps. The provided dataset is intentionally synthetic and uses documentation addresses so that students can safely reproduce the workflow."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Run the tool locally; no external scanning is required.",
+                  "Review the exact rows behind each finding.",
+                  "Write both a finding and a confidence statement."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "module-12-quiz-05",
+              "question": "What makes the capstone safer than a live network-scanning exercise?",
+              "options": [
+                "It operates on synthetic local data and does not generate traffic",
+                "It disables timestamps",
+                "It needs no analysis",
+                "It removes the need for evidence"
+              ],
+              "answer": "It operates on synthetic local data and does not generate traffic",
+              "explanation": "The project demonstrates network-analysis reasoning without interacting with third-party systems."
+            },
+            "summary": [
+              "The final exercise combines the course’s major reasoning patterns: normalize time, preserve raw data, calculate transparent features, review detector findings, consider benign explanations, and document next steps. The provided dataset is intentionally synthetic and uses documentation addresses so that students can safely reproduce the workflow."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Offline Network Traffic Triage Toolkit",
+          "description": "A reproducible Python command-line toolkit for offline analysis of normalized network events. It detects scan-like breadth, low-variance periodic connections, and rare destinations, then emits explainable evidence fields for analyst review. The project is intentionally offline and uses synthetic documentation-address data so students can practice investigation logic without active network interaction.",
+          "conceptsCovered": [
+            "network flow analysis",
+            "sliding-window aggregation",
+            "5-tuple reasoning",
+            "time normalization",
+            "periodicity analysis",
+            "rarity analysis",
+            "explainable heuristics",
+            "evidence provenance",
+            "defensive detection",
+            "false-positive review",
+            "Python JSON Lines processing",
+            "incident-report writing"
+          ],
+          "steps": [
+            "Create a Python 3 environment and place network_traffic_tool.py and sample-events.jsonl in a working directory.",
+            "Inspect the JSONL records and verify that timestamps use UTC offsets or Z notation and that the data is synthetic.",
+            "Run `python3 network_traffic_tool.py sample-events.jsonl` and save the terminal output as an analyst artifact.",
+            "Review each scan finding against the original rows that contributed to the five-minute window.",
+            "Review periodic findings and compare the observed destination with the destination rarity and asset context in the dataset.",
+            "Write a short investigation report containing scope, timeline, observations, hypotheses, confidence, benign alternatives, and recommended next telemetry.",
+            "Record the SHA-256 hash of the input dataset and the exact command used so the analysis can be reproduced.",
+            "Add at least three tests of your own: an empty file, a malformed timestamp row, and a benign scheduled-connection pattern."
+          ],
+          "code": {
+            "network_traffic_tool.py": "#!/usr/bin/env python3\n\"\"\"Local, offline network-traffic triage toolkit.\n\nInput: JSON Lines records with fields:\n  time, src_ip, dst_ip, src_port, dst_port, proto,\n  bytes, packets, event_type, domain, signature\n\nThe tool produces explainable scan, beacon, and rare-destination findings.\nIt does not capture live traffic or perform active scanning.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport collections\nimport datetime as dt\nimport json\nimport math\nimport statistics\nfrom pathlib import Path\nfrom typing import Any, Iterable\n\n\ndef parse_time(value: str) -> dt.datetime:\n    value = value.strip()\n    if value.endswith(\"Z\"):\n        value = value[:-1] + \"+00:00\"\n    parsed = dt.datetime.fromisoformat(value)\n    if parsed.tzinfo is None:\n        parsed = parsed.replace(tzinfo=dt.timezone.utc)\n    return parsed.astimezone(dt.timezone.utc)\n\n\ndef load_events(path: Path) -> list[dict[str, Any]]:\n    events: list[dict[str, Any]] = []\n    with path.open(\"r\", encoding=\"utf-8\") as handle:\n        for line_no, line in enumerate(handle, 1):\n            if not line.strip():\n                continue\n            try:\n                obj = json.loads(line)\n                required = [\"time\", \"src_ip\", \"dst_ip\", \"src_port\", \"dst_port\", \"proto\"]\n                missing = [k for k in required if k not in obj]\n                if missing:\n                    raise ValueError(f\"missing fields: {', '.join(missing)}\")\n                obj[\"_time\"] = parse_time(str(obj[\"time\"]))\n                obj[\"bytes\"] = int(obj.get(\"bytes\", 0) or 0)\n                obj[\"packets\"] = int(obj.get(\"packets\", 0) or 0)\n                obj[\"src_port\"] = int(obj[\"src_port\"])\n                obj[\"dst_port\"] = int(obj[\"dst_port\"])\n                events.append(obj)\n            except (ValueError, TypeError, json.JSONDecodeError) as exc:\n                print(f\"WARN line {line_no}: {exc}\")\n    return sorted(events, key=lambda e: e[\"_time\"])\n\n\ndef scan_findings(events: list[dict[str, Any]], window_seconds: int = 300,\n                  dest_threshold: int = 8, port_threshold: int = 8) -> list[dict[str, Any]]:\n    by_src: dict[str, list[dict[str, Any]]] = collections.defaultdict(list)\n    for event in events:\n        by_src[event[\"src_ip\"]].append(event)\n    findings: list[dict[str, Any]] = []\n    for src, rows in by_src.items():\n        left = 0\n        for right, current in enumerate(rows):\n            while (current[\"_time\"] - rows[left][\"_time\"]).total_seconds() > window_seconds:\n                left += 1\n            bucket = rows[left:right + 1]\n            unique_dests = sorted({r[\"dst_ip\"] for r in bucket})\n            unique_ports = sorted({r[\"dst_port\"] for r in bucket})\n            if len(unique_dests) >= dest_threshold or len(unique_ports) >= port_threshold:\n                findings.append({\n                    \"type\": \"scan\",\n                    \"src_ip\": src,\n                    \"window_start\": bucket[0][\"_time\"].isoformat(),\n                    \"window_end\": current[\"_time\"].isoformat(),\n                    \"unique_destinations\": len(unique_dests),\n                    \"unique_ports\": len(unique_ports),\n                    \"evidence\": \"breadth exceeds configured threshold\"\n                })\n                break\n    return findings\n\n\ndef beacon_findings(events: list[dict[str, Any]], min_points: int = 5,\n                    max_cv: float = 0.15) -> list[dict[str, Any]]:\n    grouped: dict[tuple[str, str, int], list[dt.datetime]] = collections.defaultdict(list)\n    for e in events:\n        grouped[(e[\"src_ip\"], e[\"dst_ip\"], e[\"dst_port\"])].append(e[\"_time\"])\n    findings = []\n    for (src, dst, port), times in grouped.items():\n        times.sort()\n        if len(times) < min_points:\n            continue\n        intervals = [(b - a).total_seconds() for a, b in zip(times, times[1:])]\n        mean = statistics.mean(intervals)\n        if mean <= 0:\n            continue\n        stdev = statistics.pstdev(intervals)\n        cv = stdev / mean\n        if cv <= max_cv:\n            findings.append({\n                \"type\": \"periodic\",\n                \"src_ip\": src,\n                \"dst_ip\": dst,\n                \"dst_port\": port,\n                \"observations\": len(times),\n                \"mean_interval_seconds\": round(mean, 3),\n                \"coefficient_variation\": round(cv, 4),\n                \"evidence\": \"low variance in inter-arrival times\"\n            })\n    return findings\n\n\ndef rarity_findings(events: list[dict[str, Any]], top_n: int = 10) -> list[dict[str, Any]]:\n    counts = collections.Counter(e[\"dst_ip\"] for e in events)\n    findings = []\n    for e in events:\n        if counts[e[\"dst_ip\"]] == 1:\n            findings.append({\n                \"type\": \"rare_destination\",\n                \"time\": e[\"_time\"].isoformat(),\n                \"src_ip\": e[\"src_ip\"],\n                \"dst_ip\": e[\"dst_ip\"],\n                \"dst_port\": e[\"dst_port\"],\n                \"domain\": e.get(\"domain\"),\n                \"evidence\": \"destination observed once in supplied dataset\"\n            })\n    return findings[:top_n]\n\n\ndef print_report(events: list[dict[str, Any]]) -> None:\n    if not events:\n        print(\"No valid events loaded.\")\n        return\n    print(f\"Loaded events: {len(events)}\")\n    print(f\"Time range: {events[0]['_time'].isoformat()} -> {events[-1]['_time'].isoformat()}\")\n    scans = scan_findings(events)\n    beacons = beacon_findings(events)\n    rare = rarity_findings(events)\n    print(f\"Scan findings: {len(scans)}\")\n    for item in scans:\n        print(json.dumps(item, sort_keys=True))\n    print(f\"Periodic findings: {len(beacons)}\")\n    for item in beacons:\n        print(json.dumps(item, sort_keys=True))\n    print(f\"Rare-destination findings: {len(rare)}\")\n    for item in rare:\n        print(json.dumps(item, sort_keys=True))\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser(description=\"Offline network-traffic triage\")\n    parser.add_argument(\"input\", type=Path, help=\"JSONL network event file\")\n    args = parser.parse_args()\n    events = load_events(args.input)\n    print_report(events)\n    return 0\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+            "sample-events.jsonl": "{\"time\":\"2026-01-01T10:00:00Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"203.0.113.10\",\"src_port\":50000,\"dst_port\":443,\"proto\":\"tcp\",\"bytes\":1200,\"packets\":8,\"event_type\":\"flow\",\"domain\":\"example.invalid\"}\n{\"time\":\"2026-01-01T10:00:10Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"203.0.113.10\",\"src_port\":50001,\"dst_port\":443,\"proto\":\"tcp\",\"bytes\":1100,\"packets\":7,\"event_type\":\"flow\",\"domain\":\"example.invalid\"}\n{\"time\":\"2026-01-01T10:00:20Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"203.0.113.10\",\"src_port\":50002,\"dst_port\":443,\"proto\":\"tcp\",\"bytes\":1150,\"packets\":7,\"event_type\":\"flow\",\"domain\":\"example.invalid\"}\n{\"time\":\"2026-01-01T10:00:30Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"203.0.113.10\",\"src_port\":50003,\"dst_port\":443,\"proto\":\"tcp\",\"bytes\":1110,\"packets\":7,\"event_type\":\"flow\",\"domain\":\"example.invalid\"}\n{\"time\":\"2026-01-01T10:00:40Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"203.0.113.10\",\"src_port\":50004,\"dst_port\":443,\"proto\":\"tcp\",\"bytes\":1190,\"packets\":8,\"event_type\":\"flow\",\"domain\":\"example.invalid\"}\n{\"time\":\"2026-01-01T10:01:00Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.20\",\"src_port\":50100,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:01:10Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.21\",\"src_port\":50101,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:01:20Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.22\",\"src_port\":50102,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:01:30Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.23\",\"src_port\":50103,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:01:40Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.24\",\"src_port\":50104,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:01:50Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.25\",\"src_port\":50105,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:02:00Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.26\",\"src_port\":50106,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:02:10Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"10.0.0.27\",\"src_port\":50107,\"dst_port\":22,\"proto\":\"tcp\",\"bytes\":500,\"packets\":6,\"event_type\":\"flow\"}\n{\"time\":\"2026-01-01T10:02:20Z\",\"src_ip\":\"10.0.0.10\",\"dst_ip\":\"198.51.100.55\",\"src_port\":50200,\"dst_port\":8080,\"proto\":\"tcp\",\"bytes\":800,\"packets\":5,\"event_type\":\"alert\",\"signature\":\"suspicious outbound connection\"}\n"
+          },
+          "explanation": "The toolkit models a small but defensible network-analysis pipeline. `load_events` validates and normalizes input timestamps while retaining malformed-row warnings. `scan_findings` uses a five-minute sliding window per source and counts unique destination IPs and ports to identify breadth. `beacon_findings` groups traffic by source, destination, and port and computes the coefficient of variation of inter-arrival times; low variance indicates periodicity but is intentionally not labeled as malicious. `rarity_findings` highlights destinations seen only once in the supplied dataset. Each finding includes the observations that caused the heuristic to fire. The analyst must then review context, asset role, expected software, and additional telemetry before making an incident decision. The project therefore demonstrates a complete network-analysis loop: source data → normalization → explainable detection → human validation → documented conclusion."
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,2158 @@
+{
+  "course": {
+    "id": "evidence-handling",
+    "title": "Evidence Handling",
+    "slug": "evidence-handling",
+    "description": "A focused, practice-oriented course on the controlled handling of digital evidence from preparation through collection, acquisition, integrity verification, custody, storage, transfer, special environments, quality assurance, reporting, and archive readiness. Students learn how to preserve provenance and reduce unintended change, how to document scope and device state, how to use cryptographic hashes correctly, how to maintain a traceable chain of custody, and how to respond to exceptions. The final project implements a controlled-lab Evidence Custody Ledger that turns these principles into a small, testable workflow without pretending to replace validated forensic acquisition tools or legal procedures.",
+    "level": "Beginner to Intermediate",
+    "language": "English",
+    "duration": 48,
+    "prerequisites": [
+      "Basic computer and operating-system concepts",
+      "Basic understanding of files, directories, storage devices, and permissions",
+      "Basic command-line familiarity",
+      "Basic understanding of time zones and timestamps",
+      "Python 3 familiarity is helpful for the exercises and final project but not required for the conceptual lessons",
+      "Access to a controlled training environment; do not use real third-party evidence without appropriate authorization"
+    ],
+    "learningOutcomes": [
+      "Explain the purpose, scope, lifecycle, and limitations of digital evidence handling.",
+      "Prepare evidence collection using documented authority, scope, safety, and preservation controls.",
+      "Apply volatility-aware handling decisions to powered-off, live, remote, cloud, and mobile evidence scenarios.",
+      "Differentiate physical collection, logical acquisition, full storage acquisition, and focused/targeted collection.",
+      "Create evidence inventories with stable identifiers and consistent record schemas.",
+      "Calculate and verify SHA-256 integrity values and explain what a hash can and cannot establish.",
+      "Separate preserved masters from working copies and document copy provenance.",
+      "Maintain a complete chain-of-custody trail including time zones, transfers, and purposes.",
+      "Design controlled storage, transfer, and archive practices that support integrity and future review.",
+      "Apply environment-specific handling controls to remote endpoints, cloud provider productions, and mobile devices.",
+      "Validate evidence-handling tools and procedures using known datasets and documented tests.",
+      "Perform an end-to-end QA review and communicate exceptions and limitations without rewriting history.",
+      "Produce a defensible evidence-handling report and complete the Evidence Custody Ledger final project."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Evidence Handling Foundations",
+        "description": "Establish the purpose, vocabulary, scope, lifecycle, and risk model for handling digital evidence before any collection or analysis occurs.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "What Evidence Handling Means",
+            "description": "Define evidence handling as the set of controlled activities used to identify, preserve, collect, transport, store, document, and account for digital evidence.",
+            "learningObjectives": [
+              "define digital evidence, evidence item, preservation, collection, acquisition, examination, and custody",
+              "distinguish evidence handling from later forensic analysis",
+              "identify where handling decisions can change or lose evidentiary value"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence handling is a control problem"
+              },
+              {
+                "type": "paragraph",
+                "text": "Evidence handling is about preserving the condition, provenance, and accountability of information while moving it through a controlled process. The central question is not merely “Did we copy the data?” but “Can another competent person understand where it came from, what happened to it, and whether it changed?”"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preservation concerns preventing loss or unintended change before and during collection.",
+                  "Collection obtains items or data within an authorized scope.",
+                  "Acquisition creates a representation or capture suitable for later work.",
+                  "Custody records possession and transfers.",
+                  "Documentation explains what happened and why."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Evidence handling is not a substitute for legal advice. The authority, scope, privacy requirements, and retention rules applicable to a case depend on jurisdiction and organizational policy."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which activity most directly answers “Who possessed this evidence, and when?”",
+              "options": [
+                "Chain-of-custody documentation",
+                "File carving",
+                "Packet capture",
+                "Keyword searching"
+              ],
+              "answer": "Chain-of-custody documentation",
+              "explanation": "Custody documentation records possession and transfers; analytical techniques answer different questions."
+            },
+            "summary": [
+              "Evidence handling preserves provenance, integrity, and accountability.",
+              "Good handling makes later technical analysis more trustworthy and reviewable."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.rfc-editor.org/rfc/rfc3227"
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Evidence Lifecycle and Decision Points",
+            "description": "Map an evidence item through preparation, preservation, collection, acquisition, verification, storage, examination handoff, reporting, and archive.",
+            "learningObjectives": [
+              "sequence major evidence-handling stages",
+              "identify decisions that must be made before collection",
+              "explain why the workflow may branch for live, mobile, cloud, or remote evidence"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A controlled lifecycle"
+              },
+              {
+                "type": "paragraph",
+                "text": "A defensible workflow starts with preparation and authority, moves through identification and preservation, collects or acquires the evidence, verifies integrity, stores it securely, and preserves records for later examination and reporting. The exact sequence can change when evidence is volatile or remotely controlled, but changes should be documented."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preparation: authority, scope, safety, equipment, storage, documentation forms, and roles.",
+                  "Identification: determine what may contain relevant evidence.",
+                  "Preservation: reduce the chance of loss or alteration.",
+                  "Collection/acquisition: obtain evidence using an appropriate method.",
+                  "Verification: record and compare integrity information.",
+                  "Storage/transport: protect evidence and maintain custody.",
+                  "Handoff/archive: preserve documentation and access for later review."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "Why is preservation treated as a distinct stage from acquisition?",
+              "options": [
+                "Preservation controls the risk of loss or alteration before and during the act of collecting data.",
+                "Preservation is only a legal formality.",
+                "Acquisition never changes a system.",
+                "Preservation means analyzing files first."
+              ],
+              "answer": "Preservation controls the risk of loss or alteration before and during the act of collecting data.",
+              "explanation": "A preservation decision can affect whether relevant information remains available when acquisition begins."
+            },
+            "summary": [
+              "Evidence handling is iterative: new information can require additional preservation or collection decisions.",
+              "Branching does not justify undocumented improvisation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.rfc-editor.org/rfc/rfc3227",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Evidence-Centered Thinking and Scope",
+            "description": "Turn a broad allegation into handling requirements, and distinguish a focused collection from an unjustified omission.",
+            "learningObjectives": [
+              "translate investigative questions into evidence requirements",
+              "document collection scope and exclusions",
+              "explain why focused collection requires a documented rationale"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Scope before tools"
+              },
+              {
+                "type": "paragraph",
+                "text": "Evidence handling should begin with the authorized question and scope, not with a favorite tool. A focused collection may be appropriate when data volume, operational constraints, or legal scope require prioritization, but the rationale and exclusions must be documented."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Define the question and relevant date/time window.",
+                  "Identify candidate evidence sources.",
+                  "State what is included and excluded.",
+                  "Record constraints such as downtime, bandwidth, access, encryption, or privacy minimization.",
+                  "State how the scope could affect conclusions."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A narrow collection can reduce evidentiary coverage. It must never be described as comprehensive when it is not."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-01",
+                "title": "Draft a Scope and Evidence Matrix",
+                "description": "Convert a hypothetical evidence-handling request into a small matrix that records the question, evidence source, inclusion/exclusion boundary, preservation concern, and known limitation.",
+                "steps": [
+                  "Write one precise investigative question.",
+                  "List the evidence sources that could answer it.",
+                  "Mark each source as included or excluded and record why.",
+                  "Record one preservation risk for each included source.",
+                  "Add a limitation describing what the scope cannot establish."
+                ],
+                "solution": "Use a five-column matrix: Question | Evidence Source | Scope Decision | Preservation Risk | Limitation. Example: “Was a protected document present during the authorized period?” → “Workstation storage” → “Include” → “Avoid unnecessary writes; use approved acquisition” → “Storage evidence alone may not establish who handled the document.”",
+                "output": "A documented scope matrix that another examiner can review before collection begins."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "What makes a focused collection defensible?",
+              "options": [
+                "A documented rationale, scope, tools/methods, constraints, and limitations.",
+                "Using the smallest possible amount of data without documentation.",
+                "Collecting whatever is easiest to access.",
+                "Avoiding all exclusions."
+              ],
+              "answer": "A documented rationale, scope, tools/methods, constraints, and limitations.",
+              "explanation": "SWGDE guidance emphasizes transparency and auditability for decisions that narrow collection or examination."
+            },
+            "summary": [
+              "Scope is part of evidence integrity because it determines what was and was not preserved.",
+              "Exclusions belong in the case record, not in the examiner’s memory."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/14-f-003-focused-collection-and-examination-of-digital-evidence/",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Create an Evidence Handling Plan",
+            "level": "Easy",
+            "description": "Write a handling plan for one hypothetical workstation and one removable drive.",
+            "problemStatement": "A small investigation requires preservation and collection of two devices. Produce a one-page plan covering authority, identifiers, initial observations, preservation, acquisition method, verification, custody, storage, and known limitations.",
+            "objectives": [
+              "define the evidence items",
+              "record the major preservation decisions",
+              "select an acquisition approach with rationale",
+              "define verification and storage steps"
+            ],
+            "requirements": [
+              "Text editor",
+              "No real-world personal data",
+              "Use fictional identifiers only"
+            ],
+            "hint": "Start by writing the investigative question, then work outward to the evidence sources and handling controls.",
+            "solutionCode": "Case objective: determine whether a specified workstation and removable drive contain evidence relevant to an authorized investigation.\nEvidence: E-001 workstation; E-002 removable drive.\nPlan: document device state and identifiers; isolate where justified; preserve volatile information only when the procedure and question warrant it; acquire using a validated method; hash the acquired representation; create a verified working copy; record all transfers; store the preserved source under access control; document exclusions and limitations.",
+            "solutionExplanation": "The plan demonstrates question-driven handling, preservation, integrity verification, custody, and explicit limitations."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Preparation, Preservation, and Volatility",
+        "description": "Learn what to do before acquisition, how device state affects evidence, and how volatility influences handling decisions.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Authority, Safety, and Scene Preparation",
+            "description": "Prepare a collection safely and within documented authority.",
+            "learningObjectives": [
+              "identify required pre-collection records",
+              "explain the role of legal/organizational authorization",
+              "identify safety and environmental concerns that can affect collection"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Preparation checklist"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Confirm authority and scope before touching evidence.",
+                  "Identify the evidence item and assign a unique identifier.",
+                  "Record physical condition, power state, visible state, connections, and attached media according to procedure.",
+                  "Assess hazards and the need for specialist assistance.",
+                  "Prepare clean media, storage, documentation, and evidence packaging."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE recommends documenting device state and maintaining an evidence inventory and chain of custody. It also emphasizes safety, including consideration of hazardous conditions and unexpected destructive activity."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "What should be established before collecting a digital device?",
+              "options": [
+                "The authorized scope and appropriate handling procedure",
+                "The final forensic conclusion",
+                "A list of deleted files",
+                "A complete malware diagnosis"
+              ],
+              "answer": "The authorized scope and appropriate handling procedure",
+              "explanation": "Collection should operate within defined authority and a documented procedure."
+            },
+            "summary": [
+              "Preparation prevents avoidable evidence changes and operational mistakes.",
+              "Safety and authorization are evidence-handling requirements, not administrative afterthoughts."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/"
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Order of Volatility",
+            "description": "Use volatility as a decision factor when deciding what to preserve first.",
+            "learningObjectives": [
+              "explain why volatile data may disappear quickly",
+              "apply an order-of-volatility concept to a handling plan",
+              "avoid treating a static order as universally mandatory"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Volatility is about loss risk"
+              },
+              {
+                "type": "paragraph",
+                "text": "RFC 3227 recommends proceeding from more volatile to less volatile information. Examples may include running system state and network information before persistent storage. The exact order is situation-dependent because acquisition actions themselves can alter systems."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Volatile evidence can include RAM contents, active network connections, running processes, and some transient system state.",
+                  "Persistent storage is generally less volatile, but it can still change through normal system operation.",
+                  "A collection method should minimize changes while answering the investigative question."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not mechanically apply a volatility list when doing so would create greater risk. Document why a different order was necessary."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "What is the main reason to consider volatility?",
+              "options": [
+                "Some evidence can disappear or change as the system continues operating or changes state.",
+                "Volatile data is always more important than persistent data.",
+                "Volatility determines whether a file is encrypted.",
+                "Volatility proves user intent."
+              ],
+              "answer": "Some evidence can disappear or change as the system continues operating or changes state.",
+              "explanation": "Volatility is a preservation-risk characteristic, not a statement about evidentiary importance."
+            },
+            "summary": [
+              "Order-of-volatility is a decision aid, not a replacement for a documented procedure.",
+              "Live handling should record what was observed and what interactions were performed."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc3227",
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Live System Handling",
+            "description": "Understand the trade-off between capturing transient state and altering a running system.",
+            "learningObjectives": [
+              "identify common reasons for live collection",
+              "list likely side effects of interacting with a live system",
+              "document live collection actions and boundaries"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Live evidence trade-offs"
+              },
+              {
+                "type": "paragraph",
+                "text": "A powered-on system may contain decrypted material, processes, connections, memory contents, and other state that would disappear on shutdown. Conversely, every live interaction can create or change evidence. The examiner should choose the least invasive validated method that answers the authorized question."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the power state before interaction.",
+                  "Minimize unnecessary commands and application launches.",
+                  "Do not save tools or output onto evidence media when avoidable.",
+                  "Capture exact commands and times when live collection is performed.",
+                  "Keep generated outputs separate from source evidence."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "The act of observing a live system is not neutral. Treat collection side effects as part of the case record."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "Why can live collection complicate evidence interpretation?",
+              "options": [
+                "Collection can change system state and create additional artifacts.",
+                "Live systems contain no useful evidence.",
+                "Live collection automatically creates a forensic image.",
+                "It guarantees complete historical data."
+              ],
+              "answer": "Collection can change system state and create additional artifacts.",
+              "explanation": "Live collection is valuable for volatile evidence but inherently interacts with the running environment."
+            },
+            "summary": [
+              "Live acquisition can preserve otherwise transient data, but it must be documented as an intervention.",
+              "A preserved static image and a live capture answer different evidence questions."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Preservation of Original State",
+            "description": "Reduce the risk of accidental modification through isolation, write protection, clean handling, and controlled access.",
+            "learningObjectives": [
+              "identify common sources of unintended modification",
+              "explain the role of write protection and logical isolation",
+              "define controls for preserved originals"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Preservation controls"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use hardware/software write protection where appropriate for the media and acquisition method.",
+                  "Prevent unnecessary network connectivity when outside changes could affect evidence.",
+                  "Keep original media or master acquisitions protected from routine examination.",
+                  "Use separate working copies for analysis or experimentation.",
+                  "Control access so evidence is changed only through authorized procedures."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE computer-acquisition guidance states that, after an image is acquired and verified, a working copy should be created and used for examination. The original and documentation should be retained according to policy and law."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-01",
+                "title": "Verify a Working Copy with SHA-256",
+                "description": "Create a lab file, copy it to a separate working directory, and compare SHA-256 digests without altering the inputs.",
+                "steps": [
+                  "Create `source.txt` containing controlled training text.",
+                  "Copy it to a separate working directory.",
+                  "Calculate SHA-256 for both files using a local tool or Python.",
+                  "Record both digests with the object names.",
+                  "Modify only the working copy and calculate its digest again."
+                ],
+                "solution": "Python standard library:\n```python\nimport hashlib\nfrom pathlib import Path\n\ndef sha256_file(path):\n    h = hashlib.sha256()\n    with Path(path).open(\"rb\") as f:\n        for chunk in iter(lambda: f.read(1024 * 1024), b\"\"):\n            h.update(chunk)\n    return h.hexdigest()\n\nprint(\"source:\", sha256_file(\"source.txt\"))\nprint(\"working:\", sha256_file(\"working/source.txt\"))\n```\nCompare the values before and after modifying only the working copy.",
+                "output": "The unchanged copy initially produces the same digest as the source. After the controlled modification, the working-copy digest changes."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "Why is a write blocker useful in disk acquisition?",
+              "options": [
+                "It helps prevent writes to the evidence media during acquisition when supported by the setup.",
+                "It encrypts the entire disk.",
+                "It repairs filesystem errors.",
+                "It proves the drive was never used."
+              ],
+              "answer": "It helps prevent writes to the evidence media during acquisition when supported by the setup.",
+              "explanation": "Write protection reduces the risk of unintended writes; it does not prove anything about the historical state of the disk."
+            },
+            "summary": [
+              "Preservation combines technical controls with procedural controls.",
+              "No single control proves that evidence is unchanged; verification and documentation remain necessary."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Volatility Decision Table",
+            "level": "Intermediate",
+            "description": "Choose and justify handling priorities for several system states.",
+            "problemStatement": "For three scenarios—a powered-off laptop, a running encrypted workstation, and a remote endpoint—create a table listing what should be documented first, what volatile evidence may matter, and what risks each action creates.",
+            "objectives": [
+              "identify volatility considerations",
+              "state collection risks",
+              "justify different handling sequences"
+            ],
+            "requirements": [
+              "Spreadsheet or Markdown",
+              "Use only hypothetical scenarios",
+              "Reference RFC 3227 concepts"
+            ],
+            "hint": "Focus on evidence loss risk and collection side effects, not on memorizing a universal command sequence.",
+            "solutionCode": "Scenario A: powered-off laptop — preserve physical state, identifiers, and storage; avoid unnecessary booting.\nScenario B: running encrypted workstation — record live state; determine whether volatile/decrypted evidence is relevant; use an approved live-collection procedure if justified; document side effects.\nScenario C: remote endpoint — preserve provider/endpoint context, authorization, collection time, and transport; choose the least invasive supported remote method.",
+            "solutionExplanation": "The solution shows that volatility is contextual and that handling priorities change with system state and acquisition constraints."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Identification, Collection, and Acquisition",
+        "description": "Develop practical understanding of physical identification, logical versus physical acquisition, targeted collection, and evidence labeling.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Evidence Identification and Inventory",
+            "description": "Create a complete evidence inventory that links physical or logical items to unique identifiers.",
+            "learningObjectives": [
+              "define inventory fields",
+              "distinguish an evidence item from a derived working copy",
+              "identify mismatched or ambiguous labels"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence inventory"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Unique evidence ID",
+                  "Description and media/device type",
+                  "Make/model/serial or other appropriate identifier",
+                  "Source/location as permitted and relevant",
+                  "Collection date/time and time zone",
+                  "Collector or responsible role",
+                  "Related acquisition/image IDs",
+                  "Condition and notes"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "An inventory is the case index. It should be sufficient to distinguish two similarly named devices and connect every derived object to its source evidence."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-01",
+                "title": "Create a Structured Evidence Inventory",
+                "description": "Create a machine-readable evidence inventory that uses stable identifiers and keeps acquisition, storage, and condition fields distinct.",
+                "steps": [
+                  "Create three hypothetical evidence items with unique IDs.",
+                  "Record device/media type and identifying information.",
+                  "Record collection time with an explicit timezone.",
+                  "Add a relationship field for any derived acquisition or working copy.",
+                  "Review the inventory for duplicate IDs and ambiguous descriptions."
+                ],
+                "solution": "Example JSON:\n```json\n{\n  \"evidence\": [\n    {\n      \"evidence_id\": \"E-001\",\n      \"description\": \"External storage device\",\n      \"media_type\": \"removable-storage\",\n      \"source\": \"training laboratory\",\n      \"collected_at\": \"2026-09-08T09:00:00+05:30\",\n      \"acquisition_id\": \"A-001-01\",\n      \"working_copy_id\": \"W-001-01\",\n      \"condition\": \"documented at collection\"\n    }\n  ]\n}\n```",
+                "output": "A consistent evidence inventory in which each source item can be distinguished and linked to derived objects."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "What is the primary purpose of a unique evidence identifier?",
+              "options": [
+                "To unambiguously link an evidence item to its documentation and subsequent handling.",
+                "To encrypt the evidence.",
+                "To identify a user account.",
+                "To calculate a timestamp."
+              ],
+              "answer": "To unambiguously link an evidence item to its documentation and subsequent handling.",
+              "explanation": "Identifiers provide traceability across inventory, custody, acquisition, analysis, and reporting."
+            },
+            "summary": [
+              "Inventory errors can propagate into every later stage.",
+              "Use unique, stable identifiers rather than descriptions such as “laptop” or “USB drive.”"
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/"
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "Collection Versus Acquisition",
+            "description": "Differentiate collecting a device or account from acquiring its digital contents.",
+            "learningObjectives": [
+              "distinguish physical collection from logical/forensic acquisition",
+              "choose a method that matches scope and evidence type",
+              "document the relationship between source and acquired representation"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Two related but different acts"
+              },
+              {
+                "type": "paragraph",
+                "text": "Collection obtains the item or data source. Acquisition obtains a representation of its digital contents using an appropriate method. For example, a removable drive may be collected as a physical object and then forensically imaged. A cloud service may instead provide an authorized export rather than a physical device image."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Physical collection: obtain the media/device and preserve context.",
+                  "Logical acquisition: collect selected files, records, or objects in a defined scope.",
+                  "Physical/bit-stream acquisition: capture addressable storage data according to the tool and media.",
+                  "Provider export: obtain data and metadata from a remote service under authorized scope."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never describe a targeted logical export as a full physical image."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "Which statement is correct?",
+              "options": [
+                "Collection concerns obtaining the source or item; acquisition concerns obtaining digital data from that source.",
+                "Collection and acquisition always mean exactly the same thing.",
+                "Acquisition only applies to mobile phones.",
+                "Collection guarantees complete coverage."
+              ],
+              "answer": "Collection concerns obtaining the source or item; acquisition concerns obtaining digital data from that source.",
+              "explanation": "Separating these concepts improves documentation and prevents overstatement of what was obtained."
+            },
+            "summary": [
+              "Method names must match the actual scope and capability.",
+              "A representation can only be as complete as the acquisition method and source allow."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Physical, Logical, and Targeted Acquisition Choices",
+            "description": "Compare acquisition approaches using scope, completeness, time, access, system state, and operational constraints.",
+            "learningObjectives": [
+              "compare common acquisition strategies",
+              "justify targeted collection when appropriate",
+              "document acquisition limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Acquisition strategy"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Full storage acquisition is useful when broad preservation is needed and technically feasible.",
+                  "Logical collection can be suitable for defined data or systems where full acquisition is unnecessary, unavailable, or outside scope.",
+                  "Targeted collection can reduce processing burden but can miss evidence outside the chosen scope.",
+                  "Live acquisition can preserve transient or decrypted data but is more invasive."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE computer-acquisition guidance emphasizes documenting the acquisition method, relevant device details, and integrity checks. Focused-collection guidance emphasizes documenting rationale, constraints, and exclusions when narrowing scope."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "What is the main trade-off of a focused acquisition?",
+              "options": [
+                "Efficiency and narrower scope can be gained, but evidence outside the scope may be missed.",
+                "It always produces more complete data.",
+                "It eliminates the need for authorization.",
+                "It always preserves volatile data."
+              ],
+              "answer": "Efficiency and narrower scope can be gained, but evidence outside the scope may be missed.",
+              "explanation": "Focused acquisition is a scope decision and must be reported accurately."
+            },
+            "summary": [
+              "Acquisition strategy should be selected from the question, evidence type, and constraints.",
+              "Efficiency is valuable only when it does not create an undocumented or misleading evidentiary gap."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://www.swgde.org/documents/published-complete-listing/14-f-003-focused-collection-and-examination-of-digital-evidence/"
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "Packaging, Labeling, and Physical Transport",
+            "description": "Protect evidence during movement and storage while maintaining an auditable relationship between packages and case records.",
+            "learningObjectives": [
+              "define transport and packaging controls",
+              "identify signs of tampering or package damage that should be documented",
+              "maintain evidence identity through transfers"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Packaging as a control"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use packaging appropriate to the media and environmental conditions.",
+                  "Seal or otherwise protect packaging according to organizational procedure.",
+                  "Use a label that points to the unique evidence ID rather than exposing unnecessary sensitive information.",
+                  "Document seal/package condition and transfers.",
+                  "Prevent avoidable exposure to heat, moisture, magnetic fields, impact, or unauthorized access as relevant to the medium."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Packaging controls depend on media type and organizational SOPs. Do not invent universal environmental thresholds for every storage medium."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-04",
+              "question": "What should a transfer record connect?",
+              "options": [
+                "The evidence identifier, transfer time, sender/receiver, and purpose or location of the transfer.",
+                "Only the receiver’s name.",
+                "Only the package color.",
+                "Only the final report number."
+              ],
+              "answer": "The evidence identifier, transfer time, sender/receiver, and purpose or location of the transfer.",
+              "explanation": "The purpose is traceability of possession and movement."
+            },
+            "summary": [
+              "Physical transport is part of chain of custody, not a separate informal step.",
+              "Package/seal anomalies should be documented rather than silently corrected."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.rfc-editor.org/rfc/rfc3227"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Choose an Acquisition Method",
+            "level": "Intermediate",
+            "description": "Select and justify an acquisition method for three evidence sources.",
+            "problemStatement": "For a powered-off workstation disk, a live encrypted workstation, and a cloud account, choose an acquisition strategy and explain its limitations.",
+            "objectives": [
+              "match method to evidence source",
+              "state preservation risks",
+              "document scope and limitations"
+            ],
+            "requirements": [
+              "Markdown",
+              "No real account or device access",
+              "Use only authoritative guidance"
+            ],
+            "hint": "Ask what evidence must be preserved, how volatile it is, and what the authorized scope permits.",
+            "solutionCode": "Powered-off disk: use an approved forensic imaging process if broad preservation is required.\nLive encrypted workstation: consider authorized live acquisition for volatile/decrypted state, then preserve persistent storage using an approved method; document intervention.\nCloud account: use an authorized provider or service export and preserve provider metadata, provenance, collection time, scope, and integrity information.",
+            "solutionExplanation": "Each scenario demonstrates a different acquisition boundary. The key is not the tool name but the fit between question, source, preservation risk, and scope."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Integrity, Hashing, and Working Copies",
+        "description": "Learn how cryptographic hashes, verification records, and controlled working copies support evidence integrity.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Cryptographic Hashes for Integrity",
+            "description": "Understand cryptographic digests as change-detection mechanisms and use SHA-256 correctly in evidence workflows.",
+            "learningObjectives": [
+              "explain what a hash does and does not prove",
+              "calculate a SHA-256 digest",
+              "compare source and copied data using a digest"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Hashing is verification, not authorship"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST FIPS 180-4 specifies Secure Hash Standard algorithms for generating message digests used to detect whether messages have changed since the digest was generated. In evidence handling, a digest is commonly recorded for an acquisition or file and later recalculated for comparison."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A matching digest supports that the compared byte sequences match under the selected hash algorithm.",
+                  "A hash does not identify who created a file or establish intent.",
+                  "The hashing procedure itself should be documented: algorithm, input object, tool/version when relevant, and timing."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "sha256sum evidence.dd\nsha256sum working/evidence.dd"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "What does comparing two SHA-256 digests primarily help establish?",
+              "options": [
+                "Whether the compared byte sequences are consistent with having the same content.",
+                "Who authored the content.",
+                "Whether the content is legally admissible.",
+                "Whether the content is malicious."
+              ],
+              "answer": "Whether the compared byte sequences are consistent with having the same content.",
+              "explanation": "Hash comparison supports integrity verification; it does not independently establish authorship, legality, or maliciousness."
+            },
+            "summary": [
+              "Record the hash algorithm and exactly what was hashed.",
+              "Keep original hash values with evidence documentation so later verification is possible."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/fips/180-4/upd1/final"
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "SHA-3 and Algorithm Selection",
+            "description": "Understand when SHA-3 may be encountered and why an organization should document the chosen algorithm rather than mixing values without context.",
+            "learningObjectives": [
+              "recognize SHA-3 as a NIST-standardized hash family",
+              "record algorithm names with digest values",
+              "avoid ambiguous “hash” records"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Algorithm context"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST FIPS 202 specifies the SHA-3 family. In evidence workflows, the digest must be stored with the algorithm name. A bare hexadecimal string is not self-describing."
+              },
+              {
+                "type": "code",
+                "text": "Algorithm: SHA-256\nDigest: <measured value>\nObject: E-001 acquisition\nTime: <documented time>"
+              },
+              {
+                "type": "warning",
+                "text": "Do not substitute a different hash algorithm in a later verification step and call the result a match. The algorithm must remain part of the integrity record."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "Why should the algorithm name be recorded with a digest?",
+              "options": [
+                "Because the digest format alone does not identify which hash function produced it.",
+                "Because hashes contain their own creation date.",
+                "Because the algorithm name proves authorship.",
+                "Because SHA-256 and SHA-3 always produce identical digests."
+              ],
+              "answer": "Because the digest format alone does not identify which hash function produced it.",
+              "explanation": "The same evidence must be compared using the same specified algorithm for a meaningful verification result."
+            },
+            "summary": [
+              "Hash records should be explicit and self-describing.",
+              "Use the algorithm appropriate to the organization’s validated workflow."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/fips/202/final",
+              "https://csrc.nist.gov/pubs/fips/180-4/upd1/final"
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Working Copies and Original Evidence",
+            "description": "Separate preserved evidence from analysis copies and establish a reproducible copy-verification workflow.",
+            "learningObjectives": [
+              "explain why analysis should use a verified working copy",
+              "design a source-to-working-copy hash check",
+              "document copy provenance"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Master versus working copy"
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE acquisition guidance recommends creating a working copy after an image is acquired and verified, then using the working copy for examination. This separation reduces the risk that examination activity changes the preserved master."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserved source/master: restricted, not routinely modified.",
+                  "Working copy: derived from the verified source and used for examination.",
+                  "Verification record: source hash, working-copy hash, copy time, operator, and method.",
+                  "If a working copy changes during analysis, retain the history and do not silently overwrite the original working copy baseline."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "What is the strongest reason to analyze a verified working copy?",
+              "options": [
+                "It reduces the chance that routine examination actions will alter the preserved source.",
+                "It automatically corrects missing evidence.",
+                "It proves every analysis result is accurate.",
+                "It eliminates the need for a custody record."
+              ],
+              "answer": "It reduces the chance that routine examination actions will alter the preserved source.",
+              "explanation": "Working-copy separation is a preservation control, not a guarantee of analytical correctness."
+            },
+            "summary": [
+              "A working copy must be traceable to a preserved source.",
+              "If multiple working copies are created, give each one a unique identifier and retain its verification record."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Integrity Failures and Response",
+            "description": "Handle mismatched or missing integrity values without hiding the discrepancy.",
+            "learningObjectives": [
+              "recognize common reasons for integrity mismatches",
+              "define a discrepancy workflow",
+              "write a clear integrity exception record"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "When hashes do not match"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not overwrite the original value with the new value.",
+                  "Preserve both values and identify the objects that produced them.",
+                  "Check whether the wrong object, different algorithm, incomplete copy, or changed source was used.",
+                  "Review logs, transfer records, and timestamps.",
+                  "If the cause is unresolved, report the mismatch and its impact."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A mismatch is a finding about the handling process. It is not permission to “fix” evidence by recalculating until the values match."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "What should an examiner do first after finding an integrity mismatch?",
+              "options": [
+                "Preserve the discrepancy and investigate what objects, methods, or conditions produced the values.",
+                "Delete the mismatched copy.",
+                "Replace the original hash.",
+                "Assume the tool is wrong."
+              ],
+              "answer": "Preserve the discrepancy and investigate what objects, methods, or conditions produced the values.",
+              "explanation": "A discrepancy must remain auditable while its cause is investigated."
+            },
+            "summary": [
+              "Integrity exceptions should be explicit in case records.",
+              "Do not retroactively rewrite evidence history."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://csrc.nist.gov/pubs/fips/180-4/upd1/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Build an Integrity Verification Script",
+            "level": "Intermediate",
+            "description": "Write a small Python utility that hashes a source file and a copied working file and reports a match or mismatch.",
+            "problemStatement": "The script must accept two file paths, calculate SHA-256 in chunks, and return a non-zero process status on mismatch.",
+            "objectives": [
+              "implement chunked SHA-256 hashing",
+              "compare two digests",
+              "return an explicit status code"
+            ],
+            "requirements": [
+              "Python 3 standard library",
+              "Two lab files only",
+              "Do not modify either input"
+            ],
+            "hint": "Hash fixed-size chunks rather than reading a potentially large file into memory all at once.",
+            "solutionCode": "from pathlib import Path\nimport argparse\nimport hashlib\n\ndef sha256_file(path: Path) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as handle:\n        for chunk in iter(lambda: handle.read(1024 * 1024), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"source\", type=Path)\nparser.add_argument(\"working\", type=Path)\nargs = parser.parse_args()\n\na = sha256_file(args.source)\nb = sha256_file(args.working)\nprint(\"source :\", a)\nprint(\"working:\", b)\nprint(\"MATCH\" if a == b else \"MISMATCH\")\nraise SystemExit(0 if a == b else 1)\n",
+            "solutionExplanation": "The utility provides deterministic digest comparison while leaving both input files untouched."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Chain of Custody and Documentation",
+        "description": "Build contemporaneous, reviewable records of possession, actions, transfers, timestamps, and evidence condition.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "Chain of Custody Essentials",
+            "description": "Define chain of custody and create complete transfer records.",
+            "learningObjectives": [
+              "identify core custody fields",
+              "record transfers contemporaneously",
+              "distinguish custody records from technical examination notes"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "What the custody record answers"
+              },
+              {
+                "type": "paragraph",
+                "text": "A chain-of-custody record establishes continuity of possession and control. SWGDE recommends a unique description or identifier, receipt date/time, transfers, and identification of people taking possession, with records made contemporaneously."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence ID",
+                  "Date/time with time zone",
+                  "From/to or releasing/receiving parties",
+                  "Purpose of transfer",
+                  "Storage or destination",
+                  "Condition/seal information when relevant"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Technical examination notes are different: they document tools, commands, settings, searches, observations, errors, and interpretations. A mature case keeps both records linked by the evidence identifier."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Which is most characteristic of a custody record?",
+              "options": [
+                "A transfer from one custodian to another with date/time and purpose.",
+                "A SQL query used during examination.",
+                "A screenshot of a browser page.",
+                "A malware family name."
+              ],
+              "answer": "A transfer from one custodian to another with date/time and purpose.",
+              "explanation": "Custody records track possession and movement; technical notes explain examination actions."
+            },
+            "summary": [
+              "Custody and examination notes serve different purposes and should not be conflated.",
+              "Every transfer should leave an auditable record."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.rfc-editor.org/rfc/rfc3227"
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Time and Time-Zone Recording",
+            "description": "Record times in a way that supports later correlation and avoids silent timezone errors.",
+            "learningObjectives": [
+              "distinguish local time from UTC",
+              "document the timezone/offset with event times",
+              "explain why source clock error may remain even after conversion"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Time has two layers"
+              },
+              {
+                "type": "paragraph",
+                "text": "RFC 3227 advises noting the difference between the system clock and UTC and indicating whether timestamps are UTC or local time. A converted timestamp is not proof that the source system clock was accurate."
+              },
+              {
+                "type": "code",
+                "text": "Recorded: 2026-09-08 10:15:00+05:30\nNormalized UTC: 2026-09-08 04:45:00Z\nSource clock verified against: <recorded reference or “not established”>"
+              },
+              {
+                "type": "warning",
+                "text": "Do not discard the original timestamp representation just because a normalized value is easier to read."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-01",
+                "title": "Normalize a Timestamp Without Losing Provenance",
+                "description": "Convert a recorded local timestamp to UTC while preserving the original representation and offset.",
+                "steps": [
+                  "Start with `2026-09-08T10:15:00+05:30`.",
+                  "Parse it as an offset-aware datetime.",
+                  "Convert it to UTC.",
+                  "Store both values in a record.",
+                  "Add a note that timezone conversion does not prove the source clock was accurate."
+                ],
+                "solution": "```python\nfrom datetime import datetime, timezone\n\noriginal = datetime.fromisoformat(\"2026-09-08T10:15:00+05:30\")\nnormalized = original.astimezone(timezone.utc)\n\nrecord = {\n    \"original\": original.isoformat(),\n    \"normalized_utc\": normalized.isoformat(),\n    \"clock_accuracy_established\": False\n}\n\nprint(record)\n```",
+                "output": "A record containing the original offset-aware timestamp plus the derived UTC representation; the source clock accuracy remains a separate question."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What should be retained when normalizing a custody timestamp?",
+              "options": [
+                "The original time representation plus the documented timezone/offset and the derived normalized value.",
+                "Only the normalized UTC value.",
+                "Only the local clock reading.",
+                "Only the date."
+              ],
+              "answer": "The original time representation plus the documented timezone/offset and the derived normalized value.",
+              "explanation": "Preserving source time protects provenance and allows later review of the conversion."
+            },
+            "summary": [
+              "Time normalization improves correlation only when the source and conversion assumptions are documented.",
+              "Clock accuracy is a separate question from timezone conversion."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc3227"
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Contemporaneous Notes and Audit Trails",
+            "description": "Create records that explain what was done, by whom, when, and why.",
+            "learningObjectives": [
+              "define contemporaneous documentation",
+              "record unexpected events and deviations",
+              "distinguish factual observation from interpretation"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Good notes are reconstructable"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record actions close to the time they occur.",
+                  "Use evidence IDs and object names consistently.",
+                  "Record tool/version and meaningful settings when they affect results.",
+                  "Document deviations from the planned procedure and the reason.",
+                  "Preserve errors and failed attempts when they are relevant to interpreting the final result."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "RFC 3227 recommends detailed notes, including dates and times, and emphasizes that investigators may need to explain their actions long after collection. SWGDE likewise stresses documentation of collection decisions and deviations."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "Why should an unexpected handling deviation be documented?",
+              "options": [
+                "It explains a condition that may affect reproducibility or interpretation of the evidence.",
+                "It makes the deviation disappear from the record.",
+                "It replaces authorization.",
+                "It proves the evidence is correct."
+              ],
+              "answer": "It explains a condition that may affect reproducibility or interpretation of the evidence.",
+              "explanation": "Transparent deviations are more defensible than silent deviations because reviewers can assess their impact."
+            },
+            "summary": [
+              "A good audit trail records both successful and material unsuccessful actions.",
+              "Corrections should preserve the original record and document the correction according to policy."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc3227",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "Evidence Forms, IDs, and Record Consistency",
+            "description": "Use controlled identifiers and consistent schemas across inventory, custody, acquisition, and storage records.",
+            "learningObjectives": [
+              "design a minimum record schema",
+              "detect inconsistent identifiers",
+              "explain why record consistency matters"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Link every record"
+              },
+              {
+                "type": "paragraph",
+                "text": "The evidence ID is the primary join key for the human-readable case. Acquisition IDs, hash records, package IDs, working-copy IDs, and archive locations should reference that evidence ID consistently."
+              },
+              {
+                "type": "code",
+                "text": "Evidence ID: E-004\nAcquisition ID: A-004-01\nWorking Copy ID: W-004-01\nMaster SHA-256: <measured value>\nArchive Location: <controlled location>"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "What risk is created when inventory and custody records use different identifiers for the same device?",
+              "options": [
+                "The traceability chain can become ambiguous or broken.",
+                "The device becomes encrypted.",
+                "The hash algorithm changes.",
+                "The timestamps become UTC."
+              ],
+              "answer": "The traceability chain can become ambiguous or broken.",
+              "explanation": "Consistent identifiers are the link across records and artifacts."
+            },
+            "summary": [
+              "Record schemas should be stable, unambiguous, and easy to audit.",
+              "Identifier changes should be documented as controlled mappings, not silently edited."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/documents/published-complete-listing/19-f-003-swgde-best-practices-for-archiving-digital-and-multimedia-evidence/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Repair a Broken Custody Timeline",
+            "level": "Advanced",
+            "description": "Identify and document gaps in a hypothetical custody chain.",
+            "problemStatement": "You are given four transfer records containing a missing receiving party, an inconsistent timezone, and a duplicate evidence identifier. Produce a corrected audit trail that preserves the original records and documents each correction.",
+            "objectives": [
+              "identify each inconsistency",
+              "create a corrected derived view without deleting originals",
+              "state the impact of each issue"
+            ],
+            "requirements": [
+              "Spreadsheet or text editor",
+              "Synthetic records only",
+              "No real case information"
+            ],
+            "hint": "Never rewrite the original evidence record. Create an amended/derived record with a correction note and link to the source record.",
+            "solutionCode": "Issue 1: missing receiving party — mark as incomplete; add receiving party only if independently established; document source.\nIssue 2: inconsistent timezone — retain original timestamp; calculate normalized UTC separately; note the conversion.\nIssue 3: duplicate ID — preserve both records; assign a review identifier and document the collision before downstream processing.",
+            "solutionExplanation": "The solution demonstrates auditability: errors remain visible while the corrected working representation is traceable to the original record."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Storage, Transfer, Special Evidence, and Archive",
+        "description": "Apply evidence-handling controls to storage, remote collection, cloud/provider evidence, mobile devices, and long-term archiving.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Evidence Storage and Access Control",
+            "description": "Design a storage model that protects evidence while keeping it available for authorized work.",
+            "learningObjectives": [
+              "define storage roles and access controls",
+              "separate preserved masters from working data",
+              "identify integrity and availability risks in long-term storage"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Storage goals"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Protect confidentiality and integrity.",
+                  "Restrict access to authorized personnel.",
+                  "Maintain enough redundancy for the retention requirement.",
+                  "Track evidence location and status.",
+                  "Support future integrity verification and retrieval."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE archiving guidance emphasizes that evidence and examination results can be required years later. Archive systems therefore need defined ownership, retention rules, integrity validation, appropriate storage, and procedures for retrieval and disposition."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Which property is essential to a forensic evidence repository?",
+              "options": [
+                "Controlled access with a documented method for preserving and verifying evidence integrity.",
+                "Open write access for all investigators.",
+                "Automatic deletion of older cases.",
+                "A single untracked copy."
+              ],
+              "answer": "Controlled access with a documented method for preserving and verifying evidence integrity.",
+              "explanation": "Evidence storage must protect both integrity and future availability."
+            },
+            "summary": [
+              "Archive controls are organizational controls as well as technical controls.",
+              "Retention and disposal requirements come from applicable law and policy, not from an arbitrary technical timer."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/19-f-003-swgde-best-practices-for-archiving-digital-and-multimedia-evidence/"
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "Secure Transfer and Handoff",
+            "description": "Protect integrity during digital and physical transfer between custodians, systems, or facilities.",
+            "learningObjectives": [
+              "define a transfer checklist",
+              "verify transferred objects",
+              "document failed or interrupted transfers"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Transfer workflow"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identify source and destination evidence IDs.",
+                  "Record sender, receiver, purpose, and time.",
+                  "Transfer through a controlled channel or package.",
+                  "Verify the transferred object using the agreed integrity method.",
+                  "Record success, failure, retry, and final storage state."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A successful network transfer does not prove the destination file is identical unless the relevant integrity verification is performed."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-01",
+                "title": "Verify a Transferred File",
+                "description": "Simulate a digital evidence handoff by copying a synthetic file and verifying the destination bytes with SHA-256.",
+                "steps": [
+                  "Create a synthetic source file.",
+                  "Copy it to a destination directory.",
+                  "Calculate SHA-256 for source and destination.",
+                  "Record the transfer details and both digests.",
+                  "Change only the destination in a controlled lab experiment and verify that the digests no longer match."
+                ],
+                "solution": "Shell example:\n```bash\nsha256sum source/evidence.bin\nsha256sum destination/evidence.bin\n```\nRecord the two values and compare them. Do not overwrite the original source digest if a later mismatch occurs.",
+                "output": "An integrity verification record showing whether the destination copy matches the source at the time of transfer."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "What should follow a high-value evidence transfer?",
+              "options": [
+                "An integrity verification appropriate to the object and documented chain-of-custody update.",
+                "Immediate deletion of the source without policy authorization.",
+                "A new case ID.",
+                "A change to the original evidence timestamp."
+              ],
+              "answer": "An integrity verification appropriate to the object and documented chain-of-custody update.",
+              "explanation": "Transfer security combines transport controls with evidence verification and custody documentation."
+            },
+            "summary": [
+              "Handoffs are part of custody and must be visible in the case record.",
+              "For physical evidence, package condition can be part of the handoff record."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.rfc-editor.org/rfc/rfc3227"
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Remote Endpoint Evidence Handling",
+            "description": "Handle remote endpoint collection with attention to authorization, endpoint impact, transport, and provenance.",
+            "learningObjectives": [
+              "identify remote-collection risks",
+              "record endpoint and collection context",
+              "distinguish endpoint data from collector-generated outputs"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Remote is still evidence"
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE remote-collection guidance covers preparation, considerations, implementation, and documentation for networked endpoints. Remote methods can involve endpoint, server, network, removable-media, or BYO collection models and can affect the source system."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record endpoint identity and collection time.",
+                  "Confirm authorization and scope.",
+                  "Document the collection method and tool/version where relevant.",
+                  "Separate transferred evidence from logs or temporary artifacts created by the collector.",
+                  "Verify the received object and retain provenance metadata."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "What additional concern is prominent in remote collection?",
+              "options": [
+                "The collection process can interact with the endpoint and network and can change source state.",
+                "Remote evidence is always incomplete.",
+                "Remote endpoints cannot be hashed.",
+                "Remote collection eliminates custody concerns."
+              ],
+              "answer": "The collection process can interact with the endpoint and network and can change source state.",
+              "explanation": "Remote collection is a controlled intervention and must be documented accordingly."
+            },
+            "summary": [
+              "Remote evidence still requires the same core controls: authority, scope, integrity, provenance, custody, and documentation.",
+              "Transport metadata should not be confused with source-system metadata."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/22-f-003-best-practices-for-remote-collection-of-digital-evidence-from-an-endpoint/"
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "Cloud Provider Evidence",
+            "description": "Handle provider-produced data with attention to scope, provider metadata, collection context, and integrity.",
+            "learningObjectives": [
+              "identify cloud evidence provenance fields",
+              "preserve provider-generated metadata",
+              "explain why provider records do not automatically establish human attribution"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Cloud evidence is provider-mediated"
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE cloud guidance notes that procedures vary by provider and platform. The examiner should preserve the provider production, its provenance, acquisition context, authorized scope, and relevant metadata rather than pretending the source was a locally imaged physical disk."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Provider/service and account or tenant scope",
+                  "Collection date/time and timezone",
+                  "Authorized time window",
+                  "Provider-generated identifiers and metadata",
+                  "Original production files and integrity values",
+                  "Method/tool or provider process used to obtain the production"
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Cloud-provider records can establish what the provider recorded, but human attribution may require additional identity, endpoint, and authentication evidence."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-04",
+              "question": "Why should provider metadata be preserved with a cloud export?",
+              "options": [
+                "It helps establish provenance, scope, and the meaning of the exported data.",
+                "It proves the account owner committed an act.",
+                "It replaces the original provider record.",
+                "It makes all cloud data physically local."
+              ],
+              "answer": "It helps establish provenance, scope, and the meaning of the exported data.",
+              "explanation": "Provider context is necessary to interpret a remote production accurately."
+            },
+            "summary": [
+              "Cloud acquisition is a service-specific process; current provider procedures must be checked.",
+              "Preserve the production as received before creating analytical working copies."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/23-f-004-best-practices-for-digital-evidence-acquisition-preservation-and-analysis-from-cloud-service-providers/"
+            ]
+          },
+          {
+            "id": "lesson-06-05",
+            "title": "Mobile Evidence Preservation",
+            "description": "Understand state-dependent handling of phones/tablets without pretending that one universal procedure fits all devices.",
+            "learningObjectives": [
+              "identify mobile preservation risks",
+              "document device state and identifiers",
+              "explain why specialized validated tools and procedures are needed"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Mobile handling is specialized"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-101 describes mobile device forensics as recovery of evidence from mobile devices under forensically sound conditions and emphasizes validation, preservation, acquisition, examination, analysis, and reporting. SWGDE maintains specialized mobile guidance as well."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Device state and lock state can affect what is accessible.",
+                  "Connectivity can enable remote changes or synchronization.",
+                  "Battery state can affect continued availability.",
+                  "Platform/version differences affect acquisition options.",
+                  "Document identifiers, state, interactions, and method."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not improvise mobile acquisition on a live personal device. Use an authorized, validated workflow appropriate to the platform and current tool support."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-05",
+              "question": "Why are mobile acquisition procedures platform-specific?",
+              "options": [
+                "Device security, operating-system versions, storage models, and vendor behavior vary.",
+                "All mobile devices use the same filesystem.",
+                "Mobile devices contain no encryption.",
+                "A single tool works identically on every version."
+              ],
+              "answer": "Device security, operating-system versions, storage models, and vendor behavior vary.",
+              "explanation": "Mobile evidence handling depends heavily on platform, device state, and supported acquisition methods."
+            },
+            "summary": [
+              "Mobile handling requires stronger emphasis on device state and specialized validation.",
+              "Always record what method was actually used rather than labeling every extraction a “full image.”"
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/101/r1/final",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-003-2/"
+            ]
+          },
+          {
+            "id": "lesson-06-06",
+            "title": "Archiving and Retention",
+            "description": "Build an archive strategy that supports long-term access, integrity checking, and controlled disposition.",
+            "learningObjectives": [
+              "define archive responsibilities",
+              "design retention and verification controls",
+              "explain why archive access and format sustainability matter"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Long-term availability"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Define what must be archived and for how long under policy/law.",
+                  "Identify one authoritative archive and responsible owners.",
+                  "Use appropriate redundancy and integrity validation.",
+                  "Track location and retrieval procedures.",
+                  "Plan for future access to stored formats and metadata.",
+                  "Document authorized disposition when retention ends."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE archiving guidance notes that evidence may be needed years after the original examination, so organizations should have policy, responsibility, storage, redundancy, retrieval, and disposal procedures."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-06",
+              "question": "What is the purpose of archive integrity validation?",
+              "options": [
+                "To detect unintended change or corruption in preserved materials over time.",
+                "To prove who created the evidence.",
+                "To replace a chain-of-custody record.",
+                "To eliminate the need for backups."
+              ],
+              "answer": "To detect unintended change or corruption in preserved materials over time.",
+              "explanation": "Long-term integrity checks provide evidence that archived material remains consistent with its recorded baseline."
+            },
+            "summary": [
+              "Retention is not the same as indefinite storage; legal and policy requirements govern duration.",
+              "An archive must be usable, not merely existent."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/19-f-003-swgde-best-practices-for-archiving-digital-and-multimedia-evidence/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Design a Multi-Environment Evidence Storage Matrix",
+            "level": "Advanced",
+            "description": "Design handling controls for local, remote, cloud, and mobile evidence.",
+            "problemStatement": "Create a matrix that maps evidence environment to acquisition source, preservation risk, integrity check, custody record, storage concern, and limitation.",
+            "objectives": [
+              "compare environments",
+              "identify environment-specific risks",
+              "define common controls and special controls"
+            ],
+            "requirements": [
+              "Spreadsheet or Markdown",
+              "No live systems",
+              "Use NIST/SWGDE sources"
+            ],
+            "hint": "First list controls common to all evidence, then add the controls that are unique to each environment.",
+            "solutionCode": "Local disk: physical device, write protection, image verification, secure storage.\nRemote endpoint: authorization, endpoint interaction logging, transport verification, remote-collection provenance.\nCloud: provider scope, production metadata, provider method, local hash, original-production preservation.\nMobile: device state, connectivity, platform/version, specialized validated acquisition, battery/state documentation.",
+            "solutionExplanation": "The matrix shows that the same core principles apply across environments while operational controls differ."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Quality Assurance, Validation, and Reporting",
+        "description": "Verify tools and processes, review evidence-handling records, and communicate findings and limitations clearly.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Tool and Procedure Validation",
+            "description": "Understand how known-data testing and documented verification support reliable evidence-handling tools and procedures.",
+            "learningObjectives": [
+              "distinguish validation from trust or popularity",
+              "design a known-dataset test",
+              "record version and test conditions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Validation is function-specific"
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE tool-testing guidance recommends testing tools before casework using known datasets or manual verification and repeating appropriate testing after major updates. The test should target the function that matters to the workflow and document the result."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Define the function to be tested.",
+                  "Use a dataset with expected results.",
+                  "Record tool/version and environment.",
+                  "Compare expected and observed output.",
+                  "Record limitations and retest conditions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Which is the strongest baseline test for a forensic utility?",
+              "options": [
+                "Run it against a known dataset with expected results and record the comparison.",
+                "Install it and assume it is correct.",
+                "Use it in a live case first.",
+                "Test only whether it launches."
+              ],
+              "answer": "Run it against a known dataset with expected results and record the comparison.",
+              "explanation": "Known-data testing connects a tool function to an expected result and reveals limitations."
+            },
+            "summary": [
+              "Validation should match the way the tool is relied upon.",
+              "A new major version can warrant renewed testing."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-q-001-minimum-requirements-for-testing-tools-used-in-digital-and-multimedia-forensics/"
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Process Review and Evidence QA",
+            "description": "Perform a quality review of evidence records before case closure.",
+            "learningObjectives": [
+              "construct a review checklist",
+              "detect missing hashes or custody events",
+              "verify consistency between records"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "QA before handoff or closure"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Inventory complete",
+                  "Identifiers consistent",
+                  "Acquisition method recorded",
+                  "Hash algorithm and digest recorded",
+                  "Working-copy provenance documented",
+                  "Custody transfers complete",
+                  "Exceptions documented",
+                  "Storage/archive destination recorded",
+                  "Final report references correct evidence IDs"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Quality review is a structured check of the handling record. It is not an opportunity to rewrite history; discrepancies should be resolved transparently and retained when material."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-01",
+                "title": "Run a Pre-Archive QA Checklist",
+                "description": "Perform a structured review of a synthetic case record before it moves to analysis or archive.",
+                "steps": [
+                  "Check unique evidence IDs.",
+                  "Check that acquisition details and hash algorithm/digest are present.",
+                  "Check each custody transfer for sender, receiver, time, purpose, and destination.",
+                  "Check exception records for unresolved impact.",
+                  "Record a Ready, Hold, or Corrective Action disposition with reasons."
+                ],
+                "solution": "A correct review produces a checklist with one row per control, evidence of the record checked, a pass/fail result, and a disposition. Any missing material item remains visible rather than being silently filled from assumptions.",
+                "output": "A reproducible QA decision that explains whether the case package is ready for the next controlled stage."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "What should QA do with a material missing custody event?",
+              "options": [
+                "Flag the gap, investigate the underlying records, and document the resolution or unresolved limitation.",
+                "Delete the evidence.",
+                "Backdate a transfer.",
+                "Ignore it if the hash matches."
+              ],
+              "answer": "Flag the gap, investigate the underlying records, and document the resolution or unresolved limitation.",
+              "explanation": "Integrity and custody are related but distinct controls; a matching hash does not erase a custody gap."
+            },
+            "summary": [
+              "QA should identify defects before reporting and archive.",
+              "Never backdate or silently edit an evidence history."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/"
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Forensic Reporting for Evidence Handling",
+            "description": "Write handling reports that let a reviewer understand the source, method, integrity checks, custody, and limitations.",
+            "learningObjectives": [
+              "structure a concise evidence-handling report",
+              "cite acquisition and hash records",
+              "state limitations without overclaiming"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Handling report structure"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Scope and authority",
+                  "Evidence inventory",
+                  "Condition and preservation actions",
+                  "Collection/acquisition method",
+                  "Integrity values and verification",
+                  "Custody/transfer summary",
+                  "Exceptions or deviations",
+                  "Storage/archive status",
+                  "Limitations and unresolved issues"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE reporting guidance identifies minimum elements for examination reports; in an evidence-handling-focused report, the same principle applies: describe the process and results so that the work can be reviewed and challenged."
+              },
+              {
+                "type": "warning",
+                "text": "A report should not transform a handling record into an unsupported claim about what a person intended or did."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "What is a strong handling-report statement?",
+              "options": [
+                "“The acquired file set was hashed with SHA-256 and the recorded digest matched the post-transfer digest.”",
+                "“The user definitely intended to delete the data.”",
+                "“The hash proves the suspect created the file.”",
+                "“The device is legally admissible because we used a hash.”"
+              ],
+              "answer": "“The acquired file set was hashed with SHA-256 and the recorded digest matched the post-transfer digest.”",
+              "explanation": "The first statement is directly tied to a documented handling action and measurable result."
+            },
+            "summary": [
+              "Report facts and handling observations before interpretations.",
+              "Keep unsupported attribution and legal conclusions out of technical handling claims."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "lesson-07-04",
+            "title": "Exceptions, Incident Reporting, and Corrective Action",
+            "description": "Handle broken seals, lost access, failed transfers, mismatched hashes, or undocumented actions transparently.",
+            "learningObjectives": [
+              "classify evidence-handling exceptions",
+              "record corrective action without hiding the original problem",
+              "evaluate whether the exception limits use of the evidence"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Exception workflow"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the event, time, evidence ID, and person responsible.",
+                  "Preserve original values and records.",
+                  "Determine whether evidence content or provenance may have been affected.",
+                  "Take controlled corrective action if authorized.",
+                  "Re-verify integrity where appropriate.",
+                  "State residual uncertainty and impact."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Corrective action is not the same as editing the historical record. The case should retain enough information to reconstruct what happened."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-04",
+              "question": "What is the purpose of an evidence exception record?",
+              "options": [
+                "To document a condition that may affect integrity, provenance, or interpretation and how it was handled.",
+                "To erase the event from the record.",
+                "To automatically invalidate all evidence.",
+                "To replace a chain-of-custody record."
+              ],
+              "answer": "To document a condition that may affect integrity, provenance, or interpretation and how it was handled.",
+              "explanation": "Exception records make problems visible and allow their impact to be assessed."
+            },
+            "summary": [
+              "Exceptions should be evaluated for impact rather than automatically ignored or automatically treated as fatal.",
+              "Document corrective actions and residual limitations."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+            ]
+          },
+          {
+            "id": "lesson-07-05",
+            "title": "Evidence Handling Readiness Assessment",
+            "description": "Perform a final end-to-end review of whether an evidence item can move safely from collection into analysis/archive.",
+            "learningObjectives": [
+              "apply a complete handling checklist",
+              "identify missing controls",
+              "make a go/no-go recommendation with reasons"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Readiness questions"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Can the evidence be uniquely identified?",
+                  "Is scope/authority recorded?",
+                  "Is initial state documented?",
+                  "Was the acquisition method appropriate and recorded?",
+                  "Can the source and working copy be linked?",
+                  "Are integrity values recorded and verified?",
+                  "Is custody complete?",
+                  "Are exceptions visible?",
+                  "Is storage controlled?",
+                  "Could a reviewer reconstruct the process?"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-05",
+              "question": "Which question best captures end-to-end readiness?",
+              "options": [
+                "Can an independent reviewer trace the evidence from source through acquisition, verification, custody, and storage?",
+                "Can the examiner remember what happened?",
+                "Does the tool have a popular name?",
+                "Was the case completed quickly?"
+              ],
+              "answer": "Can an independent reviewer trace the evidence from source through acquisition, verification, custody, and storage?",
+              "explanation": "Traceability is the common thread across evidence-handling controls."
+            },
+            "summary": [
+              "Readiness is a process-integrity decision, not a speed metric.",
+              "Missing controls should be documented and corrected before reliance where feasible."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://www.swgde.org/documents/published-complete-listing/19-f-003-swgde-best-practices-for-archiving-digital-and-multimedia-evidence/",
+              "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Conduct a Full Evidence-Handling QA Review",
+            "level": "Advanced",
+            "description": "Audit a synthetic evidence package and produce a disposition recommendation.",
+            "problemStatement": "Given an evidence inventory, acquisition record, hash record, three custody transfers, and an exception note, identify all defects and decide whether the package is ready for analysis/archive.",
+            "objectives": [
+              "cross-check identifiers and times",
+              "verify integrity records",
+              "evaluate custody completeness",
+              "document disposition and residual limitations"
+            ],
+            "requirements": [
+              "Spreadsheet or text editor",
+              "Synthetic evidence package",
+              "No real personal information"
+            ],
+            "hint": "Review in a fixed order: identity → scope → acquisition → integrity → custody → exceptions → storage.",
+            "solutionCode": "Review order:\n1. Match evidence ID across all records.\n2. Confirm acquisition method and object identity.\n3. Confirm hash algorithm/object/digest and verification event.\n4. Check custody for every transfer.\n5. Evaluate any exception and whether it changes provenance or integrity.\n6. Confirm storage/working-copy relationship.\nDisposition: Ready only when material gaps are resolved or explicitly accepted under policy; otherwise hold for correction/review.",
+            "solutionExplanation": "The solution turns the course into a repeatable QA gate and forces the learner to treat records as a connected system rather than isolated forms."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Final Project — Evidence Custody Ledger",
+        "description": "Build a controlled-lab evidence ledger that inventories files, records custody transfers, stores SHA-256 baselines, verifies candidate copies, validates required records, and exports a reviewable report. This is the final assessment and contains no separate module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Project Architecture and Handling Controls",
+            "description": "Translate the course principles into a small non-invasive evidence-handling application.",
+            "learningObjectives": [
+              "define application boundaries",
+              "map evidence-handling controls to software functions",
+              "identify what the tool must never do"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "System boundary"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Input: authorized evidence files or working copies.",
+                  "Ledger: evidence identifiers, descriptions, source metadata, SHA-256 baseline, storage location, and custody events.",
+                  "Verification: recalculates SHA-256 against a stored baseline.",
+                  "QA: checks identifier uniqueness and basic custody completeness.",
+                  "Output: JSON report in a separate case directory."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "The project does not create forensic disk images, acquire live memory, parse proprietary mobile databases, bypass access controls, or decide legal admissibility."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Which design choice best protects source evidence in this project?",
+              "options": [
+                "Write case records to a separate case directory and never write reports inside the evidence source.",
+                "Rename evidence files after hashing.",
+                "Delete duplicates automatically.",
+                "Modify source timestamps to UTC."
+              ],
+              "answer": "Write case records to a separate case directory and never write reports inside the evidence source.",
+              "explanation": "Separating generated records from evidence reduces accidental source modification."
+            },
+            "summary": [
+              "The final project operationalizes separation, integrity, custody, and QA.",
+              "Tool output remains a derived record and must be interpreted within the course handling model."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://csrc.nist.gov/pubs/fips/180-4/upd1/final"
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Project Implementation and Test Strategy",
+            "description": "Implement the ledger and verify it with controlled synthetic data.",
+            "learningObjectives": [
+              "run the application on synthetic evidence",
+              "verify matching and mismatching copies",
+              "use automated tests to check core invariants",
+              "document project limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Controlled test sequence"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Create synthetic source files.",
+                  "Add an evidence item and calculate its SHA-256 baseline.",
+                  "Create an identical working copy and verify a match.",
+                  "Modify the working copy and verify a mismatch.",
+                  "Record multiple custody transfers.",
+                  "Run validation and export the case report.",
+                  "Run unit tests."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "python -m unittest test_evidence_ledger.py"
+              },
+              {
+                "type": "paragraph",
+                "text": "The project code below uses only the Python standard library. This keeps the dependency surface small and lets students inspect every operation performed on the evidence files."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "What should a test of the verification function demonstrate?",
+              "options": [
+                "It returns a match for an unchanged identical copy and a mismatch after the candidate content changes.",
+                "It edits the baseline digest until it matches.",
+                "It proves the source was created by a specific person.",
+                "It deletes the original after verification."
+              ],
+              "answer": "It returns a match for an unchanged identical copy and a mismatch after the candidate content changes.",
+              "explanation": "The function is intended to compare observed file bytes with a stored integrity baseline."
+            },
+            "summary": [
+              "Tests should include both positive and negative cases.",
+              "A passing unit test demonstrates the tested software behavior; it does not validate the entire forensic methodology."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-q-001-minimum-requirements-for-testing-tools-used-in-digital-and-multimedia-forensics/",
+              "https://csrc.nist.gov/pubs/fips/180-4/upd1/final"
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Project Review and Final Assessment",
+            "description": "Use the ledger output to perform an evidence-handling QA review and produce a short professional assessment.",
+            "learningObjectives": [
+              "audit the project output against the course checklist",
+              "identify residual limitations",
+              "write a handling-focused conclusion"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Final assessment criteria"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence ID is unique and stable.",
+                  "Source and storage context are recorded.",
+                  "Hash algorithm and digest are explicit.",
+                  "Verification behavior is tested.",
+                  "Custody transfers identify sender, receiver, time, purpose, and location.",
+                  "Validation errors are visible.",
+                  "Report is generated outside source evidence.",
+                  "Limitations distinguish software scope from forensic acquisition capability."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "What is the correct conclusion about this project?",
+              "options": [
+                "It is a controlled-lab handling and integrity utility, not a substitute for validated acquisition or legal procedures.",
+                "It proves every evidence item is admissible in every jurisdiction.",
+                "It replaces forensic imaging tools.",
+                "It establishes human intent from file hashes."
+              ],
+              "answer": "It is a controlled-lab handling and integrity utility, not a substitute for validated acquisition or legal procedures.",
+              "explanation": "The project intentionally covers handling controls and not the entire forensic discipline."
+            },
+            "summary": [
+              "The strongest final assessment is evidence-grounded and limitation-aware.",
+              "Students should be able to explain not only what the tool records, but what it cannot establish."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-q-002-swgde-requirements-for-report-writing-in-digital-and-multimedia-forensics/",
+              "https://www.swgde.org/documents/published-complete-listing/17-f-002-2-1/",
+              "https://www.swgde.org/documents/published-complete-listing/19-f-003-swgde-best-practices-for-archiving-digital-and-multimedia-evidence/"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Evidence Custody Ledger",
+          "description": "Build a small controlled-lab Python application that creates an evidence inventory, stores a SHA-256 integrity baseline for ordinary files, records custody transfers, verifies working copies, validates core record structure, and exports a case report. The project combines evidence identification, preservation, integrity, custody, documentation, QA, and archive-oriented record keeping without modifying source evidence.",
+          "conceptsCovered": [
+            "evidence inventory",
+            "unique evidence identifiers",
+            "SHA-256 integrity baselines",
+            "source/working-copy separation",
+            "chain of custody",
+            "timestamp recording",
+            "validation and QA",
+            "exception visibility",
+            "structured reporting",
+            "read-only source handling",
+            "reproducible testing",
+            "limitations and scope"
+          ],
+          "steps": [
+            "Create a synthetic evidence directory containing at least three files, including two files with identical content under different names.",
+            "Create an empty case directory outside the evidence directory.",
+            "Run the `add-file` command for each synthetic evidence file to create inventory records and SHA-256 baselines.",
+            "Create an identical working copy of one file and run `verify` to obtain a match.",
+            "Modify only the working copy and run `verify` again to obtain a mismatch.",
+            "Record at least two custody transfers for one evidence ID.",
+            "Run `report` to export the case JSON.",
+            "Run the unit tests with `python -m unittest test_evidence_ledger.py`.",
+            "Review the exported report and confirm that source evidence files remain unchanged.",
+            "Write a one-page assessment covering identity, integrity, custody completeness, QA result, and limitations."
+          ],
+          "code": {
+            "README.md": "# Evidence Custody Ledger\n\nA controlled-lab Python application that maintains an evidence inventory, records custody transfers, calculates SHA-256 for ordinary files, verifies transfer/copy integrity, and exports a reviewable case report.\n\nThe program is deliberately non-invasive: it reads source files, writes case records to a separate case directory, and does not modify source evidence. It is educational software, not a replacement for validated forensic acquisition tools or organizational SOPs.\n",
+            "evidence_ledger.py": "from __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nfrom dataclasses import dataclass, asdict\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\n\ndef utc_now() -> str:\n    return datetime.now(timezone.utc).isoformat()\n\n\ndef sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as handle:\n        for chunk in iter(lambda: handle.read(chunk_size), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\n@dataclass\nclass EvidenceItem:\n    evidence_id: str\n    description: str\n    source: str\n    collected_at: str\n    collector: str\n    hash_algorithm: str | None = None\n    digest: str | None = None\n    storage_location: str | None = None\n\n\n@dataclass\nclass CustodyEvent:\n    evidence_id: str\n    at: str\n    from_party: str\n    to_party: str\n    purpose: str\n    location: str\n\n\nclass EvidenceLedger:\n    def __init__(self, root: Path) -> None:\n        self.root = root\n        self.items_file = root / \"evidence.json\"\n        self.custody_file = root / \"custody.json\"\n        self.items: list[EvidenceItem] = []\n        self.custody: list[CustodyEvent] = []\n        self._load()\n\n    def _load(self) -> None:\n        self.root.mkdir(parents=True, exist_ok=True)\n        if self.items_file.exists():\n            raw = json.loads(self.items_file.read_text(encoding=\"utf-8\"))\n            self.items = [EvidenceItem(**item) for item in raw]\n        if self.custody_file.exists():\n            raw = json.loads(self.custody_file.read_text(encoding=\"utf-8\"))\n            self.custody = [CustodyEvent(**event) for event in raw]\n\n    def _save(self) -> None:\n        self.items_file.write_text(\n            json.dumps([asdict(item) for item in self.items], indent=2),\n            encoding=\"utf-8\",\n        )\n        self.custody_file.write_text(\n            json.dumps([asdict(event) for event in self.custody], indent=2),\n            encoding=\"utf-8\",\n        )\n\n    def add_file(self, evidence_id: str, description: str, source: Path, collector: str, storage_location: str) -> EvidenceItem:\n        if any(item.evidence_id == evidence_id for item in self.items):\n            raise ValueError(f\"Evidence ID already exists: {evidence_id}\")\n        source = source.resolve()\n        if not source.is_file():\n            raise FileNotFoundError(source)\n        digest = sha256_file(source)\n        item = EvidenceItem(\n            evidence_id=evidence_id,\n            description=description,\n            source=str(source),\n            collected_at=utc_now(),\n            collector=collector,\n            hash_algorithm=\"SHA-256\",\n            digest=digest,\n            storage_location=storage_location,\n        )\n        self.items.append(item)\n        self._save()\n        return item\n\n    def add_transfer(self, evidence_id: str, from_party: str, to_party: str, purpose: str, location: str, at: str | None = None) -> None:\n        if not any(item.evidence_id == evidence_id for item in self.items):\n            raise ValueError(f\"Unknown evidence ID: {evidence_id}\")\n        event = CustodyEvent(\n            evidence_id=evidence_id,\n            at=at or utc_now(),\n            from_party=from_party,\n            to_party=to_party,\n            purpose=purpose,\n            location=location,\n        )\n        self.custody.append(event)\n        self._save()\n\n    def verify_file(self, evidence_id: str, candidate: Path) -> bool:\n        item = next((x for x in self.items if x.evidence_id == evidence_id), None)\n        if item is None:\n            raise ValueError(f\"Unknown evidence ID: {evidence_id}\")\n        if item.hash_algorithm != \"SHA-256\" or not item.digest:\n            raise ValueError(\"No SHA-256 baseline is stored for this item\")\n        observed = sha256_file(candidate)\n        return observed == item.digest\n\n    def validate(self) -> list[str]:\n        errors: list[str] = []\n        ids = [item.evidence_id for item in self.items]\n        if len(ids) != len(set(ids)):\n            errors.append(\"Duplicate evidence identifiers found\")\n        for item in self.items:\n            if item.hash_algorithm == \"SHA-256\" and (not item.digest or len(item.digest) != 64):\n                errors.append(f\"Invalid SHA-256 digest format for {item.evidence_id}\")\n            for event in self.custody:\n                if event.evidence_id == item.evidence_id and not event.from_party:\n                    errors.append(f\"Missing sender for custody event on {item.evidence_id}\")\n                if event.evidence_id == item.evidence_id and not event.to_party:\n                    errors.append(f\"Missing receiver for custody event on {item.evidence_id}\")\n        return errors\n\n    def export_report(self, output: Path) -> None:\n        payload = {\n            \"generated_at\": utc_now(),\n            \"evidence\": [asdict(item) for item in self.items],\n            \"custody\": [asdict(event) for event in self.custody],\n            \"validation_errors\": self.validate(),\n        }\n        output.write_text(json.dumps(payload, indent=2), encoding=\"utf-8\")\n\n\ndef parse_args() -> argparse.Namespace:\n    parser = argparse.ArgumentParser(description=\"Controlled-lab evidence custody ledger\")\n    parser.add_argument(\"case_dir\", type=Path)\n    sub = parser.add_subparsers(dest=\"command\", required=True)\n\n    add = sub.add_parser(\"add-file\")\n    add.add_argument(\"evidence_id\")\n    add.add_argument(\"description\")\n    add.add_argument(\"source\", type=Path)\n    add.add_argument(\"collector\")\n    add.add_argument(\"storage_location\")\n\n    transfer = sub.add_parser(\"transfer\")\n    transfer.add_argument(\"evidence_id\")\n    transfer.add_argument(\"from_party\")\n    transfer.add_argument(\"to_party\")\n    transfer.add_argument(\"purpose\")\n    transfer.add_argument(\"location\")\n    transfer.add_argument(\"--at\")\n\n    verify = sub.add_parser(\"verify\")\n    verify.add_argument(\"evidence_id\")\n    verify.add_argument(\"candidate\", type=Path)\n\n    report = sub.add_parser(\"report\")\n    report.add_argument(\"output\", type=Path)\n\n    return parser.parse_args()\n\n\ndef main() -> int:\n    args = parse_args()\n    ledger = EvidenceLedger(args.case_dir)\n\n    if args.command == \"add-file\":\n        item = ledger.add_file(args.evidence_id, args.description, args.source, args.collector, args.storage_location)\n        print(json.dumps(asdict(item), indent=2))\n        return 0\n\n    if args.command == \"transfer\":\n        ledger.add_transfer(args.evidence_id, args.from_party, args.to_party, args.purpose, args.location, args.at)\n        print(\"Transfer recorded\")\n        return 0\n\n    if args.command == \"verify\":\n        ok = ledger.verify_file(args.evidence_id, args.candidate)\n        print(\"MATCH\" if ok else \"MISMATCH\")\n        return 0 if ok else 1\n\n    if args.command == \"report\":\n        ledger.export_report(args.output)\n        print(f\"Report written to {args.output}\")\n        return 0\n\n    return 2\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+            "case_schema.example.json": "{\n  \"case_id\": \"TRAINING-001\",\n  \"authority\": \"Instructor-authorized laboratory use\",\n  \"scope\": \"Synthetic evidence files only\",\n  \"retention\": \"Follow the applicable course/lab retention rule\",\n  \"notes\": \"Example metadata; replace with authorized case information only.\"\n}\n",
+            "test_evidence_ledger.py": "import json\nimport tempfile\nimport unittest\nfrom pathlib import Path\nfrom evidence_ledger import EvidenceLedger\n\n\nclass LedgerTests(unittest.TestCase):\n    def test_add_and_verify(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            root = Path(tmp)\n            source = root / \"evidence.txt\"\n            source.write_text(\"training evidence\\n\", encoding=\"utf-8\")\n            case_dir = root / \"case\"\n            ledger = EvidenceLedger(case_dir)\n            ledger.add_file(\"E-001\", \"Synthetic evidence file\", source, \"Lab Examiner\", \"restricted-lab\")\n            working = root / \"working.txt\"\n            working.write_bytes(source.read_bytes())\n            self.assertTrue(ledger.verify_file(\"E-001\", working))\n            working.write_text(\"changed\", encoding=\"utf-8\")\n            self.assertFalse(ledger.verify_file(\"E-001\", working))\n\n    def test_unknown_transfer_rejected(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            ledger = EvidenceLedger(Path(tmp) / \"case\")\n            with self.assertRaises(ValueError):\n                ledger.add_transfer(\"E-404\", \"A\", \"B\", \"test\", \"lab\")\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+          },
+          "explanation": "The project has a simple separation of concerns. `EvidenceItem` represents a controlled evidence record. `CustodyEvent` represents a transfer. `EvidenceLedger` persists those records in JSON, computes SHA-256 from a source file, verifies a candidate copy against the stored baseline, validates basic record consistency, and exports a report. The command-line interface provides four controlled operations: add-file, transfer, verify, and report. The application never writes into the source evidence path and refuses duplicate evidence identifiers. This directly demonstrates course principles: unique identification, integrity baselines, custody tracking, source/working-copy separation, QA, and reproducibility. The application intentionally avoids acquiring evidence, mounting raw images, parsing filesystems, bypassing device security, or making legal conclusions; those functions require specialized validated tools and organizational procedures.",
+          "validationPlan": [
+            "Run the unit tests in a clean Python environment.",
+            "Add a zero-byte synthetic file and confirm a SHA-256 digest is recorded.",
+            "Add the same evidence ID twice and confirm the application rejects the duplicate.",
+            "Verify an unchanged copy and confirm MATCH.",
+            "Change only the candidate copy and confirm MISMATCH with a non-zero exit code.",
+            "Attempt a transfer for an unknown evidence ID and confirm the application rejects it.",
+            "Create a report and confirm it is outside the source evidence directory.",
+            "Inspect the source code to confirm evidence files are opened for reading and not written by the application."
+          ],
+          "limitations": [
+            "This is educational software and not a forensic acquisition tool.",
+            "It works with ordinary files and does not create physical or logical forensic images.",
+            "Python filesystem metadata and file hashes do not establish authorship, intent, or legal admissibility.",
+            "The example custody validation checks basic completeness but does not adjudicate every organizational custody rule.",
+            "Hash verification supports comparison of observed bytes but does not prove provenance.",
+            "Real cases require applicable law, organizational policy, validated procedures, specialist tools, and appropriate authorization."
+          ]
+        }
+      }
+    ]
+  }
+}

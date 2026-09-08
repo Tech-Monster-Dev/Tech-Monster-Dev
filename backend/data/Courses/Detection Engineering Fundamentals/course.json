@@ -1,0 +1,2008 @@
+{
+  "course": {
+    "id": "detection-engineering-fundamentals",
+    "title": "Detection Engineering Fundamentals",
+    "slug": "detection-engineering-fundamentals",
+    "description": "A practical, engineering-focused course on designing, implementing, validating, tuning, documenting, and operating cybersecurity detections. Students learn to translate threat behavior into evidence-backed hypotheses; reason about telemetry, normalization, thresholds, sequences, correlations, Sigma and KQL examples; test detections with positive and negative fixtures; manage false positives; use detection-as-code practices; monitor rule health; and safely turn threat hunting and intelligence into maintainable detection content. The course is vendor-neutral while using authoritative MITRE ATT&CK, NIST, Sigma, OCSF, Microsoft Sentinel, and Elastic guidance where concrete examples improve learning. It is appropriate for students with basic cybersecurity, networking, and scripting knowledge who want practical detection engineering skills.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 44,
+    "prerequisites": [
+      "Basic networking concepts such as IP addresses, ports, DNS, and authentication",
+      "Basic cybersecurity concepts including logs, alerts, indicators, and common attack behaviors",
+      "Basic Python programming and JSON familiarity",
+      "Comfort reading simple query/filter expressions",
+      "A local computer capable of running Python 3.11+; no production SIEM account is required"
+    ],
+    "learningOutcomes": [
+      "Explain the detection engineering lifecycle and write evidence-backed detection specifications",
+      "Identify telemetry, fields, normalization requirements, and data-quality assumptions for a detection",
+      "Design point, threshold, sequence, and correlation detections with appropriate time windows",
+      "Author and reason about portable Sigma rules and platform-specific KQL examples",
+      "Build positive, negative, boundary, malformed, and regression tests for detection logic",
+      "Analyze false positives and implement narrow, reviewable tuning and exception strategies",
+      "Use version control, schema validation, CI concepts, deployment controls, and rule-health monitoring for detection-as-code",
+      "Translate threat intelligence and hunting observations into defensible production detection hypotheses",
+      "Document alert context, limitations, ownership, and ATT&CK alignment without overclaiming",
+      "Build and audit a reproducible local detection workbench using synthetic telemetry"
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Detection Engineering Foundations",
+        "description": "Build the mental model for detection engineering, evidence, logic patterns, and lifecycle management.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "What Detection Engineering Is",
+            "description": "Establish detection engineering as the discipline of turning threat knowledge and observable telemetry into maintainable, testable detections that produce useful security signals.",
+            "learningObjectives": [
+              "define detection engineering and distinguish it from monitoring and incident response",
+              "describe the detection lifecycle from hypothesis to retirement",
+              "identify the assumptions that make a detection trustworthy"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Detection as an engineering lifecycle"
+              },
+              {
+                "type": "paragraph",
+                "text": "A detection is an operational claim: if a defined behavior occurs in available telemetry, the rule should produce a signal that an analyst can investigate. Engineering quality therefore depends on data availability, logic correctness, operational context, testing, and maintenance—not merely on writing a query."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A detection can be technically correct yet operationally poor if it fires too often, lacks context, or depends on unstable fields.",
+                  "Detection logic should be versioned and reviewed like other production code.",
+                  "A useful detection states what behavior it targets, what evidence it needs, expected false positives, and how an analyst should investigate."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p01",
+                "title": "Write a Detection Specification",
+                "description": "Turn a security hypothesis into a concise specification before writing query logic.",
+                "steps": [
+                  "Choose one behavior such as repeated authentication failures.",
+                  "State the actor behavior, required telemetry, time window, threshold, expected false positives, and analyst response context.",
+                  "Record a unique rule identifier and a test plan with positive and negative cases."
+                ],
+                "solution": "rule_id: AUTH-001\nbehavior: repeated authentication failures for one user from one source\ntelemetry: authentication events with user, source IP, result, timestamp\nwindow: 10 minutes\nthreshold: 5 failures\nfalse_positives: password manager retries, misconfigured applications\npositive_test: 5 failures in 10 minutes\nnegative_test: 4 failures in 10 minutes",
+                "output": "The output is a specification that can be implemented and reviewed independently of any SIEM syntax."
+              }
+            ],
+            "quiz": {
+              "id": "q01",
+              "question": "Which property most directly makes a detection operationally useful? ",
+              "options": [
+                "A short query",
+                "An analyst-relevant signal with defined evidence and expected noise",
+                "A high severity label",
+                "A large number of ATT&CK tags"
+              ],
+              "answer": "An analyst-relevant signal with defined evidence and expected noise",
+              "explanation": "A detection must be actionable and understandable; syntax and labels alone do not establish operational value."
+            },
+            "summary": [
+              "Detection engineering connects threat hypotheses to observable evidence and operational workflows.",
+              "A detection specification should exist before platform-specific syntax.",
+              "Quality includes correctness, context, testability, and maintainability."
+            ],
+            "resources": [
+              "https://attack.mitre.org/resources/learn-more-about-attack/training/detection-engineering/",
+              "https://www.elastic.co/blog/elastic-security-building-effective-threat-hunting-detection-rules"
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Telemetry, Events, and Evidence",
+            "description": "Learn to reason from raw security events to fields and event sequences that can support a detection.",
+            "learningObjectives": [
+              "identify the minimum fields required for common detection types",
+              "distinguish event time, ingestion time, and normalized fields",
+              "explain why missing telemetry can invalidate otherwise sound detection logic"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Detection starts with evidence"
+              },
+              {
+                "type": "paragraph",
+                "text": "A rule cannot recover information that was never collected. Detection design therefore begins by enumerating the event classes and fields needed to prove or refute the hypothesis. Useful fields often include timestamps, identities, process or network attributes, outcome, host context, and stable event identifiers."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Name the behavior to observe.",
+                  "Identify the event types that expose it.",
+                  "List required fields and acceptable alternatives.",
+                  "Check collection, parsing, retention, and timestamp quality.",
+                  "Only then write detection logic."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p02",
+                "title": "Inventory Required Telemetry",
+                "description": "Create a field-level telemetry contract for a suspicious process execution detection.",
+                "steps": [
+                  "Define the event type needed.",
+                  "List fields for process image, command line, parent process, user, host, and timestamp.",
+                  "Mark each field required or optional and state how the rule behaves when required fields are missing."
+                ],
+                "solution": "event_type: process_creation\nrequired: timestamp, host, user, process_image\nstrongly_preferred: command_line, parent_image, parent_command_line\nmissing_command_line_behavior: keep detection active only for logic that does not depend on it; do not infer command-line values",
+                "output": "A telemetry contract makes data gaps explicit and prevents hidden assumptions in rule logic."
+              }
+            ],
+            "quiz": {
+              "id": "q02",
+              "question": "Why should required telemetry be identified before query authoring?",
+              "options": [
+                "Because queries create missing data",
+                "Because a rule's reliability depends on the evidence actually available",
+                "Because all SIEMs use identical schemas",
+                "Because every field is optional"
+              ],
+              "answer": "Because a rule's reliability depends on the evidence actually available",
+              "explanation": "A detection is bounded by the telemetry collected, parsed, retained, and normalized by the environment."
+            },
+            "summary": [
+              "Telemetry quality is part of detection quality.",
+              "Required fields should be explicit and monitored for availability.",
+              "Time semantics and normalization affect correlation accuracy."
+            ],
+            "resources": [
+              "https://www.nist.gov/publications/guide-computer-security-log-management",
+              "https://ocsf.io/"
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Detection Logic Patterns",
+            "description": "Compare point detections, thresholds, sequences, correlations, and behavioral conditions, and choose the simplest reliable pattern.",
+            "learningObjectives": [
+              "differentiate point, threshold, sequence, correlation, and anomaly-oriented detections",
+              "select a detection pattern based on evidence and threat behavior",
+              "explain the tradeoff between specificity and generality"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Common detection patterns"
+              },
+              {
+                "type": "paragraph",
+                "text": "Point rules match a single event or field pattern. Threshold rules aggregate counts or distinct values. Sequence rules require ordered events. Correlation rules combine related evidence across sources. Anomaly-oriented methods infer deviations rather than matching a fixed signature. The engineering goal is to use the least complex pattern that expresses the threat hypothesis without losing necessary context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use exact matches for stable, high-confidence indicators.",
+                  "Use thresholds when volume or repetition is itself meaningful.",
+                  "Use sequences when order changes the meaning of events.",
+                  "Use broader behavioral methods when no stable literal indicator exists."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p03",
+                "title": "Choose the Right Pattern",
+                "description": "Select the most appropriate logic pattern for three scenarios.",
+                "steps": [
+                  "For five failed logins from one IP in ten minutes, choose a pattern.",
+                  "For a process spawning a shell followed by a network connection within two minutes, choose a pattern.",
+                  "For a known malicious hash, choose a pattern.",
+                  "Explain why each pattern fits the evidence."
+                ],
+                "solution": "1. Threshold: count failures by user/IP in a time window.\n2. Sequence/correlation: link ordered process and network events.\n3. Point/indicator match: compare a normalized hash against a trusted indicator set.",
+                "output": "The exercise demonstrates that detection architecture should follow the evidence relationship, not the preference of a particular SIEM."
+              }
+            ],
+            "quiz": {
+              "id": "q03",
+              "question": "Which pattern best represents an ordered process followed by network activity?",
+              "options": [
+                "A single exact-string match",
+                "A sequence or correlation",
+                "A static severity label",
+                "A log-retention policy"
+              ],
+              "answer": "A sequence or correlation",
+              "explanation": "Order and relationship between events are part of the hypothesis, so a sequence/correlation model is appropriate."
+            },
+            "summary": [
+              "Detection patterns encode different relationships between evidence.",
+              "Complexity should be justified by the behavior being detected.",
+              "A good rule avoids both underfitting and needless complexity."
+            ],
+            "resources": [
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/rule-types",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Detection Lifecycle and Ownership",
+            "description": "Build a practical lifecycle covering design, review, testing, deployment, monitoring, tuning, versioning, and retirement.",
+            "learningObjectives": [
+              "map a detection from intake to retirement",
+              "define ownership and change controls",
+              "identify metrics that reveal degraded detection quality"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Lifecycle states"
+              },
+              {
+                "type": "paragraph",
+                "text": "A mature detection progresses through proposal, development, validation, review, deployment, observation, tuning, and retirement. Version history should explain why logic changed. Ownership matters because telemetry, threat behavior, and analyst workflows change over time."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Keep a clear owner for logic and data dependencies.",
+                  "Track status separately from severity.",
+                  "Review rules after major telemetry or threat-model changes.",
+                  "Retire detections when their assumptions no longer hold, and document the reason."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04",
+                "title": "Design a Detection Record",
+                "description": "Create metadata for a production-style rule.",
+                "steps": [
+                  "Include owner role, rule status, version, dependencies, test evidence, false-positive notes, review date, and retirement criteria.",
+                  "Keep severity separate from confidence and operational priority.",
+                  "Add a change-history entry for the initial release."
+                ],
+                "solution": "owner: detection-engineering\nstatus: test\nversion: 1.0\nreview_interval: quarterly\ndata_dependencies: authentication_events\nvalidation: positive_and_negative_fixture_tests\nretirement_trigger: required telemetry removed or threat hypothesis no longer relevant\nchange_history: 1.0 - initial validated release",
+                "output": "This record supports governance without tying the detection to one vendor."
+              }
+            ],
+            "quiz": {
+              "id": "q04",
+              "question": "What should trigger a detection review?",
+              "options": [
+                "Only an annual calendar date",
+                "Changes in telemetry, threat behavior, performance, false positives, or analyst needs",
+                "Only a severity increase",
+                "Only a new dashboard"
+              ],
+              "answer": "Changes in telemetry, threat behavior, performance, false positives, or analyst needs",
+              "explanation": "Detection assumptions can become stale for many reasons, so review should be risk- and change-driven as well as periodic."
+            },
+            "summary": [
+              "Detection engineering is a lifecycle, not a one-time query-writing activity.",
+              "Ownership and change history make maintenance possible.",
+              "Retirement is a valid engineering outcome."
+            ],
+            "resources": [
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/validate-and-test-rules",
+              "https://attack.mitre.org/resources/learn-more-about-attack/training/"
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-02",
+        "title": "Threat-Informed Detection Design",
+        "description": "Connect threat behavior, ATT&CK, normalized telemetry, Sigma, and analyst context into defensible detection specifications.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Threat-Informed Detection Design",
+            "description": "Translate threat behavior and ATT&CK knowledge into concrete detection hypotheses without treating ATT&CK coverage as a checklist.",
+            "learningObjectives": [
+              "turn a threat behavior statement into observable hypotheses",
+              "use ATT&CK techniques to organize detection intent",
+              "avoid mapping detections to techniques that are not actually evidenced"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Threat-informed detection begins with behavior, not with a desire to color a matrix. ATT&CK can provide a shared vocabulary for adversary techniques and detection strategies, while the actual rule must specify observable evidence and environmental assumptions."
+              },
+              {
+                "type": "warning",
+                "text": "An ATT&CK tag does not prove that a detection covers every procedure for that technique. Mapping should be justified by the behavior the rule can observe."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p05",
+                "title": "Map a Hypothesis to ATT&CK",
+                "description": "Document a PowerShell encoded-command hypothesis and its evidence boundary.",
+                "steps": [
+                  "State the behavior in plain language.",
+                  "Identify the relevant ATT&CK technique/sub-technique using the current ATT&CK site.",
+                  "List the process fields required for the mapping.",
+                  "State one behavior the rule does not cover."
+                ],
+                "solution": "hypothesis: PowerShell is launched with an encoded-command option\nmapping: T1059.001 PowerShell\nrequired evidence: Windows process creation with image and command line\nboundary: the rule does not cover PowerShell execution that lacks command-line telemetry",
+                "output": "The exercise emphasizes evidence-backed mapping rather than broad claims."
+              }
+            ],
+            "quiz": {
+              "id": "q05",
+              "question": "What is the safest basis for ATT&CK mapping?",
+              "options": [
+                "The rule title",
+                "The observable behavior and evidence the rule actually detects",
+                "The severity score",
+                "The number of fields in the query"
+              ],
+              "answer": "The observable behavior and evidence the rule actually detects",
+              "explanation": "Technique mapping should describe what the detection can genuinely observe."
+            },
+            "summary": [
+              "Threat intelligence supplies hypotheses; telemetry determines what can be detected.",
+              "ATT&CK is useful for common language, prioritization, and coverage analysis.",
+              "A mapping should be revisited when rule logic changes."
+            ],
+            "resources": [
+              "https://attack.mitre.org/resources/",
+              "https://attack.mitre.org/detectionstrategies/"
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Field Normalization and Schemas",
+            "description": "Understand normalization as a way to make detection logic portable and consistent across heterogeneous sources.",
+            "learningObjectives": [
+              "explain why normalized fields reduce rule complexity",
+              "identify risks when source-specific fields are mixed with normalized fields",
+              "design a small normalized event contract"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Detection logic becomes fragile when every data source uses a different name for the same concept. Normalization creates stable semantic fields such as user, source IP, destination IP, process name, command line, and event action. OCSF is one open schema approach; Sigma also defines a taxonomy for interoperable field and log-source naming."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Normalization is not the same as lossless storage; retain source-specific context when investigations need it.",
+                  "Document transformations so analysts understand the meaning of normalized values.",
+                  "A detection should state its expected schema and parser assumptions."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p06",
+                "title": "Normalize Authentication Events",
+                "description": "Transform two source-specific records into a common event contract.",
+                "steps": [
+                  "Define normalized keys for timestamp, user, source IP, action, and outcome.",
+                  "Map a Windows-like record and a cloud-like record to those keys.",
+                  "Keep one source-specific field in each normalized event for traceability."
+                ],
+                "solution": "normalized_example = {\n  'timestamp': source.get('TimeCreated'),\n  'user': source.get('AccountName') or source.get('UserPrincipalName'),\n  'src_ip': source.get('IpAddress') or source.get('IPAddress'),\n  'action': 'authentication',\n  'outcome': 'failure' if source.get('Status') == 'failure' else 'success',\n  'source_event_id': source.get('EventID') or source.get('Id')\n}",
+                "output": "The output is a consistent semantic contract while preserving a source identifier for investigation."
+              }
+            ],
+            "quiz": {
+              "id": "q06",
+              "question": "What is the main detection-engineering benefit of normalization?",
+              "options": [
+                "It guarantees zero false positives",
+                "It lets logic operate on stable semantics across sources",
+                "It removes the need for parsing",
+                "It eliminates raw telemetry"
+              ],
+              "answer": "It lets logic operate on stable semantics across sources",
+              "explanation": "Stable semantic fields reduce source-specific branching and make detections easier to maintain."
+            },
+            "summary": [
+              "Normalize common semantics while retaining provenance.",
+              "Document transformations and assumptions.",
+              "Sigma and OCSF provide useful interoperability concepts."
+            ],
+            "resources": [
+              "https://ocsf.io/",
+              "https://github.com/SigmaHQ/sigma-specification"
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Writing Sigma Detection Rules",
+            "description": "Author portable Sigma rules using current rule structure, detection logic, metadata, false-positive documentation, and ATT&CK tags.",
+            "learningObjectives": [
+              "construct a Sigma 2.1-compatible rule structure",
+              "write selection and condition logic for a Windows process event",
+              "use status, level, false-positive, and ATT&CK metadata appropriately"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Sigma rule anatomy"
+              },
+              {
+                "type": "paragraph",
+                "text": "A Sigma rule typically combines rule metadata, a logsource description, one or more detection selections, a condition, and optional fields such as false positives, severity, and tags. The current Sigma specification defines the interoperable structure; repository-specific conventions can require additional metadata."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use the current Sigma specification rather than copying an old blog example.",
+                  "The base specification and SigmaHQ repository conventions are related but not identical.",
+                  "Validate both YAML structure and the semantic behavior of the rule."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p07",
+                "title": "Author and Validate a Sigma Rule",
+                "description": "Create a Sigma rule for suspicious PowerShell encoded-command execution and check its structural assumptions.",
+                "steps": [
+                  "Use the provided rule as a starting point.",
+                  "Explain the logsource and detection selection.",
+                  "Identify two legitimate administrative cases that could create false positives.",
+                  "State what must be validated before deployment to a SIEM."
+                ],
+                "solution": "title: Suspicious Rundll32 Remote DLL Reference\nid: 8c1f0a6b-2f0e-4b52-9c7f-2a9f8d2d4e31\nstatus: test\ndescription: Detects rundll32.exe execution where the command line references a remote URL.\nauthor: Detection Engineering Fundamentals\ndate: 2026-09-07\nlogsource:\n    category: process_creation\n    product: windows\ndetection:\n    image:\n        Image|endswith: '\\\\rundll32.exe'\n    remote_reference:\n        CommandLine|contains:\n            - 'http://'\n            - 'https://'\n    condition: image and remote_reference\nfalsepositives:\n    - Approved software installers or administrative tooling that retrieves signed content.\nlevel: medium\ntags:\n    - attack.t1218.011\n",
+                "output": "The rule expresses a concrete behavior and documents false positives; production deployment still requires environment-specific field and backend validation."
+              }
+            ],
+            "quiz": {
+              "id": "q07",
+              "question": "Which section determines the event source expected by a Sigma rule?",
+              "options": [
+                "logsource",
+                "summary",
+                "severity",
+                "resources"
+              ],
+              "answer": "logsource",
+              "explanation": "The logsource describes the category, product, service, and other source context for the rule."
+            },
+            "summary": [
+              "Sigma separates portable detection intent from backend query syntax.",
+              "Current Sigma specification is versioned; do not silently rely on older examples.",
+              "False-positive documentation is part of operational quality."
+            ],
+            "resources": [
+              "https://github.com/SigmaHQ/sigma-specification",
+              "https://github.com/SigmaHQ/sigma"
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Detection Metadata and Analyst Context",
+            "description": "Design alert metadata that helps analysts triage a signal without reading the rule implementation.",
+            "learningObjectives": [
+              "define useful alert context and investigation fields",
+              "separate severity, confidence, and risk",
+              "write a concise investigation guide for a detection"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A high-quality alert should answer what happened, where, when, to whom, why the rule fired, and what evidence should be inspected next. Metadata should avoid pretending that a rule has certainty it does not have."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "State the behavior detected.",
+                  "Expose entities needed for triage.",
+                  "Provide links or references to the rule and evidence.",
+                  "List common false positives.",
+                  "Give safe investigation questions rather than unsupported conclusions."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p08",
+                "title": "Create an Analyst-Facing Alert Contract",
+                "description": "Write an alert contract for the authentication failure detector.",
+                "steps": [
+                  "Define title, description, entities, severity, confidence, evidence fields, and investigation questions.",
+                  "Add two false-positive possibilities.",
+                  "Specify which fields should be searchable from the alert."
+                ],
+                "solution": "title: Repeated Authentication Failures\nseverity: medium\nconfidence: moderate\nentities: user, source_ip\ninvestigation_fields: first_seen, last_seen, failure_count, host, authentication_method\nquestions: Is the source expected? Did the account later authenticate successfully? Are other accounts affected?\nfalse_positives: stale credentials in an automated service; legitimate password spray testing",
+                "output": "The contract gives analysts useful context without asserting that every trigger is malicious."
+              }
+            ],
+            "quiz": {
+              "id": "q08",
+              "question": "Why should confidence be separate from severity?",
+              "options": [
+                "They are always identical",
+                "Severity describes impact/priority while confidence describes how strongly the evidence supports the hypothesis",
+                "Confidence is only for dashboards",
+                "Severity is a data-source field"
+              ],
+              "answer": "Severity describes impact/priority while confidence describes how strongly the evidence supports the hypothesis",
+              "explanation": "A low-confidence detection can still be high impact, and a high-confidence event can have limited impact."
+            },
+            "summary": [
+              "Alert context should support triage rather than overwhelm analysts.",
+              "Severity, confidence, and risk are distinct concepts.",
+              "Investigation guidance should be specific to the detection hypothesis."
+            ],
+            "resources": [
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/author-rules",
+              "https://learn.microsoft.com/en-us/azure/sentinel/sentinel-analytic-rules-creation"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build an Evidence-Backed Sigma Detection",
+            "level": "Intermediate",
+            "description": "Write a portable detection for suspicious PowerShell encoded-command execution and document its evidence boundary.",
+            "problemStatement": "Create a Sigma rule that detects PowerShell process creation with an encoded-command option. Include metadata, false positives, and an ATT&CK tag. The rule must not claim to detect all PowerShell abuse.",
+            "objectives": [
+              "Use current Sigma rule structure.",
+              "Use process-creation telemetry.",
+              "Include a test status and medium severity.",
+              "Document false positives and one non-covered behavior."
+            ],
+            "requirements": [
+              "Sigma 2.1 specification",
+              "A text editor or YAML-aware editor",
+              "Optional Sigma validator/converter for backend testing"
+            ],
+            "hint": "Start with the logsource and define a selection that requires both the PowerShell executable and encoded-command marker.",
+            "solutionCode": "title: Suspicious PowerShell EncodedCommand\nid: 4d8d2a7b-0d8a-4b4d-9c0a-7e4f6f1f2a11\nstatus: test\ndescription: Detects PowerShell processes that request encoded command execution.\nauthor: Detection Engineering Fundamentals\ndate: 2026-09-07\nlogsource:\n    category: process_creation\n    product: windows\ndetection:\n    selection:\n        Image|endswith: '\\\\powershell.exe'\n        CommandLine|contains:\n            - ' -enc '\n            - ' -encodedcommand '\n    condition: selection\nfalsepositives:\n    - Administrative automation that intentionally uses encoded PowerShell.\nlevel: medium\ntags:\n    - attack.t1059.001\n",
+            "solutionExplanation": "The solution uses the Sigma specification's logsource and detection sections. The false-positive list acknowledges administrative automation. The ATT&CK tag identifies the PowerShell sub-technique but the description limits the claim to the observable encoded-command behavior."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Detection Logic and Query Engineering",
+        "description": "Develop selective, temporal, correlated, and efficient detection logic using portable concepts and concrete query examples.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Query Design and Selectivity",
+            "description": "Design detection queries that are specific enough to be useful while preserving relevant behavioral variation.",
+            "learningObjectives": [
+              "explain precision and recall in practical detection terms",
+              "identify brittle literals and overly broad predicates",
+              "build layered conditions using stable and contextual fields"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Detection logic balances missed malicious activity against unwanted matches. Exact strings can be precise but brittle; broad keywords can survive variation but create noise. Layering stable process identity with command-line or parent-process context often produces better behavior coverage than relying on one literal."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer stable semantics over incidental formatting.",
+                  "Use case normalization or appropriate backend modifiers deliberately.",
+                  "Measure changes against representative good and bad fixtures."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p09",
+                "title": "Refine an Overbroad Predicate",
+                "description": "Given a rule that alerts on any command line containing 'powershell', make it more selective.",
+                "steps": [
+                  "Identify why the original predicate is noisy.",
+                  "Add process identity and one suspicious execution characteristic.",
+                  "List a legitimate case that should remain allowed.",
+                  "Describe one test that proves the refinement did not remove the intended behavior."
+                ],
+                "solution": "selection: Image ends with powershell.exe AND CommandLine contains ' -enc '",
+                "output": "The refined predicate narrows the behavior to encoded-command execution rather than every PowerShell launch."
+              }
+            ],
+            "quiz": {
+              "id": "q09",
+              "question": "What is a common problem with a rule matching only the word 'powershell' in every command line?",
+              "options": [
+                "It is too specific",
+                "It can generate many legitimate matches and misses behavioral context",
+                "It cannot be stored",
+                "It is automatically a sequence rule"
+              ],
+              "answer": "It can generate many legitimate matches and misses behavioral context",
+              "explanation": "Administrative and normal scripting use PowerShell, so the literal alone is usually too broad."
+            },
+            "summary": [
+              "Selectivity is a design property that must be measured.",
+              "Layering conditions can improve precision without requiring a fixed IOC.",
+              "A good rule documents what variation it intentionally accepts."
+            ],
+            "resources": [
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts",
+              "https://github.com/SigmaHQ/sigma-specification"
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Time Windows, Thresholds, and Sequences",
+            "description": "Implement temporal logic without creating gaps or duplicate alerts.",
+            "learningObjectives": [
+              "explain fixed and sliding windows",
+              "choose thresholds based on behavior and baseline evidence",
+              "identify late-arriving and duplicate-event problems"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Temporal detections depend on timestamps, scheduling, look-back windows, and event arrival. A rule that searches exactly the last interval can miss events arriving late. Conversely, a long overlap can duplicate results unless the platform deduplicates or the rule logic accounts for it."
+              },
+              {
+                "type": "warning",
+                "text": "Do not choose a threshold solely because it is a common example. Use observed benign activity, threat behavior, and the consequences of misses to justify the value."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p10",
+                "title": "Implement a Sliding-Window Threshold",
+                "description": "Use Python to detect five authentication failures for the same user/source within ten minutes.",
+                "steps": [
+                  "Represent events with ISO timestamps.",
+                  "Group failures by user and source IP.",
+                  "Sort timestamps and use a moving left boundary.",
+                  "Emit one candidate alert per key when the threshold is reached."
+                ],
+                "solution": "from datetime import datetime\nfrom collections import defaultdict\n\ndef detect(events, threshold=5, window_seconds=600):\n    grouped = defaultdict(list)\n    for e in events:\n        if e.get(\"outcome\") == \"failure\":\n            key = (e[\"user\"], e[\"src_ip\"])\n            grouped[key].append(datetime.fromisoformat(e[\"timestamp\"].replace(\"Z\",\"+00:00\")))\n    alerts = []\n    for key, times in grouped.items():\n        times.sort()\n        left = 0\n        for right, current in enumerate(times):\n            while (current - times[left]).total_seconds() > window_seconds:\n                left += 1\n            if right - left + 1 >= threshold:\n                alerts.append({\"user\": key[0], \"src_ip\": key[1], \"count\": right-left+1})\n                break\n    return alerts\n",
+                "output": "The moving boundary implements a sliding window and avoids requiring events to align with fixed clock buckets."
+              }
+            ],
+            "quiz": {
+              "id": "q10",
+              "question": "Why can an overlapping look-back window be useful?",
+              "options": [
+                "It can reduce missed detections from scheduling or late-arriving events",
+                "It guarantees no false positives",
+                "It removes the need for timestamps",
+                "It makes all queries faster"
+              ],
+              "answer": "It can reduce missed detections from scheduling or late-arriving events",
+              "explanation": "A small overlap can compensate for timing uncertainty, but duplication must also be considered."
+            },
+            "summary": [
+              "Temporal detection quality depends on timestamp and scheduling semantics.",
+              "Sliding windows can represent behavior more naturally than fixed buckets.",
+              "Thresholds should be empirically justified."
+            ],
+            "resources": [
+              "https://www.elastic.co/guide/en/security/current/rules-ui-create.html",
+              "https://learn.microsoft.com/en-us/azure/sentinel/sentinel-analytic-rules-creation"
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Correlation Across Data Sources",
+            "description": "Combine independent evidence streams to reduce ambiguity and surface behavior chains.",
+            "learningObjectives": [
+              "define correlation keys and join conditions",
+              "distinguish strong correlations from accidental matches",
+              "design a multi-event detection with bounded time and entity context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Correlation can combine endpoint, identity, network, and cloud evidence. Useful join keys include user, host, process identifier, session identifier, or a carefully chosen source/destination pair. Correlation becomes risky when keys are too broad or time windows are too long."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Choose the smallest stable join key that represents the behavior.",
+                  "Bound the time window.",
+                  "Require enough independent evidence to justify the signal.",
+                  "Preserve contributing events for analyst review."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p11",
+                "title": "Design a Process-to-Network Correlation",
+                "description": "Specify a correlation that detects a suspicious script interpreter launching and then creating an external connection.",
+                "steps": [
+                  "Define the first event and required fields.",
+                  "Define the second event and correlation key.",
+                  "Choose a bounded time window.",
+                  "State two conditions that would prevent the rule from becoming overly broad."
+                ],
+                "solution": "event1: process_creation where image is a script interpreter\njoin_key: host + process_id\nwindow: 2 minutes\nevent2: network_connection where process_id matches and destination is external\nnoise_controls: require a non-browser interpreter; exclude approved automation hosts",
+                "output": "The specification makes the relationship explicit and includes controls against broad matching."
+              }
+            ],
+            "quiz": {
+              "id": "q11",
+              "question": "What is a major risk of a very broad correlation key?",
+              "options": [
+                "It guarantees perfect matching",
+                "Unrelated events can be joined and create misleading alerts",
+                "It prevents all alerts",
+                "It changes event timestamps"
+              ],
+              "answer": "Unrelated events can be joined and create misleading alerts",
+              "explanation": "Correlation quality depends on stable, sufficiently specific relationships between events."
+            },
+            "summary": [
+              "Correlation should represent a real relationship, not merely temporal proximity.",
+              "Preserve contributing evidence for investigation.",
+              "Tune correlation windows and keys using real telemetry."
+            ],
+            "resources": [
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/rule-types",
+              "https://ocsf.io/"
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "KQL Detection Patterns",
+            "description": "Use Kusto Query Language patterns common in Microsoft Sentinel-style analytics rules while keeping the concepts platform-aware.",
+            "learningObjectives": [
+              "write filtering, aggregation, projection, and time-window logic in KQL",
+              "explain why efficient query structure matters",
+              "map a detection specification into KQL"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "let lookback = 1h;\nSigninLogs\n| where TimeGenerated >= ago(lookback)\n| where ResultType != 0\n| summarize FailureCount=count(), FirstSeen=min(TimeGenerated), LastSeen=max(TimeGenerated)\n    by UserPrincipalName, IPAddress\n| where FailureCount >= 5\n| project UserPrincipalName, IPAddress, FailureCount, FirstSeen, LastSeen\n"
+              },
+              {
+                "type": "paragraph",
+                "text": "The example groups failed sign-ins by user and source IP, then filters on a threshold. In a production Sentinel environment, the exact table schema and fields must match the connected data source. Efficient queries matter because detection rules execute repeatedly over potentially large datasets."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p12",
+                "title": "Build a KQL Threshold Rule",
+                "description": "Write a KQL query for five failed sign-ins from the same user and IP in one hour.",
+                "steps": [
+                  "Filter to the look-back period.",
+                  "Filter unsuccessful sign-ins.",
+                  "Aggregate by user and IP.",
+                  "Return only groups meeting the threshold.",
+                  "Project fields an analyst can use."
+                ],
+                "solution": "let lookback = 30m;\nSecurityEvent\n| where TimeGenerated >= ago(lookback)\n| where EventID == 4625\n| summarize FailureCount=count(), UniqueHosts=dcount(Computer)\n    by Account, IpAddress\n| where FailureCount >= 5\n| project Account, IpAddress, FailureCount, UniqueHosts\n| order by FailureCount desc\n",
+                "output": "The query produces grouped candidates and exposes the count and time bounds for investigation."
+              }
+            ],
+            "quiz": {
+              "id": "q12",
+              "question": "Which KQL operation is used to aggregate failed sign-ins by user and IP?",
+              "options": [
+                "summarize",
+                "project",
+                "where",
+                "extend"
+              ],
+              "answer": "summarize",
+              "explanation": "summarize groups rows and computes aggregations such as count, min, and max."
+            },
+            "summary": [
+              "KQL is one implementation language; the detection specification should remain understandable without it.",
+              "Use bounded time filters and selective predicates early.",
+              "Return investigation-relevant fields."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/kusto/query/summarize-operator",
+              "https://learn.microsoft.com/en-us/azure/sentinel/sentinel-analytic-rules-creation"
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Performance and Cost of Detection Queries",
+            "description": "Optimize recurring detections by controlling data scanned, joins, aggregation size, and schedule.",
+            "learningObjectives": [
+              "identify common sources of unnecessary query cost",
+              "apply early time and field filters",
+              "explain tradeoffs between frequency, look-back, and detection latency"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Detection queries run repeatedly, so inefficient logic can consume compute and increase ingestion or search costs. Start with bounded time ranges and selective predicates, avoid unnecessary fields and broad joins, and choose schedules based on the detection's required latency."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Measure query execution against realistic data volumes.",
+                  "Do not optimize away evidence needed for correctness.",
+                  "A slower but accurate rule may still be preferable to a fast rule that misses the threat; optimize after correctness is established."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p13",
+                "title": "Optimize a Detection Query",
+                "description": "Review a conceptual query and identify four improvements.",
+                "steps": [
+                  "Add a bounded time predicate.",
+                  "Filter on event type before expensive aggregation.",
+                  "Return only required fields.",
+                  "Replace an unnecessary broad join with a keyed correlation."
+                ],
+                "solution": "optimized_order: time filter -> event-type filter -> selective predicates -> aggregation/join -> projection\nmeasurement: compare execution time and scanned data before/after\ncorrectness check: confirm positive fixtures still trigger",
+                "output": "The approach reduces unnecessary work while preserving the detection hypothesis."
+              }
+            ],
+            "quiz": {
+              "id": "q13",
+              "question": "What is a good first optimization for a recurring detection query?",
+              "options": [
+                "Remove all fields",
+                "Bound the time range and reduce unnecessary data before expensive operations",
+                "Increase the alert severity",
+                "Add more joins"
+              ],
+              "answer": "Bound the time range and reduce unnecessary data before expensive operations",
+              "explanation": "Early filtering limits the data that later operations must process."
+            },
+            "summary": [
+              "Performance is part of operational reliability.",
+              "Optimize based on measurements, not assumptions.",
+              "Schedule and look-back should reflect required detection latency."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/azure/sentinel/sentinel-analytic-rules-creation",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Design a Correlated Detection",
+            "level": "Advanced",
+            "description": "Create a platform-neutral detection specification that correlates a suspicious process with subsequent external network activity.",
+            "problemStatement": "Design a rule that observes a script interpreter process on a host and a related external network connection within two minutes. Define the correlation key, required telemetry, exclusions, alert context, and test cases.",
+            "objectives": [
+              "Specify the event sequence.",
+              "Choose a stable join key.",
+              "Bound the correlation window.",
+              "Define positive, negative, and late-arriving tests.",
+              "Document false positives and data dependencies."
+            ],
+            "requirements": [
+              "Endpoint process telemetry",
+              "Network connection telemetry",
+              "A stable host/process/session correlation identifier"
+            ],
+            "hint": "Do not join only on host and time if a more specific process or session identifier is available.",
+            "solutionCode": "detection_spec = {\n    \"name\": \"Script Interpreter Followed by External Connection\",\n    \"sequence\": [\n        {\n            \"event_type\": \"process_creation\",\n            \"conditions\": {\n                \"image_class\": \"script_interpreter\",\n                \"host\": \"required\",\n                \"process_id\": \"required\"\n            }\n        },\n        {\n            \"event_type\": \"network_connection\",\n            \"conditions\": {\n                \"destination_scope\": \"external\",\n                \"host\": \"required\",\n                \"process_id\": \"matches_previous\"\n            }\n        }\n    ],\n    \"join_key\": [\"host\", \"process_id\"],\n    \"window_seconds\": 120,\n    \"noise_controls\": [\n        \"exclude approved automation hosts\",\n        \"require a non-browser interpreter\",\n        \"retain contributing events for triage\"\n    ],\n    \"tests\": {\n        \"positive\": \"interpreter process followed by external connection within 120 seconds\",\n        \"negative\": \"interpreter process with no matching external connection\",\n        \"late_event\": \"network event outside the configured correlation window\"\n    }\n}\n",
+            "solutionExplanation": "The design uses sequence semantics and a specific join key. It explicitly defines what evidence is required and what benign cases should not alert."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Detection Validation and Tuning",
+        "description": "Make detections dependable through positive/negative testing, historical validation, exception design, tuning, and quality metrics.",
+        "lessons": [
+          {
+            "id": "lesson-14",
+            "title": "False Positives and Exceptions",
+            "description": "Treat false positives as evidence for improving detection logic, data quality, or exception management rather than simply suppressing everything noisy.",
+            "learningObjectives": [
+              "categorize common false-positive causes",
+              "design narrow, reviewable exceptions",
+              "distinguish rule refinement from analyst-only suppression"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "False positives can arise from legitimate administrative behavior, automation, shared infrastructure, data parsing errors, or an overly broad hypothesis. Exceptions should be narrow, explainable, auditable, and preferably scoped by stable attributes and time when appropriate."
+              },
+              {
+                "type": "warning",
+                "text": "Permanent broad exclusions can create blind spots. An exception should be treated as a security decision with an owner and review path."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p14",
+                "title": "Build an Exception Policy",
+                "description": "Design exceptions for a legitimate backup service that repeatedly triggers a process-based rule.",
+                "steps": [
+                  "Identify the stable entity that can be safely excluded.",
+                  "Avoid excluding an entire process category if only one managed host is legitimate.",
+                  "Add an owner and review date.",
+                  "State what happens if the service changes behavior."
+                ],
+                "solution": "exception: host in approved_backup_hosts AND service_account == backup-service\nowner: detection-engineering\nreview: quarterly\nfallback: alert if command-line or destination deviates from the approved backup profile",
+                "output": "The policy limits the exception to a known context and preserves a path for detecting behavior drift."
+              }
+            ],
+            "quiz": {
+              "id": "q14",
+              "question": "Which exception is generally safer?",
+              "options": [
+                "Exclude all activity from a common system binary",
+                "Exclude a narrowly defined, documented context with an owner and review",
+                "Disable the rule",
+                "Ignore every alert from the service account"
+              ],
+              "answer": "Exclude a narrowly defined, documented context with an owner and review",
+              "explanation": "Narrow scope reduces the chance that the exception hides unrelated malicious behavior."
+            },
+            "summary": [
+              "False positives are diagnostic signals about logic and environment.",
+              "Exceptions should be narrow and governed.",
+              "Re-test both the exception and the original detection after changes."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/azure/sentinel/false-positives",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/validate-and-test-rules"
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Detection Testing with Positive and Negative Fixtures",
+            "description": "Build repeatable tests that demonstrate what should and should not trigger.",
+            "learningObjectives": [
+              "define positive, negative, edge, and malformed test cases",
+              "explain why representative benign data matters",
+              "write deterministic unit tests for detection functions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A detection test matrix"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Positive: known matching behavior must alert.",
+                  "Negative: similar benign behavior must not alert.",
+                  "Boundary: threshold exactly met and just below it.",
+                  "Malformed: missing or invalid fields must fail safely.",
+                  "Regression: previously fixed false-positive case must remain quiet."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p15",
+                "title": "Unit-Test a Threshold Detector",
+                "description": "Test a five-failure detector with positive, boundary, and negative cases.",
+                "steps": [
+                  "Write a function that counts failures by user and source.",
+                  "Create exactly five failures within ten minutes.",
+                  "Create four failures within ten minutes.",
+                  "Create five failures spread beyond ten minutes.",
+                  "Assert the expected alert/no-alert result for each case."
+                ],
+                "solution": "def is_match(events, threshold=5, window_seconds=600):\n    from datetime import datetime\n    times = [datetime.fromisoformat(e[\"timestamp\"].replace(\"Z\",\"+00:00\"))\n             for e in events if e[\"outcome\"] == \"failure\"]\n    times.sort()\n    for i, current in enumerate(times):\n        left = i\n        while (current-times[left]).total_seconds() > window_seconds:\n            left += 1\n        if i-left+1 >= threshold:\n            return True\n    return False\n\nassert is_match([\n    {\"timestamp\":\"2026-09-07T10:00:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:01:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:02:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:03:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:04:00Z\",\"outcome\":\"failure\"},\n])\nassert not is_match([\n    {\"timestamp\":\"2026-09-07T10:00:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:01:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:02:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:03:00Z\",\"outcome\":\"failure\"},\n])\nassert not is_match([\n    {\"timestamp\":\"2026-09-07T10:00:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:03:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:06:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:09:00Z\",\"outcome\":\"failure\"},\n    {\"timestamp\":\"2026-09-07T10:20:00Z\",\"outcome\":\"failure\"},\n])\n",
+                "output": "The tests prove the threshold and time-window semantics, including the important boundary case."
+              }
+            ],
+            "quiz": {
+              "id": "q15",
+              "question": "What is the purpose of a negative detection test?",
+              "options": [
+                "To make the rule longer",
+                "To demonstrate that representative benign behavior does not alert",
+                "To replace positive tests",
+                "To avoid collecting telemetry"
+              ],
+              "answer": "To demonstrate that representative benign behavior does not alert",
+              "explanation": "Negative tests are essential for evaluating false-positive behavior."
+            },
+            "summary": [
+              "Positive tests show intended coverage; negative tests expose noise.",
+              "Boundary and malformed cases catch subtle implementation defects.",
+              "Fixtures should be deterministic and version controlled."
+            ],
+            "resources": [
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/validate-and-test-rules",
+              "https://www.elastic.co/blog/elastic-security-building-effective-threat-hunting-detection-rules"
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Validation, Replay, and Historical Testing",
+            "description": "Validate detections against representative historical data before production activation.",
+            "learningObjectives": [
+              "explain replay and preview testing",
+              "compare expected results with observed alert volume",
+              "design a safe validation workflow that does not trigger production response actions"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Historical testing lets engineers evaluate a rule against normal and known-bad periods before enabling it. A good validation set includes enough normal activity to reveal noise and, where authorized, controlled exercises or known incidents to verify positive behavior."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the data range, rule version, and expected outcome.",
+                  "Do not treat historical absence of alerts as proof of detection quality if the needed telemetry was missing.",
+                  "Keep production response actions isolated during test runs."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p16",
+                "title": "Create a Validation Report",
+                "description": "Write a compact report for a rule tested over seven days.",
+                "steps": [
+                  "Record query/rule version and data range.",
+                  "Report positive fixture hits, benign hits, and missing-data observations.",
+                  "Classify each issue as logic, telemetry, or operational context.",
+                  "Recommend release, tune, or reject."
+                ],
+                "solution": "rule_version: 1.2\ndata_range: seven-day representative dataset\npositive_fixtures: 8 expected / 8 observed\nbenign_matches: 14, of which 10 were approved automation\nmissing_fields: command_line absent on 3% of process events\ndecision: tune; add bounded exception for approved automation and document reduced coverage when command_line is missing",
+                "output": "The report separates rule behavior from data-quality limitations and supports a defensible release decision."
+              }
+            ],
+            "quiz": {
+              "id": "q16",
+              "question": "What should a historical validation report include?",
+              "options": [
+                "Only the number of alerts",
+                "Rule version, data range, expected results, observed results, and data limitations",
+                "Only the query text",
+                "Only false positives"
+              ],
+              "answer": "Rule version, data range, expected results, observed results, and data limitations",
+              "explanation": "Reproducibility requires context about what was tested and under which assumptions."
+            },
+            "summary": [
+              "Historical replay is a validation step, not proof that a detection will catch every future attack.",
+              "Data gaps must be recorded as coverage limitations.",
+              "Keep test evidence linked to the deployed rule version."
+            ],
+            "resources": [
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/validate-and-test-rules",
+              "https://learn.microsoft.com/en-us/azure/sentinel/detection-tuning"
+            ]
+          },
+          {
+            "id": "lesson-17",
+            "title": "Detection Tuning and Stability",
+            "description": "Tune detections without destroying their intended coverage, using evidence from alerts, telemetry, and analyst feedback.",
+            "learningObjectives": [
+              "identify noise drivers and recurring false positives",
+              "apply tuning changes with measurable hypotheses",
+              "recognize when a detection should be split into multiple rules"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Tuning is iterative. A good change states the problem, the expected effect, and the coverage risk. Sometimes the correct solution is not a more complicated rule: splitting a broad rule into high-confidence and hunting-oriented variants can produce better operational outcomes."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Measure current alert volume and representative false positives.",
+                  "Identify the common entity or pattern causing noise.",
+                  "Apply the narrowest defensible change.",
+                  "Re-run positive and negative tests.",
+                  "Compare volume and coverage after the change."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p17",
+                "title": "Tune a Noisy Rule",
+                "description": "Given a rule that triggers on all PowerShell execution, propose a two-rule strategy.",
+                "steps": [
+                  "Create a high-confidence rule for encoded-command execution.",
+                  "Create a broader hunting rule for unusual PowerShell execution that does not automatically page analysts.",
+                  "Define separate severities and review criteria."
+                ],
+                "solution": "production_rule: PowerShell + encoded-command -> medium/high-confidence alert\nhunting_rule: PowerShell with unusual parent or network context -> low-priority hunt\nshared_dependency: process_creation telemetry",
+                "output": "Splitting objectives prevents a broad hunting signal from overwhelming the production alert queue."
+              }
+            ],
+            "quiz": {
+              "id": "q17",
+              "question": "When is splitting a detection useful?",
+              "options": [
+                "When one rule combines materially different confidence or operational goals",
+                "Whenever a rule has a title",
+                "Only when the SIEM cannot query",
+                "Never"
+              ],
+              "answer": "When one rule combines materially different confidence or operational goals",
+              "explanation": "Separate alerting and hunting objectives can reduce noise while preserving broader visibility."
+            },
+            "summary": [
+              "Tune from measured noise rather than arbitrary exclusions.",
+              "A rule can be split when confidence and workflow differ.",
+              "Every tuning change should trigger regression tests."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/azure/sentinel/detection-tuning",
+              "https://learn.microsoft.com/en-us/azure/sentinel/false-positives"
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "Detection Quality Metrics",
+            "description": "Use practical metrics to evaluate correctness, usefulness, freshness, and operational cost.",
+            "learningObjectives": [
+              "define alert volume, false-positive rate, precision, coverage, and latency in context",
+              "identify limitations of single-number detection metrics",
+              "design a small dashboard of engineering health indicators"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Metrics should answer engineering questions. Alert volume and false-positive rate reveal operational load; precision approximates how often alerts are useful; latency measures how quickly a rule can signal; coverage describes which hypotheses or behaviors are addressed. None is sufficient alone."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Track changes by rule version.",
+                  "Interpret precision only against a defined labeling process.",
+                  "Measure data availability separately from rule logic so failures are diagnosable."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p18",
+                "title": "Define a Detection Scorecard",
+                "description": "Create a scorecard for a production rule.",
+                "steps": [
+                  "Choose five metrics.",
+                  "Define how each is measured.",
+                  "Add a threshold or review trigger for each.",
+                  "Include one qualitative metric such as analyst feedback."
+                ],
+                "solution": "metrics: alert_volume_per_day, analyst_confirmed_rate, median_detection_latency, required_field_availability, days_since_last_test, analyst_feedback\nreview_triggers: rising noise, falling telemetry availability, stale tests, unexplained latency increase",
+                "output": "The scorecard mixes operational, data-quality, and maintenance signals rather than reducing detection quality to one number."
+              }
+            ],
+            "quiz": {
+              "id": "q18",
+              "question": "Why should telemetry availability be measured separately from rule precision?",
+              "options": [
+                "Because missing telemetry can hide detections without producing false positives",
+                "Because precision is irrelevant",
+                "Because telemetry is always complete",
+                "Because availability changes severity"
+              ],
+              "answer": "Because missing telemetry can hide detections without producing false positives",
+              "explanation": "A rule may appear quiet because the evidence stopped arriving, not because the environment became safer."
+            },
+            "summary": [
+              "Metrics should diagnose both detection logic and its dependencies.",
+              "Version-aware measurement makes tuning effects visible.",
+              "Qualitative analyst feedback complements quantitative measures."
+            ],
+            "resources": [
+              "https://www.nist.gov/publications/guide-computer-security-log-management",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/validate-and-test-rules"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Build a Detection Test Harness",
+            "level": "Intermediate",
+            "description": "Implement a small Python test harness that evaluates a threshold detection against positive, negative, boundary, and malformed fixtures.",
+            "problemStatement": "Create a reusable test harness for a five-failure authentication detector. It must report pass/fail for each fixture and must not crash when an event is missing a nonessential field.",
+            "objectives": [
+              "Implement deterministic fixture evaluation.",
+              "Include positive, negative, boundary, and malformed cases.",
+              "Return useful failure messages.",
+              "Keep the detector independent from the test runner."
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Standard library only"
+            ],
+            "hint": "Keep parsing and detection logic separate from assertions so the same detector can later be integrated into another runner.",
+            "solutionCode": "from datetime import datetime\n\ndef detect(events, threshold=5, window_seconds=600):\n    times = []\n    for e in events:\n        if e.get(\"outcome\") != \"failure\" or \"timestamp\" not in e:\n            continue\n        try:\n            times.append(datetime.fromisoformat(e[\"timestamp\"].replace(\"Z\",\"+00:00\")))\n        except ValueError:\n            continue\n    times.sort()\n    for right, current in enumerate(times):\n        left = right\n        while left > 0 and (current-times[left-1]).total_seconds() <= window_seconds:\n            left -= 1\n        if right-left+1 >= threshold:\n            return True\n    return False\n\nfixtures = {\n    \"positive\": [\n        {\"timestamp\":f\"2026-09-07T10:0{i}:00Z\",\"outcome\":\"failure\"} for i in range(5)\n    ],\n    \"negative\": [\n        {\"timestamp\":f\"2026-09-07T10:0{i}:00Z\",\"outcome\":\"failure\"} for i in range(4)\n    ],\n    \"malformed\": [{\"timestamp\":\"not-a-time\",\"outcome\":\"failure\"}, {\"outcome\":\"failure\"}],\n}\nexpected = {\"positive\": True, \"negative\": False, \"malformed\": False}\n\nfor name, events in fixtures.items():\n    actual = detect(events)\n    result = \"PASS\" if actual == expected[name] else \"FAIL\"\n    print(f\"{result}: {name} expected={expected[name]} actual={actual}\")\n",
+            "solutionExplanation": "The harness isolates detection behavior, includes malformed input handling, and reports deterministic results. In a production project, the fixtures would be expanded and run in CI."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Detection-as-Code and Production Operations",
+        "description": "Operationalize detections through repositories, validation, CI/CD, deployment choices, and health monitoring.",
+        "lessons": [
+          {
+            "id": "lesson-19",
+            "title": "Detection as Code",
+            "description": "Treat detections as versioned engineering artifacts with review, testing, reproducible builds, and controlled deployment.",
+            "learningObjectives": [
+              "explain the benefits of version-controlling detection logic",
+              "design a repository structure for rules and tests",
+              "identify what should be reviewed before deployment"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Detection-as-Code applies software engineering discipline to detection content. A repository can hold rules, schemas, fixtures, tests, metadata, and deployment configuration. Pull requests create a review point for logic and security impact."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Keep generated artifacts separate from source definitions.",
+                  "Require tests for behavior changes.",
+                  "Record dependencies such as data schemas and backend versions.",
+                  "Avoid secrets and environment-specific credentials in rule repositories."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p19",
+                "title": "Design a Detection Repository",
+                "description": "Propose a repository layout for Sigma rules and Python tests.",
+                "steps": [
+                  "Create directories for rules, tests, fixtures, documentation, and CI configuration.",
+                  "Define a naming convention.",
+                  "State what a pull request must prove."
+                ],
+                "solution": "rules/\ntests/\nfixtures/\ndocs/\nci/\n\nPR checks: YAML/schema validation, fixture tests, metadata review, duplicate-ID check, and changelog entry",
+                "output": "The layout separates detection source from tests and documentation and makes automated checks possible."
+              }
+            ],
+            "quiz": {
+              "id": "q19",
+              "question": "What is the main benefit of version control for detections?",
+              "options": [
+                "It prevents all false positives",
+                "It provides reviewable history and reproducible changes",
+                "It replaces testing",
+                "It removes data dependencies"
+              ],
+              "answer": "It provides reviewable history and reproducible changes",
+              "explanation": "Detection logic evolves; version history helps explain and audit those changes."
+            },
+            "summary": [
+              "Detection-as-Code makes changes reviewable and repeatable.",
+              "Rules should be treated as production artifacts with dependencies.",
+              "CI should test logic and metadata before deployment."
+            ],
+            "resources": [
+              "https://github.com/SigmaHQ/sigma",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/validate-and-test-rules"
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Schema Validation and Rule Linting",
+            "description": "Use schemas and linting to catch structural errors before behavioral testing.",
+            "learningObjectives": [
+              "distinguish syntax validity from semantic correctness",
+              "explain how JSON Schema can validate Sigma rule structure",
+              "design lint checks for duplicate IDs and required metadata"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A rule can parse successfully while still being wrong for its backend or threat hypothesis. Schema validation catches structural problems; linting can enforce project conventions; fixture tests evaluate behavior. These checks complement rather than replace each other."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Validate the exact rule version supported by the repository.",
+                  "Keep project-specific lint rules documented.",
+                  "Treat validation failures as release blockers when they indicate invalid production content."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p20",
+                "title": "Create a Rule Lint Checklist",
+                "description": "Write a checklist for a Sigma pull request.",
+                "steps": [
+                  "Include schema validity.",
+                  "Check required metadata and UUID uniqueness.",
+                  "Check that false positives are documented.",
+                  "Check that ATT&CK tags correspond to the stated behavior.",
+                  "Require at least one positive and one negative fixture."
+                ],
+                "solution": "schema_valid: required\nunique_ids: required\nmetadata_complete: required\nattack_mapping_reviewed: required\npositive_fixture: required\nnegative_fixture: required\nfalse_positive_notes: required",
+                "output": "The checklist separates structural, semantic, and behavioral quality gates."
+              }
+            ],
+            "quiz": {
+              "id": "q20",
+              "question": "Why is schema validation not sufficient to prove a detection works?",
+              "options": [
+                "Schemas validate structure, not whether the logic detects the intended behavior",
+                "Schemas are always inaccurate",
+                "Schemas test network traffic",
+                "Schemas replace fixtures"
+              ],
+              "answer": "Schemas validate structure, not whether the logic detects the intended behavior",
+              "explanation": "Behavioral testing is required to determine whether the rule does what its author intended."
+            },
+            "summary": [
+              "Schema validation catches structural errors early.",
+              "Behavioral tests remain necessary.",
+              "Project linting should reflect the team's risk and conventions."
+            ],
+            "resources": [
+              "https://github.com/SigmaHQ/sigma-rules-validator",
+              "https://github.com/SigmaHQ/sigma-specification"
+            ]
+          },
+          {
+            "id": "lesson-21",
+            "title": "CI/CD for Detection Content",
+            "description": "Build a safe pipeline that validates and tests detection changes before deployment.",
+            "learningObjectives": [
+              "design CI stages for detection repositories",
+              "separate validation from deployment authorization",
+              "identify security controls for detection deployment pipelines"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Parse and lint source files.",
+                  "Validate schemas and unique identifiers.",
+                  "Run fixture-based tests.",
+                  "Build backend-specific artifacts.",
+                  "Require review for production-impacting changes.",
+                  "Deploy only from an approved commit or release."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Detection deployment can change security monitoring. Pipeline credentials should be scoped to the minimum required permissions, and deployment logs should be auditable."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p21",
+                "title": "Design a CI Pipeline",
+                "description": "Write a vendor-neutral CI workflow in pseudocode.",
+                "steps": [
+                  "Add source validation.",
+                  "Add unit/fixture tests.",
+                  "Add a manual approval gate for production.",
+                  "Publish the exact commit identifier with the deployed artifact."
+                ],
+                "solution": "stages = [\n  'lint-and-schema-validation',\n  'fixture-tests',\n  'backend-conversion-or-compilation',\n  'review-and-approval',\n  'production-deployment',\n  'post-deploy-health-check'\n]\nartifacts = ['rule-bundle', 'test-report', 'commit-id']",
+                "output": "The pipeline makes the release artifact traceable and keeps deployment authorization distinct from automated tests."
+              }
+            ],
+            "quiz": {
+              "id": "q21",
+              "question": "Which pipeline stage should normally prevent malformed rules from reaching production?",
+              "options": [
+                "Source validation and tests",
+                "Post-incident review",
+                "Dashboard formatting",
+                "Alert notification"
+              ],
+              "answer": "Source validation and tests",
+              "explanation": "Validation and tests are early gates that should block invalid content."
+            },
+            "summary": [
+              "CI can reduce manual mistakes and provide consistent release gates.",
+              "Production deployment should be traceable to reviewed source.",
+              "Pipeline credentials are security-sensitive assets."
+            ],
+            "resources": [
+              "https://github.com/SigmaHQ/sigma-rules-validator",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/author-rules"
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "Detection Deployment Patterns",
+            "description": "Compare scheduled rules, streaming detections, batch analytics, and managed detection platforms.",
+            "learningObjectives": [
+              "identify when low-latency detection is necessary",
+              "compare scheduled query tradeoffs with event-driven approaches",
+              "design deployment metadata independent of a vendor"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Deployment architecture affects detection latency, cost, and failure modes. Scheduled rules are easy to reason about but have interval and look-back considerations. Streaming or event-driven detections can reduce latency but may require more complex state handling. Batch analytics suit lower-urgency investigations and large historical datasets."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Choose architecture from response-time requirements.",
+                  "Define what happens when data ingestion or rule execution fails.",
+                  "Monitor rule health separately from alert output."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p22",
+                "title": "Select a Deployment Pattern",
+                "description": "Choose deployment patterns for three detection use cases.",
+                "steps": [
+                  "Credential stuffing requiring near-real-time response.",
+                  "Weekly hunt for unusual administrative behavior.",
+                  "Daily compliance-oriented audit of configuration changes."
+                ],
+                "solution": "credential_stuffing: scheduled or streaming depending on platform and latency requirement\nweekly_hunt: batch/historical analytics\nconfiguration_audit: scheduled analytics",
+                "output": "The exercise demonstrates that not every detection needs the same execution model."
+              }
+            ],
+            "quiz": {
+              "id": "q22",
+              "question": "What primarily determines whether a detection needs low-latency execution?",
+              "options": [
+                "The color of the dashboard",
+                "The required response time and threat consequence",
+                "The rule title length",
+                "The number of ATT&CK tags"
+              ],
+              "answer": "The required response time and threat consequence",
+              "explanation": "Execution architecture should match the operational purpose and required detection latency."
+            },
+            "summary": [
+              "Deployment architecture is part of detection engineering.",
+              "Rule health monitoring is separate from alert correctness.",
+              "Different detection objectives can justify different execution models."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/azure/sentinel/sentinel-analytic-rules-creation",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Rule Health and Failure Monitoring",
+            "description": "Detect when detection content silently stops working because of data, schedule, permissions, or schema changes.",
+            "learningObjectives": [
+              "identify common silent detection failure modes",
+              "design health checks for rule execution and telemetry dependencies",
+              "distinguish zero alerts from a broken detector"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A rule producing zero alerts can mean a safe environment, a changed threat pattern, a broken query, missing telemetry, expired permissions, or an execution failure. Health monitoring should therefore track execution status, data freshness, required field presence, and expected query behavior."
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Monitor last successful execution.",
+                  "Monitor source-data freshness.",
+                  "Monitor required-field availability.",
+                  "Monitor query errors and execution duration.",
+                  "Use synthetic or known-good fixtures where feasible."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p23",
+                "title": "Design a Silent-Failure Monitor",
+                "description": "Create checks for a detection that depends on process creation telemetry.",
+                "steps": [
+                  "Check ingestion freshness.",
+                  "Check presence of the process_image field.",
+                  "Check rule execution status.",
+                  "Define a test event or fixture for periodic validation."
+                ],
+                "solution": "health_checks = {\n 'ingestion_freshness_minutes': '<= 10',\n 'process_image_presence_rate': '>= 0.98',\n 'last_successful_execution': '<= 2 intervals',\n 'synthetic_test': 'known-good fixture produces expected result'\n}",
+                "output": "The checks distinguish source health, execution health, and logical health."
+              }
+            ],
+            "quiz": {
+              "id": "q23",
+              "question": "Why is zero alert volume not enough to conclude that a detector is healthy?",
+              "options": [
+                "Because the rule could be broken or its telemetry could be missing",
+                "Because all rules must alert daily",
+                "Because zero is invalid",
+                "Because severity changes it"
+              ],
+              "answer": "Because the rule could be broken or its telemetry could be missing",
+              "explanation": "Health monitoring needs execution and data-quality evidence in addition to alert counts."
+            },
+            "summary": [
+              "Detection health must cover data, execution, and logic.",
+              "Synthetic checks can provide evidence when benign environments are quiet.",
+              "Monitoring rule failures prevents silent blind spots."
+            ],
+            "resources": [
+              "https://www.nist.gov/publications/guide-computer-security-log-management",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/detection-rule-concepts"
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-06",
+        "title": "Threat Hunting, Coverage, and Safe Validation",
+        "description": "Connect hunting, behavior chains, intelligence, documentation, and safe test practices to mature detection engineering.",
+        "lessons": [
+          {
+            "id": "lesson-24",
+            "title": "TTP-Based Detection and Threat Hunting",
+            "description": "Use hunting hypotheses to discover behavior that can later become a durable detection.",
+            "learningObjectives": [
+              "differentiate hunting queries from production detections",
+              "write a testable hunting hypothesis",
+              "promote a validated hunt into a detection specification"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A hunt can be broader and exploratory than a production detection. The hunter may search for weak signals and investigate context, while a production detector needs a stable hypothesis and operationally acceptable noise. Successful hunts can reveal recurring behaviors worth formalizing."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p24",
+                "title": "Convert a Hunt into a Detection",
+                "description": "Start with a hunt for unusual remote administration and convert one observed pattern into a candidate detector.",
+                "steps": [
+                  "Write a broad hunting hypothesis.",
+                  "Identify a recurring behavior from the hypothetical results.",
+                  "Define the minimum evidence needed for a production rule.",
+                  "State what evidence remains too context-dependent for automation."
+                ],
+                "solution": "hunt: find remote administration activity outside expected maintenance windows\ncandidate_detection: remote service creation on managed servers by non-maintenance identities\nproduction_evidence: service creation event + actor identity + host + maintenance-window context\nmanual-only context: unusual but approved emergency maintenance",
+                "output": "The conversion preserves useful hunting breadth while extracting a repeatable behavior."
+              }
+            ],
+            "quiz": {
+              "id": "q24",
+              "question": "How does a hunt differ from a production detection?",
+              "options": [
+                "A hunt can be exploratory and broader, while a production detection needs stable, operationally acceptable logic",
+                "A hunt must always be more precise",
+                "A production detection never uses context",
+                "They are identical"
+              ],
+              "answer": "A hunt can be exploratory and broader, while a production detection needs stable, operationally acceptable logic",
+              "explanation": "Hunting and detection share evidence but have different operational constraints."
+            },
+            "summary": [
+              "Hunting can discover patterns that later become detections.",
+              "Not every hunt should be automated.",
+              "Production rules require stronger stability and noise controls."
+            ],
+            "resources": [
+              "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/",
+              "https://www.elastic.co/blog/elastic-security-building-effective-threat-hunting-detection-rules"
+            ]
+          },
+          {
+            "id": "lesson-25",
+            "title": "Behavior Chains and Detection Coverage",
+            "description": "Model multi-stage behaviors and evaluate whether multiple detections together provide meaningful coverage.",
+            "learningObjectives": [
+              "construct a simple behavior chain",
+              "distinguish coverage of a stage from coverage of an attack outcome",
+              "identify gaps caused by missing telemetry or unmonitored stages"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Complex attacks are often observed through multiple weak signals rather than one decisive event. A behavior chain can link authentication, execution, persistence, and collection evidence. Coverage analysis should ask what evidence is actually observable and whether alerts can be correlated into an investigation narrative."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p25",
+                "title": "Build a Behavior Chain",
+                "description": "Model a four-stage chain from initial access to data staging using generic events.",
+                "steps": [
+                  "Define four stages without naming a specific malware family.",
+                  "For each stage, list one observable event type.",
+                  "Identify one stage where telemetry is likely weakest.",
+                  "Propose a correlation or enrichment strategy."
+                ],
+                "solution": "chain = [\n ('access','authentication or application access'),\n ('execution','process or command execution'),\n ('persistence','account/service/task modification'),\n ('staging','file/archive creation before transfer')\n]\nweakest_stage: staging, because collection/storage context may be application-specific",
+                "output": "The chain highlights that detection coverage is about observable behavior, not merely ATT&CK labels."
+              }
+            ],
+            "quiz": {
+              "id": "q25",
+              "question": "What does coverage analysis need to consider besides technique names?",
+              "options": [
+                "Telemetry availability and whether the detection actually observes the behavior",
+                "Only rule count",
+                "Only severity",
+                "Only dashboards"
+              ],
+              "answer": "Telemetry availability and whether the detection actually observes the behavior",
+              "explanation": "Coverage depends on observable evidence and detection logic, not the presence of labels."
+            },
+            "summary": [
+              "Behavior chains help organize related weak signals.",
+              "Coverage claims should be evidence-based.",
+              "Gaps can arise from data availability as well as missing logic."
+            ],
+            "resources": [
+              "https://attack.mitre.org/detectionstrategies/",
+              "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/"
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Threat Intelligence and Detection Inputs",
+            "description": "Use indicators, reports, vulnerabilities, and adversary behaviors as inputs without turning every intelligence item into a brittle rule.",
+            "learningObjectives": [
+              "differentiate IOC-based and behavior-based detection inputs",
+              "evaluate indicator quality and expiration",
+              "derive behavior hypotheses from intelligence reporting"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Threat intelligence can provide hashes, domains, IPs, tool names, behaviors, and campaign context. Indicators can be useful when fresh and trustworthy, but they can age quickly or be easy to change. Behavioral detections often generalize better when the evidence is stable."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p26",
+                "title": "Turn an Intelligence Report into Two Detection Ideas",
+                "description": "Given a hypothetical report describing credential abuse and unusual administrative commands, derive one IOC rule and one behavior rule.",
+                "steps": [
+                  "Create an indicator-match concept with expiration.",
+                  "Create a behavior rule that does not depend on the exact indicator.",
+                  "State which is likely to survive an indicator change and why."
+                ],
+                "solution": "ioc_rule: match reported malicious domain with expiration and source attribution\nbehavior_rule: detect unusual administrative command execution by non-admin identity with contextual controls\nsurvivability: behavior rule generally survives indicator rotation if the behavior remains observable",
+                "output": "The exercise separates short-lived indicator value from longer-lived behavior hypotheses."
+              }
+            ],
+            "quiz": {
+              "id": "q26",
+              "question": "Why should IOC-based detections have lifecycle metadata?",
+              "options": [
+                "Indicators can change or become stale and need review/expiration",
+                "Because IOCs are permanent",
+                "Because metadata changes the network",
+                "Because all indicators are false"
+              ],
+              "answer": "Indicators can change or become stale and need review/expiration",
+              "explanation": "Indicator freshness affects usefulness and can create unnecessary noise when stale."
+            },
+            "summary": [
+              "Threat intelligence is an input, not a guarantee of detection quality.",
+              "Behavioral logic can complement short-lived indicators.",
+              "Record source, confidence, and lifecycle for indicators."
+            ],
+            "resources": [
+              "https://attack.mitre.org/resources/learn-more-about-attack/training/cti/",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/rule-types"
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Detection Documentation and Knowledge Transfer",
+            "description": "Write documentation that lets another engineer understand, test, tune, and operate a detection.",
+            "learningObjectives": [
+              "write a concise rule README",
+              "document assumptions and data dependencies",
+              "create analyst and engineer handoff material"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A detection that only its author understands is an operational risk. Documentation should state the hypothesis, data sources, fields, logic summary, false positives, tests, deployment settings, ownership, and ATT&CK mapping where appropriate."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p27",
+                "title": "Write a Rule README",
+                "description": "Create a README outline for a detection rule.",
+                "steps": [
+                  "Include purpose, logic summary, dependencies, false positives, test fixtures, ATT&CK mapping, tuning notes, owner, and change history.",
+                  "Add a section explaining what the rule does not detect."
+                ],
+                "solution": "# Detection README\n## Purpose\n## Logic summary\n## Data dependencies\n## False positives and exceptions\n## Test fixtures\n## ATT&CK mapping\n## What this rule does not detect\n## Deployment settings\n## Owner and review date\n## Change history",
+                "output": "The outline makes limitations explicit and supports handoff."
+              }
+            ],
+            "quiz": {
+              "id": "q27",
+              "question": "Which documentation section is especially important for preventing overclaiming?",
+              "options": [
+                "What this rule does not detect",
+                "Logo",
+                "File size",
+                "Author biography"
+              ],
+              "answer": "What this rule does not detect",
+              "explanation": "Explicit boundaries help users understand coverage limitations."
+            },
+            "summary": [
+              "Good documentation communicates both capability and limits.",
+              "Knowledge transfer reduces single-person dependency.",
+              "Change history connects maintenance decisions to evidence."
+            ],
+            "resources": [
+              "https://github.com/SigmaHQ/sigma",
+              "https://attack.mitre.org/resources/learn-more-about-attack/training/"
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Detection Engineering Ethics and Safe Testing",
+            "description": "Conduct controlled validation without introducing unnecessary operational risk.",
+            "learningObjectives": [
+              "distinguish detection testing from unauthorized offensive activity",
+              "design safe synthetic or authorized test data",
+              "protect credentials, personal data, and production systems during validation"
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Detection testing should occur in systems and data for which the tester has authorization. Prefer synthetic events, isolated test spaces, approved emulation, and non-sensitive fixtures when possible."
+              },
+              {
+                "type": "paragraph",
+                "text": "Good detection engineering includes safe handling of telemetry and test artifacts. Test datasets should avoid unnecessary personal information and secrets. Production response actions should be disabled or isolated during validation unless the exercise explicitly authorizes them."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p28",
+                "title": "Create a Safe Detection Test Plan",
+                "description": "Write a plan for testing an authentication detection without attacking a real account.",
+                "steps": [
+                  "Generate synthetic authentication events or use an approved test account in an isolated environment.",
+                  "Define positive and negative cases.",
+                  "Disable unintended response actions during test execution.",
+                  "Record evidence and clean up test artifacts."
+                ],
+                "solution": "scope: isolated test environment or explicitly authorized test account\nmethod: synthetic event fixtures preferred\nsafety_controls: no real password spraying; no production response actions; minimal test data\ncleanup: remove test artifacts and restore temporary configuration",
+                "output": "The plan demonstrates the required behavior without using uncontrolled attack activity."
+              }
+            ],
+            "quiz": {
+              "id": "q28",
+              "question": "What is the preferred first choice for many detection unit tests?",
+              "options": [
+                "Synthetic fixtures that model expected events",
+                "Attacking a production user",
+                "Using real credentials in source control",
+                "Disabling logging"
+              ],
+              "answer": "Synthetic fixtures that model expected events",
+              "explanation": "Synthetic fixtures provide deterministic, safe inputs without unnecessary operational risk."
+            },
+            "summary": [
+              "Detection validation should be authorized and controlled.",
+              "Synthetic data is useful for deterministic testing.",
+              "Never place secrets or unnecessary personal data in fixtures."
+            ],
+            "resources": [
+              "https://www.nist.gov/publications/guide-computer-security-log-management",
+              "https://attack.mitre.org/resources/learn-more-about-attack/training/detection-engineering/"
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-07",
+        "title": "Final Project: Detection Engineering Workbench",
+        "description": "Integrate the course into a reproducible local detection workbench and complete an engineering audit.",
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Capstone Architecture",
+            "description": "Plan an end-to-end detection workbench using local synthetic telemetry, detection logic, tests, scoring, and reporting.",
+            "learningObjectives": [
+              "define the components of the capstone",
+              "explain data flow from events to alerts",
+              "identify the controls that keep the project reproducible and safe"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone uses a small local JSON event set and standard-library Python. It demonstrates detection engineering without requiring a live SIEM. The architecture separates ingestion, validation, detection functions, scoring, and reporting so each component can be tested independently."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p29",
+                "title": "Create the Capstone Skeleton",
+                "description": "Create the directories and placeholder files needed by the final workbench.",
+                "steps": [
+                  "Create a project directory.",
+                  "Add events.json, detector.py, tests.md, and README.md.",
+                  "Document how to run the detector with Python.",
+                  "Keep all sample data synthetic."
+                ],
+                "solution": "events.json\n detector.py\n tests.md\n README.md\n\nRun: python detector.py events.json -o detection_report.json",
+                "output": "The skeleton establishes a reproducible project boundary for the capstone."
+              }
+            ],
+            "quiz": {
+              "id": "q29",
+              "question": "Why separate detection functions from reporting code?",
+              "options": [
+                "It makes logic easier to test and reuse",
+                "It makes JSON invalid",
+                "It increases alert noise",
+                "It prevents validation"
+              ],
+              "answer": "It makes logic easier to test and reuse",
+              "explanation": "Separation of concerns allows detection logic to be tested independently from output formatting."
+            },
+            "summary": [
+              "The capstone uses standard-library Python and synthetic events.",
+              "Modular architecture supports testing and later integration.",
+              "The project is intentionally vendor-neutral."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/json.html",
+              "https://docs.python.org/3/library/argparse.html"
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "Implement Resolution, Validation, and Scoring",
+            "description": "Implement deterministic detection functions, input validation, and a transparent risk score.",
+            "learningObjectives": [
+              "validate required event fields",
+              "implement threshold and role-assignment detections",
+              "apply a simple documented score without pretending it is a calibrated risk model"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone's score is intentionally transparent and heuristic. It prioritizes alerts for triage but is not presented as a statistically calibrated risk score. Input validation prevents malformed records from crashing the detector and records quality observations in the report."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p30",
+                "title": "Implement the Core Detector",
+                "description": "Implement the supplied capstone detector and explain the two detection functions.",
+                "steps": [
+                  "Load the event array.",
+                  "Validate required fields.",
+                  "Run the authentication failure threshold detector.",
+                  "Run the new-admin role assignment detector.",
+                  "Score and serialize alerts."
+                ],
+                "solution": "# smoke_test.py\nimport json\nimport subprocess\nimport sys\nfrom pathlib import Path\n\nevents = [\n    {\"timestamp\":\"2026-09-07T10:00:00Z\",\"event_type\":\"authentication_failure\",\"user\":\"alice\",\"src_ip\":\"203.0.113.10\"},\n    {\"timestamp\":\"2026-09-07T10:01:00Z\",\"event_type\":\"authentication_failure\",\"user\":\"alice\",\"src_ip\":\"203.0.113.10\"},\n    {\"timestamp\":\"2026-09-07T10:02:00Z\",\"event_type\":\"authentication_failure\",\"user\":\"alice\",\"src_ip\":\"203.0.113.10\"},\n    {\"timestamp\":\"2026-09-07T10:03:00Z\",\"event_type\":\"authentication_failure\",\"user\":\"alice\",\"src_ip\":\"203.0.113.10\"},\n    {\"timestamp\":\"2026-09-07T10:04:00Z\",\"event_type\":\"authentication_failure\",\"user\":\"alice\",\"src_ip\":\"203.0.113.10\"},\n    {\"timestamp\":\"2026-09-07T10:05:00Z\",\"event_type\":\"role_assignment\",\"user\":\"bob\",\"src_ip\":\"10.0.0.5\",\"role\":\"admin\"},\n]\nPath(\"smoke_events.json\").write_text(json.dumps(events), encoding=\"utf-8\")\nsubprocess.run([sys.executable, \"detector.py\", \"smoke_events.json\", \"-o\", \"smoke_report.json\"], check=True)\nreport = json.loads(Path(\"smoke_report.json\").read_text(encoding=\"utf-8\"))\nassert len(report[\"alerts\"]) >= 2\nprint(\"capstone smoke test passed\")\n",
+                "output": "The detector produces a JSON report containing alerts and data-quality information. The scoring logic is intentionally simple and inspectable."
+              }
+            ],
+            "quiz": {
+              "id": "q30",
+              "question": "What should a heuristic alert score be called in this capstone?",
+              "options": [
+                "A calibrated probability",
+                "A transparent prioritization score",
+                "A guaranteed severity",
+                "A threat-intelligence confidence"
+              ],
+              "answer": "A transparent prioritization score",
+              "explanation": "The score is a simple deterministic prioritization aid, not a statistically validated probability."
+            },
+            "summary": [
+              "Validation and scoring are separate concerns.",
+              "Transparent heuristics are preferable to unexplained numbers in a teaching project.",
+              "The report records invalid events for data-quality review."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/datetime.html",
+              "https://docs.python.org/3/library/json.html"
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Audit, Test, and Present the Capstone",
+            "description": "Perform the final engineering review and communicate coverage, limitations, test evidence, and operational next steps.",
+            "learningObjectives": [
+              "run the project against positive and negative fixtures",
+              "audit code and output for correctness and safety",
+              "present coverage and limitations without overclaiming"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Run syntax and fixture tests.",
+                  "Inspect the generated report.",
+                  "Verify that expected alerts appear and benign fixtures remain quiet.",
+                  "Review invalid-event handling.",
+                  "Document known coverage gaps.",
+                  "Present the design, evidence, and future integration plan."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p31",
+                "title": "Complete the Capstone Audit",
+                "description": "Create an audit checklist and run it against the workbench.",
+                "steps": [
+                  "Compile checks for syntax, input validation, positive detections, negative cases, report generation, and no external network dependency.",
+                  "Record results.",
+                  "Document two limitations and two productionization steps."
+                ],
+                "solution": "audit = {\n 'python_syntax': 'pass',\n 'positive_authentication_fixture': 'pass',\n 'positive_role_assignment_fixture': 'pass',\n 'negative_fixture': 'pass',\n 'malformed_event_handling': 'pass',\n 'report_generation': 'pass',\n 'external_network_dependency': 'none'\n}\nlimitations = ['synthetic data is not a production baseline', 'heuristic score is not calibrated']\nproduction_steps = ['map fields to the target SIEM schema', 'run historical and controlled validation before deployment']",
+                "output": "The audit confirms the educational workbench is reproducible while clearly separating it from a production deployment."
+              }
+            ],
+            "quiz": {
+              "id": "q31",
+              "question": "What is the most important capstone presentation principle?",
+              "options": [
+                "Claim broad coverage regardless of evidence",
+                "Present tested behavior, data assumptions, and known limitations",
+                "Hide negative tests",
+                "Remove the test report"
+              ],
+              "answer": "Present tested behavior, data assumptions, and known limitations",
+              "explanation": "A detection engineering project is credible when its evidence and limitations are explicit."
+            },
+            "summary": [
+              "The final audit tests both positive capability and negative behavior.",
+              "Productionization requires schema mapping, historical validation, and operational controls.",
+              "The project should be presented as a foundation, not a vendor deployment."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/ast.html",
+              "https://www.elastic.co/docs/solutions/security/detect-and-alert/validate-and-test-rules"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Detection Engineering Workbench",
+          "description": "Build a vendor-neutral local detection workbench that ingests synthetic security events, validates them, applies two deterministic detection hypotheses, assigns a transparent triage score, and emits a structured report. The project demonstrates the full lifecycle from telemetry contract to tested detection output without requiring access to a production SIEM or executing offensive activity.",
+          "conceptsCovered": [
+            "detection specifications",
+            "telemetry validation",
+            "threshold detection",
+            "identity/role-change detection",
+            "transparent alert scoring",
+            "positive and negative testing",
+            "data-quality reporting",
+            "command-line operation",
+            "JSON event handling",
+            "safe and reproducible detection engineering"
+          ],
+          "steps": [
+            "Create a local project directory and synthetic events.json file.",
+            "Copy detector.py from the project code and inspect the input validation and detection functions.",
+            "Run the detector with Python 3.11 or newer using events.json as input.",
+            "Inspect detection_report.json and verify that authentication-failure and new-admin events generate alerts.",
+            "Add a negative fixture and rerun the detector to confirm benign input does not create the targeted alerts.",
+            "Review invalid-event examples and confirm malformed records do not terminate processing.",
+            "Write a short README documenting the telemetry contract, rule assumptions, test evidence, limitations, and productionization steps.",
+            "Before any real deployment, map fields to the target platform, run historical validation, and apply the platform's schema and access controls."
+          ],
+          "code": "# Detection Engineering Fundamentals capstone\n# File: detector.py\nimport argparse, json, math\nfrom collections import Counter, defaultdict\nfrom datetime import datetime, timezone\n\ndef parse_time(value):\n    return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n\ndef load_events(path):\n    with open(path, encoding=\"utf-8\") as f:\n        data = json.load(f)\n    if not isinstance(data, list):\n        raise ValueError(\"events.json must contain a JSON array\")\n    return data\n\ndef validate_event(e):\n    required = {\"timestamp\", \"event_type\", \"user\", \"src_ip\"}\n    missing = required - e.keys()\n    return not missing, sorted(missing)\n\ndef detect_bruteforce(events, threshold=5, window_minutes=10):\n    buckets = defaultdict(list)\n    for e in events:\n        if e.get(\"event_type\") != \"authentication_failure\":\n            continue\n        try:\n            ts = parse_time(e[\"timestamp\"])\n        except (KeyError, ValueError):\n            continue\n        key = (e.get(\"user\"), e.get(\"src_ip\"))\n        buckets[key].append(ts)\n    alerts = []\n    window = window_minutes * 60\n    for key, times in buckets.items():\n        times.sort()\n        left = 0\n        for right in range(len(times)):\n            while (times[right] - times[left]).total_seconds() > window:\n                left += 1\n            if right - left + 1 >= threshold:\n                alerts.append({\n                    \"rule_id\": \"AUTH-001\",\n                    \"user\": key[0], \"src_ip\": key[1],\n                    \"count\": right-left+1,\n                    \"first_seen\": times[left].isoformat(),\n                    \"last_seen\": times[right].isoformat()\n                })\n                break\n    return alerts\n\ndef detect_new_admin(events):\n    alerts = []\n    for e in events:\n        if e.get(\"event_type\") == \"role_assignment\" and e.get(\"role\") == \"admin\":\n            alerts.append({\n                \"rule_id\":\"IAM-001\",\n                \"user\":e.get(\"user\"),\n                \"role\":e.get(\"role\"),\n                \"timestamp\":e.get(\"timestamp\"),\n                \"src_ip\":e.get(\"src_ip\")\n            })\n    return alerts\n\ndef score(alert):\n    score = 0\n    if alert[\"rule_id\"] == \"AUTH-001\": score += min(alert[\"count\"] * 10, 50)\n    if alert[\"rule_id\"] == \"IAM-001\": score += 40\n    if alert.get(\"src_ip\", \"\").startswith(\"203.0.113.\"): score += 10\n    return min(score, 100)\n\ndef main():\n    ap = argparse.ArgumentParser()\n    ap.add_argument(\"events\")\n    ap.add_argument(\"-o\", \"--output\", default=\"detection_report.json\")\n    args = ap.parse_args()\n    events = load_events(args.events)\n    valid = []\n    invalid = []\n    for e in events:\n        ok, missing = validate_event(e)\n        (valid if ok else invalid).append({\"event\":e, \"missing\":missing})\n    alerts = detect_bruteforce([x[\"event\"] for x in valid])\n    alerts += detect_new_admin([x[\"event\"] for x in valid])\n    for a in alerts: a[\"risk_score\"] = score(a)\n    report = {\n        \"generated_at\": datetime.now(timezone.utc).isoformat(),\n        \"events_total\": len(events),\n        \"events_invalid\": len(invalid),\n        \"alerts\": alerts,\n        \"quality\": {\n            \"coverage\": [\"authentication_failure\", \"role_assignment\"],\n            \"invalid_event_examples\": invalid[:3]\n        }\n    }\n    with open(args.output, \"w\", encoding=\"utf-8\") as f:\n        json.dump(report, f, indent=2)\n    print(f\"wrote {args.output} with {len(alerts)} alerts\")\n\nif __name__ == \"__main__\":\n    main()\n",
+          "explanation": "The workbench follows a simple pipeline: load JSON events, validate required fields, run independent detection functions, score the resulting alerts, and write a JSON report. detect_bruteforce uses a sliding time window over authentication failures grouped by user and source IP. detect_new_admin identifies role-assignment events for an admin role. The score function is deliberately transparent and capped at 100; it is a prioritization heuristic, not a probability or calibrated risk model. Invalid records are counted and a small sample is retained in the report so telemetry quality is visible. The implementation uses only Python's standard library, has no network dependency, and is safe to run on synthetic data. A production implementation would replace the local JSON reader with the organization's approved telemetry pipeline, map normalized fields, use platform-native scheduling/correlation features where appropriate, and subject the resulting rules to historical, fixture, and controlled validation."
+        }
+      }
+    ]
+  }
+}

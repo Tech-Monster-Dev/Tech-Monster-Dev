@@ -1,0 +1,2342 @@
+{
+  "course": {
+    "id": "mongodb-complete-practical-course",
+    "title": "MongoDB",
+    "slug": "mongodb",
+    "description": "A complete practical MongoDB course from BSON and CRUD through workload-driven schema design, aggregation, indexes and query plans, atomicity and transactions, Node.js integration, security, replication, sharding, specialized features, operational readiness, and a final transactional order-service project.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 72,
+    "prerequisites": [
+      "Basic programming concepts: variables, functions, conditions, and object/JSON-like syntax.",
+      "Basic command-line usage.",
+      "Basic HTTP/REST concepts for the application-development modules.",
+      "A local MongoDB deployment or MongoDB Atlas/managed environment; advanced topics require the relevant supported deployment."
+    ],
+    "learningOutcomes": [
+      "Explain MongoDB's document/BSON model and operate mongosh confidently.",
+      "Perform CRUD with precise filters, projections, updates, sorting, bulk writes, and safe cleanup.",
+      "Query nested documents and arrays and use expression predicates correctly.",
+      "Design schemas from access patterns, growth, relationships, and atomicity needs.",
+      "Enforce important structure and value constraints with JSON Schema validation.",
+      "Build aggregation pipelines for grouping, joins, array transformations, and time-based analytics.",
+      "Design and validate indexes using actual query shapes and explain execution evidence.",
+      "Choose between single-document atomicity and multi-document transactions and implement idempotent writes.",
+      "Build Node.js services with a reusable MongoClient and error-aware driver code.",
+      "Apply authentication, least privilege, TLS, encryption concepts, auditing, and secrets hygiene.",
+      "Explain replica-set and sharded-cluster architecture and reason about routing and shard keys.",
+      "Use time-series collections, change streams, search/views, monitoring, backups, and restore testing appropriately.",
+      "Complete and verify a realistic MongoDB-backed transactional order service."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "MongoDB Foundations and Tooling",
+        "description": "Learn the document model, BSON, collections, namespaces, mongosh, and deployment vocabulary.",
+        "lessons": [
+          {
+            "id": "m01-l01",
+            "title": "Documents, Collections, Databases, and BSON",
+            "description": "Build the core mental model for MongoDB's document model.",
+            "learningObjectives": [
+              "Explain documents, collections, databases, and namespaces.",
+              "Recognize major BSON types.",
+              "Explain the role of _id."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Document model"
+              },
+              {
+                "type": "paragraph",
+                "text": "MongoDB stores BSON documents in collections. A collection groups related documents without requiring identical field sets. Each document has an _id that uniquely identifies it within the collection."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "BSON adds types beyond JSON such as ObjectId, Date, Binary, Decimal128, and 64-bit integers.",
+                  "A BSON document has a 16 MiB size limit.",
+                  "Flexible schema is a modeling capability, not permission to ignore type consistency or validation."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "{\"_id\":{\"$oid\":\"...\"},\"sku\":\"KB-01\",\"price\":2499,\"createdAt\":{\"$date\":\"2026-01-01T00:00:00Z\"}}"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q011",
+              "question": "What is BSON?",
+              "options": [
+                "A binary serialization format used by MongoDB",
+                "A SQL table format",
+                "A firewall protocol",
+                "A backup archive"
+              ],
+              "answer": "A binary serialization format used by MongoDB",
+              "explanation": "BSON is MongoDB's binary serialization format and supports additional types."
+            },
+            "summary": [
+              "Build the core mental model for MongoDB's document model. The key capability is to explain documents, collections, databases, and namespaces."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/reference/bson-types/",
+              "https://www.mongodb.com/docs/manual/"
+            ]
+          },
+          {
+            "id": "m01-l02",
+            "title": "mongosh and Connection Strings",
+            "description": "Connect to MongoDB and inspect a learning database.",
+            "learningObjectives": [
+              "Connect with mongosh.",
+              "Switch databases and inspect collections.",
+              "Keep credentials out of source code."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "mongosh is MongoDB's interactive shell. A connection URI describes the target deployment and may contain credentials and topology or TLS options."
+              },
+              {
+                "type": "code",
+                "text": "mongosh \"mongodb://127.0.0.1:27017\"\nuse mongo_course_lab\ndb.getName()\nshow collections\ndb.stats()"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "`use` changes the current database context; meaningful database storage appears when data is written.",
+                  "For hosted deployments, use the connection string provided by the service.",
+                  "Avoid pasting real passwords into shell history or repositories."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q012",
+              "question": "What does `use mongo_course_lab` do?",
+              "options": [
+                "Switches the current database context",
+                "Creates a replica set",
+                "Creates a user",
+                "Drops the active database"
+              ],
+              "answer": "Switches the current database context",
+              "explanation": "The command changes the active database context in mongosh."
+            },
+            "summary": [
+              "Core takeaway: connect with mongosh.; mongosh and Connection Strings is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/mongodb-shell/"
+            ]
+          },
+          {
+            "id": "m01-l03",
+            "title": "MongoDB CRUD Vocabulary",
+            "description": "Map common operations to the core driver and shell methods.",
+            "learningObjectives": [
+              "Map create/read/update/delete to MongoDB methods.",
+              "Distinguish update operators from replacement writes.",
+              "Recognize filters and options as separate concerns."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Create: insertOne and insertMany.",
+                  "Read: find, findOne, countDocuments, aggregate.",
+                  "Update: updateOne, updateMany, replaceOne.",
+                  "Delete: deleteOne and deleteMany."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "db.users.insertOne({name:\"Ravi\"})\ndb.users.find({active:true})\ndb.users.updateOne({name:\"Ravi\"},{$set:{active:true}})\ndb.users.deleteOne({name:\"Ravi\"})"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q013",
+              "question": "Which operation changes selected fields without replacing the whole document?",
+              "options": [
+                "updateOne with update operators",
+                "replaceOne",
+                "drop",
+                "find"
+              ],
+              "answer": "updateOne with update operators",
+              "explanation": "Operator-based updates change specified fields while preserving other fields."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on mongodb crud vocabulary, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/crud/"
+            ]
+          },
+          {
+            "id": "m01-l04",
+            "title": "Local, Managed, and Production Environments",
+            "description": "Choose an environment and isolate configuration.",
+            "learningObjectives": [
+              "Describe local versus managed MongoDB at a high level.",
+              "Identify environment-specific settings.",
+              "Explain why advanced labs may require replica-set support."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A local deployment gives control over the server process and its configuration. A managed service handles many operational concerns. The MongoDB data model is shared, but authentication, networking, backups, monitoring, and feature availability vary by environment."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use local deployments for repeatable low-risk experiments.",
+                  "Use a managed deployment when you need hosted operations or production-like topology.",
+                  "Transactions and change streams require a deployment that supports them."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q014",
+              "question": "Why keep the MongoDB URI outside application source?",
+              "options": [
+                "Endpoints and credentials are environment-specific and can be sensitive",
+                "It makes documents smaller",
+                "It forces indexes",
+                "It disables authentication"
+              ],
+              "answer": "Endpoints and credentials are environment-specific and can be sensitive",
+              "explanation": "Environment-driven configuration supports safer deployment separation."
+            },
+            "summary": [
+              "The lesson connects MongoDB syntax to an operational decision: describe local versus managed mongodb at a high level."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Build a Reusable MongoDB Lab",
+            "level": "Easy",
+            "description": "Create a scratch database with two collections and verify the connection.",
+            "problemStatement": "Create mongo_course_lab with customers and products, insert two documents into each collection, and print counts.",
+            "objectives": [
+              "Create both collections through writes.",
+              "Insert documents with MongoDB-generated _id values.",
+              "Verify counts and one sample document."
+            ],
+            "requirements": [
+              "MongoDB server and mongosh."
+            ],
+            "hint": "Use insertMany(), countDocuments(), and findOne().",
+            "solutionCode": "use mongo_course_lab\ndb.customers.insertMany([{name:\"Asha\",tier:\"standard\"},{name:\"Ravi\",tier:\"premium\"}])\ndb.products.insertMany([{sku:\"P100\",name:\"Keyboard\",price:2499},{sku:\"P200\",name:\"Mouse\",price:999}])\nprint(\"customers:\",db.customers.countDocuments())\nprint(\"products:\",db.products.countDocuments())\nprintjson(db.customers.findOne())",
+            "solutionExplanation": "Exact _id values differ by run because MongoDB generates them."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "CRUD, Filters, Sorting, and Bulk Writes",
+        "description": "Develop reliable read/write skills for common application workloads.",
+        "lessons": [
+          {
+            "id": "m02-l01",
+            "title": "Inserts and Ordered Bulk Writes",
+            "description": "Create documents efficiently and understand batch failure behavior.",
+            "learningObjectives": [
+              "Use insertOne and insertMany.",
+              "Explain ordered versus unordered insertion.",
+              "Handle duplicate-key failures."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.products.insertMany([{sku:\"P1\",name:\"Keyboard\",price:2499},{sku:\"P2\",name:\"Mouse\",price:999}],{ordered:false})"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Bulk insertion reduces repeated client/server calls.",
+                  "Ordered batches stop after an error; unordered batches can continue with other operations.",
+                  "Unique indexes enforce identity rules at the database boundary."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q021",
+              "question": "What is a key difference between ordered and unordered insertMany?",
+              "options": [
+                "Unordered mode can continue after an individual error",
+                "Ordered mode always rolls back the whole batch",
+                "Unordered mode disables validation",
+                "Ordered mode cannot insert arrays"
+              ],
+              "answer": "Unordered mode can continue after an individual error",
+              "explanation": "Ordered and unordered bulk writes differ in how they proceed after an individual error."
+            },
+            "summary": [
+              "Create documents efficiently and understand batch failure behavior. The key capability is to use insertone and insertmany."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/reference/method/db.collection.insertOne/"
+            ]
+          },
+          {
+            "id": "m02-l02",
+            "title": "Filters, Projection, and Sorting",
+            "description": "Compose precise queries and return only the data the application needs.",
+            "learningObjectives": [
+              "Use comparison and logical operators.",
+              "Project fields.",
+              "Create deterministic multi-field sorts."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.orders.find({status:\"paid\",total:{$gte:1000,$lt:5000}},{_id:0,total:1,createdAt:1}).sort({createdAt:-1,_id:-1})"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Implicit top-level fields behave like AND conditions.",
+                  "Projection reduces response size and can align with covered-query patterns.",
+                  "Add a unique tie-breaker such as _id when a feed's primary sort field is not unique."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q022",
+              "question": "Why add _id as a secondary sort key?",
+              "options": [
+                "To make ordering deterministic when the main sort values tie",
+                "To disable the index",
+                "To encrypt results",
+                "To increase BSON size"
+              ],
+              "answer": "To make ordering deterministic when the main sort values tie",
+              "explanation": "A unique tie-breaker prevents ambiguous ordering among equal primary sort values."
+            },
+            "summary": [
+              "Core takeaway: use comparison and logical operators.; Filters, Projection, and Sorting is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/tutorial/query-documents/"
+            ]
+          },
+          {
+            "id": "m02-l03",
+            "title": "Updates, Upserts, and Targeted Deletes",
+            "description": "Change only the fields required and clean data safely.",
+            "learningObjectives": [
+              "Use $set, $inc, $push, $pull, and $setOnInsert.",
+              "Explain upsert behavior.",
+              "Preview destructive filters."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.inventory.updateOne({sku:\"P1\",stock:{$gte:1}},{$inc:{stock:-1}})\ndb.products.updateOne({sku:\"P99\"},{$set:{name:\"New\",price:1999}},{upsert:true})"
+              },
+              {
+                "type": "warning",
+                "text": "Replacement updates are not the same as operator updates: omitted fields can disappear from a replacement document."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use conditional filters to encode invariants such as non-negative stock.",
+                  "Use upsert when create-or-update semantics are intentional.",
+                  "Preview deleteMany filters with find() or countDocuments()."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q023",
+              "question": "Which operator performs a numeric increment or decrement?",
+              "options": [
+                "$inc",
+                "$set",
+                "$unset",
+                "$rename"
+              ],
+              "answer": "$inc",
+              "explanation": "$inc adjusts a numeric field by a specified amount."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on updates, upserts, and targeted deletes, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/tutorial/update-documents/",
+              "https://www.mongodb.com/docs/manual/tutorial/remove-documents/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Product CRUD Workflow",
+            "level": "Easy",
+            "description": "Build a repeatable product CRUD script.",
+            "problemStatement": "Insert three products, query a price range, update stock, and safely remove a discontinued SKU.",
+            "objectives": [
+              "Use insertMany.",
+              "Use comparison filters.",
+              "Apply $inc.",
+              "Preview a delete filter."
+            ],
+            "requirements": [
+              "MongoDB server and mongosh."
+            ],
+            "hint": "Run the delete filter as find() first.",
+            "solutionCode": "use mongo_course_lab\ndb.products.deleteMany({})\ndb.products.insertMany([{sku:\"A1\",name:\"Keyboard\",price:2500,stock:10},{sku:\"A2\",name:\"Mouse\",price:900,stock:25},{sku:\"A3\",name:\"Cable\",price:300,stock:0}])\nprintjson(db.products.find({price:{$gte:1000}},{_id:0,sku:1,name:1}).toArray())\ndb.products.updateOne({sku:\"A1\"},{$inc:{stock:-2}})\ndb.products.find({sku:\"A3\"})\ndb.products.deleteOne({sku:\"A3\"})",
+            "solutionExplanation": "The workflow exercises create/read/update/delete with explicit filters and an auditable cleanup step."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Nested Documents, Arrays, Expressions, and Cleanup",
+        "description": "Query complex document shapes and design safe cleanup operations.",
+        "lessons": [
+          {
+            "id": "m03-l01",
+            "title": "Dot Notation for Nested Documents",
+            "description": "Query and update fields inside embedded objects.",
+            "learningObjectives": [
+              "Use dotted field paths.",
+              "Project nested values.",
+              "Recognize shape-sensitive queries."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.customers.find({\"address.city\":\"Pune\"})\ndb.customers.updateOne({_id:id},{$set:{\"address.postalCode\":\"411001\"}})"
+              },
+              {
+                "type": "paragraph",
+                "text": "Dot notation traverses nested object paths. The stored BSON shape must match the path you query; a string cannot be traversed as though it were an object."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Nested fields can be indexed.",
+                  "Embedding can reduce round trips for tightly coupled data.",
+                  "Validation can constrain nested types and required fields."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q031",
+              "question": "How do you query a nested field named city inside address?",
+              "options": [
+                "{\"address.city\":\"Pune\"}",
+                "{\"city.address\":\"Pune\"}",
+                "{\"address\":\"Pune\"}",
+                "{\"address->city\":\"Pune\"}"
+              ],
+              "answer": "{\"address.city\":\"Pune\"}",
+              "explanation": "MongoDB uses dot notation for nested object paths."
+            },
+            "summary": [
+              "Query and update fields inside embedded objects. The key capability is to use dotted field paths."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/tutorial/query-documents/"
+            ]
+          },
+          {
+            "id": "m03-l02",
+            "title": "Arrays and $elemMatch",
+            "description": "Query array values correctly when multiple conditions must apply to one array element.",
+            "learningObjectives": [
+              "Match scalar arrays.",
+              "Use $elemMatch for object arrays.",
+              "Use common array update operators."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.students.find({scores:{$elemMatch:{subject:\"math\",score:{$gte:90}}}})\ndb.orders.updateOne({_id:id},{$addToSet:{tags:\"priority\"}})"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "$elemMatch correlates multiple predicates to the same array element.",
+                  "$push appends; $addToSet avoids an exact duplicate; $pull removes matching elements.",
+                  "Array growth should be bounded when the embedded relationship is expected to grow indefinitely."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q032",
+              "question": "When is $elemMatch important?",
+              "options": [
+                "When multiple conditions must match the same array element",
+                "Only for scalar values",
+                "Only for deletes",
+                "Only for empty arrays"
+              ],
+              "answer": "When multiple conditions must match the same array element",
+              "explanation": "It makes element-level correlation explicit."
+            },
+            "summary": [
+              "Core takeaway: match scalar arrays.; Arrays and $elemMatch is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/tutorial/query-arrays/"
+            ]
+          },
+          {
+            "id": "m03-l03",
+            "title": "$expr and Field-to-Field Comparisons",
+            "description": "Compare document fields using expression evaluation.",
+            "learningObjectives": [
+              "Use $expr in find filters.",
+              "Compare two fields.",
+              "Recognize when derived data may be preferable for hot paths."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.products.find({$expr:{$lt:[\"$salePrice\",\"$listPrice\"]}})"
+              },
+              {
+                "type": "paragraph",
+                "text": "$expr allows aggregation expressions inside a query predicate. It is useful for rules such as salePrice < listPrice or spent > budget."
+              },
+              {
+                "type": "warning",
+                "text": "Computed predicates can be harder to optimize than simple predicates. Validate important workloads with explain() before assuming the performance is adequate."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q033",
+              "question": "What does $expr add to a query filter?",
+              "options": [
+                "Expression evaluation over document fields",
+                "A transaction",
+                "A user role",
+                "A TTL schedule"
+              ],
+              "answer": "Expression evaluation over document fields",
+              "explanation": "$expr evaluates expressions using field values from the document."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on $expr and field-to-field comparisons, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/reference/operator/query/expr/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Cart Array and Expression Queries",
+            "level": "Intermediate",
+            "description": "Query a cart collection using array and field-comparison semantics.",
+            "problemStatement": "Find carts containing a product with quantity >= 2 and identify carts whose total exceeds their budget.",
+            "objectives": [
+              "Use $elemMatch.",
+              "Use $expr.",
+              "Use updateMany for a soft-delete/abandonment rule."
+            ],
+            "requirements": [
+              "MongoDB server and mongosh."
+            ],
+            "hint": "Keep the quantity and SKU predicates inside one $elemMatch.",
+            "solutionCode": "db.carts.find({items:{$elemMatch:{sku:\"KB-01\",quantity:{$gte:2}}}})\ndb.carts.find({$expr:{$gt:[\"$total\",\"$budget\"]}})\ndb.carts.updateMany({status:\"active\",lastActiveAt:{$lt:new Date(\"2026-08-01\")}},{$set:{status:\"abandoned\",deletedAt:new Date()}})",
+            "solutionExplanation": "The solution demonstrates correlated array matching, field-to-field comparison, and non-destructive cleanup."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Workload-Driven Data Modeling and Validation",
+        "description": "Design document boundaries from access patterns, growth, relationships, and correctness requirements.",
+        "lessons": [
+          {
+            "id": "m04-l01",
+            "title": "Workload-First Schema Design",
+            "description": "Start schema design from application operations.",
+            "learningObjectives": [
+              "List common reads and writes.",
+              "Identify bounded and unbounded relationships.",
+              "Select a document boundary."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Design process"
+              },
+              {
+                "type": "paragraph",
+                "text": "MongoDB schema guidance begins with workload: identify the operations the application performs, then choose document boundaries that make those operations efficient and maintainable."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Embed data that is tightly coupled, bounded, and often read together.",
+                  "Reference data that is shared, independently updated, or high-cardinality.",
+                  "Keep the BSON document-size limit and growth behavior in mind."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q041",
+              "question": "Which case most strongly argues against embedding?",
+              "options": [
+                "An unbounded child array",
+                "A fixed two-field object",
+                "A small immutable value",
+                "Data always read with its parent"
+              ],
+              "answer": "An unbounded child array",
+              "explanation": "Unbounded embedded growth can create oversized documents and costly updates."
+            },
+            "summary": [
+              "Start schema design from application operations. The key capability is to list common reads and writes."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/data-modeling/design-patterns/",
+              "https://www.mongodb.com/docs/manual/data-modeling/concepts/embedding-vs-references/"
+            ]
+          },
+          {
+            "id": "m04-l02",
+            "title": "Embedding, References, and Historical Snapshots",
+            "description": "Choose relationship patterns deliberately.",
+            "learningObjectives": [
+              "Compare embedding and references.",
+              "Explain deliberate duplication.",
+              "Preserve transaction-time snapshots when needed."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An order may embed a shipping snapshot because the historical address used at checkout is part of the order's meaning. The current customer profile can remain referenced because it has a broader lifecycle."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Embedding can support single-document atomicity and fewer round trips.",
+                  "References suit independently managed or high-cardinality data.",
+                  "Duplicated data needs an ownership/update policy."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q042",
+              "question": "Why might an order store a copy of shipping data?",
+              "options": [
+                "To preserve the historical value used by that order",
+                "Because MongoDB cannot reference documents",
+                "To disable validation",
+                "To create a shard key"
+              ],
+              "answer": "To preserve the historical value used by that order",
+              "explanation": "Historical transaction records often need the exact values used at the time."
+            },
+            "summary": [
+              "Core takeaway: compare embedding and references.; Embedding, References, and Historical Snapshots is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/data-modeling/concepts/embedding-vs-references/"
+            ]
+          },
+          {
+            "id": "m04-l03",
+            "title": "JSON Schema Validation",
+            "description": "Enforce important document structure at the database boundary.",
+            "learningObjectives": [
+              "Create a $jsonSchema validator.",
+              "Require fields and BSON types.",
+              "Differentiate validation from authorization."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.createCollection(\"products\",{validator:{$jsonSchema:{bsonType:\"object\",required:[\"sku\",\"name\",\"price\"],properties:{sku:{bsonType:\"string\"},name:{bsonType:\"string\"},price:{bsonType:\"number\",minimum:0}}}},validationAction:\"error\"})"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Database validation protects against malformed writes from multiple clients and tools.",
+                  "Application validation can provide better user feedback.",
+                  "Validation does not control user permissions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q043",
+              "question": "What does a collection validator primarily enforce?",
+              "options": [
+                "Document shape and value constraints",
+                "TLS encryption",
+                "User authentication",
+                "Query routing"
+              ],
+              "answer": "Document shape and value constraints",
+              "explanation": "Validators enforce rules on document structure and values."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on json schema validation, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/schema-validation/",
+              "https://www.mongodb.com/docs/manual/reference/operator/query/jsonSchema/"
+            ]
+          },
+          {
+            "id": "m04-l04",
+            "title": "Schema Evolution and Compatibility",
+            "description": "Plan changes while multiple document shapes coexist.",
+            "learningObjectives": [
+              "Use a schema version when useful.",
+              "Prefer backward-compatible rollout steps.",
+              "Make migrations resumable where practical."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "{schemaVersion:2,total:1299,currency:\"INR\"}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Additive fields are often easier to roll out than incompatible replacements.",
+                  "A schemaVersion field can help readers interpret old and new shapes.",
+                  "Large migrations should be tested and designed for safe retry/resume."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q044",
+              "question": "Why can a schemaVersion field be valuable?",
+              "options": [
+                "It lets readers distinguish document shapes during migration",
+                "It creates a unique index",
+                "It enables TLS",
+                "It chooses a shard"
+              ],
+              "answer": "It lets readers distinguish document shapes during migration",
+              "explanation": "Version metadata gives application code an explicit compatibility signal."
+            },
+            "summary": [
+              "The lesson connects MongoDB syntax to an operational decision: use a schema version when useful."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/data-modeling/design-patterns/",
+              "https://www.mongodb.com/docs/manual/core/schema-validation/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Design and Validate an Order Schema",
+            "level": "Intermediate",
+            "description": "Create an order collection whose shape reflects its workload and invariants.",
+            "problemStatement": "Include customerId, shipping snapshot, status, items, total, and createdAt; validate required fields and types.",
+            "objectives": [
+              "Choose embedded fields deliberately.",
+              "Create a JSON Schema validator.",
+              "Insert one valid document and show one rejected write.",
+              "Query open orders for a customer."
+            ],
+            "requirements": [
+              "MongoDB server and mongosh."
+            ],
+            "hint": "Keep order-local purchase data together, while independently managed entities may remain referenced.",
+            "solutionCode": "db.createCollection(\"validatedOrders\",{\n  validator:{$jsonSchema:{\n    bsonType:\"object\",\n    required:[\"customerId\",\"status\",\"items\",\"total\",\"createdAt\"],\n    properties:{\n      customerId:{bsonType:\"string\"},\n      status:{enum:[\"pending\",\"paid\",\"cancelled\",\"fulfilled\"]},\n      items:{bsonType:\"array\",minItems:1},\n      total:{bsonType:\"number\",minimum:0},\n      createdAt:{bsonType:\"date\"}\n    }\n  }},\n  validationAction:\"error\"\n})\ndb.validatedOrders.insertOne({customerId:\"C1\",status:\"paid\",items:[{sku:\"P1\",quantity:1}],total:100,createdAt:new Date()})",
+            "solutionExplanation": "The validator protects required shape and values while the model keeps transaction-local data together."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Aggregation Framework and Analytics",
+        "description": "Build aggregation pipelines for filtering, grouping, joining, array expansion, and derived reporting.",
+        "lessons": [
+          {
+            "id": "m05-l01",
+            "title": "Pipeline Stages and $match/$project",
+            "description": "Process documents through ordered transformation stages.",
+            "learningObjectives": [
+              "Build an ordered pipeline.",
+              "Filter early where appropriate.",
+              "Track the shape of documents after each stage."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.orders.aggregate([{$match:{status:\"paid\"}},{$project:{customerId:1,total:1,createdAt:1,_id:0}}])"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "$match narrows input and may use an index.",
+                  "$project controls fields flowing to later stages.",
+                  "Stages such as $unwind and $group can change document cardinality."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q051",
+              "question": "Why can an early $match improve a pipeline?",
+              "options": [
+                "It reduces documents processed by later stages and may use an index",
+                "It creates a replica set",
+                "It guarantees a transaction",
+                "It disables projection"
+              ],
+              "answer": "It reduces documents processed by later stages and may use an index",
+              "explanation": "Early selective filtering can reduce downstream work."
+            },
+            "summary": [
+              "Process documents through ordered transformation stages. The key capability is to build an ordered pipeline."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/aggregation-pipeline/"
+            ]
+          },
+          {
+            "id": "m05-l02",
+            "title": "$group and Accumulators",
+            "description": "Compute grouped business metrics.",
+            "learningObjectives": [
+              "Use $sum, $avg, $min, and $max.",
+              "Group by one or more fields.",
+              "Interpret metric inputs correctly."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.sales.aggregate([{$group:{_id:\"$category\",units:{$sum:\"$quantity\"},avgPrice:{$avg:\"$unitPrice\"},minPrice:{$min:\"$unitPrice\"},maxPrice:{$max:\"$unitPrice\"}}}])"
+              },
+              {
+                "type": "paragraph",
+                "text": "$sum:1 counts documents; $sum of a field totals that field. Business metrics should be named and defined in terms stakeholders understand."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Keep units and currency meanings consistent.",
+                  "Missing or non-numeric values can change metric behavior; validate the underlying schema."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q052",
+              "question": "How can a group count incoming documents?",
+              "options": [
+                "$sum:1",
+                "$size:1",
+                "$countAll:true",
+                "$total:1"
+              ],
+              "answer": "$sum:1",
+              "explanation": "Each incoming document contributes one to a sum of one."
+            },
+            "summary": [
+              "Core takeaway: use $sum, $avg, $min, and $max.; $group and Accumulators is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/reference/operator/aggregation/group/"
+            ]
+          },
+          {
+            "id": "m05-l03",
+            "title": "$unwind, $lookup, and Derived Metrics",
+            "description": "Expand arrays and join references without double-counting.",
+            "learningObjectives": [
+              "Explain the cardinality change caused by $unwind.",
+              "Use $lookup for referenced data.",
+              "Compute line-level metrics before regrouping."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.orders.aggregate([{$unwind:\"$items\"},{$lookup:{from:\"products\",localField:\"items.sku\",foreignField:\"sku\",as:\"product\"}},{$set:{product:{$first:\"$product\"}}}])"
+              },
+              {
+                "type": "warning",
+                "text": "If one order has five items, $unwind can produce five pipeline documents. Summing the same order-level total after that step can multiply the total."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Join only what the report needs.",
+                  "Regroup by order when a metric is order-level.",
+                  "Index common foreign join fields."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p501",
+                "title": "Revenue by Customer",
+                "description": "Aggregate paid orders into count and revenue per customer.",
+                "steps": [
+                  "Match status:'paid'.",
+                  "Group by customerId.",
+                  "Calculate count and revenue.",
+                  "Sort revenue descending."
+                ],
+                "solution": "db.orders.aggregate([{$match:{status:\"paid\"}},{$group:{_id:\"$customerId\",orders:{$sum:1},revenue:{$sum:\"$total\"}}},{$sort:{revenue:-1}}])",
+                "output": "Each result contains a customer identifier, paid-order count, and revenue."
+              }
+            ],
+            "quiz": {
+              "id": "q053",
+              "question": "What does $unwind generally do to an array of N elements?",
+              "options": [
+                "It can produce N pipeline documents from one input document",
+                "It deletes the array",
+                "It sorts the array",
+                "It creates an index"
+              ],
+              "answer": "It can produce N pipeline documents from one input document",
+              "explanation": "$unwind deconstructs an array into separate pipeline documents."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on $unwind, $lookup, and derived metrics, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/aggregation-pipeline/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Monthly Sales Analytics",
+            "level": "Intermediate",
+            "description": "Build a monthly category sales report.",
+            "problemStatement": "Aggregate paid orders into period, category, units, and revenue.",
+            "objectives": [
+              "Match paid orders.",
+              "Unwind items.",
+              "Compute line revenue.",
+              "Group by period/category.",
+              "Sort results."
+            ],
+            "requirements": [
+              "MongoDB with aggregation support."
+            ],
+            "hint": "Compute line revenue before grouping.",
+            "solutionCode": "db.orders.aggregate([\n  {$match:{status:\"paid\"}},\n  {$unwind:\"$items\"},\n  {$set:{period:{$dateToString:{format:\"%Y-%m\",date:\"$createdAt\"}},lineRevenue:{$multiply:[\"$items.quantity\",\"$items.unitPrice\"]}}},\n  {$group:{_id:{period:\"$period\",category:\"$items.category\"},units:{$sum:\"$items.quantity\"},revenue:{$sum:\"$lineRevenue\"}}},\n  {$sort:{\"_id.period\":1,revenue:-1}}\n])",
+            "solutionExplanation": "The pipeline reduces input, expands item arrays, derives line-level revenue, and groups by reporting dimensions."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Indexes, Query Planning, and Performance",
+        "description": "Design indexes from workload patterns and validate them with explain evidence.",
+        "lessons": [
+          {
+            "id": "m06-l01",
+            "title": "Index Purpose and Tradeoffs",
+            "description": "Understand why indexes help and what they cost.",
+            "learningObjectives": [
+              "Explain index-assisted lookup conceptually.",
+              "Identify hot query patterns.",
+              "Describe storage and write-maintenance costs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Indexes provide ordered/searchable structures that can reduce document examination or support sorting. The _id index exists automatically."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Index frequent filter and sort paths.",
+                  "Avoid indexing every field without workload evidence.",
+                  "Each index has storage and write/update maintenance cost."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q061",
+              "question": "What is a normal index tradeoff?",
+              "options": [
+                "It can speed some reads while adding storage and write maintenance",
+                "It always slows reads",
+                "It disables replication",
+                "It encrypts data"
+              ],
+              "answer": "It can speed some reads while adding storage and write maintenance",
+              "explanation": "Indexes trade extra maintenance for faster eligible query paths."
+            },
+            "summary": [
+              "Understand why indexes help and what they cost. The key capability is to explain index-assisted lookup conceptually."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/indexes/"
+            ]
+          },
+          {
+            "id": "m06-l02",
+            "title": "Compound Index Field Order",
+            "description": "Design multi-field indexes for actual filter and sort shapes.",
+            "learningObjectives": [
+              "Explain the compound-index prefix concept.",
+              "Select an ordered key from a query.",
+              "Validate the design with explain()."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.orders.createIndex({customerId:1,status:1,createdAt:-1})\ndb.orders.find({customerId:\"C1\",status:\"paid\"}).sort({createdAt:-1})"
+              },
+              {
+                "type": "paragraph",
+                "text": "Compound index order is part of its semantics. `{a:1,b:1}` and `{b:1,a:1}` may support different query shapes."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Put fields in an order that matches the workload's equality, range, and sort needs.",
+                  "Use representative data to confirm the plan."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q062",
+              "question": "Why does field order matter in a compound index?",
+              "options": [
+                "It controls which ordered prefixes and query shapes the index can support efficiently",
+                "It changes the collection name",
+                "It enables TLS",
+                "It creates a transaction"
+              ],
+              "answer": "It controls which ordered prefixes and query shapes the index can support efficiently",
+              "explanation": "Compound indexes are ordered key structures, so their prefix matters."
+            },
+            "summary": [
+              "Core takeaway: explain the compound-index prefix concept.; Compound Index Field Order is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/",
+              "https://www.mongodb.com/docs/manual/indexes/"
+            ]
+          },
+          {
+            "id": "m06-l03",
+            "title": "Unique, Partial, TTL, and Explain Plans",
+            "description": "Enforce uniqueness, lifecycle, and measure query execution.",
+            "learningObjectives": [
+              "Create unique and partial indexes.",
+              "Use TTL for expiration-oriented collections.",
+              "Interpret IXSCAN and COLLSCAN at a high level."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.users.createIndex({email:1},{unique:true})\ndb.sessions.createIndex({expiresAt:1},{expireAfterSeconds:0})\ndb.orders.find({customerId:\"C1\"}).explain(\"executionStats\")"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A unique index enforces a uniqueness invariant.",
+                  "A partial index includes only documents matching its filter.",
+                  "A TTL index is for expiration workflows.",
+                  "`IXSCAN` commonly indicates index scanning; `COLLSCAN` indicates collection scanning."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p601",
+                "title": "Verify an Order Feed Index",
+                "description": "Measure a customer/status/date query with explain.",
+                "steps": [
+                  "Create the compound index.",
+                  "Run the find and sort query with explain('executionStats').",
+                  "Inspect nReturned, totalKeysExamined, totalDocsExamined.",
+                  "Explain whether the index aligns with the workload."
+                ],
+                "solution": "db.orders.createIndex({customerId:1,status:1,createdAt:-1})\ndb.orders.find({customerId:\"C1\",status:\"paid\"}).sort({createdAt:-1}).explain(\"executionStats\")",
+                "output": "Explain returns plan and execution statistics; numeric results depend on the dataset."
+              }
+            ],
+            "quiz": {
+              "id": "q063",
+              "question": "Which index type supports automatic expiry based on a date field?",
+              "options": [
+                "TTL",
+                "Unique",
+                "Text",
+                "Sparse only"
+              ],
+              "answer": "TTL",
+              "explanation": "TTL indexes automate expiration based on date/time configuration."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on unique, partial, ttl, and explain plans, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/indexes/",
+              "https://www.mongodb.com/docs/manual/core/index-ttl/",
+              "https://www.mongodb.com/docs/manual/reference/explain-results/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Explain-Driven Order Feed Optimization",
+            "level": "Advanced",
+            "description": "Improve a customer order feed using a compound index and measured plan evidence.",
+            "problemStatement": "Create and inspect an index supporting customerId/status filters and createdAt descending sort.",
+            "objectives": [
+              "Create the compound index.",
+              "Run explain('executionStats').",
+              "Inspect examined and returned counts.",
+              "Explain the field order."
+            ],
+            "requirements": [
+              "MongoDB server and mongosh.",
+              "Representative order data."
+            ],
+            "hint": "Use the exact filter/sort shape from the application query.",
+            "solutionCode": "db.orders.createIndex({customerId:1,status:1,createdAt:-1})\nconst x=db.orders.find({customerId:\"C7\",status:\"paid\"},{_id:0,total:1,createdAt:1}).sort({createdAt:-1}).explain(\"executionStats\")\nprintjson({nReturned:x.executionStats.nReturned,totalKeysExamined:x.executionStats.totalKeysExamined,totalDocsExamined:x.executionStats.totalDocsExamined})",
+            "solutionExplanation": "The index mirrors the workload shape; the actual statistics must be read from the explain output."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Atomicity, Transactions, Consistency, and Idempotency",
+        "description": "Choose the smallest correct atomic unit and design failure-aware multi-document workflows.",
+        "lessons": [
+          {
+            "id": "m07-l01",
+            "title": "Single-Document Atomicity",
+            "description": "Encode local invariants in one conditional update.",
+            "learningObjectives": [
+              "Explain document-scope atomicity.",
+              "Use a conditional update for inventory.",
+              "Avoid unnecessary read-then-write races."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.inventory.updateOne({sku:\"P1\",stock:{$gte:2}},{$inc:{stock:-2}})"
+              },
+              {
+                "type": "paragraph",
+                "text": "A write that changes one document is atomic. A conditional filter can check an invariant at write time, such as stock being sufficient."
+              },
+              {
+                "type": "warning",
+                "text": "Separate documents are not automatically one atomic unit."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q071",
+              "question": "What is single-document atomicity?",
+              "options": [
+                "A write to one document is applied atomically with respect to that document",
+                "All collections write as one unit",
+                "All reads are serializable",
+                "It is equivalent to a backup"
+              ],
+              "answer": "A write to one document is applied atomically with respect to that document",
+              "explanation": "MongoDB guarantees atomicity for standard single-document writes."
+            },
+            "summary": [
+              "Encode local invariants in one conditional update. The key capability is to explain document-scope atomicity."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/write-operations-atomicity/"
+            ]
+          },
+          {
+            "id": "m07-l02",
+            "title": "Transactions and Sessions",
+            "description": "Group multiple document operations into an atomic business workflow.",
+            "learningObjectives": [
+              "Start and end a session.",
+              "Pass the session to transaction operations.",
+              "Explain when a transaction is justified."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "const s=db.getMongo().startSession();const d=s.getDatabase(\"shop\");s.startTransaction();try{d.orders.insertOne({orderId:\"O1\"},{session:s});s.commitTransaction()}catch(e){s.abortTransaction();throw e}finally{s.endSession()}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Transactions are for business operations spanning multiple documents/collections.",
+                  "Keep transactions short and focused.",
+                  "A supported deployment such as an appropriate replica set is required."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q072",
+              "question": "When is a transaction most appropriate?",
+              "options": [
+                "When multiple documents must commit or abort as one business operation",
+                "For every single-document update",
+                "Only for reads",
+                "Only for backups"
+              ],
+              "answer": "When multiple documents must commit or abort as one business operation",
+              "explanation": "Transactions add multi-document atomicity where a single document cannot express the invariant."
+            },
+            "summary": [
+              "Core takeaway: start and end a session.; Transactions and Sessions is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/transactions/"
+            ]
+          },
+          {
+            "id": "m07-l03",
+            "title": "Read/Write Concerns and Idempotency",
+            "description": "Choose consistency controls and make retried requests converge safely.",
+            "learningObjectives": [
+              "Distinguish read concern, write concern, and read preference.",
+              "Use a unique idempotency key.",
+              "Use $setOnInsert with upsert."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.payments.createIndex({idempotencyKey:1},{unique:true})\ndb.payments.updateOne({idempotencyKey:\"PAY-42\"},{$setOnInsert:{orderId:\"O1\",amount:4999,status:\"pending\",createdAt:new Date()}},{upsert:true})"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Read preference chooses eligible members for reads in replicated deployments.",
+                  "Read concern controls requested read visibility semantics.",
+                  "Write concern controls write acknowledgement.",
+                  "Idempotency is a business pattern for safe replay; a unique key enforces identity."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p701",
+                "title": "Create an Idempotent Payment",
+                "description": "Make duplicate requests converge on one payment.",
+                "steps": [
+                  "Create a unique index on idempotencyKey.",
+                  "Upsert with $setOnInsert.",
+                  "Repeat the same operation.",
+                  "Read back the single payment document."
+                ],
+                "solution": "db.payments.createIndex({idempotencyKey:1},{unique:true})\ndb.payments.updateOne(\n  {idempotencyKey:\"PAY-42\"},\n  {$setOnInsert:{orderId:\"O1\",amount:4999,status:\"pending\",createdAt:new Date()}},\n  {upsert:true}\n)\n",
+                "output": "Both attempts target the same unique key; only the first creates the document."
+              }
+            ],
+            "quiz": {
+              "id": "q073",
+              "question": "Which setting controls where a replica-set read may be routed?",
+              "options": [
+                "readPreference",
+                "writeConcern",
+                "validator",
+                "TTL"
+              ],
+              "answer": "readPreference",
+              "explanation": "Read preference selects eligible members for reads."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on read/write concerns and idempotency, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/read-preference/",
+              "https://www.mongodb.com/docs/manual/core/read-isolation-consistency-recency/",
+              "https://www.mongodb.com/docs/manual/reference/write-concern/",
+              "https://www.mongodb.com/docs/manual/core/retryable-writes/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Transactional Checkout",
+            "level": "Advanced",
+            "description": "Create an order and reserve inventory atomically.",
+            "problemStatement": "Insert an order and decrement two inventory records, aborting when either reservation cannot be made.",
+            "objectives": [
+              "Open a session.",
+              "Start a transaction.",
+              "Check matchedCount on each stock update.",
+              "Abort on failure and commit on success."
+            ],
+            "requirements": [
+              "Replica set or supported managed MongoDB deployment."
+            ],
+            "hint": "Put the order insert and inventory decrements in the same transaction.",
+            "solutionCode": "const s=db.getMongo().startSession()\nconst d=s.getDatabase(\"shop\")\ns.startTransaction()\ntry {\n  d.orders.insertOne({orderId:\"O100\",items:[{sku:\"P1\",quantity:1},{sku:\"P2\",quantity:2}],status:\"paid\",createdAt:new Date()},{session:s})\n  const a=d.inventory.updateOne({sku:\"P1\",stock:{$gte:1}},{$inc:{stock:-1}},{session:s})\n  const b=d.inventory.updateOne({sku:\"P2\",stock:{$gte:2}},{$inc:{stock:-2}},{session:s})\n  if(a.matchedCount!==1 || b.matchedCount!==1) throw new Error(\"Insufficient inventory\")\n  s.commitTransaction()\n} catch(e) {\n  s.abortTransaction()\n  throw e\n} finally { s.endSession() }",
+            "solutionExplanation": "The transaction makes the cross-document checkout atomic."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Node.js Application Development",
+        "description": "Build MongoDB-backed services with the official Node.js driver, reusable connections, transactions, and error handling.",
+        "lessons": [
+          {
+            "id": "m08-l01",
+            "title": "MongoClient Lifecycle",
+            "description": "Connect once and reuse the driver client in a long-running service.",
+            "learningObjectives": [
+              "Create a MongoClient.",
+              "Reuse it across requests.",
+              "Close it during process shutdown."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import {MongoClient} from \"mongodb\";\nconst client=new MongoClient(process.env.MONGODB_URI);\nawait client.connect();\nawait client.db(\"shop\").command({ping:1});"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The driver manages a pool behind MongoClient.",
+                  "A process should normally reuse one client rather than reconnecting per request.",
+                  "Connection strings belong in environment or secret configuration."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q081",
+              "question": "What is the normal service pattern for MongoClient?",
+              "options": [
+                "Reuse one client across requests",
+                "Create a client per request",
+                "Create one per query",
+                "Connect only after errors"
+              ],
+              "answer": "Reuse one client across requests",
+              "explanation": "MongoClient manages pooled connections and is designed for reuse."
+            },
+            "summary": [
+              "Connect once and reuse the driver client in a long-running service. The key capability is to create a mongoclient."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/drivers/node/current/"
+            ]
+          },
+          {
+            "id": "m08-l02",
+            "title": "Driver CRUD and Projection",
+            "description": "Perform application CRUD and control returned fields.",
+            "learningObjectives": [
+              "Use insertOne, findOne, updateOne, and deleteOne.",
+              "Pass filters/options as objects.",
+              "Translate common database errors to domain responses."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "const products=db.collection(\"products\");\nawait products.insertOne({sku:\"P1\",name:\"Keyboard\",price:2499});\nconst p=await products.findOne({sku:\"P1\"},{projection:{_id:0}});\nawait products.updateOne({sku:\"P1\"},{$inc:{stock:1}});"
+              },
+              {
+                "type": "paragraph",
+                "text": "Driver filters are ordinary JavaScript objects. Validate request values before they become database filters, and never treat untrusted input as JavaScript source code."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Projection can reduce response payload.",
+                  "A duplicate-key failure can be mapped to an HTTP 409-style business response.",
+                  "Keep persistence code behind a service/repository boundary as an application grows."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q082",
+              "question": "Which driver method retrieves a single document?",
+              "options": [
+                "findOne",
+                "fetchRow",
+                "readOne",
+                "selectOne"
+              ],
+              "answer": "findOne",
+              "explanation": "findOne is the official Node.js driver method for one matching document."
+            },
+            "summary": [
+              "Core takeaway: use insertOne, findOne, updateOne, and deleteOne.; Driver CRUD and Projection is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/drivers/node/current/crud/"
+            ]
+          },
+          {
+            "id": "m08-l03",
+            "title": "Transactions in the Node.js Driver",
+            "description": "Implement multi-document transactions with sessions.",
+            "learningObjectives": [
+              "Start a session.",
+              "Pass the session to every transaction operation.",
+              "Use withTransaction or explicit commit/abort semantics."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "const session=client.startSession();\ntry { await session.withTransaction(async()=>{\n  await orders.insertOne(order,{session});\n  await inventory.updateOne(filter,update,{session});\n}); } finally { await session.endSession(); }"
+              },
+              {
+                "type": "warning",
+                "text": "Operations intended to participate in a transaction must use the same session. Avoid unsupported parallel operations within a single transaction."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q083",
+              "question": "How does a driver operation join the current transaction?",
+              "options": [
+                "It is given the same session",
+                "It is in the same source file",
+                "It uses the same collection",
+                "It has the same database name"
+              ],
+              "answer": "It is given the same session",
+              "explanation": "The session identifies the transaction context for the operation."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on transactions in the node.js driver, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/drivers/node/current/fundamentals/transactions/"
+            ]
+          },
+          {
+            "id": "m08-l04",
+            "title": "Error Handling and Request-Safe Logging",
+            "description": "Handle duplicate-key, validation, and operational failures without leaking secrets.",
+            "learningObjectives": [
+              "Detect common database error conditions.",
+              "Return stable API errors.",
+              "Log context without credentials or sensitive data."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "try { await products.insertOne(product); }\ncatch(e) {\n  if(e?.code===11000) return res.status(409).json({error:\"SKU already exists\"});\n  console.error(e);\n  return res.status(500).json({error:\"internal error\"});\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Application errors should expose stable business meaning, not raw stack traces to clients.",
+                  "Structured logs should include operation context/correlation identifiers but exclude passwords and tokens.",
+                  "Timeout and retry policy should be designed from workload requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q084",
+              "question": "What is MongoDB error code 11000 commonly associated with?",
+              "options": [
+                "Duplicate-key violation",
+                "Successful commit",
+                "TLS setup",
+                "TTL completion"
+              ],
+              "answer": "Duplicate-key violation",
+              "explanation": "MongoDB commonly uses code 11000 for duplicate-key errors."
+            },
+            "summary": [
+              "The lesson connects MongoDB syntax to an operational decision: detect common database error conditions."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/drivers/node/current/crud/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Node.js Product API",
+            "level": "Intermediate",
+            "description": "Build a small Express API backed by the official MongoDB driver.",
+            "problemStatement": "Implement create/list/update endpoints with a shared MongoClient and unique SKU index.",
+            "objectives": [
+              "Validate input.",
+              "Create unique SKU index.",
+              "Return a conflict on duplicate SKU.",
+              "Reuse one MongoClient."
+            ],
+            "requirements": [
+              "Node.js",
+              "Express",
+              "mongodb Node.js driver"
+            ],
+            "hint": "Instantiate MongoClient outside request handlers.",
+            "solutionCode": "import express from \"express\";\nimport {MongoClient} from \"mongodb\";\nconst app=express(); app.use(express.json());\nconst client=new MongoClient(process.env.MONGODB_URI);\nawait client.connect();\nconst products=client.db(\"shop\").collection(\"products\");\nawait products.createIndex({sku:1},{unique:true});\napp.post(\"/products\",async(req,res)=>{\n  const {sku,name,price}=req.body;\n  if(typeof sku!==\"string\"||typeof name!==\"string\"||typeof price!==\"number\"||price<0)\n    return res.status(400).json({error:\"invalid product\"});\n  try{await products.insertOne({sku,name,price,createdAt:new Date()});res.status(201).json({sku,name,price});}\n  catch(e){if(e?.code===11000)return res.status(409).json({error:\"SKU already exists\"});console.error(e);res.status(500).json({error:\"internal error\"});}\n});\napp.get(\"/products\",async(_req,res)=>res.json(await products.find({},{projection:{_id:0}}).sort({sku:1}).toArray()));\n",
+            "solutionExplanation": "The API separates validation, persistence, uniqueness, and HTTP error translation."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "MongoDB Security",
+        "description": "Apply authentication, authorization, TLS, encryption, secrets hygiene, and auditing.",
+        "lessons": [
+          {
+            "id": "m09-l01",
+            "title": "Authentication, Roles, and Least Privilege",
+            "description": "Separate identity verification from permissions and minimize application privileges.",
+            "learningObjectives": [
+              "Explain authentication versus authorization.",
+              "Use dedicated application identities conceptually.",
+              "Apply least-privilege reasoning."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authentication verifies identity; authorization governs allowed actions.",
+                  "Application identities should not normally have administrative privileges.",
+                  "Separate administrative, application, and monitoring identities where practical."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Never commit database passwords, private keys, or connection strings containing secrets to source control."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q091",
+              "question": "What does least privilege mean?",
+              "options": [
+                "Grant only the permissions required",
+                "Grant admin access to every service",
+                "Disable authentication",
+                "Share one credential everywhere"
+              ],
+              "answer": "Grant only the permissions required",
+              "explanation": "Least privilege limits blast radius and accidental misuse."
+            },
+            "summary": [
+              "Separate identity verification from permissions and minimize application privileges. The key capability is to explain authentication versus authorization."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/security-users/",
+              "https://www.mongodb.com/docs/manual/administration/security-checklist/"
+            ]
+          },
+          {
+            "id": "m09-l02",
+            "title": "TLS and Network Boundaries",
+            "description": "Protect traffic and reduce the reachable attack surface.",
+            "learningObjectives": [
+              "Explain TLS's purpose.",
+              "Explain network restriction.",
+              "Create a secure connectivity checklist."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "TLS protects data in transit and supports endpoint authentication when configured correctly.",
+                  "Network restrictions reduce the systems that can reach the database.",
+                  "Private networks complement rather than replace encrypted transport."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q092",
+              "question": "What does TLS primarily protect?",
+              "options": [
+                "Data in transit",
+                "BSON structure",
+                "Index ordering",
+                "Disk capacity"
+              ],
+              "answer": "Data in transit",
+              "explanation": "TLS secures network communication between endpoints."
+            },
+            "summary": [
+              "Core takeaway: explain TLS's purpose.; TLS and Network Boundaries is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/tutorial/configure-ssl/",
+              "https://www.mongodb.com/docs/manual/administration/security-checklist/"
+            ]
+          },
+          {
+            "id": "m09-l03",
+            "title": "Encryption at Rest and Queryable Encryption",
+            "description": "Understand storage encryption and encrypted-field query patterns.",
+            "learningObjectives": [
+              "Distinguish encryption at rest from field/query encryption.",
+              "Explain key-management responsibility.",
+              "Identify deployment-specific feature boundaries."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Encryption at rest protects stored database files and other persisted data from storage-level exposure. Queryable Encryption protects selected fields while retaining defined query capabilities. Exact features and setup vary by deployment and version."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Key lifecycle and access controls matter as much as enabling encryption.",
+                  "Encryption does not replace authentication or authorization.",
+                  "Protected fields can limit which query/index capabilities are available."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q093",
+              "question": "Which threat is encryption at rest primarily designed to reduce?",
+              "options": [
+                "Exposure of persisted data",
+                "Poor index selectivity",
+                "Duplicate writes",
+                "Slow pagination"
+              ],
+              "answer": "Exposure of persisted data",
+              "explanation": "Encryption at rest protects stored information against storage-level exposure."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on encryption at rest and queryable encryption, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/security-encryption-at-rest/",
+              "https://www.mongodb.com/docs/manual/core/queryable-encryption/"
+            ]
+          },
+          {
+            "id": "m09-l04",
+            "title": "Auditing and Secrets Management",
+            "description": "Create a practical hardening baseline for a MongoDB deployment.",
+            "learningObjectives": [
+              "Identify sensitive configuration.",
+              "Explain the purpose of auditing.",
+              "Write verifiable security controls."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Secrets include passwords, keys, and certificates.",
+                  "Auditing can capture security-relevant activity in supported deployments/editions.",
+                  "Hardening also includes restricted network access, dedicated identities, secure file permissions, and protected backups."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q094",
+              "question": "Which is a concrete MongoDB hardening measure?",
+              "options": [
+                "Use a dedicated least-privilege application account",
+                "Commit the database password",
+                "Disable TLS",
+                "Use the DBA account for every service"
+              ],
+              "answer": "Use a dedicated least-privilege application account",
+              "explanation": "Separating identities reduces privilege exposure."
+            },
+            "summary": [
+              "The lesson connects MongoDB syntax to an operational decision: identify sensitive configuration."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/auditing/",
+              "https://www.mongodb.com/docs/manual/administration/security-checklist/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09",
+            "title": "MongoDB Security Baseline",
+            "level": "Intermediate",
+            "description": "Create an auditable MongoDB security baseline.",
+            "problemStatement": "Cover identities, least privilege, TLS, network restrictions, secrets, encryption, auditing, and backup protection.",
+            "objectives": [
+              "Separate application/admin identities.",
+              "Document transport protection.",
+              "Specify secret storage.",
+              "Protect backups."
+            ],
+            "requirements": [
+              "MongoDB security documentation."
+            ],
+            "hint": "Write controls as observable statements.",
+            "solutionCode": "const baseline=[\n \"Application uses a dedicated least-privilege identity.\",\n \"Admin access is separate from application credentials.\",\n \"TLS requirements are documented and enforced where required.\",\n \"Network access is restricted to trusted sources.\",\n \"Secrets are stored outside source control.\",\n \"Encryption and key-management requirements are documented.\",\n \"Audit and backup-access requirements are reviewed.\"\n];\nconsole.log(baseline.join(\"\\n\"));",
+            "solutionExplanation": "The baseline converts broad security principles into reviewable controls while leaving deployment-specific choices explicit."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Replication, High Availability, and Sharding",
+        "description": "Reason about replica sets, read/write routing, sharded components, and shard-key tradeoffs.",
+        "lessons": [
+          {
+            "id": "m10-l01",
+            "title": "Replica Sets and Elections",
+            "description": "Understand replication topology and high-availability behavior.",
+            "learningObjectives": [
+              "Explain primary/secondary roles.",
+              "Describe elections at a high level.",
+              "Explain topology-aware client connections."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A replica set is a group of MongoDB processes that maintain the same data set. One eligible member is normally primary for writes while secondaries replicate data and may become primary after an election."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Replica sets provide redundancy and automatic primary election.",
+                  "Applications should use topology-aware connection strings/drivers rather than pinning themselves to one node."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q101",
+              "question": "Which role is normally the write target in a replica set?",
+              "options": [
+                "Primary",
+                "Secondary",
+                "mongos",
+                "Config server"
+              ],
+              "answer": "Primary",
+              "explanation": "The primary is the normal writable member."
+            },
+            "summary": [
+              "Understand replication topology and high-availability behavior. The key capability is to explain primary/secondary roles."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/replication/"
+            ]
+          },
+          {
+            "id": "m10-l02",
+            "title": "Read Preference and Write Concern",
+            "description": "Choose routing and acknowledgement policies intentionally.",
+            "learningObjectives": [
+              "Explain primary/secondary read preferences.",
+              "Explain write concern conceptually.",
+              "Recognize stale-read tradeoffs."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Read preference controls eligible members for reads.",
+                  "Write concern controls acknowledgement requirements for writes.",
+                  "Secondary reads may reduce pressure on a primary but can return stale data depending on topology and replication lag."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q102",
+              "question": "Why might a service read from secondaries?",
+              "options": [
+                "To distribute eligible read workload when its consistency requirements allow it",
+                "Because secondaries are always newer",
+                "To disable authentication",
+                "To make all writes synchronous"
+              ],
+              "answer": "To distribute eligible read workload when its consistency requirements allow it",
+              "explanation": "Secondary reads are a workload tradeoff."
+            },
+            "summary": [
+              "Core takeaway: explain primary/secondary read preferences.; Read Preference and Write Concern is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/read-preference/",
+              "https://www.mongodb.com/docs/manual/reference/write-concern/"
+            ]
+          },
+          {
+            "id": "m10-l03",
+            "title": "Sharded Cluster Components and Shard Keys",
+            "description": "Understand mongos, config servers, shards, and distribution keys.",
+            "learningObjectives": [
+              "Name the major components.",
+              "Explain the shard key's purpose.",
+              "Differentiate data storage from routing metadata."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "sh.shardCollection(\"shop.orders\",{customerId:1})"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "mongos routes client operations.",
+                  "Config servers store sharding metadata.",
+                  "Shards store application data, normally as replica sets in modern deployments.",
+                  "Shard keys influence distribution and targeting."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A shard key is an architectural commitment. Evaluate cardinality, distribution, access patterns, and hotspot risk before adopting it."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q103",
+              "question": "What is mongos?",
+              "options": [
+                "A query router for a sharded cluster",
+                "A backup format",
+                "A replica-set election",
+                "A validator"
+              ],
+              "answer": "A query router for a sharded cluster",
+              "explanation": "mongos routes operations to relevant shards."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on sharded cluster components and shard keys, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/sharding/",
+              "https://www.mongodb.com/docs/manual/sharding/sharded-cluster-components/"
+            ]
+          },
+          {
+            "id": "m10-l04",
+            "title": "Targeted Queries, Scatter-Gather, and Hotspots",
+            "description": "Evaluate sharding performance from query routing and write distribution.",
+            "learningObjectives": [
+              "Explain targeted versus scatter-gather behavior.",
+              "Identify hotspot risk from skewed or monotonic keys.",
+              "Evaluate a shard-key candidate against queries."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Queries that include useful shard-key information can often be targeted.",
+                  "Queries lacking targeting information may involve multiple shards.",
+                  "A high-cardinality key can still be a poor choice if access is highly skewed."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q104",
+              "question": "Why can a query without a useful shard-key predicate be expensive?",
+              "options": [
+                "It may require work across multiple shards",
+                "It always fails",
+                "It disables indexes",
+                "It turns shards into secondaries"
+              ],
+              "answer": "It may require work across multiple shards",
+              "explanation": "Without targeting information, the router may need to involve multiple shards."
+            },
+            "summary": [
+              "The lesson connects MongoDB syntax to an operational decision: explain targeted versus scatter-gather behavior."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/sharding/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-10",
+            "title": "HA and Sharding Architecture Review",
+            "level": "Advanced",
+            "description": "Produce an architecture assessment for a growing order service.",
+            "problemStatement": "Describe a three-member replica set, application failover expectations, and evaluate a candidate shard key.",
+            "objectives": [
+              "State replica roles.",
+              "Explain failover behavior.",
+              "Assess shard-key cardinality and distribution.",
+              "Classify targeted versus scatter-gather queries."
+            ],
+            "requirements": [
+              "Replication and sharding documentation."
+            ],
+            "hint": "Treat high availability and horizontal distribution as separate decisions.",
+            "solutionCode": "const plan={\n replicaSet:{members:3,goal:\"survive eligible primary failure through election\"},\n application:{connection:\"replica-set-aware URI\"},\n shardCandidate:{collection:\"orders\",key:{customerId:1},review:[\"cardinality\",\"distribution\",\"targeted queries\",\"skew risk\"]}\n};\nconsole.log(JSON.stringify(plan,null,2));",
+            "solutionExplanation": "The plan distinguishes redundancy/election design from scale-out and query-routing design."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Specialized MongoDB Features and Production Operations",
+        "description": "Use time-series, change streams, search/views, monitoring, backup/restore, and readiness practices appropriately.",
+        "lessons": [
+          {
+            "id": "m11-l01",
+            "title": "Time-Series Collections",
+            "description": "Model timestamped measurements with MongoDB time-series collections.",
+            "learningObjectives": [
+              "Create a time-series collection.",
+              "Use timeField and metaField.",
+              "Query measurements over a time interval."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "db.createCollection(\"temperature\",{timeseries:{timeField:\"timestamp\",metaField:\"sensorId\",granularity:\"minutes\"}})"
+              },
+              {
+                "type": "paragraph",
+                "text": "Time-series collections are designed for sequences of measurements recorded over time. `timeField` records measurement time; `metaField` can identify a series or shared metadata."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Choose granularity based on expected measurement frequency.",
+                  "Time-bounded queries are a natural workload.",
+                  "Verify feature support before assuming every normal-collection capability applies."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q111",
+              "question": "Which field is required in a time-series collection definition?",
+              "options": [
+                "timeField",
+                "backupPath",
+                "primaryKeySize",
+                "certificateName"
+              ],
+              "answer": "timeField",
+              "explanation": "MongoDB requires a timeField for time-series collections."
+            },
+            "summary": [
+              "Model timestamped measurements with MongoDB time-series collections. The key capability is to create a time-series collection."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/timeseries-collections/"
+            ]
+          },
+          {
+            "id": "m11-l02",
+            "title": "Change Streams and Event-Driven Data Flows",
+            "description": "React to database changes without polling.",
+            "learningObjectives": [
+              "Open a change stream.",
+              "Interpret operationType and documentKey.",
+              "Explain resume-token concepts."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "const stream=db.orders.watch();\nstream.on(\"change\",change=>console.log(change.operationType,change.documentKey));"
+              },
+              {
+                "type": "paragraph",
+                "text": "Change streams expose data changes from supported replica-set and sharded deployments. The change event has an identifier/resume token that can support restarting from a prior position."
+              },
+              {
+                "type": "warning",
+                "text": "MongoDB documentation notes collection-specific feature restrictions; current docs state time-series collections do not support change streams."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q112",
+              "question": "What is a common use for change streams?",
+              "options": [
+                "Trigger downstream workflows after database changes",
+                "Replace all indexes",
+                "Create TLS certificates",
+                "Store backups"
+              ],
+              "answer": "Trigger downstream workflows after database changes",
+              "explanation": "Change streams provide application-visible database change events."
+            },
+            "summary": [
+              "Core takeaway: open a change stream.; Change Streams and Event-Driven Data Flows is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/changeStreams/"
+            ]
+          },
+          {
+            "id": "m11-l03",
+            "title": "Search, Views, and Capped Collections",
+            "description": "Select specialized features based on the retrieval/storage problem.",
+            "learningObjectives": [
+              "Distinguish ordinary indexes from Atlas Search.",
+              "Explain views.",
+              "Identify a capped-collection use case."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Atlas Search addresses richer text retrieval; Atlas Vector Search addresses similarity retrieval use cases.",
+                  "Views provide logical queryable representations of source collections.",
+                  "Capped collections have fixed size and are suited to specific append-oriented patterns."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q113",
+              "question": "What is a MongoDB view?",
+              "options": [
+                "A logical queryable representation derived from source data",
+                "A backup archive",
+                "A replica-set member",
+                "A user role"
+              ],
+              "answer": "A logical queryable representation derived from source data",
+              "explanation": "A view exposes a defined read representation without being an independent duplicate dataset."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on search, views, and capped collections, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/atlas/atlas-search/",
+              "https://www.mongodb.com/docs/manual/core/views/",
+              "https://www.mongodb.com/docs/manual/core/capped-collections/"
+            ]
+          },
+          {
+            "id": "m11-l05",
+            "title": "Testing MongoDB-Backed Applications",
+            "description": "Validate persistence logic with isolated data and deterministic assertions.",
+            "learningObjectives": [
+              "Separate integration tests from pure unit tests.",
+              "Use isolated test databases or collections.",
+              "Assert database state rather than incidental console output."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Unit tests should cover business logic that does not require MongoDB.",
+                  "Integration tests should exercise real driver calls against an isolated MongoDB environment.",
+                  "Seed fixtures deliberately and clean them between tests or use isolated namespaces/databases.",
+                  "Test duplicate-key, validation, not-found, transaction-abort, and retry/idempotency paths—not only happy paths."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "const created=await products.insertOne({sku:\"T1\",name:\"Test\",price:100});\nconst found=await products.findOne({_id:created.insertedId});\nif(found?.sku!==\"T1\") throw new Error(\"assertion failed\");"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q115",
+              "question": "What should an integration test for a MongoDB service primarily verify?",
+              "options": [
+                "Observed persistence behavior and business invariants",
+                "Only the text of a console log",
+                "Only CSS output",
+                "Only network DNS"
+              ],
+              "answer": "Observed persistence behavior and business invariants",
+              "explanation": "Integration tests should verify the database-backed behavior that unit tests cannot prove."
+            },
+            "summary": [
+              "Students apply testing mongodb-backed applications directly in MongoDB practice."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/drivers/node/current/",
+              "https://www.mongodb.com/docs/drivers/node/current/crud/"
+            ]
+          },
+          {
+            "id": "m11-l06",
+            "title": "Current Practices vs Legacy MongoDB Features",
+            "description": "Recognize supported modern workflows and clearly label deprecated or legacy approaches.",
+            "learningObjectives": [
+              "Distinguish mongosh from the legacy mongo shell.",
+              "Explain that map-reduce is deprecated in modern MongoDB and aggregation is the preferred framework.",
+              "Treat version-sensitive features as documentation checks."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MongoDB's current tooling and documentation should be the default reference for new work. The legacy `mongo` shell has been superseded by `mongosh`, and map-reduce is deprecated in modern MongoDB; aggregation pipelines provide the contemporary analytics model."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not teach deprecated tooling as the default workflow.",
+                  "When maintaining legacy systems, understand the old feature well enough to migrate safely.",
+                  "Version-sensitive behavior must be checked against the MongoDB version deployed."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q116",
+              "question": "What is the preferred modern approach for analytics that historically used map-reduce?",
+              "options": [
+                "Aggregation pipelines",
+                "Dropping the collection",
+                "Only client-side loops",
+                "A TTL index"
+              ],
+              "answer": "Aggregation pipelines",
+              "explanation": "MongoDB deprecated map-reduce in favor of aggregation pipelines for supported analytics workloads."
+            },
+            "summary": [
+              "Students apply current practices vs legacy mongodb features directly in MongoDB practice."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/aggregation-pipeline/",
+              "https://www.mongodb.com/docs/mongodb-shell/",
+              "https://www.mongodb.com/docs/manual/core/map-reduce/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-11",
+            "title": "Operations Runbook",
+            "level": "Advanced",
+            "description": "Write an evidence-driven runbook for a MongoDB-backed service.",
+            "problemStatement": "Cover slow queries, duplicate-key errors, restore, failover, and credential rotation.",
+            "objectives": [
+              "Define symptoms and evidence.",
+              "Use explain for slow queries.",
+              "Verify restore.",
+              "Document failover checks.",
+              "Keep secret handling safe."
+            ],
+            "requirements": [
+              "MongoDB operations documentation."
+            ],
+            "hint": "Start with observation and evidence before mutating production data.",
+            "solutionCode": "const runbook={\n slowQuery:[\"Capture query shape\",\"Run explain('executionStats')\",\"Review index and examined counts\"],\n duplicateKey:[\"Identify unique index\",\"Inspect conflicting key\",\"Check idempotency/retry semantics\"],\n restore:[\"Use an isolated target\",\"Restore a recent backup\",\"Verify representative data\"],\n failover:[\"Inspect topology\",\"Confirm application retry behavior\",\"Verify user-visible impact\"],\n credentialRotation:[\"Create replacement credential\",\"Deploy new secret\",\"Test\",\"Revoke old credential\"]\n};\nconsole.log(JSON.stringify(runbook,null,2));",
+            "solutionExplanation": "The runbook emphasizes evidence, controlled action, and verification."
+          }
+        ]
+      },
+      {
+        "id": "module-12",
+        "title": "Final Real-World Project — Transactional Order Service",
+        "description": "Integrate MongoDB modeling, indexing, validation, transactions, Node.js, change streams, and operational verification.",
+        "lessons": [
+          {
+            "id": "m12-l01",
+            "title": "Project Architecture and Data Model",
+            "description": "Design the service boundary and MongoDB collections.",
+            "learningObjectives": [
+              "Map service components.",
+              "Choose embedded order data and referenced inventory.",
+              "Define the transactional checkout boundary."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Collections: products, inventory, orders, orderAudit.",
+                  "Embedded order items preserve purchase-time unit prices and quantities.",
+                  "Inventory is separate because stock is shared across orders.",
+                  "Unique indexes protect SKU and idempotency identity.",
+                  "Checkout uses a transaction because it spans multiple documents."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Client -> Express -> MongoClient -> MongoDB\n                         |-> products\n                         |-> inventory\n                         |-> orders\n                         |-> orderAudit"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q121",
+              "question": "Which project action most clearly needs a transaction?",
+              "options": [
+                "Read one product",
+                "Create an order and decrement multiple inventory documents",
+                "List products",
+                "Ping the database"
+              ],
+              "answer": "Create an order and decrement multiple inventory documents",
+              "explanation": "The checkout workflow must commit or abort several document changes together."
+            },
+            "summary": [
+              "Design the service boundary and MongoDB collections. The key capability is to map service components."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/core/write-operations-atomicity/",
+              "https://www.mongodb.com/docs/manual/core/transactions/",
+              "https://www.mongodb.com/docs/drivers/node/current/"
+            ]
+          },
+          {
+            "id": "m12-l02",
+            "title": "Project Correctness Controls",
+            "description": "Combine validation, uniqueness, idempotency, and conditional stock updates.",
+            "learningObjectives": [
+              "Use unique indexes for identities.",
+              "Validate request structure.",
+              "Explain the role of an idempotency key.",
+              "Use conditional inventory updates."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "await orders.createIndex({idempotencyKey:1},{unique:true});\nawait inventory.createIndex({sku:1},{unique:true});\nawait orders.createIndex({customerId:1,createdAt:-1});"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The project represents money as integer minor units for simple lab arithmetic.",
+                  "A production financial application should choose and document a precision representation suitable for its requirements.",
+                  "The database should enforce invariants that must hold under concurrency."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q122",
+              "question": "Which combination best protects checkout from replay and overselling?",
+              "options": [
+                "Unique idempotency key, transaction, and conditional stock update",
+                "Only client-side validation",
+                "Only TTL",
+                "Only a text index"
+              ],
+              "answer": "Unique idempotency key, transaction, and conditional stock update",
+              "explanation": "These controls address request replay, cross-document atomicity, and inventory conditions."
+            },
+            "summary": [
+              "Core takeaway: use unique indexes for identities.; Project Correctness Controls is reinforced with the accompanying MongoDB examples."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/manual/indexes/",
+              "https://www.mongodb.com/docs/manual/core/retryable-writes/",
+              "https://www.mongodb.com/docs/manual/core/write-operations-atomicity/"
+            ]
+          },
+          {
+            "id": "m12-l03",
+            "title": "Project Execution and Verification",
+            "description": "Run the service and validate its observable behavior.",
+            "learningObjectives": [
+              "Configure environment variables.",
+              "Run seed/start/test workflows.",
+              "Verify inventory changes once under a repeated idempotency key.",
+              "Inspect audit events and index behavior."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "The complete source is embedded under `project.files`; the physical ZIP intentionally contains only course.json.",
+                  "The project needs a deployment that supports transactions and change streams.",
+                  "Exact generated IDs and response bodies vary by run."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "npm install\nnpm run seed\nnpm start\n./test/checkout.sh"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q123",
+              "question": "What should happen when the same idempotency key is submitted twice?",
+              "options": [
+                "The same logical order is returned and inventory is not reserved twice",
+                "Two new orders are created",
+                "Inventory is decremented twice",
+                "The service must restart"
+              ],
+              "answer": "The same logical order is returned and inventory is not reserved twice",
+              "explanation": "Idempotency makes repeated delivery converge on one logical operation."
+            },
+            "summary": [
+              "Students leave this lesson with a practical handle on project execution and verification, plus the decision points needed in the next module."
+            ],
+            "resources": [
+              "https://www.mongodb.com/docs/drivers/node/current/fundamentals/transactions/",
+              "https://www.mongodb.com/docs/manual/changeStreams/",
+              "https://www.mongodb.com/docs/manual/administration/monitoring/"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Transactional Order Service",
+          "description": "A Node.js/Express service that creates idempotent orders, reserves inventory transactionally, serves products and orders, checks database health, and records order changes through a change-stream audit projection.",
+          "conceptsCovered": [
+            "Document modeling",
+            "Embedded order items",
+            "Unique indexes",
+            "Application validation",
+            "Conditional updates",
+            "Sessions and transactions",
+            "Node.js MongoDB driver",
+            "Change streams",
+            "Health checks",
+            "Environment configuration",
+            "Explain-driven index review"
+          ],
+          "steps": [
+            "Use a local replica set or supported managed deployment for transactions and change streams.",
+            "Reconstruct the project files from `project.files` in this course JSON.",
+            "Run npm install and set MONGODB_URI, MONGODB_DB, and PORT through the environment.",
+            "Run npm run seed, then npm start.",
+            "Verify GET /health and GET /products.",
+            "Run test/checkout.sh and observe order creation and inventory reservation.",
+            "Repeat the same checkout request with the same idempotency key and verify that inventory decreases only once.",
+            "Inspect orderAudit to confirm change-stream events are projected.",
+            "Use explain() on the customerId/createdAt order query and inspect the supporting index.",
+            "Before production deployment, add authentication/authorization, TLS, structured logs, robust automated tests, secret management, backups, restore drills, and deployment-specific monitoring."
+          ],
+          "files": {
+            "package.json": "{\n  \"name\":\"mongodb-order-service\",\n  \"version\":\"1.0.0\",\n  \"type\":\"module\",\n  \"scripts\":{\"start\":\"node src/server.js\",\"seed\":\"node src/seed.js\"},\n  \"dependencies\":{\"express\":\"^5.0.0\",\"mongodb\":\"^6.0.0\"}\n}",
+            ".env.example": "MONGODB_URI=mongodb://127.0.0.1:27017/?replicaSet=rs0\nMONGODB_DB=order_service\nPORT=3000",
+            "src/db.js": "import {MongoClient} from \"mongodb\";\n\nconst uri=process.env.MONGODB_URI;\nconst dbName=process.env.MONGODB_DB||\"order_service\";\nif(!uri) throw new Error(\"MONGODB_URI is required\");\n\nexport const client=new MongoClient(uri);\nexport const db=client.db(dbName);\n\nexport async function connectDatabase(){\n  await client.connect();\n  const orders=db.collection(\"orders\");\n  const products=db.collection(\"products\");\n  const inventory=db.collection(\"inventory\");\n  const audit=db.collection(\"orderAudit\");\n  await products.createIndex({sku:1},{unique:true});\n  await inventory.createIndex({sku:1},{unique:true});\n  await orders.createIndex({idempotencyKey:1},{unique:true});\n  await orders.createIndex({customerId:1,createdAt:-1});\n  await audit.createIndex({eventToken:1},{unique:true});\n  return {orders,products,inventory,audit};\n}\nexport async function closeDatabase(){await client.close();}\n",
+            "src/seed.js": "import {connectDatabase,closeDatabase,db} from \"./db.js\";\n\nawait connectDatabase();\nawait db.collection(\"products\").deleteMany({});\nawait db.collection(\"inventory\").deleteMany({});\nawait db.collection(\"orders\").deleteMany({});\nawait db.collection(\"orderAudit\").deleteMany({});\n\nawait db.collection(\"products\").insertMany([\n  {sku:\"KB-01\",name:\"Keyboard\",price:2499},\n  {sku:\"MS-01\",name:\"Mouse\",price:999},\n  {sku:\"HD-01\",name:\"Headset\",price:2199}\n]);\nawait db.collection(\"inventory\").insertMany([\n  {sku:\"KB-01\",stock:10},\n  {sku:\"MS-01\",stock:20},\n  {sku:\"HD-01\",stock:8}\n]);\n\nconsole.log(\"Seed complete\");\nawait closeDatabase();\n",
+            "src/server.js": "import express from \"express\";\nimport {ObjectId} from \"mongodb\";\nimport {client,connectDatabase,closeDatabase,db} from \"./db.js\";\n\nconst app=express();\napp.use(express.json());\n\nconst {orders,products,inventory,audit}=await connectDatabase();\n\napp.get(\"/health\",async(_req,res)=>{\n  try{await db.command({ping:1});res.json({ok:true});}\n  catch(e){console.error(e);res.status(503).json({ok:false});}\n});\n\napp.get(\"/products\",async(_req,res)=>{\n  const docs=await products.find({},{projection:{_id:0}}).sort({sku:1}).toArray();\n  res.json(docs);\n});\n\napp.post(\"/orders\",async(req,res)=>{\n  const {customerId,items,idempotencyKey}=req.body;\n  if(typeof customerId!==\"string\"||!Array.isArray(items)||items.length===0||\n     typeof idempotencyKey!==\"string\"||!idempotencyKey){\n    return res.status(400).json({error:\"customerId, items and idempotencyKey are required\"});\n  }\n  for(const item of items){\n    if(typeof item?.sku!==\"string\"||!Number.isInteger(item?.quantity)||item.quantity<=0)\n      return res.status(400).json({error:\"Each item requires a positive integer quantity and string sku\"});\n  }\n\n  const session=client.startSession();\n  try{\n    let resultOrder;\n    let created = false;\n    await session.withTransaction(async()=>{\n      const existing=await orders.findOne({idempotencyKey},{session});\n      if(existing){resultOrder=existing;return;}\n\n      const skus=[...new Set(items.map(x=>x.sku))];\n      const productDocs=await products.find({sku:{$in:skus}},{session}).toArray();\n      const prices=new Map(productDocs.map(p=>[p.sku,p.price]));\n      if(prices.size!==skus.length) throw new Error(\"One or more SKUs do not exist\");\n\n      const lines=items.map(x=>({sku:x.sku,quantity:x.quantity,unitPrice:prices.get(x.sku)}));\n      const total=lines.reduce((sum,x)=>sum+x.unitPrice*x.quantity,0);\n\n      for(const line of lines){\n        const r=await inventory.updateOne(\n          {sku:line.sku,stock:{$gte:line.quantity}},\n          {$inc:{stock:-line.quantity}},\n          {session}\n        );\n        if(r.matchedCount!==1) throw new Error(\"Insufficient inventory for \"+line.sku);\n      }\n\n      const order={customerId,items:lines,total,status:\"paid\",idempotencyKey,createdAt:new Date()};\n      const inserted=await orders.insertOne(order,{session});\n      resultOrder={_id:inserted.insertedId,...order};\n      created = true;\n    });\n    res.status(created ? 201 : 200).json(resultOrder);\n  }catch(e){\n    if(e?.code===11000){\n      const existing=await orders.findOne({idempotencyKey});\n      return res.status(200).json(existing);\n    }\n    if(/Insufficient inventory|SKUs do not exist/.test(e.message))\n      return res.status(409).json({error:e.message});\n    console.error(e);\n    res.status(500).json({error:\"internal error\"});\n  }finally{await session.endSession();}\n});\n\napp.get(\"/orders/:id\",async(req,res)=>{\n  let id;\n  try{id=new ObjectId(req.params.id);}catch{return res.status(400).json({error:\"invalid order id\"});}\n  const order=await orders.findOne({_id:id});\n  if(!order)return res.status(404).json({error:\"Order not found\"});\n  res.json(order);\n});\n\nconst server=app.listen(process.env.PORT||3000,()=>console.log(\"Order service listening on port \"+(process.env.PORT||3000)));\n\nconst changeStream=orders.watch();\nchangeStream.on(\"change\",async change=>{\n  try{\n    await audit.updateOne(\n      {eventToken:change._id},\n      {$setOnInsert:{eventToken:change._id,operationType:change.operationType,documentKey:change.documentKey,observedAt:new Date()}},\n      {upsert:true}\n    );\n  }catch(e){console.error(\"audit change stream error\",e);}\n});\n\nasync function shutdown(){\n  await changeStream.close();\n  server.close(async()=>{await closeDatabase();process.exit(0);});\n}\nprocess.on(\"SIGINT\",shutdown);\nprocess.on(\"SIGTERM\",shutdown);\n",
+            "test/checkout.sh": "#!/usr/bin/env bash\nset -euo pipefail\nBASE_URL=\"${BASE_URL:-http://127.0.0.1:3000}\"\nKEY=\"demo-$(date +%s)\"\n\ncurl -fsS \"$BASE_URL/health\"; echo\ncurl -fsS \"$BASE_URL/products\"; echo\n\npayload=$(cat <<JSON\n{\"customerId\":\"C-100\",\"idempotencyKey\":\"$KEY\",\"items\":[{\"sku\":\"KB-01\",\"quantity\":1},{\"sku\":\"MS-01\",\"quantity\":2}]}\nJSON\n)\n\ncurl -fsS -X POST \"$BASE_URL/orders\" -H 'Content-Type: application/json' -d \"$payload\"; echo\ncurl -fsS -X POST \"$BASE_URL/orders\" -H 'Content-Type: application/json' -d \"$payload\"; echo\n"
+          },
+          "explanation": "The service keeps order-local purchase state in an embedded order document while inventory remains a separate collection because stock is shared across orders. Checkout is the multi-document atomic boundary: it resolves prices, conditionally decrements inventory, and inserts the order under one transaction. A unique idempotencyKey index makes retries converge. The reusable MongoClient manages pooled connections, and a change stream creates a simple audit projection. The project is a learning baseline rather than a turnkey production system; production work should add authentication/authorization, TLS, strong secret handling, structured observability, automated tests, and a documented monetary-precision policy."
+        }
+      }
+    ]
+  }
+}

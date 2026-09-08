@@ -1,0 +1,3171 @@
+{
+  "internship": {
+    "id": "network-security-internship",
+    "title": "Network Security Internship",
+    "slug": "network-security-internship",
+    "description": "A research-backed, hands-on internship focused specifically on protecting and assessing computer networks: protocol foundations, network discovery, packet analysis, firewalling and segmentation, IDS/network-security monitoring, detection engineering, incident triage, evidence handling, documentation, and a controlled telemetry-analysis capstone.",
+    "domain": "Network Security",
+    "level": "Intermediate-to-Advanced",
+    "language": "English",
+    "duration": {
+      "recommended": "10 weeks",
+      "hours": 240,
+      "basis": "Recommendation based on the breadth of the scope, module-level engineering tasks, lab practice, and one substantial capstone; this is not a fixed program requirement."
+    },
+    "deliveryModel": "Lab-first, evidence-driven, progressive engineering workflow.",
+    "safetyBoundary": "All active network assessment must be confined to systems and networks the intern owns or is explicitly authorized to assess. The capstone itself is passive analysis of supplied telemetry.",
+    "prerequisites": [
+      "Basic Linux command-line usage and filesystem navigation.",
+      "Basic Python programming: variables, functions, exceptions, lists/dictionaries, and reading/writing files.",
+      "Basic understanding of IP addressing and the purpose of TCP and UDP.",
+      "Ability to use a virtual machine or isolated lab environment."
+    ],
+    "objectives": [
+      "Explain core network-security concepts using correct protocol and security terminology.",
+      "Interpret IP addressing, routing, TCP/UDP behavior, DNS, DHCP, TLS, and QUIC at a practical analyst level.",
+      "Perform authorized asset discovery and Nmap-based exposure assessment safely and document results.",
+      "Use Wireshark and tcpdump to capture, filter, and interpret network traffic.",
+      "Configure and reason about Linux packet filtering, segmentation, and administrative boundaries.",
+      "Interpret Suricata and Zeek telemetry and design transparent network detections.",
+      "Triage network-security evidence, distinguish facts from hypotheses, and write reproducible investigation notes.",
+      "Use Git, testing, documentation, and structured review as part of network-security engineering work.",
+      "Build, test, secure, explain, and audit a network-security telemetry-analysis capstone."
+    ],
+    "competencies": [
+      {
+        "id": "c01",
+        "name": "Network fundamentals",
+        "evidence": "Protocol lessons, subnetting practicals, routing exercises, and module tasks."
+      },
+      {
+        "id": "c02",
+        "name": "Authorized network assessment",
+        "evidence": "Nmap exercises, service exposure analysis, and evidence-focused assessment tasks."
+      },
+      {
+        "id": "c03",
+        "name": "Packet analysis",
+        "evidence": "Wireshark/tcpdump practicals and protocol-troubleshooting tasks."
+      },
+      {
+        "id": "c04",
+        "name": "Network defense administration",
+        "evidence": "Firewall and segmentation tasks plus rule-review work."
+      },
+      {
+        "id": "c05",
+        "name": "Network monitoring and detection",
+        "evidence": "Suricata/Zeek lessons, detection tasks, and capstone detector implementation."
+      },
+      {
+        "id": "c06",
+        "name": "Incident triage and reporting",
+        "evidence": "Evidence triage, timeline, report-writing, and handoff exercises."
+      },
+      {
+        "id": "c07",
+        "name": "Engineering quality",
+        "evidence": "Git workflow, tests, code review, reproducibility, and capstone audit."
+      },
+      {
+        "id": "c08",
+        "name": "Security judgment",
+        "evidence": "Authorization boundaries, data handling, secure logging, false-positive reasoning, and explicit limitations."
+      }
+    ],
+    "technologyStack": [
+      {
+        "name": "Linux",
+        "role": "Primary security-lab operating environment.",
+        "why": "Provides the network tooling and administration interfaces required by the practical work."
+      },
+      {
+        "name": "Python 3",
+        "role": "Automation and capstone implementation.",
+        "why": "Supports repeatable parsing, analysis, testing, and report generation without requiring a third-party runtime framework."
+      },
+      {
+        "name": "Nmap",
+        "role": "Authorized asset and service discovery.",
+        "why": "Provides established network scanning and service/version detection capabilities."
+      },
+      {
+        "name": "Wireshark",
+        "role": "Interactive packet analysis.",
+        "why": "Provides capture review and powerful display-filtering for protocol troubleshooting."
+      },
+      {
+        "name": "tcpdump",
+        "role": "CLI packet capture and triage.",
+        "why": "Provides scriptable command-line traffic inspection for Linux labs."
+      },
+      {
+        "name": "Suricata",
+        "role": "IDS/NSM alert telemetry.",
+        "why": "Provides structured EVE JSON alert records for detection-analysis practice."
+      },
+      {
+        "name": "Zeek",
+        "role": "Network-security metadata.",
+        "why": "Provides structured connection and protocol logs used for behavioral analysis."
+      },
+      {
+        "name": "nftables",
+        "role": "Linux packet filtering and segmentation practice.",
+        "why": "Provides the modern Linux packet-filtering framework used in firewall administration lessons."
+      },
+      {
+        "name": "SQLite",
+        "role": "Capstone local evidence persistence.",
+        "why": "Supports a small transactional evidence store with no external database service."
+      },
+      {
+        "name": "Git",
+        "role": "Version control and engineering workflow.",
+        "why": "Makes changes reproducible and supports review-oriented internship work."
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-01",
+        "title": "Orientation and Network Foundations",
+        "modules": [
+          "module-01",
+          "module-02"
+        ],
+        "outcome": "Can reason about network boundaries, protocols, addressing, and secure communications."
+      },
+      {
+        "id": "phase-02",
+        "title": "Assessment and Evidence Collection",
+        "modules": [
+          "module-03",
+          "module-04"
+        ],
+        "outcome": "Can conduct authorized discovery and interpret packet-level evidence."
+      },
+      {
+        "id": "phase-03",
+        "title": "Network Defense Engineering",
+        "modules": [
+          "module-05",
+          "module-06"
+        ],
+        "outcome": "Can implement and reason about filtering, segmentation, telemetry, and detections."
+      },
+      {
+        "id": "phase-04",
+        "title": "Triage and Capstone",
+        "modules": [
+          "module-07",
+          "module-08"
+        ],
+        "outcome": "Can produce an evidence-driven network-security investigation and complete an integrated engineering project."
+      }
+    ],
+    "professionalWorkflow": "Requirement -> Authorization and evidence plan -> Lab/design -> Implementation or collection -> Validation and testing -> Analysis -> Review -> Documentation -> Handoff",
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Scope, Lab Safety and Network Foundations",
+        "description": "Establish a disciplined operating model for authorized network-security work and make the lab reproducible.",
+        "objectives": [
+          "Work from written scope and stop conditions.",
+          "Build an isolated network lab.",
+          "Inspect Linux network state.",
+          "Reason about risk and evidence."
+        ],
+        "lessons": [
+          {
+            "id": "ns01-l01",
+            "title": "Rules of Engagement and Authorization",
+            "description": "Turn an informal request into explicit testing boundaries, targets, traffic limits, evidence requirements, and stop conditions.",
+            "learningObjectives": [
+              "Define allowed targets and actions.",
+              "Explain why authorization is required.",
+              "Create a reproducible evidence plan."
+            ],
+            "notes": [
+              "Use private/isolated targets for practical work. Never scan arbitrary Internet systems.",
+              "Treat captured traffic and logs as potentially sensitive evidence."
+            ],
+            "practicals": [
+              {
+                "title": "Write a Rules-of-Engagement sheet",
+                "steps": [
+                  "Name two lab CIDRs.",
+                  "List allowed discovery methods.",
+                  "Define prohibited actions.",
+                  "Define evidence names and stop conditions."
+                ],
+                "deliverable": "rules-of-engagement.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "SP 800-115, Technical Guide to Information Security Testing and Assessment",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final",
+                "why": "Provides the testing/assessment concepts used for authorized network discovery and security assessment work."
+              },
+              {
+                "title": "The NIST Cybersecurity Framework (CSF) 2.0",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20",
+                "why": "Uses the current CSF 2.0 outcomes model as the internship's risk-management anchor."
+              }
+            ]
+          },
+          {
+            "id": "ns01-l02",
+            "title": "Risk, Exposure and Defense-in-Depth",
+            "description": "Connect network observations to exposure, impact, controls, and residual risk.",
+            "learningObjectives": [
+              "Distinguish threat, vulnerability, exposure, control, and risk.",
+              "Prioritize findings based on evidence and impact.",
+              "Explain defense-in-depth."
+            ],
+            "notes": [
+              "A listening port is not automatically a vulnerability.",
+              "A scan result is an observation requiring validation."
+            ],
+            "practicals": [
+              {
+                "title": "Build a lab risk register",
+                "steps": [
+                  "List five assets.",
+                  "Record exposure and likely impact.",
+                  "Identify one control per risk.",
+                  "Rank the top three."
+                ],
+                "deliverable": "risk-register.csv"
+              }
+            ],
+            "resources": [
+              {
+                "title": "The NIST Cybersecurity Framework (CSF) 2.0",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20",
+                "why": "Uses the current CSF 2.0 outcomes model as the internship's risk-management anchor."
+              },
+              {
+                "title": "CIS Critical Security Controls Version 8.1",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/v8-1",
+                "why": "Provides the current v8.1 control context and alignment with NIST CSF 2.0."
+              }
+            ]
+          },
+          {
+            "id": "ns01-l03",
+            "title": "Virtual Lab Topology and Addressing",
+            "description": "Design a small isolated topology with a security workstation, monitored hosts, and separated test/management paths.",
+            "learningObjectives": [
+              "Create an address plan.",
+              "Identify source, destination, gateway, and monitoring roles.",
+              "Document routes and trust boundaries."
+            ],
+            "notes": [
+              "Separate lab/internet access where possible.",
+              "Segmentation must be enforced by routing/firewall controls, not labels alone."
+            ],
+            "practicals": [
+              {
+                "title": "Document the lab",
+                "steps": [
+                  "Draw the topology.",
+                  "Record interfaces and addresses.",
+                  "Record expected routes.",
+                  "List permitted paths."
+                ],
+                "deliverable": "lab-topology.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "ip(8) Linux Manual Page",
+                "publisher": "Linux / iproute2",
+                "url": "https://man7.org/linux/man-pages/man8/ip.8.html",
+                "why": "Reference for Linux interfaces, addresses, routes, namespaces, and related network state."
+              },
+              {
+                "title": "CIS Critical Security Control 12: Network Infrastructure Management",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management",
+                "why": "Anchors asset inventory, secure network architecture, and infrastructure management."
+              }
+            ]
+          },
+          {
+            "id": "ns01-l04",
+            "title": "Linux Network State and Troubleshooting",
+            "description": "Use iproute2 and socket inspection to diagnose local network problems without undocumented changes.",
+            "learningObjectives": [
+              "Inspect addresses and routes.",
+              "Inspect listeners.",
+              "Build a layer-by-layer troubleshooting sequence."
+            ],
+            "notes": [
+              "Use read-only inspection first.",
+              "Preserve before/after state when making an authorized change."
+            ],
+            "practicals": [
+              {
+                "title": "Diagnose a lab connectivity failure",
+                "steps": [
+                  "Inspect addresses.",
+                  "Inspect routes.",
+                  "Inspect listeners.",
+                  "Test the affected path.",
+                  "Document the root cause and fix."
+                ],
+                "deliverable": "troubleshooting-notes.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "ip(8) Linux Manual Page",
+                "publisher": "Linux / iproute2",
+                "url": "https://man7.org/linux/man-pages/man8/ip.8.html",
+                "why": "Reference for Linux interfaces, addresses, routes, namespaces, and related network state."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "ns01-t01",
+            "title": "Create a scoped assessment plan",
+            "level": "Easy",
+            "description": "Convert a lab request into a precise testing plan.",
+            "problemStatement": "A lab team wants an inventory of 192.168.56.0/24 and 192.168.57.0/24 without touching other networks.",
+            "objectives": [
+              "Define targets and source.",
+              "Define test sequence.",
+              "Define evidence and stop conditions."
+            ],
+            "requirements": [
+              "Private lab CIDRs only.",
+              "No exploitation or credential guessing."
+            ],
+            "constraints": "Start with the smallest necessary action.",
+            "hint": "SCOPE.md\n\nTargets: 192.168.56.0/24 and 192.168.57.0/24\nAllowed: host discovery, targeted service discovery, own-traffic packet capture.\nProhibited: scanning outside scope, exploitation, password attacks, denial-of-service traffic.\nEvidence: discovery.txt, services.txt, capture.pcapng, findings.md.\nStop: unexpected route, instability, or target mismatch.",
+            "solutionCode": "The plan defines authorization, scope, evidence, and stop conditions before active testing begins.",
+            "solutionExplanation": ""
+          },
+          {
+            "id": "ns01-t02",
+            "title": "Create a Linux network baseline",
+            "level": "Intermediate",
+            "description": "Create a timestamped baseline of interfaces, routes, listeners, and resolver state.",
+            "problemStatement": "Before a network-security exercise, the security workstation needs a baseline for later comparison.",
+            "objectives": [
+              "Capture address state.",
+              "Capture route state.",
+              "Capture listeners.",
+              "Record resolver state without secrets."
+            ],
+            "requirements": [
+              "Read-only inspection.",
+              "Do not change configuration."
+            ],
+            "constraints": "Collect state before starting scanners.",
+            "hint": "#!/usr/bin/env bash\nset -euo pipefail\nOUT=\"baseline-$(date +%Y%m%d-%H%M%S).txt\"\n{\n  echo \"=== addresses ===\"; ip address show\n  echo \"=== routes ===\"; ip route show\n  echo \"=== listeners ===\"; ss -lntup\n  echo \"=== resolver ===\"\n  if command -v resolvectl >/dev/null 2>&1; then resolvectl status\n  elif [ -f /etc/resolv.conf ]; then cat /etc/resolv.conf\n  else echo \"resolver state unavailable\"; fi\n} > \"$OUT\"\nprintf 'Saved %s\\n' \"$OUT\"\n",
+            "solutionCode": "The script uses read-only inspection and saves reproducible evidence.",
+            "solutionExplanation": ""
+          }
+        ],
+        "deliverables": [
+          "Rules of engagement",
+          "Lab topology",
+          "Risk register",
+          "Baseline report"
+        ],
+        "assessment": "Reviewer checks that the intern can explain scope and diagnose a network-state issue without unsafe actions."
+      },
+      {
+        "id": "module-02",
+        "title": "Protocols, Addressing and Secure Communications",
+        "description": "Develop packet-level understanding of IP, Ethernet, TCP/UDP, DNS, DHCP, TLS, and modern encrypted transport.",
+        "objectives": [
+          "Calculate CIDRs and explain segmentation.",
+          "Interpret packet fields and state transitions.",
+          "Explain DNS/DHCP roles.",
+          "Describe TLS visibility limits."
+        ],
+        "lessons": [
+          {
+            "id": "ns02-l01",
+            "title": "IPv4, CIDR and Segmentation",
+            "description": "Use CIDR notation, subnet boundaries, gateways, and segmentation concepts in security architecture.",
+            "learningObjectives": [
+              "Calculate /24, /26, /27 ranges.",
+              "Explain route boundaries.",
+              "Connect segmentation to least privilege."
+            ],
+            "notes": [
+              "Private addressing is not a security control by itself.",
+              "Network policy must be enforced at an appropriate boundary."
+            ],
+            "practicals": [
+              {
+                "title": "Create four /26 segments",
+                "steps": [
+                  "Split 192.168.100.0/24.",
+                  "Assign users, servers, management, monitoring.",
+                  "Document allowed flows."
+                ],
+                "deliverable": "segmentation-plan.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "ip(8) Linux Manual Page",
+                "publisher": "Linux / iproute2",
+                "url": "https://man7.org/linux/man-pages/man8/ip.8.html",
+                "why": "Reference for Linux interfaces, addresses, routes, namespaces, and related network state."
+              },
+              {
+                "title": "CIS Critical Security Control 12: Network Infrastructure Management",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management",
+                "why": "Anchors asset inventory, secure network architecture, and infrastructure management."
+              }
+            ]
+          },
+          {
+            "id": "ns02-l02",
+            "title": "Ethernet and ARP",
+            "description": "Interpret Ethernet frames and IPv4 ARP behavior in a capture.",
+            "learningObjectives": [
+              "Identify MAC/IP fields.",
+              "Explain ARP resolution.",
+              "Recognize why LAN trust matters."
+            ],
+            "notes": [
+              "Traditional ARP has no built-in authentication.",
+              "Use packet evidence rather than assumptions."
+            ],
+            "practicals": [
+              {
+                "title": "Analyze ARP resolution",
+                "steps": [
+                  "Capture the lab exchange.",
+                  "Filter arp.",
+                  "Record sender/target fields.",
+                  "Explain the resolution sequence."
+                ],
+                "deliverable": "arp-analysis.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Wireshark User's Guide",
+                "publisher": "Wireshark Foundation / Wireshark Project",
+                "url": "https://www.wireshark.org/docs/wsug_html/",
+                "why": "Official packet-analysis and display-filter reference."
+              }
+            ]
+          },
+          {
+            "id": "ns02-l03",
+            "title": "TCP, UDP and Ports",
+            "description": "Understand transport semantics, TCP setup/teardown, UDP, and service ports.",
+            "learningObjectives": [
+              "Explain SYN/SYN-ACK/ACK.",
+              "Interpret RST and close behavior.",
+              "Use IANA for service-port assignments."
+            ],
+            "notes": [
+              "A port number is not proof of service identity.",
+              "TCP ports multiplex application flows."
+            ],
+            "practicals": [
+              {
+                "title": "Reconstruct a TCP handshake",
+                "steps": [
+                  "Filter the two lab endpoints.",
+                  "Locate SYN, SYN-ACK, ACK.",
+                  "Record ports and timing.",
+                  "Explain the state change."
+                ],
+                "deliverable": "tcp-handshake-notes.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "RFC 9293: Transmission Control Protocol (TCP)",
+                "publisher": "IETF RFC Editor",
+                "url": "https://www.rfc-editor.org/rfc/rfc9293.html",
+                "why": "Primary specification for TCP behavior and terminology."
+              },
+              {
+                "title": "Service Name and Transport Protocol Port Number Registry",
+                "publisher": "IANA",
+                "url": "https://www.iana.org/assignments/service-names-port-numbers",
+                "why": "Authoritative registry for service names and assigned transport ports."
+              }
+            ]
+          },
+          {
+            "id": "ns02-l04",
+            "title": "DNS for Defenders",
+            "description": "Explain recursive resolution, common records, failures, and useful DNS telemetry.",
+            "learningObjectives": [
+              "Recognize query/response pairs.",
+              "Identify common qtypes.",
+              "Explain why DNS is useful in investigations."
+            ],
+            "notes": [
+              "A successful lookup does not prove a destination is safe.",
+              "DNS telemetry must be interpreted with context."
+            ],
+            "practicals": [
+              {
+                "title": "Analyze DNS behavior",
+                "steps": [
+                  "Filter dns.",
+                  "Group by client.",
+                  "Count failures and repeated queries.",
+                  "Write evidence-backed observations."
+                ],
+                "deliverable": "dns-analysis.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "RFC 1034: Domain Names — Concepts and Facilities",
+                "publisher": "IETF RFC Editor",
+                "url": "https://www.rfc-editor.org/rfc/rfc1034.html",
+                "why": "Foundational DNS architecture and terminology."
+              },
+              {
+                "title": "RFC 1035: Domain Names — Implementation and Specification",
+                "publisher": "IETF RFC Editor",
+                "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+                "why": "DNS message and implementation details."
+              },
+              {
+                "title": "Zeek dns.log Reference",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/current/reference/logs/dns.html",
+                "why": "Documents DNS telemetry useful for network-security analysis."
+              }
+            ]
+          },
+          {
+            "id": "ns02-l05",
+            "title": "DHCP and Address Attribution",
+            "description": "Use DHCP timing and identifiers to correlate dynamic addresses with hosts.",
+            "learningObjectives": [
+              "Describe DORA.",
+              "Explain why lease time matters.",
+              "Correlate DHCP and network events."
+            ],
+            "notes": [
+              "DHCP assignment is not authentication.",
+              "Preserve timestamped attribution evidence when needed."
+            ],
+            "practicals": [
+              {
+                "title": "Build an attribution record",
+                "steps": [
+                  "Record MAC, IP, hostname, and lease time where available.",
+                  "Attach an event timestamp.",
+                  "Explain correlation."
+                ],
+                "deliverable": "dhcp-attribution.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "RFC 2131: Dynamic Host Configuration Protocol",
+                "publisher": "IETF RFC Editor",
+                "url": "https://www.rfc-editor.org/rfc/rfc2131.html",
+                "why": "Primary DHCP protocol specification."
+              }
+            ]
+          },
+          {
+            "id": "ns02-l06",
+            "title": "TLS 1.3 and Encrypted Traffic Visibility",
+            "description": "Explain secure-channel goals and what network defenders can still learn from encrypted sessions.",
+            "learningObjectives": [
+              "Explain confidentiality, integrity, and authentication.",
+              "Describe visible metadata.",
+              "State payload visibility limits."
+            ],
+            "notes": [
+              "RFC 9846 is the current TLS 1.3 specification used here and supersedes RFC 8446.",
+              "Do not teach traffic interception outside authorized environments."
+            ],
+            "practicals": [
+              {
+                "title": "Compare HTTP and HTTPS metadata",
+                "steps": [
+                  "Capture controlled traffic.",
+                  "Compare endpoints, ports, timing, and payload visibility.",
+                  "Document evidence limits."
+                ],
+                "deliverable": "tls-visibility.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "RFC 9846: The Transport Layer Security (TLS) Protocol Version 1.3",
+                "publisher": "IETF RFC Editor",
+                "url": "https://www.rfc-editor.org/info/rfc9846",
+                "why": "Current TLS 1.3 specification as of this internship's research date; it obsoletes RFC 8446."
+              },
+              {
+                "title": "Wireshark User's Guide",
+                "publisher": "Wireshark Foundation / Wireshark Project",
+                "url": "https://www.wireshark.org/docs/wsug_html/",
+                "why": "Official packet-analysis and display-filter reference."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "ns02-t01",
+            "title": "Design a segmented network plan",
+            "level": "Easy",
+            "description": "Produce four security-oriented segments from one lab /24.",
+            "problemStatement": "Users, servers, management, and monitoring need separate network zones.",
+            "objectives": [
+              "Calculate four /26 subnets.",
+              "Assign gateways.",
+              "Document allowed flows."
+            ],
+            "requirements": [
+              "Use private lab addressing.",
+              "No production deployment."
+            ],
+            "constraints": "Split the /24 evenly.",
+            "hint": "Users 192.168.100.0/26; Servers 192.168.100.64/26; Management 192.168.100.128/26; Monitoring 192.168.100.192/26. Inter-segment traffic must traverse an enforcing router/firewall. Users should reach only required application services; management should be limited to administration; monitoring should receive telemetry.",
+            "solutionCode": "The plan uses four equal /26 segments and makes enforcement and least-privilege requirements explicit.",
+            "solutionExplanation": ""
+          },
+          {
+            "id": "ns02-t02",
+            "title": "Analyze an encrypted connection",
+            "level": "Intermediate",
+            "description": "Produce an evidence table for an HTTPS connection without claiming inaccessible plaintext.",
+            "problemStatement": "A lab HTTPS capture must be explained to a reviewer.",
+            "objectives": [
+              "Identify IPs and ports.",
+              "Identify visible TLS records/metadata.",
+              "Separate observed from unknown.",
+              "State additional evidence needs."
+            ],
+            "requirements": [
+              "No decryption attempts.",
+              "Lab capture only."
+            ],
+            "constraints": "Separate metadata from payload.",
+            "hint": "Observed: endpoints, transport ports, timing, connection lifecycle, and visible TLS handshake information. Not established: encrypted application body. Additional evidence: authorized endpoint/proxy/application logs or an approved inspection boundary.",
+            "solutionCode": "The answer demonstrates evidence discipline and respects encrypted payload boundaries.",
+            "solutionExplanation": ""
+          }
+        ],
+        "deliverables": [
+          "Segmentation plan",
+          "ARP analysis",
+          "TCP analysis",
+          "DNS analysis",
+          "DHCP attribution",
+          "TLS visibility note"
+        ],
+        "assessment": "Reviewer checks packet-level reasoning and evidence discipline."
+      },
+      {
+        "id": "module-03",
+        "title": "Asset Discovery, Scanning and Exposure Assessment",
+        "description": "Practice safe network inventory, service discovery, validation, and remediation reporting using authorized lab targets.",
+        "objectives": [
+          "Perform host and service discovery.",
+          "Interpret Nmap states correctly.",
+          "Validate services independently.",
+          "Write defensible findings."
+        ],
+        "lessons": [
+          {
+            "id": "ns03-l01",
+            "title": "Asset Discovery and Attack-Surface Mapping",
+            "description": "Create an inventory of hosts, services, routes, and exposed management paths.",
+            "learningObjectives": [
+              "Define inventory objectives.",
+              "Separate host discovery from service enumeration.",
+              "Track timestamps and methods."
+            ],
+            "notes": [
+              "Nmap output needs analyst interpretation.",
+              "Keep scans inside explicit scope."
+            ],
+            "practicals": [
+              {
+                "title": "Build a service inventory",
+                "steps": [
+                  "Discover hosts in the lab range.",
+                  "Run targeted service detection on identified hosts.",
+                  "Record ports and evidence."
+                ],
+                "deliverable": "asset-inventory.csv"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Nmap Reference Guide",
+                "publisher": "Nmap Project",
+                "url": "https://nmap.org/book/man.html",
+                "why": "Authoritative Nmap scanning and service-detection reference."
+              },
+              {
+                "title": "Service Name and Transport Protocol Port Number Registry",
+                "publisher": "IANA",
+                "url": "https://www.iana.org/assignments/service-names-port-numbers",
+                "why": "Authoritative registry for service names and assigned transport ports."
+              }
+            ]
+          },
+          {
+            "id": "ns03-l02",
+            "title": "Nmap States, Timing and Output",
+            "description": "Interpret open/closed/filtered states and select conservative scan modes.",
+            "learningObjectives": [
+              "Explain scan-state semantics.",
+              "Choose a low-impact scan.",
+              "Preserve raw output."
+            ],
+            "notes": [
+              "Do not teach evasion as a practical step.",
+              "Use Nmap's reference for exact option behavior."
+            ],
+            "practicals": [
+              {
+                "title": "Compare basic and version scans",
+                "steps": [
+                  "Run a basic TCP scan on one lab host.",
+                  "Run limited service detection.",
+                  "Compare evidence and cost."
+                ],
+                "deliverable": "nmap-comparison.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Nmap Reference Guide",
+                "publisher": "Nmap Project",
+                "url": "https://nmap.org/book/man.html",
+                "why": "Authoritative Nmap scanning and service-detection reference."
+              },
+              {
+                "title": "Nmap Network Scanning — Official Nmap Project Guide",
+                "publisher": "Nmap Project",
+                "url": "https://nmap.org/book/",
+                "why": "Detailed official material on discovery and security scanning."
+              }
+            ]
+          },
+          {
+            "id": "ns03-l03",
+            "title": "Service Validation and False Positives",
+            "description": "Corroborate scanner findings using safe protocol checks and local configuration.",
+            "learningObjectives": [
+              "Validate service identity.",
+              "Explain scanner uncertainty.",
+              "Assign confidence."
+            ],
+            "notes": [
+              "A port number alone is not service proof.",
+              "Use independent evidence."
+            ],
+            "practicals": [
+              {
+                "title": "Validate one service",
+                "steps": [
+                  "Select one exposed service.",
+                  "Perform a safe protocol handshake.",
+                  "Compare with scanner output.",
+                  "Record discrepancies."
+                ],
+                "deliverable": "service-validation.md"
+              }
+            ]
+          },
+          {
+            "id": "ns03-l04",
+            "title": "Exposure Review and Hardening",
+            "description": "Turn inventory into prioritized remediation and verification actions.",
+            "learningObjectives": [
+              "Identify unnecessary exposure.",
+              "Restrict management paths.",
+              "Write implementable remediation."
+            ],
+            "notes": [
+              "CIS Control 12 emphasizes secure network architecture, current infrastructure, and secure management."
+            ],
+            "practicals": [
+              {
+                "title": "Create a hardening plan",
+                "steps": [
+                  "Select five exposure findings.",
+                  "Prioritize them.",
+                  "Write remediation and verification."
+                ],
+                "deliverable": "hardening-actions.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Control 12: Network Infrastructure Management",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management",
+                "why": "Anchors asset inventory, secure network architecture, and infrastructure management."
+              },
+              {
+                "title": "CIS Critical Security Controls Version 8.1",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/v8-1",
+                "why": "Provides the current v8.1 control context and alignment with NIST CSF 2.0."
+              }
+            ]
+          },
+          {
+            "id": "ns03-l05",
+            "title": "Security Findings and Evidence",
+            "description": "Write findings that distinguish observation, impact, confidence, and remediation.",
+            "learningObjectives": [
+              "Write reproducible findings.",
+              "Avoid unsupported severity claims.",
+              "State uncertainty."
+            ],
+            "notes": [
+              "Reports should contain enough evidence for another analyst to reproduce the observation.",
+              "Minimize sensitive data."
+            ],
+            "practicals": [
+              {
+                "title": "Write a formal network finding",
+                "steps": [
+                  "Choose one validated exposure.",
+                  "Write evidence, impact, confidence, remediation, and verification."
+                ],
+                "deliverable": "finding-01.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "SP 800-115, Technical Guide to Information Security Testing and Assessment",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final",
+                "why": "Provides the testing/assessment concepts used for authorized network discovery and security assessment work."
+              },
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "publisher": "OWASP",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "ns03-t01",
+            "title": "Build a repeatable Nmap inventory",
+            "level": "Intermediate",
+            "description": "Create a reproducible host/service inventory workflow.",
+            "problemStatement": "Inventory a local /24 and then inspect one identified host.",
+            "objectives": [
+              "Host discovery.",
+              "Targeted service detection.",
+              "Evidence naming.",
+              "Command recording."
+            ],
+            "requirements": [
+              "Private lab only.",
+              "No credentialed attacks or evasion."
+            ],
+            "constraints": "Discover first; enumerate second.",
+            "hint": "#!/usr/bin/env bash\nset -euo pipefail\nCIDR=\"192.168.56.0/24\"\nSTAMP=\"$(date +%Y%m%d-%H%M%S)\"\nmkdir -p evidence\nnmap -sn \"$CIDR\" -oN \"evidence/hosts-$STAMP.txt\"\nHOST=\"${1:-192.168.56.101}\"\nnmap -sT -sV --version-light \"$HOST\" -oN \"evidence/services-$STAMP.txt\"\nprintf 'Evidence timestamp: %s\\n' \"$STAMP\"\n",
+            "solutionCode": "The workflow separates discovery from targeted service identification and creates timestamped evidence.",
+            "solutionExplanation": ""
+          },
+          {
+            "id": "ns03-t02",
+            "title": "Triage an unexpected management service",
+            "level": "Advanced",
+            "description": "Investigate an exposed management port and propose a verified remediation without exploitation.",
+            "problemStatement": "A server exposes a management listener that is not present in the intended architecture.",
+            "objectives": [
+              "Confirm the port.",
+              "Identify the service safely.",
+              "Check business/lab need.",
+              "Recommend restriction/removal.",
+              "Define verification."
+            ],
+            "requirements": [
+              "Lab only.",
+              "No password guessing or exploitation."
+            ],
+            "constraints": "Validate before recommending a change.",
+            "hint": "Re-scan the port; perform limited service identification; inspect authorized local configuration; compare with the architecture; if not required, disable or firewall-restrict it; verify with a before/after scan and listener check.",
+            "solutionCode": "This models validate -> contextualize -> remediate -> verify.",
+            "solutionExplanation": ""
+          }
+        ],
+        "deliverables": [
+          "Asset inventory",
+          "Nmap evidence",
+          "Service validation",
+          "Hardening plan",
+          "Finding report"
+        ],
+        "assessment": "Reviewer checks that scanner output becomes verified, actionable engineering work."
+      },
+      {
+        "id": "module-04",
+        "title": "Packet Analysis and Network Telemetry",
+        "description": "Develop packet-capture and flow-analysis skills using tcpdump, Wireshark, and Zeek.",
+        "objectives": [
+          "Capture traffic safely.",
+          "Use Wireshark filters.",
+          "Build timelines.",
+          "Interpret Zeek JSON logs.",
+          "Handle sensitive evidence."
+        ],
+        "lessons": [
+          {
+            "id": "ns04-l01",
+            "title": "tcpdump Capture Fundamentals",
+            "description": "Capture only the traffic needed for a controlled investigation.",
+            "learningObjectives": [
+              "Select interface.",
+              "Apply a narrow capture scope.",
+              "Save and verify evidence."
+            ],
+            "notes": [
+              "Captures can contain sensitive data.",
+              "Use lab traffic only."
+            ],
+            "practicals": [
+              {
+                "title": "Capture one lab flow",
+                "steps": [
+                  "Identify interface.",
+                  "Capture the selected host traffic.",
+                  "Generate one test connection.",
+                  "Stop and verify the file."
+                ],
+                "deliverable": "flow.pcap"
+              }
+            ],
+            "resources": [
+              {
+                "title": "tcpdump(8) Manual",
+                "publisher": "tcpdump Project / Linux man-pages",
+                "url": "https://www.man7.org/linux/man-pages/man8/tcpdump.8.html",
+                "why": "Authoritative reference for command-line packet capture and reading."
+              },
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "publisher": "OWASP",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+              }
+            ]
+          },
+          {
+            "id": "ns04-l02",
+            "title": "Wireshark Display Filters",
+            "description": "Write field-based filters to isolate investigative evidence.",
+            "learningObjectives": [
+              "Filter by protocol.",
+              "Filter by host/port.",
+              "Distinguish capture and display filters."
+            ],
+            "notes": [
+              "Wireshark documents both filter types separately.",
+              "Validate filters against actual fields in the trace."
+            ],
+            "practicals": [
+              {
+                "title": "Build a filter notebook",
+                "steps": [
+                  "Write filters for DNS, TCP, one host, one port, and SYN packets.",
+                  "Test each.",
+                  "Record the investigative question."
+                ],
+                "deliverable": "wireshark-filters.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "wireshark-filter(4)",
+                "publisher": "Wireshark Project",
+                "url": "https://www.wireshark.org/docs/man-pages/wireshark-filter.html",
+                "why": "Precise display-filter syntax and semantics."
+              },
+              {
+                "title": "Wireshark User's Guide",
+                "publisher": "Wireshark Foundation / Wireshark Project",
+                "url": "https://www.wireshark.org/docs/wsug_html/",
+                "why": "Official packet-analysis and display-filter reference."
+              }
+            ]
+          },
+          {
+            "id": "ns04-l03",
+            "title": "Connection Reconstruction and Timelines",
+            "description": "Reconstruct a conversation and correlate timestamps with other evidence.",
+            "learningObjectives": [
+              "Identify setup and teardown.",
+              "Build a timeline.",
+              "Correlate with logs."
+            ],
+            "notes": [
+              "Cross-source agreement increases confidence.",
+              "Avoid false timestamp precision."
+            ],
+            "practicals": [
+              {
+                "title": "Reconstruct a TCP conversation",
+                "steps": [
+                  "Locate SYN exchange.",
+                  "Follow the relevant stream.",
+                  "Record key timestamps.",
+                  "Correlate one log event."
+                ],
+                "deliverable": "connection-timeline.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "RFC 9293: Transmission Control Protocol (TCP)",
+                "publisher": "IETF RFC Editor",
+                "url": "https://www.rfc-editor.org/rfc/rfc9293.html",
+                "why": "Primary specification for TCP behavior and terminology."
+              },
+              {
+                "title": "Wireshark User's Guide",
+                "publisher": "Wireshark Foundation / Wireshark Project",
+                "url": "https://www.wireshark.org/docs/wsug_html/",
+                "why": "Official packet-analysis and display-filter reference."
+              }
+            ]
+          },
+          {
+            "id": "ns04-l04",
+            "title": "Scanning and Anomalous Flow Patterns",
+            "description": "Recognize fan-out, repeated connections, and baseline deviations without overclaiming maliciousness.",
+            "learningObjectives": [
+              "Measure fan-out.",
+              "Choose a time window.",
+              "Assess alternative benign explanations."
+            ],
+            "notes": [
+              "Monitoring tools can look like scanners.",
+              "Thresholds are local policy decisions."
+            ],
+            "practicals": [
+              {
+                "title": "Classify a flow burst",
+                "steps": [
+                  "Group by source/destination.",
+                  "Count ports in a window.",
+                  "Compare to the service inventory.",
+                  "Write a confidence statement."
+                ],
+                "deliverable": "scan-behavior-analysis.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Control 13: Network Monitoring and Defense",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-monitoring-and-defense",
+                "why": "Anchors network monitoring, detection, and defense practices."
+              },
+              {
+                "title": "Zeek conn.log Reference",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/current/reference/logs/conn.html",
+                "why": "Defines connection-log fields used in normalization and correlation."
+              }
+            ]
+          },
+          {
+            "id": "ns04-l05",
+            "title": "Zeek Network Telemetry",
+            "description": "Use Zeek conn.log, dns.log, and JSON output as structured network-security evidence.",
+            "learningObjectives": [
+              "Interpret conn.log fields.",
+              "Explain originator/responder semantics.",
+              "Use JSON logs in analysis."
+            ],
+            "notes": [
+              "Zeek conn.log records both TCP and UDP flows.",
+              "JSON is convenient for pipelines."
+            ],
+            "practicals": [
+              {
+                "title": "Inspect Zeek JSON",
+                "steps": [
+                  "Process a lab pcap.",
+                  "Enable JSON logs.",
+                  "Inspect conn.log and dns.log.",
+                  "Document one normal and one unusual pattern."
+                ],
+                "deliverable": "zeek-analysis.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Book of Zeek — Logs",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/master/tutorial/logs.html",
+                "why": "Documents JSON logs and core network telemetry such as conn.log."
+              },
+              {
+                "title": "Zeek conn.log Reference",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/current/reference/logs/conn.html",
+                "why": "Defines connection-log fields used in normalization and correlation."
+              },
+              {
+                "title": "Zeek dns.log Reference",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/current/reference/logs/dns.html",
+                "why": "Documents DNS telemetry useful for network-security analysis."
+              }
+            ]
+          },
+          {
+            "id": "ns04-l06",
+            "title": "Evidence Handling and Sensitive Telemetry",
+            "description": "Apply data minimization, access control, provenance, and secret-protection practices.",
+            "learningObjectives": [
+              "Identify sensitive network data.",
+              "Define storage and retention rules.",
+              "Avoid secret leakage."
+            ],
+            "notes": [
+              "OWASP recommends not directly logging passwords, tokens, and other sensitive information and stresses protecting logs from unauthorized access and tampering."
+            ],
+            "practicals": [
+              {
+                "title": "Create an evidence-handling checklist",
+                "steps": [
+                  "List evidence types.",
+                  "Mark sensitive content.",
+                  "Define storage, access, retention, and deletion."
+                ],
+                "deliverable": "evidence-handling.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "publisher": "OWASP",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+              },
+              {
+                "title": "SP 800-92, Guide to Computer Security Log Management",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Log-management lifecycle and operational guidance."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "ns04-t01",
+            "title": "Create a Wireshark investigation filter set",
+            "level": "Easy",
+            "description": "Create a reusable display-filter notebook.",
+            "problemStatement": "Analysts need quick filters for lab workstation investigations.",
+            "objectives": [
+              "Provide six display filters.",
+              "State each filter's question."
+            ],
+            "requirements": [
+              "Display filters only."
+            ],
+            "constraints": "Use documented protocol/field syntax.",
+            "hint": "1. `ip.addr == 192.168.56.101` — traffic involving the lab workstation.\n2. `dns` — DNS packets.\n3. `tcp.port == 80` — HTTP-port TCP traffic.\n4. `tcp.flags.syn == 1` — SYN segments.\n5. `ip.dst == 192.168.56.102 && tcp` — TCP traffic to the lab server.\n6. `tcp.stream == 0` — one identified TCP stream.",
+            "solutionCode": "The filters use protocol and field semantics documented by Wireshark.",
+            "solutionExplanation": ""
+          },
+          {
+            "id": "ns04-t02",
+            "title": "Correlate a Zeek flow burst with packet evidence",
+            "level": "Advanced",
+            "description": "Determine whether a burst is scanning-like using Zeek and Wireshark evidence.",
+            "problemStatement": "A lab workstation creates many short connections to one server.",
+            "objectives": [
+              "Measure distinct ports.",
+              "Locate the packet interval.",
+              "Compare to the service inventory.",
+              "State confidence and alternatives."
+            ],
+            "requirements": [
+              "Lab data only.",
+              "No external scanning."
+            ],
+            "constraints": "Treat fan-out as a signal, not a verdict.",
+            "hint": "Group Zeek conn.log by source/destination and a 60-second window; count unique responder ports; inspect corresponding SYN/response patterns; compare to expected services; document benign explanations such as monitoring; then write the conclusion with evidence references.",
+            "solutionCode": "The correlation forces multi-source validation and explicit uncertainty.",
+            "solutionExplanation": ""
+          }
+        ],
+        "deliverables": [
+          "Capture",
+          "Filter notebook",
+          "Connection timeline",
+          "Zeek analysis",
+          "Evidence checklist"
+        ],
+        "assessment": "Reviewer checks evidence-driven packet/flow analysis and safe handling."
+      },
+      {
+        "id": "module-05",
+        "title": "Firewalls, Segmentation and Secure Network Administration",
+        "description": "Design, implement, and verify access-control policy on an isolated Linux lab.",
+        "objectives": [
+          "Translate requirements into firewall rules.",
+          "Use nftables safely.",
+          "Design least-privilege paths.",
+          "Verify and roll back changes."
+        ],
+        "lessons": [
+          {
+            "id": "ns05-l01",
+            "title": "Firewall Policy and State",
+            "description": "Translate communication requirements into ordered firewall policy.",
+            "learningObjectives": [
+              "Explain stateful filtering.",
+              "Choose default policy.",
+              "Spot shadowed rules."
+            ],
+            "notes": [
+              "A firewall is a policy enforcement mechanism; document intended flows."
+            ],
+            "practicals": [
+              {
+                "title": "Create a communication matrix",
+                "steps": [
+                  "List segment pairs.",
+                  "Add required ports/protocols.",
+                  "Mark denied flows.",
+                  "Review least privilege."
+                ],
+                "deliverable": "communication-matrix.csv"
+              }
+            ],
+            "resources": [
+              {
+                "title": "nftables Wiki",
+                "publisher": "Netfilter Project",
+                "url": "https://wiki.nftables.org/wiki-nftables/index.php/Main_Page",
+                "why": "Official documentation for Linux packet filtering with nftables."
+              },
+              {
+                "title": "CIS Critical Security Control 12: Network Infrastructure Management",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management",
+                "why": "Anchors asset inventory, secure network architecture, and infrastructure management."
+              }
+            ]
+          },
+          {
+            "id": "ns05-l02",
+            "title": "nftables Fundamentals",
+            "description": "Use tables, chains, rules, state, comments, and counters.",
+            "learningObjectives": [
+              "Create an inet table.",
+              "Implement default-drop input policy.",
+              "Inspect counters and rules."
+            ],
+            "notes": [
+              "Test only on lab systems.",
+              "Preserve rollback."
+            ],
+            "practicals": [
+              {
+                "title": "Build a lab host firewall",
+                "steps": [
+                  "Create input policy.",
+                  "Allow loopback and established/related.",
+                  "Allow management from management subnet.",
+                  "Allow lab ICMP.",
+                  "Drop other inbound."
+                ],
+                "deliverable": "nftables-lab.conf"
+              }
+            ],
+            "resources": [
+              {
+                "title": "nftables Wiki",
+                "publisher": "Netfilter Project",
+                "url": "https://wiki.nftables.org/wiki-nftables/index.php/Main_Page",
+                "why": "Official documentation for Linux packet filtering with nftables."
+              }
+            ]
+          },
+          {
+            "id": "ns05-l03",
+            "title": "Segmentation and Least Privilege",
+            "description": "Apply network segmentation as an enforceable control.",
+            "learningObjectives": [
+              "Identify unnecessary east-west paths.",
+              "Define monitoring exceptions.",
+              "Explain blast-radius reduction."
+            ],
+            "notes": [
+              "CIS Control 12 identifies segmentation and least privilege as core secure-architecture aspects."
+            ],
+            "practicals": [
+              {
+                "title": "Review segment paths",
+                "steps": [
+                  "Compare communication matrix to firewall rules.",
+                  "Find overbroad paths.",
+                  "Write three hardening changes."
+                ],
+                "deliverable": "segmentation-review.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Control 12: Network Infrastructure Management",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management",
+                "why": "Anchors asset inventory, secure network architecture, and infrastructure management."
+              },
+              {
+                "title": "CIS Critical Security Controls Version 8.1",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/v8-1",
+                "why": "Provides the current v8.1 control context and alignment with NIST CSF 2.0."
+              }
+            ]
+          },
+          {
+            "id": "ns05-l04",
+            "title": "Secure Network Administration",
+            "description": "Restrict management planes and prefer encrypted administration.",
+            "learningObjectives": [
+              "Identify management sources.",
+              "Limit administrative services.",
+              "Document rollback."
+            ],
+            "notes": [
+              "Secure administrative protocols and restricted management paths reduce exposure.",
+              "Do not store private credentials in configuration files or repositories."
+            ],
+            "practicals": [
+              {
+                "title": "Harden a management path",
+                "steps": [
+                  "Restrict SSH to the management subnet.",
+                  "Verify from allowed and denied sources.",
+                  "Document the change."
+                ],
+                "deliverable": "management-hardening.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Control 12: Network Infrastructure Management",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-infrastructure-management",
+                "why": "Anchors asset inventory, secure network architecture, and infrastructure management."
+              },
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "publisher": "OWASP",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+              }
+            ]
+          },
+          {
+            "id": "ns05-l05",
+            "title": "Control Verification and Change Records",
+            "description": "Make security changes testable, reviewable, and reversible.",
+            "learningObjectives": [
+              "Record pre-change state.",
+              "Test intended behavior.",
+              "Test a negative case.",
+              "Write rollback."
+            ],
+            "notes": [
+              "A control is not complete until its effect has been verified."
+            ],
+            "practicals": [
+              {
+                "title": "Run a controlled firewall change",
+                "steps": [
+                  "Snapshot current rules.",
+                  "Apply one change.",
+                  "Run positive/negative tests.",
+                  "Export final rules.",
+                  "Write rollback."
+                ],
+                "deliverable": "change-record.md"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "ns05-t01",
+            "title": "Implement a least-privilege nftables policy",
+            "level": "Intermediate",
+            "description": "Restrict inbound access on a lab server.",
+            "problemStatement": "Only management subnet 192.168.100.128/26 should reach SSH; other unsolicited inbound traffic is denied.",
+            "objectives": [
+              "Use inet table.",
+              "Default-drop input.",
+              "Allow loopback and established/related.",
+              "Allow SSH from management.",
+              "Allow ICMP for lab troubleshooting.",
+              "Log/drop other inbound."
+            ],
+            "requirements": [
+              "Lab host only.",
+              "Keep rollback."
+            ],
+            "constraints": "Put source restrictions on the positive allow rule.",
+            "hint": "table inet internship_filter {\n    chain input {\n        type filter hook input priority 0; policy drop;\n        iifname \"lo\" accept comment \"Allow loopback\"\n        ct state established,related accept comment \"Allow return traffic\"\n        ip saddr 192.168.100.128/26 tcp dport 22 accept comment \"Management SSH\"\n        ip protocol icmp accept comment \"Lab troubleshooting\"\n        counter log prefix \"nsm-input-reject \" level warning drop comment \"Unexpected inbound\"\n    }\n    chain output {\n        type filter hook output priority 0; policy accept;\n    }\n}",
+            "solutionCode": "The policy uses a restrictive default and narrowly-scoped positive rules. Output remains permissive in this exercise to focus on ingress.",
+            "solutionExplanation": ""
+          },
+          {
+            "id": "ns05-t02",
+            "title": "Review a firewall policy for overexposure",
+            "level": "Advanced",
+            "description": "Find rule-order and scope problems in a lab ruleset.",
+            "problemStatement": "A ruleset contains a broad SSH allow, a subnet-wide allow, and a later deny.",
+            "objectives": [
+              "Identify three problems.",
+              "Explain traffic impact.",
+              "Provide corrected policy.",
+              "Define regression tests."
+            ],
+            "requirements": [
+              "Lab ruleset only."
+            ],
+            "constraints": "Read top-to-bottom matching behavior.",
+            "hint": "Problem 1: broad `tcp dport 22 accept` exposes SSH to all reachable sources. Problem 2: broad subnet allow defeats segment restrictions. Problem 3: later deny cannot undo an earlier allow. Correct with default-drop and a management-source-scoped SSH allow. Tests: management -> SSH succeeds; user -> SSH denied; unrelated inbound denied.",
+            "solutionCode": "The review focuses on actual enforcement behavior, not just syntax.",
+            "solutionExplanation": ""
+          }
+        ],
+        "deliverables": [
+          "Communication matrix",
+          "nftables policy",
+          "Segmentation review",
+          "Management hardening",
+          "Change record"
+        ],
+        "assessment": "Reviewer checks explicit policy derivation and verification."
+      },
+      {
+        "id": "module-06",
+        "title": "IDS/NSM Telemetry and Detection Engineering",
+        "description": "Build transparent, testable detection logic from Suricata EVE and Zeek JSON telemetry.",
+        "objectives": [
+          "Distinguish IDS, NSM, and flow monitoring.",
+          "Parse documented JSON event formats.",
+          "Create deterministic rules.",
+          "Test and tune detections."
+        ],
+        "lessons": [
+          {
+            "id": "ns06-l01",
+            "title": "IDS vs Network Security Monitoring",
+            "description": "Understand signatures, flow telemetry, protocol logs, and analyst context.",
+            "learningObjectives": [
+              "Choose telemetry for a question.",
+              "Explain alert-vs-incident distinction.",
+              "Understand sensor roles."
+            ],
+            "notes": [
+              "Suricata provides EVE JSON alerts and protocol records; Zeek provides protocol-oriented logs such as conn.log."
+            ],
+            "practicals": [
+              {
+                "title": "Select telemetry sources",
+                "steps": [
+                  "Choose sources for five analyst questions.",
+                  "Justify each source and expected evidence."
+                ],
+                "deliverable": "telemetry-selection.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Suricata 8.0.4 — EVE JSON Output",
+                "publisher": "Suricata Project",
+                "url": "https://docs.suricata.io/en/suricata-8.0.4/output/eve/eve-json-output.html",
+                "why": "Documents EVE JSON output used by the capstone ingestion pipeline."
+              },
+              {
+                "title": "Book of Zeek — Logs",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/master/tutorial/logs.html",
+                "why": "Documents JSON logs and core network telemetry such as conn.log."
+              },
+              {
+                "title": "CIS Critical Security Control 13: Network Monitoring and Defense",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-monitoring-and-defense",
+                "why": "Anchors network monitoring, detection, and defense practices."
+              }
+            ]
+          },
+          {
+            "id": "ns06-l02",
+            "title": "Suricata EVE JSON",
+            "description": "Parse EVE JSON structure and alert metadata.",
+            "learningObjectives": [
+              "Identify event_type.",
+              "Extract alert severity/signature and tuple.",
+              "Preserve raw context."
+            ],
+            "notes": [
+              "EVE is a JSON event stream.",
+              "Handle missing/optional fields safely."
+            ],
+            "practicals": [
+              {
+                "title": "Inspect Suricata alerts",
+                "steps": [
+                  "Select alert events.",
+                  "Extract tuple and severity.",
+                  "Summarize signatures.",
+                  "Record evidence."
+                ],
+                "deliverable": "suricata-eve-analysis.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Suricata 8.0.4 — EVE JSON Output",
+                "publisher": "Suricata Project",
+                "url": "https://docs.suricata.io/en/suricata-8.0.4/output/eve/eve-json-output.html",
+                "why": "Documents EVE JSON output used by the capstone ingestion pipeline."
+              },
+              {
+                "title": "Suricata 8.0.0 — EVE JSON Format",
+                "publisher": "Suricata Project",
+                "url": "https://docs.suricata.io/en/suricata-8.0.0/output/eve/eve-json-format.html",
+                "why": "Documents common Suricata EVE event fields and alert structure."
+              }
+            ]
+          },
+          {
+            "id": "ns06-l03",
+            "title": "Zeek JSON and Normalization",
+            "description": "Map Zeek records into a normalized event model while preserving provenance.",
+            "learningObjectives": [
+              "Map originator/responder fields.",
+              "Handle optional fields.",
+              "Retain source information."
+            ],
+            "notes": [
+              "Zeek JSON is useful for data pipelines.",
+              "Normalization should not erase the original source context."
+            ],
+            "practicals": [
+              {
+                "title": "Normalize conn.log",
+                "steps": [
+                  "Take sample records.",
+                  "Map source/destination.",
+                  "Record unavailable fields.",
+                  "Preserve raw record."
+                ],
+                "deliverable": "normalization-notes.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Book of Zeek — Logs",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/master/tutorial/logs.html",
+                "why": "Documents JSON logs and core network telemetry such as conn.log."
+              },
+              {
+                "title": "Zeek conn.log Reference",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/current/reference/logs/conn.html",
+                "why": "Defines connection-log fields used in normalization and correlation."
+              }
+            ]
+          },
+          {
+            "id": "ns06-l04",
+            "title": "Detection Rules and Thresholds",
+            "description": "Design explainable rules and understand false-positive trade-offs.",
+            "learningObjectives": [
+              "Build a fan-out rule.",
+              "Choose configurable thresholds.",
+              "Define benign exceptions carefully."
+            ],
+            "notes": [
+              "Thresholds are environment-specific.",
+              "A rule firing means investigate; it does not prove maliciousness."
+            ],
+            "practicals": [
+              {
+                "title": "Tune a port-fanout rule",
+                "steps": [
+                  "Test threshold 10/60s.",
+                  "Run benign synthetic fixtures.",
+                  "Document false-positive observations.",
+                  "Set the chosen threshold."
+                ],
+                "deliverable": "detection-tuning.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "CIS Critical Security Control 13: Network Monitoring and Defense",
+                "publisher": "Center for Internet Security",
+                "url": "https://www.cisecurity.org/controls/network-monitoring-and-defense",
+                "why": "Anchors network monitoring, detection, and defense practices."
+              }
+            ]
+          },
+          {
+            "id": "ns06-l05",
+            "title": "Correlation and Alert Enrichment",
+            "description": "Join alerts to flows, services, and asset context.",
+            "learningObjectives": [
+              "Correlate by time and network identity.",
+              "Add asset context.",
+              "State evidence confidence."
+            ],
+            "notes": [
+              "Correlation does not create certainty if source events are ambiguous."
+            ],
+            "practicals": [
+              {
+                "title": "Build one correlation case",
+                "steps": [
+                  "Take a Suricata alert.",
+                  "Find matching Zeek connections.",
+                  "Add service-inventory context.",
+                  "Write triage summary."
+                ],
+                "deliverable": "correlation-case.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Suricata 8.0.4 — EVE JSON Output",
+                "publisher": "Suricata Project",
+                "url": "https://docs.suricata.io/en/suricata-8.0.4/output/eve/eve-json-output.html",
+                "why": "Documents EVE JSON output used by the capstone ingestion pipeline."
+              },
+              {
+                "title": "Zeek conn.log Reference",
+                "publisher": "Zeek Project",
+                "url": "https://docs.zeek.org/en/current/reference/logs/conn.html",
+                "why": "Defines connection-log fields used in normalization and correlation."
+              },
+              {
+                "title": "SP 800-92, Guide to Computer Security Log Management",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Log-management lifecycle and operational guidance."
+              }
+            ]
+          },
+          {
+            "id": "ns06-l06",
+            "title": "Detection Testing and Regression",
+            "description": "Treat detections as code with positive and negative fixtures.",
+            "learningObjectives": [
+              "Write tests.",
+              "Prevent threshold regressions.",
+              "Document rule limitations."
+            ],
+            "notes": [
+              "Python unittest supports repeatable test execution and is used in the capstone."
+            ],
+            "practicals": [
+              {
+                "title": "Create detection regression tests",
+                "steps": [
+                  "Build positive fixture.",
+                  "Build benign fixture.",
+                  "Assert outcomes.",
+                  "Re-run after a rule change."
+                ],
+                "deliverable": "tests/test_rules.py"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Python 3 unittest — Unit testing framework",
+                "publisher": "Python Software Foundation",
+                "url": "https://docs.python.org/3/library/unittest.html",
+                "why": "Standard-library test framework used for reproducible project tests."
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "ns06-t01",
+            "title": "Summarize a Suricata EVE file",
+            "level": "Intermediate",
+            "description": "Parse JSONL and count alerts by severity and signature without crashing on malformed lines.",
+            "problemStatement": "A daily analyst summary must process a streaming EVE file.",
+            "objectives": [
+              "Stream line by line.",
+              "Recognize alert events.",
+              "Count severity/signature.",
+              "Count malformed lines."
+            ],
+            "requirements": [
+              "Python standard library only.",
+              "Do not load entire file into memory."
+            ],
+            "constraints": "Use json.loads and handle JSONDecodeError.",
+            "hint": "#!/usr/bin/env python3\nimport json\nimport sys\nfrom collections import Counter\nfrom pathlib import Path\n\ndef summarize(path: Path):\n    severities = Counter()\n    signatures = Counter()\n    malformed = 0\n    with path.open(\"r\", encoding=\"utf-8\") as fh:\n        for line in fh:\n            line = line.strip()\n            if not line:\n                continue\n            try:\n                event = json.loads(line)\n            except json.JSONDecodeError:\n                malformed += 1\n                continue\n            if event.get(\"event_type\") != \"alert\":\n                continue\n            alert = event.get(\"alert\") or {}\n            severities[str(alert.get(\"severity\", \"unknown\"))] += 1\n            signatures[str(alert.get(\"signature\", \"unknown\"))] += 1\n    return severities, signatures, malformed\n\nif __name__ == \"__main__\":\n    if len(sys.argv) != 2:\n        raise SystemExit(\"usage: eve_summary.py EVE_JSONL\")\n    sev, sig, bad = summarize(Path(sys.argv[1]))\n    print(\"severity:\", dict(sorted(sev.items())))\n    print(\"signatures:\", dict(sig.most_common()))\n    print(\"malformed:\", bad)\n",
+            "solutionCode": "The parser streams records, limits processing to alert events, and isolates malformed JSON from the rest of the file.",
+            "solutionExplanation": ""
+          },
+          {
+            "id": "ns06-t02",
+            "title": "Implement a transparent port-fanout detector",
+            "level": "Advanced",
+            "description": "Flag a source/destination pair that contacts many unique destination ports in a short window.",
+            "problemStatement": "A lab monitor needs an explainable scan-like signal.",
+            "objectives": [
+              "Use configurable threshold/window.",
+              "Group by source/destination.",
+              "Return supporting ports/timestamps.",
+              "Mark output as heuristic."
+            ],
+            "requirements": [
+              "Synthetic/lab data only.",
+              "Do not produce attack traffic."
+            ],
+            "constraints": "Sort by timestamp and use a bounded window.",
+            "hint": "from collections import defaultdict\nfrom datetime import datetime, timedelta\n\ndef ts(value):\n    return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n\ndef detect(events, threshold=10, window_seconds=60):\n    groups = defaultdict(list)\n    for e in events:\n        groups[(e[\"src_ip\"], e[\"dst_ip\"])].append(e)\n    findings = []\n    for (src, dst), group in groups.items():\n        group.sort(key=lambda e: ts(e[\"timestamp\"]))\n        for i, start in enumerate(group):\n            ports = set()\n            used = []\n            start_ts = ts(start[\"timestamp\"])\n            for e in group[i:]:\n                if ts(e[\"timestamp\"]) - start_ts > timedelta(seconds=window_seconds):\n                    break\n                ports.add(e[\"dst_port\"])\n                used.append(e)\n            if len(ports) >= threshold:\n                findings.append({\n                    \"rule_id\":\"NET-SCAN-PORT-FANOUT-001\",\n                    \"severity\":\"medium\",\n                    \"heuristic\":True,\n                    \"src_ip\":src,\n                    \"dst_ip\":dst,\n                    \"distinct_destination_ports\":sorted(ports),\n                    \"event_count\":len(used),\n                    \"first_seen\":used[0][\"timestamp\"],\n                    \"last_seen\":used[-1][\"timestamp\"]\n                })\n                break\n    return findings\n",
+            "solutionCode": "The detector is deterministic, bounded, and explainable. It produces a review signal rather than a claim that an event is malicious.",
+            "solutionExplanation": ""
+          }
+        ],
+        "deliverables": [
+          "Telemetry selection",
+          "EVE analysis",
+          "Zeek normalization",
+          "Detection tuning",
+          "Correlation case",
+          "Regression tests"
+        ],
+        "assessment": "Reviewer checks that detections are explainable, testable, and explicit about uncertainty."
+      },
+      {
+        "id": "module-07",
+        "title": "Incident Triage, Reporting and Engineering Workflow",
+        "description": "Turn network telemetry into defensible investigations, remediations, reviews, and closure evidence.",
+        "objectives": [
+          "Correlate multi-source evidence.",
+          "Build timelines.",
+          "Write defensible reports.",
+          "Review security changes.",
+          "Close incidents with verification."
+        ],
+        "lessons": [
+          {
+            "id": "ns07-l01",
+            "title": "Network Incident Triage",
+            "description": "Move from alert to scope, evidence, containment recommendation, and handoff.",
+            "learningObjectives": [
+              "Build an incident timeline.",
+              "Identify affected assets.",
+              "Separate facts from hypotheses.",
+              "Recommend low-risk lab containment."
+            ],
+            "notes": [
+              "NIST SP 800-61 Rev. 3 is the current incident-response guide researched here and supersedes Rev. 2."
+            ],
+            "practicals": [
+              {
+                "title": "Triage a synthetic network alert",
+                "steps": [
+                  "Review the alert.",
+                  "Correlate flow evidence.",
+                  "Scope assets.",
+                  "Write open questions.",
+                  "Recommend lab containment."
+                ],
+                "deliverable": "incident-triage.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "SP 800-61 Rev. 3, Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                "why": "Current NIST incident-response guidance; supersedes Rev. 2."
+              }
+            ]
+          },
+          {
+            "id": "ns07-l02",
+            "title": "Log Management and Time Correlation",
+            "description": "Use timestamps, source reliability, retention principles, and cross-source joins.",
+            "learningObjectives": [
+              "Normalize timestamps.",
+              "Explain clock ambiguity.",
+              "Design lab retention practices."
+            ],
+            "notes": [
+              "NIST SP 800-92 treats log management as generating, transmitting, storing, accessing, and disposing of log data.",
+              "Retention requirements are context-specific."
+            ],
+            "practicals": [
+              {
+                "title": "Build a three-source timeline",
+                "steps": [
+                  "Combine one Suricata alert, one Zeek flow, and one packet timestamp.",
+                  "Normalize time.",
+                  "Explain discrepancies."
+                ],
+                "deliverable": "three-source-timeline.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "SP 800-92, Guide to Computer Security Log Management",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                "why": "Log-management lifecycle and operational guidance."
+              },
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "publisher": "OWASP",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+              }
+            ]
+          },
+          {
+            "id": "ns07-l03",
+            "title": "Investigation Notes and Evidence Discipline",
+            "description": "Write notes that a second analyst can reproduce.",
+            "learningObjectives": [
+              "Reference evidence precisely.",
+              "Mark uncertainty.",
+              "Avoid unsupported claims."
+            ],
+            "notes": [
+              "Sensitive evidence should be minimized and access-controlled."
+            ],
+            "practicals": [
+              {
+                "title": "Rewrite a weak investigation note",
+                "steps": [
+                  "Replace unsupported claims with observations.",
+                  "Add evidence references.",
+                  "Add open questions and confidence."
+                ],
+                "deliverable": "investigation-note.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "publisher": "OWASP",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+              },
+              {
+                "title": "The NIST Cybersecurity Framework (CSF) 2.0",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20",
+                "why": "Uses the current CSF 2.0 outcomes model as the internship's risk-management anchor."
+              }
+            ]
+          },
+          {
+            "id": "ns07-l04",
+            "title": "Remediation and Lessons Learned",
+            "description": "Connect root cause to a control change, verification, rollback, and improvement.",
+            "learningObjectives": [
+              "Write actionable remediation.",
+              "Define verification.",
+              "Capture lessons."
+            ],
+            "notes": [
+              "Closure requires evidence that remediation worked."
+            ],
+            "practicals": [
+              {
+                "title": "Close a synthetic incident",
+                "steps": [
+                  "Select evidence-backed root cause.",
+                  "Write control change.",
+                  "Define regression check.",
+                  "Write lessons learned."
+                ],
+                "deliverable": "closure-report.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "SP 800-61 Rev. 3, Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                "why": "Current NIST incident-response guidance; supersedes Rev. 2."
+              },
+              {
+                "title": "The NIST Cybersecurity Framework (CSF) 2.0",
+                "publisher": "National Institute of Standards and Technology",
+                "url": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20",
+                "why": "Uses the current CSF 2.0 outcomes model as the internship's risk-management anchor."
+              }
+            ]
+          },
+          {
+            "id": "ns07-l05",
+            "title": "Git, Change Review and Documentation",
+            "description": "Apply engineering workflow to network-security rules and evidence.",
+            "learningObjectives": [
+              "Use meaningful commits.",
+              "Review diffs.",
+              "Keep secrets out of repositories.",
+              "Document changes and rollback."
+            ],
+            "notes": [
+              "Do not commit passwords, private keys, or sensitive packet captures to shared repositories."
+            ],
+            "practicals": [
+              {
+                "title": "Perform a security change review",
+                "steps": [
+                  "Review a lab firewall/detection diff.",
+                  "Identify correctness/security gaps.",
+                  "Write approval conditions and tests."
+                ],
+                "deliverable": "change-review.md"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "ns07-t01",
+            "title": "Triage a multi-source alert",
+            "level": "Intermediate",
+            "description": "Produce a defensible triage record using Suricata, Zeek, and packet metadata.",
+            "problemStatement": "A lab alert reports suspicious internal network activity and source timestamps vary slightly.",
+            "objectives": [
+              "Build timeline.",
+              "Scope affected asset.",
+              "Separate confirmed from unknown.",
+              "Recommend lab containment.",
+              "List follow-up evidence."
+            ],
+            "requirements": [
+              "No destructive response.",
+              "Lab/synthetic evidence only."
+            ],
+            "constraints": "Preserve source provenance.",
+            "hint": "Incident ID: LAB-NET-001\n\nConfirmed facts:\n- A Suricata alert exists for the recorded tuple.\n- Zeek observed one or more connections in the same time window.\n- Packet metadata either corroborates or fails to corroborate the connection.\n\nOpen questions:\n- Is the traffic expected monitoring/maintenance?\n- Which lab asset owner is responsible?\n\nLab containment:\n- Restrict the source host's access to the affected service at the lab firewall while preserving evidence.\n\nFollow-up:\n- Review service inventory changes.\n- Check host logs if available.\n- Re-run the detector after remediation.",
+            "solutionCode": "This task teaches scope -> preserve -> correlate -> contain -> verify.",
+            "solutionExplanation": ""
+          },
+          {
+            "id": "ns07-t02",
+            "title": "Conduct a network-security change review",
+            "level": "Advanced",
+            "description": "Review a proposed firewall or detection change for scope, correctness, privacy, tests, and rollback.",
+            "problemStatement": "A change looks safer but may create false positives or a broad network path.",
+            "objectives": [
+              "Check requirement traceability.",
+              "Check policy scope.",
+              "Check false positives.",
+              "Check sensitive logging.",
+              "Check tests and rollback."
+            ],
+            "requirements": [
+              "Lab change only."
+            ],
+            "constraints": "Review behavior and failure modes, not only syntax.",
+            "hint": "Approval checklist\n- Requirement traceability\n- Source/destination scope\n- Default behavior\n- Logging and sensitive-data exposure\n- False-positive impact\n- Positive and negative tests\n- Rollback procedure\n- Evidence provenance\n\nApprove only after the issues are corrected and regression tests are in place.",
+            "solutionCode": "The checklist makes review a control rather than an informal opinion.",
+            "solutionExplanation": ""
+          }
+        ],
+        "deliverables": [
+          "Triage record",
+          "Three-source timeline",
+          "Investigation note",
+          "Closure report",
+          "Change review"
+        ],
+        "assessment": "Reviewer checks that the intern can take evidence through a complete engineering and incident-response lifecycle."
+      },
+      {
+        "id": "module-08",
+        "title": "Final Capstone — Network Security Monitoring and Detection Lab",
+        "description": "Independent capstone that integrates authorized telemetry handling, network evidence interpretation, detection engineering, correlation, persistence, reporting, testing, and security review.",
+        "objectives": [
+          "Translate a network-security monitoring requirement into an explicit telemetry contract.",
+          "Implement a deterministic analysis pipeline across Suricata and Zeek JSON telemetry.",
+          "Apply and explain a transparent heuristic without overstating what it proves.",
+          "Produce reproducible evidence, tests, documentation, and an analyst-facing report."
+        ],
+        "lessons": [
+          {
+            "id": "ns08-l01",
+            "title": "Capstone Scope, Evidence Contract, and Lab Topology",
+            "description": "Translate the capstone brief into an explicit telemetry contract, analyst questions, evidence sources, and a reproducible lab boundary.",
+            "learningObjectives": [
+              "Define exactly which telemetry the capstone consumes.",
+              "Separate detection logic from sensor responsibilities.",
+              "Document the authorized lab boundary and expected outputs."
+            ],
+            "notes": [
+              "The capstone is an analysis layer: it does not scan, exploit, intercept, or remediate systems.",
+              "Synthetic fixtures are supplied so the project can be tested deterministically."
+            ],
+            "practicals": [
+              {
+                "title": "Write the capstone acceptance checklist",
+                "steps": [
+                  "List the Suricata and Zeek input files.",
+                  "List every expected output file.",
+                  "Define the detection threshold and time window.",
+                  "Record the safety boundary and evidence-retention rule."
+                ],
+                "deliverable": "capstone-acceptance-checklist.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Suricata EVE JSON Output",
+                "publisher": "Suricata Project",
+                "url": {
+                  "title": "Suricata 8.0.4 — EVE JSON Output",
+                  "publisher": "Suricata Project",
+                  "url": "https://docs.suricata.io/en/suricata-8.0.4/output/eve/eve-json-output.html",
+                  "why": "Documents EVE JSON output used by the capstone ingestion pipeline."
+                },
+                "why": "Defines the JSON event model used as an input contract."
+              },
+              {
+                "title": "Zeek Logs",
+                "publisher": "Zeek Project",
+                "url": {
+                  "title": "Book of Zeek — Logs",
+                  "publisher": "Zeek Project",
+                  "url": "https://docs.zeek.org/en/master/tutorial/logs.html",
+                  "why": "Documents JSON logs and core network telemetry such as conn.log."
+                },
+                "why": "Explains the network metadata represented by Zeek logs."
+              }
+            ]
+          },
+          {
+            "id": "ns08-l02",
+            "title": "Telemetry Normalization and Detection Inputs",
+            "description": "Trace how heterogeneous Suricata and Zeek records become a common internal Event model before detection and reporting.",
+            "learningObjectives": [
+              "Explain why normalization is required before correlation.",
+              "Identify timestamps, network tuples, protocol, and alert metadata.",
+              "Trace malformed-input handling from parser to CLI failure."
+            ],
+            "notes": [
+              "Suricata alert records and Zeek conn records have different field names and semantics; normalization deliberately retains only fields used by this lab.",
+              "Per-line size limits reduce exposure to unexpectedly large JSONL records."
+            ],
+            "practicals": [
+              {
+                "title": "Trace one event end to end",
+                "steps": [
+                  "Select one Suricata alert fixture.",
+                  "Map source fields to Event fields.",
+                  "Follow timestamp normalization.",
+                  "Record the final detector input."
+                ],
+                "deliverable": "event-trace.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Python json module",
+                "publisher": "Python Software Foundation",
+                "url": {
+                  "title": "Python 3 json — JSON encoder and decoder",
+                  "publisher": "Python Software Foundation",
+                  "url": "https://docs.python.org/3/library/json.html",
+                  "why": "Standard-library JSON processing used by the capstone."
+                },
+                "why": "Reference for parsing JSON safely in the implementation."
+              },
+              {
+                "title": "Zeek conn.log reference",
+                "publisher": "Zeek Project",
+                "url": {
+                  "title": "Zeek conn.log Reference",
+                  "publisher": "Zeek Project",
+                  "url": "https://docs.zeek.org/en/current/reference/logs/conn.html",
+                  "why": "Defines connection-log fields used in normalization and correlation."
+                },
+                "why": "Defines the connection-log fields consumed by the normalizer."
+              }
+            ]
+          },
+          {
+            "id": "ns08-l03",
+            "title": "Detection, Correlation, Storage, and Reporting Flow",
+            "description": "Follow the complete execution path from CLI arguments through detection, SQLite persistence, and Markdown reporting.",
+            "learningObjectives": [
+              "Explain the detector's port-fanout heuristic.",
+              "Explain tuple-and-time correlation between sensors.",
+              "Trace how findings become analyst-readable output."
+            ],
+            "notes": [
+              "The port-fanout detector is a heuristic, not proof of malicious scanning.",
+              "The report deliberately avoids reproducing raw payloads and secrets."
+            ],
+            "practicals": [
+              {
+                "title": "Draw the capstone execution flow",
+                "steps": [
+                  "Start at cli.main().",
+                  "Add ingestion and normalization.",
+                  "Add detection and correlation.",
+                  "Add database writes.",
+                  "Finish at report generation."
+                ],
+                "deliverable": "execution-flow.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Python sqlite3 module",
+                "publisher": "Python Software Foundation",
+                "url": {
+                  "title": "Python 3 sqlite3 — DB-API 2.0 interface for SQLite",
+                  "publisher": "Python Software Foundation",
+                  "url": "https://docs.python.org/3/library/sqlite3.html",
+                  "why": "Standard-library persistence layer used by the capstone."
+                },
+                "why": "Documents the SQLite interface used by the storage layer."
+              },
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "publisher": "OWASP",
+                "url": {
+                  "title": "OWASP Logging Cheat Sheet",
+                  "publisher": "OWASP",
+                  "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                  "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+                },
+                "why": "Provides guidance for safe security logging and avoiding sensitive values in logs."
+              }
+            ]
+          },
+          {
+            "id": "ns08-l04",
+            "title": "Capstone Verification, Failure Modes, and Analyst Handoff",
+            "description": "Verify the capstone against functional, testing, security, and operational acceptance criteria without fabricating results.",
+            "learningObjectives": [
+              "Run the full automated test suite.",
+              "Exercise a known-positive and known-negative detection case.",
+              "Document limitations and analyst handoff information."
+            ],
+            "notes": [
+              "Passing tests establish the checked behaviors in the supplied environment; they do not prove production readiness.",
+              "The project is intentionally lab-scale and should be treated as an educational analysis component."
+            ],
+            "practicals": [
+              {
+                "title": "Perform an analyst acceptance review",
+                "steps": [
+                  "Run the unit-test command.",
+                  "Run the sample-data CLI command.",
+                  "Inspect the generated report and SQLite summary.",
+                  "Record actual observed outputs and any deviations."
+                ],
+                "deliverable": "acceptance-review.md"
+              }
+            ],
+            "resources": [
+              {
+                "title": "Python unittest",
+                "publisher": "Python Software Foundation",
+                "url": {
+                  "title": "Python 3 unittest — Unit testing framework",
+                  "publisher": "Python Software Foundation",
+                  "url": "https://docs.python.org/3/library/unittest.html",
+                  "why": "Standard-library test framework used for reproducible project tests."
+                },
+                "why": "Reference for the automated test runner used by the project."
+              },
+              {
+                "title": "NIST Computer Security Incident Handling Guide SP 800-61 Rev. 3",
+                "publisher": "National Institute of Standards and Technology",
+                "url": {
+                  "title": "SP 800-61 Rev. 3, Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                  "publisher": "National Institute of Standards and Technology",
+                  "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                  "why": "Current NIST incident-response guidance; supersedes Rev. 2."
+                },
+                "why": "Provides current incident-response context for the analyst handoff and limitations discussion."
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "deliverables": [
+          "Completed capstone repository",
+          "Automated test run evidence",
+          "Generated SQLite evidence database",
+          "Generated Markdown investigation report",
+          "Acceptance checklist and limitations record"
+        ],
+        "assessment": {
+          "method": "Final project review against the documented acceptance criteria and evaluation rubric.",
+          "criteria": [
+            "Functional correctness",
+            "Detection reasoning",
+            "Code quality",
+            "Testing evidence",
+            "Security controls",
+            "Documentation",
+            "Reproducibility",
+            "Technical explanation"
+          ],
+          "minimumExpectation": "The intern can explain the pipeline, run it from a clean project tree, interpret a detector finding as heuristic evidence, and identify limitations without overstating certainty."
+        },
+        "project": {
+          "heading": "Build a Network Security Monitoring and Detection Lab",
+          "description": "Build a lab-scale network security monitoring and detection analysis layer that accepts newline-delimited Suricata EVE alert records and Zeek connection logs, normalizes them into a common event model, applies a transparent port-fanout heuristic, correlates alerts with nearby network flows, stores the evidence in SQLite, and generates a Markdown investigation report. The system is deliberately defensive: it analyzes supplied telemetry and does not perform discovery, exploitation, packet interception, credential attacks, or automatic response.",
+          "problemStatement": "An analyst has two complementary telemetry sources: Suricata provides security alerts and Zeek provides network-connection context. The records use different schemas, and reviewing them manually makes it difficult to identify repeated connection behavior and relate alerts to surrounding flows. Build a reproducible analysis tool that turns the two inputs into a small evidence set and an analyst-facing report, while preserving a clear distinction between heuristic findings and confirmed malicious activity.",
+          "objectives": [
+            "Implement robust JSONL ingestion with explicit malformed-input handling.",
+            "Normalize Suricata and Zeek records into a common typed event model.",
+            "Detect configurable port fan-out over a bounded time window.",
+            "Correlate Suricata alerts with matching Zeek flows using network tuple and time proximity.",
+            "Persist normalized events and findings in SQLite using parameterized SQL.",
+            "Generate a deterministic Markdown report suitable for analyst review.",
+            "Test parsing, detection, correlation, storage, and reporting behavior.",
+            "Document security boundaries, limitations, and scaling considerations."
+          ],
+          "requirements": {
+            "functional": [
+              "Accept zero, one, or both telemetry files; fail clearly when a specified input cannot be parsed.",
+              "Read Suricata JSONL and retain only alert events for the alert stream.",
+              "Read Zeek conn JSONL and normalize its core connection fields.",
+              "Sort normalized events chronologically before rule evaluation.",
+              "Detect at least five distinct destination ports from one source to one destination within a configurable window.",
+              "Correlate Suricata alerts with Zeek flows sharing source IP, destination IP, and destination port inside a configurable time window.",
+              "Create a SQLite database with normalized events and detection alerts.",
+              "Generate a Markdown report containing event totals, detection totals, and finding details."
+            ],
+            "technical": [
+              "Use Python 3.12 or newer as declared by the project metadata.",
+              "Use the Python standard library only at runtime.",
+              "Use newline-delimited JSON input.",
+              "Use SQLite for local persistence.",
+              "Expose a command-line interface for repeatable execution.",
+              "Keep detector thresholds configurable through command-line arguments."
+            ],
+            "security": [
+              "Run only on telemetry from systems and networks the operator is authorized to monitor.",
+              "Do not hardcode secrets or credentials.",
+              "Do not log passwords, authentication tokens, private keys, or other unnecessary sensitive data.",
+              "Bound JSONL line size before parsing.",
+              "Use parameterized SQL rather than interpolated SQL strings.",
+              "Treat detector output as heuristic evidence requiring analyst validation."
+            ],
+            "testing": [
+              "Run the unittest discovery command.",
+              "Verify positive port-fanout detection.",
+              "Verify a negative case outside the configured time window.",
+              "Verify tuple-and-time alert/flow correlation.",
+              "Verify malformed JSON raises a clear input error.",
+              "Verify SQLite persistence and report-generation tests."
+            ],
+            "deployment": [
+              "Operate locally on an analyst workstation or isolated lab host.",
+              "Keep database and report paths separate from source fixtures.",
+              "For larger telemetry volumes, redesign ingestion and detection around streaming or queue-based processing before claiming scale."
+            ]
+          },
+          "features": [
+            {
+              "name": "Suricata alert ingestion",
+              "behavior": "Reads JSONL records, accepts alert events, extracts alert signature and severity, and ignores unrelated event types."
+            },
+            {
+              "name": "Zeek connection ingestion",
+              "behavior": "Reads JSONL conn records and maps originator/responder addresses, ports, protocol, duration, and byte counts into the common Event model."
+            },
+            {
+              "name": "Event normalization",
+              "behavior": "Normalizes supported timestamp formats, sorts events chronologically, and rejects malformed required data instead of silently inventing values."
+            },
+            {
+              "name": "Port-fanout detector",
+              "behavior": "Groups Zeek connection events by source/destination pair and raises a medium-severity heuristic when the configured distinct-port threshold occurs inside the configured time window."
+            },
+            {
+              "name": "Sensor correlation",
+              "behavior": "Matches Suricata alerts to Zeek flows using the same source IP, destination IP, destination port, and configurable timestamp proximity."
+            },
+            {
+              "name": "SQLite evidence store",
+              "behavior": "Stores normalized events and detector alerts in indexed tables for repeatable local review."
+            },
+            {
+              "name": "Markdown analyst report",
+              "behavior": "Summarizes event counts, detector counts, findings, and matched telemetry without embedding raw packet payloads."
+            },
+            {
+              "name": "CLI configuration",
+              "behavior": "Accepts input paths, database/report paths, fan-out threshold, and detection window so an analyst can reproduce a run."
+            }
+          ],
+          "technologyStack": [
+            {
+              "name": "Python 3.12+",
+              "purpose": "Application language and command-line orchestration.",
+              "role": "Implements ingestion, normalization, detection, storage, reporting, and tests.",
+              "why": "The project needs a maintainable scripting/runtime layer and uses only standard-library modules."
+            },
+            {
+              "name": "SQLite",
+              "purpose": "Local relational persistence.",
+              "role": "Stores normalized events and detection findings.",
+              "why": "It provides a transactional embedded database suitable for a deterministic lab-scale artifact."
+            },
+            {
+              "name": "Suricata EVE JSON",
+              "purpose": "Security-alert telemetry input.",
+              "role": "Supplies structured alert records.",
+              "why": "It provides machine-readable security-event output suitable for downstream analysis."
+            },
+            {
+              "name": "Zeek JSON logs",
+              "purpose": "Network-connection telemetry input.",
+              "role": "Supplies flow context for detection and correlation.",
+              "why": "Its conn log exposes who communicated with whom, when, and using which connection metadata."
+            },
+            {
+              "name": "unittest",
+              "purpose": "Automated verification.",
+              "role": "Tests ingestion, detector logic, persistence, and reporting.",
+              "why": "It is part of Python's standard library and keeps the project dependency-free at runtime."
+            }
+          ],
+          "architecture": {
+            "style": "Small layered local analysis pipeline",
+            "components": [
+              {
+                "name": "CLI",
+                "responsibility": "Parses configuration, invokes pipeline stages, handles input failures, and determines output paths."
+              },
+              {
+                "name": "Ingestion",
+                "responsibility": "Parses Suricata and Zeek JSONL records into typed Event objects."
+              },
+              {
+                "name": "Normalization",
+                "responsibility": "Parses supported timestamps and provides chronological ordering."
+              },
+              {
+                "name": "Detection",
+                "responsibility": "Runs the configurable port-fanout heuristic."
+              },
+              {
+                "name": "Correlation",
+                "responsibility": "Relates Suricata alert events to Zeek flows by tuple and time proximity."
+              },
+              {
+                "name": "Storage",
+                "responsibility": "Initializes SQLite schema and inserts normalized events and detector findings."
+              },
+              {
+                "name": "Reporting",
+                "responsibility": "Builds an analyst-readable Markdown report from summary and finding data."
+              }
+            ],
+            "securityBoundaries": [
+              "Telemetry input is treated as untrusted data; the application does not execute payload content.",
+              "SQLite writes use SQL parameters.",
+              "The detector performs analysis only and contains no automatic remediation or command execution.",
+              "The report layer limits output to normalized metadata and finding summaries."
+            ],
+            "dataFlow": "Authorized telemetry files -> JSONL ingestion -> Event normalization -> chronological rule evaluation -> detector findings + alert/flow correlation -> SQLite evidence store -> Markdown analyst report"
+          },
+          "fileStructure": "project/\n├── README.md\n├── pyproject.toml\n├── nsm_monitor/\n│   ├── __init__.py\n│   ├── models.py\n│   ├── ingest.py\n│   ├── normalize.py\n│   ├── rules.py\n│   ├── storage.py\n│   ├── report.py\n│   └── cli.py\n├── samples/\n│   ├── suricata_eve.jsonl\n│   └── zeek_conn.jsonl\n└── tests/\n    ├── __init__.py\n    ├── test_ingest.py\n    ├── test_rules.py\n    ├── test_storage.py\n    └── test_report.py",
+          "setupRequirements": [
+            "Python 3.12 or newer.",
+            "A shell/terminal with permission to create the project's data and report directories.",
+            "No third-party runtime package installation is required.",
+            "Use only synthetic fixtures or telemetry captured from an explicitly authorized lab."
+          ],
+          "setupInstructions": [
+            "Create the directory structure exactly as shown in the file tree.",
+            "Copy each file from fileWiseSolution into the stated path.",
+            "From the project root, run: python -m unittest discover -s tests -v",
+            "Analyze the supplied fixtures with: python -m nsm_monitor.cli --suricata samples/suricata_eve.jsonl --zeek samples/zeek_conn.jsonl --db data/nsm.db --report reports/report.md --threshold 5 --window 60",
+            "Inspect the generated SQLite database and Markdown report.",
+            "For a fresh run, remove only the generated data/nsm.db and reports/report.md files and rerun the command; do not remove source fixtures."
+          ],
+          "implementationSteps": [
+            {
+              "step": 1,
+              "action": "Create the project directories and Python package."
+            },
+            {
+              "step": 2,
+              "action": "Add pyproject.toml and the package marker."
+            },
+            {
+              "step": 3,
+              "action": "Implement the Event dataclass and timestamp/field handling."
+            },
+            {
+              "step": 4,
+              "action": "Implement JSONL ingestion with explicit input validation and bounded line size."
+            },
+            {
+              "step": 5,
+              "action": "Implement chronological normalization."
+            },
+            {
+              "step": 6,
+              "action": "Implement the configurable port-fanout detector and alert/flow correlation."
+            },
+            {
+              "step": 7,
+              "action": "Implement SQLite schema creation and parameterized inserts."
+            },
+            {
+              "step": 8,
+              "action": "Implement deterministic Markdown report generation."
+            },
+            {
+              "step": 9,
+              "action": "Wire all stages together in the CLI and expose configuration arguments."
+            },
+            {
+              "step": 10,
+              "action": "Run unit tests and correct any observed implementation defects."
+            },
+            {
+              "step": 11,
+              "action": "Run the supplied synthetic fixtures through the CLI."
+            },
+            {
+              "step": 12,
+              "action": "Review the generated evidence, document limitations, and perform the capstone security/consistency checklist."
+            }
+          ],
+          "howItWorks": {
+            "startup": "cli.main() validates argument values, creates output directories, initializes SQLite, and begins ingestion.",
+            "ingestion": "read_suricata() and read_zeek_conn() parse JSONL records, normalize supported fields, and produce Event objects.",
+            "detection": "detect_port_fanout() evaluates ordered Zeek connection events by source/destination pair using a configurable threshold and time window.",
+            "correlation": "correlate_suricata_and_zeek() compares normalized Suricata alert events with Zeek flow events on source IP, destination IP, destination port, and time proximity.",
+            "storage": "initialize() creates indexed SQLite tables; insert_events() and insert_alerts() persist normalized evidence and detector findings.",
+            "reporting": "render_report() combines summary counts, findings, and correlation information into Markdown for analyst review.",
+            "failureHandling": "Malformed JSONL or required-field failures become InputFormatError values handled by the CLI with a clear error and nonzero exit status."
+          },
+          "dataFlow": [
+            "Authorized telemetry file",
+            "JSONL parser",
+            "Validated Event objects",
+            "Timestamp normalization and chronological ordering",
+            "Port-fanout detection and sensor correlation",
+            "SQLite persistence",
+            "Markdown report",
+            "Analyst review and follow-up"
+          ],
+          "testingPlan": [
+            {
+              "test": "Suricata alert parsing",
+              "command": "python -m unittest tests.test_ingest.IngestTests.test_parse_suricata_alert -v",
+              "expectedBehavior": "A supported alert record becomes an Event with source=suricata."
+            },
+            {
+              "test": "Ignore non-alert Suricata event",
+              "command": "python -m unittest tests.test_ingest.IngestTests.test_non_alert_suricata_record_is_ignored -v",
+              "expectedBehavior": "A flow-only Suricata record is ignored by the alert reader."
+            },
+            {
+              "test": "Malformed JSON handling",
+              "command": "python -m unittest tests.test_ingest.IngestTests.test_jsonl_reader_rejects_invalid_json -v",
+              "expectedBehavior": "Malformed JSON raises InputFormatError."
+            },
+            {
+              "test": "Positive port-fanout detection",
+              "command": "python -m unittest tests.test_rules.RuleTests.test_port_fanout_positive -v",
+              "expectedBehavior": "Five distinct destination ports inside the 60-second window produce one finding."
+            },
+            {
+              "test": "Negative fan-out outside window",
+              "command": "python -m unittest tests.test_rules.RuleTests.test_port_fanout_negative_due_to_window -v",
+              "expectedBehavior": "Ports separated beyond the configured window do not produce a finding."
+            },
+            {
+              "test": "Alert/flow correlation",
+              "command": "python -m unittest tests.test_rules.RuleTests.test_correlation_matches_tuple_and_time -v",
+              "expectedBehavior": "A matching tuple inside the time window produces one correlation match."
+            },
+            {
+              "test": "SQLite persistence",
+              "command": "python -m unittest tests.test_storage.StorageTests.test_initialize_and_insert -v",
+              "expectedBehavior": "Schema initializes and summary counts reflect inserted evidence."
+            },
+            {
+              "test": "Report generation",
+              "command": "python -m unittest tests.test_report.ReportTests.test_report_contains_key_sections -v",
+              "expectedBehavior": "The Markdown report includes the expected title and detector identifier."
+            }
+          ],
+          "securityReview": {
+            "threatModel": "The primary risks are malformed/untrusted telemetry input, accidental exposure of sensitive telemetry through reports/logs, SQL injection through future query changes, and misuse outside an authorized monitoring boundary.",
+            "controls": [
+              "Bound each JSONL input line before parsing.",
+              "Reject malformed required input rather than coercing arbitrary values.",
+              "Use parameterized SQLite statements.",
+              "Avoid embedding raw packet payloads or secrets in the Markdown report.",
+              "Keep the application offline from target networks; it reads files only.",
+              "Document that supplied telemetry may contain sensitive information and must be handled according to the operator's evidence rules.",
+              "Treat the detector as heuristic evidence rather than automatic attribution."
+            ],
+            "references": [
+              {
+                "title": "OWASP Logging Cheat Sheet",
+                "url": {
+                  "title": "OWASP Logging Cheat Sheet",
+                  "publisher": "OWASP",
+                  "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+                  "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+                }
+              },
+              {
+                "title": "NIST SP 800-115",
+                "url": {
+                  "title": "SP 800-115, Technical Guide to Information Security Testing and Assessment",
+                  "publisher": "National Institute of Standards and Technology",
+                  "url": "https://csrc.nist.gov/pubs/sp/800/115/final",
+                  "why": "Provides the testing/assessment concepts used for authorized network discovery and security assessment work."
+                }
+              },
+              {
+                "title": "NIST SP 800-92",
+                "url": {
+                  "title": "SP 800-92, Guide to Computer Security Log Management",
+                  "publisher": "National Institute of Standards and Technology",
+                  "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+                  "why": "Log-management lifecycle and operational guidance."
+                }
+              },
+              {
+                "title": "NIST SP 800-61 Rev. 3",
+                "url": {
+                  "title": "SP 800-61 Rev. 3, Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+                  "publisher": "National Institute of Standards and Technology",
+                  "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+                  "why": "Current NIST incident-response guidance; supersedes Rev. 2."
+                }
+              }
+            ]
+          },
+          "performanceReview": {
+            "currentDesign": "Events are materialized in memory for deterministic lab-scale detection and correlation.",
+            "measurement": "Measure parsing time, peak process memory, database write time, and report generation time against progressively larger authorized JSONL fixtures using an OS-level process monitor and repeated runs.",
+            "limitations": "No benchmark result is claimed here because performance testing is environment-specific.",
+            "scalingPath": "For materially larger telemetry volumes, introduce streaming ingestion, bounded state for time-window detectors, batched database writes, retention policies, and an external queue or stream processor appropriate to the operational environment."
+          },
+          "deployment": {
+            "recommendedModel": "Run locally on an analyst workstation or isolated lab host with read access to the telemetry directory and write access to a dedicated output directory.",
+            "productionCaution": "Do not present this small reference implementation as a production SIEM or as a replacement for Suricata or Zeek sensors.",
+            "operationalPractices": [
+              "Protect telemetry and report files with host-level permissions.",
+              "Separate source fixtures from generated evidence.",
+              "Back up or retain evidence according to the lab/organization's approved policy.",
+              "Record the exact command and configuration used for a report so an analyst can reproduce the run.",
+              "Review and update detector thresholds against the actual environment before operational use."
+            ]
+          },
+          "troubleshooting": [
+            {
+              "problem": "ModuleNotFoundError for nsm_monitor when running tests",
+              "checks": [
+                "Run commands from the project root so the package directory is on Python's import path.",
+                "Confirm nsm_monitor/__init__.py exists."
+              ]
+            },
+            {
+              "problem": "InputFormatError while reading a fixture",
+              "checks": [
+                "Validate that the file is newline-delimited JSON.",
+                "Inspect the failing line for malformed JSON or missing required fields.",
+                "Do not bypass parser validation by inventing missing values."
+              ]
+            },
+            {
+              "problem": "No detector finding appears",
+              "checks": [
+                "Confirm the Zeek records contain enough distinct destination ports.",
+                "Check the --threshold value.",
+                "Check the --window value and timestamps."
+              ]
+            },
+            {
+              "problem": "Report directory does not exist",
+              "checks": [
+                "Use the supplied CLI, which creates parent directories for the database and report paths.",
+                "Confirm filesystem permissions allow the process to create those directories."
+              ]
+            },
+            {
+              "problem": "Database contains old results",
+              "checks": [
+                "Use a new database path or remove the generated lab database before rerunning.",
+                "Keep source fixtures unchanged so test reproducibility is preserved."
+              ]
+            }
+          ],
+          "fileWiseSolution": [
+            {
+              "path": "pyproject.toml",
+              "purpose": "Project metadata and packaging configuration.",
+              "explanation": "Declares the package, Python requirement, empty third-party runtime dependency set, console entry point, and package discovery.",
+              "code": "[build-system]\nrequires = [\"setuptools>=68\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"nsm-lab-monitor\"\nversion = \"1.0.0\"\ndescription = \"Small lab-scale network security telemetry normalizer, detector, and report generator\"\nrequires-python = \">=3.12\"\ndependencies = []\n\n[project.scripts]\nnsm-monitor = \"nsm_monitor.cli:main\"\n\n[tool.setuptools.packages.find]\ninclude = [\"nsm_monitor*\"]\n"
+            },
+            {
+              "path": "README.md",
+              "purpose": "Project-specific operating guide for the capstone.",
+              "explanation": "Explains the safety boundary, inputs, commands, outputs, and scaling limitations so the implementation is reproducible without pretending to be a production SIEM.",
+              "code": "# Network Security Monitoring Lab\n\nThis capstone is a **lab-scale analysis layer** for network-security telemetry.\n\nIt consumes newline-delimited JSON records exported by:\n- Suricata EVE JSON for sensor alerts.\n- Zeek JSON connection logs for network-flow context.\n\nIt normalizes useful network metadata, stores it in SQLite, applies deterministic detection rules, and produces a Markdown investigation report.\n\n## Safety boundary\n\nRun the capstone only against telemetry from systems and networks that you own or are explicitly authorized to monitor. The supplied fixtures are synthetic test data. The project does not perform scanning, exploitation, credential attacks, traffic interception, or automatic containment.\n\n## Requirements\n\n- Python 3.12 or newer.\n- No third-party runtime dependencies.\n\n## Run the tests\n\n```bash\npython -m unittest discover -s tests -v\n```\n\n## Analyze the supplied fixtures\n\n```bash\npython -m nsm_monitor.cli   --suricata samples/suricata_eve.jsonl   --zeek samples/zeek_conn.jsonl   --db data/nsm.db   --report reports/report.md   --threshold 5   --window 60\n```\n\nThe command creates the SQLite database and a Markdown report.\n\n## Design limitations\n\nThe implementation is intentionally small and transparent. It is suitable for an internship lab, deterministic testing, and code review. It is not a production SIEM, high-volume streaming platform, or replacement for the Suricata/Zeek sensors themselves. A production design would normally add durable ingestion, access control, retention policy, horizontal scaling, operational monitoring, and stronger schema/version management.\n"
+            },
+            {
+              "path": "nsm_monitor/__init__.py",
+              "purpose": "Package identity and version.",
+              "explanation": "Makes the package importable and records a simple project version.",
+              "code": "__all__ = [\"models\", \"ingest\", \"normalize\", \"rules\", \"storage\", \"report\"]\n__version__ = \"1.0.0\"\n"
+            },
+            {
+              "path": "nsm_monitor/models.py",
+              "purpose": "Canonical normalized network event model.",
+              "explanation": "Uses an immutable dataclass so all telemetry sources can share a common structure while preserving raw source data.",
+              "code": "from __future__ import annotations\n\nfrom dataclasses import asdict, dataclass\nfrom typing import Any\n\n\n@dataclass(frozen=True)\nclass Event:\n    source: str\n    timestamp: str\n    event_type: str\n    src_ip: str | None = None\n    src_port: int | None = None\n    dst_ip: str | None = None\n    dst_port: int | None = None\n    proto: str | None = None\n    severity: str | None = None\n    signature: str | None = None\n    raw: dict[str, Any] | None = None\n\n    def as_dict(self) -> dict[str, Any]:\n        return asdict(self)\n"
+            },
+            {
+              "path": "nsm_monitor/ingest.py",
+              "purpose": "Streaming input parsing and source-specific normalization.",
+              "explanation": "Reads JSONL safely, enforces a per-line size limit, rejects malformed records clearly, converts Suricata alert records and Zeek conn records into Event objects, and normalizes timestamps to UTC.",
+              "code": "from __future__ import annotations\n\nimport json\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom typing import Any, Iterator\n\nfrom .models import Event\n\n\nclass InputFormatError(ValueError):\n    pass\n\n\ndef normalize_suricata_timestamp(value: str) -> str:\n    text = value.strip()\n    if text.endswith(\"Z\"):\n        dt = datetime.fromisoformat(text.replace(\"Z\", \"+00:00\"))\n    else:\n        dt = datetime.fromisoformat(text)\n    if dt.tzinfo is None:\n        dt = dt.replace(tzinfo=timezone.utc)\n    return dt.astimezone(timezone.utc).isoformat().replace(\"+00:00\", \"Z\")\n\n\ndef normalize_zeek_timestamp(value: float | int | str) -> str:\n    dt = datetime.fromtimestamp(float(value), tz=timezone.utc)\n    return dt.isoformat().replace(\"+00:00\", \"Z\")\n\n\ndef _to_optional_int(value: Any) -> int | None:\n    if value is None or value == \"\":\n        return None\n    try:\n        return int(value)\n    except (TypeError, ValueError):\n        return None\n\n\ndef parse_suricata_record(record: dict[str, Any]) -> Event | None:\n    if record.get(\"event_type\") != \"alert\":\n        return None\n\n    alert = record.get(\"alert\") or {}\n    return Event(\n        source=\"suricata\",\n        timestamp=normalize_suricata_timestamp(str(record[\"timestamp\"])),\n        event_type=\"alert\",\n        src_ip=record.get(\"src_ip\"),\n        src_port=_to_optional_int(record.get(\"src_port\")),\n        dst_ip=record.get(\"dest_ip\"),\n        dst_port=_to_optional_int(record.get(\"dest_port\")),\n        proto=record.get(\"proto\"),\n        severity=str(alert[\"severity\"]) if \"severity\" in alert else None,\n        signature=alert.get(\"signature\"),\n        raw=record,\n    )\n\n\ndef parse_zeek_conn_record(record: dict[str, Any]) -> Event:\n    required = (\"ts\", \"id.orig_h\", \"id.resp_h\", \"proto\")\n    missing = [key for key in required if key not in record]\n    if missing:\n        raise InputFormatError(f\"Zeek conn record missing required fields: {missing}\")\n\n    return Event(\n        source=\"zeek\",\n        timestamp=normalize_zeek_timestamp(record[\"ts\"]),\n        event_type=\"conn\",\n        src_ip=record.get(\"id.orig_h\"),\n        src_port=_to_optional_int(record.get(\"id.orig_p\")),\n        dst_ip=record.get(\"id.resp_h\"),\n        dst_port=_to_optional_int(record.get(\"id.resp_p\")),\n        proto=str(record.get(\"proto\")).lower() if record.get(\"proto\") is not None else None,\n        raw=record,\n    )\n\n\ndef iter_jsonl(path: Path, max_line_bytes: int = 1_000_000) -> Iterator[dict[str, Any]]:\n    with path.open(\"r\", encoding=\"utf-8\") as handle:\n        for line_number, raw_line in enumerate(handle, start=1):\n            if len(raw_line.encode(\"utf-8\")) > max_line_bytes:\n                raise InputFormatError(\n                    f\"{path}:{line_number}: line exceeds {max_line_bytes} bytes\"\n                )\n            line = raw_line.strip()\n            if not line:\n                continue\n            try:\n                value = json.loads(line)\n            except json.JSONDecodeError as exc:\n                raise InputFormatError(\n                    f\"{path}:{line_number}: invalid JSON: {exc.msg}\"\n                ) from exc\n            if not isinstance(value, dict):\n                raise InputFormatError(\n                    f\"{path}:{line_number}: JSON value must be an object\"\n                )\n            yield value\n\n\ndef read_suricata(path: Path) -> Iterator[Event]:\n    for record in iter_jsonl(path):\n        event = parse_suricata_record(record)\n        if event is not None:\n            yield event\n\n\ndef read_zeek_conn(path: Path) -> Iterator[Event]:\n    for record in iter_jsonl(path):\n        yield parse_zeek_conn_record(record)\n"
+            },
+            {
+              "path": "nsm_monitor/normalize.py",
+              "purpose": "Common event ordering and tuple helpers.",
+              "explanation": "Provides timestamp parsing, stable chronological ordering, and a five-tuple helper used by analysis code.",
+              "code": "from __future__ import annotations\n\nfrom datetime import datetime\n\nfrom .models import Event\n\n\ndef parse_event_time(event: Event) -> datetime:\n    return datetime.fromisoformat(event.timestamp.replace(\"Z\", \"+00:00\"))\n\n\ndef sort_events(events: list[Event]) -> list[Event]:\n    return sorted(events, key=parse_event_time)\n\n\ndef five_tuple(event: Event) -> tuple[str | None, int | None, str | None, int | None, str | None]:\n    return (\n        event.src_ip,\n        event.src_port,\n        event.dst_ip,\n        event.dst_port,\n        event.proto,\n    )\n"
+            },
+            {
+              "path": "nsm_monitor/rules.py",
+              "purpose": "Deterministic detection and correlation logic.",
+              "explanation": "Implements a configurable port-fanout heuristic and a tuple/time-window correlation between Suricata alerts and Zeek flows.",
+              "code": "from __future__ import annotations\n\nfrom collections import defaultdict\nfrom datetime import timedelta\nfrom typing import Any\n\nfrom .models import Event\nfrom .normalize import parse_event_time, sort_events\n\n\ndef detect_port_fanout(\n    events: list[Event],\n    threshold: int = 10,\n    window_seconds: int = 60,\n) -> list[dict[str, Any]]:\n    if threshold < 1:\n        raise ValueError(\"threshold must be >= 1\")\n    if window_seconds < 1:\n        raise ValueError(\"window_seconds must be >= 1\")\n\n    grouped: dict[tuple[str | None, str | None], list[Event]] = defaultdict(list)\n    for event in events:\n        if event.src_ip and event.dst_ip and event.dst_port is not None:\n            grouped[(event.src_ip, event.dst_ip)].append(event)\n\n    findings: list[dict[str, Any]] = []\n    window = timedelta(seconds=window_seconds)\n\n    for (src_ip, dst_ip), group in grouped.items():\n        ordered = sort_events(group)\n        for start_index, start in enumerate(ordered):\n            start_time = parse_event_time(start)\n            ports: set[int] = set()\n            evidence: list[Event] = []\n\n            for candidate in ordered[start_index:]:\n                if parse_event_time(candidate) - start_time > window:\n                    break\n                if candidate.dst_port is not None:\n                    ports.add(candidate.dst_port)\n                evidence.append(candidate)\n\n            if len(ports) >= threshold:\n                findings.append(\n                    {\n                        \"rule_id\": \"NET-SCAN-PORT-FANOUT-001\",\n                        \"severity\": \"medium\",\n                        \"heuristic\": True,\n                        \"src_ip\": src_ip,\n                        \"dst_ip\": dst_ip,\n                        \"distinct_destination_ports\": sorted(ports),\n                        \"event_count\": len(evidence),\n                        \"first_seen\": evidence[0].timestamp,\n                        \"last_seen\": evidence[-1].timestamp,\n                        \"reason\": (\n                            f\"{len(ports)} distinct destination ports observed \"\n                            f\"within {window_seconds} seconds\"\n                        ),\n                    }\n                )\n                break\n\n    return findings\n\n\ndef correlate_suricata_and_zeek(\n    suricata_events: list[Event],\n    zeek_events: list[Event],\n    window_seconds: int = 30,\n) -> list[dict[str, Any]]:\n    if window_seconds < 0:\n        raise ValueError(\"window_seconds must be >= 0\")\n\n    ordered_zeek = sort_events(zeek_events)\n    correlations: list[dict[str, Any]] = []\n\n    for alert in sort_events(suricata_events):\n        candidates = []\n        alert_time = parse_event_time(alert)\n        for flow in ordered_zeek:\n            if flow.src_ip != alert.src_ip or flow.dst_ip != alert.dst_ip:\n                continue\n            if alert.dst_port is not None and flow.dst_port != alert.dst_port:\n                continue\n            delta = abs((parse_event_time(flow) - alert_time).total_seconds())\n            if delta <= window_seconds:\n                candidates.append(\n                    {\n                        \"zeek_timestamp\": flow.timestamp,\n                        \"zeek_src_port\": flow.src_port,\n                        \"zeek_dst_port\": flow.dst_port,\n                        \"delta_seconds\": round(delta, 6),\n                    }\n                )\n\n        correlations.append(\n            {\n                \"alert_timestamp\": alert.timestamp,\n                \"signature\": alert.signature,\n                \"src_ip\": alert.src_ip,\n                \"dst_ip\": alert.dst_ip,\n                \"matches\": candidates,\n            }\n        )\n\n    return correlations\n"
+            },
+            {
+              "path": "nsm_monitor/storage.py",
+              "purpose": "SQLite persistence layer.",
+              "explanation": "Creates indexed event/alert tables and stores normalized evidence plus serialized raw context without requiring a separate database server.",
+              "code": "from __future__ import annotations\n\nimport json\nimport sqlite3\nfrom pathlib import Path\nfrom typing import Any, Iterable\n\nfrom .models import Event\n\n\nSCHEMA = \"\"\"\nCREATE TABLE IF NOT EXISTS events (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    source TEXT NOT NULL,\n    timestamp TEXT NOT NULL,\n    event_type TEXT NOT NULL,\n    src_ip TEXT,\n    src_port INTEGER,\n    dst_ip TEXT,\n    dst_port INTEGER,\n    proto TEXT,\n    severity TEXT,\n    signature TEXT,\n    raw_json TEXT NOT NULL\n);\n\nCREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp);\nCREATE INDEX IF NOT EXISTS idx_events_src_dst ON events(src_ip, dst_ip);\n\nCREATE TABLE IF NOT EXISTS alerts (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    rule_id TEXT NOT NULL,\n    severity TEXT NOT NULL,\n    source TEXT NOT NULL,\n    timestamp TEXT NOT NULL,\n    src_ip TEXT,\n    dst_ip TEXT,\n    details_json TEXT NOT NULL\n);\n\"\"\"\n\n\ndef connect(path: Path) -> sqlite3.Connection:\n    path.parent.mkdir(parents=True, exist_ok=True)\n    connection = sqlite3.connect(path)\n    connection.execute(\"PRAGMA foreign_keys = ON\")\n    return connection\n\n\ndef initialize(connection: sqlite3.Connection) -> None:\n    connection.executescript(SCHEMA)\n    connection.commit()\n\n\ndef insert_events(connection: sqlite3.Connection, events: Iterable[Event]) -> int:\n    rows = []\n    for event in events:\n        rows.append(\n            (\n                event.source,\n                event.timestamp,\n                event.event_type,\n                event.src_ip,\n                event.src_port,\n                event.dst_ip,\n                event.dst_port,\n                event.proto,\n                event.severity,\n                event.signature,\n                json.dumps(event.raw or {}, separators=(\",\", \":\"), ensure_ascii=False),\n            )\n        )\n\n    connection.executemany(\n        \"\"\"\n        INSERT INTO events (\n            source, timestamp, event_type, src_ip, src_port,\n            dst_ip, dst_port, proto, severity, signature, raw_json\n        )\n        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n        \"\"\",\n        rows,\n    )\n    connection.commit()\n    return len(rows)\n\n\ndef insert_alerts(connection: sqlite3.Connection, alerts: Iterable[dict[str, Any]]) -> int:\n    rows = [\n        (\n            alert[\"rule_id\"],\n            str(alert[\"severity\"]),\n            str(alert.get(\"source\", \"detector\")),\n            alert[\"timestamp\"] if \"timestamp\" in alert else alert.get(\"first_seen\"),\n            alert.get(\"src_ip\"),\n            alert.get(\"dst_ip\"),\n            json.dumps(alert, separators=(\",\", \":\"), ensure_ascii=False),\n        )\n        for alert in alerts\n    ]\n    connection.executemany(\n        \"\"\"\n        INSERT INTO alerts (\n            rule_id, severity, source, timestamp, src_ip, dst_ip, details_json\n        )\n        VALUES (?, ?, ?, ?, ?, ?, ?)\n        \"\"\",\n        rows,\n    )\n    connection.commit()\n    return len(rows)\n\n\ndef summary(connection: sqlite3.Connection) -> dict[str, Any]:\n    event_count = connection.execute(\"SELECT COUNT(*) FROM events\").fetchone()[0]\n    alert_count = connection.execute(\"SELECT COUNT(*) FROM alerts\").fetchone()[0]\n    by_source = {\n        row[0]: row[1]\n        for row in connection.execute(\n            \"SELECT source, COUNT(*) FROM events GROUP BY source ORDER BY source\"\n        )\n    }\n    by_rule = {\n        row[0]: row[1]\n        for row in connection.execute(\n            \"SELECT rule_id, COUNT(*) FROM alerts GROUP BY rule_id ORDER BY rule_id\"\n        )\n    }\n    return {\n        \"event_count\": event_count,\n        \"alert_count\": alert_count,\n        \"events_by_source\": by_source,\n        \"alerts_by_rule\": by_rule,\n    }\n"
+            },
+            {
+              "path": "nsm_monitor/report.py",
+              "purpose": "Human-readable Markdown report generator.",
+              "explanation": "Summarizes source volumes, detector findings, and Suricata-to-Zeek correlations while intentionally avoiding raw payload disclosure in the report.",
+              "code": "from __future__ import annotations\n\nimport json\nfrom pathlib import Path\nfrom typing import Any\n\n\ndef _json(value: Any) -> str:\n    return json.dumps(value, indent=2, sort_keys=True)\n\n\ndef render_report(\n    summary: dict[str, Any],\n    findings: list[dict[str, Any]],\n    correlations: list[dict[str, Any]],\n) -> str:\n    lines = [\n        \"# Network Security Monitoring Report\",\n        \"\",\n        \"## Scope\",\n        \"\",\n        \"This report summarizes only the supplied lab telemetry. Detection findings are analyst signals, not automatic proof of malicious activity.\",\n        \"\",\n        \"## Event summary\",\n        \"\",\n        f\"- Total normalized events: {summary['event_count']}\",\n        f\"- Detector findings: {summary['alert_count']}\",\n        \"\",\n        \"### Events by source\",\n        \"\",\n    ]\n\n    for source, count in summary[\"events_by_source\"].items():\n        lines.append(f\"- {source}: {count}\")\n\n    lines.extend([\"\", \"### Alerts by rule\", \"\"])\n    for rule_id, count in summary[\"alerts_by_rule\"].items():\n        lines.append(f\"- {rule_id}: {count}\")\n\n    lines.extend([\"\", \"## Detection findings\", \"\"])\n    if not findings:\n        lines.append(\"No configured detector findings were produced.\")\n    else:\n        for index, finding in enumerate(findings, start=1):\n            lines.extend(\n                [\n                    f\"### Finding {index}: {finding['rule_id']}\",\n                    \"\",\n                    f\"- Severity: {finding['severity']}\",\n                    f\"- Heuristic: {finding['heuristic']}\",\n                    f\"- Source IP: {finding['src_ip']}\",\n                    f\"- Destination IP: {finding['dst_ip']}\",\n                    f\"- First seen: {finding['first_seen']}\",\n                    f\"- Last seen: {finding['last_seen']}\",\n                    f\"- Reason: {finding['reason']}\",\n                    f\"- Destination ports: {', '.join(map(str, finding['distinct_destination_ports']))}\",\n                    \"\",\n                ]\n            )\n\n    lines.extend([\"## Suricata-to-Zeek correlation\", \"\"])\n    if not correlations:\n        lines.append(\"No Suricata alerts were supplied.\")\n    else:\n        for correlation in correlations:\n            lines.append(f\"### Alert at {correlation['alert_timestamp']}\")\n            lines.append(\"\")\n            lines.append(f\"- Signature: {correlation.get('signature')}\")\n            lines.append(f\"- Source: {correlation.get('src_ip')}\")\n            lines.append(f\"- Destination: {correlation.get('dst_ip')}\")\n            if correlation[\"matches\"]:\n                lines.append(\"- Matching Zeek flows:\")\n                for match in correlation[\"matches\"]:\n                    lines.append(\n                        f\"  - {match['zeek_timestamp']} src_port={match['zeek_src_port']} \"\n                        f\"dst_port={match['zeek_dst_port']} delta={match['delta_seconds']}s\"\n                    )\n            else:\n                lines.append(\"- Matching Zeek flows: none within the configured window.\")\n            lines.append(\"\")\n\n    lines.extend(\n        [\n            \"## Analyst notes\",\n            \"\",\n            \"Treat the detector output as a triage signal. Validate unusual behavior against asset inventory, expected monitoring/maintenance activity, packet evidence, and system-owner context before escalation.\",\n            \"\",\n            \"The report intentionally excludes full raw JSON payloads to reduce unnecessary disclosure of telemetry details.\",\n            \"\",\n        ]\n    )\n    return \"\\n\".join(lines)\n\n\ndef write_report(path: Path, content: str) -> None:\n    path.parent.mkdir(parents=True, exist_ok=True)\n    path.write_text(content, encoding=\"utf-8\")\n"
+            },
+            {
+              "path": "nsm_monitor/cli.py",
+              "purpose": "Command-line orchestration.",
+              "explanation": "Parses inputs and configuration, runs ingestion and detection, writes SQLite and Markdown outputs, and returns a nonzero code for input failures.",
+              "code": "from __future__ import annotations\n\nimport argparse\nimport logging\nfrom pathlib import Path\n\nfrom .ingest import InputFormatError, read_suricata, read_zeek_conn\nfrom .normalize import sort_events\nfrom .report import render_report, write_report\nfrom .rules import correlate_suricata_and_zeek, detect_port_fanout\nfrom .storage import connect, initialize, insert_alerts, insert_events, summary\n\n\ndef build_parser() -> argparse.ArgumentParser:\n    parser = argparse.ArgumentParser(\n        description=\"Analyze Suricata EVE and Zeek conn JSONL from an authorized lab.\"\n    )\n    parser.add_argument(\"--suricata\", type=Path, help=\"Suricata EVE JSONL file\")\n    parser.add_argument(\"--zeek\", type=Path, help=\"Zeek conn.log JSONL file\")\n    parser.add_argument(\"--db\", type=Path, default=Path(\"data/nsm.db\"))\n    parser.add_argument(\"--report\", type=Path, default=Path(\"reports/report.md\"))\n    parser.add_argument(\"--threshold\", type=int, default=10)\n    parser.add_argument(\"--window\", type=int, default=60)\n    parser.add_argument(\"--verbose\", action=\"store_true\")\n    return parser\n\n\ndef main(argv: list[str] | None = None) -> int:\n    args = build_parser().parse_args(argv)\n    logging.basicConfig(\n        level=logging.DEBUG if args.verbose else logging.INFO,\n        format=\"%(levelname)s %(message)s\",\n    )\n\n    if not args.suricata and not args.zeek:\n        raise SystemExit(\"at least one input file is required\")\n\n    try:\n        suricata_events = list(read_suricata(args.suricata)) if args.suricata else []\n        zeek_events = list(read_zeek_conn(args.zeek)) if args.zeek else []\n    except (OSError, InputFormatError) as exc:\n        logging.error(\"input failure: %s\", exc)\n        return 2\n\n    all_events = sort_events(suricata_events + zeek_events)\n    findings = detect_port_fanout(\n        zeek_events,\n        threshold=args.threshold,\n        window_seconds=args.window,\n    )\n    for finding in findings:\n        finding[\"source\"] = \"detector\"\n        finding[\"timestamp\"] = finding[\"first_seen\"]\n\n    correlations = correlate_suricata_and_zeek(\n        suricata_events,\n        zeek_events,\n        window_seconds=min(args.window, 30),\n    )\n\n    connection = connect(args.db)\n    try:\n        initialize(connection)\n        insert_events(connection, all_events)\n        insert_alerts(connection, findings)\n        report = render_report(summary(connection), findings, correlations)\n    finally:\n        connection.close()\n\n    write_report(args.report, report)\n    print(f\"Normalized events: {len(all_events)}\")\n    print(f\"Detector findings: {len(findings)}\")\n    print(f\"Report: {args.report}\")\n    print(f\"Database: {args.db}\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+            },
+            {
+              "path": "samples/suricata_eve.jsonl",
+              "purpose": "Synthetic Suricata EVE fixture.",
+              "explanation": "Contains one synthetic alert plus one ignored non-alert event so the parser can be tested against documented EVE event structure.",
+              "code": "{\"timestamp\":\"2026-09-07T10:00:00.000000+0000\",\"flow_id\":1001,\"event_type\":\"alert\",\"src_ip\":\"192.168.56.10\",\"src_port\":51000,\"dest_ip\":\"192.168.56.101\",\"dest_port\":80,\"proto\":\"TCP\",\"alert\":{\"signature_id\":900001,\"rev\":1,\"signature\":\"Synthetic Lab Alert - Example HTTP Observation\",\"category\":\"Synthetic Lab Event\",\"severity\":2},\"app_proto\":\"http\"}\n{\"timestamp\":\"2026-09-07T10:05:00.000000+0000\",\"flow_id\":1002,\"event_type\":\"flow\",\"src_ip\":\"192.168.56.10\",\"src_port\":52000,\"dest_ip\":\"192.168.56.101\",\"dest_port\":443,\"proto\":\"TCP\"}\n"
+            },
+            {
+              "path": "samples/zeek_conn.jsonl",
+              "purpose": "Synthetic Zeek conn.log fixture.",
+              "explanation": "Contains a scan-like burst and one normal TLS-like connection so detection and negative-context behavior can be demonstrated.",
+              "code": "{\"ts\":1788775200,\"uid\":\"C01SYNTH\",\"id.orig_h\":\"192.168.56.10\",\"id.orig_p\":50000,\"id.resp_h\":\"192.168.56.101\",\"id.resp_p\":21,\"proto\":\"tcp\",\"service\":\"-\",\"duration\":0.1,\"orig_bytes\":60,\"resp_bytes\":0,\"conn_state\":\"S0\"}\n{\"ts\":1788775205,\"uid\":\"C02SYNTH\",\"id.orig_h\":\"192.168.56.10\",\"id.orig_p\":50001,\"id.resp_h\":\"192.168.56.101\",\"id.resp_p\":22,\"proto\":\"tcp\",\"service\":\"-\",\"duration\":0.1,\"orig_bytes\":60,\"resp_bytes\":0,\"conn_state\":\"S0\"}\n{\"ts\":1788775210,\"uid\":\"C03SYNTH\",\"id.orig_h\":\"192.168.56.10\",\"id.orig_p\":50002,\"id.resp_h\":\"192.168.56.101\",\"id.resp_p\":23,\"proto\":\"tcp\",\"service\":\"-\",\"duration\":0.1,\"orig_bytes\":60,\"resp_bytes\":0,\"conn_state\":\"S0\"}\n{\"ts\":1788775215,\"uid\":\"C04SYNTH\",\"id.orig_h\":\"192.168.56.10\",\"id.orig_p\":50003,\"id.resp_h\":\"192.168.56.101\",\"id.resp_p\":25,\"proto\":\"tcp\",\"service\":\"-\",\"duration\":0.1,\"orig_bytes\":60,\"resp_bytes\":0,\"conn_state\":\"S0\"}\n{\"ts\":1788775220,\"uid\":\"C05SYNTH\",\"id.orig_h\":\"192.168.56.10\",\"id.orig_p\":50004,\"id.resp_h\":\"192.168.56.101\",\"id.resp_p\":53,\"proto\":\"tcp\",\"service\":\"-\",\"duration\":0.1,\"orig_bytes\":60,\"resp_bytes\":0,\"conn_state\":\"S0\"}\n{\"ts\":1788775225,\"uid\":\"C06SYNTH\",\"id.orig_h\":\"192.168.56.10\",\"id.orig_p\":50005,\"id.resp_h\":\"192.168.56.101\",\"id.resp_p\":80,\"proto\":\"tcp\",\"service\":\"-\",\"duration\":0.1,\"orig_bytes\":60,\"resp_bytes\":0,\"conn_state\":\"S0\"}\n{\"ts\":1788775320,\"uid\":\"C99NORMAL\",\"id.orig_h\":\"192.168.56.20\",\"id.orig_p\":51000,\"id.resp_h\":\"192.168.56.101\",\"id.resp_p\":443,\"proto\":\"tcp\",\"service\":\"ssl\",\"duration\":1.2,\"orig_bytes\":400,\"resp_bytes\":1200,\"conn_state\":\"SF\"}\n"
+            },
+            {
+              "path": "tests/__init__.py",
+              "purpose": "Python test-package marker.",
+              "explanation": "Keeps the test directory importable without adding runtime behavior.",
+              "code": ""
+            },
+            {
+              "path": "tests/test_ingest.py",
+              "purpose": "Ingestion unit tests.",
+              "explanation": "Checks Suricata alert parsing, non-alert filtering, required Zeek fields, and malformed JSON handling.",
+              "code": "import tempfile\nimport unittest\nfrom pathlib import Path\n\nfrom nsm_monitor.ingest import (\n    InputFormatError,\n    parse_suricata_record,\n    parse_zeek_conn_record,\n    read_suricata,\n)\n\n\nclass IngestTests(unittest.TestCase):\n    def test_parse_suricata_alert(self):\n        record = {\n            \"timestamp\": \"2026-09-07T10:00:00.000000+0000\",\n            \"event_type\": \"alert\",\n            \"src_ip\": \"192.168.56.10\",\n            \"src_port\": 51000,\n            \"dest_ip\": \"192.168.56.101\",\n            \"dest_port\": 80,\n            \"proto\": \"TCP\",\n            \"alert\": {\"signature\": \"Synthetic\", \"severity\": 2},\n        }\n        event = parse_suricata_record(record)\n        self.assertIsNotNone(event)\n        self.assertEqual(event.source, \"suricata\")\n        self.assertEqual(event.dst_port, 80)\n        self.assertEqual(event.severity, \"2\")\n\n    def test_non_alert_suricata_record_is_ignored(self):\n        event = parse_suricata_record({\"event_type\": \"flow\", \"timestamp\": \"2026-09-07T10:00:00+0000\"})\n        self.assertIsNone(event)\n\n    def test_zeek_requires_core_fields(self):\n        with self.assertRaises(InputFormatError):\n            parse_zeek_conn_record({\"ts\": 1})\n\n    def test_jsonl_reader_rejects_invalid_json(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            path = Path(tmp) / \"bad.jsonl\"\n            path.write_text(\"{broken\\n\", encoding=\"utf-8\")\n            with self.assertRaises(InputFormatError):\n                list(read_suricata(path))\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+            },
+            {
+              "path": "tests/test_rules.py",
+              "purpose": "Detection/correlation tests.",
+              "explanation": "Checks positive and negative fan-out behavior and a time/tuple correlation case.",
+              "code": "import unittest\n\nfrom nsm_monitor.models import Event\nfrom nsm_monitor.rules import correlate_suricata_and_zeek, detect_port_fanout\n\n\ndef event(ts, src, dst, dst_port, source=\"zeek\"):\n    return Event(\n        source=source,\n        timestamp=ts,\n        event_type=\"conn\" if source == \"zeek\" else \"alert\",\n        src_ip=src,\n        src_port=50000,\n        dst_ip=dst,\n        dst_port=dst_port,\n        proto=\"tcp\",\n        signature=\"Synthetic Alert\" if source == \"suricata\" else None,\n        severity=\"2\" if source == \"suricata\" else None,\n        raw={},\n    )\n\n\nclass RuleTests(unittest.TestCase):\n    def test_port_fanout_positive(self):\n        events = [\n            event(f\"2026-09-07T10:00:{i:02d}Z\", \"192.168.56.10\", \"192.168.56.101\", p)\n            for i, p in enumerate([21, 22, 23, 25, 53])\n        ]\n        findings = detect_port_fanout(events, threshold=5, window_seconds=60)\n        self.assertEqual(len(findings), 1)\n        self.assertEqual(findings[0][\"distinct_destination_ports\"], [21, 22, 23, 25, 53])\n\n    def test_port_fanout_negative_due_to_window(self):\n        events = [\n            event(\"2026-09-07T10:00:00Z\", \"192.168.56.10\", \"192.168.56.101\", 21),\n            event(\"2026-09-07T10:02:00Z\", \"192.168.56.10\", \"192.168.56.101\", 22),\n        ]\n        findings = detect_port_fanout(events, threshold=2, window_seconds=30)\n        self.assertEqual(findings, [])\n\n    def test_correlation_matches_tuple_and_time(self):\n        alert = event(\"2026-09-07T10:00:05Z\", \"192.168.56.10\", \"192.168.56.101\", 80, \"suricata\")\n        flow = event(\"2026-09-07T10:00:10Z\", \"192.168.56.10\", \"192.168.56.101\", 80, \"zeek\")\n        result = correlate_suricata_and_zeek([alert], [flow], window_seconds=10)\n        self.assertEqual(len(result), 1)\n        self.assertEqual(len(result[0][\"matches\"]), 1)\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+            },
+            {
+              "path": "tests/test_storage.py",
+              "purpose": "Persistence tests.",
+              "explanation": "Checks schema initialization, event insertion, alert insertion, and summary counts.",
+              "code": "import tempfile\nimport unittest\nfrom pathlib import Path\n\nfrom nsm_monitor.models import Event\nfrom nsm_monitor.storage import connect, initialize, insert_alerts, insert_events, summary\n\n\nclass StorageTests(unittest.TestCase):\n    def test_initialize_and_insert(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            connection = connect(Path(tmp) / \"test.db\")\n            try:\n                initialize(connection)\n                events = [\n                    Event(\n                        source=\"zeek\",\n                        timestamp=\"2026-09-07T10:00:00Z\",\n                        event_type=\"conn\",\n                        src_ip=\"192.168.56.10\",\n                        src_port=50000,\n                        dst_ip=\"192.168.56.101\",\n                        dst_port=443,\n                        proto=\"tcp\",\n                        raw={\"id.orig_h\":\"192.168.56.10\"},\n                    )\n                ]\n                self.assertEqual(insert_events(connection, events), 1)\n                alerts = [{\n                    \"rule_id\":\"NET-SCAN-PORT-FANOUT-001\",\n                    \"severity\":\"medium\",\n                    \"source\":\"detector\",\n                    \"timestamp\":\"2026-09-07T10:00:00Z\",\n                    \"src_ip\":\"192.168.56.10\",\n                    \"dst_ip\":\"192.168.56.101\",\n                    \"distinct_destination_ports\":[21,22,23],\n                }]\n                self.assertEqual(insert_alerts(connection, alerts), 1)\n                result = summary(connection)\n                self.assertEqual(result[\"event_count\"], 1)\n                self.assertEqual(result[\"alert_count\"], 1)\n                self.assertEqual(result[\"events_by_source\"][\"zeek\"], 1)\n            finally:\n                connection.close()\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+            },
+            {
+              "path": "tests/test_report.py",
+              "purpose": "Report-generation test.",
+              "explanation": "Checks that the report contains the key analyst-facing sections and does not silently omit findings.",
+              "code": "import unittest\n\nfrom nsm_monitor.report import render_report\n\n\nclass ReportTests(unittest.TestCase):\n    def test_report_contains_key_sections(self):\n        text = render_report(\n            {\n                \"event_count\": 2,\n                \"alert_count\": 1,\n                \"events_by_source\": {\"suricata\": 1, \"zeek\": 1},\n                \"alerts_by_rule\": {\"NET-SCAN-PORT-FANOUT-001\": 1},\n            },\n            [{\n                \"rule_id\":\"NET-SCAN-PORT-FANOUT-001\",\n                \"severity\":\"medium\",\n                \"heuristic\":True,\n                \"src_ip\":\"192.168.56.10\",\n                \"dst_ip\":\"192.168.56.101\",\n                \"first_seen\":\"2026-09-07T10:00:00Z\",\n                \"last_seen\":\"2026-09-07T10:00:20Z\",\n                \"reason\":\"5 distinct destination ports observed within 60 seconds\",\n                \"distinct_destination_ports\":[21,22,23,25,53],\n            }],\n            [],\n        )\n        self.assertIn(\"# Network Security Monitoring Report\", text)\n        self.assertIn(\"NET-SCAN-PORT-FANOUT-001\", text)\n        self.assertIn(\"lab telemetry\", text.lower())\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+            }
+          ],
+          "finalProjectReviewChecklist": [
+            "Architecture matches the implemented seven-layer pipeline.",
+            "Every file in the tree is represented in fileWiseSolution.",
+            "The CLI options match the README command and implementation.",
+            "Test cases target real functions and supplied fixtures.",
+            "No network sockets, exploit logic, credential handling, or automatic remediation are implemented.",
+            "SQLite writes are parameterized.",
+            "The capstone explicitly labels detection as heuristic.",
+            "No benchmark or deployment-success claim is presented as an observed result."
+          ]
+        }
+      }
+    ],
+    "evaluation": {
+      "approach": "Evidence-based evaluation using practical deliverables, module-level tasks, technical explanations, and one final capstone.",
+      "dimensions": [
+        {
+          "name": "Technical understanding",
+          "weight": "15%",
+          "evidence": "Concept explanations, quizzes, and protocol reasoning."
+        },
+        {
+          "name": "Practical execution",
+          "weight": "20%",
+          "evidence": "Completed lab practicals and reproducible command/output evidence."
+        },
+        {
+          "name": "Module engineering tasks",
+          "weight": "20%",
+          "evidence": "Completed module tasks with working solutions and explanations."
+        },
+        {
+          "name": "Network-analysis judgment",
+          "weight": "15%",
+          "evidence": "Packet, scan, telemetry, and incident-triage reasoning."
+        },
+        {
+          "name": "Security and safety",
+          "weight": "10%",
+          "evidence": "Authorization boundaries, evidence handling, secure configuration, and logging discipline."
+        },
+        {
+          "name": "Code quality and testing",
+          "weight": "10%",
+          "evidence": "Capstone structure, tests, error handling, and review checklist."
+        },
+        {
+          "name": "Documentation and communication",
+          "weight": "10%",
+          "evidence": "Investigation notes, design records, README, and final explanation."
+        }
+      ],
+      "finalEvaluation": "The intern passes the final evaluation when they can independently explain the network-security reasoning behind the capstone, run its tests, interpret its findings as evidence rather than certainty, identify limitations, and defend the security/engineering decisions in a technical review.",
+      "integrityNote": "Completion of this internship does not guarantee employment, certification, accreditation, or permission to assess networks without explicit authorization."
+    },
+    "researchMethod": {
+      "status": "Completed",
+      "date": "2026-09-08",
+      "sourcePolicy": "Primary/official standards and project documentation were prioritized; current protocol/security references were checked where version or status matters.",
+      "importantCurrentNote": "TLS guidance uses RFC 9846, the current RFC for TLS 1.3, rather than the obsoleted RFC 8446. Incident-response guidance uses NIST SP 800-61 Rev. 3 rather than the withdrawn Rev. 2."
+    },
+    "resources": [
+      {
+        "title": "NIST Cybersecurity Framework (CSF) 2.0",
+        "publisher": "National Institute of Standards and Technology",
+        "url": {
+          "title": "The NIST Cybersecurity Framework (CSF) 2.0",
+          "publisher": "National Institute of Standards and Technology",
+          "url": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20",
+          "why": "Uses the current CSF 2.0 outcomes model as the internship's risk-management anchor."
+        },
+        "scope": "Risk-management context for network-security outcomes."
+      },
+      {
+        "title": "SP 800-115: Technical Guide to Information Security Testing and Assessment",
+        "publisher": "National Institute of Standards and Technology",
+        "url": {
+          "title": "SP 800-115, Technical Guide to Information Security Testing and Assessment",
+          "publisher": "National Institute of Standards and Technology",
+          "url": "https://csrc.nist.gov/pubs/sp/800/115/final",
+          "why": "Provides the testing/assessment concepts used for authorized network discovery and security assessment work."
+        },
+        "scope": "Authorized assessment methodology and rules-of-engagement context."
+      },
+      {
+        "title": "CIS Controls v8.1",
+        "publisher": "Center for Internet Security",
+        "url": {
+          "title": "CIS Critical Security Controls Version 8.1",
+          "publisher": "Center for Internet Security",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "why": "Provides the current v8.1 control context and alignment with NIST CSF 2.0."
+        },
+        "scope": "Current control framework reference."
+      },
+      {
+        "title": "CIS Control 12: Network Infrastructure Management",
+        "publisher": "Center for Internet Security",
+        "url": {
+          "title": "CIS Critical Security Control 12: Network Infrastructure Management",
+          "publisher": "Center for Internet Security",
+          "url": "https://www.cisecurity.org/controls/network-infrastructure-management",
+          "why": "Anchors asset inventory, secure network architecture, and infrastructure management."
+        },
+        "scope": "Network infrastructure inventory and management."
+      },
+      {
+        "title": "CIS Control 13: Network Monitoring and Defense",
+        "publisher": "Center for Internet Security",
+        "url": {
+          "title": "CIS Critical Security Control 13: Network Monitoring and Defense",
+          "publisher": "Center for Internet Security",
+          "url": "https://www.cisecurity.org/controls/network-monitoring-and-defense",
+          "why": "Anchors network monitoring, detection, and defense practices."
+        },
+        "scope": "Network monitoring, detection, and defense."
+      },
+      {
+        "title": "RFC 9293: Transmission Control Protocol (TCP)",
+        "publisher": "RFC Editor / IETF",
+        "url": {
+          "title": "RFC 9293: Transmission Control Protocol (TCP)",
+          "publisher": "IETF RFC Editor",
+          "url": "https://www.rfc-editor.org/rfc/rfc9293.html",
+          "why": "Primary specification for TCP behavior and terminology."
+        },
+        "scope": "Current TCP specification used for protocol foundations."
+      },
+      {
+        "title": "RFC 1034: Domain Names — Concepts and Facilities",
+        "publisher": "RFC Editor / IETF",
+        "url": {
+          "title": "RFC 1034: Domain Names — Concepts and Facilities",
+          "publisher": "IETF RFC Editor",
+          "url": "https://www.rfc-editor.org/rfc/rfc1034.html",
+          "why": "Foundational DNS architecture and terminology."
+        },
+        "scope": "DNS architecture and concepts."
+      },
+      {
+        "title": "RFC 1035: Domain Names — Implementation and Specification",
+        "publisher": "RFC Editor / IETF",
+        "url": {
+          "title": "RFC 1035: Domain Names — Implementation and Specification",
+          "publisher": "IETF RFC Editor",
+          "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+          "why": "DNS message and implementation details."
+        },
+        "scope": "DNS message and implementation detail."
+      },
+      {
+        "title": "RFC 2131: Dynamic Host Configuration Protocol",
+        "publisher": "RFC Editor / IETF",
+        "url": {
+          "title": "RFC 2131: Dynamic Host Configuration Protocol",
+          "publisher": "IETF RFC Editor",
+          "url": "https://www.rfc-editor.org/rfc/rfc2131.html",
+          "why": "Primary DHCP protocol specification."
+        },
+        "scope": "DHCP protocol behavior."
+      },
+      {
+        "title": "RFC 9846: The Transport Layer Security (TLS) Protocol Version 1.3",
+        "publisher": "RFC Editor / IETF",
+        "url": {
+          "title": "RFC 9846: The Transport Layer Security (TLS) Protocol Version 1.3",
+          "publisher": "IETF RFC Editor",
+          "url": "https://www.rfc-editor.org/info/rfc9846",
+          "why": "Current TLS 1.3 specification as of this internship's research date; it obsoletes RFC 8446."
+        },
+        "scope": "Current TLS 1.3 protocol specification."
+      },
+      {
+        "title": "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport",
+        "publisher": "RFC Editor / IETF",
+        "url": {
+          "title": "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport",
+          "publisher": "IETF RFC Editor",
+          "url": "https://www.rfc-editor.org/rfc/rfc9000.html",
+          "why": "Introduces QUIC's transport and security characteristics relevant to modern traffic analysis."
+        },
+        "scope": "QUIC transport concepts."
+      },
+      {
+        "title": "IANA Service Name and Port Number Registry",
+        "publisher": "Internet Assigned Numbers Authority",
+        "url": {
+          "title": "Service Name and Transport Protocol Port Number Registry",
+          "publisher": "IANA",
+          "url": "https://www.iana.org/assignments/service-names-port-numbers",
+          "why": "Authoritative registry for service names and assigned transport ports."
+        },
+        "scope": "Authoritative port/service assignments."
+      },
+      {
+        "title": "Wireshark User's Guide",
+        "publisher": "Wireshark Foundation",
+        "url": {
+          "title": "Wireshark User's Guide",
+          "publisher": "Wireshark Foundation / Wireshark Project",
+          "url": "https://www.wireshark.org/docs/wsug_html/",
+          "why": "Official packet-analysis and display-filter reference."
+        },
+        "scope": "Packet-capture analysis workflow."
+      },
+      {
+        "title": "Wireshark Display Filter Reference",
+        "publisher": "Wireshark Foundation",
+        "url": {
+          "title": "wireshark-filter(4)",
+          "publisher": "Wireshark Project",
+          "url": "https://www.wireshark.org/docs/man-pages/wireshark-filter.html",
+          "why": "Precise display-filter syntax and semantics."
+        },
+        "scope": "Display-filter syntax and semantics."
+      },
+      {
+        "title": "Nmap Reference Guide",
+        "publisher": "Nmap Project",
+        "url": {
+          "title": "Nmap Reference Guide",
+          "publisher": "Nmap Project",
+          "url": "https://nmap.org/book/man.html",
+          "why": "Authoritative Nmap scanning and service-detection reference."
+        },
+        "scope": "Authorized network discovery and scan-result interpretation."
+      },
+      {
+        "title": "Nmap Network Scanning",
+        "publisher": "Nmap Project",
+        "url": {
+          "title": "Nmap Network Scanning — Official Nmap Project Guide",
+          "publisher": "Nmap Project",
+          "url": "https://nmap.org/book/",
+          "why": "Detailed official material on discovery and security scanning."
+        },
+        "scope": "Detailed Nmap reference and methodology."
+      },
+      {
+        "title": "Suricata EVE JSON Output",
+        "publisher": "Suricata Project",
+        "url": {
+          "title": "Suricata 8.0.4 — EVE JSON Output",
+          "publisher": "Suricata Project",
+          "url": "https://docs.suricata.io/en/suricata-8.0.4/output/eve/eve-json-output.html",
+          "why": "Documents EVE JSON output used by the capstone ingestion pipeline."
+        },
+        "scope": "Structured IDS/NSM telemetry format."
+      },
+      {
+        "title": "Suricata EVE JSON Format",
+        "publisher": "Suricata Project",
+        "url": {
+          "title": "Suricata 8.0.0 — EVE JSON Format",
+          "publisher": "Suricata Project",
+          "url": "https://docs.suricata.io/en/suricata-8.0.0/output/eve/eve-json-format.html",
+          "why": "Documents common Suricata EVE event fields and alert structure."
+        },
+        "scope": "Field-level EVE JSON format reference."
+      },
+      {
+        "title": "Zeek Tutorial: Logs",
+        "publisher": "Zeek Project",
+        "url": {
+          "title": "Book of Zeek — Logs",
+          "publisher": "Zeek Project",
+          "url": "https://docs.zeek.org/en/master/tutorial/logs.html",
+          "why": "Documents JSON logs and core network telemetry such as conn.log."
+        },
+        "scope": "Network telemetry and JSON log concepts."
+      },
+      {
+        "title": "Zeek conn.log Reference",
+        "publisher": "Zeek Project",
+        "url": {
+          "title": "Zeek conn.log Reference",
+          "publisher": "Zeek Project",
+          "url": "https://docs.zeek.org/en/current/reference/logs/conn.html",
+          "why": "Defines connection-log fields used in normalization and correlation."
+        },
+        "scope": "Connection telemetry consumed by the capstone."
+      },
+      {
+        "title": "Zeek dns.log Reference",
+        "publisher": "Zeek Project",
+        "url": {
+          "title": "Zeek dns.log Reference",
+          "publisher": "Zeek Project",
+          "url": "https://docs.zeek.org/en/current/reference/logs/dns.html",
+          "why": "Documents DNS telemetry useful for network-security analysis."
+        },
+        "scope": "DNS telemetry for protocol analysis lessons."
+      },
+      {
+        "title": "tcpdump manual page",
+        "publisher": "Linux man-pages Project",
+        "url": {
+          "title": "tcpdump(8) Manual",
+          "publisher": "tcpdump Project / Linux man-pages",
+          "url": "https://www.man7.org/linux/man-pages/man8/tcpdump.8.html",
+          "why": "Authoritative reference for command-line packet capture and reading."
+        },
+        "scope": "Command-line capture and filtering context."
+      },
+      {
+        "title": "ip command manual page",
+        "publisher": "Linux man-pages Project",
+        "url": {
+          "title": "ip(8) Linux Manual Page",
+          "publisher": "Linux / iproute2",
+          "url": "https://man7.org/linux/man-pages/man8/ip.8.html",
+          "why": "Reference for Linux interfaces, addresses, routes, namespaces, and related network state."
+        },
+        "scope": "Linux interface, address, route, and namespace administration."
+      },
+      {
+        "title": "nftables Wiki",
+        "publisher": "The nftables project",
+        "url": {
+          "title": "nftables Wiki",
+          "publisher": "Netfilter Project",
+          "url": "https://wiki.nftables.org/wiki-nftables/index.php/Main_Page",
+          "why": "Official documentation for Linux packet filtering with nftables."
+        },
+        "scope": "Linux packet-filtering concepts and configuration reference."
+      },
+      {
+        "title": "OWASP Logging Cheat Sheet",
+        "publisher": "OWASP",
+        "url": {
+          "title": "OWASP Logging Cheat Sheet",
+          "publisher": "OWASP",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+          "why": "Security logging guidance, especially around sensitive data, integrity, and operational monitoring."
+        },
+        "scope": "Secure logging and sensitive-data handling."
+      },
+      {
+        "title": "NIST SP 800-92: Guide to Computer Security Log Management",
+        "publisher": "National Institute of Standards and Technology",
+        "url": {
+          "title": "SP 800-92, Guide to Computer Security Log Management",
+          "publisher": "National Institute of Standards and Technology",
+          "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+          "why": "Log-management lifecycle and operational guidance."
+        },
+        "scope": "Log-management lifecycle and operational guidance."
+      },
+      {
+        "title": "NIST SP 800-61 Rev. 3: Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+        "publisher": "National Institute of Standards and Technology",
+        "url": {
+          "title": "SP 800-61 Rev. 3, Incident Response Recommendations and Considerations for Cybersecurity Risk Management",
+          "publisher": "National Institute of Standards and Technology",
+          "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+          "why": "Current NIST incident-response guidance; supersedes Rev. 2."
+        },
+        "scope": "Current incident-response guidance."
+      },
+      {
+        "title": "Python json documentation",
+        "publisher": "Python Software Foundation",
+        "url": {
+          "title": "Python 3 json — JSON encoder and decoder",
+          "publisher": "Python Software Foundation",
+          "url": "https://docs.python.org/3/library/json.html",
+          "why": "Standard-library JSON processing used by the capstone."
+        },
+        "scope": "JSON parsing behavior used in the capstone."
+      },
+      {
+        "title": "Python sqlite3 documentation",
+        "publisher": "Python Software Foundation",
+        "url": {
+          "title": "Python 3 sqlite3 — DB-API 2.0 interface for SQLite",
+          "publisher": "Python Software Foundation",
+          "url": "https://docs.python.org/3/library/sqlite3.html",
+          "why": "Standard-library persistence layer used by the capstone."
+        },
+        "scope": "SQLite persistence API."
+      },
+      {
+        "title": "Python logging documentation",
+        "publisher": "Python Software Foundation",
+        "url": {
+          "title": "Python 3 logging — Logging facility for Python",
+          "publisher": "Python Software Foundation",
+          "url": "https://docs.python.org/3/library/logging.html",
+          "why": "Structured application logging guidance for the capstone."
+        },
+        "scope": "Application logging facilities."
+      },
+      {
+        "title": "Python unittest documentation",
+        "publisher": "Python Software Foundation",
+        "url": {
+          "title": "Python 3 unittest — Unit testing framework",
+          "publisher": "Python Software Foundation",
+          "url": "https://docs.python.org/3/library/unittest.html",
+          "why": "Standard-library test framework used for reproducible project tests."
+        },
+        "scope": "Automated unit testing."
+      },
+      {
+        "title": "Python pathlib documentation",
+        "publisher": "Python Software Foundation",
+        "url": {
+          "title": "Python 3 pathlib — Object-oriented filesystem paths",
+          "publisher": "Python Software Foundation",
+          "url": "https://docs.python.org/3.14/library/pathlib.html",
+          "why": "Safe, portable filesystem operations used by the capstone CLI/report path handling."
+        },
+        "scope": "Filesystem-path handling."
+      }
+    ]
+  },
+  "schemaVersion": "1.0.0"
+}

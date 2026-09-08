@@ -1,0 +1,2082 @@
+{
+  "course": {
+    "id": "mitre-attack",
+    "title": "MITRE ATT&CK",
+    "slug": "mitre-attack",
+    "description": "A practical, research-driven course on the MITRE ATT&CK knowledge base and its operational use. It teaches the current ATT&CK hierarchy, domains, CTI objects, evidence-backed mapping, Navigator, modern Detection Strategies and Analytics, Data Components, threat hunting, STIX 2.1 automation, adversary emulation, purple-team validation, version management, and a defensive capstone. The course emphasizes reproducibility, provenance, safe authorized labs, and meaningful defensive outcomes rather than checklist completion.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 46,
+    "prerequisites": [
+      "Basic cybersecurity concepts and common attack/defense terminology.",
+      "Basic Windows/Linux process, authentication, networking, and log knowledge.",
+      "Ability to read JSON and use a command line.",
+      "Python 3 fundamentals recommended for automation and the capstone."
+    ],
+    "learningOutcomes": [
+      "Explain tactics, techniques, sub-techniques, domains, platforms, and major ATT&CK CTI objects.",
+      "Map observed behavior to ATT&CK with evidence, confidence, and provenance.",
+      "Create and interpret Navigator layers for threat intelligence and defensive coverage.",
+      "Use Detection Strategies, Analytics, and Data Components in current ATT&CK defensive workflows.",
+      "Design ATT&CK-aligned threat-hunting hypotheses and validation plans.",
+      "Query ATT&CK as STIX 2.1 data and resolve relationships programmatically.",
+      "Manage ATT&CK versions and translate legacy terminology into current concepts.",
+      "Design safe adversary-emulation and purple-team validation exercises.",
+      "Build and audit a reproducible ATT&CK automation workflow."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "ATT&CK Foundations and Scope",
+        "description": "Build a precise model of ATT&CK, its hierarchy, domains, platforms, and release lifecycle.",
+        "lessons": [
+          {
+            "id": "l01",
+            "title": "What ATT&CK Is",
+            "description": "ATT&CK is a knowledge base of adversary behavior based on real-world observations.",
+            "learningObjectives": [
+              "explain ATT&CK purpose",
+              "distinguish behavior from a linear attack checklist",
+              "describe defensive and CTI uses"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ATT&CK categorizes adversary behavior. It is not a mandatory checklist and does not claim to capture every possible behavior."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Tactics describe why an adversary acts.",
+                  "Techniques and sub-techniques describe how behavior achieves an objective.",
+                  "Local evidence remains necessary for incident conclusions."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p01",
+                "title": "Classify ATT&CK layers",
+                "description": "Separate objective, behavior, and implementation context.",
+                "steps": [
+                  "Classify “obtain credentials”, “credential dumping”, and a named tool.",
+                  "Explain the distinction."
+                ],
+                "solution": "Objective is tactic-level; credential dumping is behavior; the named tool is software/context. Verify exact IDs in the current catalog.",
+                "output": "Three-layer classification."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-does-a-tactic-repre",
+              "question": "What does a tactic represent?",
+              "options": [
+                "Why",
+                "How",
+                "Which tool",
+                "Which log"
+              ],
+              "answer": "Why",
+              "explanation": "A tactic is the adversary objective or reason."
+            },
+            "summary": [
+              "ATT&CK is a behavior knowledge base, not a complete attack lifecycle."
+            ],
+            "resources": [
+              {
+                "title": "start",
+                "url": "https://attack.mitre.org/resources/",
+                "type": "official"
+              },
+              {
+                "title": "design",
+                "url": "https://attack.mitre.org/docs/ATTACK_Design_and_Philosophy_March_2020.pdf",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l02",
+            "title": "Tactics, Techniques, Sub-Techniques",
+            "description": "Learn ATT&CK hierarchy and evidence-driven specificity.",
+            "learningObjectives": [
+              "differentiate tactics, techniques and sub-techniques",
+              "choose defensible mappings",
+              "record uncertainty"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Tactics are the why; techniques are the how; sub-techniques refine a parent behavior. A technique may support multiple tactical objectives."
+              },
+              {
+                "type": "warning",
+                "text": "Do not choose a sub-technique merely because it is familiar. Specificity must be supported by evidence."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p02",
+                "title": "Map an incident fragment",
+                "description": "Map a short behavior description to a current technique.",
+                "steps": [
+                  "Extract observable behavior.",
+                  "Search the live ATT&CK catalog.",
+                  "Record ID, rationale, evidence, and confidence."
+                ],
+                "solution": "Select the narrowest mapping supported by the evidence and explicitly reject unsupported specificity.",
+                "output": "Evidence-backed mapping table."
+              }
+            ],
+            "quiz": {
+              "id": "q-which-is-most-specific?",
+              "question": "Which is most specific?",
+              "options": [
+                "Tactic",
+                "Technique",
+                "Sub-technique",
+                "Domain"
+              ],
+              "answer": "Sub-technique",
+              "explanation": "A sub-technique refines a parent technique."
+            },
+            "summary": [
+              "Precision should follow evidence."
+            ],
+            "resources": [
+              {
+                "title": "start",
+                "url": "https://attack.mitre.org/resources/",
+                "type": "official"
+              },
+              {
+                "title": "design",
+                "url": "https://attack.mitre.org/docs/ATTACK_Design_and_Philosophy_March_2020.pdf",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l03",
+            "title": "Domains, Platforms, and Matrices",
+            "description": "Scope analysis correctly across Enterprise, Mobile, and ICS.",
+            "learningObjectives": [
+              "identify major ATT&CK domains",
+              "explain platform applicability",
+              "select the correct matrix"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ATT&CK maintains Enterprise, Mobile, and ICS domains. Enterprise includes traditional enterprise and cloud technologies; Mobile covers Android/iOS; ICS models industrial-control behavior."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p03",
+                "title": "Select the domain",
+                "description": "Classify Windows enterprise, Android, and industrial-control scenarios.",
+                "steps": [
+                  "Assign each domain.",
+                  "Verify against current matrices."
+                ],
+                "solution": "Windows enterprise → Enterprise; Android → Mobile; industrial control → ICS.",
+                "output": "Three verified domain selections."
+              }
+            ],
+            "quiz": {
+              "id": "q-which-domain-covers-indu",
+              "question": "Which domain covers industrial control systems?",
+              "options": [
+                "Enterprise",
+                "Mobile",
+                "ICS",
+                "Cloud"
+              ],
+              "answer": "ICS",
+              "explanation": "ICS is the industrial control systems domain."
+            },
+            "summary": [
+              "Domain selection affects applicability and interpretation."
+            ],
+            "resources": [
+              {
+                "title": "mat",
+                "url": "https://attack.mitre.org/matrices/",
+                "type": "official"
+              },
+              {
+                "title": "design",
+                "url": "https://attack.mitre.org/docs/ATTACK_Design_and_Philosophy_March_2020.pdf",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l04",
+            "title": "Versions and Change Management",
+            "description": "Make ATT&CK analyses reproducible as the catalog evolves.",
+            "learningObjectives": [
+              "identify the current release",
+              "explain why mappings can change",
+              "record release and retrieval context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE lists v19.2 as the current ATT&CK release as of September 2026. The August 2026 Agile release updated Groups and Software for Enterprise."
+              },
+              {
+                "type": "warning",
+                "text": "Historical counts and structures must not be presented as current without checking the release."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04",
+                "title": "Pin an ATT&CK version",
+                "description": "Create a reproducibility header.",
+                "steps": [
+                  "Record version, domain, retrieval date, and source.",
+                  "Explain why an older release may be required for a historical case."
+                ],
+                "solution": "Example: attack_version=v19.2; domain=Enterprise; retrieved=2026-09-07; source=attack.mitre.org.",
+                "output": "Reproducible analysis header."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-record-att&ck-versio",
+              "question": "Why record ATT&CK version?",
+              "options": [
+                "Content evolves",
+                "IDs are passwords",
+                "Navigator needs payment",
+                "Techniques never change"
+              ],
+              "answer": "Content evolves",
+              "explanation": "ATT&CK content and structure are maintained over time."
+            },
+            "summary": [
+              "Version pinning prevents silent semantic drift."
+            ],
+            "resources": [
+              {
+                "title": "versions",
+                "url": "https://attack.mitre.org/resources/versions/",
+                "type": "official"
+              },
+              {
+                "title": "updates",
+                "url": "https://attack.mitre.org/resources/updates/",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-02",
+        "title": "ATT&CK Objects and CTI Mapping",
+        "description": "Read technique pages and relate Groups, Software, Campaigns, Mitigations, and evidence.",
+        "lessons": [
+          {
+            "id": "l05",
+            "title": "Reading a Technique Page",
+            "description": "Extract operationally useful information from a technique page.",
+            "learningObjectives": [
+              "identify description, platforms, procedures, relationships",
+              "distinguish examples from universal behavior",
+              "capture provenance"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Inspect description, tactics, platforms, procedure examples, mitigations, detection content, and references.",
+                  "Procedure examples connect documented behavior to named groups/software.",
+                  "References provide provenance."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p05",
+                "title": "Technique worksheet",
+                "description": "Analyze one current Enterprise technique.",
+                "steps": [
+                  "Record ID, tactics, platforms, description, procedure examples, references.",
+                  "State what local evidence would support it."
+                ],
+                "solution": "Use the live page and preserve its references.",
+                "output": "Completed technique worksheet."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-do-procedure-exampl",
+              "question": "What do procedure examples provide?",
+              "options": [
+                "Concrete observed uses",
+                "Proof of compromise",
+                "Exploit code",
+                "Passwords"
+              ],
+              "answer": "Concrete observed uses",
+              "explanation": "They connect behavior to documented group/software activity."
+            },
+            "summary": [
+              "Technique pages are research starting points, not substitutes for local evidence."
+            ],
+            "resources": [
+              {
+                "title": "main",
+                "url": "https://attack.mitre.org/",
+                "type": "official"
+              },
+              {
+                "title": "cti",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/cti/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l06",
+            "title": "Groups, Software, and Campaigns",
+            "description": "Use CTI objects and relationships without overclaiming attribution.",
+            "learningObjectives": [
+              "distinguish Group, Software, Campaign",
+              "trace relationships",
+              "avoid treating associations as proof"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Groups, Software, and Campaigns are CTI objects connected by ATT&CK relationships. A documented relationship is not automatic proof of attribution in a new incident."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p06",
+                "title": "Trace a group",
+                "description": "Trace one group to techniques and software.",
+                "steps": [
+                  "Select a current group.",
+                  "Record three technique relationships and one software relationship.",
+                  "Write what the relationships do and do not prove."
+                ],
+                "solution": "Use the current group page and relationship evidence.",
+                "output": "A relationship table with provenance."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-does-a-group-techni",
+              "question": "What does a group-technique relationship provide?",
+              "options": [
+                "Documented association",
+                "Proof of current compromise",
+                "Vulnerability score",
+                "License"
+              ],
+              "answer": "Documented association",
+              "explanation": "It encodes documented knowledge, not current compromise."
+            },
+            "summary": [
+              "Use group relationships to form hypotheses, not shortcut attribution."
+            ],
+            "resources": [
+              {
+                "title": "main",
+                "url": "https://attack.mitre.org/",
+                "type": "official"
+              },
+              {
+                "title": "cti",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/cti/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l07",
+            "title": "Mitigations and Defensive Interpretation",
+            "description": "Use mitigations as risk-reduction guidance.",
+            "learningObjectives": [
+              "explain mitigations",
+              "connect controls to behaviors",
+              "identify residual risk"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Mitigations are defensive measures intended to reduce the opportunity or effectiveness of techniques. They are distinct from detections."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p07",
+                "title": "Rank mitigations",
+                "description": "Select a technique and rank associated mitigations.",
+                "steps": [
+                  "Read current mitigation relationships.",
+                  "Rank by feasibility for a hypothetical organization.",
+                  "State residual risk."
+                ],
+                "solution": "Use current ATT&CK relationships and justify local ranking; ATT&CK does not provide a universal priority.",
+                "output": "Ranked mitigation plan."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-is-a-mitigation?",
+              "question": "What is a mitigation?",
+              "options": [
+                "Defensive risk-reduction action",
+                "Threat actor",
+                "STIX relationship",
+                "Payload"
+              ],
+              "answer": "Defensive risk-reduction action",
+              "explanation": "Mitigations describe defensive measures."
+            },
+            "summary": [
+              "ATT&CK informs controls; local architecture determines priority."
+            ],
+            "resources": [
+              {
+                "title": "main",
+                "url": "https://attack.mitre.org/",
+                "type": "official"
+              },
+              {
+                "title": "start",
+                "url": "https://attack.mitre.org/resources/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l08",
+            "title": "Evidence-First Mapping",
+            "description": "Map reports without inventing specificity.",
+            "learningObjectives": [
+              "extract behavior",
+              "separate observation from inference",
+              "assign confidence and citations"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Extract exact behavior.",
+                  "Identify action/object.",
+                  "Find candidates.",
+                  "Compare definitions.",
+                  "Record evidence and uncertainty."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p08",
+                "title": "Map a narrative",
+                "description": "Map a controlled incident narrative.",
+                "steps": [
+                  "Create one row per observable behavior.",
+                  "Select defensible techniques.",
+                  "Add confidence and evidence pointer.",
+                  "Reject unsupported mappings."
+                ],
+                "solution": "Only accept mappings supported by the narrative; preserve rejected hypotheses separately.",
+                "output": "Defensible mapping table."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-if-evidence-only-su",
+              "question": "What if evidence only supports a broad technique?",
+              "options": [
+                "Record broad mapping and uncertainty",
+                "Invent sub-technique",
+                "Assume common sub-technique",
+                "Omit evidence"
+              ],
+              "answer": "Record broad mapping and uncertainty",
+              "explanation": "Specificity should follow evidence."
+            },
+            "summary": [
+              "Good mapping is evidence-led, not box-filling."
+            ],
+            "resources": [
+              {
+                "title": "cti",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/cti/",
+                "type": "official"
+              },
+              {
+                "title": "fund",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/attack-fundamentals/",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t02",
+            "title": "Evidence-Backed ATT&CK Mapping",
+            "level": "Intermediate",
+            "description": "Map a supplied incident narrative with evidence and confidence.",
+            "problemStatement": "Produce behavior, ATT&CK ID, rationale, confidence, evidence, and source URL for each defensible mapping.",
+            "objectives": [
+              "extract behaviors",
+              "map precisely",
+              "preserve provenance",
+              "reject unsupported assumptions"
+            ],
+            "requirements": [
+              "Browser",
+              "Current ATT&CK site"
+            ],
+            "hint": "Start from the behavior verb and object, not the malware name.",
+            "solutionCode": "Use a table or JSON with behavior, attack_id, rationale, confidence, evidence, source_url.",
+            "solutionExplanation": "The solution demonstrates evidence traceability and explicit uncertainty."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "ATT&CK Navigator and Coverage",
+        "description": "Operationalize ATT&CK through layers, coverage definitions, and gap analysis.",
+        "lessons": [
+          {
+            "id": "l09",
+            "title": "Navigator Fundamentals",
+            "description": "Create and interpret ATT&CK Navigator layers.",
+            "learningObjectives": [
+              "explain layers",
+              "annotate techniques",
+              "avoid treating colors as proof"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Navigator provides custom views and annotations of ATT&CK matrices for defensive coverage, threat intelligence, planning, and other uses."
+              },
+              {
+                "type": "warning",
+                "text": "A colored cell is an annotation, not evidence that a technique occurred or is fully detected."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p09",
+                "title": "Create an investigation layer",
+                "description": "Build a small evidence layer.",
+                "steps": [
+                  "Select Enterprise domain.",
+                  "Add three evidence-supported techniques.",
+                  "Add comments/confidence.",
+                  "Export and reload."
+                ],
+                "solution": "Use the current Navigator UI and its current layer format.",
+                "output": "Reloadable annotated layer."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-is-a-navigator-laye",
+              "question": "What is a Navigator layer?",
+              "options": [
+                "Custom ATT&CK view",
+                "Malware",
+                "Detection rule",
+                "STIX identity"
+              ],
+              "answer": "Custom ATT&CK view",
+              "explanation": "Layers are custom views/annotations."
+            },
+            "summary": [
+              "Navigator is a communication artifact; rationale remains essential."
+            ],
+            "resources": [
+              {
+                "title": "nav",
+                "url": "https://github.com/mitre-attack/attack-navigator",
+                "type": "official"
+              },
+              {
+                "title": "start",
+                "url": "https://attack.mitre.org/resources/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l10",
+            "title": "Coverage and Gap Analysis",
+            "description": "Define meaningful coverage instead of chasing 100 percent.",
+            "learningObjectives": [
+              "define visibility/detection/prevention/response coverage",
+              "prioritize gaps",
+              "document assumptions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Coverage must have a definition.",
+                  "ATT&CK advises against treating 100% coverage as the universal goal.",
+                  "Prioritize relevant threats and platforms."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p10",
+                "title": "Build a coverage scorecard",
+                "description": "Score ten techniques across capability states.",
+                "steps": [
+                  "Define states.",
+                  "Score each technique.",
+                  "Rank gaps by relevance.",
+                  "Document assumptions."
+                ],
+                "solution": "Use a transparent state model such as no telemetry, telemetry only, analytic tested, response tested.",
+                "output": "Prioritized gap list."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-not-chase-100%?",
+              "question": "Why not chase 100%?",
+              "options": [
+                "Organizations have different threats",
+                "ATT&CK has no techniques",
+                "Navigator cannot color",
+                "Coverage is impossible"
+              ],
+              "answer": "Organizations have different threats",
+              "explanation": "MITRE recommends prioritizing relevant techniques."
+            },
+            "summary": [
+              "Coverage metrics are useful only when the capability being measured is explicit."
+            ],
+            "resources": [
+              {
+                "title": "start",
+                "url": "https://attack.mitre.org/resources/",
+                "type": "official"
+              },
+              {
+                "title": "nav",
+                "url": "https://github.com/mitre-attack/attack-navigator",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l11",
+            "title": "Threat Intelligence Layers",
+            "description": "Compare adversary profiles visually.",
+            "learningObjectives": [
+              "create comparative layers",
+              "annotate evidence",
+              "communicate overlaps and differences"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Navigator can visualize techniques associated with groups or campaigns. Comparisons should preserve source and time context."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p11",
+                "title": "Compare two groups",
+                "description": "Compare two documented groups.",
+                "steps": [
+                  "Select two current groups.",
+                  "Record technique sets.",
+                  "Create layers.",
+                  "Identify overlaps and unique behaviors."
+                ],
+                "solution": "Use current group pages; overlap does not prove collaboration.",
+                "output": "Two layers and analytical comparison."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-can-layer-compariso",
+              "question": "What can layer comparison show?",
+              "options": [
+                "Behavioral overlap/difference",
+                "Identity proof",
+                "Passwords",
+                "Exploitability score"
+              ],
+              "answer": "Behavioral overlap/difference",
+              "explanation": "It supports comparison, not attribution proof."
+            },
+            "summary": [
+              "Layer comparison is useful for communicating threat hypotheses."
+            ],
+            "resources": [
+              {
+                "title": "nav",
+                "url": "https://github.com/mitre-attack/attack-navigator",
+                "type": "official"
+              },
+              {
+                "title": "cti",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/cti/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l12",
+            "title": "Layer JSON and Reproducibility",
+            "description": "Treat Navigator layers as auditable data artifacts.",
+            "learningObjectives": [
+              "inspect JSON",
+              "record version/domain metadata",
+              "avoid sensitive information"
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Do not place secrets or unnecessary sensitive incident data into shareable layers."
+              },
+              {
+                "type": "paragraph",
+                "text": "Layer schemas can evolve. Inspect the current Navigator documentation/template before generating production layers programmatically."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p12",
+                "title": "Inspect a layer",
+                "description": "Review an exported Navigator layer.",
+                "steps": [
+                  "Locate metadata.",
+                  "Locate technique entries.",
+                  "Identify comments/scores.",
+                  "Reload the unchanged layer."
+                ],
+                "solution": "Compare the exported structure with the current Navigator documentation.",
+                "output": "Reproducible layer review."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-record-layer-context",
+              "question": "Why record layer context?",
+              "options": [
+                "For reproducibility",
+                "For authentication",
+                "For encryption",
+                "For firewalling"
+              ],
+              "answer": "For reproducibility",
+              "explanation": "Version/domain context makes layers interpretable."
+            },
+            "summary": [
+              "Shareable layers should be reproducible and appropriately sanitized."
+            ],
+            "resources": [
+              {
+                "title": "nav",
+                "url": "https://github.com/mitre-attack/attack-navigator",
+                "type": "official"
+              },
+              {
+                "title": "versions",
+                "url": "https://attack.mitre.org/resources/versions/",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-04",
+        "title": "Detection Engineering with ATT&CK",
+        "description": "Use the modern defensive model of Detection Strategies, Analytics, and Data Components.",
+        "lessons": [
+          {
+            "id": "l13",
+            "title": "Detection Strategies and Analytics",
+            "description": "Understand the defensive model introduced in v18.",
+            "learningObjectives": [
+              "distinguish strategies and analytics",
+              "explain the v18 change",
+              "relate detection logic to telemetry"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ATT&CK v18 replaced technique-level detection content with Detection Strategies and Analytics and deprecated Data Sources as the primary defensive model."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Detection Strategies organize high-level methodologies.",
+                  "Analytics provide more specific detection logic.",
+                  "Data Components express relevant telemetry properties."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p13",
+                "title": "Trace a detection strategy",
+                "description": "Follow a strategy to analytics and data components.",
+                "steps": [
+                  "Choose a current Enterprise strategy.",
+                  "Record linked analytics.",
+                  "Record required data components.",
+                  "Describe one telemetry gap."
+                ],
+                "solution": "Use live relationships and cite exact object pages.",
+                "output": "Strategy → analytics → data components → gap."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-does-a-detection-st",
+              "question": "What does a Detection Strategy do?",
+              "options": [
+                "Organizes detection analytics",
+                "Defines malware",
+                "Defines a tactic",
+                "Defines a vulnerability"
+              ],
+              "answer": "Organizes detection analytics",
+              "explanation": "Strategies are high-level detection approaches."
+            },
+            "summary": [
+              "Current defensive work should use the current detection model."
+            ],
+            "resources": [
+              {
+                "title": "detect",
+                "url": "https://attack.mitre.org/detectionstrategies/",
+                "type": "official"
+              },
+              {
+                "title": "updates",
+                "url": "https://attack.mitre.org/resources/updates/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l14",
+            "title": "Data Components and Telemetry",
+            "description": "Translate defensive requirements into concrete telemetry.",
+            "learningObjectives": [
+              "identify data components",
+              "map requirements to local telemetry",
+              "document gaps"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Data Components identify specific properties or values relevant to detecting a behavior. They are more granular than the deprecated Data Sources concept."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p14",
+                "title": "Build telemetry requirements",
+                "description": "Create a requirement matrix.",
+                "steps": [
+                  "List data components for a chosen strategy.",
+                  "Map each to hypothetical events/logs.",
+                  "Mark available/unavailable/unvalidated.",
+                  "Describe impact."
+                ],
+                "solution": "Start with ATT&CK data components, then document the actual local telemetry implementation.",
+                "output": "Telemetry requirement matrix."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-do-data-components-",
+              "question": "What do Data Components express?",
+              "options": [
+                "Relevant telemetry properties/values",
+                "Threat actor names",
+                "Tactics",
+                "Licenses"
+              ],
+              "answer": "Relevant telemetry properties/values",
+              "explanation": "They describe granular evidence needed for detection."
+            },
+            "summary": [
+              "Start with required evidence, then map to actual logs."
+            ],
+            "resources": [
+              {
+                "title": "ds",
+                "url": "https://attack.mitre.org/datasources/",
+                "type": "official"
+              },
+              {
+                "title": "detect",
+                "url": "https://attack.mitre.org/detectionstrategies/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l15",
+            "title": "From Technique to Analytic",
+            "description": "Design testable behavior-based detection.",
+            "learningObjectives": [
+              "write analytic hypotheses",
+              "identify required data",
+              "define benign/suspicious conditions",
+              "test logic safely"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Define behavior.",
+                  "State hypothesis.",
+                  "Identify data.",
+                  "Write logic.",
+                  "Define benign activity.",
+                  "Test and tune."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p15",
+                "title": "Design an analytic",
+                "description": "Create SIEM-neutral logic for a safe behavior.",
+                "steps": [
+                  "Select a technique.",
+                  "Define telemetry.",
+                  "Write pseudocode.",
+                  "List benign causes.",
+                  "Define synthetic tests."
+                ],
+                "solution": "Example: IF process_creation AND suspicious condition AND unexpected parent THEN candidate alert; tune using approved administrative workflows.",
+                "output": "Detection design document."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-adapt-att&ck-analyti",
+              "question": "Why adapt ATT&CK analytics locally?",
+              "options": [
+                "Telemetry and benign behavior differ",
+                "ATT&CK has no techniques",
+                "All SIEMs are identical",
+                "Analytics are passwords"
+              ],
+              "answer": "Telemetry and benign behavior differ",
+              "explanation": "Local telemetry schemas and workflows differ."
+            },
+            "summary": [
+              "ATT&CK is a behavior model, not a copy-paste SIEM rule repository."
+            ],
+            "resources": [
+              {
+                "title": "detect",
+                "url": "https://attack.mitre.org/detectionstrategies/",
+                "type": "official"
+              },
+              {
+                "title": "hunt",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l16",
+            "title": "Detection Validation and Tuning",
+            "description": "Test positive, negative, boundary, and telemetry-missing cases.",
+            "learningObjectives": [
+              "design controlled tests",
+              "measure false positives",
+              "document tuning"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Validation asks whether the analytic detects the target behavior, avoids expected benign activity, and provides enough context for investigation."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p16",
+                "title": "Create a detection test matrix",
+                "description": "Build four test classes.",
+                "steps": [
+                  "Define a positive case.",
+                  "Define two benign cases.",
+                  "Define an ambiguous boundary case.",
+                  "Define missing telemetry behavior."
+                ],
+                "solution": "Use synthetic or approved lab events only.",
+                "output": "Test matrix with expected/observed results."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-is-a-negative-test?",
+              "question": "What is a negative test?",
+              "options": [
+                "Benign case that should not alert",
+                "A malware sample",
+                "A failed login",
+                "A deprecated technique"
+              ],
+              "answer": "Benign case that should not alert",
+              "explanation": "Negative tests measure false positives."
+            },
+            "summary": [
+              "Detection quality requires controlled validation."
+            ],
+            "resources": [
+              {
+                "title": "detect",
+                "url": "https://attack.mitre.org/detectionstrategies/",
+                "type": "official"
+              },
+              {
+                "title": "hunt",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t04",
+            "title": "ATT&CK Detection Specification",
+            "level": "Advanced",
+            "description": "Produce a platform-neutral detection specification.",
+            "problemStatement": "For a current Enterprise behavior, document Detection Strategy, Analytics, Data Components, hypothesis, logic, exclusions, and tests.",
+            "objectives": [
+              "trace current defensive objects",
+              "define telemetry",
+              "write analytic logic",
+              "define validation"
+            ],
+            "requirements": [
+              "Browser",
+              "Current ATT&CK catalog"
+            ],
+            "hint": "Start from the current Detection Strategy page.",
+            "solutionCode": "Use JSON/Markdown fields attack_id, strategy_id, analytics, data_components, hypothesis, logic, exclusions, tests.",
+            "solutionExplanation": "The result demonstrates a complete behavior-to-detection reasoning chain."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Threat Hunting and Threat-Informed Defense",
+        "description": "Build ATT&CK-aligned hypotheses, abstract analytics, hunt priorities, and evidence-backed reporting.",
+        "lessons": [
+          {
+            "id": "l17",
+            "title": "Hunting Hypotheses",
+            "description": "Turn ATT&CK behaviors into testable hunt questions.",
+            "learningObjectives": [
+              "write hypotheses",
+              "define data before queries",
+              "distinguish hunting from alert triage"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A hunt hypothesis states what suspicious behavior is expected, where it may occur, what evidence should exist, and under what conditions."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p17",
+                "title": "Write a hunt hypothesis",
+                "description": "Create one behavior-driven hypothesis.",
+                "steps": [
+                  "Choose a relevant technique.",
+                  "Write a one-sentence hypothesis.",
+                  "List data components.",
+                  "Define scope and benign patterns."
+                ],
+                "solution": "Use: If an adversary uses [behavior] on [platform], we expect [telemetry] under [conditions].",
+                "output": "Complete hunt hypothesis."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-comes-before-a-hunt",
+              "question": "What comes before a hunt query?",
+              "options": [
+                "Hypothesis and data requirements",
+                "Random IOCs",
+                "Malware download",
+                "Screenshot"
+              ],
+              "answer": "Hypothesis and data requirements",
+              "explanation": "The hypothesis determines the required evidence."
+            },
+            "summary": [
+              "ATT&CK anchors behavior; local telemetry determines execution."
+            ],
+            "resources": [
+              {
+                "title": "hunt",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/",
+                "type": "official"
+              },
+              {
+                "title": "cti",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/cti/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l18",
+            "title": "Abstract Analytics and Behavior Chains",
+            "description": "Model multi-event behavior without overfitting to a tool.",
+            "learningObjectives": [
+              "define abstract analytics",
+              "construct behavior chains",
+              "handle missing events"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Abstract analytics describe behavioral conditions independent of a vendor schema. Behavior chains combine multiple observations for context."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p18",
+                "title": "Model a behavior chain",
+                "description": "Create a three-stage safe simulated chain.",
+                "steps": [
+                  "Choose three related behaviors.",
+                  "Define telemetry for each.",
+                  "Define timing.",
+                  "List false-positive causes."
+                ],
+                "solution": "Use benign/synthetic events; do not conduct unauthorized intrusion.",
+                "output": "Three-stage behavior chain."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-use-abstract-analyti",
+              "question": "Why use abstract analytics?",
+              "options": [
+                "Vendor-independent behavior description",
+                "Hide activity",
+                "Replace evidence",
+                "Create exploits"
+              ],
+              "answer": "Vendor-independent behavior description",
+              "explanation": "Abstract logic can later be implemented in platform-specific forms."
+            },
+            "summary": [
+              "Chains require careful timing and missing-event handling."
+            ],
+            "resources": [
+              {
+                "title": "hunt",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/",
+                "type": "official"
+              },
+              {
+                "title": "detect",
+                "url": "https://attack.mitre.org/detectionstrategies/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l19",
+            "title": "Hunt Prioritization",
+            "description": "Prioritize hunts using threat relevance, exposure, telemetry, and impact.",
+            "learningObjectives": [
+              "score candidate hunts",
+              "document assumptions",
+              "choose actionable priorities"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ATT&CK does not provide a universal organization-specific priority. Local threat intelligence, exposure, telemetry quality, and impact should influence the backlog."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p19",
+                "title": "Build a hunt backlog",
+                "description": "Rank five behaviors.",
+                "steps": [
+                  "Choose five current behaviors.",
+                  "Score relevance, exposure, telemetry, impact.",
+                  "Calculate transparent priority.",
+                  "Select top two and justify."
+                ],
+                "solution": "Any defined consistent scale is acceptable; explain why the score is actionable.",
+                "output": "Ranked hunt backlog."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-should-drive-local-",
+              "question": "What should drive local hunt priority?",
+              "options": [
+                "Relevant threats and local risk",
+                "Number of pages",
+                "Cell colors",
+                "Random selection"
+              ],
+              "answer": "Relevant threats and local risk",
+              "explanation": "Priority should reflect local risk and feasibility."
+            },
+            "summary": [
+              "Transparent assumptions matter more than arbitrary universal scores."
+            ],
+            "resources": [
+              {
+                "title": "start",
+                "url": "https://attack.mitre.org/resources/",
+                "type": "official"
+              },
+              {
+                "title": "hunt",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l20",
+            "title": "Hunt Reporting",
+            "description": "Report findings with scope, confidence, limitations, and ATT&CK context.",
+            "learningObjectives": [
+              "document positive/negative results",
+              "avoid overclaiming",
+              "turn findings into improvements"
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "A negative result means the behavior was not observed in the searched scope and available telemetry; it does not prove the behavior never occurred."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p20",
+                "title": "Write a hunt report",
+                "description": "Produce a one-page report.",
+                "steps": [
+                  "State hypothesis and ATT&CK behavior.",
+                  "Describe data and time range.",
+                  "Summarize results.",
+                  "Record limitations.",
+                  "Recommend one detection and one telemetry improvement."
+                ],
+                "solution": "Use labels such as confirmed, likely, inconclusive, and not observed.",
+                "output": "Evidence-backed hunt report."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-does-a-negative-hun",
+              "question": "What does a negative hunt result mean?",
+              "options": [
+                "Not observed in searched scope/telemetry",
+                "Never occurred",
+                "Impossible behavior",
+                "Wrong ATT&CK entry"
+              ],
+              "answer": "Not observed in searched scope/telemetry",
+              "explanation": "Results are bounded by scope and visibility."
+            },
+            "summary": [
+              "Good reporting makes uncertainty explicit."
+            ],
+            "resources": [
+              {
+                "title": "hunt",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/threat-hunting/",
+                "type": "official"
+              },
+              {
+                "title": "cti",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/cti/",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-06",
+        "title": "STIX 2.1, ATT&CK Data, and Automation",
+        "description": "Use official machine-readable ATT&CK data, relationships, provenance, and acquisition methods.",
+        "lessons": [
+          {
+            "id": "l21",
+            "title": "ATT&CK as STIX 2.1",
+            "description": "Understand machine-readable ATT&CK representation.",
+            "learningObjectives": [
+              "explain STIX role",
+              "identify common object types",
+              "describe relationships"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE publishes ATT&CK in STIX 2.1 collections. The machine-readable representation is the granular form from which other views are derived."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Techniques are STIX attack-pattern objects.",
+                  "Groups are intrusion-set objects.",
+                  "Relationships connect objects.",
+                  "The ATT&CK Data Model provides schemas and typed tooling."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p21",
+                "title": "Inspect a STIX collection",
+                "description": "Inventory object types and trace one relationship.",
+                "steps": [
+                  "Load Enterprise collection.",
+                  "List several object types.",
+                  "Find an attack-pattern.",
+                  "Find a relationship and resolve source/target."
+                ],
+                "solution": "Use the official repository and preserve the release/version context.",
+                "output": "Object and relationship inventory."
+              }
+            ],
+            "quiz": {
+              "id": "q-which-stix-type-represen",
+              "question": "Which STIX type represents a technique?",
+              "options": [
+                "attack-pattern",
+                "intrusion-set",
+                "course-of-action",
+                "identity"
+              ],
+              "answer": "attack-pattern",
+              "explanation": "ATT&CK techniques use STIX attack-pattern objects."
+            },
+            "summary": [
+              "Programmatic ATT&CK use benefits from understanding the human-facing catalog and STIX model."
+            ],
+            "resources": [
+              {
+                "title": "data",
+                "url": "https://attack.mitre.org/resources/working-with-attack/",
+                "type": "official"
+              },
+              {
+                "title": "stix",
+                "url": "https://github.com/mitre-attack/attack-stix-data",
+                "type": "official"
+              },
+              {
+                "title": "adm",
+                "url": "https://github.com/mitre-attack/attack-data-model",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l22",
+            "title": "Query ATT&CK with Python",
+            "description": "Use safe local parsing to find an ATT&CK technique.",
+            "learningObjectives": [
+              "load JSON",
+              "filter attack-patterns",
+              "use external references"
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "import json\nfrom pathlib import Path\nbundle=json.loads(Path(\"enterprise-attack.json\").read_text(encoding=\"utf-8\"))\ntechniques=[o for o in bundle[\"objects\"] if o.get(\"type\")==\"attack-pattern\"]\nprint(len(techniques))"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p22",
+                "title": "Find a technique by ID",
+                "description": "Write a local query utility.",
+                "steps": [
+                  "Load the bundle.",
+                  "Iterate attack-patterns.",
+                  "Check external_references for source_name=mitre-attack and external_id.",
+                  "Print name and description."
+                ],
+                "solution": "Use the external ATT&CK ID instead of object order.",
+                "output": "Technique name/description printed."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-use-external_referen",
+              "question": "Why use external_references?",
+              "options": [
+                "They contain ATT&CK IDs",
+                "They execute commands",
+                "They encrypt STIX",
+                "They are user credentials"
+              ],
+              "answer": "They contain ATT&CK IDs",
+              "explanation": "ATT&CK external IDs are represented in STIX external references."
+            },
+            "summary": [
+              "Avoid hard-coded object positions."
+            ],
+            "resources": [
+              {
+                "title": "usage",
+                "url": "https://github.com/mitre-attack/attack-stix-data/blob/master/USAGE.md",
+                "type": "official"
+              },
+              {
+                "title": "stix",
+                "url": "https://github.com/mitre-attack/attack-stix-data",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l23",
+            "title": "Relationships and Provenance",
+            "description": "Resolve Group/Software relationships programmatically.",
+            "learningObjectives": [
+              "index STIX objects",
+              "resolve source/target",
+              "retain provenance"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "STIX relationships use source_ref and target_ref. An ID index makes traversal efficient and deterministic."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p23",
+                "title": "Build an object index",
+                "description": "Resolve techniques related to a selected group.",
+                "steps": [
+                  "Create id→object index.",
+                  "Find group by ATT&CK ID.",
+                  "Find relationships from its STIX ID.",
+                  "Resolve targets."
+                ],
+                "solution": "Use a dictionary keyed by STIX id and preserve relationship metadata.",
+                "output": "Resolved relationship list."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-index-stix-ids?",
+              "question": "Why index STIX IDs?",
+              "options": [
+                "To resolve relationships efficiently",
+                "To encrypt data",
+                "To alter IDs",
+                "To bypass provenance"
+              ],
+              "answer": "To resolve relationships efficiently",
+              "explanation": "Relationships point to STIX IDs."
+            },
+            "summary": [
+              "Relationship provenance should be retained in generated outputs."
+            ],
+            "resources": [
+              {
+                "title": "usage",
+                "url": "https://github.com/mitre-attack/attack-stix-data/blob/master/USAGE.md",
+                "type": "official"
+              },
+              {
+                "title": "adm",
+                "url": "https://github.com/mitre-attack/attack-data-model",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l24",
+            "title": "TAXII and Acquisition Strategy",
+            "description": "Distinguish STIX and TAXII and design reproducible acquisition.",
+            "learningObjectives": [
+              "distinguish STIX/TAXII",
+              "compare acquisition methods",
+              "design version-aware refresh"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "STIX is a CTI language/serialization format; TAXII is an HTTPS exchange protocol. MITRE documents repository and TAXII access to ATT&CK."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p24",
+                "title": "Design an acquisition workflow",
+                "description": "Choose sources for current and historical work.",
+                "steps": [
+                  "Compare versioned repository data, current repository content, and TAXII.",
+                  "Define refresh policy.",
+                  "Record release metadata.",
+                  "Define offline fallback."
+                ],
+                "solution": "Maintain a versioned local cache and record release context for investigations; use live retrieval when appropriate for refresh workflows.",
+                "output": "Acquisition architecture."
+              }
+            ],
+            "quiz": {
+              "id": "q-which-statement-is-corre",
+              "question": "Which statement is correct?",
+              "options": [
+                "STIX is CTI format; TAXII is exchange protocol",
+                "They are malware families",
+                "They are identical",
+                "TAXII is a firewall"
+              ],
+              "answer": "STIX is CTI format; TAXII is exchange protocol",
+              "explanation": "They have distinct roles."
+            },
+            "summary": [
+              "Reproducible investigations need versioned content and provenance."
+            ],
+            "resources": [
+              {
+                "title": "data",
+                "url": "https://attack.mitre.org/resources/working-with-attack/",
+                "type": "official"
+              },
+              {
+                "title": "usage",
+                "url": "https://github.com/mitre-attack/attack-stix-data/blob/master/USAGE.md",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t06",
+            "title": "Build an ATT&CK Relationship Query",
+            "level": "Intermediate",
+            "description": "Create a Python utility that resolves a Group or Software ID to related techniques.",
+            "problemStatement": "Given enterprise-attack.json and an ATT&CK external ID, print related attack-pattern IDs, names, and relationship types.",
+            "objectives": [
+              "load STIX",
+              "resolve external ID",
+              "index objects",
+              "traverse relationships"
+            ],
+            "requirements": [
+              "Python 3",
+              "Official Enterprise STIX 2.1 dataset"
+            ],
+            "hint": "Build STIX ID and external ID indexes first.",
+            "solutionCode": "Use dictionaries for ID resolution and relationship traversal.",
+            "solutionExplanation": "This avoids object-order assumptions and preserves relationship semantics."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Adversary Emulation, Purple Teaming, and Legacy Migration",
+        "description": "Use ATT&CK safely for validation and translate older terminology into current defensive concepts.",
+        "lessons": [
+          {
+            "id": "l25",
+            "title": "Adversary Emulation",
+            "description": "Understand controlled ATT&CK-based validation.",
+            "learningObjectives": [
+              "explain emulation purpose",
+              "select safe behaviors",
+              "define stop conditions"
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Use only isolated, authorized environments. Course exercises should prefer benign simulation or synthetic telemetry over real destructive tooling."
+              },
+              {
+                "type": "paragraph",
+                "text": "MITRE emulation plans use public threat reporting and ATT&CK to help defenders test networks and products against modeled adversary behavior."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p25",
+                "title": "Design a safe emulation plan",
+                "description": "Create a non-destructive plan.",
+                "steps": [
+                  "Choose three behaviors.",
+                  "Define benign simulation methods.",
+                  "Specify expected telemetry.",
+                  "Define cleanup and stop conditions."
+                ],
+                "solution": "Prefer synthetic events or benign administrative actions that create comparable telemetry.",
+                "output": "Authorized safe emulation plan."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-is-the-defensive-pu",
+              "question": "What is the defensive purpose of emulation?",
+              "options": [
+                "Test defenses against modeled behavior",
+                "Unauthorized exploitation",
+                "Replace IR",
+                "Guarantee detection"
+              ],
+              "answer": "Test defenses against modeled behavior",
+              "explanation": "Emulation validates defensive capabilities."
+            },
+            "summary": [
+              "The value is measurement, not destructive execution."
+            ],
+            "resources": [
+              {
+                "title": "emu",
+                "url": "https://attack.mitre.org/resources/adversary-emulation-plans/",
+                "type": "official"
+              },
+              {
+                "title": "training",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l26",
+            "title": "Purple Teaming",
+            "description": "Coordinate emulation and defense around shared behavior.",
+            "learningObjectives": [
+              "define purple-team objectives",
+              "align expected telemetry and detection",
+              "capture improvements"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Purple teaming uses shared objectives between simulation and defense teams. ATT&CK provides common behavior terminology for planning and reporting."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p26",
+                "title": "Create a purple-team test card",
+                "description": "Write one reusable test card.",
+                "steps": [
+                  "Choose technique.",
+                  "Define safe action.",
+                  "List telemetry.",
+                  "Define detection/response owner.",
+                  "Record result and improvement."
+                ],
+                "solution": "Results should be detected, partially detected, not detected, or inconclusive with evidence.",
+                "output": "Reusable ATT&CK test card."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-is-att&ck-useful-to-",
+              "question": "Why is ATT&CK useful to purple teams?",
+              "options": [
+                "Shared behavior language",
+                "Automatic execution",
+                "SIEM replacement",
+                "Authorization bypass"
+              ],
+              "answer": "Shared behavior language",
+              "explanation": "ATT&CK creates a common vocabulary."
+            },
+            "summary": [
+              "Each test should end with evidence and an improvement action."
+            ],
+            "resources": [
+              {
+                "title": "training",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/",
+                "type": "official"
+              },
+              {
+                "title": "emu",
+                "url": "https://attack.mitre.org/resources/adversary-emulation-plans/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l27",
+            "title": "Threat-Informed Defensive Backlog",
+            "description": "Convert ATT&CK findings into measurable improvements.",
+            "learningObjectives": [
+              "link behavior to controls",
+              "prioritize relevant risks",
+              "define validation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Threat-informed defense uses adversary knowledge to improve controls. ATT&CK organizes behavior; local risk determines priority."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p27",
+                "title": "Create improvement tickets",
+                "description": "Turn findings into measurable actions.",
+                "steps": [
+                  "Identify behavior/control gap.",
+                  "Assign priority rationale.",
+                  "Define owner and validation.",
+                  "Write success criterion."
+                ],
+                "solution": "Avoid vague actions; tie each ticket to a behavior and testable outcome.",
+                "output": "ATT&CK-linked backlog."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-is-a-good-improveme",
+              "question": "What is a good improvement action?",
+              "options": [
+                "Measurable behavior-linked change",
+                "Color all cells",
+                "Install everything",
+                "Map everything"
+              ],
+              "answer": "Measurable behavior-linked change",
+              "explanation": "Operationalization requires concrete validation."
+            },
+            "summary": [
+              "ATT&CK matters when it changes capabilities."
+            ],
+            "resources": [
+              {
+                "title": "start",
+                "url": "https://attack.mitre.org/resources/",
+                "type": "official"
+              },
+              {
+                "title": "training",
+                "url": "https://attack.mitre.org/resources/learn-more-about-attack/training/",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l28",
+            "title": "Legacy Practices and Migration",
+            "description": "Read older ATT&CK reports while using current defensive terminology.",
+            "learningObjectives": [
+              "identify deprecated defensive concepts",
+              "translate Data Sources to Data Components",
+              "preserve historical context"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "ATT&CK v18 deprecated Data Sources and introduced Detection Strategies, Analytics, and expanded Data Components. Older reports may still use the previous vocabulary."
+              },
+              {
+                "type": "warning",
+                "text": "Preserve original terminology for historical fidelity, but use current concepts for new workflows."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p28",
+                "title": "Migrate a legacy note",
+                "description": "Modernize a historical detection note.",
+                "steps": [
+                  "Identify legacy Data Source wording.",
+                  "Find current Data Components.",
+                  "Find current Detection Strategy/Analytics where applicable.",
+                  "Keep original date and scope."
+                ],
+                "solution": "Maintain historical and current interpretation fields.",
+                "output": "Auditable migration note."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-changed-in-v18?",
+              "question": "What changed in v18?",
+              "options": [
+                "Detection Strategies/Analytics introduced; Data Sources deprecated",
+                "Techniques removed",
+                "Navigator discontinued",
+                "STIX replaced by CSV"
+              ],
+              "answer": "Detection Strategies/Analytics introduced; Data Sources deprecated",
+              "explanation": "This was a major defensive-model change in v18."
+            },
+            "summary": [
+              "Version-aware translation is necessary for long-lived content."
+            ],
+            "resources": [
+              {
+                "title": "updates",
+                "url": "https://attack.mitre.org/resources/updates/",
+                "type": "official"
+              },
+              {
+                "title": "ds",
+                "url": "https://attack.mitre.org/datasources/",
+                "type": "official"
+              },
+              {
+                "title": "detect",
+                "url": "https://attack.mitre.org/detectionstrategies/",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-08",
+        "title": "Final Project: ATT&CK Coverage & Threat Mapping Workbench",
+        "description": "Integrate evidence-based mapping, STIX automation, version awareness, coverage analysis, and Navigator visualization into one defensible workflow.",
+        "lessons": [
+          {
+            "id": "l29",
+            "title": "Capstone Architecture",
+            "description": "Design the data flow and evidence model.",
+            "learningObjectives": [
+              "design input/output schema",
+              "define provenance",
+              "separate confirmed from suspected mappings"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Observations → ATT&CK dataset → ID resolution → enrichment → report/layer."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p29",
+                "title": "Draft capstone schema",
+                "description": "Define required fields and acceptance criteria.",
+                "steps": [
+                  "Specify observation fields.",
+                  "Specify resolution states.",
+                  "Specify provenance fields.",
+                  "Write three acceptance criteria."
+                ],
+                "solution": "Use the schemas in the project files as the baseline.",
+                "output": "Reviewed capstone schema."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-are-the-two-primary",
+              "question": "What are the two primary inputs?",
+              "options": [
+                "ATT&CK dataset and observations",
+                "Passwords and malware",
+                "PCAP and exploit",
+                "Screenshots and licenses"
+              ],
+              "answer": "ATT&CK dataset and observations",
+              "explanation": "The project combines ATT&CK data with analyst observations."
+            },
+            "summary": [
+              "The architecture keeps evidence and catalog knowledge distinct."
+            ],
+            "resources": [
+              {
+                "title": "data",
+                "url": "https://attack.mitre.org/resources/working-with-attack/",
+                "type": "official"
+              },
+              {
+                "title": "stix",
+                "url": "https://github.com/mitre-attack/attack-stix-data",
+                "type": "official"
+              },
+              {
+                "title": "nav",
+                "url": "https://github.com/mitre-attack/attack-navigator",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l30",
+            "title": "Implement Resolution and Enrichment",
+            "description": "Run the included utility and inspect outputs.",
+            "learningObjectives": [
+              "run Python tool",
+              "verify resolution",
+              "inspect report/layer"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The implementation uses ATT&CK external IDs for user input and STIX IDs for relationship/object resolution. It is designed for local, reproducible analysis."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p30",
+                "title": "Run the workbench",
+                "description": "Execute the capstone.",
+                "steps": [
+                  "Obtain Enterprise STIX JSON.",
+                  "Run the documented command.",
+                  "Inspect report.json.",
+                  "Inspect layer.json."
+                ],
+                "solution": "If the current dataset changes fields, validate the parser against current MITRE documentation before production use.",
+                "output": "Report and layer files are produced."
+              }
+            ],
+            "quiz": {
+              "id": "q-why-use-external-att&ck-",
+              "question": "Why use external ATT&CK IDs?",
+              "options": [
+                "They are stable user-facing identifiers for catalog objects",
+                "They execute code",
+                "They are passwords",
+                "They replace STIX IDs"
+              ],
+              "answer": "They are stable user-facing identifiers for catalog objects",
+              "explanation": "External references connect human-facing ATT&CK IDs to STIX objects."
+            },
+            "summary": [
+              "Automation should fail clearly on unresolved IDs."
+            ],
+            "resources": [
+              {
+                "title": "usage",
+                "url": "https://github.com/mitre-attack/attack-stix-data/blob/master/USAGE.md",
+                "type": "official"
+              },
+              {
+                "title": "stix",
+                "url": "https://github.com/mitre-attack/attack-stix-data",
+                "type": "official"
+              },
+              {
+                "title": "adm",
+                "url": "https://github.com/mitre-attack/attack-data-model",
+                "type": "official"
+              }
+            ]
+          },
+          {
+            "id": "l31",
+            "title": "Capstone Audit and Presentation",
+            "description": "Validate technical correctness and communicate uncertainty.",
+            "learningObjectives": [
+              "test resolved/unresolved mappings",
+              "verify provenance",
+              "present findings without overclaiming"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Test invalid IDs.",
+                  "Test duplicates.",
+                  "Parse generated JSON.",
+                  "Review layer with current Navigator.",
+                  "Record dataset context and limitations."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p31",
+                "title": "Conduct final audit",
+                "description": "Run the supplied test plan.",
+                "steps": [
+                  "Execute every test.",
+                  "Record pass/fail evidence.",
+                  "Review assumptions.",
+                  "Write limitations and next steps."
+                ],
+                "solution": "Use TEST_PLAN.md and add tests for any release-specific behavior encountered.",
+                "output": "Audited capstone with limitations."
+              }
+            ],
+            "quiz": {
+              "id": "q-what-makes-the-capstone-",
+              "question": "What makes the capstone defensible?",
+              "options": [
+                "Evidence, version context, validation, uncertainty",
+                "Many colored cells",
+                "A secret exploit",
+                "A malware payload"
+              ],
+              "answer": "Evidence, version context, validation, uncertainty",
+              "explanation": "Defensibility comes from reproducibility and evidence."
+            },
+            "summary": [
+              "The final project demonstrates ATT&CK as an analytical and engineering workflow."
+            ],
+            "resources": [
+              {
+                "title": "versions",
+                "url": "https://attack.mitre.org/resources/versions/",
+                "type": "official"
+              },
+              {
+                "title": "nav",
+                "url": "https://github.com/mitre-attack/attack-navigator",
+                "type": "official"
+              },
+              {
+                "title": "adm",
+                "url": "https://github.com/mitre-attack/attack-data-model",
+                "type": "official"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "ATT&CK Coverage & Threat Mapping Workbench",
+          "description": "A realistic defensive capstone combining evidence-backed mapping, STIX 2.1 enrichment, version awareness, coverage reporting, and Navigator visualization using only synthetic or authorized observations.",
+          "conceptsCovered": [
+            "evidence-driven mapping",
+            "Enterprise ATT&CK",
+            "STIX 2.1",
+            "relationships",
+            "provenance",
+            "coverage",
+            "Navigator layers",
+            "validation",
+            "version management"
+          ],
+          "steps": [
+            "Download a current or version-pinned Enterprise STIX 2.1 collection from MITRE.",
+            "Review the synthetic observations file and replace or extend it only with authorized evidence.",
+            "Run the Python workbench.",
+            "Inspect the report for resolved and unresolved mappings.",
+            "Inspect the generated Navigator layer and validate its format against the current Navigator documentation.",
+            "Run the test plan and record failures.",
+            "Record the exact dataset version/retrieval context in the final submission."
+          ],
+          "code": {
+            "README.md": "# ATT&CK Coverage & Threat Mapping Workbench\nA defensive capstone using a local MITRE ATT&CK Enterprise STIX 2.1 collection and synthetic/authorized observations. It resolves ATT&CK IDs, enriches observations, produces a reviewable report, and creates a Navigator layer artifact. It does not execute malware, exploit systems, or collect credentials.\n",
+            "observations.json": "[\n  {\"id\":\"obs-001\",\"attack_id\":\"T1016\",\"evidence\":\"Synthetic lab event: network configuration discovery was observed.\",\"confidence\":\"high\",\"status\":\"confirmed\"},\n  {\"id\":\"obs-002\",\"attack_id\":\"T1059\",\"evidence\":\"Synthetic lab event: a command interpreter was launched.\",\"confidence\":\"medium\",\"status\":\"suspected\"}\n]",
+            "workbench.py": "import json,sys\nfrom pathlib import Path\n\ndef ext_id(o):\n    for r in o.get(\"external_references\",[]):\n        if r.get(\"source_name\")==\"mitre-attack\": return r.get(\"external_id\")\n    return None\n\ndef load(path):\n    b=json.loads(Path(path).read_text(encoding=\"utf-8\"))\n    objs=b.get(\"objects\",[])\n    by_id={o.get(\"id\"):o for o in objs if o.get(\"id\")}\n    by_attack={ext_id(o):o for o in objs if ext_id(o)}\n    return b,objs,by_id,by_attack\n\ndef tactics(obj,objs):\n    phases={p.get(\"phase_name\") for p in obj.get(\"kill_chain_phases\",[]) if p.get(\"kill_chain_name\")==\"mitre-attack\"}\n    names=[]\n    for t in objs:\n        if t.get(\"type\")==\"x-mitre-tactic\" and t.get(\"x_mitre_shortname\") in phases: names.append(t.get(\"name\"))\n    return sorted(set(names or phases))\n\ndef main():\n    if len(sys.argv)!=5: raise SystemExit(\"usage: python workbench.py enterprise-attack.json observations.json report.json layer.json\")\n    attack,obs,report,layer=sys.argv[1:]\n    bundle,objs,by_id,by_attack=load(attack)\n    observations=json.loads(Path(obs).read_text(encoding=\"utf-8\"))\n    rows=[]; seen=set()\n    for x in observations:\n        t=by_attack.get(x.get(\"attack_id\"))\n        if not t or t.get(\"type\")!=\"attack-pattern\":\n            rows.append({**x,\"resolution\":\"unresolved\"}); continue\n        row={**x,\"resolution\":\"resolved\",\"technique_name\":t.get(\"name\"),\"tactics\":tactics(t,objs),\"stix_id\":t.get(\"id\")}\n        rows.append(row); seen.add(x.get(\"attack_id\"))\n    out={\"dataset_marker\":bundle.get(\"id\") or bundle.get(\"spec_version\"),\"resolved_count\":sum(r[\"resolution\"]==\"resolved\" for r in rows),\"unresolved_count\":sum(r[\"resolution\"]==\"unresolved\" for r in rows),\"observations\":rows}\n    Path(report).write_text(json.dumps(out,indent=2),encoding=\"utf-8\")\n    layer_obj={\"name\":\"ATT&CK Evidence Layer\",\"domain\":\"enterprise-attack\",\"versions\":{\"attack\":str(out[\"dataset_marker\"])},\"techniques\":[{\"techniqueID\":i,\"comment\":\"mapped from observations\"} for i in sorted(seen)]}\n    Path(layer).write_text(json.dumps(layer_obj,indent=2),encoding=\"utf-8\")\n    print(\"Resolved:\",out[\"resolved_count\"],\"Unresolved:\",out[\"unresolved_count\"])\n\nif __name__==\"__main__\": main()\n",
+            "TEST_PLAN.md": "# Test Plan\n1. Use a current or deliberately version-pinned Enterprise ATT&CK STIX 2.1 collection from MITRE.\n2. Run the utility with the included synthetic observations.\n3. Add an invalid ATT&CK ID and confirm it becomes unresolved.\n4. Add a duplicate observation and confirm the report counts observations while the layer keeps one technique entry.\n5. Parse both generated JSON files.\n6. Inspect the generated layer against the current ATT&CK Navigator documentation before production use.\n7. Confirm the project performs no unauthorized network interaction or offensive execution.\n"
+          },
+          "explanation": "The workbench reads a machine-readable ATT&CK dataset and analyst observations. It indexes STIX IDs and ATT&CK external IDs, resolves observations to attack-pattern objects, extracts tactic context, writes a reviewable report, and produces a compact Navigator layer artifact. The workflow demonstrates evidence → mapping → enrichment → visualization → audit. It intentionally avoids malware execution, exploitation, credentials, or unauthorized interaction. The generated layer must be checked against the current Navigator schema before production use because tooling formats can evolve."
+        }
+      }
+    ]
+  }
+}

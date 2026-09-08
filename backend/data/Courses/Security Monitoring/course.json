@@ -1,0 +1,2416 @@
+{
+  "course": {
+    "id": "security-monitoring",
+    "title": "Security Monitoring",
+    "slug": "security-monitoring",
+    "description": "A practical, research-driven course on security monitoring that teaches learners how to design telemetry coverage, manage logs, engineer detections, investigate alerts, correlate endpoint and network evidence, use ATT&CK and threat intelligence, hunt for suspicious behavior, automate safe enrichment, validate monitoring controls, and operate detections in production. It is appropriate for beginners with basic networking and operating-system knowledge who want to develop strong practical security-monitoring capability.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 72,
+    "prerequisites": [
+      "Basic networking concepts such as IP, TCP/UDP, DNS and HTTP.",
+      "Basic Linux or Windows command-line familiarity.",
+      "Comfort reading JSON and text logs.",
+      "Basic Python is helpful for practical exercises but not required for conceptual lessons."
+    ],
+    "learningOutcomes": [
+      "Explain the purpose, vocabulary and lifecycle of security monitoring.",
+      "Design risk-driven monitoring use cases and identify telemetry blind spots.",
+      "Build and assess log-management, normalization and collection-health practices.",
+      "Write deterministic, correlated and baseline-oriented detection logic.",
+      "Interpret endpoint and network telemetry from Windows, Linux, Zeek and Suricata-style sources.",
+      "Use SIEM-style query patterns to investigate and summarize security events.",
+      "Map monitoring requirements to current MITRE ATT&CK concepts and threat-intelligence structures.",
+      "Perform evidence-backed alert triage, timeline construction and case documentation.",
+      "Conduct hypothesis-driven threat hunts and turn useful results into monitoring improvements.",
+      "Apply Sigma concepts, safe automation boundaries and detection-validation practices.",
+      "Measure monitoring quality using coverage, fidelity, health and workload metrics while respecting privacy and change control.",
+      "Build and test a small explainable security-monitoring pipeline and document its production limitations."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Security Monitoring Foundations",
+        "description": "Establish the purpose, vocabulary and risk-driven design principles of a monitoring program.",
+        "lessons": [
+          {
+            "id": "L01",
+            "title": "What Security Monitoring Is",
+            "description": "Define security monitoring as the continuous collection, enrichment, analysis and escalation of security-relevant telemetry, and separate it from general observability.",
+            "learningObjectives": [
+              "Explain the purpose and boundaries of security monitoring.",
+              "Distinguish telemetry, events, alerts, findings and incidents.",
+              "Relate monitoring outcomes to organizational risk and response."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Security monitoring turns raw observations into defensible decisions. A log line is an observation; an alert is a rule- or model-generated signal; a finding is analyst interpretation; an incident is an event or set of events that meets the organization’s incident criteria."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Monitoring is not simply collecting logs. Collection without use cases, review and retention produces storage rather than detection.",
+                  "A useful monitoring program answers what assets matter, what threats matter, what telemetry can expose them, who reviews signals, and how escalation works.",
+                  "Monitoring should be aligned to risk, business impact and the organization’s response capability."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q01",
+              "question": "Which statement best distinguishes an alert from an incident?",
+              "options": [
+                "An alert is always malicious; an incident is always benign.",
+                "An alert is a detection signal; an incident is a security event or set of events that meets defined incident criteria.",
+                "An alert is stored data; an incident is a network packet.",
+                "They are interchangeable terms."
+              ],
+              "answer": "An alert is a detection signal; an incident is a security event or set of events that meets defined incident criteria.",
+              "explanation": "A detection signal requires analysis and context before it can be classified as an incident."
+            },
+            "summary": [
+              "Security monitoring is a detection-and-decision capability, not a product name.",
+              "The quality of monitoring depends on both telemetry and the process that interprets it."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://www.cisecurity.org/controls/audit-log-management",
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+            ]
+          },
+          {
+            "id": "L02",
+            "title": "Monitoring Objectives and Use Cases",
+            "description": "Translate business and threat concerns into concrete monitoring use cases that define what must be observed and what action a detection should trigger.",
+            "learningObjectives": [
+              "Write a security monitoring use case with a clear objective.",
+              "Choose telemetry that can support the use case.",
+              "Define success criteria and escalation expectations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A monitoring use case should state the behavior of concern, the observable evidence, the expected decision, and the owner of the next action. Good use cases are operationally testable rather than vague goals such as 'monitor the network.'"
+              },
+              {
+                "type": "code",
+                "text": "Use case: Detect unusual privileged sign-ins\nSignal: successful privileged login outside an approved maintenance window\nEvidence: identity, source IP/device, authentication result, timestamp, target system\nDecision: validate legitimacy; escalate if unexplained\nOwner: security operations"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer use cases that map to a meaningful risk or control.",
+                  "Define exclusions before a rule is deployed so analysts understand expected noise.",
+                  "Document the required telemetry and known blind spots."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q02",
+              "question": "What is the strongest starting point for a new monitoring use case?",
+              "options": [
+                "A product feature list",
+                "A random collection of available logs",
+                "A defined risk or threat scenario with an expected analyst action",
+                "The longest possible query"
+              ],
+              "answer": "A defined risk or threat scenario with an expected analyst action",
+              "explanation": "A monitoring use case is most useful when it begins with the decision the organization needs to make."
+            },
+            "summary": [
+              "A use case connects a security question to evidence and an operational decision.",
+              "Detection quality includes coverage, fidelity, actionability and maintainability."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://www.cisecurity.org/controls/audit-log-management",
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+            ]
+          },
+          {
+            "id": "L03",
+            "title": "Events, Alerts, Findings and Incidents",
+            "description": "Build a shared vocabulary for the objects that move through a monitoring pipeline.",
+            "learningObjectives": [
+              "Classify sample records as events, alerts, findings or incidents.",
+              "Explain why severity and confidence are not the same property.",
+              "Trace an alert through triage to incident declaration."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Event: an observed occurrence recorded by a system or sensor.",
+                  "Alert: a signal produced by a rule, correlation or analytic.",
+                  "Finding: an analyst-supported interpretation that something noteworthy occurred.",
+                  "Incident: a confirmed security occurrence that requires incident-management actions according to policy.",
+                  "Severity expresses potential impact; confidence expresses how strongly the evidence supports the detection."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q03",
+              "question": "Why should severity and confidence be kept separate?",
+              "options": [
+                "They are synonyms.",
+                "A high-impact hypothesis can still have weak evidence, and a low-impact event can be detected with high confidence.",
+                "Only severity matters.",
+                "Only confidence matters."
+              ],
+              "answer": "A high-impact hypothesis can still have weak evidence, and a low-impact event can be detected with high confidence.",
+              "explanation": "Separating impact from evidence helps analysts prioritize appropriately."
+            },
+            "summary": [
+              "Monitoring becomes easier to operate when teams use consistent object definitions.",
+              "Severity and confidence should be modeled separately."
+            ],
+            "resources": [
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "L04",
+            "title": "Telemetry Sources and Coverage",
+            "description": "Survey endpoint, identity, network, application, cloud and security-control telemetry and learn how source selection creates coverage and blind spots.",
+            "learningObjectives": [
+              "Identify telemetry categories relevant to a use case.",
+              "Explain the difference between source coverage and analytic coverage.",
+              "Document major telemetry blind spots."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Endpoint telemetry can include process, authentication, file, service and security-control events.",
+                  "Identity telemetry can include authentication, MFA, group changes, privilege assignments and session activity.",
+                  "Network telemetry can include flow, DNS, HTTP, TLS and IDS/NSM records.",
+                  "Application and cloud telemetry expose business actions and control-plane changes that host logs may not show."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Coverage question:\nCan the analyst observe:\n1) the actor,\n2) the action,\n3) the target,\n4) the time,\n5) the result,\n6) enough context to decide what to do next?"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q04",
+              "question": "Which is a telemetry blind spot?",
+              "options": [
+                "A field documented in a schema",
+                "A behavior that the monitoring environment cannot observe reliably",
+                "A query returning one record",
+                "A normal successful login"
+              ],
+              "answer": "A behavior that the monitoring environment cannot observe reliably",
+              "explanation": "A blind spot is a gap in observable evidence for a required monitoring objective."
+            },
+            "summary": [
+              "Source inventory should be driven by monitoring objectives.",
+              "Missing telemetry is a detection limitation, not something a clever query can always fix."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T01",
+            "title": "Design a Privileged-Login Monitoring Use Case",
+            "level": "Easy",
+            "description": "Create a one-page monitoring specification for suspicious privileged logins.",
+            "problemStatement": "An organization needs to detect privileged authentication from unmanaged devices and outside approved maintenance windows.",
+            "objectives": [
+              "Define the detection objective.",
+              "List minimum telemetry fields.",
+              "Specify expected analyst action and a tuning exclusion."
+            ],
+            "requirements": [
+              "A log source containing identity, timestamp, source device and authentication result.",
+              "A documented maintenance schedule or allow-list source."
+            ],
+            "hint": "Start with the decision the analyst must make, then work backward to the evidence required.",
+            "solutionCode": "{\n  \"name\": \"Privileged login anomaly\",\n  \"signal\": \"successful privileged login from an unmanaged device OR outside approved window\",\n  \"required_fields\": [\"timestamp\", \"user\", \"role\", \"device_id\", \"managed\", \"source_ip\", \"result\"],\n  \"initial_action\": \"triage identity legitimacy and device ownership\",\n  \"tuning\": \"exclude documented maintenance identities and approved service windows\"\n}",
+            "solutionExplanation": "The solution makes the evidence requirements explicit and separates the signal from the analyst’s next action."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Logging, Collection and Data Quality",
+        "description": "Build reliable telemetry pipelines with useful fields, normalization and integrity controls.",
+        "lessons": [
+          {
+            "id": "L05",
+            "title": "Log Management Lifecycle",
+            "description": "Learn the lifecycle from event generation through transport, storage, access, retention and disposal.",
+            "learningObjectives": [
+              "Describe a complete log-management lifecycle.",
+              "Identify operational controls needed at each stage.",
+              "Explain why retention and disposal are design decisions."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "NIST describes log management as generating, transmitting, storing, accessing and disposing of log data.",
+                  "Centralization improves analysis and resilience, but collection paths must also be monitored.",
+                  "Retention should reflect investigation needs, obligations, storage constraints and risk; there is no universal number of days."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Generate -> Collect -> Transport -> Normalize -> Store -> Enrich -> Analyze -> Alert -> Retain/Archive -> Dispose"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q05",
+              "question": "Which activity is part of log management?",
+              "options": [
+                "Only querying",
+                "Generating, transmitting, storing, accessing and disposing of log data",
+                "Only writing files",
+                "Only deleting old records"
+              ],
+              "answer": "Generating, transmitting, storing, accessing and disposing of log data",
+              "explanation": "Log management spans the full lifecycle of log data."
+            },
+            "summary": [
+              "Log management is a lifecycle, not a single storage product.",
+              "Retention should be justified rather than copied from another environment."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          },
+          {
+            "id": "L06",
+            "title": "Event Fields, Time and Identity",
+            "description": "Develop practical field requirements for timestamp, principal, source, destination, action and outcome.",
+            "learningObjectives": [
+              "List core fields needed for analyst reconstruction.",
+              "Explain why time synchronization matters.",
+              "Normalize identity and network context."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "At minimum, monitoring often needs an event timestamp, ingestion time, source identity, target, action, result and unique event or correlation identifiers.",
+                  "Event time and ingestion time are not interchangeable; pipeline delay can affect sequence reconstruction.",
+                  "Identity context should distinguish human users, service accounts, devices and workload identities where possible."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not silently discard timezone, offset or clock-source information when normalizing timestamps."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q06",
+              "question": "Why can ingestion time differ from event time?",
+              "options": [
+                "Logs are always rewritten",
+                "Transport, buffering, queueing or clock differences can delay arrival",
+                "The fields are synonyms",
+                "Because JSON requires two times"
+              ],
+              "answer": "Transport, buffering, queueing or clock differences can delay arrival",
+              "explanation": "Pipelines can introduce delay, and system clocks can also disagree."
+            },
+            "summary": [
+              "Good fields let analysts reconstruct who did what, where, when and with what result.",
+              "Event time and arrival time should both be retained when they answer different operational questions."
+            ],
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://www.rfc-editor.org/rfc/rfc5424"
+            ]
+          },
+          {
+            "id": "L07",
+            "title": "Structured Logging and Normalization",
+            "description": "Compare free text with structured events and learn why normalized fields improve correlation and detection portability.",
+            "learningObjectives": [
+              "Explain benefits of structured events.",
+              "Identify normalization challenges.",
+              "Map source-specific fields into a stable internal vocabulary."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "{\n  \"event_time\": \"2026-09-07T11:10:14Z\",\n  \"event_type\": \"authentication\",\n  \"user\": \"svc_backup\",\n  \"source_ip\": \"192.0.2.10\",\n  \"target\": \"fileserver-01\",\n  \"result\": \"failure\"\n}",
+                "language": "json"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Normalization should preserve the original event where forensic fidelity matters.",
+                  "A normalized field should have documented semantics; 'user' should not mean one thing for one source and something else for another.",
+                  "Parser changes are detection changes and should be tested like code."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "P01",
+                "title": "Normalize a Security Event",
+                "description": "Normalize a Windows-like authentication record into a stable schema and preserve the original event.",
+                "steps": [
+                  "Create a source event containing timestamp, account, source address, result and host fields.",
+                  "Map the source fields to event_time, user, source_ip, result and host.",
+                  "Retain source_name and the raw source event.",
+                  "Validate that the normalized timestamp remains timezone-aware."
+                ],
+                "solution": "source = {\n    \"TimeCreated\": \"2026-09-07T12:00:00+00:00\",\n    \"TargetUserName\": \"analyst\",\n    \"IpAddress\": \"192.0.2.44\",\n    \"Status\": \"success\",\n    \"Computer\": \"workstation-4\"\n}\n\nnormalized = {\n    \"event_time\": source[\"TimeCreated\"],\n    \"event_type\": \"authentication\",\n    \"user\": source[\"TargetUserName\"],\n    \"source_ip\": source[\"IpAddress\"],\n    \"result\": source[\"Status\"],\n    \"host\": source[\"Computer\"],\n    \"source_name\": \"windows_security\",\n    \"raw\": source\n}\n\nprint(normalized)",
+                "output": "The observable result is one normalized record with stable field semantics plus a preserved raw source event."
+              }
+            ],
+            "quiz": {
+              "id": "Q07",
+              "question": "What is a key risk of silently overwriting raw logs during normalization?",
+              "options": [
+                "Reduced storage cost",
+                "Loss of source fidelity that may be needed during investigation",
+                "Faster DNS",
+                "Lower CPU usage"
+              ],
+              "answer": "Loss of source fidelity that may be needed during investigation",
+              "explanation": "Normalized data is useful, but investigators may need the original representation to verify interpretation."
+            },
+            "summary": [
+              "Structured fields reduce parsing ambiguity and support repeatable analytics.",
+              "Keep enough source fidelity to investigate parser or mapping mistakes."
+            ],
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+              "https://sigmahq.io/docs/basics/rules.html"
+            ]
+          },
+          {
+            "id": "L08",
+            "title": "Secure Collection and Log Integrity",
+            "description": "Understand protection of logs in transit and at rest, privileged access, tamper detection and collection health monitoring.",
+            "learningObjectives": [
+              "Describe controls for log confidentiality and integrity.",
+              "Identify risks in unsecured log transport.",
+              "Design a collection-health check."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Protect log data during transport when it crosses untrusted networks.",
+                  "Restrict log access and monitor access to the logs themselves.",
+                  "Use tamper-evident or append-oriented storage where investigation integrity matters.",
+                  "Monitor for missing sources, ingestion delay and abnormal volume because a broken pipeline can create a false sense of coverage."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "A security monitoring system that cannot tell that a critical log source stopped sending data has a dangerous visibility failure."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q08",
+              "question": "What should a monitoring program detect about its own log pipeline?",
+              "options": [
+                "Only storage utilization",
+                "At least missing sources, unexpected ingestion delay and major volume anomalies",
+                "Only user logins",
+                "Nothing; collection is assumed to work"
+              ],
+              "answer": "At least missing sources, unexpected ingestion delay and major volume anomalies",
+              "explanation": "Pipeline failures can create blind spots, so collection health must be monitored."
+            },
+            "summary": [
+              "Log protection includes both the records and the collection pipeline.",
+              "Collection health is itself a monitoring use case."
+            ],
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T02",
+            "title": "Detect a Broken Log Source",
+            "level": "Intermediate",
+            "description": "Build a small Python check that flags a source whose heartbeat events have stopped.",
+            "problemStatement": "Given newline-delimited JSON heartbeat events containing source and event_time, report sources with no event within a configured window.",
+            "objectives": [
+              "Parse valid JSON lines.",
+              "Track last-seen timestamp per source.",
+              "Report missing sources without crashing on malformed lines."
+            ],
+            "requirements": [
+              "Python 3.11+ standard library.",
+              "Input is NDJSON."
+            ],
+            "hint": "Separate parsing errors from time-based logic so one malformed event does not terminate the health check.",
+            "solutionCode": "import json\nfrom datetime import datetime, timedelta\n\ndef check_heartbeats(lines, now, max_age_minutes=10):\n    last_seen = {}\n    errors = 0\n    for line in lines:\n        try:\n            event = json.loads(line)\n            source = event[\"source\"]\n            ts = datetime.fromisoformat(event[\"event_time\"].replace(\"Z\", \"+00:00\"))\n            if ts.tzinfo is None:\n                raise ValueError(\"event_time must be timezone-aware\")\n            if source not in last_seen or ts > last_seen[source]:\n                last_seen[source] = ts\n        except (json.JSONDecodeError, KeyError, ValueError):\n            errors += 1\n\n    cutoff = now - timedelta(minutes=max_age_minutes)\n    missing = sorted(source for source, ts in last_seen.items() if ts < cutoff)\n    return {\"missing\": missing, \"parse_errors\": errors}",
+            "solutionExplanation": "The function keeps the newest observed event per source, treats timestamps as timezone-aware, and reports stale sources separately from malformed records."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Detection Engineering Fundamentals",
+        "description": "Turn monitoring objectives into deterministic rules, correlations and tunable detections.",
+        "lessons": [
+          {
+            "id": "L09",
+            "title": "Detection Logic: Rules and Thresholds",
+            "description": "Create deterministic detections using conditions, thresholds and allow-lists without confusing simplicity with weakness.",
+            "learningObjectives": [
+              "Write a deterministic threshold rule.",
+              "Choose an appropriate grouping key.",
+              "Explain why exclusions should be explicit and reviewable."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "count(failed_authentication where user = X and source_ip = Y in 10m) >= 8"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Thresholds are meaningful only relative to a baseline or risk hypothesis.",
+                  "Grouping changes detection semantics: user, source, device and destination answer different questions.",
+                  "Allow-lists should be scoped narrowly and revisited; broad exclusions hide attacks."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q09",
+              "question": "What changes when failed logins are grouped by source IP instead of user?",
+              "options": [
+                "Nothing",
+                "The detection question changes from account-focused behavior to source-focused behavior",
+                "Only formatting changes",
+                "The events are deleted"
+              ],
+              "answer": "The detection question changes from account-focused behavior to source-focused behavior",
+              "explanation": "Aggregation keys determine what behavior the rule is actually measuring."
+            },
+            "summary": [
+              "Rules are transparent and testable, but threshold-only logic can miss low-and-slow behavior.",
+              "The unit of aggregation is part of the detection design."
+            ],
+            "resources": [
+              "https://sigmahq.io/docs/basics/rules.html",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          },
+          {
+            "id": "L10",
+            "title": "Correlation Across Events",
+            "description": "Combine related events using time windows, shared identifiers and entity relationships.",
+            "learningObjectives": [
+              "Design a multi-stage correlation sequence.",
+              "Choose correlation keys and windows.",
+              "Explain limitations caused by missing or inconsistent identifiers."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Correlation can join events by user, device, session, process, destination, flow identifier or another stable relationship.",
+                  "A useful sequence might be authentication success followed by privileged action followed by unusual data access.",
+                  "Short windows can miss slow behavior; long windows can increase noise and state requirements."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q10",
+              "question": "Which correlation key is usually stronger than matching only on IP address?",
+              "options": [
+                "A stable session or event correlation identifier when available",
+                "Random ordering",
+                "Log file name only",
+                "Severity alone"
+              ],
+              "answer": "A stable session or event correlation identifier when available",
+              "explanation": "Stable identifiers can connect events that share the same activity without relying on a potentially shared or changing IP."
+            },
+            "summary": [
+              "Correlation should be justified by a plausible sequence of behavior.",
+              "Stable identifiers greatly improve fidelity."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://sigmahq.io/docs/basics/rules.html",
+              "https://attack.mitre.org/techniques/"
+            ]
+          },
+          {
+            "id": "L11",
+            "title": "Baselines and Anomaly Detection",
+            "description": "Use expected behavior to identify deviations while understanding why anomaly detection requires careful context.",
+            "learningObjectives": [
+              "Define a baseline for an entity.",
+              "Differentiate anomaly from maliciousness.",
+              "Select features suitable for a simple anomaly detector."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A baseline describes expected behavior for a defined entity, time period and feature set.",
+                  "An anomaly is a deviation from expectation, not proof of compromise.",
+                  "Baselines should account for seasonality, maintenance windows, new systems and legitimate role differences."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q11",
+              "question": "What does an anomaly detection result establish?",
+              "options": [
+                "Proof of compromise",
+                "That observed behavior differs from the defined baseline",
+                "That a user is malicious",
+                "That the log is corrupted"
+              ],
+              "answer": "That observed behavior differs from the defined baseline",
+              "explanation": "An anomaly is a deviation signal requiring context and investigation."
+            },
+            "summary": [
+              "Anomaly detections generate hypotheses rather than verdicts.",
+              "Feature quality and scope are often more important than model complexity."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          },
+          {
+            "id": "L12",
+            "title": "Alert Fidelity, Noise and Tuning",
+            "description": "Measure false positives and missed detections, then tune rules without creating unsafe blind spots.",
+            "learningObjectives": [
+              "Calculate and interpret simple alert-fidelity measures.",
+              "Tune a rule using observed evidence.",
+              "Document suppressions and exclusions."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "precision = true_positives / (true_positives + false_positives)\nrecall = true_positives / (true_positives + false_negatives)"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A suppression should say what is suppressed, why, for how long, and who owns the exception.",
+                  "Tuning must preserve the original threat scenario; reducing alert count alone is not success.",
+                  "Sampling and test cases help estimate whether a rule still fires on known-good malicious simulations."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q12",
+              "question": "What is a dangerous tuning outcome?",
+              "options": [
+                "Fewer alerts",
+                "Lower CPU use",
+                "A rule becomes quiet because it suppresses the very behavior it was meant to detect",
+                "A documented exception"
+              ],
+              "answer": "A rule becomes quiet because it suppresses the very behavior it was meant to detect",
+              "explanation": "Silencing a rule by excluding relevant behavior creates a detection blind spot."
+            },
+            "summary": [
+              "Noise reduction is valuable only when coverage is preserved.",
+              "Exceptions are configuration, not permanent truth; treat them as reviewable controls."
+            ],
+            "resources": [
+              "https://sigmahq.io/docs/basics/rules.html",
+              "https://csrc.nist.gov/pubs/sp/800/137/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T03",
+            "title": "Build a Correlated Authentication Detection",
+            "level": "Intermediate",
+            "description": "Write a query-like Python function that finds repeated failures followed by a success from the same source.",
+            "problemStatement": "Given ordered authentication events, alert when a source produces at least five failures for the same account within 10 minutes and then succeeds within 2 minutes.",
+            "objectives": [
+              "Group by account and source.",
+              "Maintain a rolling time window.",
+              "Emit one alert per correlated sequence."
+            ],
+            "requirements": [
+              "Python 3.11+ standard library.",
+              "Events contain timestamp, account, source_ip and result."
+            ],
+            "hint": "Maintain recent failures per (account, source_ip) and remove entries that fall outside the rule window.",
+            "solutionCode": "from collections import defaultdict, deque\nfrom datetime import datetime, timedelta\n\ndef detect_burst_then_success(events):\n    recent = defaultdict(deque)\n    alerts = []\n\n    for event in events:\n        ts = datetime.fromisoformat(event[\"timestamp\"].replace(\"Z\", \"+00:00\"))\n        key = (event[\"account\"], event[\"source_ip\"])\n        q = recent[key]\n\n        if event[\"result\"] == \"failure\":\n            q.append(ts)\n            cutoff = ts - timedelta(minutes=10)\n            while q and q[0] < cutoff:\n                q.popleft()\n        elif event[\"result\"] == \"success\":\n            cutoff = ts - timedelta(minutes=2)\n            if sum(1 for t in q if t >= cutoff) >= 5:\n                alerts.append({\n                    \"account\": event[\"account\"],\n                    \"source_ip\": event[\"source_ip\"],\n                    \"timestamp\": event[\"timestamp\"],\n                    \"reason\": \"five_or_more_recent_failures_followed_by_success\"\n                })\n    return alerts",
+            "solutionExplanation": "The function uses a per-entity deque to maintain a rolling failure window and checks for a success within the correlation interval."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Endpoint Security Monitoring",
+        "description": "Interpret Windows and Linux endpoint telemetry, process chains and security-control state changes.",
+        "lessons": [
+          {
+            "id": "L13",
+            "title": "Windows Security Telemetry",
+            "description": "Identify high-value Windows security telemetry and reason about authentication, process and account-change observations.",
+            "learningObjectives": [
+              "Name important Windows telemetry categories.",
+              "Explain how authentication and process events support investigations.",
+              "Choose fields needed for identity-focused detections."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Security auditing can provide authentication, account-management and policy-related evidence.",
+                  "Process telemetry is useful for parent/child relationships, executable paths, command lines and user context when available.",
+                  "The exact event IDs and available fields depend on Windows configuration and collection tooling; do not assume all endpoints emit identical data."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q13",
+              "question": "Why is event ID alone insufficient for many endpoint detections?",
+              "options": [
+                "Event IDs are meaningless",
+                "The surrounding fields and relationships determine what the event represents in context",
+                "Event IDs consume too much storage",
+                "Event IDs cannot be logged"
+              ],
+              "answer": "The surrounding fields and relationships determine what the event represents in context",
+              "explanation": "Context such as account, process, command line, parent process and outcome can materially change interpretation."
+            },
+            "summary": [
+              "Windows monitoring should be designed around enabled audit policy and the actual fields collected.",
+              "Event ID alone is rarely enough context for a high-fidelity detection."
+            ],
+            "resources": [
+              "https://www.cisecurity.org/controls/audit-log-management",
+              "https://attack.mitre.org/datasources/"
+            ]
+          },
+          {
+            "id": "L14",
+            "title": "Linux Authentication and Process Telemetry",
+            "description": "Use Linux authentication, sudo and process observations to build monitoring coverage.",
+            "learningObjectives": [
+              "Identify common Linux authentication sources.",
+              "Distinguish authentication events from process execution evidence.",
+              "Design a monitoring check for repeated privileged access failures."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Linux environments can expose authentication activity through system logs, journald, SSH logging and audit facilities depending on distribution and configuration.",
+                  "sudo-related events answer privilege-use questions; process telemetry answers execution questions.",
+                  "Log formats and paths vary, so detection logic should rely on documented parsers or normalized fields rather than hard-coded assumptions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q14",
+              "question": "Which pairing best supports an investigation of suspicious SSH access followed by privilege use?",
+              "options": [
+                "Authentication logs plus sudo/audit/process telemetry",
+                "Only disk space metrics",
+                "Only DNS",
+                "Only CPU temperature"
+              ],
+              "answer": "Authentication logs plus sudo/audit/process telemetry",
+              "explanation": "The combined evidence establishes access followed by privileged activity."
+            },
+            "summary": [
+              "Linux monitoring depends on the distribution and enabled audit configuration.",
+              "Treat source-specific paths as deployment details rather than universal facts."
+            ],
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://attack.mitre.org/datasources/"
+            ]
+          },
+          {
+            "id": "L15",
+            "title": "Endpoint Process Chains",
+            "description": "Learn to read parent-child process relationships and identify suspicious process ancestry patterns.",
+            "learningObjectives": [
+              "Interpret a process tree.",
+              "Identify suspicious ancestry patterns without assuming maliciousness.",
+              "Capture command-line and identity context."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "browser.exe\n  └─ office.exe\n      └─ script-host.exe\n          └─ network-client.exe"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A process tree helps analysts understand which process launched another process.",
+                  "Unusual ancestry is a signal; legitimate software can create unexpected but valid chains.",
+                  "Executable path, signer, user, command line, hash and network activity can add discriminating context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q15",
+              "question": "What does parent-child process context primarily provide?",
+              "options": [
+                "File retention time",
+                "An execution relationship showing which process launched another",
+                "Password complexity",
+                "Network bandwidth"
+              ],
+              "answer": "An execution relationship showing which process launched another",
+              "explanation": "Process ancestry helps reconstruct execution flow."
+            },
+            "summary": [
+              "Process relationships are strongest when combined with identity and network context.",
+              "Avoid treating a particular process name as inherently malicious."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/",
+              "https://attack.mitre.org/datasources/"
+            ]
+          },
+          {
+            "id": "L16",
+            "title": "Endpoint Security Control Telemetry",
+            "description": "Monitor endpoint protection, firewall, EDR and policy-change signals and learn why control-plane events matter.",
+            "learningObjectives": [
+              "Identify telemetry from security controls.",
+              "Detect control-disable and policy-change conditions.",
+              "Correlate control health with endpoint activity."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Security-control telemetry can reveal blocked executions, detections, quarantine actions and policy changes.",
+                  "A disabled control is both an operational problem and potentially a defense-impairment signal.",
+                  "Monitoring should distinguish authorized maintenance from unexpected security-control changes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q16",
+              "question": "Why monitor security-control state changes?",
+              "options": [
+                "They are always harmless",
+                "An unexpected control change can reduce defensive visibility and may itself be suspicious",
+                "They only affect billing",
+                "They cannot be logged"
+              ],
+              "answer": "An unexpected control change can reduce defensive visibility and may itself be suspicious",
+              "explanation": "Security controls are part of the monitoring surface and their impairment can increase risk."
+            },
+            "summary": [
+              "Security-control telemetry helps explain both attacks and visibility failures.",
+              "Unexpected changes to a protection mechanism deserve context and ownership."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T04",
+            "title": "Normalize Endpoint Process Events",
+            "level": "Easy",
+            "description": "Create a normalized representation for process-start events from two different endpoint schemas.",
+            "problemStatement": "Map two sample source formats into common fields without discarding original source metadata.",
+            "objectives": [
+              "Produce common timestamp, host, user, parent_process and process fields.",
+              "Retain source_name and raw event."
+            ],
+            "requirements": [
+              "Python 3.11+ standard library."
+            ],
+            "hint": "Normalize semantics, not just field names; preserve the original event for later review.",
+            "solutionCode": "def normalize_windows(event):\n    return {\n        \"timestamp\": event[\"TimeCreated\"],\n        \"host\": event[\"Computer\"],\n        \"user\": event.get(\"SubjectUserName\"),\n        \"parent_process\": event.get(\"ParentImage\"),\n        \"process\": event.get(\"NewProcessName\"),\n        \"source_name\": \"windows_security\",\n        \"raw\": event,\n    }\n\ndef normalize_linux(event):\n    return {\n        \"timestamp\": event[\"timestamp\"],\n        \"host\": event[\"host\"],\n        \"user\": event.get(\"uid\"),\n        \"parent_process\": event.get(\"ppid\"),\n        \"process\": event.get(\"comm\") or event.get(\"exe\"),\n        \"source_name\": \"linux_audit\",\n        \"raw\": event,\n    }",
+            "solutionExplanation": "Both adapters emit the same core vocabulary while preserving source name and the original record."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Network Security Monitoring",
+        "description": "Use flow, DNS, Zeek and Suricata telemetry to reconstruct network behavior and support detections.",
+        "lessons": [
+          {
+            "id": "L17",
+            "title": "Network Flow Monitoring",
+            "description": "Use flow-level observations to reason about who communicated with whom, when and at what volume.",
+            "learningObjectives": [
+              "Explain the purpose of flow telemetry.",
+              "Identify useful flow fields.",
+              "Distinguish flow metadata from packet content."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Flow records summarize communications rather than exposing every packet payload.",
+                  "Typical fields include source/destination addresses, ports, protocol, byte/packet counts and timestamps.",
+                  "Flow data is useful for baselining, lateral movement analysis and unusual egress patterns, but may not reveal application content."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q17",
+              "question": "What is a key limitation of flow telemetry?",
+              "options": [
+                "It cannot record timestamps",
+                "It summarizes communication and may not contain application payload details",
+                "It is always encrypted",
+                "It cannot show IP addresses"
+              ],
+              "answer": "It summarizes communication and may not contain application payload details",
+              "explanation": "Flow records provide metadata rather than complete packet contents."
+            },
+            "summary": [
+              "Flow records are compact behavior summaries.",
+              "Flow data alone usually cannot answer every application-layer question."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/94/final",
+              "https://csrc.nist.gov/pubs/sp/800/137/final"
+            ]
+          },
+          {
+            "id": "L18",
+            "title": "DNS Monitoring",
+            "description": "Analyze DNS activity for unusual query patterns, new domains and suspicious resolution behavior.",
+            "learningObjectives": [
+              "Identify DNS fields useful for monitoring.",
+              "Design a rare-domain or high-volume query signal.",
+              "Use DNS results as investigation context rather than verdicts."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Useful DNS fields include query name, type, response code, answer data, client identity and timestamp.",
+                  "Rare domains, algorithmically generated-looking labels and unusual query volume can warrant review, but legitimate software can produce similar behavior.",
+                  "DNS monitoring benefits from asset and user context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q18",
+              "question": "Why is a rare DNS domain not automatically malicious?",
+              "options": [
+                "DNS has no security value",
+                "Legitimate new services and software can also contact rarely seen domains",
+                "Rare domains are always safe",
+                "DNS responses cannot be logged"
+              ],
+              "answer": "Legitimate new services and software can also contact rarely seen domains",
+              "explanation": "Rarity is contextual evidence, not proof of maliciousness."
+            },
+            "summary": [
+              "DNS provides a useful behavioral layer connecting clients to names and answers.",
+              "Rarity is evidence to investigate, not a classification by itself."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/logs/index.html",
+              "https://attack.mitre.org/datasources/"
+            ]
+          },
+          {
+            "id": "L19",
+            "title": "Zeek Network Security Monitoring",
+            "description": "Understand Zeek logs as structured network observations suitable for investigation and detection engineering.",
+            "learningObjectives": [
+              "Identify common Zeek log categories.",
+              "Use connection and DNS records for a small investigation.",
+              "Explain why network metadata is valuable even without payload capture."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "# Conceptual conn.log fields\nts id.orig_h id.orig_p id.resp_h id.resp_p proto service duration"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Zeek is a network security monitor that produces rich structured logs from observed traffic.",
+                  "Connection records can establish communication relationships; DNS, HTTP, TLS and other logs can add protocol context.",
+                  "Exact log fields depend on Zeek version, scripts and configuration. Use the installed schema as the authority for production parsing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q19",
+              "question": "What is a strong first use of Zeek connection logs?",
+              "options": [
+                "Determine exact payload content",
+                "Establish communication relationships and timing",
+                "Recover deleted files",
+                "Set endpoint passwords"
+              ],
+              "answer": "Establish communication relationships and timing",
+              "explanation": "Connection logs provide network metadata useful for reconstructing communication patterns."
+            },
+            "summary": [
+              "Zeek is valuable because it converts network observations into structured, queryable evidence.",
+              "Schemas are configuration- and version-sensitive and must be documented."
+            ],
+            "resources": [
+              "https://docs.zeek.org/en/current/logs/index.html",
+              "https://attack.mitre.org/datasources/"
+            ]
+          },
+          {
+            "id": "L20",
+            "title": "Suricata EVE and IDS Alerts",
+            "description": "Interpret Suricata EVE JSON output and combine IDS alerts with protocol and flow context.",
+            "learningObjectives": [
+              "Explain EVE JSON event types.",
+              "Parse an alert record safely.",
+              "Correlate an IDS alert with surrounding network evidence."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "{\n  \"event_type\": \"alert\",\n  \"src_ip\": \"192.0.2.10\",\n  \"dest_ip\": \"198.51.100.20\",\n  \"proto\": \"TCP\",\n  \"alert\": {\n    \"signature\": \"Example signature\",\n    \"action\": \"allowed\"\n  }\n}",
+                "language": "json"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Suricata EVE can emit alerts, anomalies, flow and protocol-specific records as JSON.",
+                  "The EVE stream is broad; analysts should use event_type and relevant nested fields rather than assuming every record has the same shape.",
+                  "An alert action such as 'allowed' can mean the traffic was observed/alerted rather than blocked; interpret according to deployment configuration."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "P02",
+                "title": "Inspect a Suricata EVE Alert",
+                "description": "Parse one EVE-style alert and produce an analyst summary that keeps source, destination, protocol and action context.",
+                "steps": [
+                  "Save the sample JSON to a file.",
+                  "Parse the JSON with Python's json module.",
+                  "Extract event_type, src_ip, dest_ip, proto, signature and action.",
+                  "Print a one-line summary that states what was observed without claiming compromise."
+                ],
+                "solution": "import json\n\nevent = json.loads('''{\n  \"event_type\": \"alert\",\n  \"src_ip\": \"192.0.2.10\",\n  \"dest_ip\": \"198.51.100.20\",\n  \"proto\": \"TCP\",\n  \"alert\": {\n    \"signature\": \"Example signature\",\n    \"action\": \"allowed\"\n  }\n}''')\n\nsummary = (\n    f\"{event['event_type']}: {event['src_ip']} -> {event['dest_ip']} \"\n    f\"over {event['proto']}; signature={event['alert']['signature']}; \"\n    f\"action={event['alert']['action']}\"\n)\nprint(summary)",
+                "output": "The output is an evidence-focused summary; it does not infer that the destination is malicious simply because an IDS signature matched."
+              }
+            ],
+            "quiz": {
+              "id": "Q20",
+              "question": "Why should an analyst inspect more than the Suricata signature text?",
+              "options": [
+                "The signature is useless",
+                "Context such as source, destination, protocol and event action helps determine what actually occurred",
+                "JSON cannot contain useful data",
+                "The signature contains the password"
+              ],
+              "answer": "Context such as source, destination, protocol and event action helps determine what actually occurred",
+              "explanation": "The surrounding network context determines the significance of an IDS alert."
+            },
+            "summary": [
+              "Suricata EVE is a structured stream suitable for downstream parsing and correlation.",
+              "Always interpret alert action and deployment configuration together."
+            ],
+            "resources": [
+              "https://docs.suricata.io/en/latest/output/eve/eve-json-output.html",
+              "https://attack.mitre.org/datasources/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T05",
+            "title": "Correlate Zeek DNS With Suricata Alerts",
+            "level": "Advanced",
+            "description": "Create a small correlation routine that links a suspicious network alert to recent DNS activity from the same client.",
+            "problemStatement": "Given Suricata EVE alert events and Zeek-like DNS events, report correlations where a client queried a domain within five minutes before an alert to an address resolved by that query.",
+            "objectives": [
+              "Index DNS answers by client and time.",
+              "Match alert destination to recent DNS answers.",
+              "Return explainable correlation records."
+            ],
+            "requirements": [
+              "Python 3.11+ standard library.",
+              "Events are already parsed JSON objects."
+            ],
+            "hint": "Correlate using client, destination and time; keep the matched DNS record in the output so the analyst can inspect the evidence.",
+            "solutionCode": "from datetime import timedelta\n\ndef correlate_dns_alerts(dns_events, alerts):\n    answers = {}\n    for d in dns_events:\n        key = (d[\"client\"], d[\"answer\"])\n        answers.setdefault(key, []).append(d)\n\n    results = []\n    for a in alerts:\n        for d in answers.get((a[\"src_ip\"], a[\"dest_ip\"]), []):\n            delta = a[\"timestamp\"] - d[\"timestamp\"]\n            if timedelta(0) <= delta <= timedelta(minutes=5):\n                results.append({\n                    \"client\": a[\"src_ip\"],\n                    \"destination\": a[\"dest_ip\"],\n                    \"query\": d[\"query\"],\n                    \"dns_time\": d[\"timestamp\"],\n                    \"alert_time\": a[\"timestamp\"],\n                    \"signature\": a[\"signature\"]\n                })\n    return results",
+            "solutionExplanation": "The correlation preserves the matching DNS query and timestamps, creating an explainable relationship instead of only producing a score."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "SIEM Queries and Investigation Analytics",
+        "description": "Learn how monitoring platforms ingest telemetry and how analysts write efficient, explainable queries.",
+        "lessons": [
+          {
+            "id": "L21",
+            "title": "SIEM Data Model and Ingestion",
+            "description": "Understand how security analytics platforms ingest, normalize and index telemetry for investigation.",
+            "learningObjectives": [
+              "Explain the stages between a source log and an analyst query.",
+              "Identify ingestion failures that can produce false conclusions.",
+              "Choose stable fields for cross-source searches."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A SIEM typically receives events, parses or transforms them, stores them in queryable structures and applies analytics or correlation.",
+                  "Ingestion pipelines can fail independently of the source system, so source health and pipeline health should be measured.",
+                  "Cross-source investigations depend on common fields such as time, user, host, IP, process and event category."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q21",
+              "question": "What is a dangerous assumption in a SIEM?",
+              "options": [
+                "Indexed data can be queried",
+                "If no event is found, the event definitely did not happen",
+                "Parsing affects the resulting fields",
+                "Time range matters"
+              ],
+              "answer": "If no event is found, the event definitely did not happen",
+              "explanation": "A missing result can reflect collection, parsing, retention or query problems rather than event absence."
+            },
+            "summary": [
+              "A SIEM is an analytics workflow as much as a storage system.",
+              "A missing result can reflect missing telemetry, retention, parsing or an incorrect query."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://learn.microsoft.com/en-us/azure/sentinel/",
+              "https://documentation.wazuh.com/current/user-manual/index.html"
+            ]
+          },
+          {
+            "id": "L22",
+            "title": "KQL Investigation Patterns",
+            "description": "Practice the core Kusto Query Language patterns commonly used for security analytics.",
+            "learningObjectives": [
+              "Filter by time and predicates.",
+              "Project and summarize relevant fields.",
+              "Group and count events to reveal patterns."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SecurityEvent\n| where TimeGenerated > ago(1h)\n| where EventID == 4625\n| summarize failures=count() by Account, IpAddress\n| order by failures desc",
+                "language": "kql"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use a narrow time range first, then widen deliberately.",
+                  "Projection makes results easier to review and reduces cognitive load.",
+                  "Summarization converts event streams into behavior-level signals."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "P03",
+                "title": "Run a KQL Investigation Pattern",
+                "description": "Use a Sentinel-style KQL query to summarize authentication failures while keeping a bounded time range.",
+                "steps": [
+                  "Open a KQL-capable workspace or use a static query editor.",
+                  "Start with a one-hour time filter.",
+                  "Filter to failed authentication records.",
+                  "Summarize by user and source address in 10-minute bins.",
+                  "Review the result and explain which fields support triage."
+                ],
+                "solution": "SecurityEvent\n| where TimeGenerated > ago(1h)\n| where EventID == 4625\n| summarize Failures=count(), FirstSeen=min(TimeGenerated), LastSeen=max(TimeGenerated)\n    by Account, IpAddress, bin(TimeGenerated, 10m)\n| where Failures >= 5\n| order by Failures desc",
+                "output": "The query returns grouped failures with first/last observed times and the source identity needed for follow-up analysis."
+              }
+            ],
+            "quiz": {
+              "id": "Q22",
+              "question": "What does `summarize count() by Account` accomplish?",
+              "options": [
+                "Deletes accounts",
+                "Aggregates events into counts per account",
+                "Encrypts logs",
+                "Changes the source records"
+              ],
+              "answer": "Aggregates events into counts per account",
+              "explanation": "summarize produces grouped aggregates over the selected events."
+            },
+            "summary": [
+              "KQL-style investigation emphasizes filtering, projection and aggregation.",
+              "The exact tables and field names depend on the Sentinel or Log Analytics schema in use."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/kusto/query/?view=microsoft-fabric",
+              "https://learn.microsoft.com/en-us/azure/sentinel/"
+            ]
+          },
+          {
+            "id": "L23",
+            "title": "Investigation Queries That Explain Themselves",
+            "description": "Write queries that return enough context to support analyst decisions rather than only a boolean result.",
+            "learningObjectives": [
+              "Return entity, time, source and action context.",
+              "Use calculated fields to explain why a row matched.",
+              "Balance breadth with analyst readability."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Events\n| where EventType == \"authentication\"\n| extend reason = case(\n    Result == \"failure\" and RiskScore >= 70, \"high-risk-failure\",\n    Result == \"success\" and NewDevice == true, \"new-device-success\",\n    \"other\")\n| project TimeGenerated, User, SourceIp, Result, reason",
+                "language": "kql"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A detection result should expose the evidence that made it match.",
+                  "Readable columns reduce analyst time spent reconstructing the rule’s logic.",
+                  "A query output should be stable enough to feed downstream playbooks or tickets when appropriate."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q23",
+              "question": "Why add a calculated `reason` field to an investigation query?",
+              "options": [
+                "It makes the log unreadable",
+                "It makes the detection logic explicit in the output",
+                "It changes the source system",
+                "It prevents all false positives"
+              ],
+              "answer": "It makes the detection logic explicit in the output",
+              "explanation": "An explicit reason helps the analyst understand why an event or group matched."
+            },
+            "summary": [
+              "Explainable queries return the same evidence the analyst would otherwise have to reconstruct.",
+              "Treat output schema as part of the detection contract."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/kusto/query/?view=microsoft-fabric"
+            ]
+          },
+          {
+            "id": "L24",
+            "title": "Query Performance and Data Scope",
+            "description": "Control query cost and investigation latency through time bounding, selective filtering and appropriate aggregation.",
+            "learningObjectives": [
+              "Start investigations with bounded time ranges.",
+              "Use filters that reduce unnecessary data early.",
+              "Recognize when query results can be misleading because of retention or sampling."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A query that scans an unnecessary time range increases cost and analyst waiting time.",
+                  "Use source-specific fields and indexed dimensions when the platform provides them.",
+                  "A fast query over incomplete data is still an incomplete investigation. Always know retention and ingestion coverage."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q24",
+              "question": "Which is generally the safest first step for a large investigation query?",
+              "options": [
+                "Remove all time filters",
+                "Start with a bounded time range and expand as evidence requires",
+                "Query every table at once",
+                "Disable logging"
+              ],
+              "answer": "Start with a bounded time range and expand as evidence requires",
+              "explanation": "Bounding the initial search reduces unnecessary work while preserving a controlled path to broader analysis."
+            },
+            "summary": [
+              "Efficient queries are useful only when their scope remains correct.",
+              "Retention and ingestion coverage belong in the analyst’s mental model."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/kusto/query/?view=microsoft-fabric",
+              "https://learn.microsoft.com/en-us/azure/sentinel/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T06",
+            "title": "Write an Explainable Authentication Query",
+            "level": "Intermediate",
+            "description": "Produce a KQL-style query that surfaces failed authentication bursts with context.",
+            "problemStatement": "Write a query over an Authentication table to find users with at least eight failures in 10 minutes and show their top source IPs.",
+            "objectives": [
+              "Use a time filter.",
+              "Filter failures.",
+              "Summarize by user and source.",
+              "Make the threshold visible."
+            ],
+            "requirements": [
+              "KQL-capable environment or a syntactic review setting."
+            ],
+            "hint": "Aggregate first by user and source, then apply the threshold so the result preserves source context.",
+            "solutionCode": "Authentication\n| where TimeGenerated > ago(1h)\n| where Result == \"failure\"\n| summarize Failures=count(), FirstSeen=min(TimeGenerated), LastSeen=max(TimeGenerated) by User, SourceIp, bin(TimeGenerated, 10m)\n| where Failures >= 8\n| order by Failures desc",
+            "solutionExplanation": "The query bounds time, filters to failures, aggregates into 10-minute windows and returns the evidence needed to investigate the burst."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Threat-Informed Monitoring",
+        "description": "Use ATT&CK and threat intelligence to prioritize detections and identify telemetry gaps.",
+        "lessons": [
+          {
+            "id": "L25",
+            "title": "MITRE ATT&CK for Monitoring",
+            "description": "Use ATT&CK tactics, techniques and current detection-oriented concepts to organize monitoring coverage.",
+            "learningObjectives": [
+              "Explain tactic versus technique.",
+              "Map a monitoring use case to an ATT&CK behavior.",
+              "Identify the telemetry needed for a behavioral hypothesis."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "ATT&CK tactics describe adversary goals; techniques describe how those goals are achieved.",
+                  "The ATT&CK knowledge base evolves, and defensive mappings should be reviewed against the current version rather than treated as timeless.",
+                  "Detection mapping is strongest when tied to concrete telemetry and analytics rather than technique names alone."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q25",
+              "question": "What does an ATT&CK tactic represent?",
+              "options": [
+                "A software version",
+                "The adversary’s tactical goal or why a behavior is performed",
+                "A log parser",
+                "A SIEM table"
+              ],
+              "answer": "The adversary’s tactical goal or why a behavior is performed",
+              "explanation": "ATT&CK defines tactics as the adversary’s reason or goal for performing an action."
+            },
+            "summary": [
+              "ATT&CK provides a vocabulary for adversary behavior, not a replacement for local detection engineering.",
+              "Current version information should be recorded when mappings are operationally important."
+            ],
+            "resources": [
+              "https://attack.mitre.org/tactics/enterprise/",
+              "https://attack.mitre.org/techniques/",
+              "https://attack.mitre.org/datasources/"
+            ]
+          },
+          {
+            "id": "L26",
+            "title": "Detection Strategies and Data Components",
+            "description": "Understand the shift toward detection-oriented ATT&CK structures and the relationship between behaviors and required data.",
+            "learningObjectives": [
+              "Explain why data components matter.",
+              "Use data requirements to expose monitoring gaps.",
+              "Avoid treating deprecated or historical ATT&CK structures as current guidance."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Current ATT&CK material emphasizes Detection Strategies, Analytics and Data Components in places where earlier approaches centered on data sources and detection rules.",
+                  "Data components describe specific observable properties relevant to detecting behavior.",
+                  "A technique mapping without the required data is a claimed coverage, not demonstrated coverage."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q26",
+              "question": "What is the practical value of a data component?",
+              "options": [
+                "It replaces the SIEM",
+                "It identifies a specific observable property that can support detection of a behavior",
+                "It stores passwords",
+                "It determines severity"
+              ],
+              "answer": "It identifies a specific observable property that can support detection of a behavior",
+              "explanation": "Data components make telemetry requirements more concrete for defensive analytics."
+            },
+            "summary": [
+              "Defensive mappings should be version-aware and tied to actual telemetry.",
+              "Data requirements expose where a detection cannot work as designed."
+            ],
+            "resources": [
+              "https://attack.mitre.org/datasources/",
+              "https://attack.mitre.org/techniques/"
+            ]
+          },
+          {
+            "id": "L27",
+            "title": "Threat Intelligence Fundamentals",
+            "description": "Use indicators, context and confidence without confusing threat intelligence with raw feeds.",
+            "learningObjectives": [
+              "Distinguish an indicator from intelligence.",
+              "Assess relevance and confidence.",
+              "Record provenance and context for an intelligence item."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Threat intelligence is contextualized information that supports decisions; a raw IP, hash or domain is an indicator rather than a complete intelligence product.",
+                  "Useful context can include source, observation time, relevance, confidence, intended use and expiration or re-evaluation criteria.",
+                  "Indicators should be checked against internal telemetry and current context before escalation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q27",
+              "question": "Which is an example of context that increases the usefulness of an indicator?",
+              "options": [
+                "Its color",
+                "Provenance, confidence, observation time and relationship to a current investigation",
+                "Its file name only",
+                "A longer hash"
+              ],
+              "answer": "Provenance, confidence, observation time and relationship to a current investigation",
+              "explanation": "Context enables the analyst to assess whether an indicator is relevant and trustworthy."
+            },
+            "summary": [
+              "Indicators are inputs to analysis, not automatic incident declarations.",
+              "Provenance and observation time help analysts evaluate freshness and relevance."
+            ],
+            "resources": [
+              "https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html",
+              "https://www.oasis-open.org/standard/taxii-version-2-1/"
+            ]
+          },
+          {
+            "id": "L28",
+            "title": "STIX and TAXII Concepts",
+            "description": "Understand structured threat-information representation and transport at a practical conceptual level.",
+            "learningObjectives": [
+              "Explain what STIX is used for.",
+              "Explain what TAXII is used for.",
+              "Differentiate content representation from transport."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "STIX defines structured cyber threat intelligence objects and relationships.",
+                  "TAXII defines an application-layer protocol for exchanging cyber threat information.",
+                  "A monitoring team may consume structured intelligence without implementing a complete CTI platform, but should understand provenance and data handling."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q28",
+              "question": "What is the main distinction between STIX and TAXII?",
+              "options": [
+                "STIX is transport and TAXII is malware",
+                "STIX models cyber threat information; TAXII defines a protocol for exchanging it",
+                "Both are SIEMs",
+                "Both are IDS rules"
+              ],
+              "answer": "STIX models cyber threat information; TAXII defines a protocol for exchanging it",
+              "explanation": "STIX provides structured content while TAXII provides exchange mechanisms."
+            },
+            "summary": [
+              "STIX structures threat information; TAXII describes exchange mechanisms.",
+              "A useful consumer still validates provenance and relevance before using imported indicators."
+            ],
+            "resources": [
+              "https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html",
+              "https://www.oasis-open.org/standard/taxii-version-2-1/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T07",
+            "title": "Map a Monitoring Use Case to ATT&CK",
+            "level": "Easy",
+            "description": "Map a suspicious service-account login scenario to a defensible ATT&CK-based monitoring description.",
+            "problemStatement": "Document the adversary behavior, relevant telemetry, analytics and data gaps without inventing technique IDs.",
+            "objectives": [
+              "Describe behavior in plain language.",
+              "Identify telemetry required.",
+              "Verify the current ATT&CK mapping before recording an identifier.",
+              "List one gap that prevents high-confidence detection."
+            ],
+            "requirements": [
+              "Access to current ATT&CK.",
+              "No private intelligence required."
+            ],
+            "hint": "Map behavior first and verify the current ATT&CK page before choosing identifiers; record the telemetry dependency next to the mapping.",
+            "solutionCode": "mapping = {\n  \"behavior\": \"suspicious use of a valid account\",\n  \"telemetry\": [\"authentication\", \"device\", \"source_ip\", \"privilege_change\"],\n  \"analytic\": \"successful account use from an unusual source followed by privileged activity\",\n  \"coverage_gap\": \"no reliable device ownership field\",\n  \"verification\": \"review the current ATT&CK technique/analytics page before implementation\"\n}",
+            "solutionExplanation": "The solution deliberately separates the behavioral hypothesis from the version-sensitive ATT&CK identifier and records the missing evidence that limits detection confidence."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Alert Triage and Incident Investigation",
+        "description": "Move from alert signals to evidence-backed triage, timelines and case documentation.",
+        "lessons": [
+          {
+            "id": "L29",
+            "title": "Alert Triage and Prioritization",
+            "description": "Turn detection signals into analyst decisions using severity, confidence, asset criticality and evidence quality.",
+            "learningObjectives": [
+              "Build a triage priority model.",
+              "Separate evidence collection from speculation.",
+              "Document a defensible triage decision."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Priority should reflect potential impact, confidence, scope and urgency—not just the rule’s static severity.",
+                  "Asset criticality can change the operational priority of an otherwise identical alert.",
+                  "Triage should preserve uncertainty: 'suspicious, pending identity validation' is better than an unsupported 'confirmed compromise.'"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q29",
+              "question": "Which factor can legitimately change alert priority?",
+              "options": [
+                "Asset criticality",
+                "Font size",
+                "Analyst initials only",
+                "Log filename"
+              ],
+              "answer": "Asset criticality",
+              "explanation": "The same technical signal can have different operational consequences depending on the affected asset."
+            },
+            "summary": [
+              "Priority is an operational decision, not just a detection field.",
+              "Preserve uncertainty until evidence supports a stronger conclusion."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+            ]
+          },
+          {
+            "id": "L30",
+            "title": "Evidence Collection and Preservation",
+            "description": "Collect relevant artifacts while maintaining provenance, timestamps and handling discipline.",
+            "learningObjectives": [
+              "Identify volatile and durable evidence categories.",
+              "Record acquisition metadata.",
+              "Preserve original evidence while analyzing copies where appropriate."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence collection should be driven by the incident hypothesis and volatility of data.",
+                  "Record who collected the artifact, when, from where, with what method and any integrity information needed by the organization.",
+                  "Logs themselves can be evidence; protecting their integrity matters."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q30",
+              "question": "Why record acquisition metadata?",
+              "options": [
+                "It makes the file smaller",
+                "It supports provenance and helps others understand how evidence was obtained",
+                "It changes evidence content",
+                "It prevents all attacks"
+              ],
+              "answer": "It supports provenance and helps others understand how evidence was obtained",
+              "explanation": "Acquisition metadata contributes to traceability and reproducibility."
+            },
+            "summary": [
+              "Evidence handling needs provenance and repeatability.",
+              "Collection should be proportionate to the question being answered."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+            ]
+          },
+          {
+            "id": "L31",
+            "title": "Incident Timeline Construction",
+            "description": "Build a normalized timeline from heterogeneous events and handle clock skew and missing evidence explicitly.",
+            "learningObjectives": [
+              "Create a timeline from multiple sources.",
+              "Separate event time from ingestion time.",
+              "Mark inferred or uncertain sequence relationships."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "11:02:14Z auth failure\n11:03:01Z auth success\n11:04:19Z privilege change\n11:05:10Z file access\n11:07:42Z outbound connection"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Normalize timestamps to a common representation while retaining the source timestamp semantics.",
+                  "Do not fabricate missing events to make a story coherent.",
+                  "A timeline should show evidence and uncertainty, not merely a narrative conclusion."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "P04",
+                "title": "Construct an Incident Timeline",
+                "description": "Create a normalized timeline from authentication, privilege and network events and mark uncertainty.",
+                "steps": [
+                  "Collect at least five events from three source categories.",
+                  "Convert timestamps to UTC while retaining their original values in a source field.",
+                  "Sort the events chronologically.",
+                  "Add a note wherever event time or clock synchronization is uncertain.",
+                  "Separate observed facts from your incident hypothesis."
+                ],
+                "solution": "events = [\n    {\"timestamp\":\"2026-09-07T11:02:14Z\",\"type\":\"auth_failure\",\"source\":\"idp\"},\n    {\"timestamp\":\"2026-09-07T11:03:01Z\",\"type\":\"auth_success\",\"source\":\"idp\"},\n    {\"timestamp\":\"2026-09-07T11:04:19Z\",\"type\":\"privilege_change\",\"source\":\"host-audit\"},\n    {\"timestamp\":\"2026-09-07T11:05:10Z\",\"type\":\"file_access\",\"source\":\"application\"},\n    {\"timestamp\":\"2026-09-07T11:07:42Z\",\"type\":\"outbound_connection\",\"source\":\"network\"}\n]\n\nfrom datetime import datetime, timezone\n\ntimeline = []\nfor e in events:\n    ts = datetime.fromisoformat(e[\"timestamp\"].replace(\"Z\",\"+00:00\")).astimezone(timezone.utc)\n    timeline.append({**e, \"utc_time\": ts.isoformat()})\ntimeline.sort(key=lambda e: e[\"utc_time\"])\n\nfor item in timeline:\n    print(item)",
+                "output": "The practical produces a chronological, source-aware timeline. Any causal interpretation remains an analyst hypothesis rather than an invented event."
+              }
+            ],
+            "quiz": {
+              "id": "Q31",
+              "question": "What should an analyst do when two systems have uncertain clock synchronization?",
+              "options": [
+                "Ignore timestamps",
+                "Mark timing uncertainty and use additional evidence to establish sequence",
+                "Invent an offset",
+                "Delete one source"
+              ],
+              "answer": "Mark timing uncertainty and use additional evidence to establish sequence",
+              "explanation": "Time uncertainty should be represented explicitly rather than hidden."
+            },
+            "summary": [
+              "A timeline should preserve chronology and uncertainty.",
+              "Missing evidence should be recorded as a limitation rather than filled by assumption."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "L32",
+            "title": "Escalation and Case Documentation",
+            "description": "Write concise case records that preserve evidence, decisions, status and next actions.",
+            "learningObjectives": [
+              "Create an analyst-friendly case summary.",
+              "Record actions and owners.",
+              "Differentiate observation from conclusion."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A useful case record contains a problem statement, evidence summary, current assessment, actions taken, owner, status and next decision point.",
+                  "Avoid copying entire log streams into tickets; link or reference evidence and summarize why it matters.",
+                  "Clear uncertainty and explicit next actions make handoffs safer."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q32",
+              "question": "What is the best reason to separate observations from conclusions in a case note?",
+              "options": [
+                "It uses more words",
+                "It lets later reviewers distinguish evidence from analyst interpretation",
+                "It hides mistakes",
+                "It guarantees correctness"
+              ],
+              "answer": "It lets later reviewers distinguish evidence from analyst interpretation",
+              "explanation": "Separating evidence from interpretation improves traceability and reviewability."
+            },
+            "summary": [
+              "Case notes should be concise enough for handoffs yet traceable to evidence.",
+              "Separate observation from interpretation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T08",
+            "title": "Build a Structured Alert Triage Record",
+            "level": "Intermediate",
+            "description": "Create a JSON triage record for a suspicious privileged login that includes evidence, uncertainty and next actions.",
+            "problemStatement": "The record will be handed from a Tier-1 analyst to an incident responder.",
+            "objectives": [
+              "Include severity and confidence separately.",
+              "Record affected asset and evidence references.",
+              "State what is known, unknown and next action."
+            ],
+            "requirements": [
+              "JSON structure only; no live platform required."
+            ],
+            "hint": "Use separate arrays for evidence and uncertainties; avoid putting unsupported conclusions in the facts section.",
+            "solutionCode": "{\n  \"case_id\": \"SM-2026-0017\",\n  \"severity\": \"high\",\n  \"confidence\": \"medium\",\n  \"status\": \"triage\",\n  \"affected_asset\": \"server-17\",\n  \"facts\": [\n    \"Privileged authentication succeeded from an unmanaged device.\",\n    \"The source was not present in the approved maintenance set.\"\n  ],\n  \"evidence\": [\n    \"auth-event-4821\",\n    \"asset-inventory-record-17\",\n    \"maintenance-window-2026-09-07\"\n  ],\n  \"uncertainties\": [\n    \"Whether the device is legitimately owned by the administrator\"\n  ],\n  \"next_action\": \"Validate the administrator session and review adjacent privileged activity.\",\n  \"owner\": \"incident-response\"\n}",
+            "solutionExplanation": "The record keeps severity and confidence distinct, separates observed facts from uncertainty, and names a concrete next action."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Threat Hunting",
+        "description": "Run hypothesis-driven searches that uncover behavior missed by existing alerts and improve the monitoring program.",
+        "lessons": [
+          {
+            "id": "L33",
+            "title": "Threat Hunting Mindset",
+            "description": "Use hypotheses, telemetry and iterative queries to search for behaviors that may not have generated an alert.",
+            "learningObjectives": [
+              "Write a testable hunting hypothesis.",
+              "Select data sources and features for the hunt.",
+              "Document hunt outcome and follow-up actions."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A hunt begins with a hypothesis grounded in threat intelligence, environment knowledge, prior incidents or anomalous patterns.",
+                  "Hunting should be falsifiable: define what evidence would support or weaken the hypothesis.",
+                  "A negative hunt result can expose telemetry gaps when the data needed to answer the question is missing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q33",
+              "question": "What makes a hunting hypothesis useful?",
+              "options": [
+                "It cannot be disproved",
+                "It defines observable evidence that could support or weaken the hypothesis",
+                "It is as broad as possible",
+                "It only names a product"
+              ],
+              "answer": "It defines observable evidence that could support or weaken the hypothesis",
+              "explanation": "A hunt needs a testable question and expected evidence."
+            },
+            "summary": [
+              "A hunt is a structured search for evidence, not random query experimentation.",
+              "Negative outcomes can still improve monitoring."
+            ],
+            "resources": [
+              "https://attack.mitre.org/tactics/enterprise/",
+              "https://csrc.nist.gov/pubs/sp/800/137/final"
+            ]
+          },
+          {
+            "id": "L34",
+            "title": "Hunt Queries and Pivoting",
+            "description": "Pivot from one entity or observation to related evidence across host, identity and network data.",
+            "learningObjectives": [
+              "Start with a seed observation.",
+              "Pivot using stable entities.",
+              "Avoid losing context during pivots."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Common pivots include user → devices → processes → network connections, or IP → DNS → hosts → authentication.",
+                  "A pivot should be driven by a specific investigative question, not by collecting everything.",
+                  "Keep the original seed observation attached to derived findings so the final conclusion is traceable."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q34",
+              "question": "What is a good pivot?",
+              "options": [
+                "A move from a seed observation to related evidence using a meaningful shared entity",
+                "A random query",
+                "Deleting the first record",
+                "Changing the incident severity"
+              ],
+              "answer": "A move from a seed observation to related evidence using a meaningful shared entity",
+              "explanation": "Pivots are evidence-driven transitions between related datasets."
+            },
+            "summary": [
+              "A good pivot answers the next investigative question.",
+              "Preserve the seed observation as an anchor throughout the hunt."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/kusto/query/?view=microsoft-fabric",
+              "https://docs.zeek.org/en/current/logs/index.html",
+              "https://attack.mitre.org/datasources/"
+            ]
+          },
+          {
+            "id": "L35",
+            "title": "Hunt Documentation and Outcomes",
+            "description": "Turn exploratory hunts into reusable detection improvements, data requirements or documented negative results.",
+            "learningObjectives": [
+              "Write a hunt report.",
+              "Convert a successful hunt into a candidate detection.",
+              "Record telemetry gaps discovered during the hunt."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A useful hunt report states hypothesis, scope, data used, queries or logic, observations, limitations and outcome.",
+                  "Successful hunts may yield a formal detection, a telemetry request, an analytic improvement or a documented benign explanation.",
+                  "Not every hunt should become an alert; forcing every result into an alert can create noise."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q35",
+              "question": "What is a valid outcome of a threat hunt?",
+              "options": [
+                "Only a new alert",
+                "A detection improvement, telemetry gap, benign explanation or documented negative result",
+                "Only a malware sample",
+                "Only an incident"
+              ],
+              "answer": "A detection improvement, telemetry gap, benign explanation or documented negative result",
+              "explanation": "Hunting is a learning activity as well as a detection-discovery activity."
+            },
+            "summary": [
+              "Hunts should feed the improvement loop of the monitoring program.",
+              "A negative or benign outcome is useful when it is documented with scope and limitations."
+            ],
+            "resources": [
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1",
+              "https://csrc.nist.gov/pubs/sp/800/137/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T09",
+            "title": "Hunt for Unusual Service-Account Activity",
+            "level": "Advanced",
+            "description": "Design and implement a hunt that searches for service accounts authenticating from unexpected hosts and then accessing administrative interfaces.",
+            "problemStatement": "Create a Python prototype that compares observed service-account activity with an allow-list of expected hosts.",
+            "objectives": [
+              "Build an allow-list structure.",
+              "Identify deviations by account and host.",
+              "Produce explainable findings with timestamps."
+            ],
+            "requirements": [
+              "Python 3.11+ standard library.",
+              "Input events contain account, host, timestamp and target_service."
+            ],
+            "hint": "Represent the allow-list as account → expected hosts and report only deviations with the original event retained.",
+            "solutionCode": "def hunt_service_accounts(events, expected_hosts):\n    findings = []\n    for event in events:\n        account = event[\"account\"]\n        if not account.startswith(\"svc_\"):\n            continue\n        allowed = set(expected_hosts.get(account, ()))\n        if event[\"host\"] not in allowed:\n            findings.append({\n                \"type\": \"unexpected_service_account_host\",\n                \"account\": account,\n                \"host\": event[\"host\"],\n                \"target_service\": event.get(\"target_service\"),\n                \"timestamp\": event[\"timestamp\"],\n                \"evidence\": event\n            })\n    return findings",
+            "solutionExplanation": "The hunt focuses on a concrete hypothesis, uses an explicit environment baseline and retains the triggering event for investigation."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Detection Engineering Operations and Automation",
+        "description": "Make detections portable, automatable and continuously testable while protecting monitoring infrastructure.",
+        "lessons": [
+          {
+            "id": "L36",
+            "title": "Sigma Detection Rules",
+            "description": "Understand Sigma as a portable rule format for describing log-based detections across SIEM implementations.",
+            "learningObjectives": [
+              "Identify major parts of a Sigma rule.",
+              "Write a small detection selection and condition.",
+              "Explain portability limits and backend translation."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "title: Repeated authentication failures\nlogsource:\n  category: authentication\ndetection:\n  selection:\n    result: failure\n  condition: selection\nlevel: medium",
+                "language": "yaml"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Sigma describes detections independently from a specific SIEM query language.",
+                  "Field names, backend behavior and available log sources affect translation and fidelity.",
+                  "A portable rule still requires local validation against actual schemas and data."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q36",
+              "question": "What is a primary purpose of Sigma?",
+              "options": [
+                "To replace operating systems",
+                "To describe log-based detections in a portable rule format",
+                "To capture packets",
+                "To encrypt logs"
+              ],
+              "answer": "To describe log-based detections in a portable rule format",
+              "explanation": "Sigma provides a generic representation for log detection logic that can be translated for different backends."
+            },
+            "summary": [
+              "Sigma encourages portable detection descriptions.",
+              "Translation should be validated against the target backend and local schema."
+            ],
+            "resources": [
+              "https://sigmahq.io/docs/basics/rules.html"
+            ]
+          },
+          {
+            "id": "L37",
+            "title": "Monitoring Automation and SOAR Boundaries",
+            "description": "Automate repetitive enrichment and safe actions while keeping high-impact decisions governed and auditable.",
+            "learningObjectives": [
+              "Identify tasks suitable for automation.",
+              "Design guardrails for automated actions.",
+              "Record automation inputs, outputs and failures."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Low-risk enrichment such as asset lookup or indicator reputation checks is often easier to automate safely than destructive response actions.",
+                  "Automation should have explicit scope, credentials, logging, failure handling and rollback where applicable.",
+                  "A playbook should define when human approval is required."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q37",
+              "question": "Which action is generally safer to automate first?",
+              "options": [
+                "Deleting a production host",
+                "Enriching an alert with asset ownership information",
+                "Resetting every administrator password",
+                "Blocking an entire subnet"
+              ],
+              "answer": "Enriching an alert with asset ownership information",
+              "explanation": "Read-only or low-impact enrichment typically carries less operational risk than destructive response actions."
+            },
+            "summary": [
+              "Automation should reduce analyst repetition without hiding decisions.",
+              "High-impact changes require strong guardrails and usually human approval."
+            ],
+            "resources": [
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "L38",
+            "title": "Monitoring Health and Control Validation",
+            "description": "Monitor the monitoring system itself and continuously validate that critical detections still operate.",
+            "learningObjectives": [
+              "Define health metrics for sources and detections.",
+              "Create a detection test case.",
+              "Distinguish telemetry failure from analytic failure."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Health checks can include source freshness, parser error rate, event volume anomalies, detection execution status and alert delivery latency.",
+                  "Use controlled test events or simulations to validate critical analytics after schema or infrastructure changes.",
+                  "A green pipeline indicator does not prove the analytic logic still detects the intended behavior."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q38",
+              "question": "Why are controlled detection tests valuable?",
+              "options": [
+                "They create random malware",
+                "They verify that collection and analytics still produce expected detections after changes",
+                "They replace incident response",
+                "They remove all false positives"
+              ],
+              "answer": "They verify that collection and analytics still produce expected detections after changes",
+              "explanation": "Detection tests provide evidence that the monitoring control continues to work."
+            },
+            "summary": [
+              "Security monitoring has its own attack and failure surface.",
+              "Continuous validation helps detect control drift."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          },
+          {
+            "id": "L39",
+            "title": "Secrets and Access for Monitoring Systems",
+            "description": "Secure service accounts, tokens and analyst access paths used by monitoring infrastructure.",
+            "learningObjectives": [
+              "Apply least privilege to collection and query roles.",
+              "Identify secrets that should not be stored in source code.",
+              "Define access logging for monitoring systems."
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Never embed production credentials, API keys or access tokens in detection rules, scripts or course examples."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Monitoring infrastructure often has broad read access; that makes credential protection and segmentation especially important.",
+                  "Use a managed secret store or approved credential mechanism in production rather than plain-text configuration.",
+                  "Log administrative changes to detection content and access to sensitive log data."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q39",
+              "question": "Why does least privilege matter for monitoring service accounts?",
+              "options": [
+                "It improves screen resolution",
+                "A compromised monitoring credential should expose as little additional capability as possible",
+                "It guarantees no incidents",
+                "It eliminates logging"
+              ],
+              "answer": "A compromised monitoring credential should expose as little additional capability as possible",
+              "explanation": "Monitoring identities can be high-value because they may read broad telemetry."
+            },
+            "summary": [
+              "Monitoring identities can be high-value because they read broad telemetry.",
+              "Access to monitoring systems is itself an auditable security surface."
+            ],
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T10",
+            "title": "Create a Portable Authentication Detection",
+            "level": "Intermediate",
+            "description": "Write a Sigma-style YAML rule for an authentication failure condition and document the local fields needed for translation.",
+            "problemStatement": "Create a rule that detects authentication failures and documents the fields needed for correlation.",
+            "objectives": [
+              "Provide title, logsource, detection selection and condition.",
+              "Document grouping/window logic separately.",
+              "List required normalized fields."
+            ],
+            "requirements": [
+              "YAML 1.2-compatible syntax is sufficient for authoring.",
+              "No SIEM deployment required."
+            ],
+            "hint": "Keep portable field selection separate from backend-specific correlation syntax.",
+            "solutionCode": "title: Repeated Authentication Failures\nid: 2d2b2a3c-9cb0-4e19-9fc2-0a1c5af3b4c1\nstatus: experimental\nlogsource:\n  category: authentication\ndetection:\n  selection:\n    result: failure\n  condition: selection\nfields:\n  - user\n  - source_ip\n  - timestamp\n  - result\nlevel: medium\ntags:\n  - attack.credential-access\n",
+            "solutionExplanation": "The Sigma-style rule expresses portable event selection. The repeated-failure window and per-user grouping are documented separately because correlation semantics depend on the target backend."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Production Security Monitoring",
+        "description": "Operate monitoring as a measurable, privacy-aware and change-controlled production capability.",
+        "lessons": [
+          {
+            "id": "L40",
+            "title": "Monitoring Metrics That Matter",
+            "description": "Measure operational performance and control effectiveness without optimizing for vanity numbers.",
+            "learningObjectives": [
+              "Define useful monitoring metrics.",
+              "Distinguish workload metrics from security-effectiveness metrics.",
+              "Create a metric with an explicit numerator and denominator."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Mean time to acknowledge = total time from alert creation to analyst acknowledgement / acknowledged alerts\nDetection coverage = monitored scenarios with validated telemetry / monitored scenarios in scope"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Metrics should have a defined population, time period and calculation method.",
+                  "Alert volume alone is not a security-effectiveness metric; it can rise because of noise or improved visibility.",
+                  "Track data quality, detection performance and analyst workload together."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q40",
+              "question": "Why is alert volume alone a poor success metric?",
+              "options": [
+                "It is always zero",
+                "More alerts can result from either improved detection or increased noise",
+                "It cannot be counted",
+                "It measures storage only"
+              ],
+              "answer": "More alerts can result from either improved detection or increased noise",
+              "explanation": "Volume needs context from fidelity, coverage and workload measures."
+            },
+            "summary": [
+              "Metrics should support decisions, not merely dashboards.",
+              "Always define the denominator and population for a rate."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+            ]
+          },
+          {
+            "id": "L41",
+            "title": "False Positives, False Negatives and Coverage",
+            "description": "Use detection outcomes to reason about what a monitoring control misses and what it over-alerts on.",
+            "learningObjectives": [
+              "Define false positive and false negative in a detection context.",
+              "Explain why ground truth is difficult.",
+              "Track coverage by scenario and telemetry dependency."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A false positive is a detection that does not represent the intended condition; a false negative is a relevant condition that the detector fails to identify.",
+                  "Ground truth may require controlled exercises, incident retrospectives or labeled test datasets.",
+                  "Coverage claims should name the scenario and required telemetry rather than saying '100% coverage.'"
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q41",
+              "question": "Which statement is true about detection coverage?",
+              "options": [
+                "Coverage means every threat is detected",
+                "Coverage should be tied to defined scenarios, telemetry and validation evidence",
+                "Coverage is alert count",
+                "Coverage is the same as uptime"
+              ],
+              "answer": "Coverage should be tied to defined scenarios, telemetry and validation evidence",
+              "explanation": "Coverage is meaningful only against a defined scope and observable evidence."
+            },
+            "summary": [
+              "Coverage is always relative to a defined scope and evidence requirement.",
+              "Ground truth should be established carefully."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://sigmahq.io/docs/basics/rules.html"
+            ]
+          },
+          {
+            "id": "L42",
+            "title": "Retention, Privacy and Data Minimization",
+            "description": "Balance investigative utility with privacy, access control, legal obligations and storage considerations.",
+            "learningObjectives": [
+              "Identify data that may be unnecessarily sensitive.",
+              "Apply minimization and access restrictions.",
+              "Explain why retention periods must be documented and justified."
+            ],
+            "notes": [
+              {
+                "type": "warning",
+                "text": "Do not collect or retain sensitive personal information merely because it is available. Monitoring design should follow applicable law, policy and legitimate security purpose."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "OWASP recommends thinking carefully about which events and attributes are logged and what sensitive information should be excluded or protected.",
+                  "Retention can affect privacy exposure as well as investigation capability.",
+                  "Access to sensitive logs should itself be logged and periodically reviewed."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q42",
+              "question": "What is a key principle for security logging and privacy?",
+              "options": [
+                "Collect everything forever",
+                "Collect what is needed for the stated purpose and protect or exclude unnecessary sensitive data",
+                "Disable auditing",
+                "Publish logs publicly"
+              ],
+              "answer": "Collect what is needed for the stated purpose and protect or exclude unnecessary sensitive data",
+              "explanation": "Minimization reduces unnecessary exposure while retaining useful evidence."
+            },
+            "summary": [
+              "Security monitoring and privacy requirements must be designed together.",
+              "Retention periods are organizational and legal decisions, not a universal security constant."
+            ],
+            "resources": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          },
+          {
+            "id": "L43",
+            "title": "Production Change Management for Detections",
+            "description": "Manage rule changes, parser updates and suppression changes as production changes with review, testing and rollback.",
+            "learningObjectives": [
+              "Define a detection change workflow.",
+              "Identify regression risks.",
+              "Document version and rollback information."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A parser change can alter field semantics and silently break detections.",
+                  "Detection content should be versioned and reviewed, especially for high-impact analytics.",
+                  "Rollbacks should restore a known-good analytic state without requiring emergency manual reconstruction."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "Q43",
+              "question": "Why can a parser change be a security control change?",
+              "options": [
+                "Parsers have nothing to do with detections",
+                "Changing parsed fields can change whether a detection matches and what evidence analysts see",
+                "Parsers only affect colors",
+                "Parsing never fails"
+              ],
+              "answer": "Changing parsed fields can change whether a detection matches and what evidence analysts see",
+              "explanation": "Detections depend on the parsed representation of telemetry."
+            },
+            "summary": [
+              "Detection content is production control logic.",
+              "Parser and suppression changes should be reviewed as security-relevant changes."
+            ],
+            "resources": [
+              "https://sigmahq.io/docs/basics/rules.html",
+              "https://csrc.nist.gov/pubs/sp/800/137/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T11",
+            "title": "Define a Detection Health Scorecard",
+            "level": "Advanced",
+            "description": "Design a scorecard for critical detections covering data freshness, execution, fidelity and recent validation.",
+            "problemStatement": "Each detection must have measurable health indicators and an owner.",
+            "objectives": [
+              "Define at least four measurable indicators.",
+              "State expected state or threshold.",
+              "Include a test date and owner.",
+              "Separate control health from detection severity."
+            ],
+            "requirements": [
+              "JSON, YAML or tabular design is acceptable."
+            ],
+            "hint": "Score health dimensions independently: source freshness, parser quality, execution status, test result and analyst feedback.",
+            "solutionCode": "[\n  {\n    \"detection\": \"privileged-login-anomaly\",\n    \"owner\": \"security-monitoring\",\n    \"source_freshness\": \"healthy\",\n    \"parser_error_rate\": 0.01,\n    \"execution\": \"healthy\",\n    \"last_control_test\": \"2026-09-05\",\n    \"fidelity_status\": \"reviewed\",\n    \"rollback_version\": \"v3.4\"\n  },\n  {\n    \"detection\": \"endpoint-control-impairment\",\n    \"owner\": \"endpoint-security\",\n    \"source_freshness\": \"healthy\",\n    \"parser_error_rate\": 0.00,\n    \"execution\": \"healthy\",\n    \"last_control_test\": \"2026-08-28\",\n    \"fidelity_status\": \"needs-review\",\n    \"rollback_version\": \"v2.1\"\n  }\n]",
+            "solutionExplanation": "The scorecard measures control health separately from alert severity and preserves ownership and rollback context."
+          }
+        ]
+      },
+      {
+        "id": "module-12",
+        "title": "Final Real-World Project: Explainable Security Monitoring Pipeline",
+        "description": "Integrate the course into a complete, tested monitoring pipeline and demonstrate practical analyst-ready outputs.",
+        "lessons": [
+          {
+            "id": "L44",
+            "title": "Capstone Architecture and Data Flow",
+            "description": "Design the complete educational monitoring pipeline and map each component to course concepts.",
+            "learningObjectives": [
+              "Explain the capstone architecture.",
+              "Trace data from ingestion to analyst finding.",
+              "Identify where monitoring health is measured."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "NDJSON events\n   -> parser/time normalization\n   -> detection functions\n   -> explainable findings\n   -> health report\n   -> analyst review/test"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The capstone intentionally uses local files and Python standard library components so learners can understand the monitoring logic without needing a paid platform.",
+                  "The architecture separates ingestion errors from detection findings.",
+                  "Every finding retains evidence and a reason, supporting analyst review."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "The capstone is a small but complete monitoring loop: observe, normalize, detect, explain and validate.",
+              "Production systems require stronger controls, scale and integrations than this lab prototype."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://www.cisecurity.org/controls/audit-log-management"
+            ]
+          },
+          {
+            "id": "L45",
+            "title": "Capstone Implementation: Parsing and Detection",
+            "description": "Implement safe parsing, authentication-burst detection and unmanaged privileged-login detection.",
+            "learningObjectives": [
+              "Run the capstone parser.",
+              "Explain the two detections.",
+              "Inspect malformed-event handling."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "python monitor.py sample_events.ndjson --out findings.json\npython -m pytest test_monitor.py",
+                "language": "bash"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The parser rejects timezone-naive timestamps so event ordering is explicit.",
+                  "Authentication-burst logic uses a rolling window.",
+                  "The privileged-login detector treats unmanaged-device status as a high-confidence contextual signal in the lab dataset."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "P05",
+                "title": "Execute and Validate the Capstone",
+                "description": "Run the pipeline, inspect detections and deliberately introduce a malformed event to validate collection-health behavior.",
+                "steps": [
+                  "Place monitor.py and test_monitor.py in one directory.",
+                  "Run the test suite with pytest.",
+                  "Run the monitor against the course sample data and inspect findings.json.",
+                  "Add one malformed JSON line to the input.",
+                  "Run the monitor again and confirm the health status becomes warning while valid events are still processed."
+                ],
+                "solution": "python -m pytest test_monitor.py\npython monitor.py sample_events.ndjson --out findings.json",
+                "output": "The first run should produce findings for the controlled positive cases and a healthy status. After adding a malformed line, valid events remain processable and the health status changes to warning."
+              }
+            ],
+            "quiz": null,
+            "summary": [
+              "Implementation must remain explainable and deterministic.",
+              "Malformed data changes health status rather than being silently ignored."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://csrc.nist.gov/pubs/sp/800/137/final",
+              "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+            ]
+          },
+          {
+            "id": "L46",
+            "title": "Capstone Validation and Analyst Review",
+            "description": "Validate the monitoring pipeline, inspect its outputs and document limitations before calling it complete.",
+            "learningObjectives": [
+              "Run automated tests.",
+              "Inspect findings for evidence and reason fields.",
+              "Document at least three production limitations."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A passing unit test demonstrates expected behavior for the supplied cases; it does not prove production effectiveness.",
+                  "Validation should include positive, negative, malformed and boundary-time cases.",
+                  "Production limitations include distributed collection, authentication to data stores, access control, scale, clock drift, parser maintenance and long-term retention."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": null,
+            "summary": [
+              "Testing is part of monitoring engineering, not a final cosmetic step.",
+              "A lab prototype should state where it is intentionally incomplete."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/137/final"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Explainable Security Monitoring Evidence Pipeline",
+          "description": "A local, testable monitoring pipeline that ingests NDJSON security events, normalizes time, runs two explainable detections, reports collection health and preserves evidence with each finding. The project is deliberately bounded as an educational prototype; it demonstrates monitoring engineering concepts without pretending to be a production SIEM.",
+          "conceptsCovered": [
+            "structured security events",
+            "timestamp normalization",
+            "log parsing",
+            "detection rules",
+            "rolling-window correlation",
+            "context-rich findings",
+            "collection health",
+            "testing",
+            "analyst evidence",
+            "limitations and production hardening"
+          ],
+          "steps": [
+            "Create a Python 3.11+ environment and place monitor.py, test_monitor.py, and sample_events.ndjson together in a working directory.",
+            "Prepare NDJSON events containing timestamp, event_type, user, source_ip, result and source fields; add privileged and managed_device fields to authentication success events where needed.",
+            "Run the unit tests with pytest and confirm the expected detections are exercised.",
+            "Run monitor.py against the sample NDJSON file and inspect findings.json.",
+            "Verify that every finding includes a type, severity, confidence, timestamp, reason and evidence.",
+            "Introduce one malformed JSON line and confirm the health report changes to warning while valid events remain processable.",
+            "Document what additional controls would be required before using a similar design in production."
+          ],
+          "code": {
+            "files": {
+              "README.md": "# Security Monitoring Evidence Pipeline\n\nA small local lab that reads newline-delimited JSON security events, normalizes them, runs explainable detections, produces analyst findings, and writes a health report.\n\nThis is an educational prototype. It does not replace a SIEM, EDR, IDS, or production incident-response workflow.\n",
+              "monitor.py": "#!/usr/bin/env python3\nimport argparse\nimport json\nfrom collections import defaultdict, deque\nfrom datetime import datetime, timedelta, timezone\nfrom pathlib import Path\n\ndef parse_ts(value):\n    ts = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n    if ts.tzinfo is None:\n        raise ValueError(\"timestamp must include timezone\")\n    return ts.astimezone(timezone.utc)\n\ndef load_events(path):\n    events = []\n    errors = []\n    for lineno, line in enumerate(Path(path).read_text().splitlines(), start=1):\n        if not line.strip():\n            continue\n        try:\n            event = json.loads(line)\n            event[\"_ts\"] = parse_ts(event[\"timestamp\"])\n            events.append(event)\n        except (json.JSONDecodeError, KeyError, ValueError) as exc:\n            errors.append({\"line\": lineno, \"error\": str(exc)})\n    events.sort(key=lambda e: e[\"_ts\"])\n    return events, errors\n\ndef detect_auth_burst(events, min_failures=5, failure_window_minutes=10, success_window_minutes=2):\n    recent = defaultdict(deque)\n    findings = []\n    for event in events:\n        if event.get(\"event_type\") not in {\"authentication\", \"auth\"}:\n            continue\n        key = (event.get(\"user\"), event.get(\"source_ip\"))\n        ts = event[\"_ts\"]\n        q = recent[key]\n        if event.get(\"result\") == \"failure\":\n            q.append(ts)\n            cutoff = ts - timedelta(minutes=failure_window_minutes)\n            while q and q[0] < cutoff:\n                q.popleft()\n        elif event.get(\"result\") == \"success\":\n            if q and (ts - q[-1]) <= timedelta(minutes=success_window_minutes) and len(q) >= min_failures:\n                findings.append({\n                    \"type\": \"auth_burst_then_success\",\n                    \"severity\": \"high\",\n                    \"confidence\": \"medium\",\n                    \"timestamp\": event[\"timestamp\"],\n                    \"user\": event.get(\"user\"),\n                    \"source_ip\": event.get(\"source_ip\"),\n                    \"reason\": f\"{min_failures}+ failures within the rolling window followed by a success\",\n                    \"evidence\": event\n                })\n                q.clear()\n    return findings\n\ndef detect_unmanaged_privileged_logins(events):\n    findings = []\n    for event in events:\n        if event.get(\"event_type\") != \"authentication\":\n            continue\n        if event.get(\"result\") != \"success\":\n            continue\n        if not event.get(\"privileged\"):\n            continue\n        if event.get(\"managed_device\") is False:\n            findings.append({\n                \"type\": \"privileged_login_from_unmanaged_device\",\n                \"severity\": \"high\",\n                \"confidence\": \"high\",\n                \"timestamp\": event[\"timestamp\"],\n                \"user\": event.get(\"user\"),\n                \"source_ip\": event.get(\"source_ip\"),\n                \"reason\": \"successful privileged authentication from unmanaged device\",\n                \"evidence\": event\n            })\n    return findings\n\ndef build_health_report(events, parse_errors):\n    sources = sorted({e.get(\"source\") for e in events if e.get(\"source\")})\n    counts = defaultdict(int)\n    for event in events:\n        counts[event.get(\"source\", \"unknown\")] += 1\n    return {\n        \"event_count\": len(events),\n        \"parse_error_count\": len(parse_errors),\n        \"sources\": [{\"source\": s, \"event_count\": counts[s]} for s in sources],\n        \"status\": \"warning\" if parse_errors else \"healthy\"\n    }\n\ndef main():\n    parser = argparse.ArgumentParser(description=\"Educational security monitoring pipeline\")\n    parser.add_argument(\"input\")\n    parser.add_argument(\"--out\", default=\"findings.json\")\n    args = parser.parse_args()\n\n    events, parse_errors = load_events(args.input)\n    findings = detect_auth_burst(events) + detect_unmanaged_privileged_logins(events)\n    report = {\n        \"findings\": findings,\n        \"health\": build_health_report(events, parse_errors),\n        \"parse_errors\": parse_errors\n    }\n    Path(args.out).write_text(json.dumps(report, indent=2, default=str) + \"\\n\")\n    print(json.dumps({\"findings\": len(findings), \"health\": report[\"health\"][\"status\"]}, indent=2))\n\nif __name__ == \"__main__\":\n    main()\n",
+              "test_monitor.py": "import json\nimport subprocess\nimport sys\n\nSAMPLE = '''{\"timestamp\":\"2026-09-07T10:00:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:01:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:02:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:03:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:04:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:05:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"success\",\"source\":\"idp\",\"privileged\":false,\"managed_device\":true}\n{\"timestamp\":\"2026-09-07T10:06:00Z\",\"event_type\":\"authentication\",\"user\":\"bob\",\"source_ip\":\"192.0.2.20\",\"result\":\"success\",\"source\":\"idp\",\"privileged\":true,\"managed_device\":false}\n'''\n\ndef test_pipeline_detects_two_conditions(tmp_path):\n    inp = tmp_path / \"events.ndjson\"\n    out = tmp_path / \"findings.json\"\n    inp.write_text(SAMPLE)\n    subprocess.run([sys.executable, \"monitor.py\", str(inp), \"--out\", str(out)], check=True)\n    result = json.loads(out.read_text())\n    types = {f[\"type\"] for f in result[\"findings\"]}\n    assert \"auth_burst_then_success\" in types\n    assert \"privileged_login_from_unmanaged_device\" in types\n    assert result[\"health\"][\"status\"] == \"healthy\"\n\ndef test_bad_line_is_reported(tmp_path):\n    inp = tmp_path / \"events.ndjson\"\n    out = tmp_path / \"findings.json\"\n    inp.write_text(SAMPLE + \"not-json\\n\")\n    subprocess.run([sys.executable, \"monitor.py\", str(inp), \"--out\", str(out)], check=True)\n    result = json.loads(out.read_text())\n    assert result[\"health\"][\"status\"] == \"warning\"\n    assert result[\"health\"][\"parse_error_count\"] == 1\n",
+              "sample_events.ndjson": "{\"timestamp\":\"2026-09-07T10:00:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:01:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:02:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:03:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:04:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"failure\",\"source\":\"idp\"}\n{\"timestamp\":\"2026-09-07T10:05:00Z\",\"event_type\":\"authentication\",\"user\":\"alice\",\"source_ip\":\"192.0.2.10\",\"result\":\"success\",\"source\":\"idp\",\"privileged\":false,\"managed_device\":true}\n{\"timestamp\":\"2026-09-07T10:06:00Z\",\"event_type\":\"authentication\",\"user\":\"bob\",\"source_ip\":\"192.0.2.20\",\"result\":\"success\",\"source\":\"idp\",\"privileged\":true,\"managed_device\":false}\n"
+            }
+          },
+          "explanation": "The architecture intentionally separates parsing, detections and health reporting. `load_events` validates JSON and timezone-aware timestamps, sorting events for deterministic processing. `detect_auth_burst` implements a rolling-window correlation that detects repeated failures followed by a success for the same user/source pair. `detect_unmanaged_privileged_logins` demonstrates context-based detection using identity and device posture. The health report counts events by source and elevates status when parsing errors are observed. Tests execute the program end-to-end on controlled events and verify both detection conditions and pipeline-health behavior. The design demonstrates a key monitoring principle: a detection output should contain enough evidence and explanation for an analyst to decide what happens next. It also demonstrates that collection and parser failures are themselves security-monitoring signals."
+        }
+      }
+    ]
+  }
+}

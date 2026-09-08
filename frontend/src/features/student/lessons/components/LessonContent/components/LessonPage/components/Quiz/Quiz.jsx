@@ -12,12 +12,19 @@ export default function Quiz({
         return null;
     }
 
-    const handleSelect = (questionIndex, option) => {
+    const getQuestionKey = (question, questionIndex) =>
+        String(
+            question?.id ||
+            question?.questionId ||
+            `question-${questionIndex}`
+        );
+
+    const handleSelect = (questionKey, option) => {
         if (submitted) return;
 
         setAnswers((previous) => ({
             ...previous,
-            [questionIndex]: option,
+            [questionKey]: option,
         }));
     };
 
@@ -44,16 +51,17 @@ export default function Quiz({
 
             <div className="lesson-quiz__questions">
                 {questions.map((question, questionIndex) => {
-                    const selected = answers[questionIndex];
+                    const questionKey = getQuestionKey(
+                        question,
+                        questionIndex
+                    );
+                    const selected = answers[questionKey];
                     const correct = question.answer;
 
                     return (
                         <article
                             className="lesson-quiz__question"
-                            key={
-                                question.id ||
-                                `quiz-${questionIndex}`
-                            }
+                            key={questionKey}
                         >
                             <div className="lesson-quiz__question-number">
                                 Question {questionIndex + 1}
@@ -99,7 +107,7 @@ export default function Quiz({
                                                           .join(" ")}
                                                       onClick={() =>
                                                           handleSelect(
-                                                              questionIndex,
+                                                                  questionKey,
                                                               option
                                                           )
                                                       }

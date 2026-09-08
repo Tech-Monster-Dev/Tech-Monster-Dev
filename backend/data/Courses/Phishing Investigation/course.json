@@ -1,0 +1,1715 @@
+{
+  "course": {
+    "id": "phishing-investigation",
+    "title": "Phishing Investigation",
+    "slug": "phishing-investigation",
+    "description": "A practical intermediate course for investigating suspected phishing from user report through evidence preservation, standards-based email analysis, authentication review, URL and attachment triage, identity and mailbox correlation, campaign scoping, containment validation, detection improvement, and defensible reporting. Students use controlled artifacts and synthetic telemetry rather than real credentials or live attacker infrastructure.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 46,
+    "prerequisites": [
+      "Basic TCP/IP, DNS, HTTP, and SMTP knowledge",
+      "Basic Windows or Linux command-line skills",
+      "Basic Python familiarity",
+      "A safe lab environment for controlled phishing artifacts"
+    ],
+    "learningOutcomes": [
+      "triage phishing reports and preserve original evidence",
+      "analyze email structure, routing, identity, and authentication fields",
+      "parse and normalize suspicious URLs safely",
+      "preserve and hash attachment artifacts with provenance",
+      "correlate phishing evidence with identity and mailbox telemetry",
+      "scope campaigns with evidence-ranked pivots",
+      "map observed delivery methods to MITRE ATT&CK",
+      "design proportionate containment and validation procedures",
+      "produce structured phishing indicators and handling metadata",
+      "write technical and executive phishing investigation reports with confidence and limitations"
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Investigation Foundations",
+        "description": "Build the investigation mindset: scope the event, preserve evidence, classify phishing, and triage risk before technical deep-dives.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "Case Questions and Evidence Logic",
+            "description": "Turn a phishing report into explicit hypotheses and evidence questions.",
+            "learningObjectives": [
+              "separate observations from interpretations",
+              "identify minimum evidence needed to support a phishing assessment",
+              "record uncertainty and assumptions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Observation vs conclusion"
+              },
+              {
+                "type": "paragraph",
+                "text": "An investigation should distinguish what was directly observed from what the analyst concludes. A user saying “I clicked it” is an important lead; a browser or secure-link event can corroborate it. A suspicious display name is an observation; “the sender is malicious” is a conclusion that needs more evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Ask whether the message was delivered, interacted with, and followed by security-relevant events.",
+                  "Record which evidence would increase or decrease confidence.",
+                  "Treat case scope as changeable as new evidence arrives."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-01",
+                "title": "Build a Phishing Case Intake Record",
+                "description": "Create a structured intake record that preserves the submitted artifact identity while separating initial suspicion from established facts.",
+                "steps": [
+                  "Record the original artifact filename and acquisition context.",
+                  "Record investigator action time separately from any message timestamp.",
+                  "Calculate a SHA-256 digest of the original artifact without editing it.",
+                  "Write a scope statement that distinguishes confirmed facts from hypotheses."
+                ],
+                "solution": "from pathlib import Path\nimport hashlib\n\npath = Path(\"reported-message.eml\")\ndata = path.read_bytes()\nrecord = {\n    \"artifact\": path.name,\n    \"sha256\": hashlib.sha256(data).hexdigest(),\n    \"scope\": \"Assess whether the submitted message is phishing and determine affected scope.\",\n    \"status\": \"intake-complete\"\n}\nprint(record)",
+                "output": "A reproducible intake record containing the artifact name, SHA-256 digest, investigation scope, and case state."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which statement is an evidence-based finding?",
+              "options": [
+                "The sender is definitely a criminal.",
+                "The email looked strange.",
+                "Multiple independent observations support a high-confidence phishing assessment.",
+                "The domain is unfamiliar, so it is malicious."
+              ],
+              "answer": "Multiple independent observations support a high-confidence phishing assessment.",
+              "explanation": "A finding should connect an assessment to evidence and confidence."
+            },
+            "summary": [
+              "Phishing investigation is structured hypothesis testing.",
+              "Evidence traceability is more important than dramatic wording."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1",
+              "https://attack.mitre.org/techniques/T1566/"
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Phishing Taxonomy and ATT&CK",
+            "description": "Classify attachment, link, service, and voice phishing and distinguish delivery from later behaviors.",
+            "learningObjectives": [
+              "identify T1566 and its current sub-techniques",
+              "classify a message by observed delivery mechanism",
+              "avoid unsupported ATT&CK assignments"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "MITRE ATT&CK models Phishing as T1566 with sub-techniques for spearphishing attachment, link, service, and voice. The delivery classification should not be confused with later behaviors such as credential access, execution, or persistence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use T1566.002 when the investigated delivery mechanism is a spearphishing link.",
+                  "Use T1566.001 when the delivery mechanism is a spearphishing attachment.",
+                  "Map later actions only when evidence supports them."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "A suspicious email primarily delivers a credential-harvesting URL. Which ATT&CK sub-technique best describes the delivery?",
+              "options": [
+                "T1566.001",
+                "T1566.002",
+                "T1059",
+                "T1078"
+              ],
+              "answer": "T1566.002",
+              "explanation": "T1566.002 is Spearphishing Link."
+            },
+            "summary": [
+              "ATT&CK is a behavioral classification framework, not an attribution engine.",
+              "The observed delivery method determines the phishing sub-technique."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/T1566/",
+              "https://attack.mitre.org/techniques/T1566/002/",
+              "https://attack.mitre.org/techniques/T1566/001/"
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Triage, Priority, and Preservation",
+            "description": "Decide what to protect and collect first based on potential impact and evidence volatility.",
+            "learningObjectives": [
+              "prioritize suspected credential exposure",
+              "identify evidence likely to disappear or change",
+              "document escalation rationale"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Early triage can consider privileged accounts, possible credential exposure, campaign breadth, and the availability window of mail and identity telemetry. NIST SP 800-61 Rev. 3 places incident response within broader cybersecurity risk management and emphasizes efficient detection, response, and recovery."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve the original message/export before editing it.",
+                  "Record message identifiers and timestamps early.",
+                  "Do not turn an unverified user recollection into a factual conclusion."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "What most directly protects the evidentiary source during initial triage?",
+              "options": [
+                "Deleting the email",
+                "Preserving the original export and identifiers",
+                "Forwarding to a personal account",
+                "Rewriting the subject"
+              ],
+              "answer": "Preserving the original export and identifiers",
+              "explanation": "Preserving source data before manipulation reduces the risk of losing or altering evidence."
+            },
+            "summary": [
+              "Preservation and prioritization happen before deep interpretation.",
+              "Escalation should be explainable from recorded risk."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Create a Phishing Case Intake Record",
+            "level": "Easy",
+            "description": "Build a structured case record from a minimal user report.",
+            "problemStatement": "Capture source, scope, message identifiers, priority, hypotheses, and preservation needs for one controlled case.",
+            "objectives": [
+              "record immutable identifiers",
+              "separate facts from hypotheses",
+              "document preservation needs"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Start with evidence identifiers and keep derived assessments separate.",
+            "solutionCode": "from dataclasses import dataclass, asdict\nimport hashlib, json\n\n@dataclass\nclass Case:\n    case_id: str\n    source: str\n    priority: str\n    message_id: str\n    sha256: str\n    hypotheses: list\n\nraw = b\"controlled-phishing-artifact\"\ncase = Case(\"PHISH-001\", \"user-submitted\", \"High\", \"<controlled@example.invalid>\", hashlib.sha256(raw).hexdigest(), [\"benign\", \"impersonation\", \"credential theft\"])\nprint(json.dumps(asdict(case), indent=2))\n",
+            "solutionExplanation": "The structure preserves source identity and makes the hypotheses explicit instead of hiding them in a free-form verdict."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Email Anatomy and Header Analysis",
+        "description": "Read standards-based message structure and analyze routing, identity, and authentication headers without overclaiming.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "RFC 5322 Message Structure",
+            "description": "Understand the message header/body model and the difference between content syntax and transport behavior.",
+            "learningObjectives": [
+              "explain header fields and message body",
+              "identify investigation-relevant fields",
+              "distinguish RFC 5322 from SMTP transport details"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "RFC 5322 specifies Internet message format: header fields followed by an optional body. Transport-envelope behavior is addressed by other mail protocols, so an analyst must not infer every transport fact from message content alone."
+              },
+              {
+                "type": "code",
+                "text": "From: Finance Support <support@example.invalid>\nTo: analyst@example.invalid\nMessage-ID: <abc123@example.invalid>\nSubject: Review required"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Message-ID supports correlation but is not sender authentication.",
+                  "Date describes origination context, not necessarily delivery time.",
+                  "Received fields provide trace information that should be interpreted within a trust model."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "What does RFC 5322 primarily specify?",
+              "options": [
+                "DNS records",
+                "Internet message format",
+                "Endpoint malware behavior",
+                "Mailbox retention"
+              ],
+              "answer": "Internet message format",
+              "explanation": "RFC 5322 specifies Internet message format, including headers and body syntax."
+            },
+            "summary": [
+              "Preserve the complete source message.",
+              "Message content syntax is not the entire mail-delivery history."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc5322.html"
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Received Header Reasoning",
+            "description": "Use Received fields to construct a cautious delivery timeline.",
+            "learningObjectives": [
+              "parse repeated Received fields",
+              "consider trust boundaries",
+              "correlate headers with mail-system logs"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Received fields can support path reconstruction, but each entry reflects a processing point and its trust context. A gateway or provider log can corroborate routing observations when exact provenance matters."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve header order and raw text.",
+                  "Do not label the first visible address as “the attacker IP” without corroboration.",
+                  "Compare timestamps and infrastructure ownership with trusted logs."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Routing fields can originate outside your administrative trust boundary. They are useful evidence, not self-authenticating proof."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-01",
+                "title": "Extract Routing Headers from EML",
+                "description": "Parse a controlled EML file and inspect routing and identity headers without executing links or attachments.",
+                "steps": [
+                  "Place a controlled EML file in the lab directory.",
+                  "Parse it using Python's email package with policy.default.",
+                  "Print selected identity fields and every Received header.",
+                  "Record observations without treating a single header as proof of maliciousness."
+                ],
+                "solution": "from email import policy\nfrom email.parser import BytesParser\n\nwith open(\"lab.eml\", \"rb\") as fh:\n    message = BytesParser(policy=policy.default).parse(fh)\n\nfor field in (\"From\", \"To\", \"Reply-To\", \"Return-Path\", \"Message-ID\"):\n    print(f\"{field}: {message.get(field)}\")\n\nfor index, received in enumerate(message.get_all(\"Received\", []), 1):\n    print(f\"Received[{index}]: {received}\")",
+                "output": "The console displays the selected identity fields and the Received chain for manual routing analysis."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "Why corroborate a suspicious Received header with gateway logs?",
+              "options": [
+                "Received fields are prohibited",
+                "Some routing information can originate outside the organization’s trust boundary",
+                "SMTP has no timestamps",
+                "Headers cannot contain IP addresses"
+              ],
+              "answer": "Some routing information can originate outside the organization’s trust boundary",
+              "explanation": "Corroboration reduces the chance of treating an untrusted or incomplete trace as definitive."
+            },
+            "summary": [
+              "Routing analysis works best as a chain of corroborated observations.",
+              "Trust-boundary reasoning is essential."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc5322.html",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Authentication-Results and Domain Authentication",
+            "description": "Interpret SPF, DKIM, DMARC, and Authentication-Results in context.",
+            "learningObjectives": [
+              "explain the role of Authentication-Results",
+              "distinguish SPF, DKIM, and DMARC",
+              "state what authentication results do not prove"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "RFC 8601 defines Authentication-Results as a message header that records authentication evaluation results. SPF evaluates authorized sending hosts for a domain; DKIM verifies a cryptographic signature; DMARC evaluates alignment between authenticated domains and the visible From domain. A passing result is useful evidence, but it does not guarantee benign intent."
+              },
+              {
+                "type": "code",
+                "text": "Authentication-Results: mx.example.invalid; spf=pass smtp.mailfrom=example.invalid; dkim=fail header.d=example.invalid; dmarc=fail header.from=example.invalid"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record the exact result and domain.",
+                  "Explain alignment separately from basic pass/fail values.",
+                  "Consider compromised legitimate accounts and trusted services as possible phishing sources."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "What is Authentication-Results?",
+              "options": [
+                "A sender-side signature",
+                "A receiver-side header recording authentication evaluation results",
+                "A DNS record",
+                "A malware classification"
+              ],
+              "answer": "A receiver-side header recording authentication evaluation results",
+              "explanation": "RFC 8601 defines this message header for conveying authentication results."
+            },
+            "summary": [
+              "Authentication results are analytical inputs, not a universal safety label.",
+              "Domain identity must be interpreted alongside content and infrastructure evidence."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc8601.html",
+              "https://support.google.com/mail/answer/180707",
+              "https://support.google.com/a/answer/10032473"
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Identity Fields and Impersonation",
+            "description": "Compare From, Reply-To, Return-Path, display identity, and Message-ID.",
+            "learningObjectives": [
+              "identify suspicious identity mismatches",
+              "explain Reply-To and Return-Path roles",
+              "use identifiers for campaign correlation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Phishing messages can use deceptive display names, lookalike domains, Reply-To changes, and familiar branding. Investigators should compare identity fields against authentication results and provider telemetry rather than declaring spoofing from one mismatch."
+              },
+              {
+                "type": "code",
+                "text": "From: Finance Team <finance@trusted.invalid>\nReply-To: finance-help@untrusted.invalid\nReturn-Path: bounce@mailer.untrusted.invalid\nMessage-ID: <7f2a@example.invalid>"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "Which field directly identifies the suggested reply destination?",
+              "options": [
+                "Reply-To",
+                "Received",
+                "Message-ID",
+                "Date"
+              ],
+              "answer": "Reply-To",
+              "explanation": "RFC 5322 defines Reply-To as the address(es) to which replies are suggested to be sent."
+            },
+            "summary": [
+              "Visible identity, reply identity, and envelope identity can differ legitimately or maliciously.",
+              "Mismatches are leads that require context."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc5322.html",
+              "https://support.google.com/mail/answer/180707"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Parse and Normalize an EML Artifact",
+            "level": "Intermediate",
+            "description": "Parse a preserved EML file and output investigation-relevant fields.",
+            "problemStatement": "Extract key identity/authentication headers, preserve every Received field, and hash the source bytes.",
+            "objectives": [
+              "parse the EML with Python’s email package",
+              "preserve repeated headers",
+              "hash original bytes"
+            ],
+            "requirements": [
+              "Python 3.11+",
+              "Controlled .eml artifact"
+            ],
+            "hint": "Use BytesParser with a standard policy and get_all() for repeated headers.",
+            "solutionCode": "from email import policy\nfrom email.parser import BytesParser\n\nwith open(\"evidence.eml\", \"rb\") as fh:\n    message = BytesParser(policy=policy.default).parse(fh)\n\nfor field in (\"From\", \"To\", \"Reply-To\", \"Return-Path\", \"Subject\", \"Date\", \"Message-ID\", \"Authentication-Results\"):\n    print(f\"{field}: {message.get(field)}\")\n\nfor index, received in enumerate(message.get_all(\"Received\", []), 1):\n    print(f\"Received[{index}]: {received}\")\n",
+            "solutionExplanation": "The parser creates a reproducible evidence view without altering the original source file."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "URL and Web Infrastructure Analysis",
+        "description": "Investigate links and domains safely, separating exact source URLs from normalized analytical views.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "URL Structure and Canonicalization",
+            "description": "Break suspicious URLs into components and retain the exact original string.",
+            "learningObjectives": [
+              "parse scheme, host, port, path, query",
+              "spot userinfo and deceptive structures",
+              "preserve original representation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "URL investigation benefits from two views: the untouched source string and a normalized representation used for comparison. Analysts should watch for userinfo, misleading subdomains, encoding, and unnecessary redirect layers."
+              },
+              {
+                "type": "code",
+                "text": "https://login.example.invalid@untrusted.invalid/session?next=%2Fhome"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "The hostname in the controlled example is untrusted.invalid.",
+                  "Canonicalization should be stored as a derived value.",
+                  "Never replace the original evidence with a normalized version."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-01",
+                "title": "Normalize a Suspicious URL Offline",
+                "description": "Decompose a controlled URL locally so the analyst can identify the effective hostname and other components without contacting the site.",
+                "steps": [
+                  "Define a controlled URL string.",
+                  "Parse it with urllib.parse.urlsplit.",
+                  "Record hostname, username presence, port, path, and query.",
+                  "Do not fetch the URL or submit credentials."
+                ],
+                "solution": "from urllib.parse import urlsplit\n\nraw_url = \"https://login.example.invalid@untrusted.invalid:8443/session?next=%2Fhome\"\nparts = urlsplit(raw_url)\nrecord = {\n    \"hostname\": parts.hostname,\n    \"username_present\": bool(parts.username),\n    \"port\": parts.port,\n    \"path\": parts.path,\n    \"query\": parts.query,\n}\nprint(record)",
+                "output": "A local parse showing the effective hostname and URL components with no outbound request."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "Why preserve the original URL separately from its normalized representation?",
+              "options": [
+                "URLs cannot be parsed",
+                "Normalization can change representation and the source string is evidence",
+                "Browsers reject normalization",
+                "Hashing requires a URL parser"
+              ],
+              "answer": "Normalization can change representation and the source string is evidence",
+              "explanation": "The exact source representation may matter for later review and comparison."
+            },
+            "summary": [
+              "URL parsing turns visual suspicion into explicit fields.",
+              "Canonicalization must not destroy source evidence."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/T1566/002/"
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "DNS and Domain Context",
+            "description": "Use DNS observations and registration context as supporting evidence rather than verdicts.",
+            "learningObjectives": [
+              "interpret A, AAAA, CNAME, MX, and TXT context",
+              "time-scope infrastructure observations",
+              "avoid ownership claims from shared hosting"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A phishing domain can sit on ordinary hosting, shared infrastructure, or compromised services. DNS answers describe observed configuration, while registration information can add historical context. Neither alone proves maliciousness or common control."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record observation time for historical reconstruction.",
+                  "An IP shared by many domains does not prove common ownership.",
+                  "A newly registered domain is a clue, not a verdict."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "What does two suspicious domains resolving to the same IP establish?",
+              "options": [
+                "Common actor ownership",
+                "Observed infrastructure overlap, but not necessarily common control",
+                "That both are benign",
+                "That one domain is a subdomain of the other"
+              ],
+              "answer": "Observed infrastructure overlap, but not necessarily common control",
+              "explanation": "Shared hosting can create IP overlap without shared ownership."
+            },
+            "summary": [
+              "Infrastructure is strongest when multiple independent signals converge.",
+              "Avoid unsupported threat-actor attribution."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Controlled Redirect and Page Analysis",
+            "description": "Investigate phishing destinations without risking production credentials or sessions.",
+            "learningObjectives": [
+              "design a safe analysis environment",
+              "record redirect-chain observations",
+              "avoid credential submission"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Controlled workflow"
+              },
+              {
+                "type": "paragraph",
+                "text": "Use an isolated environment without production sessions, browser profiles, or real credentials. Capture the original URL, redirect sequence, final host, page indicators, and collection time. For credential-harvesting pages, never authenticate with real credentials."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Treat screenshots as supplemental evidence.",
+                  "Record the observation timestamp because infrastructure can change.",
+                  "Separate live behavior observations from static indicator collection."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Opening suspicious links from a production endpoint can expose the investigator to the same attack being investigated."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "Why should an analyst avoid entering real credentials on a suspected phishing page?",
+              "options": [
+                "It changes DNS",
+                "It could disclose valid credentials or session material",
+                "It breaks HTTP",
+                "It prevents screenshots"
+              ],
+              "answer": "It could disclose valid credentials or session material",
+              "explanation": "The analysis workflow must not create a new compromise."
+            },
+            "summary": [
+              "Safety is part of evidence collection.",
+              "Controlled detonation protects investigators and preserves repeatability."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://learn.microsoft.com/en-us/defender-office-365/anti-phishing-protection-tuning"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Normalize Suspicious URLs Safely",
+            "level": "Easy",
+            "description": "Parse controlled URLs and output structured fields.",
+            "problemStatement": "Identify hostname, port, userinfo, path, and query fields without discarding the original string.",
+            "objectives": [
+              "parse URLs",
+              "flag userinfo",
+              "preserve originals"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Use urllib.parse.urlsplit and keep the raw input.",
+            "solutionCode": "from urllib.parse import urlsplit\nimport json\n\nraw_url = \"https://login.example.invalid@untrusted.invalid/session?next=%2Fhome\"\nparts = urlsplit(raw_url)\nresult = {\n    \"original\": raw_url,\n    \"scheme\": parts.scheme,\n    \"hostname\": parts.hostname,\n    \"port\": parts.port,\n    \"userinfo_present\": bool(parts.username),\n    \"path\": parts.path,\n    \"query\": parts.query,\n}\nprint(json.dumps(result, indent=2))\n",
+            "solutionExplanation": "The utility creates a structured analytical view while preserving the original URL."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Attachments, Hashes, and Evidence Objects",
+        "description": "Preserve and triage attachments as evidence objects with provenance and integrity metadata.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "MIME Parts and Attachment Provenance",
+            "description": "Understand attachment extraction and source relationships.",
+            "learningObjectives": [
+              "identify multipart messages",
+              "record filename and MIME context",
+              "maintain parent-message provenance"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Attachments should be treated as child artifacts of a source message. Record the parent message identifier, filename, observed MIME type, size, and cryptographic digest before deeper analysis."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Extract without executing.",
+                  "Track nested artifacts as separate objects.",
+                  "Preserve parent-child relationships so analysts can move back to the source message."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "Which metadata best preserves attachment context?",
+              "options": [
+                "Filename only",
+                "Parent message, filename, size, MIME context, and hash",
+                "Icon appearance",
+                "File extension only"
+              ],
+              "answer": "Parent message, filename, size, MIME context, and hash",
+              "explanation": "Those fields preserve provenance, context, and integrity information."
+            },
+            "summary": [
+              "Attachment extraction is evidence handling, not file opening.",
+              "Provenance must survive downstream transformations."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc5322.html",
+              "https://attack.mitre.org/techniques/T1566/001/"
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Hashing and Exact-Byte Integrity",
+            "description": "Use SHA-256 for evidence identification and understand its limits.",
+            "learningObjectives": [
+              "calculate SHA-256 correctly",
+              "explain integrity versus attribution",
+              "hash source and derived artifacts separately"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A SHA-256 digest identifies the byte sequence that was hashed. Matching digests support content equality for those bytes, but do not establish authorship, origin, or maliciousness."
+              },
+              {
+                "type": "code",
+                "text": "from pathlib import Path\nimport hashlib\n\ndata = Path(\"evidence.eml\").read_bytes()\nprint(hashlib.sha256(data).hexdigest())"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Hash the exact preserved source bytes.",
+                  "Record algorithm and digest with the evidence record.",
+                  "Derived copies should have their own digests and provenance."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-01",
+                "title": "Hash an Evidence Artifact",
+                "description": "Create an evidence record containing the exact byte count and SHA-256 digest of a controlled artifact.",
+                "steps": [
+                  "Select a controlled attachment or message file.",
+                  "Read it as bytes without modifying it.",
+                  "Calculate a SHA-256 digest using hashlib.",
+                  "Store the filename, byte count, and digest together."
+                ],
+                "solution": "from pathlib import Path\nimport hashlib\n\nartifact = Path(\"attachment.bin\")\ndata = artifact.read_bytes()\nrecord = {\n    \"filename\": artifact.name,\n    \"size_bytes\": len(data),\n    \"sha256\": hashlib.sha256(data).hexdigest(),\n}\nprint(record)",
+                "output": "A compact evidence record showing the artifact name, byte count, and SHA-256 hash."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "What does a SHA-256 digest most directly provide?",
+              "options": [
+                "Proof of authorship",
+                "A reproducible identifier for the hashed bytes",
+                "Proof of malware",
+                "Proof of ownership"
+              ],
+              "answer": "A reproducible identifier for the hashed bytes",
+              "explanation": "A digest supports integrity verification and exact-byte correlation."
+            },
+            "summary": [
+              "Hashing supports integrity and correlation, not attribution.",
+              "The byte sequence matters."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Archive, Extension, and File-Signature Triage",
+            "description": "Analyze disguised files and nested archives without trusting filename extensions.",
+            "learningObjectives": [
+              "compare naming with observed file structure",
+              "track nested evidence",
+              "document password-protected content as a limitation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "File names can be changed without changing content. Triage should consider the observed file signature, MIME metadata, size, nesting, and archive structure where available. A protected archive remains evidence even when its contents cannot be inspected yet."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not execute unknown content on the production workstation.",
+                  "Hash original and derived artifacts separately.",
+                  "Record failed extraction attempts and reasons."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "Why is the extension alone insufficient for file-type triage?",
+              "options": [
+                "Extensions are encrypted",
+                "Names can be misleading and do not establish underlying structure",
+                "Extensions create hashes",
+                "RFC 5322 forbids extensions"
+              ],
+              "answer": "Names can be misleading and do not establish underlying structure",
+              "explanation": "An attacker can rename an artifact without changing its underlying content."
+            },
+            "summary": [
+              "File identity is an evidence question, not a naming question.",
+              "Nested evidence must remain traceable."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/T1566/001/",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Create an Attachment Evidence Manifest",
+            "level": "Intermediate",
+            "description": "Generate a manifest for controlled attachment artifacts.",
+            "problemStatement": "Record filename, size, hash, and parent relationship for each file.",
+            "objectives": [
+              "hash artifacts",
+              "preserve parent-child relationships",
+              "emit JSON"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Treat every artifact as a separate evidence object.",
+            "solutionCode": "from pathlib import Path\nimport hashlib\n\nartifact = Path(\"evidence.eml\")\ndata = artifact.read_bytes()\ndigest = hashlib.sha256(data).hexdigest()\nprint({\"file\": artifact.name, \"bytes\": len(data), \"sha256\": digest})\n",
+            "solutionExplanation": "The example demonstrates source hashing. The student’s manifest should add explicit parent artifact IDs for nested files."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "User Interaction and Account Impact",
+        "description": "Correlate delivery, click, credential, identity, and mailbox evidence without confusing correlation with proof.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "Delivery, Open, Click, and Submit States",
+            "description": "Differentiate what mail telemetry can and cannot establish.",
+            "learningObjectives": [
+              "define delivery versus interaction",
+              "identify stronger click evidence",
+              "document visibility gaps"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A delivered message proves delivery, not that a person opened or clicked it. Secure-link telemetry, browser records, endpoint events, or provider audit data can provide stronger interaction evidence. Absence of telemetry should be documented as a limitation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "State the source and timestamp of each interaction event.",
+                  "Do not infer click from delivery alone.",
+                  "Do not infer credential submission from a click alone."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Which observation best supports a phishing-link click?",
+              "options": [
+                "Delivery record",
+                "Suspicious wording",
+                "Provider or endpoint telemetry recording a request to the destination",
+                "A message subject"
+              ],
+              "answer": "Provider or endpoint telemetry recording a request to the destination",
+              "explanation": "Direct interaction telemetry is stronger evidence of a click than message delivery or content alone."
+            },
+            "summary": [
+              "Phishing investigation requires event-level evidence.",
+              "Missing telemetry is an explicit limitation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Credential Exposure and Identity Correlation",
+            "description": "Pivot from the message to identity telemetry when credentials may have been exposed.",
+            "learningObjectives": [
+              "correlate message and sign-in timing",
+              "use source/device/geography as context",
+              "identify containment triggers"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Identity evidence can include sign-in time, source address, device context, MFA events, password resets, and session changes. A sign-in shortly after a phishing event is a correlation lead; analysts should assess the full identity context before declaring compromise."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Normalize timestamps before comparison.",
+                  "New device or geography can be suspicious but is not proof by itself.",
+                  "Follow the organization’s approved containment procedure when exposure is credible."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What should follow a credible report that a user entered credentials into a phishing page?",
+              "options": [
+                "Ignore identity logs",
+                "Review identity telemetry and follow account-containment procedure",
+                "Delete the message",
+                "Assume total compromise"
+              ],
+              "answer": "Review identity telemetry and follow account-containment procedure",
+              "explanation": "Potential credential exposure requires identity-focused evidence collection and appropriate containment."
+            },
+            "summary": [
+              "Credential exposure turns a mail investigation into an identity investigation.",
+              "Context determines the strength of the correlation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Mailbox Rules and Post-Compromise Persistence",
+            "description": "Investigate mailbox changes that may extend or hide attacker access.",
+            "learningObjectives": [
+              "identify suspicious forwarding rules",
+              "correlate rule creation with identity events",
+              "distinguish automation from abuse"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Unexpected external forwarding, hidden-folder rules, or other mailbox changes can be relevant after credential compromise. Review creation time, initiating identity, source device, and business justification before labeling a change malicious."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "External forwarding is higher risk when it conflicts with policy or user behavior.",
+                  "Automated workflows can create legitimate rules.",
+                  "Mailbox evidence should be correlated with identity telemetry."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "Which mailbox change deserves priority investigation after suspected compromise?",
+              "options": [
+                "A font change",
+                "Unexpected external forwarding",
+                "A sorted inbox",
+                "A calendar color change"
+              ],
+              "answer": "Unexpected external forwarding",
+              "explanation": "External forwarding may expose future mail and can be used to maintain access or collect information."
+            },
+            "summary": [
+              "Mailbox configuration can reveal impact after the original phishing message.",
+              "Persistence hypotheses require timeline and provenance."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://learn.microsoft.com/en-us/defender-office-365/anti-phishing-policies-about"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Correlate Phishing and Sign-In Events",
+            "level": "Advanced",
+            "description": "Identify sign-ins occurring within a configurable window after a phishing event.",
+            "problemStatement": "Correlate controlled message and sign-in events by user and UTC time without automatically declaring compromise.",
+            "objectives": [
+              "normalize UTC timestamps",
+              "correlate by user",
+              "output review candidates"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Make the output a candidate list, not a verdict.",
+            "solutionCode": "from datetime import datetime, timezone\n\nmessage_time = datetime.fromisoformat(\"2026-09-07T10:00:00+00:00\").astimezone(timezone.utc)\nevents = [\n    {\"user\": \"analyst@example.invalid\", \"time\": \"2026-09-07T10:12:00+00:00\"},\n    {\"user\": \"analyst@example.invalid\", \"time\": \"2026-09-07T13:40:00+00:00\"},\n]\nfor event in events:\n    event_time = datetime.fromisoformat(event[\"time\"]).astimezone(timezone.utc)\n    delta = (event_time - message_time).total_seconds()\n    if 0 <= delta <= 3600:\n        print({**event, \"seconds_after_message\": int(delta)})\n",
+            "solutionExplanation": "The utility identifies temporal candidates. Analysts must validate source, device, and other context before concluding compromise."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Campaign Scoping and Threat Intelligence",
+        "description": "Expand a message into a campaign and create context-rich indicators suitable for controlled sharing.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Campaign Pivots and Similarity",
+            "description": "Use evidence-ranked pivots to identify related phishing messages.",
+            "learningObjectives": [
+              "rank strong and weak pivots",
+              "combine exact and contextual searches",
+              "record inclusion rationale"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Campaign scoping can use exact attachment hashes, URLs, message identifiers, infrastructure, sender patterns, lure themes, and time windows. Each pivot has a different false-positive profile, so inclusion decisions should record why the event is considered related."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Exact file hash is strong for identical bytes.",
+                  "Generic subjects and branding are weaker pivots.",
+                  "Shared IP infrastructure needs additional context."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Which pivot is strongest for identifying identical attachment content?",
+              "options": [
+                "Display name",
+                "SHA-256",
+                "Brand logo",
+                "Generic subject"
+              ],
+              "answer": "SHA-256",
+              "explanation": "An exact hash match strongly supports identical bytes, subject to collection context."
+            },
+            "summary": [
+              "Campaign scope should be explainable event by event.",
+              "Pivots should be selected for evidentiary value, not convenience."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1"
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "Indicator Quality, Confidence, and Attribution",
+            "description": "Create operationally useful indicators without overstating actor attribution.",
+            "learningObjectives": [
+              "separate observable from assessment",
+              "define confidence factors",
+              "state limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "An indicator can be a domain, URL, IP address, email address, hash, or message identifier. Operational quality improves when indicators are precise, time-scoped, and linked to evidence. Confidence should reflect independent corroboration rather than repetition of one source."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A technical indicator does not automatically identify an adversary.",
+                  "Negative evidence can reduce confidence.",
+                  "Actor attribution requires a higher evidence threshold than infrastructure identification."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "What most strengthens confidence in an indicator assessment?",
+              "options": [
+                "More descriptive language",
+                "Independent corroboration",
+                "An actor name",
+                "A longer URL"
+              ],
+              "answer": "Independent corroboration",
+              "explanation": "Independent evidence sources reduce reliance on one incomplete observation."
+            },
+            "summary": [
+              "Confidence is a reasoned judgment that should be auditable.",
+              "Indicator context is as important as the value itself."
+            ],
+            "resources": [
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1",
+              "https://www.oasis-open.org/standard/stix2-1/"
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "STIX, TAXII, and TLP 2.0",
+            "description": "Understand structured intelligence exchange and information-sharing boundaries.",
+            "learningObjectives": [
+              "explain STIX 2.1 and TAXII 2.1 roles",
+              "recognize when structured phishing intelligence is useful",
+              "apply TLP 2.0 labels appropriately"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "STIX 2.1 is a language for expressing cyber threat and observable information. TAXII 2.1 specifies an application-layer protocol and resources for communicating cyber threat information. FIRST TLP 2.0 labels sharing boundaries with TLP:RED, TLP:AMBER, TLP:GREEN, and TLP:CLEAR."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not represent a custom JSON record as a standards-compliant STIX bundle.",
+                  "TLP communicates handling expectations, not maliciousness.",
+                  "Preserve source and confidence fields in intelligence records."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "What is TAXII 2.1 primarily designed to do?",
+              "options": [
+                "Execute malicious code",
+                "Communicate cyber threat information through a defined protocol",
+                "Replace SMTP",
+                "Store credentials"
+              ],
+              "answer": "Communicate cyber threat information through a defined protocol",
+              "explanation": "TAXII defines a protocol and API resources for exchanging cyber threat information."
+            },
+            "summary": [
+              "Structured intelligence improves interoperability when semantics are explicit.",
+              "TLP is a handling label, not a verdict."
+            ],
+            "resources": [
+              "https://www.oasis-open.org/standard/stix2-1/",
+              "https://www.oasis-open.org/standard/taxii-version-2-1/",
+              "https://www.first.org/tlp/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Create a Controlled Threat-Intelligence Record",
+            "level": "Intermediate",
+            "description": "Produce a small JSON intelligence record for a phishing campaign.",
+            "problemStatement": "Include indicators, confidence, evidence references, and a TLP label while explicitly using an internal schema rather than claiming full STIX compliance.",
+            "objectives": [
+              "normalize indicators",
+              "preserve evidence references",
+              "include handling and confidence"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Keep indicator value, source evidence, and confidence as separate fields.",
+            "solutionCode": "import json\nbundle = {\n  \"type\": \"controlled-phishing-intel\",\n  \"tlp\": \"TLP:AMBER\",\n  \"confidence\": \"high\",\n  \"indicators\": [\n    {\"type\": \"domain\", \"value\": \"login.example.invalid\", \"evidence\": [\"message-001\"]},\n    {\"type\": \"sha256\", \"value\": \"00\" * 32, \"evidence\": [\"attachment-001\"]}\n  ]\n}\nprint(json.dumps(bundle, indent=2))\n",
+            "solutionExplanation": "The record demonstrates provenance and sharing metadata without pretending to implement the STIX standard."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Containment, Remediation, and Validation",
+        "description": "Translate findings into proportionate operational actions and verify that remediation worked.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Evidence-to-Action Decisions",
+            "description": "Select containment actions based on evidence, impact, and authorization.",
+            "learningObjectives": [
+              "map findings to response actions",
+              "document action rationale and owner",
+              "choose proportionate controls"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Containment can involve mail search and removal, indicator blocks, session revocation, credential resets, or increased monitoring. The appropriate action depends on evidence quality, likely impact, organizational authority, and the risk of disruption."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "High-confidence credential exposure can justify rapid identity containment.",
+                  "Unconfirmed indicators may warrant monitoring or scoped blocking.",
+                  "Every action should have a validation method."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "What makes a containment action auditable?",
+              "options": [
+                "Only the action name",
+                "Rationale, owner, evidence basis, and validation method",
+                "A screenshot",
+                "An attacker label"
+              ],
+              "answer": "Rationale, owner, evidence basis, and validation method",
+              "explanation": "Those fields allow later reviewers to understand why the action occurred and whether it worked."
+            },
+            "summary": [
+              "Containment is a decision process tied to evidence.",
+              "Operational actions must be traceable and authorized."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://learn.microsoft.com/en-us/defender-office-365/anti-phishing-protection-tuning"
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Mail Search and False-Positive Control",
+            "description": "Design remediation searches that minimize accidental removal of legitimate mail.",
+            "learningObjectives": [
+              "build narrow search predicates",
+              "preview scope",
+              "record before/after counts"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Exact indicators such as a message identifier, attachment hash, URL, or combination of features can support targeted remediation. Broad subject or brand searches can overmatch, so previewing scope and recording result counts are important controls."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Keep the query or predicate in the case record.",
+                  "Use multiple conditions when one indicator is noisy.",
+                  "Validate the post-action population."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "Why preview a remediation search before destructive action?",
+              "options": [
+                "To change the message",
+                "To reduce false-positive deletion risk",
+                "To bypass authentication",
+                "To make DNS faster"
+              ],
+              "answer": "To reduce false-positive deletion risk",
+              "explanation": "Previewing lets the analyst validate the intended scope before removal."
+            },
+            "summary": [
+              "Message-remediation searches are operational evidence.",
+              "False-positive control protects the business as well as the investigation."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/defender-office-365/anti-phishing-protection-tuning",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Post-Containment Validation and Closure",
+            "description": "Verify that remediation reduced exposure and document residual uncertainty.",
+            "learningObjectives": [
+              "verify removal and blocking",
+              "detect re-delivery or variants",
+              "define closure criteria"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Closure is stronger when it includes repeat searches, block validation, identity review, and monitoring for reappearance. A clean result is time-dependent, so the report should include validation time and residual limitations."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not equate “not found” with “never existed.”",
+                  "Re-check campaign variants and alternate indicators.",
+                  "Keep response timestamps and validation evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "Which is a useful post-remediation check?",
+              "options": [
+                "Assume deletion succeeded",
+                "Repeat the scoped search and verify the expected result",
+                "Delete logs",
+                "Close the case immediately"
+              ],
+              "answer": "Repeat the scoped search and verify the expected result",
+              "explanation": "A repeat query provides direct evidence about the success of the intended remediation scope."
+            },
+            "summary": [
+              "Validation converts response actions into evidence of outcome.",
+              "Closure should preserve residual risk rather than hide it."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://learn.microsoft.com/en-us/defender-office-365/anti-phishing-protection-tuning"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Write a Phishing Containment Runbook",
+            "level": "Intermediate",
+            "description": "Create a JSON decision runbook for suspicious, confirmed, and credential-exposure scenarios.",
+            "problemStatement": "Define actions, ownership assumptions, and validation checks for each evidence state.",
+            "objectives": [
+              "define evidence thresholds",
+              "include validation",
+              "avoid unsupported destructive automation"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "For every action state what evidence justifies it and how success will be verified.",
+            "solutionCode": "import json\nrunbook = {\n  \"suspicious\": {\"actions\": [\"preserve\", \"scope\", \"collect\"], \"validation\": [\"evidence preserved\"]},\n  \"confirmed\": {\"actions\": [\"remove\", \"block\"], \"validation\": [\"repeat search clear\"]},\n  \"credential_exposure\": {\"actions\": [\"revoke sessions\", \"reset per policy\"], \"validation\": [\"identity telemetry reviewed\"]}\n}\nprint(json.dumps(runbook, indent=2))\n",
+            "solutionExplanation": "The runbook separates evidence state from action and makes validation explicit."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Detection Engineering and SOC Metrics",
+        "description": "Use investigation lessons to improve phishing detections, test them safely, and measure investigation quality.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "From Investigation to Detection Logic",
+            "description": "Translate investigation findings into robust detection features.",
+            "learningObjectives": [
+              "derive useful detection features",
+              "avoid brittle single-string rules",
+              "separate alerting from automated response"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Detection features can include authentication anomalies, suspicious URL structures, lookalike domains, unusual mailbox changes, and campaign context. A good detection describes observable conditions and should not depend on one exact subject or sender string."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use multiple relevant signals when one feature is noisy.",
+                  "Document why the feature maps to observed behavior.",
+                  "Keep destructive response automation separately governed."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Which approach is generally more resilient to simple campaign changes?",
+              "options": [
+                "Exact subject match only",
+                "Multiple relevant evidence signals",
+                "Display name only",
+                "One IP forever"
+              ],
+              "answer": "Multiple relevant evidence signals",
+              "explanation": "Multi-signal logic is generally less brittle than one literal campaign artifact."
+            },
+            "summary": [
+              "Detection should encode durable evidence patterns.",
+              "A detection is not automatically a response action."
+            ],
+            "resources": [
+              "https://attack.mitre.org/techniques/T1566/",
+              "https://learn.microsoft.com/en-us/defender-office-365/anti-phishing-policies-about"
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Detection Test Design",
+            "description": "Create positive, negative, and edge cases for phishing detection tuning.",
+            "learningObjectives": [
+              "write representative test cases",
+              "measure expected versus observed results",
+              "document tuning choices"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Detection tuning is safer when test cases include intended phishing positives, benign negatives, and ambiguous edge conditions. An external Reply-To can be a useful example of an anomaly that needs review rather than automatic blocking."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Freeze expected outcomes before the test.",
+                  "Keep benign examples representative of real mail flow.",
+                  "Record why tuning changed after a test."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "Why include benign negative test cases?",
+              "options": [
+                "To make the rule longer",
+                "To measure false positives and protect legitimate mail flow",
+                "To disable logging",
+                "To bypass SPF"
+              ],
+              "answer": "To measure false positives and protect legitimate mail flow",
+              "explanation": "Negative cases reveal overmatching and support safer tuning."
+            },
+            "summary": [
+              "Good tuning uses evidence from both false positives and false negatives.",
+              "Ambiguity can legitimately route to analyst review."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/defender-office-365/anti-phishing-policies-about",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Phishing Investigation Metrics",
+            "description": "Define measurable metrics for speed, evidence quality, and outcome.",
+            "learningObjectives": [
+              "define reproducible metrics",
+              "include a denominator and time window",
+              "identify vanity metrics"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Useful measures can include median triage time, time to campaign scope, percentage of cases preserving original artifacts, recurrence after remediation, and false-positive rate. Each metric needs a population, time period, and calculation method."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Raw volume is not a complete performance measure.",
+                  "Evidence-quality metrics should reflect preservation and reproducibility.",
+                  "Document exclusions and data gaps."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Which metric directly evaluates evidence preservation?",
+              "options": [
+                "Number of alerts",
+                "Percentage of cases with preserved and hashed original artifacts",
+                "Number of dashboards",
+                "Number of analysts"
+              ],
+              "answer": "Percentage of cases with preserved and hashed original artifacts",
+              "explanation": "That metric evaluates whether investigations retained reproducible source evidence."
+            },
+            "summary": [
+              "Metrics should support decisions, not just dashboards.",
+              "A denominator and time window make a metric interpretable."
+            ],
+            "resources": [
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Build a Phishing Detection Test Matrix",
+            "level": "Intermediate",
+            "description": "Represent positive, negative, and edge test cases as JSON.",
+            "problemStatement": "Define expected alert states and rationale for controlled phishing detection tests.",
+            "objectives": [
+              "define expected outcomes",
+              "include benign cases",
+              "preserve rationale"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Include at least one benign case that resembles the malicious pattern.",
+            "solutionCode": "import json\ncases = [\n  {\"id\": \"P1\", \"scenario\": \"credential-harvest-link\", \"expected\": \"alert\"},\n  {\"id\": \"N1\", \"scenario\": \"benign-marketing\", \"expected\": \"no-alert\"},\n  {\"id\": \"E1\", \"scenario\": \"legitimate-external-reply-to\", \"expected\": \"review\"}\n]\nprint(json.dumps(cases, indent=2))\n",
+            "solutionExplanation": "The matrix makes expected outcomes explicit and supports repeatable tuning."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Reporting and Communication",
+        "description": "Produce technically precise and audience-appropriate phishing reports with evidence, confidence, timeline, impact, and limitations.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Evidence-to-Finding Writing",
+            "description": "Convert observations into concise, traceable findings.",
+            "learningObjectives": [
+              "write observation-first findings",
+              "link claims to evidence",
+              "state confidence and limitations"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A defensible finding states the observed fact, the analytical interpretation, and the operational implication. For example, an Authentication-Results dkim=fail value is an observation; concern about claimed domain authentication is an interpretation. Avoid collapsing them into a single unsupported statement."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use exact field names where wording matters.",
+                  "Reference source artifacts and timestamps.",
+                  "Do not turn an absence of evidence into evidence of absence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "Which is a direct observation?",
+              "options": [
+                "The attacker owns the domain.",
+                "The user is compromised.",
+                "Authentication-Results contains dkim=fail.",
+                "Actor X sent the message."
+              ],
+              "answer": "Authentication-Results contains dkim=fail.",
+              "explanation": "That statement reports a directly observed field value."
+            },
+            "summary": [
+              "Precision is more valuable than dramatic language.",
+              "Readers should be able to trace each conclusion back to evidence."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc8601.html",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Timeline Construction",
+            "description": "Build a normalized timeline from message and telemetry events.",
+            "learningObjectives": [
+              "normalize time zones",
+              "retain original timestamp context",
+              "identify conflicting or missing timestamps"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A phishing timeline can combine message Date, Received fields, provider audit logs, endpoint data, identity events, and response actions. Preserve the original timestamp and source while generating a normalized comparison view."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Message Date is not delivery time by definition.",
+                  "Received events represent processing points.",
+                  "Different systems can have different clock behavior or delays."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "Why retain the original timezone when normalizing to UTC?",
+              "options": [
+                "It is irrelevant",
+                "It makes the normalized conversion auditable",
+                "It changes the hash",
+                "It changes Message-ID"
+              ],
+              "answer": "It makes the normalized conversion auditable",
+              "explanation": "The source context lets a reviewer reconstruct the normalization."
+            },
+            "summary": [
+              "A timeline is a synthesis of multiple clocks and sources.",
+              "Every event needs provenance and context."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc5322.html",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "lesson-09-03",
+            "title": "Executive and Technical Reporting",
+            "description": "Adapt the same case to technical and leadership audiences without changing the facts.",
+            "learningObjectives": [
+              "write an executive summary",
+              "write a technical evidence section",
+              "preserve material uncertainty"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Executives generally need impact, affected scope, decisions, and residual risk. Technical responders need evidence, indicators, timelines, searches, and limitations. Both views should derive from the same case record and maintain the same factual conclusion."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Simplify jargon, not evidence.",
+                  "Keep material uncertainty visible.",
+                  "Use the technical appendix for reproducibility."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-03",
+              "question": "What must remain consistent across executive and technical reports?",
+              "options": [
+                "Formatting",
+                "Underlying evidence-based conclusion and material uncertainty",
+                "Number of screenshots",
+                "Amount of jargon"
+              ],
+              "answer": "Underlying evidence-based conclusion and material uncertainty",
+              "explanation": "Different audiences can receive different detail, but not different facts."
+            },
+            "summary": [
+              "Audience changes presentation, not truth.",
+              "Executive summaries should remain consistent with technical evidence."
+            ],
+            "resources": [
+              "https://www.first.org/standards/frameworks/csirts/csirt_services_framework_v2.1",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Generate a Defensible Phishing Report",
+            "level": "Advanced",
+            "description": "Produce a machine-readable report with findings and limitations.",
+            "problemStatement": "Represent assessment, confidence, evidence-backed findings, impact, actions, and limitations.",
+            "objectives": [
+              "separate observation from assessment",
+              "include confidence",
+              "document limitations"
+            ],
+            "requirements": [
+              "Python 3.11+"
+            ],
+            "hint": "Each finding should carry evidence, confidence, impact, and action.",
+            "solutionCode": "import json\n\nreport = {\n    \"case\": \"PHISH-2026-001\",\n    \"assessment\": \"Malicious phishing\",\n    \"confidence\": \"High\",\n    \"findings\": [\n        {\n            \"name\": \"Authentication anomaly\",\n            \"evidence\": \"Controlled Authentication-Results data records dkim=fail.\",\n            \"confidence\": \"High\",\n            \"impact\": \"Visible sender identity requires additional validation.\",\n            \"action\": \"Scope related messages and review sender infrastructure.\"\n        }\n    ],\n    \"limitations\": [\"Mailbox-side delivery logs were unavailable in the controlled dataset.\"]\n}\nprint(json.dumps(report, indent=2))\n",
+            "solutionExplanation": "The example uses a compact schema that preserves the evidence-to-action relationship."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Final Capstone — End-to-End Phishing Investigation",
+        "description": "Complete one realistic controlled phishing case from evidence preservation through final response reporting. This module contains the final project and no separate module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-10-01",
+            "title": "Capstone Planning and Evidence Gates",
+            "description": "Plan the capstone before analysis and define the evidence and completion gates.",
+            "learningObjectives": [
+              "create an evidence inventory",
+              "define scope and assumptions",
+              "set acceptance criteria"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Capstone gates"
+              },
+              {
+                "type": "paragraph",
+                "text": "The controlled dataset should contain an EML message, URL artifacts, controlled attachment samples or metadata, and synthetic mail/identity events. Establish an evidence manifest before interpretation. Success means the final report can explain what is known, what is inferred, what was done, and what remains unknown."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve → analyze → scope → assess impact → respond → validate → report.",
+                  "No real credentials, personal data, or live phishing infrastructure are required."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-10-01",
+              "question": "What is the first capstone gate?",
+              "options": [
+                "Attribution",
+                "Evidence preservation and scope",
+                "Public disclosure",
+                "Malware execution"
+              ],
+              "answer": "Evidence preservation and scope",
+              "explanation": "The case begins by establishing scope and protecting source evidence."
+            },
+            "summary": [
+              "The capstone evaluates investigation reasoning across the full workflow."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://www.rfc-editor.org/rfc/rfc5322.html",
+              "https://www.rfc-editor.org/rfc/rfc8601.html",
+              "https://attack.mitre.org/techniques/T1566/"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "End-to-End Phishing Investigation Case",
+          "description": "Investigate a controlled phishing campaign from preserved email through final SOC reporting using synthetic telemetry and non-live infrastructure.",
+          "conceptsCovered": [
+            "Case intake and preservation",
+            "RFC 5322 analysis",
+            "Received and identity headers",
+            "Authentication-Results, SPF, DKIM, DMARC",
+            "URL parsing and safe analysis",
+            "Attachment hashing and provenance",
+            "Identity and mailbox correlation",
+            "Campaign scoping",
+            "ATT&CK classification",
+            "Containment and validation",
+            "Executive and technical reporting"
+          ],
+          "steps": [
+            "1. Freeze the controlled dataset and hash every source artifact.",
+            "2. Parse the EML and preserve identity, authentication, and routing fields.",
+            "3. Analyze SPF/DKIM/DMARC results without treating them as a universal verdict.",
+            "4. Extract and normalize URLs without using production credentials or sessions.",
+            "5. Build attachment evidence objects with hashes and parent relationships.",
+            "6. Correlate synthetic click/sign-in/mailbox events with the phishing timeline.",
+            "7. Expand campaign scope using evidence-ranked pivots and confidence labels.",
+            "8. Map the observed delivery method to the correct MITRE ATT&CK phishing sub-technique.",
+            "9. Build a proportionate containment plan and validation checklist.",
+            "10. Produce a final technical report and executive summary with explicit limitations."
+          ],
+          "code": [
+            {
+              "file": "phishing_case.py",
+              "language": "python",
+              "content": "from __future__ import annotations\n\nfrom dataclasses import dataclass, asdict\nfrom email import policy\nfrom email.parser import BytesParser\nfrom hashlib import sha256\nfrom pathlib import Path\nfrom urllib.parse import urlsplit\nfrom datetime import datetime, timezone\nimport json\nimport re\n\n@dataclass\nclass Finding:\n    name: str\n    observation: str\n    assessment: str\n    confidence: str\n    evidence: list[str]\n\ndef parse_message(path: Path) -> tuple[dict, str]:\n    raw = path.read_bytes()\n    digest = sha256(raw).hexdigest()\n    message = BytesParser(policy=policy.default).parsebytes(raw)\n    record = {\n        \"filename\": path.name,\n        \"sha256\": digest,\n        \"from\": message.get(\"From\"),\n        \"to\": message.get(\"To\"),\n        \"reply_to\": message.get(\"Reply-To\"),\n        \"message_id\": message.get(\"Message-ID\"),\n        \"authentication_results\": message.get(\"Authentication-Results\"),\n        \"received\": message.get_all(\"Received\", []),\n    }\n    return record, message.as_string()\n\ndef extract_urls(message_text: str) -> list[dict]:\n    results = []\n    candidates = re.findall(r'https?://[^\\s<>\"\\']+', message_text)\n    for value in candidates:\n        parsed = urlsplit(value)\n        results.append({\n            \"original\": value,\n            \"scheme\": parsed.scheme,\n            \"hostname\": parsed.hostname,\n            \"username_present\": bool(parsed.username),\n            \"port\": parsed.port,\n            \"path\": parsed.path,\n            \"query\": parsed.query,\n        })\n    return results\n\ndef build_investigation(eml_path: Path, artifact_paths: list[Path]) -> dict:\n    message_record, message_text = parse_message(eml_path)\n    artifacts = []\n    for path in artifact_paths:\n        raw = path.read_bytes()\n        artifacts.append({\n            \"filename\": path.name,\n            \"size_bytes\": len(raw),\n            \"sha256\": sha256(raw).hexdigest(),\n        })\n\n    findings = []\n    auth = message_record.get(\"authentication_results\")\n    if auth:\n        findings.append(asdict(Finding(\n            name=\"Authentication result review\",\n            observation=str(auth),\n            assessment=\"Authentication results are evidence for contextual analysis; they are not a stand-alone verdict of maliciousness.\",\n            confidence=\"Medium\",\n            evidence=[\"Authentication-Results header\"]\n        )))\n\n    return {\n        \"case\": message_record,\n        \"urls\": extract_urls(message_text),\n        \"artifacts\": artifacts,\n        \"findings\": findings,\n        \"generated_at\": datetime.now(timezone.utc).isoformat(),\n    }\n\nif __name__ == \"__main__\":\n    case = build_investigation(Path(\"evidence.eml\"), [Path(\"evidence.eml\")])\n    Path(\"investigation.json\").write_text(json.dumps(case, indent=2), encoding=\"utf-8\")\n    print(\"Created investigation.json from preserved evidence and offline analysis.\")\n"
+            }
+          ],
+          "explanation": "The capstone uses controlled artifacts so students practice realistic investigation without live attacker infrastructure. The workflow starts with evidence preservation, then moves through standards-based message analysis, safe URL and attachment triage, identity correlation, campaign scoping, operational response planning, validation, and final reporting. Each conclusion must be traceable to an artifact or telemetry record, while limitations remain explicit."
+        }
+      }
+    ]
+  }
+}

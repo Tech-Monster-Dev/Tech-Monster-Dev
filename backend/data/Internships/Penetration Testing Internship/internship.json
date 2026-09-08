@@ -1,0 +1,1475 @@
+{
+  "internship": {
+    "id": "penetration-testing-internship",
+    "title": "Penetration Testing Internship",
+    "slug": "penetration-testing-internship",
+    "domain": "Cybersecurity / Penetration Testing",
+    "level": "Intermediate to Advanced",
+    "language": "English",
+    "duration": {
+      "recommendedEffort": "120–160 focused hours",
+      "basis": "Based on methodology, network/web testing, controlled exploitation, reporting, automation and capstone workload."
+    },
+    "prerequisites": [
+      "Basic Linux command line.",
+      "Foundational TCP/IP, DNS, HTTP/HTTPS, ports and routing.",
+      "Basic Python and JSON.",
+      "Basic Git.",
+      "Ability to operate isolated VMs/containers.",
+      "Understanding that all testing must be explicitly authorized."
+    ],
+    "objectives": [
+      "Plan and scope penetration tests.",
+      "Perform network and service enumeration.",
+      "Map and test web application attack surfaces.",
+      "Validate common weaknesses safely.",
+      "Understand controlled exploitation in isolated labs.",
+      "Write evidence-backed findings and remediation.",
+      "Automate repeatable assessment tasks safely.",
+      "Retest remediated weaknesses and close findings with evidence."
+    ],
+    "competencies": [
+      "Scope and authorization discipline",
+      "Network reconnaissance",
+      "Service enumeration",
+      "HTTP analysis",
+      "Web vulnerability validation",
+      "Controlled exploitation",
+      "Privilege reasoning",
+      "Evidence handling",
+      "Risk communication",
+      "Reporting",
+      "Automation",
+      "Git hygiene",
+      "Retesting"
+    ],
+    "technologyStack": [
+      {
+        "name": "Kali Linux or equivalent",
+        "purpose": "Assessment environment",
+        "role": "Hosts security tools."
+      },
+      {
+        "name": "Nmap",
+        "purpose": "Network enumeration",
+        "role": "Discovery and service/version detection."
+      },
+      {
+        "name": "Burp Suite",
+        "purpose": "Web interception",
+        "role": "Manual request analysis."
+      },
+      {
+        "name": "OWASP ZAP",
+        "purpose": "Web proxy and scanning",
+        "role": "Automated coverage aid."
+      },
+      {
+        "name": "Metasploit Framework",
+        "purpose": "Lab exploit validation",
+        "role": "Controlled exploitation."
+      },
+      {
+        "name": "Python 3",
+        "purpose": "Automation",
+        "role": "Capstone workbench."
+      },
+      {
+        "name": "Git",
+        "purpose": "Version control",
+        "role": "Engineering workflow."
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-1",
+        "name": "Engagement control",
+        "outcomes": [
+          "scope",
+          "authorization",
+          "evidence"
+        ]
+      },
+      {
+        "id": "phase-2",
+        "name": "Discovery",
+        "outcomes": [
+          "network mapping",
+          "service enumeration",
+          "web mapping"
+        ]
+      },
+      {
+        "id": "phase-3",
+        "name": "Validation",
+        "outcomes": [
+          "web testing",
+          "controlled exploitation",
+          "privilege reasoning"
+        ]
+      },
+      {
+        "id": "phase-4",
+        "name": "Reporting and engineering",
+        "outcomes": [
+          "risk",
+          "remediation",
+          "automation",
+          "retesting"
+        ]
+      },
+      {
+        "id": "phase-5",
+        "name": "Capstone",
+        "outcomes": [
+          "end-to-end authorized assessment",
+          "evidence pack",
+          "workbench"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Engagement, Authorization, Methodology and Evidence",
+        "description": "Build the professional foundation for authorized penetration testing: scope, rules of engagement, methodology, evidence discipline, and stop conditions.",
+        "objectives": [
+          "Translate authorization into explicit operational boundaries.",
+          "Differentiate vulnerability scanning from penetration testing.",
+          "Apply a repeatable assessment lifecycle.",
+          "Maintain reproducible evidence without collecting unnecessary sensitive data."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "Purpose and limits of penetration testing",
+            "description": "Define penetration testing as an authorized assessment that identifies, validates, and communicates security weaknesses. Distinguish it from scanning, auditing, incident response, and red-team operations.",
+            "learningObjectives": [
+              "Explain why authorization is a technical constraint.",
+              "Distinguish detection from validation and impact demonstration."
+            ],
+            "summary": "Explain why authorization is a technical constraint. Distinguish detection from validation and impact demonstration."
+          },
+          {
+            "id": "lesson-02",
+            "title": "Rules of engagement and scope translation",
+            "description": "Convert prose authorization into targets, exclusions, time windows, contacts, permitted techniques, and stop conditions.",
+            "learningObjectives": [
+              "Create explicit include/exclude lists.",
+              "Define conditions that require a stop."
+            ],
+            "summary": "Create explicit include/exclude lists. Define conditions that require a stop."
+          },
+          {
+            "id": "lesson-03",
+            "title": "Methodology and phase gates",
+            "description": "Use NIST SP 800-115 and PTES-style thinking to separate planning, discovery, validation, exploitation, cleanup, analysis, and reporting.",
+            "learningObjectives": [
+              "Map activities to lifecycle phases.",
+              "Explain why planning and reporting are part of technical quality."
+            ],
+            "summary": "Map activities to lifecycle phases. Explain why planning and reporting are part of technical quality."
+          },
+          {
+            "id": "lesson-04",
+            "title": "Evidence and reproducibility",
+            "description": "Capture timestamps, raw tool output, requests/responses, screenshots, hashes, and exact reproduction steps.",
+            "learningObjectives": [
+              "Create an evidence trail another tester can reproduce.",
+              "Minimize unnecessary sensitive data collection."
+            ],
+            "summary": "Create an evidence trail another tester can reproduce. Minimize unnecessary sensitive data collection."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Convert an authorization memo into an operational test plan",
+            "level": "Easy",
+            "description": "Turn a fictional local-lab authorization memo into a test plan.",
+            "problemStatement": "The team has a signed lab scope in prose; produce a concrete plan with targets, exclusions, sequence, evidence and stop conditions.",
+            "objectives": [
+              "Identify targets and exclusions.",
+              "Define a safe sequence.",
+              "Define stop conditions."
+            ],
+            "requirements": [
+              "Only local/private lab targets.",
+              "No public targets.",
+              "No destructive actions."
+            ],
+            "constraints": [
+              "Explicit scope is more useful than vague statements like “internal network”."
+            ],
+            "hint": "from dataclasses import dataclass, field\n\n@dataclass\nclass TestPlan:\n    targets: list[str]\n    exclusions: list[str]\n    phases: list[str]\n    stop_conditions: list[str] = field(default_factory=list)\n\nplan = TestPlan(\n    targets=['127.0.0.1'],\n    exclusions=['public internet', 'production systems'],\n    phases=['scope verification','discovery','enumeration','validation','reporting'],\n    stop_conditions=['unexpected instability','scope cannot be verified','non-lab impact suspected']\n)\nassert plan.targets and plan.exclusions and plan.stop_conditions\nprint(plan)\n",
+            "solutionCode": "The implementation captures boundaries before tool execution and makes stop conditions explicit.",
+            "solutionExplanation": [
+              "Confirm every target before testing.",
+              "Reject an empty target list.",
+              "Record stop conditions before execution."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Operational test plan",
+          "Scope checklist",
+          "Evidence checklist"
+        ],
+        "assessment": "The intern can translate written authorization into operational controls.",
+        "practicals": [
+          {
+            "id": "prac-01",
+            "title": "Write and verify a lab rules-of-engagement sheet",
+            "objective": "Translate scope into target, exclusion, time-window, evidence, and stop-condition controls.",
+            "steps": [
+              "Write the target list and exclusions.",
+              "Define permitted test techniques and prohibited actions.",
+              "Add stop conditions for instability and scope uncertainty.",
+              "Have a peer read the sheet and point out ambiguous language."
+            ],
+            "expectedEvidence": [
+              "Completed rules-of-engagement sheet",
+              "Peer-review notes"
+            ],
+            "safetyBoundary": "Only test explicitly authorized lab targets; stop immediately when scope or impact becomes uncertain."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Network Reconnaissance and Service Enumeration",
+        "description": "Perform disciplined network discovery with Nmap and supporting Linux tooling, emphasizing target attribution, port states, service identification, and evidence preservation.",
+        "objectives": [
+          "Explain hosts, ports, services, and attack surface.",
+          "Choose Nmap options based on an assessment question.",
+          "Interpret service/version output without overclaiming.",
+          "Preserve machine-readable evidence."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Network reconnaissance fundamentals",
+            "description": "Review IPv4 addressing, TCP/UDP, sockets, routes, ports, banners and service exposure.",
+            "learningObjectives": [
+              "Interpret common port states.",
+              "Relate exposed services to enumeration decisions."
+            ],
+            "summary": "Interpret common port states. Relate exposed services to enumeration decisions."
+          },
+          {
+            "id": "lesson-06",
+            "title": "Nmap discovery and scan selection",
+            "description": "Choose targeted discovery and scanning methods appropriate to an isolated lab.",
+            "learningObjectives": [
+              "Select least-intrusive options that answer the question.",
+              "Use targeted port ranges."
+            ],
+            "quiz": {
+              "id": "quiz-01",
+              "question": "Which statement best describes an open TCP port?",
+              "options": [
+                "The port is reachable and an application is listening.",
+                "The host is definitely vulnerable.",
+                "The firewall is disabled.",
+                "The OS is identified with certainty."
+              ],
+              "answer": "The port is reachable and an application is listening.",
+              "explanation": "An open port is an observation; vulnerability and OS conclusions require additional evidence."
+            },
+            "summary": "Select least-intrusive options that answer the question. Use targeted port ranges."
+          },
+          {
+            "id": "lesson-07",
+            "title": "Service and version enumeration",
+            "description": "Use version detection to build hypotheses about protocols and software, then validate manually.",
+            "learningObjectives": [
+              "Use service/version detection.",
+              "Separate a banner from confirmed vulnerability evidence."
+            ],
+            "summary": "Use service/version detection. Separate a banner from confirmed vulnerability evidence."
+          },
+          {
+            "id": "lesson-08",
+            "title": "NSE, XML and evidence preservation",
+            "description": "Use narrow NSE checks and save XML for later parsing rather than relying only on console output.",
+            "learningObjectives": [
+              "Preserve XML output.",
+              "Select scripts by assessment question."
+            ],
+            "summary": "Preserve XML output. Select scripts by assessment question."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Build a repeatable Nmap enumeration record",
+            "level": "Intermediate",
+            "description": "Create a safe command set and evidence record for one authorized lab host.",
+            "problemStatement": "The tester must identify exposed services, preserve XML, and explain the purpose of each command.",
+            "objectives": [
+              "Run constrained enumeration.",
+              "Save XML evidence.",
+              "Document observations and next validation steps."
+            ],
+            "requirements": [
+              "Local/private targets only.",
+              "No evasion.",
+              "No credential attacks."
+            ],
+            "constraints": [],
+            "hint": [
+              "Start with the smallest scan that answers the question."
+            ],
+            "solutionCode": "from pathlib import Path\nimport subprocess\n\ntarget='127.0.0.1'\nout=Path('artifacts'); out.mkdir(exist_ok=True)\ncmd=['nmap','-Pn','-sV','-T3','--top-ports','20','-oX',str(out/'services.xml'),target]\nresult=subprocess.run(cmd,capture_output=True,text=True,shell=False,check=False)\nif result.returncode != 0:\n    raise SystemExit(result.stderr.strip() or 'nmap failed')\nprint('Evidence:', out/'services.xml')\n",
+            "solutionExplanation": "The solution uses an argument list and shell=False, records XML evidence, and fails clearly when the tool fails."
+          }
+        ],
+        "deliverables": [
+          "Nmap command log",
+          "XML evidence",
+          "Service inventory"
+        ],
+        "assessment": "The intern can execute and document repeatable enumeration.",
+        "practicals": [
+          {
+            "id": "prac-02",
+            "title": "Enumerate a private lab host",
+            "objective": "Build a reproducible service inventory using Nmap.",
+            "steps": [
+              "Confirm the target IP matches the lab asset.",
+              "Run a conservative port discovery command.",
+              "Run service/version detection against the same target.",
+              "Save XML output.",
+              "Compare console output to the XML inventory."
+            ],
+            "expectedEvidence": [
+              "Command log",
+              "Raw Nmap XML",
+              "Normalized service inventory"
+            ],
+            "safetyBoundary": "Only test explicitly authorized lab targets; stop immediately when scope or impact becomes uncertain."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Web Reconnaissance and HTTP Attack-Surface Mapping",
+        "description": "Move from network exposure to application behavior: HTTP semantics, proxies, endpoints, parameters, cookies, session state and API surfaces.",
+        "objectives": [
+          "Read HTTP traffic as security evidence.",
+          "Map public and authenticated attack surfaces.",
+          "Use Burp Suite or ZAP for interception and request analysis.",
+          "Prioritize functions for deeper testing."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "HTTP request and response anatomy",
+            "description": "Study methods, headers, cookies, content types, status codes, redirects, cache controls and security headers.",
+            "learningObjectives": [
+              "Interpret requests/responses precisely.",
+              "Identify user-controlled inputs and trust boundaries."
+            ],
+            "summary": "Interpret requests/responses precisely. Identify user-controlled inputs and trust boundaries."
+          },
+          {
+            "id": "lesson-10",
+            "title": "Intercepting proxies",
+            "description": "Configure a browser against a local proxy and capture normal application traffic.",
+            "learningObjectives": [
+              "Capture and replay a normal lab request.",
+              "Keep proxy traffic scoped to the lab."
+            ],
+            "summary": "Capture and replay a normal lab request. Keep proxy traffic scoped to the lab."
+          },
+          {
+            "id": "lesson-11",
+            "title": "Endpoint discovery and application mapping",
+            "description": "Build an endpoint inventory from navigation, forms, APIs, scripts and observed routes.",
+            "learningObjectives": [
+              "Classify endpoints by authentication state.",
+              "Prioritize business-critical actions."
+            ],
+            "summary": "Classify endpoints by authentication state. Prioritize business-critical actions."
+          },
+          {
+            "id": "lesson-12",
+            "title": "Cookies, sessions and state",
+            "description": "Trace session identifiers, CSRF tokens, authorization context and state changes.",
+            "learningObjectives": [
+              "Compare authenticated and unauthenticated requests.",
+              "Identify parameters that influence authorization."
+            ],
+            "summary": "Compare authenticated and unauthenticated requests. Identify parameters that influence authorization."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Create an authenticated web attack-surface map",
+            "level": "Intermediate",
+            "description": "Turn observed HTTP traffic into an endpoint inventory.",
+            "problemStatement": "A local application has public and authenticated functions; produce a route/method/parameter/auth/data-sensitivity inventory.",
+            "objectives": [
+              "Capture representative requests.",
+              "Classify auth requirements.",
+              "Prioritize next tests."
+            ],
+            "requirements": [
+              "Provided lab accounts only.",
+              "No brute forcing.",
+              "No public targets."
+            ],
+            "constraints": [],
+            "hint": [
+              "Start from application behavior, not from a vulnerability checklist."
+            ],
+            "solutionCode": "from dataclasses import dataclass\n\n@dataclass\nclass Endpoint:\n    method:str\n    path:str\n    auth:str\n    inputs:list[str]\n    priority:str\n\ninventory=[\n Endpoint('GET','/public','none',[],'low'),\n Endpoint('GET','/profile','user',['id'],'high'),\n Endpoint('POST','/transfer','user',['amount','recipient'],'critical')\n]\nfor e in inventory:\n    print(e.method,e.path,e.auth,e.inputs,e.priority)\n",
+            "solutionExplanation": "A structured inventory forces the tester to connect route behavior to trust boundaries and testing priorities."
+          }
+        ],
+        "deliverables": [
+          "Endpoint inventory",
+          "Authentication-state map",
+          "Representative request/response evidence"
+        ],
+        "assessment": "The intern can transform HTTP observations into a testable attack-surface model.",
+        "practicals": [
+          {
+            "id": "prac-03",
+            "title": "Build an HTTP request map",
+            "objective": "Use an intercepting proxy to map web routes and state transitions.",
+            "steps": [
+              "Configure the browser proxy for the local target.",
+              "Browse public functions.",
+              "Authenticate with provided lab credentials if authorized.",
+              "Capture representative requests and responses.",
+              "Classify endpoints by authentication state and data sensitivity."
+            ],
+            "expectedEvidence": [
+              "Proxy history export or screenshots",
+              "Endpoint inventory",
+              "Authentication-state notes"
+            ],
+            "safetyBoundary": "Only test explicitly authorized lab targets; stop immediately when scope or impact becomes uncertain."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Vulnerability Discovery and Validation",
+        "description": "Use structured hypotheses and manual validation to assess authentication, authorization, injection, XSS, path traversal, file handling and SSRF, with automated scanners as coverage aids.",
+        "objectives": [
+          "Validate common web vulnerabilities without relying blindly on scanners.",
+          "Separate observations, hypotheses, and confirmed findings.",
+          "Understand interpreter boundaries and browser output contexts.",
+          "Use ZAP appropriately inside the lab."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "Authentication versus authorization testing",
+            "description": "Test identity and role boundaries, direct object references, forced browsing and session handling in the lab.",
+            "learningObjectives": [
+              "Compare behavior under multiple test identities.",
+              "Document unauthorized access with minimal evidence."
+            ],
+            "summary": "Compare behavior under multiple test identities. Document unauthorized access with minimal evidence."
+          },
+          {
+            "id": "lesson-14",
+            "title": "Injection root causes",
+            "description": "Understand how untrusted input reaches interpreters such as SQL, shell and template engines.",
+            "learningObjectives": [
+              "Recognize interpreter boundaries.",
+              "Connect validation failures to parameterization and safe APIs."
+            ],
+            "summary": "Recognize interpreter boundaries. Connect validation failures to parameterization and safe APIs."
+          },
+          {
+            "id": "lesson-15",
+            "title": "XSS and output contexts",
+            "description": "Study reflected, stored and DOM-based XSS as context-sensitive output handling failures.",
+            "learningObjectives": [
+              "Identify browser execution contexts.",
+              "Choose context-appropriate output handling."
+            ],
+            "summary": "Identify browser execution contexts. Choose context-appropriate output handling."
+          },
+          {
+            "id": "lesson-16",
+            "title": "Path traversal, uploads and SSRF",
+            "description": "Test file-path and server-side URL inputs, focusing on normalization, allowlists, storage separation and network controls.",
+            "learningObjectives": [
+              "Design non-destructive validation steps.",
+              "Recommend architectural controls."
+            ],
+            "summary": "Design non-destructive validation steps. Recommend architectural controls."
+          },
+          {
+            "id": "lesson-17",
+            "title": "Scanner-assisted testing with ZAP",
+            "description": "Use ZAP baseline coverage and understand when full active scanning is justified in a lab.",
+            "learningObjectives": [
+              "Interpret alerts critically.",
+              "Verify alerts manually before reporting."
+            ],
+            "notes": "ZAP Baseline is documented as a passive-oriented scan; ZAP Full Scan performs active attacks and should be constrained to authorized lab systems.",
+            "summary": "Interpret alerts critically. Verify alerts manually before reporting."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Validate an object-level authorization weakness",
+            "level": "Advanced",
+            "description": "Test whether a user can read another user’s record by changing an identifier in a local lab request.",
+            "problemStatement": "User A can access record A. Determine whether changing the object identifier exposes record B, then capture minimal evidence and a remediation hypothesis.",
+            "objectives": [
+              "Identify the authorization decision.",
+              "Reproduce the access-control failure.",
+              "Recommend a server-side ownership check."
+            ],
+            "requirements": [
+              "Two lab users only.",
+              "No destructive operations."
+            ],
+            "constraints": [],
+            "hint": [
+              "Compare identical function calls under different identities before changing identifiers."
+            ],
+            "solutionCode": "def authorize(request_user_id:int, resource_owner_id:int)->bool:\n    return request_user_id == resource_owner_id\n\nassert authorize(10,10) is True\nassert authorize(10,11) is False\nprint('Authorization regression checks passed.')\n",
+            "solutionExplanation": "The corrected logic evaluates authorization from the server-side authenticated identity rather than trusting a client-supplied object identifier."
+          },
+          {
+            "id": "task-05",
+            "title": "Triage automated scanner alerts",
+            "level": "Intermediate",
+            "description": "Convert scanner output into a statused verification register.",
+            "problemStatement": "A scanner produces alerts of differing certainty; classify them as confirmed, false positive, needs verification, or informational.",
+            "objectives": [
+              "Define evidence requirements for confirmation.",
+              "Preserve uncertainty.",
+              "Record a next validation step."
+            ],
+            "requirements": [
+              "Do not invent scanner output or test results."
+            ],
+            "constraints": [],
+            "hint": [
+              "An alert is a lead, not automatically a confirmed vulnerability."
+            ],
+            "solutionCode": "alerts=[\n {'id':'A01','status':'needs-verification'},\n {'id':'A02','status':'informational'},\n {'id':'A03','status':'confirmed'}\n]\nallowed={'confirmed','false-positive','needs-verification','informational'}\nassert all(a['status'] in allowed for a in alerts)\nprint(alerts)\n",
+            "solutionExplanation": "The solution models explicit validation state and prevents the reporting layer from silently converting alerts into findings."
+          }
+        ],
+        "deliverables": [
+          "Validated findings",
+          "Scanner triage register",
+          "Manual verification notes"
+        ],
+        "assessment": "The intern can confirm vulnerabilities with evidence and preserve uncertainty where proof is incomplete.",
+        "practicals": [
+          {
+            "id": "prac-04",
+            "title": "Verify a web vulnerability hypothesis",
+            "objective": "Move from an observed behavior to a reproducible, non-destructive proof.",
+            "steps": [
+              "Select one local-lab endpoint.",
+              "State the security hypothesis.",
+              "Choose the smallest test input that can confirm or reject it.",
+              "Capture the relevant request/response evidence.",
+              "Write the expected remediation."
+            ],
+            "expectedEvidence": [
+              "Hypothesis record",
+              "Minimal proof evidence",
+              "Remediation note"
+            ],
+            "safetyBoundary": "Only test explicitly authorized lab targets; stop immediately when scope or impact becomes uncertain."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Controlled Exploitation, Post-Exploitation and Privilege Reasoning",
+        "description": "Practice bounded exploitation only within deliberately vulnerable labs, emphasizing minimal proof, impact assessment, cleanup, and privilege-boundary reasoning.",
+        "objectives": [
+          "Differentiate weakness, exploitability, access and impact.",
+          "Use exploitation frameworks in isolated labs.",
+          "Perform bounded post-exploitation enumeration.",
+          "Reason about privilege boundaries without persistence or lateral movement."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-18",
+            "title": "From vulnerability to exploitability",
+            "description": "Choose the smallest proof of impact that answers the assessment question.",
+            "learningObjectives": [
+              "Distinguish exposure from exploitability.",
+              "Stop when sufficient evidence exists."
+            ],
+            "summary": "Distinguish exposure from exploitability. Stop when sufficient evidence exists."
+          },
+          {
+            "id": "lesson-19",
+            "title": "Metasploit fundamentals",
+            "description": "Understand modules, sessions and controlled lab use.",
+            "learningObjectives": [
+              "Describe core Metasploit concepts.",
+              "Record exact configuration used."
+            ],
+            "summary": "Describe core Metasploit concepts. Record exact configuration used."
+          },
+          {
+            "id": "lesson-20",
+            "title": "Post-exploitation enumeration",
+            "description": "Enumerate identity, network context, permissions and accessible resources without destructive actions.",
+            "learningObjectives": [
+              "Collect only assessment-relevant evidence.",
+              "Avoid persistence unless explicitly in scope."
+            ],
+            "summary": "Collect only assessment-relevant evidence. Avoid persistence unless explicitly in scope."
+          },
+          {
+            "id": "lesson-21",
+            "title": "Privilege escalation reasoning",
+            "description": "Build hypotheses around permissions, services, scheduled tasks, capabilities and vulnerable software.",
+            "learningObjectives": [
+              "Identify privilege boundaries.",
+              "Choose safe next checks."
+            ],
+            "summary": "Identify privilege boundaries. Choose safe next checks."
+          },
+          {
+            "id": "lesson-22",
+            "title": "Pivoting and segmentation concepts",
+            "description": "Understand how a foothold could expose a second network segment and why scope must be rechecked.",
+            "learningObjectives": [
+              "Explain pivoting conceptually.",
+              "Identify whether a second-hop target is in scope."
+            ],
+            "summary": "Explain pivoting conceptually. Identify whether a second-hop target is in scope."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Produce a bounded lab exploitation record",
+            "level": "Advanced",
+            "description": "Document a single known vulnerable lab validation without providing a destructive exploit chain.",
+            "problemStatement": "A training VM contains a deliberately vulnerable service. The intern must confirm identity, document the validation objective, record session context and cleanup.",
+            "objectives": [
+              "Confirm target identity.",
+              "Record exact assessment objective.",
+              "Capture cleanup actions."
+            ],
+            "requirements": [
+              "Local lab only.",
+              "No persistence.",
+              "No credential dumping.",
+              "No lateral movement."
+            ],
+            "constraints": [],
+            "hint": [
+              "The smallest exploit proof is preferable to an open-ended post-exploitation exercise."
+            ],
+            "solutionCode": "import json\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nout=Path('artifacts'); out.mkdir(exist_ok=True)\nrecord={\n 'timestamp_utc':datetime.now(timezone.utc).isoformat(),\n 'target':'192.168.56.101',\n 'objective':'Validate one known training-lab weakness',\n 'actions':['confirm target identity','validate weakness','capture minimal evidence','stop'],\n 'cleanup':['close test session','remove tester-created temporary artifacts']\n}\n(out/'exploit-record.json').write_text(json.dumps(record,indent=2),encoding='utf-8')\nprint(record)\n",
+            "solutionExplanation": "The practical output emphasizes evidence and cleanup rather than an uncontrolled exploit chain."
+          }
+        ],
+        "deliverables": [
+          "Controlled exploitation record",
+          "Post-exploitation checklist",
+          "Cleanup notes"
+        ],
+        "assessment": "The intern can perform and document bounded exploitation without losing scope discipline.",
+        "practicals": [
+          {
+            "id": "prac-05",
+            "title": "Perform bounded post-exploitation enumeration",
+            "objective": "Understand the impact of a lab foothold without persistence or lateral movement.",
+            "steps": [
+              "Confirm the session belongs to the authorized training VM.",
+              "Record current user and host identity.",
+              "Review network interfaces and accessible services.",
+              "Check only permissions relevant to the assessment.",
+              "Close the session and document cleanup."
+            ],
+            "expectedEvidence": [
+              "Session-context notes",
+              "Cleanup record"
+            ],
+            "safetyBoundary": "Only test explicitly authorized lab targets; stop immediately when scope or impact becomes uncertain."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Risk, Findings, Remediation and Reporting",
+        "description": "Turn validated technical observations into actionable findings using evidence, severity reasoning, CVSS v4.0 awareness, remediation design and professional reporting.",
+        "objectives": [
+          "Write reproducible findings.",
+          "Separate severity, exploitability and business context.",
+          "Use CVSS v4.0 as a severity language without treating it as the entire risk decision.",
+          "Write testable remediation and retest criteria."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-23",
+            "title": "Anatomy of a penetration-test finding",
+            "description": "Build title, asset, description, evidence, reproduction, impact, severity, remediation and references.",
+            "learningObjectives": [
+              "Write reproducible findings.",
+              "Keep claims proportional to evidence."
+            ],
+            "summary": "Write reproducible findings. Keep claims proportional to evidence."
+          },
+          {
+            "id": "lesson-24",
+            "title": "CVSS v4.0 and risk communication",
+            "description": "Study Base, Threat, Environmental and Supplemental metric groups and the need for contextual risk interpretation.",
+            "learningObjectives": [
+              "Explain CVSS v4.0 concepts.",
+              "Avoid fabricating vectors or scores."
+            ],
+            "summary": "Explain CVSS v4.0 concepts. Avoid fabricating vectors or scores."
+          },
+          {
+            "id": "lesson-25",
+            "title": "Remediation engineering",
+            "description": "Translate root causes into server-side authorization, parameterization, output encoding, secure configuration, segmentation or patching fixes.",
+            "learningObjectives": [
+              "Link remediation to root cause.",
+              "Define verification criteria."
+            ],
+            "summary": "Link remediation to root cause. Define verification criteria."
+          },
+          {
+            "id": "lesson-26",
+            "title": "Technical report and executive summary",
+            "description": "Create technical and decision-oriented layers of communication.",
+            "learningObjectives": [
+              "State scope, methods and limitations.",
+              "Write a concise executive summary."
+            ],
+            "summary": "State scope, methods and limitations. Write a concise executive summary."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Write a reproduction-ready vulnerability report",
+            "level": "Advanced",
+            "description": "Turn a confirmed lab finding into a professional report entry.",
+            "problemStatement": "The engineering team needs affected asset, evidence, reproduction, impact, remediation and verification criteria.",
+            "objectives": [
+              "Write a complete finding.",
+              "Tie evidence to reproduction.",
+              "Make remediation testable."
+            ],
+            "requirements": [
+              "Lab evidence only.",
+              "No secrets or real personal data."
+            ],
+            "constraints": [],
+            "hint": [
+              "Another tester should be able to reproduce from your evidence alone."
+            ],
+            "solutionCode": "from dataclasses import dataclass\n\n@dataclass\nclass Finding:\n    title:str\n    asset:str\n    severity:str\n    reproduction:list[str]\n    impact:str\n    remediation:list[str]\n    verification:list[str]\n\nf=Finding(\n 'Broken object-level authorization',\n 'GET /api/records/17',\n 'High',\n ['Authenticate as user A','Request record A','Change identifier to record B','Observe unauthorized record response'],\n 'An authenticated user can access another user record.',\n ['Enforce ownership/authorization server-side','Add cross-user access regression tests'],\n ['User A succeeds on record A','User A receives denial on record B']\n)\nprint(f)\n",
+            "solutionExplanation": "The structure models the fields a real engineering team needs to reproduce and remediate a vulnerability."
+          }
+        ],
+        "deliverables": [
+          "Technical finding",
+          "Severity rationale",
+          "Remediation and retest plan"
+        ],
+        "assessment": "The intern can communicate findings in a form engineers can act upon.",
+        "practicals": [
+          {
+            "id": "prac-06",
+            "title": "Write one complete technical finding",
+            "objective": "Convert lab evidence into a reproducible finding.",
+            "steps": [
+              "Write a concise title.",
+              "Identify the affected asset and preconditions.",
+              "Document reproduction steps and evidence paths.",
+              "Explain technical and business impact separately.",
+              "Provide root-cause remediation and a retest criterion."
+            ],
+            "expectedEvidence": [
+              "Completed finding",
+              "Evidence references",
+              "Retest criterion"
+            ],
+            "safetyBoundary": "Only test explicitly authorized lab targets; stop immediately when scope or impact becomes uncertain."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Automation, Git Hygiene, QA and Retesting",
+        "description": "Apply engineering discipline to assessment tooling: safe automation boundaries, artifact hygiene, Git practices, quality control and evidence-based retesting.",
+        "objectives": [
+          "Automate repeatable collection without automating away judgment.",
+          "Protect evidence and secrets.",
+          "Use Git and review practices appropriately.",
+          "Retest fixes against original failure conditions."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-27",
+            "title": "Safe automation boundaries",
+            "description": "Identify repetitive tasks suitable for automation and preserve human control over validation and exploitation.",
+            "learningObjectives": [
+              "Choose safe automation candidates.",
+              "Prevent silent scope expansion."
+            ],
+            "summary": "Choose safe automation candidates. Prevent silent scope expansion."
+          },
+          {
+            "id": "lesson-28",
+            "title": "Git and artifact hygiene",
+            "description": "Use meaningful commits, ignore generated artifacts, and keep secrets out of repositories.",
+            "learningObjectives": [
+              "Build a clean repository.",
+              "Separate source from assessment evidence."
+            ],
+            "summary": "Build a clean repository. Separate source from assessment evidence."
+          },
+          {
+            "id": "lesson-29",
+            "title": "Quality control and peer review",
+            "description": "Review scope, evidence, reproduction, severity, remediation and limitations before delivery.",
+            "learningObjectives": [
+              "Perform report QA.",
+              "Identify unsupported claims."
+            ],
+            "summary": "Perform report QA. Identify unsupported claims."
+          },
+          {
+            "id": "lesson-30",
+            "title": "Retesting and closure",
+            "description": "Treat remediation as a new test hypothesis and close findings only when evidence supports closure.",
+            "learningObjectives": [
+              "Create a retest matrix.",
+              "Record pass/fail evidence."
+            ],
+            "summary": "Create a retest matrix. Record pass/fail evidence."
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Design a remediation retest matrix",
+            "level": "Intermediate",
+            "description": "Map findings to exact secure-state verification criteria.",
+            "problemStatement": "Three lab findings have been remediated. Define positive and negative verification for each, without inventing results.",
+            "objectives": [
+              "Map each finding to secure behavior.",
+              "Define regression checks."
+            ],
+            "requirements": [
+              "No fabricated pass/fail results."
+            ],
+            "constraints": [],
+            "hint": [
+              "Retest the original failure mode, not just the new code path."
+            ],
+            "solutionCode": "rows=[\n {'finding':'BOLA','positive':'User A reads own record','negative':'User A is denied access to User B record'},\n {'finding':'SQL injection','positive':'Normal query returns expected data','negative':'Injection marker is treated as data'},\n {'finding':'XSS','positive':'Legitimate text renders as text','negative':'Test marker is not executed as script'}\n]\nfor row in rows:\n    assert row['finding'] and row['positive'] and row['negative']\nprint(rows)\n",
+            "solutionExplanation": "The retest matrix defines secure and insecure-state expectations without pretending to have run the tests.",
+            "regressionTesting": [
+              "Run the exact regression tests against the remediated lab target.",
+              "Record observed evidence before closing each finding."
+            ]
+          }
+        ],
+        "deliverables": [
+          "Automation design",
+          "QA checklist",
+          "Retest matrix"
+        ],
+        "assessment": "The intern can manage testing work as a traceable engineering lifecycle.",
+        "practicals": [
+          {
+            "id": "prac-07",
+            "title": "Run the capstone workbench quality gate",
+            "objective": "Validate tooling, scope, artifact hygiene and report reproducibility before final delivery.",
+            "steps": [
+              "Run unit tests.",
+              "Run the scope validator.",
+              "Run the tool availability check.",
+              "Review generated artifacts for secrets and scope leaks.",
+              "Recreate the report from the run directory."
+            ],
+            "expectedEvidence": [
+              "Test output",
+              "Scope-validation output",
+              "Artifact review checklist",
+              "Reproducible report"
+            ],
+            "safetyBoundary": "Only test explicitly authorized lab targets; stop immediately when scope or impact becomes uncertain."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Final Capstone — Controlled Enterprise-Lab Penetration Test and Assessment Workbench",
+        "description": "Perform an end-to-end authorized penetration test of a local lab and deliver an evidence-backed report while building a small scope-aware automation workbench for repeatable collection.",
+        "objectives": [
+          "Execute an end-to-end authorized assessment.",
+          "Preserve raw evidence and make conclusions reproducible.",
+          "Automate low-risk collection without silently expanding scope.",
+          "Produce findings, remediation and retest criteria.",
+          "Defend methodology, limitations and conclusions in a final review."
+        ],
+        "lessons": [
+          {
+            "id": "lesson-31",
+            "title": "Capstone planning and rules of engagement",
+            "description": "Translate the capstone authorization into a concrete target list, exclusions, phase plan, evidence policy and stop conditions.",
+            "learningObjectives": [
+              "Define exact scope.",
+              "Create the assessment plan."
+            ],
+            "summary": "Define exact scope. Create the assessment plan."
+          },
+          {
+            "id": "lesson-32",
+            "title": "Capstone execution and evidence discipline",
+            "description": "Run discovery and validation in phases, keeping observation, hypothesis, confirmed finding and unresolved lead separate.",
+            "learningObjectives": [
+              "Maintain an assessment log.",
+              "Preserve raw evidence."
+            ],
+            "summary": "Maintain an assessment log. Preserve raw evidence."
+          },
+          {
+            "id": "lesson-33",
+            "title": "Capstone reporting and final review",
+            "description": "Assemble findings, limitations, remediation, retest criteria and a walkthrough of what was and was not tested.",
+            "learningObjectives": [
+              "Produce a technically reproducible report.",
+              "Explain limitations and conclusions."
+            ],
+            "summary": "Produce a technically reproducible report. Explain limitations and conclusions."
+          }
+        ],
+        "tasks": [],
+        "deliverables": [
+          "Assessment evidence pack",
+          "Technical report",
+          "Executive summary",
+          "Retest matrix",
+          "Automation workbench source"
+        ],
+        "assessment": "Final review based on scope discipline, technical correctness, evidence, reasoning, security, report quality and ability to explain limitations.",
+        "project": {
+          "id": "final-project-01",
+          "heading": "Build and Execute a Controlled Enterprise-Lab Penetration Test with an Evidence Automation Workbench",
+          "description": "The intern performs a full authorized penetration test of an isolated local lab using network reconnaissance, service enumeration, web attack-surface mapping, manual vulnerability validation, bounded exploitation where explicitly permitted, and professional reporting. The companion Python workbench validates scope, invokes Nmap and optional OWASP ZAP Baseline through Docker, indexes evidence, parses Nmap XML and renders a Markdown report. The workbench is an assistant: exploit selection, finding confirmation, severity and risk interpretation remain human decisions.",
+          "problemStatement": "A security team needs a repeatable way to assess a small internal lab without accidentally scanning outside approved targets, losing raw evidence, or reporting unverified alerts as confirmed vulnerabilities. The intern must demonstrate the assessment and produce a reusable local workbench that improves repeatability without removing human judgment.",
+          "objectives": [
+            "Translate written authorization into machine-checkable scope.",
+            "Enumerate the approved lab hosts and services.",
+            "Map and test an in-scope web application where available.",
+            "Validate selected findings with minimal safe proof.",
+            "Generate evidence-backed technical reporting and remediation guidance.",
+            "Implement and test a scope-aware automation workbench."
+          ],
+          "requirements": [
+            {
+              "category": "Authorization",
+              "items": [
+                "Use only targets in scope.json.",
+                "Default policy accepts only loopback or RFC1918 literal IPv4 targets.",
+                "Do not test public Internet targets.",
+                "Stop if target identity or scope cannot be verified."
+              ]
+            },
+            {
+              "category": "Lab",
+              "items": [
+                "Linux/Kali or equivalent environment.",
+                "An isolated deliberately vulnerable lab target or VM.",
+                "Nmap installed for enumeration.",
+                "Docker only if using ZAP Baseline.",
+                "Browser plus intercepting proxy recommended for web testing."
+              ]
+            },
+            {
+              "category": "Engineering",
+              "items": [
+                "Python 3.11+ recommended.",
+                "Git.",
+                "Writable artifacts directory.",
+                "No secrets in source or configuration."
+              ]
+            },
+            {
+              "category": "Reporting",
+              "items": [
+                "Preserve raw tool output.",
+                "Every confirmed finding must reference evidence.",
+                "Untested areas must be stated explicitly.",
+                "Severity must be justified rather than invented."
+              ]
+            }
+          ],
+          "features": [
+            {
+              "name": "Scope enforcement",
+              "behavior": "Rejects public IPs and hostnames by default and allows only literal loopback/private IPv4 targets."
+            },
+            {
+              "name": "Run management",
+              "behavior": "Creates timestamped run directories containing scope snapshot, logs, raw outputs, parsed inventory and report."
+            },
+            {
+              "name": "Nmap integration",
+              "behavior": "Runs constrained service/version enumeration with XML output."
+            },
+            {
+              "name": "Nmap XML parsing",
+              "behavior": "Normalizes hosts, ports, states and service/version metadata."
+            },
+            {
+              "name": "Optional ZAP baseline",
+              "behavior": "Invokes the official ZAP stable Docker image against an in-scope HTTP/HTTPS URL and stores the HTML report."
+            },
+            {
+              "name": "Evidence index",
+              "behavior": "Hashes assessment artifacts and records sizes and relative paths."
+            },
+            {
+              "name": "Finding register",
+              "behavior": "Stores tester-authored findings and explicit verification states."
+            },
+            {
+              "name": "Markdown reporting",
+              "behavior": "Renders scope, methodology, service inventory, findings, evidence and limitations."
+            }
+          ],
+          "technologyStack": [
+            {
+              "name": "Python 3",
+              "purpose": "Automation, parsing, artifact handling and reporting.",
+              "role": "Capstone workbench language.",
+              "whyAppropriate": "Standard-library-only implementation keeps the helper small and auditable."
+            },
+            {
+              "name": "Nmap",
+              "purpose": "Network discovery and service/version enumeration.",
+              "role": "Primary enumeration tool.",
+              "whyAppropriate": "Provides documented scan modes and XML output."
+            },
+            {
+              "name": "OWASP ZAP",
+              "purpose": "Optional automated web baseline coverage.",
+              "role": "Web testing aid.",
+              "whyAppropriate": "Official Docker images provide packaged scans."
+            },
+            {
+              "name": "Docker",
+              "purpose": "Optional local execution of ZAP baseline and lab services.",
+              "role": "Isolated tooling environment.",
+              "whyAppropriate": "Reproducible container workflow."
+            },
+            {
+              "name": "Git",
+              "purpose": "Version control and review history.",
+              "role": "Engineering workflow.",
+              "whyAppropriate": "Assessment tooling should be traceable."
+            }
+          ],
+          "architecture": {
+            "overview": "CLI → scope validator → tool runner → raw evidence → parser/evidence index → human validation → findings register → report renderer.",
+            "components": [
+              {
+                "name": "CLI",
+                "role": "Phase orchestration."
+              },
+              {
+                "name": "Scope validator",
+                "role": "Security boundary before tool execution."
+              },
+              {
+                "name": "Runner",
+                "role": "Fixed-argument subprocess execution."
+              },
+              {
+                "name": "Parser",
+                "role": "Nmap XML normalization."
+              },
+              {
+                "name": "Evidence manager",
+                "role": "Hash/index of artifacts."
+              },
+              {
+                "name": "Report renderer",
+                "role": "Deterministic Markdown report."
+              }
+            ],
+            "dataFlow": [
+              "scope.json",
+              "→ scope validator",
+              "→ approved target",
+              "→ Nmap/ZAP",
+              "→ raw evidence",
+              "→ parsed inventory",
+              "→ human validation",
+              "→ findings.json",
+              "→ assessment.md"
+            ],
+            "securityBoundaries": [
+              "Literal IPv4 loopback/private policy.",
+              "shell=False for subprocesses.",
+              "No secrets in configuration.",
+              "No automated exploit payloads or persistence."
+            ]
+          },
+          "projectStructure": "capstone-workbench/\n├── pyproject.toml\n├── README.md\n├── scope.json\n├── findings.json\n├── .gitignore\n├── Makefile\n├── ptw/\n│   ├── __init__.py\n│   ├── cli.py\n│   ├── scope.py\n│   ├── runner.py\n│   ├── parsers.py\n│   ├── evidence.py\n│   └── report.py\n├── tests/\n│   ├── test_scope.py\n│   └── test_parsers.py\n└── scripts/\n    └── check_tools.sh",
+          "setupRequirements": [
+            "Create a clean assessment directory.",
+            "Create a Python virtual environment.",
+            "Run unit tests before tool execution.",
+            "Install Nmap through the operating system package manager or approved lab image.",
+            "Use Docker only for optional ZAP baseline.",
+            "Edit scope.json only for explicitly authorized local/private lab targets."
+          ],
+          "setupCommands": [
+            "python3 -m venv .venv",
+            "source .venv/bin/activate",
+            "python -m unittest discover -s tests -v",
+            "python -m ptw.cli validate-scope scope.json",
+            "python -m ptw.cli scan scope.json",
+            "python -m ptw.cli report --run-dir artifacts/<RUN_ID>"
+          ],
+          "implementationSteps": [
+            "Initialize the repository and define authorization.",
+            "Validate the scope before any assessment tool runs.",
+            "Run unit tests.",
+            "Run the tool-availability check.",
+            "Run constrained Nmap enumeration and preserve XML.",
+            "Inspect service inventory and select manual validation steps.",
+            "Where an in-scope web URL exists, optionally run ZAP Baseline.",
+            "Perform manual proxy-driven testing.",
+            "Validate the smallest safe proof of selected findings.",
+            "Record tester-authored findings and evidence paths.",
+            "Generate the Markdown report.",
+            "Perform a QA review for scope, evidence, wording, severity and limitations.",
+            "Retest fixes against the original failure conditions.",
+            "Commit source changes with meaningful Git history."
+          ],
+          "fileWiseSolution": [
+            {
+              "path": "pyproject.toml",
+              "purpose": "Python package metadata",
+              "explanation": "Standard-library-only workbench metadata and CLI entry point.",
+              "code": "[build-system]\nrequires = [\"setuptools>=68\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"penetration-test-workbench\"\nversion = \"1.0.0\"\ndescription = \"Scope-aware evidence workbench for authorized local penetration-testing labs\"\nrequires-python = \">=3.11\"\ndependencies = []\n\n[project.scripts]\nptw = \"ptw.cli:main\"\n\n[tool.setuptools.packages.find]\ninclude = [\"ptw*\"]"
+            },
+            {
+              "path": "README.md",
+              "purpose": "Project setup and operating boundaries",
+              "explanation": "Documents the capstone workflow and explicit safety boundary.",
+              "code": "# Controlled Penetration-Test Workbench\n\nThis project supports an authorized penetration-testing internship capstone. It validates local/private IPv4 targets, runs constrained Nmap enumeration, optionally invokes the official OWASP ZAP Docker baseline scan, preserves evidence, parses Nmap XML, and renders a Markdown report.\n\n## Safety boundary\n\nUse only targets explicitly authorized for the assessment. The default policy accepts loopback and RFC1918 IPv4 targets. The workbench does not implement persistence, credential attacks, lateral movement, or exploit payload generation.\n\n## Setup\n\n```bash\npython3 -m venv .venv\nsource .venv/bin/activate\npython -m unittest discover -s tests -v\npython -m ptw.cli validate-scope scope.json\npython -m ptw.cli scan scope.json\npython -m ptw.cli report --run-dir artifacts/<RUN_ID>\n```\n\nNmap must be installed separately. Docker is needed only for optional ZAP baseline scanning."
+            },
+            {
+              "path": "scope.json",
+              "purpose": "Machine-readable scope",
+              "explanation": "Default example is loopback-only; interns must replace it only with explicitly authorized local/private lab targets.",
+              "code": "{\n  \"engagement\": {\n    \"name\": \"local-enterprise-lab\",\n    \"authorization\": \"Training laboratory only\",\n    \"window\": \"Current isolated lab session\",\n    \"contacts\": [\"lab-owner@example.invalid\"]\n  },\n  \"targets\": [\n    {\"id\": \"loopback\", \"host\": \"127.0.0.1\", \"ports\": [80, 8080]}\n  ],\n  \"web_urls\": [],\n  \"exclusions\": [\"Public Internet\", \"Production systems\", \"Third-party systems\", \"Unlisted targets\"]\n}"
+            },
+            {
+              "path": "findings.json",
+              "purpose": "Finding register",
+              "explanation": "Empty by default so no vulnerability is claimed without tester evidence.",
+              "code": "{\"findings\": []}"
+            },
+            {
+              "path": ".gitignore",
+              "purpose": "Repository hygiene",
+              "explanation": "Keeps local environments, generated artifacts and caches out of Git.",
+              "code": ".venv/\n__pycache__/\n*.pyc\n.pytest_cache/\nartifacts/\n.DS_Store\n.vscode/\n.idea/"
+            },
+            {
+              "path": "Makefile",
+              "purpose": "Convenience commands",
+              "explanation": "Provides repeatable wrappers for common local workflows.",
+              "code": ".PHONY: test scope scan\n\ntest:\n\tpython -m unittest discover -s tests -v\n\nscope:\n\tpython -m ptw.cli validate-scope scope.json\n\nscan:\n\tpython -m ptw.cli scan scope.json"
+            },
+            {
+              "path": "ptw/__init__.py",
+              "purpose": "Package version",
+              "explanation": "Minimal package marker.",
+              "code": "__version__ = \"1.0.0\""
+            },
+            {
+              "path": "ptw/scope.py",
+              "purpose": "Scope safety boundary",
+              "explanation": "Validates literal IPv4 addresses, private/loopback policy, ports, and web URLs before any tool runs.",
+              "code": "from __future__ import annotations\n\nimport ipaddress\nimport json\nfrom dataclasses import dataclass\nfrom pathlib import Path\nfrom urllib.parse import urlparse\n\n\nclass ScopeError(ValueError):\n    pass\n\n\n@dataclass(frozen=True)\nclass Target:\n    target_id: str\n    host: str\n    ports: tuple[int, ...]\n\n\ndef _safe_ip(value: str) -> ipaddress.IPv4Address:\n    try:\n        ip = ipaddress.ip_address(value)\n    except ValueError as exc:\n        raise ScopeError(f\"Only literal IP addresses are accepted: {value}\") from exc\n    if not isinstance(ip, ipaddress.IPv4Address):\n        raise ScopeError(f\"Only IPv4 targets are accepted: {value}\")\n    if not (ip.is_loopback or ip.is_private):\n        raise ScopeError(f\"Target is outside the local/private policy: {value}\")\n    return ip\n\n\ndef _ports(value: object) -> tuple[int, ...]:\n    if value is None:\n        return ()\n    if not isinstance(value, list):\n        raise ScopeError(\"ports must be a list\")\n    result=[]\n    for port in value:\n        if not isinstance(port, int) or not 1 <= port <= 65535:\n            raise ScopeError(f\"Invalid port: {port!r}\")\n        result.append(port)\n    return tuple(sorted(set(result)))\n\n\ndef validate_url(url: str) -> str:\n    parsed=urlparse(url)\n    if parsed.scheme not in {\"http\",\"https\"} or not parsed.hostname:\n        raise ScopeError(f\"Unsupported or malformed URL: {url}\")\n    _safe_ip(parsed.hostname)\n    if parsed.username or parsed.password:\n        raise ScopeError(\"Credentials are not allowed in scoped URLs\")\n    return url\n\n\ndef load_scope(path: str | Path):\n    data=json.loads(Path(path).read_text(encoding=\"utf-8\"))\n    targets_raw=data.get(\"targets\",[])\n    urls_raw=data.get(\"web_urls\",[])\n    if not isinstance(targets_raw,list):\n        raise ScopeError(\"targets must be a list\")\n    targets=[]\n    seen=set()\n    for raw in targets_raw:\n        if not isinstance(raw,dict):\n            raise ScopeError(\"Each target must be an object\")\n        tid=raw.get(\"id\")\n        host=raw.get(\"host\")\n        if not isinstance(tid,str) or not tid or tid in seen:\n            raise ScopeError(\"Target ids must be unique non-empty strings\")\n        if not isinstance(host,str):\n            raise ScopeError(\"host must be a string\")\n        _safe_ip(host)\n        targets.append(Target(tid,host,_ports(raw.get(\"ports\"))))\n        seen.add(tid)\n    urls=[validate_url(v) for v in urls_raw]\n    if not targets and not urls:\n        raise ScopeError(\"Scope must contain at least one target or web URL\")\n    return targets, urls, data"
+            },
+            {
+              "path": "ptw/runner.py",
+              "purpose": "External command runner",
+              "explanation": "Uses subprocess with argument arrays, shell=False, timeouts, and command logging.",
+              "code": "from __future__ import annotations\n\nimport json\nimport subprocess\nfrom pathlib import Path\nfrom typing import Sequence\n\n\nclass CommandError(RuntimeError):\n    pass\n\n\ndef run_command(args: Sequence[str], *, timeout: int = 300, log_path: Path | None = None):\n    if not args or any(not isinstance(a,str) or not a for a in args):\n        raise ValueError(\"Command arguments must be non-empty strings\")\n    result=subprocess.run(list(args), capture_output=True, text=True, shell=False, timeout=timeout, check=False)\n    if log_path:\n        with log_path.open(\"a\", encoding=\"utf-8\") as fh:\n            fh.write(json.dumps({\"args\":list(args),\"returncode\":result.returncode,\"stdout\":result.stdout,\"stderr\":result.stderr})+\"\\n\")\n    if result.returncode != 0:\n        raise CommandError(f\"Command failed ({result.returncode}): {' '.join(args)}\\n{result.stderr.strip()}\")\n    return result\n\n\ndef nmap_enumerate(host: str, xml_path: Path, log_path: Path):\n    xml_path.parent.mkdir(parents=True, exist_ok=True)\n    args=[\"nmap\",\"-Pn\",\"-sV\",\"-T3\",\"--top-ports\",\"100\",\"-oX\",str(xml_path),host]\n    run_command(args,timeout=300,log_path=log_path)\n    if not xml_path.exists():\n        raise CommandError(\"Nmap completed but XML output is missing\")\n    return xml_path\n\n\ndef zap_baseline(url: str, html_path: Path, log_path: Path):\n    html_path.parent.mkdir(parents=True, exist_ok=True)\n    wd=html_path.parent.resolve()\n    args=[\"docker\",\"run\",\"--rm\",\"-v\",f\"{wd}:/zap/wrk/:rw\",\"ghcr.io/zaproxy/zaproxy:stable\",\"zap-baseline.py\",\"-t\",url,\"-r\",html_path.name]\n    run_command(args,timeout=600,log_path=log_path)\n    if not html_path.exists():\n        raise CommandError(\"ZAP completed but HTML report is missing\")\n    return html_path"
+            },
+            {
+              "path": "ptw/parsers.py",
+              "purpose": "Nmap XML parser",
+              "explanation": "Extracts only host/service observations; it does not infer vulnerabilities.",
+              "code": "from __future__ import annotations\n\nimport xml.etree.ElementTree as ET\nfrom pathlib import Path\n\n\ndef parse_nmap_xml(path: str | Path):\n    root=ET.parse(path).getroot()\n    hosts=[]\n    for host in root.findall(\"host\"):\n        address=host.find(\"address\")\n        if address is None:\n            continue\n        status=host.find(\"status\")\n        record={\"address\":address.attrib.get(\"addr\"),\"status\":status.attrib.get(\"state\") if status is not None else None,\"ports\":[]}\n        ports=host.find(\"ports\")\n        if ports is not None:\n            for port in ports.findall(\"port\"):\n                state=port.find(\"state\")\n                service=port.find(\"service\")\n                record[\"ports\"].append({\n                    \"protocol\":port.attrib.get(\"protocol\"),\n                    \"port\":int(port.attrib[\"portid\"]),\n                    \"state\":state.attrib.get(\"state\") if state is not None else None,\n                    \"service\":service.attrib.get(\"name\") if service is not None else None,\n                    \"product\":service.attrib.get(\"product\") if service is not None else None,\n                    \"version\":service.attrib.get(\"version\") if service is not None else None,\n                })\n        hosts.append(record)\n    return hosts"
+            },
+            {
+              "path": "ptw/evidence.py",
+              "purpose": "Evidence index and hashing",
+              "explanation": "Hashes artifacts with streaming SHA-256 reads and records relative paths and sizes.",
+              "code": "from __future__ import annotations\n\nimport hashlib\nimport json\nfrom pathlib import Path\n\n\ndef sha256_file(path: Path) -> str:\n    digest=hashlib.sha256()\n    with path.open(\"rb\") as fh:\n        for chunk in iter(lambda: fh.read(1024*1024), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\ndef build_index(run_dir: Path):\n    records=[]\n    for path in sorted(p for p in run_dir.rglob(\"*\") if p.is_file()):\n        if path.name == \"evidence-index.json\":\n            continue\n        records.append({\"path\":str(path.relative_to(run_dir)),\"bytes\":path.stat().st_size,\"sha256\":sha256_file(path)})\n    out=run_dir/\"evidence-index.json\"\n    out.write_text(json.dumps(records,indent=2),encoding=\"utf-8\")\n    return out"
+            },
+            {
+              "path": "ptw/report.py",
+              "purpose": "Markdown report renderer",
+              "explanation": "Renders scope, service inventory, tester-authored findings, evidence and limitations without inventing results.",
+              "code": "from __future__ import annotations\n\nimport json\nfrom pathlib import Path\n\n\ndef load(path: Path, default):\n    return json.loads(path.read_text(encoding=\"utf-8\")) if path.exists() else default\n\n\ndef generate_report(run_dir: Path):\n    scope=load(run_dir/\"scope.json\",{})\n    services=load(run_dir/\"services.json\",[])\n    findings=load(run_dir/\"findings.json\",{\"findings\":[]})\n    evidence=load(run_dir/\"evidence-index.json\",[])\n    e=scope.get(\"engagement\",{})\n    lines=[\"# Penetration Testing Assessment Report\",\"\",f\"- Engagement: {e.get('name','N/A')}\",f\"- Authorization: {e.get('authorization','N/A')}\",f\"- Window: {e.get('window','N/A')}\",\"\",\"## Scope\",\"\",\"### Targets\"]\n    for t in scope.get(\"targets\",[]):\n        lines.append(f\"- {t.get('id')}: {t.get('host')} ports={t.get('ports',[])}\")\n    lines += [\"\",\"## Methodology\",\"\",\"Scope validation → discovery → enumeration → manual validation → reporting → retesting.\",\"\",\"## Service inventory\",\"\"]\n    if services:\n        lines += [\"| Host | Port | Proto | State | Service | Product | Version |\",\"|---|---:|---|---|---|---|---|\"]\n        for h in services:\n            for p in h.get(\"ports\",[]):\n                lines.append(f\"| {h.get('address')} | {p.get('port')} | {p.get('protocol')} | {p.get('state')} | {p.get('service') or ''} | {p.get('product') or ''} | {p.get('version') or ''} |\")\n    else:\n        lines.append(\"No parsed Nmap services are present.\")\n    lines += [\"\",\"## Findings\",\"\"]\n    fs=findings.get(\"findings\",[])\n    if not fs:\n        lines.append(\"No tester-authored findings are recorded.\")\n    for f in fs:\n        lines += [f\"### {f.get('title','Untitled')}\",\"\",f\"- Status: {f.get('status','unspecified')}\",f\"- Severity: {f.get('severity','unspecified')}\",f\"- Asset: {f.get('asset','unspecified')}\",f\"- Description: {f.get('description','')}\",f\"- Impact: {f.get('impact','')}\",\"\",\"#### Reproduction\"]\n        for step in f.get(\"reproduction\",[]): lines.append(f\"1. {step}\")\n        lines += [\"\",\"#### Remediation\"]\n        for rem in f.get(\"remediation\",[]): lines.append(f\"- {rem}\")\n        lines += [\"\",\"#### Evidence\"]\n        for ev in f.get(\"evidence\",[]): lines.append(f\"- `{ev}`\")\n    lines += [\"\",\"## Evidence inventory\",\"\",\"| Artifact | Bytes | SHA-256 |\",\"|---|---:|---|\"]\n    for item in evidence:\n        lines.append(f\"| `{item['path']}` | {item['bytes']} | `{item['sha256']}` |\")\n    lines += [\"\",\"## Limitations\",\"\",\"- Results are limited to the authorized local lab scope.\",\"- Scanner alerts are not confirmed vulnerabilities without manual verification.\",\"- Untested systems, routes, ports, and attack paths are not claimed as assessed.\",\"\"]\n    out=run_dir/\"assessment.md\"\n    out.write_text(\"\\n\".join(lines),encoding=\"utf-8\")\n    return out"
+            },
+            {
+              "path": "ptw/cli.py",
+              "purpose": "CLI orchestration",
+              "explanation": "Validates scope first, runs Nmap, parses XML, builds evidence, and renders the report.",
+              "code": "from __future__ import annotations\n\nimport argparse\nimport json\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nfrom .evidence import build_index\nfrom .parsers import parse_nmap_xml\nfrom .report import generate_report\nfrom .runner import nmap_enumerate\nfrom .scope import ScopeError, load_scope\n\n\ndef run_id():\n    return datetime.now(timezone.utc).strftime(\"%Y%m%dT%H%M%SZ\")\n\n\ndef validate_scope_cmd(path):\n    targets, urls, _ = load_scope(path)\n    print(f\"Valid scope: {len(targets)} target(s), {len(urls)} web URL(s)\")\n    for t in targets:\n        print(f\"- {t.target_id}: {t.host} ports={list(t.ports)}\")\n    for u in urls:\n        print(f\"- web: {u}\")\n    return 0\n\n\ndef scan_cmd(scope_path, artifacts_root=\"artifacts\"):\n    targets, urls, raw=load_scope(scope_path)\n    run=Path(artifacts_root)/run_id()\n    run.mkdir(parents=True,exist_ok=True)\n    (run/\"scope.json\").write_text(json.dumps(raw,indent=2),encoding=\"utf-8\")\n    (run/\"findings.json\").write_text(json.dumps({\"findings\":[]},indent=2),encoding=\"utf-8\")\n    log=run/\"command-log.jsonl\"\n    services=[]\n    for t in targets:\n        xml=run/f\"nmap-{t.target_id}.xml\"\n        nmap_enumerate(t.host,xml,log)\n        services.extend(parse_nmap_xml(xml))\n    (run/\"services.json\").write_text(json.dumps(services,indent=2),encoding=\"utf-8\")\n    build_index(run)\n    generate_report(run)\n    print(run)\n    return 0\n\n\ndef main(argv=None):\n    parser=argparse.ArgumentParser(description=\"Scope-aware penetration-testing evidence workbench\")\n    sub=parser.add_subparsers(dest=\"command\",required=True)\n    p1=sub.add_parser(\"validate-scope\"); p1.add_argument(\"scope\")\n    p2=sub.add_parser(\"scan\"); p2.add_argument(\"scope\"); p2.add_argument(\"--artifacts-root\",default=\"artifacts\")\n    p3=sub.add_parser(\"report\"); p3.add_argument(\"--run-dir\",required=True)\n    args=parser.parse_args(argv)\n    try:\n        if args.command==\"validate-scope\": return validate_scope_cmd(args.scope)\n        if args.command==\"scan\": return scan_cmd(args.scope,args.artifacts_root)\n        if args.command==\"report\": generate_report(Path(args.run_dir)); return 0\n    except ScopeError as exc:\n        print(f\"Scope error: {exc}\")\n        return 2\n    return 1\n\n\nif __name__==\"__main__\":\n    raise SystemExit(main())"
+            },
+            {
+              "path": "tests/test_scope.py",
+              "purpose": "Scope unit tests",
+              "explanation": "Verifies allow/reject behavior for loopback, private, public, hostname, bad ports, and credential URLs.",
+              "code": "import json\nimport tempfile\nimport unittest\nfrom pathlib import Path\n\nfrom ptw.scope import ScopeError, load_scope, validate_url\n\n\nclass ScopeTests(unittest.TestCase):\n    def write_scope(self, data):\n        h=tempfile.NamedTemporaryFile('w',delete=False,suffix='.json')\n        with h: json.dump(data,h)\n        return Path(h.name)\n\n    def test_loopback_and_private_allowed(self):\n        p=self.write_scope({'targets':[{'id':'a','host':'127.0.0.1','ports':[80]},{'id':'b','host':'192.168.56.101','ports':[22]}],'web_urls':[]})\n        targets,_,_=load_scope(p)\n        self.assertEqual(len(targets),2)\n\n    def test_public_rejected(self):\n        p=self.write_scope({'targets':[{'id':'a','host':'8.8.8.8','ports':[53]}],'web_urls':[]})\n        with self.assertRaises(ScopeError): load_scope(p)\n\n    def test_hostname_rejected(self):\n        p=self.write_scope({'targets':[{'id':'a','host':'example.com','ports':[80]}],'web_urls':[]})\n        with self.assertRaises(ScopeError): load_scope(p)\n\n    def test_bad_port_rejected(self):\n        p=self.write_scope({'targets':[{'id':'a','host':'127.0.0.1','ports':[70000]}],'web_urls':[]})\n        with self.assertRaises(ScopeError): load_scope(p)\n\n    def test_url_credentials_rejected(self):\n        with self.assertRaises(ScopeError): validate_url('http://user:pass@127.0.0.1:8080/')\n\n    def test_private_url_allowed(self):\n        self.assertEqual(validate_url('http://127.0.0.1:8080/'),'http://127.0.0.1:8080/')"
+            },
+            {
+              "path": "tests/test_parsers.py",
+              "purpose": "Nmap XML parser tests",
+              "explanation": "Uses deterministic XML data to test parsing without invoking a live scanner.",
+              "code": "import tempfile\nimport unittest\nfrom pathlib import Path\n\nfrom ptw.parsers import parse_nmap_xml\n\nSAMPLE_XML = '<nmaprun><host><status state=\"up\"/><address addr=\"127.0.0.1\" addrtype=\"ipv4\"/><ports><port protocol=\"tcp\" portid=\"80\"><state state=\"open\"/><service name=\"http\" product=\"Example Server\" version=\"1.2.3\"/></port></ports></host></nmaprun>'\n\n\nclass ParserTests(unittest.TestCase):\n    def test_parse_service(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            path=Path(tmp)/'scan.xml'\n            path.write_text(SAMPLE_XML,encoding='utf-8')\n            result=parse_nmap_xml(path)\n        self.assertEqual(result[0]['address'],'127.0.0.1')\n        self.assertEqual(result[0]['ports'][0]['port'],80)\n        self.assertEqual(result[0]['ports'][0]['service'],'http')\n        self.assertEqual(result[0]['ports'][0]['version'],'1.2.3')"
+            },
+            {
+              "path": "scripts/check_tools.sh",
+              "purpose": "Tool availability check",
+              "explanation": "Checks PATH availability only; it does not install tools or scan anything.",
+              "code": "#!/usr/bin/env bash\nset -euo pipefail\nmissing=0\nif ! command -v python3 >/dev/null 2>&1; then echo 'Missing: python3'; missing=1; else python3 --version; fi\nif ! command -v nmap >/dev/null 2>&1; then echo 'Missing: nmap'; missing=1; else nmap --version | head -n 1; fi\nif command -v docker >/dev/null 2>&1; then docker --version; else echo 'Optional: docker (needed for ZAP baseline)'; fi\nexit \"$missing\""
+            }
+          ],
+          "testing": {
+            "strategy": "Static syntax validation plus built-in unit tests; optional end-to-end scan against the authorized lab.",
+            "testCases": [
+              "Loopback/private IP accepted.",
+              "Public IP rejected.",
+              "Hostname rejected.",
+              "Invalid port rejected.",
+              "Credential URL rejected.",
+              "Nmap XML parses correctly.",
+              "CLI reports missing/failed external tools clearly."
+            ],
+            "commands": [
+              "python -m unittest discover -s tests -v",
+              "python -m ptw.cli validate-scope scope.json",
+              "bash scripts/check_tools.sh"
+            ],
+            "honestyNote": "No scanner or deployment result is pre-populated as a claimed success."
+          },
+          "securityReview": {
+            "controls": [
+              "Scope is checked before commands run.",
+              "Only literal loopback/private IPv4 addresses are accepted.",
+              "subprocess.run uses shell=False and explicit argv.",
+              "No credentials are embedded in URLs or command lines.",
+              "Evidence is hashed.",
+              "No persistence, credential dumping or lateral movement functions.",
+              "ZAP is invoked only for an in-scope URL."
+            ],
+            "limitations": [
+              "Private IP status does not replace written authorization.",
+              "The workbench does not auto-confirm vulnerabilities.",
+              "CVSS scoring is not auto-generated."
+            ]
+          },
+          "performance": {
+            "guidance": [
+              "Keep scans narrowly scoped.",
+              "Use XML rather than repeated text scraping.",
+              "Hash evidence with streaming reads.",
+              "Measure runtime before optimizing."
+            ]
+          },
+          "deployment": {
+            "mode": "Local isolated lab",
+            "steps": [
+              "Run locally from the assessment workstation.",
+              "Store evidence securely.",
+              "Do not publish sensitive evidence.",
+              "Use Git for source and exclude artifacts."
+            ]
+          },
+          "troubleshooting": [
+            {
+              "problem": "nmap not found",
+              "diagnosis": "Nmap is absent or not on PATH.",
+              "action": "Install it using the approved lab OS package manager and rerun check_tools.sh."
+            },
+            {
+              "problem": "scope validation rejects a target",
+              "diagnosis": "The target is not a literal local/private IPv4 address.",
+              "action": "Confirm the target is an authorized lab IP; do not weaken the policy just to reach a public host."
+            },
+            {
+              "problem": "ZAP baseline cannot run",
+              "diagnosis": "Docker unavailable, image unavailable or URL outside local/private policy.",
+              "action": "Use the core Nmap/report workflow or fix the local Docker environment."
+            },
+            {
+              "problem": "Report has no findings",
+              "diagnosis": "The register is intentionally empty until tester evidence exists.",
+              "action": "Perform manual validation and add only confirmed findings."
+            }
+          ],
+          "finalDeliverables": [
+            "Git repository with source/tests",
+            "Scope and scope snapshot",
+            "Raw Nmap XML",
+            "Parsed services.json",
+            "Optional ZAP baseline HTML",
+            "Evidence index",
+            "Tester-reviewed findings.json",
+            "assessment.md",
+            "Retest matrix",
+            "Final technical walkthrough"
+          ]
+        }
+      }
+    ],
+    "evaluation": {
+      "model": "Evidence-based assessment",
+      "criteria": [
+        {
+          "criterion": "Scope discipline",
+          "weight": 15,
+          "evidence": "Scope, command history and stop conditions."
+        },
+        {
+          "criterion": "Technical execution",
+          "weight": 25,
+          "evidence": "Discovery, enumeration, validation and findings."
+        },
+        {
+          "criterion": "Reasoning",
+          "weight": 15,
+          "evidence": "Hypotheses, root causes and troubleshooting."
+        },
+        {
+          "criterion": "Reporting",
+          "weight": 20,
+          "evidence": "Reproducible findings, report and limitations."
+        },
+        {
+          "criterion": "Security and safety",
+          "weight": 10,
+          "evidence": "Authorization, data hygiene and conservative automation."
+        },
+        {
+          "criterion": "Engineering quality",
+          "weight": 10,
+          "evidence": "Tests, deterministic outputs and Git hygiene."
+        },
+        {
+          "criterion": "Retesting and defense",
+          "weight": 5,
+          "evidence": "Retest plan and final explanation."
+        }
+      ],
+      "passingStandard": "The intern must demonstrate safe scope discipline and evidence-backed technical work; report polish cannot compensate for unsafe or unsupported claims.",
+      "finalReviewQuestions": [
+        "Can the intern state exactly what was in scope?",
+        "Can the intern distinguish scanner alerts from confirmed vulnerabilities?",
+        "Can they reproduce their strongest findings from evidence?",
+        "Can they explain root cause and remediation?",
+        "Can they state what was not tested?",
+        "Can they prove automation did not silently expand scope?"
+      ]
+    },
+    "resources": [
+      {
+        "title": "OWASP Web Security Testing Guide",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/",
+        "type": "official-guide",
+        "whyItMatters": "Structured web-security testing methodology and versioned test identifiers."
+      },
+      {
+        "title": "NIST SP 800-115",
+        "url": "https://csrc.nist.gov/pubs/sp/800/115/final",
+        "type": "official-guidance",
+        "whyItMatters": "Planning, conducting, analyzing, and reporting technical security assessments."
+      },
+      {
+        "title": "PTES",
+        "url": "http://www.pentest-standard.org/index.php/Main_Page",
+        "type": "methodology",
+        "whyItMatters": "Penetration-testing phases from pre-engagement through reporting."
+      },
+      {
+        "title": "Nmap Reference Guide",
+        "url": "https://nmap.org/book/man.html",
+        "type": "official-tool-documentation",
+        "whyItMatters": "Port scanning, service/version detection, NSE, timing, and output."
+      },
+      {
+        "title": "Kali Linux Documentation",
+        "url": "https://www.kali.org/docs/",
+        "type": "official-platform-documentation",
+        "whyItMatters": "Penetration-testing oriented Linux platform documentation."
+      },
+      {
+        "title": "PortSwigger Web Security Academy",
+        "url": "https://portswigger.net/web-security",
+        "type": "official-training",
+        "whyItMatters": "Interactive labs for SQLi, XSS, access control, SSRF, authentication, API testing, and more."
+      },
+      {
+        "title": "OWASP ZAP Documentation",
+        "url": "https://www.zaproxy.org/docs/",
+        "type": "official-tool-documentation",
+        "whyItMatters": "Proxying, passive/active scanning, API usage, and Docker scans."
+      },
+      {
+        "title": "Metasploit Documentation",
+        "url": "https://docs.rapid7.com/metasploit/",
+        "type": "official-tool-documentation",
+        "whyItMatters": "Controlled exploitation framework documentation."
+      },
+      {
+        "title": "FIRST CVSS v4.0",
+        "url": "https://www.first.org/cvss/v4.0/specification-document",
+        "type": "official-standard",
+        "whyItMatters": "Current standardized vulnerability severity metrics and vectors."
+      },
+      {
+        "title": "Docker Compose Documentation",
+        "url": "https://docs.docker.com/compose/",
+        "type": "official-tooling-documentation",
+        "whyItMatters": "Local multi-container lab lifecycle management."
+      },
+      {
+        "title": "Python subprocess Documentation",
+        "url": "https://docs.python.org/3/library/subprocess.html",
+        "type": "official-language-documentation",
+        "whyItMatters": "Safe child-process invocation for automation."
+      },
+      {
+        "title": "Python venv Documentation",
+        "url": "https://docs.python.org/3/library/venv.html",
+        "type": "official-language-documentation",
+        "whyItMatters": "Isolated Python environments for the workbench."
+      }
+    ]
+  }
+}

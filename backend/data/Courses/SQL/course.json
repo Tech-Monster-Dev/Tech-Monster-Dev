@@ -1,0 +1,2563 @@
+{
+  "course": {
+    "id": "sql-complete-course",
+    "title": "SQL",
+    "slug": "sql",
+    "description": "A research-grounded SQL course progressing from relational modeling and table design through querying, joins, aggregation, window functions, transactions, concurrency, reusable database logic, performance tuning, security, testing, recovery, partitioning, and a realistic capstone. Portable SQL concepts are taught first; PostgreSQL 18 is the reference execution dialect for advanced labs and implementation-specific features are clearly identified.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 64,
+    "prerequisites": [
+      "Basic computer literacy",
+      "Ability to read simple tabular data",
+      "No prior SQL experience required"
+    ],
+    "learningOutcomes": [
+      "Design relational tables with appropriate keys and integrity constraints.",
+      "Write accurate SQL for filtering, sorting, pagination, joins, subqueries, set operations, and CTEs.",
+      "Build grouped and windowed analytics at a defined data grain.",
+      "Modify data safely and design atomic transactions.",
+      "Reason about isolation levels, locking, serialization failures, and retry behavior.",
+      "Use views, routines, and triggers appropriately while identifying implementation-specific behavior.",
+      "Diagnose SQL performance using indexes and execution plans.",
+      "Prevent SQL injection with parameterization and apply least privilege.",
+      "Create repeatable SQL tests and reason about backup, migration, and partitioning practices.",
+      "Deliver and explain a complete SQL system with schema, data, analytics, security, and performance evidence."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "SQL Foundations and Relational Thinking",
+        "description": "Establish SQL terminology, relational modeling, reproducible practice, and query reasoning.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "SQL, Relational Databases, and Standards",
+            "description": "Understand SQL as a standardized language used by relational database systems, while recognizing that PostgreSQL, MySQL, and SQLite implement different subsets and extensions.",
+            "learningObjectives": [
+              "Define SQL, relation, tuple/row, attribute/column, key, and constraint.",
+              "Explain why SQL portability is limited by vendor-specific features."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Portable core"
+              },
+              {
+                "type": "paragraph",
+                "text": "The ISO/IEC 9075 family specifies SQL. A database product implements that language and may add extensions or omit features. The course therefore teaches standard concepts first and uses PostgreSQL 18 as the reference implementation for advanced labs."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Primary keys identify rows; foreign keys express relationships.",
+                  "SQL result sets are unordered unless an ORDER BY clause requests an order.",
+                  "NULL participates in three-valued logic; it is not an ordinary value."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not memorize a product-specific syntax as though it were universal SQL."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which statement best describes SQL?",
+              "options": [
+                "A server product made by PostgreSQL",
+                "A standardized language implemented by database products",
+                "A file format for tables",
+                "A network transport protocol"
+              ],
+              "answer": "A standardized language implemented by database products",
+              "explanation": "SQL is standardized; products implement it with varying feature sets and extensions."
+            },
+            "summary": [
+              "SQL is a standardized language family, not one database product.",
+              "Relational concepts are the foundation for later query and integrity work."
+            ],
+            "resources": [
+              {
+                "title": "ISO/IEC 9075-1:2023",
+                "url": "https://www.iso.org/standard/76583.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL SQL Tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial-sql.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Keys, Relationships, and Data Grain",
+            "description": "Learn to translate business entities and relationships into relational tables before writing queries.",
+            "learningObjectives": [
+              "Choose primary keys from candidate identifiers.",
+              "Model one-to-many and many-to-many relationships.",
+              "State the grain of a table or query result before calculating measures."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "If customers place orders and orders contain products, a customer-to-order relationship is one-to-many and order-to-product is many-to-many. A junction table such as order_item carries one row per order/product pairing and can store quantity or line price."
+              },
+              {
+                "type": "code",
+                "text": "CREATE TABLE customer (\n  customer_id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);\nCREATE TABLE product (\n  product_id INTEGER PRIMARY KEY,\n  name VARCHAR(150) NOT NULL\n);\nCREATE TABLE order_header (\n  order_id INTEGER PRIMARY KEY,\n  customer_id INTEGER NOT NULL REFERENCES customer(customer_id)\n);\nCREATE TABLE order_item (\n  order_id INTEGER NOT NULL REFERENCES order_header(order_id),\n  product_id INTEGER NOT NULL REFERENCES product(product_id),\n  quantity INTEGER NOT NULL CHECK (quantity > 0),\n  PRIMARY KEY (order_id, product_id)\n);"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Grain answers “one row represents what?”",
+                  "Incorrect grain is a major source of double-counted reports."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "Where should quantity normally live in an order/product many-to-many model?",
+              "options": [
+                "customer",
+                "order_header",
+                "order_item",
+                "product_category"
+              ],
+              "answer": "order_item",
+              "explanation": "Quantity describes the relationship between one order and one product, so it belongs at the junction-row grain."
+            },
+            "summary": [
+              "Business rules should drive relational structure.",
+              "State row grain explicitly before joining or aggregating."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Constraints",
+                "url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Data Definition",
+                "url": "https://www.postgresql.org/docs/current/ddl.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "SQL Clients, Scripts, and Reproducible Labs",
+            "description": "Create a repeatable local SQL workflow rather than depending on interactive GUI actions.",
+            "learningObjectives": [
+              "Create a dedicated practice schema.",
+              "Execute SQL from scripts and record the target DB/version.",
+              "Separate schema setup, test data, queries, and teardown."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT version();\nCREATE SCHEMA IF NOT EXISTS training;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "PostgreSQL is the reference lab dialect for advanced examples.",
+                  "SQLite is lightweight but intentionally omits some features and adds its own behavior.",
+                  "MySQL 8.4 is included as a dialect comparison point."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "Why record the DBMS/version when testing SQL?",
+              "options": [
+                "It is required for every SELECT",
+                "Implementations differ in supported features and behavior",
+                "SQL cannot run without it",
+                "It creates a primary key"
+              ],
+              "answer": "Implementations differ in supported features and behavior",
+              "explanation": "The standard does not imply identical product behavior for every feature."
+            },
+            "summary": [
+              "Reproducibility comes from scripts and known execution contexts.",
+              "The database product/version is part of the meaning of a SQL test."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial-sql.html",
+                "type": "documentation"
+              },
+              {
+                "title": "MySQL 8.4 Reference Manual",
+                "url": "https://dev.mysql.com/doc/refman/8.4/en/",
+                "type": "documentation"
+              },
+              {
+                "title": "SQLite SQL Language",
+                "url": "https://www.sqlite.org/lang.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-04",
+            "title": "Statement Classes and Logical Query Order",
+            "description": "Build the vocabulary and reasoning model used to read SQL statements.",
+            "learningObjectives": [
+              "Classify DDL, DML, queries, transaction control, and access control statements.",
+              "Describe the logical order of common SELECT processing stages."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "DDL: CREATE, ALTER, DROP define objects.",
+                  "DML: INSERT, UPDATE, DELETE, MERGE modify data where supported.",
+                  "Transaction control includes COMMIT, ROLLBACK, and SAVEPOINT in systems that support them."
+                ]
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "FROM/JOIN form the source rows.",
+                  "WHERE filters source rows.",
+                  "GROUP BY forms groups; HAVING filters groups.",
+                  "SELECT projects expressions.",
+                  "ORDER BY orders the result.",
+                  "FETCH/OFFSET or LIMIT limits rows."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Logical query order explains semantics; it is not a promise about the physical execution plan."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-04",
+              "question": "Which clause filters rows before grouping?",
+              "options": [
+                "HAVING",
+                "WHERE",
+                "ORDER BY",
+                "SELECT"
+              ],
+              "answer": "WHERE",
+              "explanation": "WHERE filters source rows before GROUP BY creates groups."
+            },
+            "summary": [
+              "SQL statement families clarify intent.",
+              "Logical query order helps explain aliasing and aggregation rules."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              },
+              {
+                "title": "ISO SQL/Framework",
+                "url": "https://www.iso.org/standard/76583.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Model a Retail Order Schema",
+            "level": "Easy",
+            "description": "Design a relational schema from a short business scenario.",
+            "problemStatement": "Customers place orders; orders contain products; line quantity must be positive and every relationship must be valid.",
+            "objectives": [
+              "Choose keys.",
+              "Represent the many-to-many relationship.",
+              "Encode required integrity rules."
+            ],
+            "requirements": [
+              "PostgreSQL DDL or equivalent relational SQL."
+            ],
+            "hint": [
+              "Identify table grain first.",
+              "Put relationship attributes in the junction table."
+            ],
+            "solutionCode": "CREATE TABLE customer (\n  customer_id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);\nCREATE TABLE product (\n  product_id INTEGER PRIMARY KEY,\n  name VARCHAR(150) NOT NULL\n);\nCREATE TABLE order_header (\n  order_id INTEGER PRIMARY KEY,\n  customer_id INTEGER NOT NULL REFERENCES customer(customer_id)\n);\nCREATE TABLE order_item (\n  order_id INTEGER NOT NULL REFERENCES order_header(order_id),\n  product_id INTEGER NOT NULL REFERENCES product(product_id),\n  quantity INTEGER NOT NULL CHECK (quantity > 0),\n  PRIMARY KEY (order_id, product_id)\n);",
+            "solutionExplanation": "The schema preserves relationships through foreign keys and prevents duplicate lines for the same order/product pair with a composite primary key."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Data Definition and Integrity",
+        "description": "Define relational structures with appropriate types, constraints, schemas, views, and generated values.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "CREATE TABLE and Data Types",
+            "description": "Choose common SQL data types based on domain meaning, range, precision, and temporal semantics.",
+            "learningObjectives": [
+              "Use CREATE TABLE with typed columns.",
+              "Choose exact numeric types for monetary values.",
+              "Explain why temporal types differ from plain strings."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE TABLE invoice (\n  invoice_id INTEGER PRIMARY KEY,\n  amount NUMERIC(12,2) NOT NULL CHECK (amount >= 0),\n  issued_on DATE NOT NULL,\n  paid BOOLEAN NOT NULL DEFAULT FALSE\n);"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "NUMERIC/DECIMAL supports exact decimal arithmetic for values such as prices.",
+                  "Character types, integer widths, boolean, and temporal types communicate domain intent.",
+                  "Vendor-specific types should be isolated when portability matters."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "Which type is designed for exact decimal arithmetic?",
+              "options": [
+                "NUMERIC/DECIMAL",
+                "BOOLEAN",
+                "BLOB",
+                "FLOAT for all currency"
+              ],
+              "answer": "NUMERIC/DECIMAL",
+              "explanation": "Exact numeric types are appropriate when decimal precision is part of the domain requirement."
+            },
+            "summary": [
+              "Type choice is a correctness decision, not only a storage decision.",
+              "Constraints complement types by expressing finer business rules."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL CREATE TABLE",
+                "url": "https://www.postgresql.org/docs/current/ddl.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Default Values",
+                "url": "https://www.postgresql.org/docs/current/ddl-default.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Constraints and Referential Integrity",
+            "description": "Turn data-quality rules into database-enforced guarantees.",
+            "learningObjectives": [
+              "Use NOT NULL, UNIQUE, PRIMARY KEY, CHECK, and FOREIGN KEY correctly.",
+              "Predict common constraint failures.",
+              "Choose ON DELETE behavior deliberately."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE TABLE department (\n  department_id INTEGER PRIMARY KEY,\n  code VARCHAR(20) NOT NULL UNIQUE\n);\nCREATE TABLE employee (\n  employee_id INTEGER PRIMARY KEY,\n  email VARCHAR(255) NOT NULL UNIQUE,\n  salary NUMERIC(12,2) CHECK (salary >= 0),\n  department_id INTEGER REFERENCES department(department_id) ON DELETE SET NULL\n);"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "PRIMARY KEY identifies rows and is unique/non-null.",
+                  "FOREIGN KEY protects referential relationships.",
+                  "ON DELETE actions are domain choices; CASCADE can intentionally remove dependent rows but must be reviewed carefully."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "What does a foreign key enforce?",
+              "options": [
+                "Column formatting",
+                "Referential integrity",
+                "Query sorting",
+                "Index uniqueness"
+              ],
+              "answer": "Referential integrity",
+              "explanation": "A foreign key constrains values in a referencing table according to a referenced key."
+            },
+            "summary": [
+              "Constraints keep invalid states out of the database.",
+              "Referential actions should reflect the domain lifecycle."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Constraints",
+                "url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "ALTER, DROP, Schemas, and Migrations",
+            "description": "Change database structure while preserving control over object names, dependencies, and deployment risk.",
+            "learningObjectives": [
+              "Use ALTER TABLE for schema evolution.",
+              "Use schemas as namespaces.",
+              "Explain why destructive DDL needs a migration/recovery plan."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE SCHEMA reporting;\nALTER TABLE reporting.daily_sales\n  ADD COLUMN order_count INTEGER NOT NULL DEFAULT 0;\nSELECT * FROM reporting.daily_sales;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Schema-qualified names reduce ambiguity.",
+                  "DROP ... CASCADE can remove dependent objects.",
+                  "A migration should be versioned, reviewed, tested, and suitable for the target deployment process."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "Why use schema-qualified names such as reporting.daily_sales?",
+              "options": [
+                "To disable constraints",
+                "To make object resolution explicit",
+                "To force a full table scan",
+                "To turn a table into JSON"
+              ],
+              "answer": "To make object resolution explicit",
+              "explanation": "Qualification identifies the intended namespace when multiple schemas are available."
+            },
+            "summary": [
+              "Schema evolution is part of database engineering.",
+              "Namespaces help organize objects and manage privileges."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Schemas",
+                "url": "https://www.postgresql.org/docs/current/ddl-schemas.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Data Definition",
+                "url": "https://www.postgresql.org/docs/current/ddl.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Views and Generated Values",
+            "description": "Use reusable query interfaces and modern generated-key patterns without confusing implementation features with the SQL core.",
+            "learningObjectives": [
+              "Create a view.",
+              "Explain the role of generated identity values.",
+              "Distinguish normal views from materialized results."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE TABLE ticket (\n  ticket_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  summary VARCHAR(200) NOT NULL\n);\nCREATE VIEW open_ticket AS\nSELECT ticket_id, summary\nFROM ticket;"
+              },
+              {
+                "type": "paragraph",
+                "text": "PostgreSQL normal views store the query definition rather than a physically materialized copy of the rows. Identity columns are a modern PostgreSQL mechanism for generated keys; other DBMSs use different syntax or facilities."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "What does a normal PostgreSQL view primarily store?",
+              "options": [
+                "A physically copied table",
+                "A query definition",
+                "An index for every column",
+                "A transaction snapshot"
+              ],
+              "answer": "A query definition",
+              "explanation": "A normal PostgreSQL view is a stored query definition evaluated when referenced."
+            },
+            "summary": [
+              "Views are reusable query interfaces.",
+              "Generated columns/values are implementation-sensitive and should be labeled when portability matters."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL CREATE VIEW",
+                "url": "https://www.postgresql.org/docs/current/sql-createview.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Default Values",
+                "url": "https://www.postgresql.org/docs/current/ddl-default.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Harden an Order Schema",
+            "level": "Easy",
+            "description": "Add constraints that reject invalid orders.",
+            "problemStatement": "Enforce required relationships, positive quantities, non-negative line prices, and allowed order states.",
+            "objectives": [
+              "Add NOT NULL and UNIQUE rules.",
+              "Add CHECK and foreign keys."
+            ],
+            "requirements": [
+              "Start with invariants rather than syntax.",
+              "PostgreSQL or equivalent SQL."
+            ],
+            "hint": [
+              "A relational database."
+            ],
+            "solutionCode": "CREATE TABLE order_header (\n  order_id INTEGER PRIMARY KEY,\n  customer_id INTEGER NOT NULL REFERENCES customer(customer_id),\n  status VARCHAR(20) NOT NULL CHECK (status IN ('NEW','PAID','SHIPPED','CANCELLED'))\n);\nCREATE TABLE order_item (\n  order_id INTEGER NOT NULL REFERENCES order_header(order_id) ON DELETE CASCADE,\n  product_id INTEGER NOT NULL REFERENCES product(product_id),\n  quantity INTEGER NOT NULL CHECK (quantity > 0),\n  unit_price NUMERIC(10,2) NOT NULL CHECK (unit_price >= 0),\n  PRIMARY KEY (order_id, product_id)\n);",
+            "solutionExplanation": "The constraints encode the most important integrity rules at the database boundary."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Retrieval, Filtering, and Result Shaping",
+        "description": "Master projection, predicates, NULL handling, expressions, ordering, and reliable pagination.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Projection, Expressions, and DISTINCT",
+            "description": "Write focused SELECT lists and calculated expressions.",
+            "learningObjectives": [
+              "Select only needed columns.",
+              "Use aliases and expressions.",
+              "Explain DISTINCT as duplicate elimination over the projected row."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT customer_name AS name,\n       city,\n       UPPER(city) AS normalized_city\nFROM training.customers;\n\nSELECT DISTINCT city\nFROM training.customers\nWHERE city IS NOT NULL;"
+              },
+              {
+                "type": "warning",
+                "text": "SELECT * can make application interfaces unstable when table schemas evolve."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "What does SELECT DISTINCT city remove?",
+              "options": [
+                "Rows with duplicate city values in the result",
+                "All NULLs",
+                "All indexes",
+                "Duplicate physical pages"
+              ],
+              "answer": "Rows with duplicate city values in the result",
+              "explanation": "DISTINCT removes duplicate result rows after projection."
+            },
+            "summary": [
+              "Projection shapes the result consumed by downstream users.",
+              "DISTINCT does not replace GROUP BY."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Functions",
+                "url": "https://www.postgresql.org/docs/current/functions.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "WHERE, NULL, and Boolean Logic",
+            "description": "Filter correctly while understanding NULL and three-valued logic.",
+            "learningObjectives": [
+              "Use IN, BETWEEN, LIKE, IS NULL, AND, OR, and NOT.",
+              "Explain UNKNOWN in predicate evaluation.",
+              "Use parentheses to make compound conditions clear."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT product_name\nFROM training.products\nWHERE (category = 'Accessories' OR category = 'Displays')\n  AND unit_price BETWEEN 10.00 AND 50.00;\n\nSELECT customer_name\nFROM training.customers\nWHERE city IS NULL;"
+              },
+              {
+                "type": "warning",
+                "text": "Do not write city = NULL. NULL comparison results in UNKNOWN; use IS NULL or IS NOT NULL."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "Which predicate correctly checks for NULL?",
+              "options": [
+                "column = NULL",
+                "column IS NULL",
+                "column == NULL",
+                "column <> NULL"
+              ],
+              "answer": "column IS NULL",
+              "explanation": "IS NULL is the SQL predicate for testing whether a value is NULL."
+            },
+            "summary": [
+              "WHERE predicates are evaluated with SQL Boolean semantics.",
+              "NULL requires explicit handling."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Conditional Expressions",
+                "url": "https://www.postgresql.org/docs/current/functions-conditional.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "ORDER BY and Deterministic Pagination",
+            "description": "Produce stable sorted results and avoid pagination that changes unpredictably between requests.",
+            "learningObjectives": [
+              "Sort on multiple keys.",
+              "Use a unique tie-breaker for deterministic pages.",
+              "Compare OFFSET-based and keyset-style pagination conceptually."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT order_id, order_date, status\nFROM training.orders\nORDER BY order_date DESC, order_id DESC\nFETCH FIRST 20 ROWS ONLY;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Without ORDER BY, row order is not a query contract.",
+                  "OFFSET can become costly for large offsets.",
+                  "Keyset pagination uses a stable last-seen key and range predicate."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "Why add order_id after order_date in pagination?",
+              "options": [
+                "To create a view",
+                "To break ties deterministically",
+                "To disable indexes",
+                "To remove NULLs"
+              ],
+              "answer": "To break ties deterministically",
+              "explanation": "A unique secondary ordering key stabilizes which rows fall on each page when dates tie."
+            },
+            "summary": [
+              "Stable ordering is part of reliable pagination.",
+              "A primary key is often a useful deterministic tie-breaker."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "CASE, COALESCE, NULLIF, and Common Functions",
+            "description": "Perform useful conditional and missing-value transformations close to the data.",
+            "learningObjectives": [
+              "Classify rows with CASE.",
+              "Use COALESCE and NULLIF appropriately.",
+              "Recognize vendor-specific function differences."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT product_name,\n       CASE WHEN active THEN 'Available' ELSE 'Inactive' END AS availability,\n       COALESCE(category, 'Uncategorized') AS category_name\nFROM training.products;\n\nSELECT 100 / NULLIF(:divisor, 0) AS safe_ratio;"
+              },
+              {
+                "type": "paragraph",
+                "text": "CASE is SQL-compliant conditional syntax. COALESCE selects the first non-NULL value; NULLIF returns NULL when its two arguments compare equal, which can be useful for avoiding division by zero when that behavior matches the business meaning."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-04",
+              "question": "What does COALESCE(a,b,c) return?",
+              "options": [
+                "The last expression",
+                "The first non-NULL expression",
+                "The largest expression",
+                "A row count"
+              ],
+              "answer": "The first non-NULL expression",
+              "explanation": "COALESCE returns the first argument that is not NULL."
+            },
+            "summary": [
+              "Conditional expressions encode data transformations clearly.",
+              "Null-handling should be designed, not improvised."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Conditional Expressions",
+                "url": "https://www.postgresql.org/docs/current/functions-conditional.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Functions and Operators",
+                "url": "https://www.postgresql.org/docs/current/functions.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Build a Deterministic Customer Search",
+            "level": "Easy",
+            "description": "Write a search query with optional filters and stable ordering.",
+            "problemStatement": "Search customers by name prefix and optional city, then return a stable first page.",
+            "objectives": [
+              "Use a WHERE predicate.",
+              "Use parameter placeholders for values.",
+              "Use deterministic ordering."
+            ],
+            "requirements": [
+              "Keep SQL structure fixed; only values should vary.",
+              "Relational database with FETCH FIRST or equivalent."
+            ],
+            "hint": [
+              "A SQL client/driver supporting bound parameters."
+            ],
+            "solutionCode": "SELECT customer_id, customer_name, email, city, created_at\nFROM training.customers\nWHERE customer_name LIKE :prefix || '%'\n  AND (:city IS NULL OR city = :city)\nORDER BY created_at DESC, customer_id DESC\nFETCH FIRST :page_size ROWS ONLY;",
+            "solutionExplanation": "The query uses values as parameters and adds customer_id as a deterministic tie-breaker. Placeholder syntax varies by driver, so :name is illustrative rather than a universal client syntax."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Joins, Subqueries, Set Operations, and CTEs",
+        "description": "Combine tables and result sets while controlling row grain and query complexity.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "INNER and OUTER JOINs",
+            "description": "Choose joins based on which rows must survive the combination.",
+            "learningObjectives": [
+              "Write explicit JOIN ... ON expressions.",
+              "Use LEFT JOIN for parent-preserving reports.",
+              "Explain row multiplication in one-to-many joins."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT c.customer_id, c.customer_name, o.order_id\nFROM training.customers AS c\nJOIN training.orders AS o\n  ON o.customer_id = c.customer_id;\n\nSELECT c.customer_id, c.customer_name, COUNT(o.order_id) AS order_count\nFROM training.customers AS c\nLEFT JOIN training.orders AS o\n  ON o.customer_id = c.customer_id\nGROUP BY c.customer_id, c.customer_name;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "INNER JOIN keeps matching combinations.",
+                  "LEFT JOIN preserves the left input and uses NULLs for unmatched right-side columns.",
+                  "FULL OUTER JOIN preserves unmatched rows from both sides where supported."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "Which join keeps customers with zero orders?",
+              "options": [
+                "INNER JOIN",
+                "LEFT JOIN from customers to orders",
+                "CROSS JOIN",
+                "NATURAL JOIN"
+              ],
+              "answer": "LEFT JOIN from customers to orders",
+              "explanation": "LEFT JOIN preserves every customer while unmatched orders appear as NULL on the right."
+            },
+            "summary": [
+              "Join type encodes the population that should remain visible.",
+              "Multiplicity must be understood before calculating measures."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Join Tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial-join.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Subqueries and EXISTS",
+            "description": "Use subqueries when comparison or existence is the natural form of the question.",
+            "learningObjectives": [
+              "Write scalar and table subqueries.",
+              "Use EXISTS and NOT EXISTS.",
+              "Recognize correlated subqueries and their performance implications."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT p.product_id, p.product_name\nFROM training.products AS p\nWHERE EXISTS (\n  SELECT 1\n  FROM training.order_items AS oi\n  WHERE oi.product_id = p.product_id\n);"
+              },
+              {
+                "type": "paragraph",
+                "text": "EXISTS is true when the subquery returns at least one row. The projected expression inside EXISTS does not determine truth; SELECT 1 is simply a clear conventional expression."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "When is EXISTS TRUE?",
+              "options": [
+                "When the subquery returns at least one row",
+                "Only when it returns one row",
+                "When the first column is non-NULL",
+                "Only when it is indexed"
+              ],
+              "answer": "When the subquery returns at least one row",
+              "explanation": "EXISTS is an existence predicate."
+            },
+            "summary": [
+              "EXISTS tests presence without requiring child aggregation.",
+              "Correlated subqueries can be transformed by optimizers, so performance must be checked with plans rather than assumed."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "UNION, INTERSECT, EXCEPT",
+            "description": "Combine compatible query results with set operators.",
+            "learningObjectives": [
+              "Use UNION and UNION ALL correctly.",
+              "Explain INTERSECT and EXCEPT.",
+              "Check column count and compatible types."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT email FROM training.customers WHERE city = 'Pune'\nUNION\nSELECT email FROM training.customers WHERE city = 'Mumbai';\n\nSELECT email FROM training.customers WHERE city = 'Pune'\nUNION ALL\nSELECT email FROM training.customers WHERE city = 'Mumbai';"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "UNION eliminates duplicate result rows.",
+                  "UNION ALL preserves duplicates and avoids unnecessary deduplication work.",
+                  "Set inputs must be union-compatible."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "Which operator preserves duplicates between the two inputs?",
+              "options": [
+                "UNION",
+                "UNION ALL",
+                "INTERSECT",
+                "EXCEPT"
+              ],
+              "answer": "UNION ALL",
+              "explanation": "UNION ALL does not perform the duplicate elimination done by UNION."
+            },
+            "summary": [
+              "Set operators combine compatible result sets.",
+              "Choose duplicate semantics deliberately."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Common Table Expressions and Recursive SQL",
+            "description": "Use WITH queries to decompose complex statements and traverse hierarchies.",
+            "learningObjectives": [
+              "Write non-recursive CTEs.",
+              "Use multiple dependent CTEs.",
+              "Explain the anchor/recursive parts of a recursive CTE."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "WITH customer_totals AS (\n  SELECT o.customer_id, SUM(oi.quantity * oi.unit_price) AS total_spend\n  FROM training.orders o\n  JOIN training.order_items oi ON oi.order_id = o.order_id\n  WHERE o.status <> 'CANCELLED'\n  GROUP BY o.customer_id\n)\nSELECT c.customer_name, ct.total_spend\nFROM training.customers c\nJOIN customer_totals ct ON ct.customer_id = c.customer_id;"
+              },
+              {
+                "type": "code",
+                "text": "WITH RECURSIVE org AS (\n  SELECT employee_id, manager_id, employee_name, 0 AS depth\n  FROM employees\n  WHERE manager_id IS NULL\n  UNION ALL\n  SELECT e.employee_id, e.manager_id, e.employee_name, org.depth + 1\n  FROM employees e\n  JOIN org ON e.manager_id = org.employee_id\n)\nSELECT * FROM org;"
+              },
+              {
+                "type": "warning",
+                "text": "Recursive queries require termination/cycle reasoning. A tree guarantee is different from an arbitrary graph."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "What is the role of the anchor member in a recursive CTE?",
+              "options": [
+                "It defines the starting rows",
+                "It creates an index",
+                "It sorts the final result",
+                "It commits the transaction"
+              ],
+              "answer": "It defines the starting rows",
+              "explanation": "The anchor member establishes the initial result set; the recursive member derives further rows."
+            },
+            "summary": [
+              "CTEs improve composability and readability.",
+              "Recursive CTEs make hierarchical SQL possible but require careful data guarantees."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL WITH Queries",
+                "url": "https://www.postgresql.org/docs/current/queries-with.html",
+                "type": "documentation"
+              },
+              {
+                "title": "MySQL 8.4 CTEs",
+                "url": "https://dev.mysql.com/doc/refman/8.4/en/with.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-05",
+            "title": "Join Grain and Double-Counting",
+            "description": "Diagnose inflated aggregates caused by combining multiple one-to-many relationships at once.",
+            "learningObjectives": [
+              "Detect multiplicative joins.",
+              "Pre-aggregate child facts at the required grain.",
+              "Explain why apparently valid SQL can return wrong totals."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "If one order has 3 items and 2 payments, a direct join can create 6 intermediate combinations for that order. A line-item SUM performed after that join may count every item twice. Reduce each child relation to one row per order before combining them."
+              },
+              {
+                "type": "code",
+                "text": "WITH item_totals AS (\n  SELECT order_id, SUM(quantity * unit_price) AS order_total\n  FROM training.order_items\n  GROUP BY order_id\n), payment_totals AS (\n  SELECT order_id, SUM(amount) AS paid_total\n  FROM training.payments\n  GROUP BY order_id\n)\nSELECT o.order_id, i.order_total, COALESCE(p.paid_total,0) AS paid_total\nFROM training.orders o\nJOIN item_totals i ON i.order_id = o.order_id\nLEFT JOIN payment_totals p ON p.order_id = o.order_id;"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-05",
+              "question": "Why can two independent child joins inflate totals?",
+              "options": [
+                "Joins always sort rows",
+                "The child row sets can multiply at the parent grain",
+                "GROUP BY duplicates every row",
+                "NULL doubles numbers"
+              ],
+              "answer": "The child row sets can multiply at the parent grain",
+              "explanation": "Each child row can combine with multiple rows from the other child relation, multiplying combinations."
+            },
+            "summary": [
+              "Correct grain is more important than clever syntax.",
+              "Pre-aggregation prevents multiplicative joins from inflating measures."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Repair an Inflated Order Report",
+            "level": "Intermediate",
+            "description": "Rewrite a report that double-counts line items because it joins two child tables at once.",
+            "problemStatement": "Return one row per order with correct order value and total paid amount.",
+            "objectives": [
+              "State the output grain.",
+              "Pre-aggregate child tables.",
+              "Use LEFT JOIN where missing payments should still show."
+            ],
+            "requirements": [
+              "A relational database with CTE support.",
+              "Pre-aggregate items and payments independently.",
+              "SQL supporting common table expressions."
+            ],
+            "hint": [
+              "Use CTEs or derived tables to reduce each child relationship first."
+            ],
+            "solutionCode": "WITH item_totals AS (\n  SELECT order_id, SUM(quantity * unit_price) AS order_total\n  FROM training.order_items\n  GROUP BY order_id\n), payment_totals AS (\n  SELECT order_id, SUM(amount) AS paid_total\n  FROM training.payments\n  GROUP BY order_id\n)\nSELECT o.order_id, i.order_total, COALESCE(p.paid_total, 0) AS paid_total\nFROM training.orders o\nJOIN item_totals i ON i.order_id = o.order_id\nLEFT JOIN payment_totals p ON p.order_id = o.order_id;",
+            "solutionExplanation": "Each child relation is collapsed to order grain before the final join, removing the multiplicative effect."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Data Modification and Transaction Basics",
+        "description": "Change data safely and use transaction boundaries for atomic workflows.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "INSERT and Generated Keys",
+            "description": "Insert rows safely and use generated values when the implementation supports returning them.",
+            "learningObjectives": [
+              "Write explicit-column INSERTs.",
+              "Load multiple rows.",
+              "Explain why returning generated values is useful."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "INSERT INTO training.products (product_id, product_name, category, unit_price)\nVALUES (101, 'Keyboard', 'Accessories', 29.90);\n\nINSERT INTO training.products (product_id, product_name, category, unit_price)\nVALUES (102, 'Mouse', 'Accessories', 19.90);"
+              },
+              {
+                "type": "code",
+                "text": "-- PostgreSQL-specific\nINSERT INTO training.products (product_name, category, unit_price)\nVALUES ('Desk Lamp', 'Accessories', 24.00)\nRETURNING product_id;"
+              },
+              {
+                "type": "warning",
+                "text": "Always list target columns unless dependence on defined column order is an intentional, controlled choice."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Why name INSERT target columns?",
+              "options": [
+                "To disable constraints",
+                "To make the value mapping explicit",
+                "To sort rows",
+                "To create an index"
+              ],
+              "answer": "To make the value mapping explicit",
+              "explanation": "Explicit columns reduce accidental coupling to table column order."
+            },
+            "summary": [
+              "Explicit column lists make inserts resilient to schema changes.",
+              "RETURNING is a useful implementation feature but not universal SQL."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL SQL Tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial-sql.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "UPDATE and DELETE Safely",
+            "description": "Modify data with predicates that are reviewed and recoverable.",
+            "learningObjectives": [
+              "Preview an UPDATE/DELETE target with SELECT.",
+              "Use precise WHERE conditions.",
+              "Explain the risk of accidental table-wide changes."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT product_id, product_name\nFROM training.products\nWHERE category = 'Accessories';\n\nUPDATE training.products\nSET active = FALSE\nWHERE category = 'Accessories';"
+              },
+              {
+                "type": "warning",
+                "text": "A missing or overly broad WHERE clause can change many rows. Use transactions and appropriate privileges for sensitive changes."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What should you often do before a destructive UPDATE?",
+              "options": [
+                "DROP the table",
+                "Run a SELECT using the same predicate",
+                "Disable foreign keys",
+                "Create a random index"
+              ],
+              "answer": "Run a SELECT using the same predicate",
+              "explanation": "A preview query shows the rows that the modification would target."
+            },
+            "summary": [
+              "Safe DML starts with knowing the target row set.",
+              "Recovery and review matter as much as syntax."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL SQL Tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial-sql.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Transactions, COMMIT, ROLLBACK, SAVEPOINT",
+            "description": "Use transactions to make related data changes behave as one recoverable unit.",
+            "learningObjectives": [
+              "Open and commit/rollback transactions.",
+              "Use SAVEPOINT for checkpoints.",
+              "Explain atomicity in practical workflows."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "BEGIN;\nUPDATE training.products\nSET unit_price = unit_price * 1.05\nWHERE category = 'Displays';\nSAVEPOINT price_update;\n-- inspect or perform more work\nCOMMIT;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "ROLLBACK aborts uncommitted work.",
+                  "SAVEPOINT allows partial rollback within a transaction.",
+                  "Keep transactions focused and avoid leaving them open unnecessarily."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "What does ROLLBACK do to uncommitted changes?",
+              "options": [
+                "It publishes them",
+                "It discards the transaction changes",
+                "It creates an index",
+                "It makes them durable"
+              ],
+              "answer": "It discards the transaction changes",
+              "explanation": "ROLLBACK aborts the transaction and undoes its uncommitted changes."
+            },
+            "summary": [
+              "Transactions define units of work and recovery.",
+              "Atomicity is useful for multi-step business operations."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Transaction Tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial-transactions.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Transaction Isolation",
+                "url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "MERGE and Upsert Design",
+            "description": "Handle source/target synchronization while distinguishing SQL-standard-oriented MERGE from vendor-specific upsert syntax.",
+            "learningObjectives": [
+              "Explain MERGE.",
+              "Write a basic MERGE statement where supported.",
+              "Understand why unique constraints and transaction semantics matter for concurrency."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "MERGE INTO target AS t\nUSING source AS s\nON t.key_col = s.key_col\nWHEN MATCHED THEN\n  UPDATE SET value_col = s.value_col\nWHEN NOT MATCHED THEN\n  INSERT (key_col, value_col)\n  VALUES (s.key_col, s.value_col);"
+              },
+              {
+                "type": "warning",
+                "text": "Different databases offer different upsert syntax. Use the target DBMS documentation when portability is required."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "What problem does MERGE address?",
+              "options": [
+                "Sorting tables",
+                "Conditional source/target synchronization",
+                "Index creation",
+                "Transaction logging"
+              ],
+              "answer": "Conditional source/target synchronization",
+              "explanation": "MERGE matches source and target rows and applies configured actions such as UPDATE or INSERT."
+            },
+            "summary": [
+              "MERGE expresses conditional source/target synchronization.",
+              "Concurrency correctness is not solved by “check then insert” race-prone application logic alone."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL MERGE",
+                "url": "https://www.postgresql.org/docs/current/sql-merge.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Transfer Funds Atomically",
+            "level": "Intermediate",
+            "description": "Design a transactional transfer between two accounts.",
+            "problemStatement": "Move money from one account to another without committing a partial transfer.",
+            "objectives": [
+              "Use a transaction.",
+              "Check the debit condition.",
+              "Consider concurrent access."
+            ],
+            "requirements": [
+              "Relational DB supporting transactions.",
+              "Validate affected rows before committing; for concurrent workflows use appropriate locks/isolation."
+            ],
+            "hint": [
+              "A transaction should contain the logical unit of work.",
+              "Production logic must also handle row counts and concurrency."
+            ],
+            "solutionCode": "BEGIN;\n\nUPDATE accounts\nSET balance = balance - :amount\nWHERE account_id = :from_id\n  AND balance >= :amount;\n\n-- Application checks exactly one row was updated.\nUPDATE accounts\nSET balance = balance + :amount\nWHERE account_id = :to_id;\n\nCOMMIT;",
+            "solutionExplanation": "The transaction provides atomicity for the two writes. A production client must validate both updates and handle concurrency/error paths rather than blindly committing."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Aggregation and Analytical SQL",
+        "description": "Build accurate summaries and row-preserving analytics with aggregates and windows.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "GROUP BY and Aggregate Functions",
+            "description": "Summarize rows at a defined grain using core aggregates.",
+            "learningObjectives": [
+              "Use COUNT, SUM, AVG, MIN, and MAX.",
+              "Explain COUNT(*) versus COUNT(column).",
+              "Choose GROUP BY columns intentionally."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT category,\n       COUNT(*) AS product_count,\n       AVG(unit_price) AS avg_price,\n       MIN(unit_price) AS min_price,\n       MAX(unit_price) AS max_price\nFROM training.products\nGROUP BY category;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "COUNT(*) counts rows.",
+                  "COUNT(expression) counts non-NULL expression results.",
+                  "Aggregates generally skip NULL inputs where the function semantics specify that behavior."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "What does COUNT(column) count?",
+              "options": [
+                "All rows",
+                "Non-NULL values of the expression",
+                "Only unique rows",
+                "Only primary keys"
+              ],
+              "answer": "Non-NULL values of the expression",
+              "explanation": "COUNT(expression) counts rows where the expression is not NULL."
+            },
+            "summary": [
+              "Aggregation reduces data to a reporting grain.",
+              "NULL behavior matters for accurate measures."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Aggregate Functions",
+                "url": "https://www.postgresql.org/docs/current/functions-aggregate.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "HAVING and Conditional Aggregation",
+            "description": "Filter grouped results and compute multiple conditional measures in one grouped query.",
+            "learningObjectives": [
+              "Distinguish WHERE and HAVING.",
+              "Use CASE inside aggregates.",
+              "Build conditional counts/sums."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT customer_id,\n       COUNT(*) AS order_count,\n       SUM(CASE WHEN status = 'PAID' THEN 1 ELSE 0 END) AS paid_orders\nFROM training.orders\nGROUP BY customer_id\nHAVING COUNT(*) >= 3;"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "Which clause filters after grouping?",
+              "options": [
+                "WHERE",
+                "HAVING",
+                "FROM",
+                "SELECT"
+              ],
+              "answer": "HAVING",
+              "explanation": "HAVING can evaluate aggregate expressions and filter grouped results."
+            },
+            "summary": [
+              "WHERE filters rows before grouping; HAVING filters groups after aggregation.",
+              "Conditional aggregation is a portable reporting technique."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Conditional Expressions",
+                "url": "https://www.postgresql.org/docs/current/functions-conditional.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Window Functions for Ranking and Row-Preserving Analytics",
+            "description": "Calculate values over related rows without collapsing the result set.",
+            "learningObjectives": [
+              "Use PARTITION BY and ORDER BY in OVER.",
+              "Compare ROW_NUMBER, RANK, and DENSE_RANK.",
+              "Explain how windows differ from GROUP BY."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT customer_id, order_id, order_date,\n       ROW_NUMBER() OVER (\n         PARTITION BY customer_id\n         ORDER BY order_date DESC, order_id DESC\n       ) AS rn,\n       RANK() OVER (\n         PARTITION BY customer_id\n         ORDER BY order_date DESC\n       ) AS rnk\nFROM training.orders;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "ROW_NUMBER gives each row a unique sequence position.",
+                  "RANK leaves gaps after ties; DENSE_RANK does not.",
+                  "Window ORDER BY controls the window calculation, not necessarily final output order."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "Which ranking function leaves gaps after ties?",
+              "options": [
+                "ROW_NUMBER",
+                "RANK",
+                "DENSE_RANK",
+                "COUNT"
+              ],
+              "answer": "RANK",
+              "explanation": "RANK assigns equal values to ties and skips subsequent rank numbers."
+            },
+            "summary": [
+              "Window functions preserve row-level detail while adding analysis.",
+              "Ranking choice should match the intended tie semantics."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Window Functions",
+                "url": "https://www.postgresql.org/docs/current/functions-window.html",
+                "type": "documentation"
+              },
+              {
+                "title": "MySQL 8.4 Window Functions",
+                "url": "https://dev.mysql.com/doc/refman/8.4/en/window-functions.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "Running Totals, LAG/LEAD, and Frames",
+            "description": "Use window frames and adjacent-row functions for sequence and time-oriented analysis.",
+            "learningObjectives": [
+              "Use LAG and LEAD.",
+              "Define a ROWS frame for cumulative calculations.",
+              "Recognize that window features differ slightly across DBMSs."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "SELECT order_date,\n       order_id,\n       LAG(order_date) OVER (ORDER BY order_date, order_id) AS previous_order,\n       SUM(1) OVER (\n         ORDER BY order_date, order_id\n         ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n       ) AS running_count\nFROM training.orders;"
+              },
+              {
+                "type": "paragraph",
+                "text": "Explicit frames communicate which rows belong to a cumulative calculation. This is especially useful when ordering values can tie."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-04",
+              "question": "What does LAG normally return?",
+              "options": [
+                "A preceding row value in the window order",
+                "A new table",
+                "The largest value",
+                "An index identifier"
+              ],
+              "answer": "A preceding row value in the window order",
+              "explanation": "LAG accesses a value from an earlier row according to the window ordering and offset."
+            },
+            "summary": [
+              "LAG/LEAD compare adjacent rows in window order.",
+              "Explicit frames reduce ambiguity in running calculations."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Window Functions",
+                "url": "https://www.postgresql.org/docs/current/functions-window.html",
+                "type": "documentation"
+              },
+              {
+                "title": "MySQL 8.4 Window Functions",
+                "url": "https://dev.mysql.com/doc/refman/8.4/en/window-functions.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Top-3 Orders per Customer",
+            "level": "Intermediate",
+            "description": "Return each customer’s three highest-value non-cancelled orders with customer total spend and rank.",
+            "problemStatement": "Produce one row per qualifying order, preserving order detail while adding customer-level analytics.",
+            "objectives": [
+              "Aggregate order line items.",
+              "Use a window function.",
+              "Filter the ranking in an outer query."
+            ],
+            "requirements": [
+              "PostgreSQL or another DBMS supporting window functions.",
+              "Use CTEs to establish order grain before windowing."
+            ],
+            "hint": [
+              "Order amount must be computed at order grain first."
+            ],
+            "solutionCode": "WITH order_totals AS (\n  SELECT o.order_id, o.customer_id,\n         SUM(oi.quantity * oi.unit_price) AS order_total\n  FROM training.orders o\n  JOIN training.order_items oi ON oi.order_id = o.order_id\n  WHERE o.status <> 'CANCELLED'\n  GROUP BY o.order_id, o.customer_id\n), ranked AS (\n  SELECT *,\n         SUM(order_total) OVER (PARTITION BY customer_id) AS customer_spend,\n         ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_total DESC, order_id DESC) AS rn\n  FROM order_totals\n)\nSELECT *\nFROM ranked\nWHERE rn <= 3\nORDER BY customer_id, rn;",
+            "solutionExplanation": "The first CTE fixes the order grain, the second adds window calculations, and the outer query filters ranked rows."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Reusable and Advanced SQL Constructs",
+        "description": "Use recursive CTEs, views, routines, and triggers deliberately.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Recursive Hierarchies",
+            "description": "Traverse organizational or category trees with recursive CTEs.",
+            "learningObjectives": [
+              "Build an anchor and recursive member.",
+              "Track depth.",
+              "Reason about cycles and termination."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "WITH RECURSIVE tree AS (\n  SELECT category_id, parent_id, name, 0 AS depth\n  FROM category\n  WHERE parent_id IS NULL\n  UNION ALL\n  SELECT c.category_id, c.parent_id, c.name, tree.depth + 1\n  FROM category c\n  JOIN tree ON c.parent_id = tree.category_id\n)\nSELECT * FROM tree ORDER BY depth, category_id;"
+              },
+              {
+                "type": "warning",
+                "text": "This pattern assumes a tree. Graphs with cycles require cycle detection or bounded traversal."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "What starts a recursive CTE?",
+              "options": [
+                "The anchor member",
+                "The final ORDER BY",
+                "The index definition",
+                "COMMIT"
+              ],
+              "answer": "The anchor member",
+              "explanation": "The anchor supplies initial rows before recursive derivation begins."
+            },
+            "summary": [
+              "Recursive SQL is a structured form of repeated row derivation.",
+              "Hierarchy correctness depends on data constraints as well as query logic."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL WITH Queries",
+                "url": "https://www.postgresql.org/docs/current/queries-with.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Views as Abstraction and Access Boundaries",
+            "description": "Encapsulate complex queries in reusable interfaces.",
+            "learningObjectives": [
+              "Create a view.",
+              "Explain view dependencies.",
+              "Use a view with privileges to expose only approved data."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE VIEW training.customer_activity AS\nSELECT c.customer_id, c.customer_name,\n       COUNT(o.order_id) AS order_count\nFROM training.customers c\nLEFT JOIN training.orders o ON o.customer_id = c.customer_id\nGROUP BY c.customer_id, c.customer_name;"
+              },
+              {
+                "type": "paragraph",
+                "text": "A normal PostgreSQL view stores a query definition. Views can also reduce coupling for consumers and can work as a privilege boundary when underlying tables are not directly granted."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "What is a practical benefit of a view?",
+              "options": [
+                "Stable abstraction over complex joins",
+                "Automatic encryption",
+                "Automatic sharding",
+                "Removal of all constraints"
+              ],
+              "answer": "Stable abstraction over complex joins",
+              "explanation": "A view can provide a stable, reusable query interface over underlying relations."
+            },
+            "summary": [
+              "Views are query contracts, not automatically cached result sets.",
+              "Access-control design and view design can complement one another."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL CREATE VIEW",
+                "url": "https://www.postgresql.org/docs/current/sql-createview.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "SQL Functions and Procedures",
+            "description": "Package reusable database-side logic while distinguishing function and procedure semantics.",
+            "learningObjectives": [
+              "Create a SQL function with arguments.",
+              "Explain return types and result sets.",
+              "Distinguish functions from procedures."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE FUNCTION training.customer_order_count(p_customer_id INTEGER)\nRETURNS INTEGER\nLANGUAGE SQL\nAS $$\n  SELECT COUNT(*)::INTEGER\n  FROM training.orders\n  WHERE customer_id = p_customer_id;\n$$;\n\nSELECT training.customer_order_count(1);"
+              },
+              {
+                "type": "paragraph",
+                "text": "PostgreSQL supports SQL-language functions and procedures. Exact routine syntax, transaction-control capabilities, and procedural languages are implementation-specific."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "How is a PostgreSQL procedure invoked?",
+              "options": [
+                "SELECT procedure()",
+                "CALL procedure(...)",
+                "EXECUTE TABLE procedure",
+                "RUN procedure"
+              ],
+              "answer": "CALL procedure(...)",
+              "explanation": "PostgreSQL procedures are invoked with CALL."
+            },
+            "summary": [
+              "Routines can centralize repeated data logic.",
+              "Routine behavior should be documented because execution happens inside the database."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL SQL Functions",
+                "url": "https://www.postgresql.org/docs/current/xfunc-sql.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL PL/pgSQL",
+                "url": "https://www.postgresql.org/docs/current/plpgsql.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-04",
+            "title": "Triggers and Hidden Side Effects",
+            "description": "Automate database reactions while learning when triggers help and when they increase complexity.",
+            "learningObjectives": [
+              "Explain BEFORE and AFTER triggers.",
+              "Use NEW/OLD in row-level triggers.",
+              "Assess trigger side effects and debugging costs."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE FUNCTION set_updated_at()\nRETURNS trigger\nLANGUAGE plpgsql\nAS $$\nBEGIN\n  NEW.updated_at := CURRENT_TIMESTAMP;\n  RETURN NEW;\nEND;\n$$;\n\nCREATE TRIGGER set_customer_updated_at\nBEFORE UPDATE ON training.customers\nFOR EACH ROW\nEXECUTE FUNCTION set_updated_at();"
+              },
+              {
+                "type": "warning",
+                "text": "Triggers are implicit control flow: a write can cause additional work that is not visible in the calling SQL text. Keep them small and documented."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-04",
+              "question": "Can a PostgreSQL BEFORE row trigger modify NEW before the row is written?",
+              "options": [
+                "Yes",
+                "No"
+              ],
+              "answer": "Yes",
+              "explanation": "PostgreSQL permits BEFORE row-level triggers to modify the NEW record."
+            },
+            "summary": [
+              "Triggers can automate cross-cutting behavior.",
+              "Hidden behavior increases operational and debugging complexity."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL CREATE TRIGGER",
+                "url": "https://www.postgresql.org/docs/current/sql-createtrigger.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL PL/pgSQL",
+                "url": "https://www.postgresql.org/docs/current/plpgsql.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Create a Customer Reporting View",
+            "level": "Intermediate",
+            "description": "Expose customer activity through a view without changing base tables.",
+            "problemStatement": "Return one row per customer with total orders, last order date, and lifetime non-cancelled value.",
+            "objectives": [
+              "Preserve one row per customer.",
+              "Handle customers with no orders.",
+              "Use a view."
+            ],
+            "requirements": [
+              "PostgreSQL or another DBMS with views.",
+              "Use LEFT JOIN for inactive customers.",
+              "SQL supporting CREATE VIEW."
+            ],
+            "hint": [
+              "Aggregate order facts at customer grain first."
+            ],
+            "solutionCode": "CREATE VIEW training.customer_activity AS\nWITH totals AS (\n  SELECT o.customer_id,\n         COUNT(DISTINCT o.order_id) AS order_count,\n         MAX(o.order_date) AS last_order_date,\n         SUM(oi.quantity * oi.unit_price) AS lifetime_value\n  FROM training.orders o\n  JOIN training.order_items oi ON oi.order_id = o.order_id\n  WHERE o.status <> 'CANCELLED'\n  GROUP BY o.customer_id\n)\nSELECT c.customer_id, c.customer_name,\n       COALESCE(t.order_count,0) AS order_count,\n       t.last_order_date,\n       COALESCE(t.lifetime_value,0) AS lifetime_value\nFROM training.customers c\nLEFT JOIN totals t ON t.customer_id = c.customer_id;",
+            "solutionExplanation": "The CTE establishes customer grain before the outer LEFT JOIN, preventing order-line multiplication and preserving customers without activity."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Transactions and Concurrency",
+        "description": "Advance from atomic transactions to isolation levels, locking, and retry-aware design.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "ACID and Transaction Invariants",
+            "description": "Connect transaction guarantees to actual business invariants.",
+            "learningObjectives": [
+              "Explain atomicity, consistency, isolation, durability.",
+              "Differentiate database-enforced consistency from application business logic."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Atomicity: the transaction commits as a unit or aborts.",
+                  "Consistency: successful work respects the configured integrity rules and the intended transaction logic.",
+                  "Isolation: concurrent transactions observe data according to the chosen isolation behavior.",
+                  "Durability: committed work persists according to the DBMS/storage durability design."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Which ACID property is the all-or-nothing property?",
+              "options": [
+                "Atomicity",
+                "Consistency",
+                "Isolation",
+                "Durability"
+              ],
+              "answer": "Atomicity",
+              "explanation": "Atomicity makes a transaction indivisible from the perspective of commit/abort outcome."
+            },
+            "summary": [
+              "ACID describes system guarantees, not a substitute for correct business logic.",
+              "Constraints and transactions work together to preserve invariants."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Transaction Isolation",
+                "url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Isolation Levels and Concurrency Anomalies",
+            "description": "Reason about dirty reads, nonrepeatable reads, phantoms, and serialization anomalies.",
+            "learningObjectives": [
+              "Compare common isolation levels.",
+              "Explain PostgreSQL’s Read Committed and Serializable behavior.",
+              "Design retry logic for serialization failures."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The SQL standard defines four isolation levels. PostgreSQL exposes their names but implements Read Uncommitted like Read Committed. PostgreSQL Repeatable Read is stronger than the minimum standard requirement for phantom protection. Serializable may abort a transaction with a serialization failure, so applications must be prepared to retry the whole transaction."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "Which isolation level is the strictest?",
+              "options": [
+                "Read Uncommitted",
+                "Read Committed",
+                "Repeatable Read",
+                "Serializable"
+              ],
+              "answer": "Serializable",
+              "explanation": "Serializable aims to provide behavior equivalent to some serial order of committed transactions."
+            },
+            "summary": [
+              "Isolation is a concurrency contract, not merely a performance knob.",
+              "Retrying the whole logical transaction is important after serialization failure."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Transaction Isolation",
+                "url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Explicit Row Locking",
+            "description": "Coordinate read-modify-write workflows with targeted row locks.",
+            "learningObjectives": [
+              "Use SELECT FOR UPDATE.",
+              "Explain lock scope.",
+              "Reduce deadlock risk with consistent lock ordering."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "BEGIN;\nSELECT account_id, balance\nFROM accounts\nWHERE account_id IN (:from_id, :to_id)\nORDER BY account_id\nFOR UPDATE;\n-- validate and update\nCOMMIT;"
+              },
+              {
+                "type": "warning",
+                "text": "Locks can increase contention. Keep transactions short and lock only rows necessary for the invariant being protected."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Why lock rows in a transfer workflow?",
+              "options": [
+                "To coordinate concurrent modifications",
+                "To create a view",
+                "To bypass constraints",
+                "To sort faster"
+              ],
+              "answer": "To coordinate concurrent modifications",
+              "explanation": "Row locks can serialize conflicting access to specific rows within the transaction."
+            },
+            "summary": [
+              "Explicit locking can protect critical read-modify-write sequences.",
+              "Deadlock prevention often includes a consistent acquisition order."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Explicit Locking",
+                "url": "https://www.postgresql.org/docs/current/explicit-locking.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Serializable Booking with Retry",
+            "level": "Advanced",
+            "description": "Design a reservation transaction that retries after serialization failure.",
+            "problemStatement": "Two concurrent sessions may attempt to reserve the same resource. Use Serializable isolation and rerun the full transaction after an abort.",
+            "objectives": [
+              "Use Serializable isolation.",
+              "Keep the transaction self-contained.",
+              "Specify a bounded retry policy."
+            ],
+            "requirements": [
+              "PostgreSQL or another DBMS with Serializable isolation.",
+              "Retry the entire transaction, not one statement.",
+              "DBMS transaction support."
+            ],
+            "hint": [
+              "The retry loop belongs in the application or suitable procedure layer."
+            ],
+            "solutionCode": "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;\nSELECT resource_id\nFROM resource\nWHERE resource_id = :resource_id\n  AND available = TRUE\nFOR UPDATE;\n\nINSERT INTO reservation(resource_id, customer_id)\nVALUES (:resource_id, :customer_id);\n\nCOMMIT;",
+            "solutionExplanation": "When the transaction ends with a serialization failure, the client must discard the aborted transaction and start the complete logical operation again."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "SQL Performance and Query Plans",
+        "description": "Tune SQL with indexes, execution plans, statistics, and evidence-based rewrites.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Indexes and Their Trade-offs",
+            "description": "Treat indexes as workload-driven access paths.",
+            "learningObjectives": [
+              "Explain why indexes can speed selective searches.",
+              "Recognize write/storage costs.",
+              "Choose candidate indexes from query patterns."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE INDEX idx_orders_customer_date\nON training.orders (customer_id, order_date);"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "B-tree indexes cover many equality/range/order patterns.",
+                  "Indexes add storage and maintenance cost on writes.",
+                  "Index every-column thinking is usually wasteful; verify with workload evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "What is a cost of unnecessary indexes?",
+              "options": [
+                "They increase write/storage overhead",
+                "They always break SELECT",
+                "They remove constraints",
+                "They eliminate backups"
+              ],
+              "answer": "They increase write/storage overhead",
+              "explanation": "Indexes need maintenance and storage, so excess indexes can hurt write performance and resource use."
+            },
+            "summary": [
+              "Indexes are physical-design decisions driven by queries.",
+              "The optimal set is a balance between reads, writes, and storage."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Indexes",
+                "url": "https://www.postgresql.org/docs/current/indexes.html",
+                "type": "documentation"
+              },
+              {
+                "title": "MySQL 8.4 Optimization",
+                "url": "https://dev.mysql.com/doc/refman/8.4/en/optimization.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Composite, Partial, and Expression Indexes",
+            "description": "Design specialized indexes when ordinary single-column indexing does not match the workload.",
+            "learningObjectives": [
+              "Explain composite index column order.",
+              "Use partial indexes for relevant row subsets.",
+              "Use expression indexes for matching computed predicates."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE INDEX idx_orders_customer_status_date\nON training.orders (customer_id, status, order_date DESC);\n\n-- PostgreSQL-specific\nCREATE INDEX idx_active_category\nON training.products (category)\nWHERE active = TRUE;\n\nCREATE INDEX idx_lower_email\nON training.customers (LOWER(email));"
+              },
+              {
+                "type": "paragraph",
+                "text": "Composite index order matters. A partial index covers only rows satisfying its predicate. An expression index matches queries written against the same expression in systems that support the feature."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What is a partial index?",
+              "options": [
+                "An index over rows satisfying a predicate",
+                "An index with one column only",
+                "An index that cannot be used by SELECT",
+                "A temporary table"
+              ],
+              "answer": "An index over rows satisfying a predicate",
+              "explanation": "A partial index stores entries only for rows meeting its definition predicate."
+            },
+            "summary": [
+              "Specialized indexes should be justified by real predicates and access paths.",
+              "Advanced index features are often vendor-specific."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Indexes",
+                "url": "https://www.postgresql.org/docs/current/indexes.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-03",
+            "title": "EXPLAIN and EXPLAIN ANALYZE",
+            "description": "Read execution plans instead of guessing at performance problems.",
+            "learningObjectives": [
+              "Use EXPLAIN.",
+              "Use EXPLAIN ANALYZE safely.",
+              "Compare estimated and actual row counts."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "EXPLAIN\nSELECT order_id, order_date\nFROM training.orders\nWHERE customer_id = 42\nORDER BY order_date DESC;\n\nEXPLAIN (ANALYZE, BUFFERS)\nSELECT order_id, order_date\nFROM training.orders\nWHERE customer_id = 42\nORDER BY order_date DESC;"
+              },
+              {
+                "type": "warning",
+                "text": "EXPLAIN ANALYZE executes the statement. Use caution with data-changing statements and production workloads."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-03",
+              "question": "What does EXPLAIN show?",
+              "options": [
+                "An execution plan",
+                "Only syntax errors",
+                "Table data",
+                "Password policy"
+              ],
+              "answer": "An execution plan",
+              "explanation": "EXPLAIN exposes the plan selected or proposed by the optimizer."
+            },
+            "summary": [
+              "Execution plans are evidence about optimizer choices.",
+              "A sequential scan is not automatically bad; context and data size matter."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Using EXPLAIN",
+                "url": "https://www.postgresql.org/docs/current/using-explain.html",
+                "type": "documentation"
+              },
+              {
+                "title": "MySQL EXPLAIN",
+                "url": "https://dev.mysql.com/doc/refman/8.4/en/using-explain.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-04",
+            "title": "Statistics, Sargability, and Query Rewrites",
+            "description": "Use measurements and planner evidence to refine SQL.",
+            "learningObjectives": [
+              "Explain why predicates can be easier or harder to optimize.",
+              "Understand the relationship between statistics and cardinality estimates.",
+              "Compare before/after plans instead of claiming unmeasured speedups."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "-- Range predicate that directly constrains the indexed column\nSELECT *\nFROM training.customers\nWHERE created_at >= TIMESTAMP '2026-01-01'\n  AND created_at <  TIMESTAMP '2026-02-01';\n\n-- May require an expression index in some systems\nSELECT *\nFROM training.customers\nWHERE LOWER(email) = 'user@example.com';"
+              },
+              {
+                "type": "paragraph",
+                "text": "Sargability is an optimizer-oriented concept: a predicate is easier to optimize when the search condition can use an available access path. Exact behavior depends on the DBMS, statistics, indexes, and query plan."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-04",
+              "question": "Why can LOWER(email) change index usage?",
+              "options": [
+                "The expression changes the searchable form of the column",
+                "Functions are forbidden",
+                "It removes the index",
+                "It converts email to JSON"
+              ],
+              "answer": "The expression changes the searchable form of the column",
+              "explanation": "An ordinary index on email does not automatically equal an index on LOWER(email); some systems support expression indexes for this use."
+            },
+            "summary": [
+              "Performance tuning is empirical.",
+              "Rewrite only when the plan or measurement provides evidence."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Using EXPLAIN",
+                "url": "https://www.postgresql.org/docs/current/using-explain.html",
+                "type": "documentation"
+              },
+              {
+                "title": "MySQL 8.4 Optimization",
+                "url": "https://dev.mysql.com/doc/refman/8.4/en/optimization.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Tune a Lowercase Email Lookup",
+            "level": "Advanced",
+            "description": "Use EXPLAIN to choose a suitable index for a case-normalized lookup.",
+            "problemStatement": "Compare the plan before and after adding an expression index for LOWER(email).",
+            "objectives": [
+              "Capture before/after plans.",
+              "Create an expression index.",
+              "Explain when the planner might still choose another plan."
+            ],
+            "requirements": [
+              "PostgreSQL recommended.",
+              "Match the index expression to the query predicate.",
+              "PostgreSQL index and EXPLAIN support."
+            ],
+            "hint": [
+              "Use representative data.",
+              "Do not invent performance numbers."
+            ],
+            "solutionCode": "CREATE INDEX idx_customers_lower_email\nON training.customers (LOWER(email));\n\nEXPLAIN (ANALYZE, BUFFERS)\nSELECT customer_id, customer_name\nFROM training.customers\nWHERE LOWER(email) = :email;",
+            "solutionExplanation": "The expression index matches the search expression. Whether it is chosen depends on table size, statistics, costs, and the actual data distribution; the assignment requires evidence from the plan rather than a fabricated benchmark."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "SQL Security and Safe Query Construction",
+        "description": "Protect SQL-driven systems with parameterization, least privilege, and controlled dynamic SQL.",
+        "lessons": [
+          {
+            "id": "lesson-10-01",
+            "title": "SQL Injection and Parameterization",
+            "description": "Understand SQL injection as a query-construction flaw and use parameterized queries as the primary defense for values.",
+            "learningObjectives": [
+              "Explain code/data separation in SQL queries.",
+              "Use bound parameters.",
+              "Recognize why escaping is a weaker primary strategy."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "-- Unsafe construction pattern for illustration only:\n-- SELECT ... WHERE user_name = '\" + input + \"';\n\n-- Safe value binding (placeholder syntax varies by driver):\nSELECT account_balance\nFROM user_data\nWHERE user_name = $1;"
+              },
+              {
+                "type": "warning",
+                "text": "Never concatenate untrusted input into SQL command text. Bind it as a parameter using the application driver."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-10-01",
+              "question": "What is the primary defense for untrusted SQL values?",
+              "options": [
+                "Parameterized/prepared queries",
+                "String concatenation",
+                "Disabling indexes",
+                "SELECT *"
+              ],
+              "answer": "Parameterized/prepared queries",
+              "explanation": "Parameterized interfaces keep data values separate from executable SQL structure."
+            },
+            "summary": [
+              "Parameterization keeps SQL structure separate from user data.",
+              "OWASP recommends parameterized queries as the primary defense."
+            ],
+            "resources": [
+              {
+                "title": "OWASP SQL Injection Prevention",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+                "type": "documentation"
+              },
+              {
+                "title": "OWASP Query Parameterization",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-02",
+            "title": "Roles, Privileges, and Least Privilege",
+            "description": "Limit database capabilities according to workload needs.",
+            "learningObjectives": [
+              "Explain ownership and GRANT/REVOKE.",
+              "Design a read-only role.",
+              "Use views as narrow interfaces where appropriate."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE ROLE report_reader;\nGRANT USAGE ON SCHEMA training TO report_reader;\nGRANT SELECT ON training.customer_order_summary TO report_reader;"
+              },
+              {
+                "type": "warning",
+                "text": "Do not put real passwords in course code or source control. Use an external secret mechanism for credentials."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-10-02",
+              "question": "What is least privilege?",
+              "options": [
+                "Every user gets admin rights",
+                "Each identity gets only the access needed for its role",
+                "All tables are public",
+                "Passwords are optional"
+              ],
+              "answer": "Each identity gets only the access needed for its role",
+              "explanation": "Least privilege limits unnecessary permissions and reduces impact from mistakes or compromise."
+            },
+            "summary": [
+              "Least privilege reduces blast radius.",
+              "Grant access to the narrowest object set that satisfies the workload."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Privileges",
+                "url": "https://www.postgresql.org/docs/current/ddl-priv.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Roles",
+                "url": "https://www.postgresql.org/docs/current/user-manag.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-03",
+            "title": "Safe Dynamic SQL and Identifier Allow-Lists",
+            "description": "Handle cases where query structure must vary without treating untrusted identifiers as safe data values.",
+            "learningObjectives": [
+              "Distinguish values from identifiers.",
+              "Design allow-lists for sorting/column choices.",
+              "Explain why arbitrary identifier concatenation is risky."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "-- Example fixed choices chosen by application logic:\n-- \"name\" -> customer_name\n-- \"city\" -> city\n-- \"newest\" -> created_at DESC\n\nSELECT customer_id, customer_name, city, created_at\nFROM training.customers\nORDER BY created_at DESC;"
+              },
+              {
+                "type": "paragraph",
+                "text": "Bind parameters normally represent values. Table/column names and sort-direction syntax often require controlled SQL construction or database-specific identifier APIs; OWASP recommends allow-list validation for such structural inputs."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-10-03",
+              "question": "Why can’t a normal bind parameter replace a column name?",
+              "options": [
+                "Bind parameters normally represent values, not SQL identifiers",
+                "Columns are not part of SQL",
+                "Columns must be numbers",
+                "Parameters only work in DELETE"
+              ],
+              "answer": "Bind parameters normally represent values, not SQL identifiers",
+              "explanation": "The prepared-statement interface binds data values; structural identifiers require separate safe handling."
+            },
+            "summary": [
+              "Dynamic SQL should separate data values from SQL structure.",
+              "Allow-listing keeps structural variation constrained to known-good fragments."
+            ],
+            "resources": [
+              {
+                "title": "OWASP SQL Injection Prevention",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-10-01",
+            "title": "Secure a Customer Search Query",
+            "level": "Intermediate",
+            "description": "Replace unsafe dynamic SQL with parameters and a fixed sort allow-list.",
+            "problemStatement": "A search endpoint accepts a name fragment and a sort option; redesign it without concatenating raw user input into SQL.",
+            "objectives": [
+              "Bind the search value.",
+              "Allow-list sort options.",
+              "Keep SQL structure controlled."
+            ],
+            "requirements": [
+              "SQL driver with bound parameters.",
+              "Never let raw user text become an identifier or SQL fragment.",
+              "Relational database and application client."
+            ],
+            "hint": [
+              "The sort option must be mapped by application code to one of a small set of known expressions."
+            ],
+            "solutionCode": "SELECT customer_id, customer_name, city, created_at\nFROM training.customers\nWHERE customer_name ILIKE '%' || :name_fragment || '%'\nORDER BY created_at DESC;",
+            "solutionExplanation": "The name fragment is a bound value. The application maps the requested sort option to a predetermined ORDER BY fragment instead of concatenating the raw option."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Testing, Recovery, and Large-Table Design",
+        "description": "Make SQL work repeatable and operationally safer with testing, recovery practices, and physical design awareness.",
+        "lessons": [
+          {
+            "id": "lesson-11-01",
+            "title": "Repeatable SQL Testing",
+            "description": "Test database behavior with controlled fixtures and assertions.",
+            "learningObjectives": [
+              "Create deterministic fixtures.",
+              "Test positive and negative cases.",
+              "Use transactions/disposable schemas for cleanup."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "BEGIN;\nINSERT INTO training.products(product_id, product_name, category, unit_price)\nVALUES (9901, 'Test Product', 'Testing', 10.00);\n\nSELECT CASE WHEN COUNT(*) = 1 THEN 'PASS' ELSE 'FAIL' END AS result\nFROM training.products\nWHERE product_id = 9901;\nROLLBACK;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Test constraints with invalid input, not only successful paths.",
+                  "Assert expected rows/values instead of only checking for absence of exceptions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-11-01",
+              "question": "Why include negative constraint tests?",
+              "options": [
+                "To verify invalid states are rejected",
+                "To make all queries faster",
+                "To remove constraints",
+                "To create backups"
+              ],
+              "answer": "To verify invalid states are rejected",
+              "explanation": "Negative tests exercise the database rules that protect integrity."
+            },
+            "summary": [
+              "Repeatability is essential for useful database tests.",
+              "Failure cases verify that constraints actually protect the domain."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Tutorial",
+                "url": "https://www.postgresql.org/docs/current/tutorial-sql.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11-02",
+            "title": "Backup, Restore, and Migration Discipline",
+            "description": "Treat database recovery and schema evolution as operational engineering.",
+            "learningObjectives": [
+              "Explain logical backup at a high level.",
+              "Design ordered migrations.",
+              "Distinguish backup existence from verified recoverability."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "-- PostgreSQL command-line tooling (not SQL statements)\npg_dump -Fc training_db > training_db.dump\ncreatedb training_db_restore\npg_restore -d training_db_restore training_db.dump"
+              },
+              {
+                "type": "warning",
+                "text": "A backup is not a recovery plan until restore procedures are tested in an environment that resembles the target failure/recovery scenario."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-11-02",
+              "question": "What verifies that a backup is actually usable for recovery?",
+              "options": [
+                "Successful restore testing",
+                "The filename ending in .dump",
+                "Running SELECT 1",
+                "Creating another backup"
+              ],
+              "answer": "Successful restore testing",
+              "explanation": "A tested restore demonstrates that the backup can actually be used to recover the intended state."
+            },
+            "summary": [
+              "Migrations change state over time; backups support recovery.",
+              "Restore testing validates the recovery path."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Backup and Restore",
+                "url": "https://www.postgresql.org/docs/current/backup-dump.html",
+                "type": "documentation"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11-03",
+            "title": "Partitioning and Large-Table Design",
+            "description": "Recognize when partitioning can improve manageability and query behavior for large tables.",
+            "learningObjectives": [
+              "Explain range partitioning.",
+              "Choose a partition key from workload/lifecycle needs.",
+              "Distinguish partitioning from indexing and sharding."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "CREATE TABLE measurement (\n  measured_on DATE NOT NULL,\n  device_id INTEGER NOT NULL,\n  value NUMERIC(12,3) NOT NULL\n) PARTITION BY RANGE (measured_on);\n\nCREATE TABLE measurement_2026_01\nPARTITION OF measurement\nFOR VALUES FROM ('2026-01-01') TO ('2026-02-01');"
+              },
+              {
+                "type": "paragraph",
+                "text": "Partitioning creates one logical table with data distributed across partitions. It is especially useful when data lifecycle and query predicates naturally align with a partition key. It is not a universal performance solution."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-11-03",
+              "question": "What is a strong reason to partition time-oriented data?",
+              "options": [
+                "Align storage/lifecycle with the time dimension",
+                "Remove all constraints",
+                "Replace SQL with application code",
+                "Guarantee constant-time queries"
+              ],
+              "answer": "Align storage/lifecycle with the time dimension",
+              "explanation": "Partitioning can help when data lifecycle, retention, and access patterns align with the partition key."
+            },
+            "summary": [
+              "Partitioning is a physical data-layout choice.",
+              "Partition pruning and maintenance benefits depend on workload and design."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Partitioning",
+                "url": "https://www.postgresql.org/docs/current/ddl-partitioning.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-11-01",
+            "title": "Build a Repeatable SQL Regression Suite",
+            "level": "Advanced",
+            "description": "Create a database test script that validates key queries and integrity rules without leaving fixture data.",
+            "problemStatement": "The suite must insert controlled fixtures, assert expected results, test at least two invalid states, and leave no test rows afterward.",
+            "objectives": [
+              "Use deterministic data.",
+              "Cover success and failure paths.",
+              "Guarantee cleanup."
+            ],
+            "requirements": [
+              "Use expected-error checks in the surrounding test runner for statements that should fail.",
+              "PostgreSQL recommended; command-line or test-runner execution."
+            ],
+            "hint": [
+              "A transaction is useful for fixture isolation."
+            ],
+            "solutionCode": "BEGIN;\n\nINSERT INTO training.products(product_id, product_name, category, unit_price)\nVALUES (9901, 'Test Product', 'Testing', 10.00);\n\nSELECT CASE WHEN COUNT(*) = 1 THEN 'PASS' ELSE 'FAIL' END\nFROM training.products\nWHERE product_id = 9901;\n\n-- A separate test should expect this statement to fail:\n-- INSERT INTO training.products(product_id, product_name, category, unit_price)\n-- VALUES (9901, 'Duplicate', 'Testing', 20.00);\n\nROLLBACK;",
+            "solutionExplanation": "The transaction isolates the fixture. Expected-error checks should be handled by the test runner so that a deliberate constraint failure does not abort the whole test script unexpectedly."
+          }
+        ]
+      },
+      {
+        "id": "module-12",
+        "title": "Final Project: Library Lending Analytics Database",
+        "description": "A realistic SQL capstone that combines schema design, integrity, querying, analytics, security, and performance inspection. This is the final practical assessment and is assessed as one integrated project rather than separate difficulty-tier tasks.",
+        "lessons": [
+          {
+            "id": "lesson-12-01",
+            "title": "Capstone Build and Review",
+            "description": "Execute the full library lending system and defend the design choices in schema, queries, indexes, security, and testing.",
+            "learningObjectives": [
+              "Build the schema and load the fixture data.",
+              "Validate constraints with positive and negative tests.",
+              "Run and explain each report at its intended grain.",
+              "Interpret the EXPLAIN plan and connect it to index design.",
+              "Verify the reporting role has only required access.",
+              "Identify at least two PostgreSQL-specific features that would need review for portability."
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Implementation steps"
+              },
+              {
+                "type": "orderedList",
+                "items": [
+                  "Create a clean PostgreSQL database and run schema.sql.",
+                  "Load data.sql and verify row counts.",
+                  "Run constraint-failure tests without leaving invalid data.",
+                  "Execute reports.sql and document the result grain.",
+                  "Capture the EXPLAIN output for the open-loan query.",
+                  "Run audit.sql in a controlled lab and verify read-only access.",
+                  "Write a portability note comparing the project to another SQL implementation."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "This capstone builds a library lending system as a relational SQL design. The schema demonstrates identity keys, UNIQUE/CHECK constraints, foreign keys, defaults, composite indexes, a PostgreSQL partial index, and clear entity/relationship grain.\n\nThe reporting layer combines joins, a LEFT JOIN, CTEs, EXISTS, aggregation, and a window ranking query. The open-loan partial index is tied to a real reporting predicate and is inspected with EXPLAIN rather than justified by an invented benchmark. The reporting role and view demonstrate least privilege and a narrow read interface.\n\nThe project intentionally labels PostgreSQL-specific features: GENERATED ALWAYS AS IDENTITY, FILTER, partial indexes, and EXPLAIN (ANALYZE, BUFFERS). Portability review is part of the assessment so students learn to distinguish SQL concepts from DBMS-specific syntax."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-12-01",
+                "title": "Build and Audit the Library Database",
+                "description": "Execute the capstone end-to-end and review the technical decisions.",
+                "steps": [
+                  "Run schema.sql.",
+                  "Load data.sql.",
+                  "Run reports.sql.",
+                  "Exercise constraint failures in a controlled transaction/test harness.",
+                  "Run audit.sql in a lab database.",
+                  "Capture and explain the execution plan.",
+                  "Record portability considerations."
+                ],
+                "solution": "{\n  \"schema.sql\": \"CREATE SCHEMA IF NOT EXISTS library;\\n\\nCREATE TABLE library.member (\\n  member_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\\n  full_name VARCHAR(120) NOT NULL,\\n  email VARCHAR(255) NOT NULL UNIQUE,\\n  joined_on DATE NOT NULL DEFAULT CURRENT_DATE,\\n  active BOOLEAN NOT NULL DEFAULT TRUE\\n);\\n\\nCREATE TABLE library.book (\\n  book_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\\n  isbn VARCHAR(20) NOT NULL UNIQUE,\\n  title VARCHAR(250) NOT NULL,\\n  category VARCHAR(80) NOT NULL,\\n  published_year INTEGER CHECK (published_year BETWEEN 1400 AND 2100),\\n  total_copies INTEGER NOT NULL CHECK (total_copies >= 0),\\n  available_copies INTEGER NOT NULL CHECK (available_copies BETWEEN 0 AND total_copies)\\n);\\n\\nCREATE TABLE library.loan (\\n  loan_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\\n  member_id INTEGER NOT NULL REFERENCES library.member(member_id),\\n  book_id INTEGER NOT NULL REFERENCES library.book(book_id),\\n  loaned_on DATE NOT NULL DEFAULT CURRENT_DATE,\\n  due_on DATE NOT NULL,\\n  returned_on DATE,\\n  CHECK (due_on >= loaned_on),\\n  CHECK (returned_on IS NULL OR returned_on >= loaned_on)\\n);\\n\\nCREATE INDEX idx_loan_member_due\\n  ON library.loan (member_id, due_on DESC);\\n\\nCREATE INDEX idx_loan_open_book\\n  ON library.loan (book_id)\\n  WHERE returned_on IS NULL;\\n\",\n  \"data.sql\": \"INSERT INTO library.member(full_name, email)\\nVALUES\\n('Member One', 'member1@example.test'),\\n('Member Four', 'member2@example.test'),\\n('Member Three', 'member3@example.test');\\n\\nINSERT INTO library.book(isbn, title, category, published_year, total_copies, available_copies)\\nVALUES\\n('9780000000001', 'Relational Database Design', 'Database', 2022, 4, 3),\\n('9780000000002', 'SQL Query Patterns', 'Database', 2024, 5, 5),\\n('9780000000003', 'Systems Thinking', 'Technology', 2021, 3, 2),\\n('9780000000004', 'Data Modeling in Practice', 'Database', 2023, 2, 2);\\n\\nINSERT INTO library.loan(member_id, book_id, loaned_on, due_on, returned_on)\\nVALUES\\n(1,1,DATE '2026-01-10',DATE '2026-01-24',DATE '2026-01-20'),\\n(1,2,DATE '2026-02-03',DATE '2026-02-17',NULL),\\n(2,1,DATE '2026-02-05',DATE '2026-02-19',NULL),\\n(2,3,DATE '2026-01-12',DATE '2026-01-26',DATE '2026-01-25'),\\n(3,4,DATE '2026-02-01',DATE '2026-02-15',NULL);\\n\",\n  \"reports.sql\": \"SELECT l.loan_id, m.full_name, b.title, l.loaned_on, l.due_on,\\n       CURRENT_DATE - l.due_on AS days_from_due\\nFROM library.loan l\\nJOIN library.member m ON m.member_id = l.member_id\\nJOIN library.book b ON b.book_id = l.book_id\\nWHERE l.returned_on IS NULL\\nORDER BY l.due_on, l.loan_id;\\n\\nWITH member_stats AS (\\n  SELECT m.member_id, m.full_name,\\n         COUNT(l.loan_id) AS total_loans,\\n         COUNT(*) FILTER (WHERE l.returned_on IS NULL) AS open_loans,\\n         MAX(l.loaned_on) AS last_loan_date\\n  FROM library.member m\\n  LEFT JOIN library.loan l ON l.member_id = m.member_id\\n  GROUP BY m.member_id, m.full_name\\n)\\nSELECT * FROM member_stats\\nORDER BY total_loans DESC, member_id;\\n\\nWITH book_counts AS (\\n  SELECT b.book_id, b.title, COUNT(l.loan_id) AS loan_count\\n  FROM library.book b\\n  LEFT JOIN library.loan l ON l.book_id = b.book_id\\n  GROUP BY b.book_id, b.title\\n)\\nSELECT title, loan_count,\\n       DENSE_RANK() OVER (ORDER BY loan_count DESC) AS demand_rank\\nFROM book_counts\\nORDER BY demand_rank, title;\\n\\nSELECT b.book_id, b.title\\nFROM library.book b\\nWHERE NOT EXISTS (\\n  SELECT 1 FROM library.loan l WHERE l.book_id = b.book_id\\n)\\nORDER BY b.book_id;\\n\\nEXPLAIN (ANALYZE, BUFFERS)\\nSELECT loan_id, member_id, book_id, due_on\\nFROM library.loan\\nWHERE returned_on IS NULL AND book_id = 1;\\n\",\n  \"audit.sql\": \"CREATE ROLE library_reporter;\\nGRANT USAGE ON SCHEMA library TO library_reporter;\\nCREATE VIEW library.member_activity AS\\nSELECT m.member_id,\\n       m.full_name,\\n       COUNT(l.loan_id) AS loan_count,\\n       MAX(l.loaned_on) AS last_loan_date\\nFROM library.member m\\nLEFT JOIN library.loan l ON l.member_id = m.member_id\\nGROUP BY m.member_id, m.full_name;\\n\\nGRANT SELECT ON library.member_activity TO library_reporter;\\n\"\n}",
+                "output": "The result is a working library schema, populated data, operational/analytical reports, an inspectable execution plan, and a narrow reporting role/view."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-12-01",
+              "question": "Which artifact best demonstrates performance reasoning?",
+              "options": [
+                "Changing every type to TEXT",
+                "Using EXPLAIN to connect the query plan to index design",
+                "Removing all constraints",
+                "Replacing joins with loops"
+              ],
+              "answer": "Using EXPLAIN to connect the query plan to index design",
+              "explanation": "Performance work should be based on optimizer evidence and representative workload data."
+            },
+            "summary": [
+              "The capstone integrates the course’s core SQL skills in one coherent domain.",
+              "A successful submission includes both working SQL and an explanation of why the design is appropriate."
+            ],
+            "resources": [
+              {
+                "title": "PostgreSQL Constraints",
+                "url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Queries",
+                "url": "https://www.postgresql.org/docs/current/queries.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Window Functions",
+                "url": "https://www.postgresql.org/docs/current/functions-window.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Indexes",
+                "url": "https://www.postgresql.org/docs/current/indexes.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL EXPLAIN",
+                "url": "https://www.postgresql.org/docs/current/using-explain.html",
+                "type": "documentation"
+              },
+              {
+                "title": "PostgreSQL Privileges",
+                "url": "https://www.postgresql.org/docs/current/ddl-priv.html",
+                "type": "documentation"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Library Lending Analytics Database",
+          "description": "A production-style SQL capstone in a library lending domain.",
+          "conceptsCovered": [
+            "Relational modeling",
+            "Keys and constraints",
+            "DML",
+            "Joins",
+            "CTEs",
+            "EXISTS",
+            "Aggregates",
+            "Window functions",
+            "Indexes",
+            "EXPLAIN",
+            "Views",
+            "Privileges",
+            "Testing",
+            "Portability"
+          ],
+          "steps": [
+            "Create schema",
+            "Load fixtures",
+            "Validate integrity",
+            "Run reports",
+            "Inspect EXPLAIN",
+            "Verify least privilege",
+            "Write portability review"
+          ],
+          "code": {
+            "schema.sql": "CREATE SCHEMA IF NOT EXISTS library;\n\nCREATE TABLE library.member (\n  member_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  full_name VARCHAR(120) NOT NULL,\n  email VARCHAR(255) NOT NULL UNIQUE,\n  joined_on DATE NOT NULL DEFAULT CURRENT_DATE,\n  active BOOLEAN NOT NULL DEFAULT TRUE\n);\n\nCREATE TABLE library.book (\n  book_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  isbn VARCHAR(20) NOT NULL UNIQUE,\n  title VARCHAR(250) NOT NULL,\n  category VARCHAR(80) NOT NULL,\n  published_year INTEGER CHECK (published_year BETWEEN 1400 AND 2100),\n  total_copies INTEGER NOT NULL CHECK (total_copies >= 0),\n  available_copies INTEGER NOT NULL CHECK (available_copies BETWEEN 0 AND total_copies)\n);\n\nCREATE TABLE library.loan (\n  loan_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  member_id INTEGER NOT NULL REFERENCES library.member(member_id),\n  book_id INTEGER NOT NULL REFERENCES library.book(book_id),\n  loaned_on DATE NOT NULL DEFAULT CURRENT_DATE,\n  due_on DATE NOT NULL,\n  returned_on DATE,\n  CHECK (due_on >= loaned_on),\n  CHECK (returned_on IS NULL OR returned_on >= loaned_on)\n);\n\nCREATE INDEX idx_loan_member_due\n  ON library.loan (member_id, due_on DESC);\n\nCREATE INDEX idx_loan_open_book\n  ON library.loan (book_id)\n  WHERE returned_on IS NULL;\n",
+            "data.sql": "INSERT INTO library.member(full_name, email)\nVALUES\n('Member One', 'member1@example.test'),\n('Member Four', 'member2@example.test'),\n('Member Three', 'member3@example.test');\n\nINSERT INTO library.book(isbn, title, category, published_year, total_copies, available_copies)\nVALUES\n('9780000000001', 'Relational Database Design', 'Database', 2022, 4, 3),\n('9780000000002', 'SQL Query Patterns', 'Database', 2024, 5, 5),\n('9780000000003', 'Systems Thinking', 'Technology', 2021, 3, 2),\n('9780000000004', 'Data Modeling in Practice', 'Database', 2023, 2, 2);\n\nINSERT INTO library.loan(member_id, book_id, loaned_on, due_on, returned_on)\nVALUES\n(1,1,DATE '2026-01-10',DATE '2026-01-24',DATE '2026-01-20'),\n(1,2,DATE '2026-02-03',DATE '2026-02-17',NULL),\n(2,1,DATE '2026-02-05',DATE '2026-02-19',NULL),\n(2,3,DATE '2026-01-12',DATE '2026-01-26',DATE '2026-01-25'),\n(3,4,DATE '2026-02-01',DATE '2026-02-15',NULL);\n",
+            "reports.sql": "SELECT l.loan_id, m.full_name, b.title, l.loaned_on, l.due_on,\n       CURRENT_DATE - l.due_on AS days_from_due\nFROM library.loan l\nJOIN library.member m ON m.member_id = l.member_id\nJOIN library.book b ON b.book_id = l.book_id\nWHERE l.returned_on IS NULL\nORDER BY l.due_on, l.loan_id;\n\nWITH member_stats AS (\n  SELECT m.member_id, m.full_name,\n         COUNT(l.loan_id) AS total_loans,\n         COUNT(*) FILTER (WHERE l.returned_on IS NULL) AS open_loans,\n         MAX(l.loaned_on) AS last_loan_date\n  FROM library.member m\n  LEFT JOIN library.loan l ON l.member_id = m.member_id\n  GROUP BY m.member_id, m.full_name\n)\nSELECT * FROM member_stats\nORDER BY total_loans DESC, member_id;\n\nWITH book_counts AS (\n  SELECT b.book_id, b.title, COUNT(l.loan_id) AS loan_count\n  FROM library.book b\n  LEFT JOIN library.loan l ON l.book_id = b.book_id\n  GROUP BY b.book_id, b.title\n)\nSELECT title, loan_count,\n       DENSE_RANK() OVER (ORDER BY loan_count DESC) AS demand_rank\nFROM book_counts\nORDER BY demand_rank, title;\n\nSELECT b.book_id, b.title\nFROM library.book b\nWHERE NOT EXISTS (\n  SELECT 1 FROM library.loan l WHERE l.book_id = b.book_id\n)\nORDER BY b.book_id;\n\nEXPLAIN (ANALYZE, BUFFERS)\nSELECT loan_id, member_id, book_id, due_on\nFROM library.loan\nWHERE returned_on IS NULL AND book_id = 1;\n",
+            "audit.sql": "CREATE ROLE library_reporter;\nGRANT USAGE ON SCHEMA library TO library_reporter;\nCREATE VIEW library.member_activity AS\nSELECT m.member_id,\n       m.full_name,\n       COUNT(l.loan_id) AS loan_count,\n       MAX(l.loaned_on) AS last_loan_date\nFROM library.member m\nLEFT JOIN library.loan l ON l.member_id = m.member_id\nGROUP BY m.member_id, m.full_name;\n\nGRANT SELECT ON library.member_activity TO library_reporter;\n"
+          },
+          "explanation": "This capstone builds a library lending system as a relational SQL design. The schema demonstrates identity keys, UNIQUE/CHECK constraints, foreign keys, defaults, composite indexes, a PostgreSQL partial index, and clear entity/relationship grain.\n\nThe reporting layer combines joins, a LEFT JOIN, CTEs, EXISTS, aggregation, and a window ranking query. The open-loan partial index is tied to a real reporting predicate and is inspected with EXPLAIN rather than justified by an invented benchmark. The reporting role and view demonstrate least privilege and a narrow read interface.\n\nThe project intentionally labels PostgreSQL-specific features: GENERATED ALWAYS AS IDENTITY, FILTER, partial indexes, and EXPLAIN (ANALYZE, BUFFERS). Portability review is part of the assessment so students learn to distinguish SQL concepts from DBMS-specific syntax."
+        }
+      }
+    ]
+  }
+}

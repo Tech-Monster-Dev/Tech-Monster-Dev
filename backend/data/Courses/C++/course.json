@@ -1,0 +1,2682 @@
+{
+  "course": {
+    "id": "cpp-modern-complete",
+    "title": "C++",
+    "slug": "cpp",
+    "description": "A complete, practice-first C++ course that moves from language fundamentals and toolchains through object lifetime, RAII, OOP, the standard library, modern generic programming, error handling, concurrency, CMake, debugging, performance, secure coding, and a production-style capstone. The curriculum is intentionally centered on modern C++20 practices while introducing C++23 availability and C++20 modules with explicit toolchain caveats.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 72,
+    "prerequisites": [
+      "Basic computer literacy and comfort using a terminal or IDE.",
+      "Ability to read simple arithmetic and logical expressions.",
+      "No prior C++ knowledge is required."
+    ],
+    "learningOutcomes": [
+      "Compile and debug C++20 programs using GCC/Clang and explicit warning/debug flags.",
+      "Design classes with invariants, RAII, value semantics, and clear ownership.",
+      "Use standard containers, algorithms, ranges, smart pointers, and optional values appropriately.",
+      "Write constrained generic code with templates and concepts.",
+      "Handle file I/O, filesystem operations, exceptions, and time measurements robustly.",
+      "Write and debug concurrent C++ code with threads, futures, mutexes, atomics, and condition variables.",
+      "Organize multi-file applications with CMake and understand current C++20 module/toolchain considerations.",
+      "Measure performance and choose data structures based on complexity, locality, and evidence.",
+      "Apply defensive input validation and memory-safety practices.",
+      "Build, test, review, and explain a multi-file C++20 application using the standard library."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "C++ Foundations and Toolchains",
+        "description": "Build a reliable mental model of C++ source, translation, compilation, linking, standards, and the basic language surface.",
+        "lessons": [
+          {
+            "id": "m01-l01",
+            "title": "What C++ Is and Where It Fits",
+            "description": "Understand C++ as a compiled, multi-paradigm language and distinguish the language standard from a compiler implementation.",
+            "learningObjectives": [
+              "Explain the roles of source code, compiler, linker, executable, and runtime library.",
+              "Distinguish ISO C++ language rules from compiler-specific extensions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "C++ is specified by the ISO C++ standard, while GCC, Clang, and MSVC implement versions of that standard with varying feature coverage. The same source can therefore be portable C++ while compiler flags remain toolchain-specific."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Compiled does not mean “no runtime”; standard-library facilities and OS interactions still execute at runtime.",
+                  "A linker resolves references across translation units and libraries.",
+                  "Modern C++ means using language/library facilities introduced from C++11 onward with disciplined resource management."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m01-l01-quiz",
+              "question": "Which component resolves references between separately compiled translation units?",
+              "options": [
+                "Compiler preprocessor",
+                "Linker",
+                "Debugger",
+                "Package manager"
+              ],
+              "answer": "Linker",
+              "explanation": "The linker combines object files/libraries and resolves external symbol references."
+            },
+            "summary": [
+              "C++ separates language definition from implementation; build tools turn translation units into executables."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://gcc.gnu.org/projects/cxx-status.html"
+            ]
+          },
+          {
+            "id": "m01-l02",
+            "title": "Hello World, Translation Units, and main",
+            "description": "Write and build a minimal C++ program and understand the role of `main` and translation units.",
+            "learningObjectives": [
+              "Create a valid C++ program with a `main` function.",
+              "Explain why headers are included before declarations are used."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "#include <iostream>\n\nint main() {\n    std::cout << \"Hello, C++\\n\";\n    return 0;\n}"
+              },
+              {
+                "type": "paragraph",
+                "text": "Each `.cpp` source file is compiled as a translation unit after preprocessing. `main` is the program entry point for a hosted implementation. Returning from `main` is equivalent to returning from the initial invocation of `std::exit` with the same status."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer `\n` over flushing output with `std::endl` unless flushing is required.",
+                  "Avoid `using namespace std;` in headers."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p01-build",
+                "title": "Compile a Minimal Program",
+                "description": "Compile a minimal program with explicit standard and warning flags.",
+                "steps": [
+                  "Create `main.cpp` with a greeting and integer exit status.",
+                  "Compile with `g++ -std=c++20 -Wall -Wextra -Wpedantic main.cpp -o app`.",
+                  "Run `./app` and confirm the greeting appears."
+                ],
+                "solution": "g++ -std=c++20 -Wall -Wextra -Wpedantic main.cpp -o app",
+                "output": "The executable builds in C++20 mode with common warnings enabled and runs successfully."
+              }
+            ],
+            "quiz": {
+              "id": "m01-l02-quiz",
+              "question": "Which header provides std::cout?",
+              "options": [
+                "<string>",
+                "<vector>",
+                "<iostream>",
+                "<cstdio>"
+              ],
+              "answer": "<iostream>",
+              "explanation": "`std::cout` is declared by `<iostream>`."
+            },
+            "summary": [
+              "A small executable starts with `main`, uses library declarations from headers, and is compiled into a complete program."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m01-l03",
+            "title": "Variables, Fundamental Types, and Initialization",
+            "description": "Use fundamental types and modern initialization forms correctly.",
+            "learningObjectives": [
+              "Choose suitable fundamental types for common values.",
+              "Differentiate copy, direct, and list initialization and recognize narrowing in braced initialization."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "C++ has fundamental types such as `bool`, character types, integers, floating-point types, and `void`. Initialization is distinct from assignment: an object receives its initial value when its lifetime begins."
+              },
+              {
+                "type": "code",
+                "text": "int count{42};\ndouble ratio{0.75};\nchar grade{'A'};\nbool ready{true};"
+              },
+              {
+                "type": "warning",
+                "text": "Do not assume the size of `int`, `long`, or other implementation-defined types. Use `<cstdint>` fixed-width integers only when an exact width is actually needed."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m01-l03-quiz",
+              "question": "Why is `int x{3.14};` rejected on a conforming implementation?",
+              "options": [
+                "List initialization forbids narrowing conversions",
+                "int cannot store 3.14",
+                "double is unsupported",
+                "Braces only work for classes"
+              ],
+              "answer": "List initialization forbids narrowing conversions",
+              "explanation": "List initialization deliberately rejects narrowing conversions such as floating-point to integer."
+            },
+            "summary": [
+              "Initialization choices affect correctness; brace initialization is a strong default for preventing accidental narrowing."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m01-l04",
+            "title": "Expressions, Operators, and Control Flow",
+            "description": "Build deterministic programs with expressions, branching, and loops.",
+            "learningObjectives": [
+              "Use relational and logical operators safely.",
+              "Select `if`, `switch`, range-based `for`, `while`, or `do` based on control-flow needs."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "for (int value : values) {\n    if (value % 2 == 0) {\n        std::cout << value << \" is even\\n\";\n    }\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Short-circuiting: `&&` and `||` evaluate left-to-right and may avoid evaluating the right operand.",
+                  "`switch` works with integral, enumeration, and other supported switch condition types.",
+                  "Range-based `for` is usually clearer when iterating an entire range."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m01-l04-quiz",
+              "question": "What property of `&&` can prevent evaluation of its right operand?",
+              "options": [
+                "It is commutative",
+                "Short-circuit evaluation",
+                "Implicit conversion",
+                "Operator overloading"
+              ],
+              "answer": "Short-circuit evaluation",
+              "explanation": "If the left operand is false, the right operand of built-in `&&` is not evaluated."
+            },
+            "summary": [
+              "Control flow should express intent and avoid accidental fall-through or unsafe evaluation."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m01-l05",
+            "title": "Functions, Parameters, and Scope",
+            "description": "Define functions with clear interfaces and understand lexical scope.",
+            "learningObjectives": [
+              "Declare and define functions with value, reference, and const-reference parameters.",
+              "Explain scope and lifetime at a basic level."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "double average(const std::vector<int>& values) {\n    if (values.empty()) return 0.0;\n    int sum{};\n    for (int v : values) sum += v;\n    return static_cast<double>(sum) / values.size();\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Pass small trivially copied values by value; use references when copying is unnecessary.",
+                  "`const T&` allows read-only access without copying large objects.",
+                  "Keep scopes narrow so names and mutable state remain easy to reason about."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m01-l05-quiz",
+              "question": "Why is `const std::vector<int>&` commonly used for a read-only parameter?",
+              "options": [
+                "It copies the vector",
+                "It prevents modification and avoids a copy",
+                "It always moves the vector",
+                "It makes the vector global"
+              ],
+              "answer": "It prevents modification and avoids a copy",
+              "explanation": "A const reference can bind to the caller’s object without making a container copy and prevents mutation through that reference."
+            },
+            "summary": [
+              "Good function interfaces communicate ownership, mutability, and cost."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m01-t01",
+            "title": "Build a Standards-Aware CLI",
+            "level": "Easy",
+            "description": "Create a tiny command-line program that reports a value supplied by the user and uses a selected C++ standard mode.",
+            "problemStatement": "Your program should read an integer and print whether it is positive, negative, or zero. Build it in C++20 mode and document the exact compiler command you used.",
+            "objectives": [
+              "Read and validate one integer from standard input.",
+              "Implement a three-way branch.",
+              "Compile explicitly with `-std=c++20` and warnings enabled."
+            ],
+            "requirements": [
+              "A C++20-capable compiler such as GCC or Clang",
+              "A shell/terminal"
+            ],
+            "hint": "Keep input handling simple: extract into `int`, check stream state, then branch on `< 0`, `> 0`, or equality.",
+            "solutionCode": "#include <iostream>\n\nint main() {\n    int value{};\n    if (!(std::cin >> value)) {\n        std::cerr << \"Invalid integer\\n\";\n        return 1;\n    }\n    if (value < 0) std::cout << \"negative\\n\";\n    else if (value > 0) std::cout << \"positive\\n\";\n    else std::cout << \"zero\\n\";\n}\n",
+            "solutionExplanation": "The program uses formatted extraction, checks failure, and performs an exhaustive three-way classification. GCC/Clang can compile it with `-std=c++20 -Wall -Wextra -pedantic`."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Object Lifetime, References, and RAII",
+        "description": "Master C++ lifetime rules, references, pointers, const-correctness, and RAII before using dynamic memory or advanced abstractions.",
+        "lessons": [
+          {
+            "id": "m02-l01",
+            "title": "References and const-correctness",
+            "description": "Use lvalue references, const references, and references as non-owning aliases.",
+            "learningObjectives": [
+              "Explain reference binding and lifetime basics.",
+              "Design function parameters that communicate mutation and read-only access."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "void increment(int& value) { ++value; }\nvoid print(const std::string& text) { std::cout << text << \"\\n\"; }"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A reference is an alias; it is not a reseatable owning handle.",
+                  "`const` on a reference parameter protects the referred object through that interface.",
+                  "Avoid returning references to local automatic objects."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l01-quiz",
+              "question": "Which function parameter most clearly communicates read-only access without copying a large string?",
+              "options": [
+                "std::string",
+                "std::string&",
+                "const std::string&",
+                "std::string*"
+              ],
+              "answer": "const std::string&",
+              "explanation": "A const reference avoids a copy and prevents mutation through the parameter."
+            },
+            "summary": [
+              "References are non-owning interfaces; const-correctness communicates intent."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m02-l02",
+            "title": "Pointers, nullptr, and Ownership Thinking",
+            "description": "Use raw pointers for non-owning or low-level roles without confusing them with ownership.",
+            "learningObjectives": [
+              "Distinguish pointers from references.",
+              "Use `nullptr` and document ownership rather than encoding it implicitly in raw pointers."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "void print_if_present(const int* value) {\n    if (value != nullptr) {\n        std::cout << *value << \"\\n\";\n    }\n}"
+              },
+              {
+                "type": "warning",
+                "text": "A raw pointer can represent an optional/non-owning relationship, but modern C++ generally prefers RAII ownership types such as `std::unique_ptr` for dynamically owned objects."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l02-quiz",
+              "question": "What is the type-safe null pointer literal in modern C++?",
+              "options": [
+                "NULL",
+                "0",
+                "nullptr",
+                "false"
+              ],
+              "answer": "nullptr",
+              "explanation": "`nullptr` has type `std::nullptr_t` and participates in null pointer conversions without the integer-literal ambiguity of `0`."
+            },
+            "summary": [
+              "Pointer syntax is easy; correctly expressing ownership and lifetime is the harder skill."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m02-l03",
+            "title": "RAII and Deterministic Cleanup",
+            "description": "Understand Resource Acquisition Is Initialization and use destructors to manage resources reliably.",
+            "learningObjectives": [
+              "Explain why cleanup belongs in object lifetime management.",
+              "Identify resources that benefit from RAII: files, locks, sockets, memory, and custom handles."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "RAII binds a resource to an object lifetime: acquisition occurs during construction and release during destruction. This makes cleanup automatic across normal returns and exception paths."
+              },
+              {
+                "type": "code",
+                "text": "class FileGuard {\npublic:\n    explicit FileGuard(const char* path) : file_(std::fopen(path, \"r\")) {}\n    ~FileGuard() { if (file_) std::fclose(file_); }\n    FileGuard(const FileGuard&) = delete;\nprivate:\n    std::FILE* file_{};\n};"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A destructor should release what the object owns.",
+                  "RAII also underpins `std::lock_guard`, containers, smart pointers, and streams."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p02-raii",
+                "title": "Observe RAII Cleanup",
+                "description": "Use a scoped object to demonstrate deterministic cleanup even when an exception is thrown.",
+                "steps": [
+                  "Create a small class with a constructor message and destructor message.",
+                  "Throw an exception from inside a nested scope.",
+                  "Catch the exception outside the scope and observe destructor output before the catch."
+                ],
+                "solution": "#include <iostream>\n#include <stdexcept>\n\nstruct ScopeLog {\n    explicit ScopeLog(const char* name) : name(name) { std::cout << \"acquire \" << name << \"\n\"; }\n    ~ScopeLog() { std::cout << \"release \" << name << \"\n\"; }\n    const char* name;\n};\n\nint main() {\n    try {\n        ScopeLog log(\"resource\");\n        throw std::runtime_error(\"failure\");\n    } catch (const std::exception& ex) {\n        std::cout << ex.what() << \"\n\";\n    }\n}\n",
+                "output": "The destructor runs during stack unwinding before control reaches the catch handler, illustrating deterministic RAII cleanup."
+              }
+            ],
+            "quiz": {
+              "id": "m02-l03-quiz",
+              "question": "What is the central benefit of RAII?",
+              "options": [
+                "Manual cleanup is faster",
+                "Resource lifetime follows object lifetime",
+                "It removes destructors",
+                "It requires garbage collection"
+              ],
+              "answer": "Resource lifetime follows object lifetime",
+              "explanation": "RAII makes ownership and cleanup automatic through construction/destruction."
+            },
+            "summary": [
+              "RAII is foundational modern C++: make resource-owning types impossible to forget to clean up."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m02-l04",
+            "title": "Dynamic Memory and Smart Pointers",
+            "description": "Use smart pointers and understand when dynamic allocation is justified.",
+            "learningObjectives": [
+              "Choose `unique_ptr` for exclusive ownership and `shared_ptr` only when shared ownership is real.",
+              "Use `make_unique`/`make_shared` and recognize the cost of shared ownership."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "auto worker = std::make_unique<std::string>(\"job\");\nstd::cout << *worker << \"\\n\";"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "`std::unique_ptr<T>` represents exclusive ownership and is movable, not copyable.",
+                  "`std::shared_ptr<T>` maintains shared ownership with a control block and reference count.",
+                  "Avoid `shared_ptr` merely as a convenient nullable pointer."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l04-quiz",
+              "question": "Which smart pointer models exclusive ownership?",
+              "options": [
+                "shared_ptr",
+                "weak_ptr",
+                "unique_ptr",
+                "span"
+              ],
+              "answer": "unique_ptr",
+              "explanation": "`std::unique_ptr` is the standard exclusive-ownership smart pointer."
+            },
+            "summary": [
+              "Prefer automatic storage and standard containers first; use dynamic allocation when the lifetime or polymorphism requires it."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m02-l05",
+            "title": "Move Semantics and Value Categories",
+            "description": "Understand lvalues, rvalues, move construction, and why moves can transfer resources cheaply.",
+            "learningObjectives": [
+              "Distinguish lvalues from temporary/rvalue expressions at a practical level.",
+              "Explain why moving a resource-owning object can avoid deep copies."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::string a = \"large text\";\nstd::string b = std::move(a);"
+              },
+              {
+                "type": "warning",
+                "text": "`std::move` does not itself move anything; it casts an expression to an xvalue so a move operation can be selected. After moving from an object, it remains valid but its value is generally unspecified unless the type documents more."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m02-l05-quiz",
+              "question": "What does `std::move` primarily do?",
+              "options": [
+                "It immediately transfers memory",
+                "It deletes the source",
+                "It enables move operations by casting the expression",
+                "It copies into the destination"
+              ],
+              "answer": "It enables move operations by casting the expression",
+              "explanation": "`std::move` is a cast to an rvalue reference category; the selected move constructor/assignment performs the transfer."
+            },
+            "summary": [
+              "Move semantics optimize ownership transfer while preserving deterministic lifetime."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m02-t01",
+            "title": "RAII File Analyzer",
+            "level": "Intermediate",
+            "description": "Implement a small file-analysis class whose destructor closes its underlying file resource and whose copy operations are disabled.",
+            "problemStatement": "Build a class that opens a text file in its constructor, exposes a method to count lines, and closes the file automatically on destruction. Handle open failure with an exception.",
+            "objectives": [
+              "Implement constructor/destructor resource pairing.",
+              "Disable copying to prevent double-close.",
+              "Use exception-safe cleanup."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "A readable text file for testing"
+            ],
+            "hint": "The class should own a `std::FILE*` and ensure all successful constructor paths establish a valid invariant.",
+            "solutionCode": "#include <cstdio>\n#include <stdexcept>\n#include <string>\n\nclass LineCounter {\npublic:\n    explicit LineCounter(const char* path) : file_(std::fopen(path, \"r\")) {\n        if (!file_) throw std::runtime_error(\"cannot open file\");\n    }\n    ~LineCounter() { if (file_) std::fclose(file_); }\n    LineCounter(const LineCounter&) = delete;\n    LineCounter& operator=(const LineCounter&) = delete;\n\n    std::size_t count() {\n        std::size_t lines = 0;\n        int ch;\n        while ((ch = std::fgetc(file_)) != EOF) {\n            if (ch == '\\n') ++lines;\n        }\n        return lines;\n    }\nprivate:\n    std::FILE* file_{};\n};\n\nint main() {\n    LineCounter counter(\"input.txt\");\n    std::printf(\"lines=%zu\\n\", counter.count());\n}\n",
+            "solutionExplanation": "The class owns the C file handle and releases it deterministically in its destructor. Copying is disabled because duplicating the pointer would create two objects responsible for one resource."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Classes, Inheritance, and Polymorphism",
+        "description": "Design classes with invariants, value semantics, composition, inheritance, virtual dispatch, and special member functions.",
+        "lessons": [
+          {
+            "id": "m03-l01",
+            "title": "Classes, Invariants, and Encapsulation",
+            "description": "Design classes around valid state and minimal public interfaces.",
+            "learningObjectives": [
+              "Define private data and public operations.",
+              "State and enforce class invariants."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "class Temperature {\npublic:\n    explicit Temperature(double celsius) : celsius_(celsius) {\n        if (celsius < -273.15) throw std::invalid_argument(\"below absolute zero\");\n    }\n    double celsius() const noexcept { return celsius_; }\nprivate:\n    double celsius_;\n};"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "An invariant is a condition that should hold for every valid object.",
+                  "Keep mutation behind operations that preserve the invariant."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l01-quiz",
+              "question": "What is an invariant?",
+              "options": [
+                "A compiler option",
+                "A condition that remains true for valid object state",
+                "A namespace",
+                "A temporary value"
+              ],
+              "answer": "A condition that remains true for valid object state",
+              "explanation": "An invariant defines the state guarantee the class maintains."
+            },
+            "summary": [
+              "Encapsulation is strongest when callers cannot create invalid object states through the public interface."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m03-l02",
+            "title": "Constructors, Destructors, and Special Member Functions",
+            "description": "Control construction and destruction correctly, including copy/move behavior.",
+            "learningObjectives": [
+              "Recognize the rule of zero as a preferred design target.",
+              "Explain when copy/move constructors and assignment operators are generated or suppressed."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The rule of zero encourages classes to delegate resource management to standard RAII types so they need no custom destructor/copy/move operations. Custom special members become necessary when a class itself owns a non-standard resource."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Construct members in member-initializer lists.",
+                  "Destruction happens in reverse member/base construction order.",
+                  "A user-declared destructor can affect implicit move generation."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l02-quiz",
+              "question": "What does the rule of zero encourage?",
+              "options": [
+                "Manual new/delete everywhere",
+                "Owning raw pointers",
+                "Using RAII members so no custom special members are needed",
+                "Global mutable state"
+              ],
+              "answer": "Using RAII members so no custom special members are needed",
+              "explanation": "If members already manage resources correctly, the compiler-generated special members are usually the safest option."
+            },
+            "summary": [
+              "Prefer composition of RAII components over manually managed resources."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m03-l03",
+            "title": "Composition and Aggregation",
+            "description": "Model “has-a” relationships and decide when composition is better than inheritance.",
+            "learningObjectives": [
+              "Use member objects to express owned subcomponents.",
+              "Distinguish composition from inheritance-based reuse."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "class Engine {\npublic:\n    void start() {}\n};\n\nclass Car {\npublic:\n    void start() { engine_.start(); }\nprivate:\n    Engine engine_;\n};"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Composition keeps implementation dependencies explicit.",
+                  "Use inheritance primarily for substitutability, not as a generic code-reuse mechanism."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l03-quiz",
+              "question": "Which relationship is represented by a class containing an `Engine` member?",
+              "options": [
+                "is-a",
+                "has-a",
+                "uses-a-only",
+                "casts-to"
+              ],
+              "answer": "has-a",
+              "explanation": "A data member expresses that the containing object has an engine subobject."
+            },
+            "summary": [
+              "Composition is often a simpler and more robust default than inheritance."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m03-l04",
+            "title": "Virtual Functions and Polymorphism",
+            "description": "Use dynamic polymorphism safely and understand virtual destructors.",
+            "learningObjectives": [
+              "Create polymorphic interfaces with pure virtual functions.",
+              "Explain why a polymorphic base typically needs a virtual destructor."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "struct Shape {\n    virtual double area() const = 0;\n    virtual ~Shape() = default;\n};\n\nstruct Circle final : Shape {\n    explicit Circle(double r) : r_(r) {}\n    double area() const override { return 3.141592653589793 * r_ * r_; }\nprivate:\n    double r_;\n};"
+              },
+              {
+                "type": "warning",
+                "text": "Deleting a derived object through a base pointer requires an appropriate virtual destructor when the base is intended to be polymorphic."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l04-quiz",
+              "question": "Why is `virtual ~Shape() = default;` useful here?",
+              "options": [
+                "It allocates the object",
+                "It enables correct destruction through a base pointer",
+                "It makes area static",
+                "It disables inheritance"
+              ],
+              "answer": "It enables correct destruction through a base pointer",
+              "explanation": "A virtual destructor ensures the derived destructor is invoked when destruction occurs through a base interface."
+            },
+            "summary": [
+              "Dynamic polymorphism is a runtime substitution mechanism; use it only when the design benefits from it."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m03-l05",
+            "title": "Operator Overloading and User-Defined Types",
+            "description": "Overload operators only when the resulting syntax is natural and preserves intuitive semantics.",
+            "learningObjectives": [
+              "Implement a small arithmetic type with sensible operators.",
+              "Recognize when a named function is clearer than an overload."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "struct Point {\n    int x;\n    int y;\n};\n\nPoint operator+(Point a, Point b) {\n    return {a.x + b.x, a.y + b.y};\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Operators should preserve expected algebraic meaning where practical.",
+                  "Do not overload operators solely to create surprising DSL-like syntax."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m03-l05-quiz",
+              "question": "When is operator overloading a good fit?",
+              "options": [
+                "When it makes arbitrary APIs shorter",
+                "When syntax naturally expresses the type’s operation",
+                "Whenever a class exists",
+                "Only for pointers"
+              ],
+              "answer": "When syntax naturally expresses the type’s operation",
+              "explanation": "Point addition is naturally expressed as `a + b`; the operator is meaningful rather than surprising."
+            },
+            "summary": [
+              "Good user-defined types feel like coherent values rather than collections of unrelated methods."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m03-t01",
+            "title": "Polymorphic Shape Registry",
+            "level": "Intermediate",
+            "description": "Build a container of shapes behind a polymorphic interface and calculate total area.",
+            "problemStatement": "Create at least two concrete shape types derived from a common abstract `Shape`. Store them in `std::vector<std::unique_ptr<Shape>>` and print the total area.",
+            "objectives": [
+              "Use a pure virtual interface.",
+              "Use virtual destruction.",
+              "Store owning polymorphic objects safely with `unique_ptr`."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "<vector>",
+              "<memory>"
+            ],
+            "hint": "Use `std::unique_ptr<Shape>` so the vector owns each object and destruction remains automatic.",
+            "solutionCode": "#include <cmath>\n#include <iostream>\n#include <memory>\n#include <vector>\n\nstruct Shape {\n    virtual double area() const = 0;\n    virtual ~Shape() = default;\n};\nstruct Circle : Shape {\n    explicit Circle(double r) : r(r) {}\n    double area() const override { return 3.141592653589793 * r * r; }\n    double r;\n};\nstruct Rectangle : Shape {\n    Rectangle(double w, double h) : w(w), h(h) {}\n    double area() const override { return w * h; }\n    double w, h;\n};\n\nint main() {\n    std::vector<std::unique_ptr<Shape>> shapes;\n    shapes.push_back(std::make_unique<Circle>(2.0));\n    shapes.push_back(std::make_unique<Rectangle>(3.0, 4.0));\n    double total{};\n    for (const auto& shape : shapes) total += shape->area();\n    std::cout << total << '\\n';\n}\n",
+            "solutionExplanation": "The vector owns the polymorphic objects, while calls through `Shape` use virtual dispatch to select the derived `area` implementation."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "The Standard Library: Containers, Iterators, and Algorithms",
+        "description": "Use the standard containers and algorithms as primary building blocks instead of reinventing common data structures.",
+        "lessons": [
+          {
+            "id": "m04-l01",
+            "title": "std::vector and Sequence Containers",
+            "description": "Choose contiguous sequence storage and understand size/capacity and invalidation basics.",
+            "learningObjectives": [
+              "Use `std::vector` for dynamic contiguous sequences.",
+              "Explain the difference between size and capacity."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::vector<int> values;\nvalues.reserve(100);\nvalues.push_back(10);\nvalues.push_back(20);"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "`size()` counts elements; `capacity()` is the currently allocated storage capacity.",
+                  "Reallocation can invalidate pointers, references, and iterators to elements.",
+                  "Prefer `reserve` when a useful upper-bound size is known."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m04-l01-quiz",
+              "question": "What does `reserve(n)` primarily affect?",
+              "options": [
+                "Element values",
+                "Allocated capacity",
+                "The element type",
+                "Sort order"
+              ],
+              "answer": "Allocated capacity",
+              "explanation": "`reserve` requests capacity for at least `n` elements without changing the vector’s size."
+            },
+            "summary": [
+              "Vectors are the default sequence container for many workloads because contiguous storage works well with the CPU cache."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m04-l02",
+            "title": "Associative and Unordered Containers",
+            "description": "Choose maps and sets based on ordering and lookup requirements.",
+            "learningObjectives": [
+              "Use `std::map`/`std::set` when ordered keys matter.",
+              "Use `std::unordered_map`/`std::unordered_set` for hash-based average constant-time lookup when ordering is unnecessary."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::unordered_map<std::string, int> counts;\n++counts[\"error\"];"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Ordered associative containers are tree-based in the standard model and maintain key order.",
+                  "Unordered containers use hashing and have average constant-time lookup, with worst-case behavior depending on collisions.",
+                  "Hash quality and load factor can affect performance."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m04-l02-quiz",
+              "question": "Which container provides ordered unique keys?",
+              "options": [
+                "unordered_map",
+                "map",
+                "vector",
+                "deque"
+              ],
+              "answer": "map",
+              "explanation": "`std::map` maintains unique keys in order; `std::unordered_map` does not provide key ordering."
+            },
+            "summary": [
+              "Container choice should follow semantics first and measured performance second."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m04-l03",
+            "title": "Iterators and Range-Based Loops",
+            "description": "Traverse containers safely and understand iterator invalidation at a practical level.",
+            "learningObjectives": [
+              "Use iterator-based and range-based traversal.",
+              "Recognize invalidation after mutating operations."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "for (auto it = values.begin(); it != values.end(); ++it) {\n    std::cout << *it << \"\\n\";\n}\n\nfor (int value : values) {\n    std::cout << value << \"\\n\";\n}"
+              },
+              {
+                "type": "warning",
+                "text": "A mutating operation can invalidate iterators. The exact rules depend on the container and operation, so do not assume an iterator remains valid after insertion/erasure."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m04-l03-quiz",
+              "question": "Why are range-based `for` loops often preferred for read-only traversal?",
+              "options": [
+                "They disable iteration",
+                "They express traversal directly and reduce iterator boilerplate",
+                "They sort the container",
+                "They allocate a new container"
+              ],
+              "answer": "They express traversal directly and reduce iterator boilerplate",
+              "explanation": "Range-based loops use begin/end machinery while making simple traversal intent explicit."
+            },
+            "summary": [
+              "Iterator validity is a correctness issue, not merely a performance detail."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m04-l04",
+            "title": "Algorithms and Predicates",
+            "description": "Replace hand-written loops with composable standard algorithms.",
+            "learningObjectives": [
+              "Use algorithms such as `sort`, `find_if`, `count_if`, and `transform`.",
+              "Write predicates that express a reusable condition."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::sort(values.begin(), values.end());\nauto it = std::find_if(values.begin(), values.end(), [](int x) {\n    return x > 100;\n});"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Algorithms separate “what to do” from container traversal details.",
+                  "Lambdas are compact function objects and capture state when needed."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p03-stl-sort",
+                "title": "Rank Records with STL",
+                "description": "Sort a vector of records by a primary and secondary key using a lambda comparator.",
+                "steps": [
+                  "Define a record with `name` and `score`.",
+                  "Populate several records.",
+                  "Use `std::sort` with a comparator that orders higher scores first and names ascending on ties."
+                ],
+                "solution": "#include <algorithm>\n#include <iostream>\n#include <string>\n#include <vector>\n\nstruct Record { std::string name; int score; };\n\nint main() {\n    std::vector<Record> records{{\"A\", 90}, {\"C\", 90}, {\"B\", 95}};\n    std::sort(records.begin(), records.end(), [](const Record& a, const Record& b) {\n        if (a.score != b.score) return a.score > b.score;\n        return a.name < b.name;\n    });\n    for (const auto& r : records) std::cout << r.name << ' ' << r.score << '\n';\n}\n",
+                "output": "The output is deterministically ranked by descending score, then ascending name for equal scores."
+              }
+            ],
+            "quiz": {
+              "id": "m04-l04-quiz",
+              "question": "Which standard algorithm sorts a range in place?",
+              "options": [
+                "sort",
+                "merge_sort",
+                "order",
+                "arrange"
+              ],
+              "answer": "sort",
+              "explanation": "`std::sort` rearranges elements in the supplied range according to the chosen comparator."
+            },
+            "summary": [
+              "Prefer tested standard algorithms over custom loops when the standard abstraction directly matches the job."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m04-l05",
+            "title": "Strings, string_view, and Optional Values",
+            "description": "Handle textual data efficiently and represent absence explicitly.",
+            "learningObjectives": [
+              "Use `std::string` for ownership and `std::string_view` for non-owning read-only views.",
+              "Use `std::optional<T>` for functions where “no value” is a valid result."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::optional<int> parse_port(std::string_view text) {\n    int value{};\n    // parse and validate...\n    return value;\n}"
+              },
+              {
+                "type": "warning",
+                "text": "`std::string_view` does not own characters. Never return a view referring to a destroyed string or store a view beyond the owner’s lifetime."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m04-l05-quiz",
+              "question": "What is the key lifetime property of `std::string_view`?",
+              "options": [
+                "It owns its characters",
+                "It is always null-terminated",
+                "It is non-owning",
+                "It is immutable storage"
+              ],
+              "answer": "It is non-owning",
+              "explanation": "A string view is a lightweight view over existing character storage and does not extend that storage’s lifetime."
+            },
+            "summary": [
+              "Non-owning views can be efficient, but lifetime correctness is the caller’s responsibility."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m04-t01",
+            "title": "Log Frequency Analyzer",
+            "level": "Intermediate",
+            "description": "Read tokens from a text file and report the five most frequent tokens using STL containers and algorithms.",
+            "problemStatement": "Build a command-line analyzer that reads whitespace-delimited tokens, counts them with `std::unordered_map`, copies the counts to a vector, and sorts the results by frequency descending then token ascending.",
+            "objectives": [
+              "Use unordered_map for counting.",
+              "Use vector plus sort for deterministic ranking.",
+              "Handle an unreadable file gracefully."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "Text input file"
+            ],
+            "hint": "Convert the map entries to a vector of pairs before sorting; this separates counting from presentation order.",
+            "solutionCode": "#include <algorithm>\n#include <fstream>\n#include <iostream>\n#include <string>\n#include <unordered_map>\n#include <vector>\n\nint main(int argc, char** argv) {\n    if (argc != 2) { std::cerr << \"usage: analyzer <file>\\n\"; return 2; }\n    std::ifstream in(argv[1]);\n    if (!in) { std::cerr << \"cannot open file\\n\"; return 1; }\n    std::unordered_map<std::string, std::size_t> freq;\n    std::string token;\n    while (in >> token) ++freq[token];\n    std::vector<std::pair<std::string, std::size_t>> items(freq.begin(), freq.end());\n    std::sort(items.begin(), items.end(), [](const auto& a, const auto& b) {\n        if (a.second != b.second) return a.second > b.second;\n        return a.first < b.first;\n    });\n    const std::size_t limit = std::min<std::size_t>(5, items.size());\n    for (std::size_t i = 0; i < limit; ++i)\n        std::cout << items[i].first << ' ' << items[i].second << '\\n';\n}\n",
+            "solutionExplanation": "The hash map provides counting, while a vector provides a sortable snapshot for deterministic presentation. This is a common pattern when hash order is not appropriate for output."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Modern C++: Lambdas, Templates, Concepts, and Ranges",
+        "description": "Use modern generic programming facilities to build reusable, type-safe abstractions without unnecessary boilerplate.",
+        "lessons": [
+          {
+            "id": "m05-l01",
+            "title": "Lambdas and Captures",
+            "description": "Write lambdas for local algorithms and understand capture modes.",
+            "learningObjectives": [
+              "Use value and reference captures deliberately.",
+              "Identify when a lambda’s captured references can dangle."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "int threshold = 10;\nconst auto larger = [threshold](int x) { return x > threshold; };"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Capture by value copies the captured object into the closure object.",
+                  "Capture by reference aliases an existing object and therefore depends on its lifetime.",
+                  "Prefer explicit capture lists when readability or safety matters."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m05-l01-quiz",
+              "question": "Which capture can introduce lifetime risk if the referenced object dies first?",
+              "options": [
+                "By value",
+                "By reference",
+                "No capture",
+                "Captureless only"
+              ],
+              "answer": "By reference",
+              "explanation": "A reference capture does not extend the referenced object lifetime."
+            },
+            "summary": [
+              "Lambdas are objects with call operators; capture choices are part of their semantics."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m05-l02",
+            "title": "Function Objects and Callable Design",
+            "description": "Understand callable objects, `std::function`, and when templates are preferable to type erasure.",
+            "learningObjectives": [
+              "Pass generic callables into functions.",
+              "Explain the trade-off between templated callables and `std::function`."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "template <typename F>\nint count_if_positive(const std::vector<int>& values, F pred) {\n    int count{};\n    for (int v : values) if (pred(v)) ++count;\n    return count;\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A function template can preserve the exact callable type and often optimize well.",
+                  "`std::function` is a type-erased wrapper that can store many callable types behind a single interface."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m05-l02-quiz",
+              "question": "Why might a template be preferable to `std::function` in a hot generic algorithm?",
+              "options": [
+                "Templates always allocate",
+                "Templates can preserve the concrete callable type",
+                "std::function cannot call lambdas",
+                "Templates disable optimization"
+              ],
+              "answer": "Templates can preserve the concrete callable type",
+              "explanation": "Templates allow the compiler to see the callable type directly, enabling inlining and avoiding type-erasure overhead when applicable."
+            },
+            "summary": [
+              "Use the simplest abstraction that meets the interface and performance requirements."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m05-l03",
+            "title": "Templates and Generic Programming",
+            "description": "Write type-parameterized functions and classes with correct constraints and value semantics.",
+            "learningObjectives": [
+              "Create function and class templates.",
+              "Understand dependent names and basic template instantiation."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "template <typename T>\nT clamp_value(T value, T low, T high) {\n    if (value < low) return low;\n    if (high < value) return high;\n    return value;\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Templates are instantiated with concrete types when needed.",
+                  "Generic code should rely on documented operations, not accidental properties of a type."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m05-l03-quiz",
+              "question": "What is the main purpose of a template?",
+              "options": [
+                "Runtime reflection",
+                "Compile-time generation of type-generic code",
+                "Automatic memory cleanup",
+                "A replacement for namespaces"
+              ],
+              "answer": "Compile-time generation of type-generic code",
+              "explanation": "Templates let the compiler instantiate code for concrete types and values."
+            },
+            "summary": [
+              "Generic programming shifts reusable behavior into compile-time type relationships."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m05-l04",
+            "title": "Concepts and Constraints",
+            "description": "Constrain templates so errors are local, readable, and semantically meaningful.",
+            "learningObjectives": [
+              "Use standard concepts such as `std::totally_ordered` or define a simple custom concept.",
+              "Explain why constraints improve template diagnostics and interfaces."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "template <typename T>\nconcept Addable = requires(T a, T b) { a + b; };\n\ntemplate <Addable T>\nT add(T a, T b) { return a + b; }"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Concepts describe requirements on template arguments.",
+                  "Constraints participate in overload resolution and can make unsupported calls fail earlier and more clearly."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m05-l04-quiz",
+              "question": "What is a concept primarily used for?",
+              "options": [
+                "Dynamic allocation",
+                "Constraining template arguments",
+                "File I/O",
+                "Thread scheduling"
+              ],
+              "answer": "Constraining template arguments",
+              "explanation": "A concept specifies requirements that template arguments must satisfy."
+            },
+            "summary": [
+              "Concepts turn informal generic assumptions into explicit interfaces."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m05-l05",
+            "title": "Ranges and Views",
+            "description": "Use C++20 ranges where they make pipelines clearer while respecting view lifetime and laziness.",
+            "learningObjectives": [
+              "Compose range operations such as filtering and transformation.",
+              "Explain that many views are lazy and non-owning."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "auto evens = values\n    | std::views::filter([](int x) { return x % 2 == 0; })\n    | std::views::transform([](int x) { return x * 2; });"
+              },
+              {
+                "type": "warning",
+                "text": "Views commonly refer to an underlying range rather than owning elements. Keep the underlying range alive for as long as the view is used."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m05-l05-quiz",
+              "question": "What is a key property of many range views?",
+              "options": [
+                "They always copy all elements",
+                "They are lazy/non-owning adaptors",
+                "They require a database",
+                "They sort automatically"
+              ],
+              "answer": "They are lazy/non-owning adaptors",
+              "explanation": "Many standard views describe transformations without eagerly materializing a new container."
+            },
+            "summary": [
+              "Ranges improve composability, but view lifetime and evaluation timing remain important."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m05-t01",
+            "title": "Constrained Generic Statistics",
+            "level": "Advanced",
+            "description": "Create a reusable statistics function that accepts any range of values satisfying a suitable numeric constraint.",
+            "problemStatement": "Implement a templated mean function constrained so it accepts values that can be converted to `double`. Demonstrate it with `std::vector<int>` and `std::array<float, 4>`.",
+            "objectives": [
+              "Use a custom concept or `std::convertible_to`.",
+              "Avoid accidental integral-division truncation.",
+              "Return an optional for empty input."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "<concepts>",
+              "<ranges> or a standard container"
+            ],
+            "hint": "Constrain on convertibility to double and cast each value before summation.",
+            "solutionCode": "#include <array>\n#include <concepts>\n#include <iostream>\n#include <optional>\n#include <vector>\n\ntemplate <typename T>\nconcept MeanValue = std::convertible_to<T, double>;\n\ntemplate <std::ranges::input_range R>\nrequires MeanValue<std::ranges::range_value_t<R>>\nstd::optional<double> mean(R&& range) {\n    double sum{};\n    std::size_t count{};\n    for (auto&& value : range) {\n        sum += static_cast<double>(value);\n        ++count;\n    }\n    if (count == 0) return std::nullopt;\n    return sum / static_cast<double>(count);\n}\n\nint main() {\n    std::vector<int> a{1,2,3,4};\n    std::array<float,4> b{2.5f,3.5f,4.5f,5.5f};\n    std::cout << *mean(a) << \"\\n\" << *mean(b) << \"\\n\";\n}\n",
+            "solutionExplanation": "The function constrains range element values to types convertible to double, accumulates in floating-point, and reports an empty range with `std::nullopt`."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Errors, Files, Time, and Program Boundaries",
+        "description": "Handle exceptional conditions, streams, filesystem operations, and time values in a predictable and testable way.",
+        "lessons": [
+          {
+            "id": "m06-l01",
+            "title": "Exceptions and Strong Error Handling",
+            "description": "Use exceptions for exceptional failure and preserve object invariants across failed operations.",
+            "learningObjectives": [
+              "Throw and catch by value/reference appropriately.",
+              "Distinguish recoverable input errors from programming bugs."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "double divide(double a, double b) {\n    if (b == 0.0) throw std::invalid_argument(\"division by zero\");\n    return a / b;\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Catch exceptions by `const&` when inspecting polymorphic exception objects.",
+                  "Do not use exceptions as ordinary control flow for expected per-item decisions when a direct return value is clearer.",
+                  "Destructors should not normally throw."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m06-l01-quiz",
+              "question": "How should a polymorphic exception generally be caught for inspection?",
+              "options": [
+                "By const reference",
+                "By value only",
+                "By raw pointer",
+                "By reinterpret_cast"
+              ],
+              "answer": "By const reference",
+              "explanation": "Catching by const reference preserves dynamic type and avoids unnecessary copying/slicing."
+            },
+            "summary": [
+              "Exception safety works together with RAII so resources remain valid when failures propagate."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m06-l02",
+            "title": "Streams and File I/O",
+            "description": "Read and write text files with stream state checks.",
+            "learningObjectives": [
+              "Use `std::ifstream` and `std::ofstream`.",
+              "Detect EOF and other stream failures correctly."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::ifstream in(\"data.txt\");\nif (!in) throw std::runtime_error(\"open failed\");\nstd::string line;\nwhile (std::getline(in, line)) {\n    // process line\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Streams are RAII objects; closing occurs automatically at destruction.",
+                  "Check the state after opening and after operations where failure matters."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m06-l02-quiz",
+              "question": "What is the main reason to prefer `std::ifstream` over a raw FILE* in ordinary C++ file work?",
+              "options": [
+                "It is always faster",
+                "It integrates RAII and C++ stream facilities",
+                "It removes the need for paths",
+                "It cannot fail"
+              ],
+              "answer": "It integrates RAII and C++ stream facilities",
+              "explanation": "C++ file streams combine resource ownership with stream extraction/insertion operations."
+            },
+            "summary": [
+              "File I/O should make lifetime and error states explicit."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m06-l03",
+            "title": "Filesystem and Paths",
+            "description": "Use `std::filesystem` for path manipulation and file-system queries.",
+            "learningObjectives": [
+              "Compose paths portably with `std::filesystem::path`.",
+              "Query existence, regular-file status, and directory contents."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "namespace fs = std::filesystem;\nfs::path root = \"logs\";\nfor (const auto& entry : fs::directory_iterator(root)) {\n    if (entry.is_regular_file()) std::cout << entry.path() << \"\\n\";\n}"
+              },
+              {
+                "type": "warning",
+                "text": "Filesystem operations can fail because of permissions, missing paths, and platform behavior. Use overloads with `std::error_code` when non-throwing error reporting is preferable."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04-filesystem",
+                "title": "Enumerate Regular Files",
+                "description": "Practice `std::filesystem::directory_iterator` and path inspection.",
+                "steps": [
+                  "Create or choose a directory with several files.",
+                  "Iterate over entries and test `is_regular_file()`.",
+                  "Print each regular file path and extension."
+                ],
+                "solution": "#include <filesystem>\n#include <iostream>\n\nnamespace fs = std::filesystem;\n\nint main(int argc, char** argv) {\n    if (argc != 2) return 2;\n    for (const auto& entry : fs::directory_iterator(argv[1])) {\n        if (entry.is_regular_file()) {\n            std::cout << entry.path() << \" \" << entry.path().extension() << '\n';\n        }\n    }\n}\n",
+                "output": "The program prints each regular file found directly in the supplied directory together with its extension."
+              }
+            ],
+            "quiz": {
+              "id": "m06-l03-quiz",
+              "question": "Which type is designed to represent a filesystem path?",
+              "options": [
+                "std::string only",
+                "std::filesystem::path",
+                "std::vector<char>",
+                "std::uri"
+              ],
+              "answer": "std::filesystem::path",
+              "explanation": "`std::filesystem::path` provides path operations abstracted from platform-specific representation details."
+            },
+            "summary": [
+              "Treat filesystem state as external and failure-prone input."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m06-l04",
+            "title": "chrono: Durations, Time Points, and Clocks",
+            "description": "Represent time intervals and timestamps without using ad-hoc integers.",
+            "learningObjectives": [
+              "Use `std::chrono::duration` and `time_point`.",
+              "Choose steady clocks for elapsed-time measurement."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "const auto start = std::chrono::steady_clock::now();\n// work\nconst auto elapsed = std::chrono::steady_clock::now() - start;\nstd::cout << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "`steady_clock` is intended for measuring intervals because it is monotonic.",
+                  "Wall-clock time can jump due to synchronization or manual adjustment.",
+                  "Use `system_clock` when civil/calendar time is required."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m06-l04-quiz",
+              "question": "Which clock is typically appropriate for measuring elapsed duration?",
+              "options": [
+                "system_clock",
+                "steady_clock",
+                "high_resolution_clock always",
+                "time_t"
+              ],
+              "answer": "steady_clock",
+              "explanation": "A steady clock is monotonic and designed for measuring elapsed time."
+            },
+            "summary": [
+              "Chrono types make units visible and reduce “magic number” time arithmetic."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m06-t01",
+            "title": "Robust Directory Scanner",
+            "level": "Intermediate",
+            "description": "Write a filesystem scanner that counts regular files by extension and reports filesystem errors without crashing on the first problem.",
+            "problemStatement": "Scan a user-provided directory recursively. Count regular files by lowercase extension and print the counts sorted by extension. Continue past entries that cannot be inspected by using the `error_code` overloads.",
+            "objectives": [
+              "Use filesystem iterators.",
+              "Handle permission/path errors explicitly.",
+              "Use an unordered map and deterministic sorted output."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "Readable directory tree"
+            ],
+            "hint": "Use `directory_options::skip_permission_denied` and an `std::error_code` with iterator/error queries where appropriate.",
+            "solutionCode": "#include <algorithm>\n#include <cctype>\n#include <filesystem>\n#include <iostream>\n#include <string>\n#include <unordered_map>\n#include <vector>\n\nnamespace fs = std::filesystem;\n\nstd::string lower(std::string s) {\n    for (char& c : s) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));\n    return s;\n}\n\nint main(int argc, char** argv) {\n    if (argc != 2) return 2;\n    std::error_code ec;\n    fs::recursive_directory_iterator it(argv[1], fs::directory_options::skip_permission_denied, ec), end;\n    std::unordered_map<std::string, std::size_t> counts;\n    for (; it != end; it.increment(ec)) {\n        if (ec) { ec.clear(); continue; }\n        if (it->is_regular_file(ec) && !ec) {\n            ++counts[lower(it->path().extension().string())];\n        }\n        ec.clear();\n    }\n    std::vector<std::pair<std::string, std::size_t>> rows(counts.begin(), counts.end());\n    std::sort(rows.begin(), rows.end());\n    for (const auto& [ext, count] : rows) std::cout << (ext.empty() ? \"<none>\" : ext) << \" \" << count << '\\n';\n}\n",
+            "solutionExplanation": "The scanner uses filesystem error-code operations to avoid making one permission error fatal. Results are copied to a vector for deterministic sorted output."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Testing, Debugging, and Sanitizers",
+        "description": "Develop a repeatable debugging workflow with assertions, unit-style tests, GDB, sanitizers, and compiler diagnostics.",
+        "lessons": [
+          {
+            "id": "m07-l01",
+            "title": "Assertions and Defensive Checks",
+            "description": "Use assertions for programmer assumptions and explicit runtime checks for external input.",
+            "learningObjectives": [
+              "Distinguish `assert` from runtime validation.",
+              "Write invariants that are meaningful during development."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "#include <cassert>\n\nint index_of(int index, int size) {\n    assert(size >= 0);\n    if (index < 0 || index >= size) throw std::out_of_range(\"index\");\n    return index;\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Assertions document assumptions that indicate program bugs when violated.",
+                  "Do not rely on assertions for security-critical input validation because `NDEBUG` can disable them."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m07-l01-quiz",
+              "question": "Why should user input validation not rely only on `assert`?",
+              "options": [
+                "assert is slow",
+                "assert may be disabled in release builds",
+                "assert cannot compare",
+                "assert requires templates"
+              ],
+              "answer": "assert may be disabled in release builds",
+              "explanation": "The standard `assert` macro can be disabled by defining `NDEBUG`, so external-input checks need explicit runtime handling."
+            },
+            "summary": [
+              "Assertions are for invariants; validation is for inputs and conditions the program must handle."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m07-l02",
+            "title": "Unit-Style Testing with the Standard Library",
+            "description": "Design functions that are easy to test and create simple table-driven tests without depending on a specific third-party framework.",
+            "learningObjectives": [
+              "Separate pure logic from I/O.",
+              "Write deterministic checks for representative and edge cases."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "int max_value(const std::vector<int>& values) {\n    if (values.empty()) throw std::invalid_argument(\"empty\");\n    return *std::max_element(values.begin(), values.end());\n}\n\nvoid test_max_value() {\n    assert(max_value({1, 4, 2}) == 4);\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Test nominal, boundary, and invalid cases.",
+                  "Prefer small deterministic functions so failures are easy to localize."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m07-l02-quiz",
+              "question": "What makes a function especially easy to unit-test?",
+              "options": [
+                "Hidden global state",
+                "Deterministic inputs and outputs",
+                "Random I/O",
+                "Thread-local side effects only"
+              ],
+              "answer": "Deterministic inputs and outputs",
+              "explanation": "Pure or mostly pure functions are easier to test because the same inputs produce predictable results."
+            },
+            "summary": [
+              "Test design is strongly influenced by interface and state isolation."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m07-l03",
+            "title": "GDB Debugging Workflow",
+            "description": "Use a debugger to inspect state instead of adding random print statements.",
+            "learningObjectives": [
+              "Compile with debug information.",
+              "Use breakpoints, stepping, backtraces, and variable inspection."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "g++ -std=c++20 -g -O0 -Wall -Wextra main.cpp -o app\ngdb ./app\n(gdb) break main\n(gdb) run\n(gdb) next\n(gdb) print variable\n(gdb) bt"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "`-g` includes debugging information.",
+                  "A backtrace shows the current call stack.",
+                  "Use conditional breakpoints when a bug occurs only for specific inputs."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m07-l03-quiz",
+              "question": "Which compiler option adds debugging information for GDB?",
+              "options": [
+                "-O3",
+                "-g",
+                "-static",
+                "-DNDEBUG"
+              ],
+              "answer": "-g",
+              "explanation": "The `-g` option requests debugging information in GCC and is the standard starting point for GDB debugging."
+            },
+            "summary": [
+              "Debugging is a disciplined loop: reproduce, stop near the fault, inspect state, form a hypothesis, and verify."
+            ],
+            "resources": [
+              "https://sourceware.org/gdb/current/onlinedocs/gdb.html/"
+            ]
+          },
+          {
+            "id": "m07-l04",
+            "title": "AddressSanitizer and Undefined Behavior",
+            "description": "Use sanitizers to catch memory safety defects during testing.",
+            "learningObjectives": [
+              "Build a program with AddressSanitizer.",
+              "Interpret common reports such as use-after-free and out-of-bounds access."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "clang++ -std=c++20 -g -O1 -fsanitize=address -fno-omit-frame-pointer main.cpp -o app\n./app"
+              },
+              {
+                "type": "warning",
+                "text": "Sanitizer runtimes are testing tools and are not intended to be shipped as production runtime dependencies. Their overhead and platform constraints matter."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p05-asan",
+                "title": "Catch a Use-After-Free",
+                "description": "Compile a deliberately unsafe toy program with AddressSanitizer and interpret the report.",
+                "steps": [
+                  "Create a heap allocation, delete it, then read through the stale pointer.",
+                  "Compile with `-fsanitize=address -g`.",
+                  "Run the binary and identify the reported use-after-free stack.",
+                  "Replace the raw pointer with a lifetime-safe design and rerun."
+                ],
+                "solution": "#include <iostream>\n\nint main() {\n    int* p = new int(42);\n    delete p;\n    // Deliberate bug for sanitizer demonstration:\n    std::cout << *p << '\n';\n}\n",
+                "output": "AddressSanitizer should report the invalid access. The production fix is to remove the dangling pointer; for this tiny case, automatic storage such as `int value{42};` is sufficient."
+              }
+            ],
+            "quiz": {
+              "id": "m07-l04-quiz",
+              "question": "Which class of defect does AddressSanitizer target particularly well?",
+              "options": [
+                "SQL syntax errors",
+                "Memory safety violations",
+                "Network routing",
+                "Template substitution only"
+              ],
+              "answer": "Memory safety violations",
+              "explanation": "AddressSanitizer detects several classes of memory-access bugs such as out-of-bounds and use-after-free."
+            },
+            "summary": [
+              "Sanitizers complement tests and debuggers; they do not prove a program has no bugs."
+            ],
+            "resources": [
+              "https://clang.llvm.org/docs/AddressSanitizer.html"
+            ]
+          },
+          {
+            "id": "m07-l05",
+            "title": "Compiler Warnings and Static Reasoning",
+            "description": "Turn warnings into an early feedback mechanism.",
+            "learningObjectives": [
+              "Use `-Wall -Wextra -Wpedantic` as a useful GCC warning baseline.",
+              "Distinguish warning cleanup from suppressing diagnostics."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "g++ -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion main.cpp -o app"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Warning sets vary by compiler and project.",
+                  "Treat new warnings as defects to understand, not noise to silence blindly.",
+                  "Static analysis and formatters add further layers of feedback."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m07-l05-quiz",
+              "question": "Why are compiler warnings valuable?",
+              "options": [
+                "They replace tests",
+                "They catch suspicious constructs before runtime",
+                "They guarantee portability",
+                "They make code compile without a standard"
+              ],
+              "answer": "They catch suspicious constructs before runtime",
+              "explanation": "Compilers can identify many suspicious or error-prone patterns before a program executes."
+            },
+            "summary": [
+              "Fast feedback from the toolchain is part of modern C++ engineering."
+            ],
+            "resources": [
+              "https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m07-t01",
+            "title": "Find and Fix a Memory Bug",
+            "level": "Advanced",
+            "description": "Diagnose a deliberately flawed vector/pointer program with GDB and AddressSanitizer, then repair it using RAII.",
+            "problemStatement": "Given a program that stores pointers to vector elements and then triggers reallocation, use sanitizer output to identify the invalidated pointer and rewrite the program without the lifetime bug.",
+            "objectives": [
+              "Reproduce the fault under AddressSanitizer.",
+              "Explain vector iterator/reference invalidation.",
+              "Fix the design rather than merely suppressing the report."
+            ],
+            "requirements": [
+              "Clang or GCC with sanitizer support",
+              "GDB optional but recommended"
+            ],
+            "hint": "Ask whether the vector mutation can reallocate storage and invalidate the pointer.",
+            "solutionCode": "#include <iostream>\n#include <memory>\n#include <vector>\n\nint main() {\n    std::vector<int> values;\n    values.reserve(2);\n    values.push_back(10);\n    values.push_back(20);\n\n    auto p = std::make_unique<int>(values[0]);\n    values.push_back(30);\n\n    std::cout << *p << '\\n';\n}\n",
+            "solutionExplanation": "The repaired version owns a separate integer rather than retaining a pointer into vector storage that may be invalidated by reallocation. In a real design, an even better fix may be to avoid the pointer entirely and use an index or stable owner depending on the required semantics."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Concurrency and Parallelism",
+        "description": "Use standard threading primitives safely, understand data races, and choose synchronization based on shared-state requirements.",
+        "lessons": [
+          {
+            "id": "m08-l01",
+            "title": "Threads, Tasks, and Futures",
+            "description": "Distinguish low-level threads from task-oriented asynchronous execution.",
+            "learningObjectives": [
+              "Create a thread and join it correctly.",
+              "Use `std::async`/`std::future` for result-producing asynchronous work."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "auto future = std::async(std::launch::async, [] { return 21 * 2; });\nstd::cout << future.get() << '\\n';"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A thread is an execution mechanism; a future represents a result that may become available later.",
+                  "Do not spawn threads just because concurrency exists; task decomposition and measured workload matter."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m08-l01-quiz",
+              "question": "What does `future.get()` do for an asynchronous result?",
+              "options": [
+                "Deletes the task",
+                "Retrieves the result and may wait",
+                "Starts another thread only",
+                "Sorts the result"
+              ],
+              "answer": "Retrieves the result and may wait",
+              "explanation": "`get()` obtains the associated result; if it is not ready, it waits until completion."
+            },
+            "summary": [
+              "Task-based abstractions can be simpler when the main concern is obtaining results rather than managing thread lifetimes."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m08-l02",
+            "title": "Mutexes and Lock Guards",
+            "description": "Protect shared mutable state with scoped locking.",
+            "learningObjectives": [
+              "Use `std::mutex` and `std::lock_guard`.",
+              "Identify the critical section and minimize its size."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::mutex m;\nint total{};\n\nvoid add(int value) {\n    std::lock_guard<std::mutex> lock(m);\n    total += value;\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A lock guard releases the mutex automatically when it goes out of scope.",
+                  "Keep the critical section small to reduce contention.",
+                  "Establish a consistent lock ordering when multiple mutexes are required."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m08-l02-quiz",
+              "question": "What protects the mutex in the example from remaining locked after an exception?",
+              "options": [
+                "Global variables",
+                "RAII via lock_guard",
+                "volatile",
+                "The compiler"
+              ],
+              "answer": "RAII via lock_guard",
+              "explanation": "`std::lock_guard` unlocks the mutex in its destructor, even when control leaves the scope because of an exception."
+            },
+            "summary": [
+              "Scoped locking is the concurrency analogue of RAII resource management."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m08-l03",
+            "title": "Atomics and Data Races",
+            "description": "Understand when `std::atomic` is appropriate and why data races are undefined behavior.",
+            "learningObjectives": [
+              "Use atomics for simple shared state such as counters or flags when the operation semantics fit.",
+              "Distinguish atomicity from general mutual exclusion."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::atomic<int> counter{0};\n++counter;"
+              },
+              {
+                "type": "warning",
+                "text": "Making one variable atomic does not make an entire multi-variable invariant atomic. Use a mutex or another synchronization design when several values must change together."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m08-l03-quiz",
+              "question": "Which statement is correct?",
+              "options": [
+                "Atomics automatically protect arbitrary object graphs",
+                "A data race is harmless if values look plausible",
+                "Atomics provide atomic operations for the atomic object, not arbitrary invariants",
+                "volatile is a mutex"
+              ],
+              "answer": "Atomics provide atomic operations for the atomic object, not arbitrary invariants",
+              "explanation": "Atomic operations are scoped to the atomic object and memory-order semantics; larger invariants often require stronger coordination."
+            },
+            "summary": [
+              "Concurrency correctness is about happens-before relationships, not merely avoiding crashes."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m08-l04",
+            "title": "Condition Variables and Work Coordination",
+            "description": "Coordinate producer/consumer work without busy-waiting.",
+            "learningObjectives": [
+              "Use `std::condition_variable` with a mutex and predicate.",
+              "Explain why waiting in a loop is required."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::unique_lock<std::mutex> lock(m);\ncv.wait(lock, [&] { return !queue.empty() || done; });"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Spurious wakeups are permitted, so always wait on a predicate.",
+                  "The condition variable does not store the condition; the shared state does."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m08-l04-quiz",
+              "question": "Why should `condition_variable::wait` be given a predicate?",
+              "options": [
+                "To allocate memory",
+                "Because spurious wakeups can occur",
+                "Because mutexes cannot unlock",
+                "To sort the queue"
+              ],
+              "answer": "Because spurious wakeups can occur",
+              "explanation": "A thread can wake without the desired condition being true, so the predicate re-checks the actual shared state."
+            },
+            "summary": [
+              "Correct coordination is based on state plus synchronization, not on the wake-up itself."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m08-t01",
+            "title": "Parallel File Counting",
+            "level": "Advanced",
+            "description": "Build a small worker-based file counter that partitions independent files across asynchronous tasks and combines results safely.",
+            "problemStatement": "Given a list of file paths, count total lines in parallel using `std::async`. Each task reads one file and returns its line count; the main thread combines the futures.",
+            "objectives": [
+              "Use futures for result propagation.",
+              "Keep file-local state independent between tasks.",
+              "Handle per-file failures without losing other results."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "Input file paths"
+            ],
+            "hint": "Each file is an independent unit of work, so the simplest safe design is one task per file with no shared mutable counter.",
+            "solutionCode": "#include <fstream>\n#include <future>\n#include <iostream>\n#include <string>\n#include <vector>\n\nstd::size_t count_lines(const std::string& path) {\n    std::ifstream in(path);\n    if (!in) throw std::runtime_error(\"open failed: \" + path);\n    std::size_t lines{};\n    std::string line;\n    while (std::getline(in, line)) ++lines;\n    return lines;\n}\n\nint main(int argc, char** argv) {\n    std::vector<std::future<std::size_t>> futures;\n    for (int i = 1; i < argc; ++i)\n        futures.push_back(std::async(std::launch::async, count_lines, std::string(argv[i])));\n    std::size_t total{};\n    for (auto& f : futures) {\n        try { total += f.get(); }\n        catch (const std::exception& ex) { std::cerr << ex.what() << '\\n'; }\n    }\n    std::cout << total << '\\n';\n}\n",
+            "solutionExplanation": "Each async operation owns only its local file state. The combining phase is single-threaded, so no shared counter needs a mutex."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Build Systems, Modules, and Project Structure",
+        "description": "Organize multi-file C++ projects with CMake and understand the role and current implementation status of C++ modules.",
+        "lessons": [
+          {
+            "id": "m09-l01",
+            "title": "Translation Units, Headers, and ODR",
+            "description": "Organize declarations and definitions without violating the One Definition Rule.",
+            "learningObjectives": [
+              "Separate declarations from definitions sensibly.",
+              "Explain why non-inline definitions generally belong in one translation unit."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "// math.hpp\nint add(int a, int b);\n\n// math.cpp\nint add(int a, int b) { return a + b; }"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Include guards or `#pragma once` prevent duplicate inclusion in a translation unit.",
+                  "Templates and inline definitions are commonly placed in headers because their definitions are needed where instantiated."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m09-l01-quiz",
+              "question": "Why can defining a non-inline function in a widely included header cause linker errors?",
+              "options": [
+                "Headers cannot contain declarations",
+                "It can create multiple definitions across translation units",
+                "The function becomes private",
+                "The compiler skips headers"
+              ],
+              "answer": "It can create multiple definitions across translation units",
+              "explanation": "A non-inline external definition generally must have one program-wide definition under the One Definition Rule."
+            },
+            "summary": [
+              "Project structure is part of correctness: declarations, definitions, and linkage must line up."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m09-l02",
+            "title": "CMake Fundamentals",
+            "description": "Create a small reproducible CMake build instead of relying on ad-hoc compiler commands.",
+            "learningObjectives": [
+              "Write a minimal `CMakeLists.txt`.",
+              "Configure and build out-of-source with CMake."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "cmake_minimum_required(VERSION 3.20)\nproject(app LANGUAGES CXX)\nset(CMAKE_CXX_STANDARD 20)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\nadd_executable(app main.cpp)"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Configure into a separate build directory to keep source trees clean.",
+                  "Prefer target-specific properties over global flags as projects grow."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m09-l02-quiz",
+              "question": "What does `add_executable(app main.cpp)` define?",
+              "options": [
+                "A compiler",
+                "A build target producing an executable",
+                "A package repository",
+                "A test only"
+              ],
+              "answer": "A build target producing an executable",
+              "explanation": "It declares an executable target named `app` built from `main.cpp`."
+            },
+            "summary": [
+              "A build system captures the project graph so builds remain reproducible across environments."
+            ],
+            "resources": [
+              "https://cmake.org/cmake/help/latest/guide/tutorial/index.html"
+            ]
+          },
+          {
+            "id": "m09-l03",
+            "title": "C++20 Modules Concept",
+            "description": "Understand why modules exist, what they change, and why compiler support must be considered.",
+            "learningObjectives": [
+              "Explain the motivation for modules.",
+              "Distinguish named modules from traditional textual inclusion."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "export module math;\n\nexport int add(int a, int b) {\n    return a + b;\n}\n\n// consumer\nimport math;"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Modules are compiled interfaces rather than textual header substitution.",
+                  "They can reduce macro leakage and repeated parsing.",
+                  "Toolchain and build-system support varies, so production adoption should be based on the actual compiler/build matrix."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m09-l03-quiz",
+              "question": "Which major problem do modules primarily address compared with textual headers?",
+              "options": [
+                "CPU instruction scheduling",
+                "Macro and repeated textual inclusion complexity",
+                "File permissions",
+                "Network latency"
+              ],
+              "answer": "Macro and repeated textual inclusion complexity",
+              "explanation": "Modules provide compiled interfaces and reduce many problems caused by textual inclusion and macro visibility."
+            },
+            "summary": [
+              "Modules are a modern C++ feature, but project support depends on current compiler and build tooling."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://learn.microsoft.com/en-us/cpp/cpp/modules-cpp?view=msvc-170",
+              "https://gcc.gnu.org/projects/cxx-status.html"
+            ]
+          },
+          {
+            "id": "m09-l04",
+            "title": "Packaging Project Configuration",
+            "description": "Make compiler warnings, sanitizers, and tests reproducible through build targets.",
+            "learningObjectives": [
+              "Create separate Debug/Release-friendly settings.",
+              "Attach warnings and sanitizer options to targets conditionally."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "target_compile_options(app PRIVATE -Wall -Wextra -Wpedantic)\n# For a sanitizer-enabled configuration, add flags appropriate to the chosen compiler/toolchain."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Build configuration is part of your executable specification.",
+                  "Do not assume sanitizer flags or compiler behavior are identical across GCC, Clang, and MSVC."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m09-l04-quiz",
+              "question": "Why should build flags be attached to targets where possible?",
+              "options": [
+                "To hide dependencies",
+                "To keep settings scoped and composable",
+                "To remove all warnings",
+                "To make source files larger"
+              ],
+              "answer": "To keep settings scoped and composable",
+              "explanation": "Target-scoped settings reduce accidental effects on unrelated targets and make build intent clearer."
+            },
+            "summary": [
+              "A professional C++ project makes its build assumptions explicit and repeatable."
+            ],
+            "resources": [
+              "https://cmake.org/cmake/help/latest/guide/tutorial/index.html",
+              "https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html",
+              "https://clang.llvm.org/cxx_status.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m09-t01",
+            "title": "CMake Multi-Target Project",
+            "level": "Intermediate",
+            "description": "Build a small C++ library plus executable with target-scoped compile features and warnings.",
+            "problemStatement": "Create a `string_utils` library exposing a function that trims a string, then link it into a CLI executable. Configure C++20, add warnings, and build into `build/`.",
+            "objectives": [
+              "Use `add_library` and `add_executable`.",
+              "Use target-based include directories and linking.",
+              "Verify an out-of-source build."
+            ],
+            "requirements": [
+              "CMake",
+              "C++20 compiler"
+            ],
+            "hint": "Keep the public header in an include directory and link the library target into the executable with `target_link_libraries`.",
+            "solutionCode": "cmake_minimum_required(VERSION 3.20)\nproject(StringTool LANGUAGES CXX)\nset(CMAKE_CXX_STANDARD 20)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\n\nadd_library(string_utils src/string_utils.cpp)\ntarget_include_directories(string_utils PUBLIC include)\ntarget_compile_options(string_utils PRIVATE -Wall -Wextra -Wpedantic)\n\nadd_executable(app src/main.cpp)\ntarget_link_libraries(app PRIVATE string_utils)\ntarget_compile_options(app PRIVATE -Wall -Wextra -Wpedantic)\n",
+            "solutionExplanation": "This CMake project models the library/executable dependency graph explicitly. The library publishes its include directory to consumers, while warning options remain scoped to each target."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Performance, Memory, and Optimization",
+        "description": "Reason about allocation, cache behavior, copying, move costs, complexity, and measurement without premature optimization.",
+        "lessons": [
+          {
+            "id": "m10-l01",
+            "title": "Complexity and Data-Oriented Choices",
+            "description": "Choose algorithms and containers by asymptotic behavior and workload semantics.",
+            "learningObjectives": [
+              "Estimate common operation complexity.",
+              "Match container choice to access/update patterns."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Vector random access is constant time; inserting in the middle is linear in the number of shifted elements.",
+                  "Hash-table lookup is average constant time but depends on hashing and load.",
+                  "A simple O(n) algorithm with good locality can outperform a theoretically better algorithm on realistic input sizes."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m10-l01-quiz",
+              "question": "Which operation is typically constant-time for `std::vector`?",
+              "options": [
+                "Random access by index",
+                "Inserting at the front",
+                "Finding an arbitrary value",
+                "Sorting"
+              ],
+              "answer": "Random access by index",
+              "explanation": "Indexing directly into contiguous vector storage is constant time."
+            },
+            "summary": [
+              "Complexity guides design, while measurement validates real performance."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp",
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m10-l02",
+            "title": "Allocations, Capacity, and Object Movement",
+            "description": "Reduce unnecessary allocations through lifetime-aware container and string usage.",
+            "learningObjectives": [
+              "Use `reserve` and move operations where justified.",
+              "Recognize when temporary objects can be elided or moved."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::vector<std::string> messages;\nmessages.reserve(expected);\nmessages.emplace_back(\"event\");"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "`emplace_back` constructs an element in place from constructor arguments.",
+                  "Return value optimization and move semantics often make returning by value efficient.",
+                  "Measure allocation hot spots before introducing custom allocators."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m10-l02-quiz",
+              "question": "What does `reserve` help avoid?",
+              "options": [
+                "All copies forever",
+                "Some reallocations as a vector grows",
+                "Sorting",
+                "Integer overflow"
+              ],
+              "answer": "Some reallocations as a vector grows",
+              "explanation": "If enough capacity is reserved ahead of time, growth can avoid repeated reallocation."
+            },
+            "summary": [
+              "Most performance wins come from data structures and algorithms before micro-optimizing syntax."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m10-l03",
+            "title": "Cache Locality and Layout",
+            "description": "Understand why contiguous storage and data layout can matter to throughput.",
+            "learningObjectives": [
+              "Explain spatial locality at a practical level.",
+              "Recognize why pointer-heavy structures can have poor locality."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Modern CPUs move data in cache lines, so traversing adjacent memory tends to reuse fetched data. This is one reason `std::vector` often performs well in iteration-heavy workloads."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Locality is workload-dependent.",
+                  "A structure optimized for locality may trade off insertion/removal convenience."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m10-l03-quiz",
+              "question": "Why can contiguous iteration over a vector be fast even for large datasets?",
+              "options": [
+                "It bypasses the CPU",
+                "It benefits from cache locality",
+                "It uses no memory",
+                "It disables bounds checks automatically"
+              ],
+              "answer": "It benefits from cache locality",
+              "explanation": "Adjacent elements tend to be fetched together, improving cache reuse during sequential traversal."
+            },
+            "summary": [
+              "Performance is partly a property of how data is laid out and accessed, not just instruction count."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m10-l04",
+            "title": "Measurement with chrono and Profiling Mindset",
+            "description": "Measure before and after optimization and avoid drawing conclusions from one noisy timing.",
+            "learningObjectives": [
+              "Use `steady_clock` for simple elapsed-time measurements.",
+              "Design benchmarks that repeat enough work to reveal meaningful differences."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "auto start = std::chrono::steady_clock::now();\nrun_workload();\nauto stop = std::chrono::steady_clock::now();\nauto ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();"
+              },
+              {
+                "type": "warning",
+                "text": "Microbenchmarks can be distorted by I/O, CPU frequency scaling, optimization, cache warm-up, dead-code elimination, and environmental noise. Use dedicated benchmarking tools for serious performance work."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m10-l04-quiz",
+              "question": "Which practice best supports trustworthy optimization decisions?",
+              "options": [
+                "Optimize first and measure later",
+                "Measure representative workloads",
+                "Use the fastest-looking code",
+                "Time only one iteration"
+              ],
+              "answer": "Measure representative workloads",
+              "explanation": "Representative measurements provide evidence that an optimization improves the behavior that actually matters."
+            },
+            "summary": [
+              "Optimization is an empirical engineering activity layered on top of sound design."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m10-t01",
+            "title": "Benchmark Two Counting Strategies",
+            "level": "Advanced",
+            "description": "Compare two counting implementations and document the result without claiming unsupported universal conclusions.",
+            "problemStatement": "Implement a baseline using `std::map` and a hash-based version using `std::unordered_map`. Generate the same workload, time repeated runs, and report median elapsed time plus container sizes.",
+            "objectives": [
+              "Use the same input for both implementations.",
+              "Use `steady_clock`.",
+              "Report enough runs to avoid relying on a single measurement."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "A repeatable synthetic or captured workload"
+            ],
+            "hint": "Keep generation outside the timed region and warm up each strategy before recording measurements.",
+            "solutionCode": "#include <algorithm>\n#include <chrono>\n#include <iostream>\n#include <map>\n#include <random>\n#include <string>\n#include <unordered_map>\n#include <vector>\n\ntemplate <class F>\nlong long time_us(F&& f) {\n    auto s = std::chrono::steady_clock::now();\n    f();\n    auto e = std::chrono::steady_clock::now();\n    return std::chrono::duration_cast<std::chrono::microseconds>(e - s).count();\n}\n\nint main() {\n    std::mt19937 rng(42);\n    std::uniform_int_distribution<int> dist(0, 100000);\n    std::vector<int> data(200000);\n    for (int& x : data) x = dist(rng);\n\n    std::vector<long long> map_times, hash_times;\n    for (int run = 0; run < 9; ++run) {\n        map_times.push_back(time_us([&]{ std::map<int,int> m; for (int x : data) ++m[x]; }));\n        hash_times.push_back(time_us([&]{ std::unordered_map<int,int> m; for (int x : data) ++m[x]; }));\n    }\n    std::sort(map_times.begin(), map_times.end());\n    std::sort(hash_times.begin(), hash_times.end());\n    std::cout << \"map_median_us=\" << map_times[4] << \"\\n\";\n    std::cout << \"unordered_map_median_us=\" << hash_times[4] << \"\\n\";\n}\n",
+            "solutionExplanation": "The benchmark controls the input seed and compares medians from repeated runs. The lesson is not that one container is universally faster, but that measured workload characteristics should drive the decision."
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Secure and Maintainable Modern C++",
+        "description": "Apply defensive input handling, ownership discipline, dependency hygiene, and production-oriented coding practices.",
+        "lessons": [
+          {
+            "id": "m11-l01",
+            "title": "Input Validation and Boundary Design",
+            "description": "Treat external input as untrusted and keep parsing separate from business logic.",
+            "learningObjectives": [
+              "Validate ranges and formats explicitly.",
+              "Prevent malformed input from violating invariants."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "std::string token;\nif (!(std::cin >> token)) {\n    throw std::runtime_error(\"input failed\");\n}\nif (token.size() > 32) {\n    throw std::invalid_argument(\"token too long\");\n}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Parse into constrained domain types where practical.",
+                  "Avoid implicit assumptions about file sizes, counts, string lengths, and indices."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m11-l01-quiz",
+              "question": "Which layer should usually enforce domain limits such as a maximum username length?",
+              "options": [
+                "The optimizer",
+                "The boundary/parser or domain type",
+                "The linker",
+                "The CPU"
+              ],
+              "answer": "The boundary/parser or domain type",
+              "explanation": "Input/domain boundaries are where external assumptions should be turned into validated program state."
+            },
+            "summary": [
+              "Secure C++ begins with correct boundaries and explicit assumptions."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m11-l02",
+            "title": "Safe String and Memory Practices",
+            "description": "Avoid common memory hazards by preferring standard containers, spans/views with valid lifetimes, and checked APIs.",
+            "learningObjectives": [
+              "Identify use-after-free, buffer overflow, and dangling-view risks.",
+              "Prefer standard containers and lifetime-aware interfaces."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer `std::string`, `std::vector`, `std::array`, and smart pointers over manual buffers where possible.",
+                  "A `std::span` or `std::string_view` borrows; the owner must outlive the view.",
+                  "Never return pointers/references/views to destroyed local objects."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m11-l02-quiz",
+              "question": "What makes `std::string_view` potentially dangerous?",
+              "options": [
+                "It allocates too much",
+                "It can outlive the referenced string",
+                "It cannot compare strings",
+                "It is always mutable"
+              ],
+              "answer": "It can outlive the referenced string",
+              "explanation": "A view does not own storage; using it after the owner is destroyed creates a dangling reference."
+            },
+            "summary": [
+              "Memory safety is largely about making lifetime and ownership visible in interfaces."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m11-l03",
+            "title": "Serialization and Text Formats Without Unsafe Parsing",
+            "description": "Design simple file formats carefully and avoid ad-hoc parsing assumptions.",
+            "learningObjectives": [
+              "Define an explicit text format with validation.",
+              "Separate parsing from domain-object construction."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "// Example record: id|priority|message\n// Validate field count and numeric conversion before constructing the domain object."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Delimited formats need an escaping strategy if delimiters may appear in data.",
+                  "Use standard conversion functions such as `std::from_chars` where applicable for efficient numeric parsing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m11-l03-quiz",
+              "question": "What is the key security reason to validate field counts before indexing parsed fields?",
+              "options": [
+                "It improves sorting",
+                "It prevents out-of-range access and malformed state",
+                "It makes files smaller",
+                "It enables templates"
+              ],
+              "answer": "It prevents out-of-range access and malformed state",
+              "explanation": "Malformed input can otherwise trigger exceptions, invalid access, or corrupted domain state."
+            },
+            "summary": [
+              "Parsing is an attack surface when data comes from outside the process."
+            ],
+            "resources": [
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m11-l04",
+            "title": "Dependencies, Build Reproducibility, and Portability",
+            "description": "Keep the compiler, standard level, warnings, and external dependencies explicit.",
+            "learningObjectives": [
+              "Document supported C++ standard/toolchain assumptions.",
+              "Avoid compiler extensions unless they are an explicit portability decision."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer `-std=c++20`/`-std=c++23` over relying on a compiler default.",
+                  "Current compiler support for newer standards varies; verify the exact features you use against the compiler matrix.",
+                  "Keep third-party dependencies pinned and auditable in real projects."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m11-l04-quiz",
+              "question": "Why should a project specify the language standard explicitly?",
+              "options": [
+                "To hide source code",
+                "To make language assumptions reproducible",
+                "To disable the linker",
+                "To force C++98"
+              ],
+              "answer": "To make language assumptions reproducible",
+              "explanation": "Explicit language-mode selection prevents behavior from changing merely because a compiler default changes."
+            },
+            "summary": [
+              "Portability is an engineering constraint, not an afterthought."
+            ],
+            "resources": [
+              "https://gcc.gnu.org/projects/cxx-status.html",
+              "https://clang.llvm.org/cxx_status.html",
+              "https://cmake.org/cmake/help/latest/guide/tutorial/index.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "m11-t01",
+            "title": "Harden a Command Parser",
+            "level": "Advanced",
+            "description": "Refactor an unsafe command parser so malformed user input cannot access outside a token array or violate numeric constraints.",
+            "problemStatement": "Input commands look like `ADD <id> <priority> <message>`. Reject missing fields, non-numeric ids/priorities, extra syntax, and out-of-range priority values. Keep parsing logic separate from execution.",
+            "objectives": [
+              "Define a parser return type.",
+              "Validate numeric conversion and bounds.",
+              "Ensure malformed input never reaches the execution layer."
+            ],
+            "requirements": [
+              "C++20 compiler",
+              "Standard library only"
+            ],
+            "hint": "Use `std::istringstream` for tokenization, validate each extraction, and preserve the remainder of the message after the required prefix.",
+            "solutionCode": "#include <iostream>\n#include <optional>\n#include <sstream>\n#include <string>\n\nstruct AddCommand { int id; int priority; std::string message; };\n\nstd::optional<AddCommand> parse_add(const std::string& line) {\n    std::istringstream in(line);\n    std::string op;\n    AddCommand cmd{};\n    if (!(in >> op) || op != \"ADD\") return std::nullopt;\n    if (!(in >> cmd.id >> cmd.priority)) return std::nullopt;\n    if (cmd.priority < 0 || cmd.priority > 5) return std::nullopt;\n    std::getline(in, cmd.message);\n    if (!cmd.message.empty() && cmd.message.front() == ' ') cmd.message.erase(0, 1);\n    if (cmd.message.empty()) return std::nullopt;\n    return cmd;\n}\n\nint main() {\n    std::string line;\n    while (std::getline(std::cin, line)) {\n        if (auto cmd = parse_add(line)) {\n            std::cout << cmd->id << ' ' << cmd->priority << ' ' << cmd->message << '\\n';\n        } else {\n            std::cout << \"invalid\\n\";\n        }\n    }\n}\n",
+            "solutionExplanation": "The parser isolates syntax and validation from execution. `std::optional` makes failure explicit, and priority bounds are enforced before returning a domain object."
+          }
+        ]
+      },
+      {
+        "id": "module-12",
+        "title": "Capstone: Event Log Analysis Service",
+        "description": "Integrate modern C++ design into a realistic command-line log-analysis application using RAII, STL, parsing, filesystem, concurrency, tests, and CMake.",
+        "lessons": [
+          {
+            "id": "m12-l01",
+            "title": "Capstone Architecture and Contracts",
+            "description": "Design the final project as cooperating components with explicit ownership and data contracts.",
+            "learningObjectives": [
+              "Partition the application into parsing, domain, analysis, and presentation responsibilities.",
+              "Define interfaces that are easy to test."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Parser: convert raw lines into validated records.",
+                  "Analyzer: compute counts and severity summaries.",
+                  "File loader: owns stream lifetime and produces lines.",
+                  "CLI: orchestrates components and formats results."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The project intentionally stays within the C++ standard library so students focus on language and engineering techniques rather than framework-specific APIs."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m12-l01-quiz",
+              "question": "Which component should own the responsibility of turning a raw line into a validated domain record?",
+              "options": [
+                "CLI only",
+                "Parser",
+                "Linker",
+                "Benchmark harness"
+              ],
+              "answer": "Parser",
+              "explanation": "Separating parsing keeps validation rules local and makes them testable independently of file I/O."
+            },
+            "summary": [
+              "Good architecture makes correctness local: each component owns one kind of decision."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m12-l02",
+            "title": "Concurrency Strategy for the Capstone",
+            "description": "Choose a safe parallelization boundary for independent input files.",
+            "learningObjectives": [
+              "Parallelize independent file-level work.",
+              "Combine results without unnecessary shared mutable state."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Each file can be analyzed independently into a local result.",
+                  "The main thread can merge local results after futures complete.",
+                  "This design avoids a shared global counter and simplifies correctness reasoning."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m12-l02-quiz",
+              "question": "Why is file-level parallelism attractive for this project?",
+              "options": [
+                "Files share all mutable state",
+                "Each file can produce an independent partial result",
+                "It requires raw pointers",
+                "It prevents error handling"
+              ],
+              "answer": "Each file can produce an independent partial result",
+              "explanation": "Independent partial results reduce synchronization and make work composition simple."
+            },
+            "summary": [
+              "Parallel decomposition is strongest when the units of work have clear ownership boundaries."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html"
+            ]
+          },
+          {
+            "id": "m12-l03",
+            "title": "Testing the Capstone Components",
+            "description": "Use small deterministic tests to validate parsing and aggregation before integrating the CLI.",
+            "learningObjectives": [
+              "Create tests for valid, malformed, and boundary log lines.",
+              "Test aggregations with controlled input vectors."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "assert(parse_line(\"INFO 2026-01-01 login\").has_value());\nassert(!parse_line(\"BROKEN\").has_value());"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Keep parsing tests independent of filesystem state.",
+                  "Use a small set of edge cases: empty message, invalid timestamp, unknown severity, and oversized fields."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m12-l03-quiz",
+              "question": "Which test set is most valuable for a parser?",
+              "options": [
+                "Only one happy-path case",
+                "Happy path plus malformed and boundary cases",
+                "Only performance tests",
+                "Only compiler warnings"
+              ],
+              "answer": "Happy path plus malformed and boundary cases",
+              "explanation": "Parsers fail at boundaries, so representative invalid and edge cases matter alongside valid input."
+            },
+            "summary": [
+              "The capstone’s testability comes from small, deterministic components."
+            ],
+            "resources": [
+              "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines.html",
+              "https://en.cppreference.com/w/cpp"
+            ]
+          },
+          {
+            "id": "m12-l04",
+            "title": "Capstone Build, Debug, and Review Checklist",
+            "description": "Build the application, inspect diagnostics, run tests, and perform a production-style review.",
+            "learningObjectives": [
+              "Run a clean CMake build.",
+              "Exercise normal and failure paths.",
+              "Review ownership, error handling, performance, and portability."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug\ncmake --build build\n./build/log_analyzer sample.log"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Verify warnings are understood.",
+                  "Run sanitizer builds during testing.",
+                  "Confirm no personal paths, environment-specific assumptions, or leaked resources remain in the final design."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "m12-l04-quiz",
+              "question": "Which step should occur before claiming the capstone is production-ready?",
+              "options": [
+                "Delete all tests",
+                "Run the build and meaningful failure-path tests",
+                "Disable warnings",
+                "Remove error handling"
+              ],
+              "answer": "Run the build and meaningful failure-path tests",
+              "explanation": "A production-oriented review needs evidence that the program builds and behaves correctly on representative and failure cases."
+            },
+            "summary": [
+              "The capstone is assessed as an engineered system, not simply as a code listing."
+            ],
+            "resources": [
+              "https://cmake.org/cmake/help/latest/guide/tutorial/index.html",
+              "https://sourceware.org/gdb/current/onlinedocs/gdb.html/",
+              "https://clang.llvm.org/docs/AddressSanitizer.html"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Event Log Analysis Service",
+          "description": "A command-line C++20 application that parses structured event-log lines, validates input, analyzes multiple files concurrently, aggregates severity counts, reports malformed records, and includes a CMake test target. It intentionally uses the standard library only.",
+          "conceptsCovered": [
+            "RAII and streams",
+            "Classes and data invariants",
+            "std::optional",
+            "string_view and parsing",
+            "STL containers and algorithms",
+            "std::filesystem-ready command-line design",
+            "std::async and futures",
+            "Exception handling",
+            "CMake",
+            "Assertions and tests",
+            "Compiler warnings",
+            "Sanitizer-ready architecture"
+          ],
+          "steps": [
+            "Create the CMake project and configure C++20 explicitly.",
+            "Implement and unit-test the log parser independently from file I/O.",
+            "Implement per-file analysis with RAII-managed `std::ifstream`.",
+            "Launch independent file analyses with `std::async` and collect futures.",
+            "Merge local reports in the calling thread to avoid a shared mutable counter.",
+            "Build the executable and optional test target using CMake.",
+            "Run normal, malformed-input, and missing-file cases; then run a sanitizer build in a supported toolchain.",
+            "Review ownership, lifetime, error propagation, warning cleanliness, and portability assumptions."
+          ],
+          "code": {
+            "CMakeLists.txt": "cmake_minimum_required(VERSION 3.20)\nproject(LogAnalyzer LANGUAGES CXX)\n\nset(CMAKE_CXX_STANDARD 20)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\nset(CMAKE_CXX_EXTENSIONS OFF)\n\nadd_executable(log_analyzer\n    src/main.cpp\n    src/log_parser.cpp\n)\n\ntarget_include_directories(log_analyzer PRIVATE include)\ntarget_compile_options(log_analyzer PRIVATE -Wall -Wextra -Wpedantic)\n\n# Optional testing target. Build with: cmake -S . -B build -DBUILD_TESTING=ON\ninclude(CTest)\nif(BUILD_TESTING)\n    add_executable(log_tests\n        tests/test_parser.cpp\n        src/log_parser.cpp\n    )\n    target_include_directories(log_tests PRIVATE include)\n    target_compile_options(log_tests PRIVATE -Wall -Wextra -Wpedantic)\n    add_test(NAME log_parser_tests COMMAND log_tests)\nendif()\n",
+            "include/log_parser.hpp": "#pragma once\n#include <optional>\n#include <string>\n#include <string_view>\n\nstruct LogRecord {\n    std::string severity;\n    std::string timestamp;\n    std::string message;\n};\n\nstd::optional<LogRecord> parse_log_line(std::string_view line);\n",
+            "src/log_parser.cpp": "#include \"log_parser.hpp\"\n#include <cctype>\n#include <sstream>\n#include <string>\n\nnamespace {\nstd::string trim_leading(std::string value) {\n    std::size_t i = 0;\n    while (i < value.size() && std::isspace(static_cast<unsigned char>(value[i]))) ++i;\n    return value.substr(i);\n}\n\nbool valid_severity(const std::string& value) {\n    return value == \"DEBUG\" || value == \"INFO\" || value == \"WARN\" || value == \"ERROR\";\n}\n\nbool valid_date_prefix(const std::string& value) {\n    // This intentionally validates the YYYY-MM-DD shape, not calendar validity.\n    if (value.size() != 10 || value[4] != '-' || value[7] != '-') return false;\n    for (std::size_t i = 0; i < value.size(); ++i) {\n        if (i == 4 || i == 7) continue;\n        if (!std::isdigit(static_cast<unsigned char>(value[i]))) return false;\n    }\n    return true;\n}\n}\n\nstd::optional<LogRecord> parse_log_line(std::string_view line) {\n    std::istringstream in{std::string(line)};\n    LogRecord record;\n    if (!(in >> record.severity >> record.timestamp)) return std::nullopt;\n    if (!valid_severity(record.severity) || !valid_date_prefix(record.timestamp)) return std::nullopt;\n    std::getline(in, record.message);\n    record.message = trim_leading(record.message);\n    if (record.message.empty() || record.message.size() > 4096) return std::nullopt;\n    return record;\n}\n",
+            "src/main.cpp": "#include \"log_parser.hpp\"\n#include <algorithm>\n#include <filesystem>\n#include <fstream>\n#include <future>\n#include <iostream>\n#include <map>\n#include <stdexcept>\n#include <string>\n#include <vector>\n\nstruct FileReport {\n    std::size_t total{0};\n    std::map<std::string, std::size_t> by_severity;\n    std::size_t malformed{0};\n};\n\nFileReport analyze_file(const std::string& path) {\n    std::ifstream in(path);\n    if (!in) throw std::runtime_error(\"cannot open: \" + path);\n\n    FileReport report;\n    std::string line;\n    while (std::getline(in, line)) {\n        ++report.total;\n        if (auto parsed = parse_log_line(line)) {\n            ++report.by_severity[parsed->severity];\n        } else {\n            ++report.malformed;\n        }\n    }\n    return report;\n}\n\nFileReport merge_reports(const std::vector<FileReport>& reports) {\n    FileReport merged;\n    for (const auto& report : reports) {\n        merged.total += report.total;\n        merged.malformed += report.malformed;\n        for (const auto& [severity, count] : report.by_severity) {\n            merged.by_severity[severity] += count;\n        }\n    }\n    return merged;\n}\n\nint main(int argc, char** argv) {\n    if (argc < 2) {\n        std::cerr << \"usage: log_analyzer <file> [file ...]\\n\";\n        return 2;\n    }\n\n    std::vector<std::future<FileReport>> futures;\n    futures.reserve(static_cast<std::size_t>(argc - 1));\n    for (int i = 1; i < argc; ++i) {\n        futures.push_back(std::async(std::launch::async, analyze_file, std::string(argv[i])));\n    }\n\n    std::vector<FileReport> reports;\n    reports.reserve(futures.size());\n    int failures = 0;\n    for (std::size_t i = 0; i < futures.size(); ++i) {\n        try {\n            reports.push_back(futures[i].get());\n        } catch (const std::exception& ex) {\n            ++failures;\n            std::cerr << \"error: \" << ex.what() << '\\n';\n        }\n    }\n\n    const FileReport merged = merge_reports(reports);\n    std::cout << \"files_processed=\" << reports.size() << '\\n';\n    std::cout << \"files_failed=\" << failures << '\\n';\n    std::cout << \"lines_seen=\" << merged.total << '\\n';\n    std::cout << \"malformed_lines=\" << merged.malformed << '\\n';\n    for (const auto& [severity, count] : merged.by_severity) {\n        std::cout << severity << '=' << count << '\\n';\n    }\n    return failures == 0 ? 0 : 1;\n}\n",
+            "tests/test_parser.cpp": "#include \"log_parser.hpp\"\n#include <cassert>\n\nint main() {\n    {\n        auto r = parse_log_line(\"INFO 2026-01-01 user logged in\");\n        assert(r.has_value());\n        assert(r->severity == \"INFO\");\n        assert(r->timestamp == \"2026-01-01\");\n        assert(r->message == \"user logged in\");\n    }\n    assert(!parse_log_line(\"BROKEN\").has_value());\n    assert(!parse_log_line(\"TRACE 2026-01-01 unsupported\").has_value());\n    assert(!parse_log_line(\"ERROR 2026/01/01 bad date\").has_value());\n    assert(!parse_log_line(\"WARN 2026-01-01 \").has_value());\n    return 0;\n}\n",
+            "sample.log": "INFO 2026-01-01 service started\nERROR 2026-01-01 database timeout\nWARN 2026-01-01 retry scheduled\nBROKEN LINE\nINFO 2026-01-02 request completed\n"
+          },
+          "explanation": "Architecture: `parse_log_line` is a pure-ish domain boundary that converts raw text into a validated `LogRecord`; `analyze_file` owns file I/O and produces a local `FileReport`; the CLI launches independent `analyze_file` operations through futures; `merge_reports` combines local immutable snapshots into one final result. The design avoids shared mutable global state, uses RAII for file streams, uses `optional` for parse failure, and keeps concurrency at the file-work level where the units are independent. The CMake file explicitly selects C++20 and attaches warnings to targets. The test target checks valid records, malformed syntax, unsupported severity, invalid dates, and empty messages. For production use, extend date validation, add stronger command-line parsing, use a dedicated logging/telemetry strategy, add a real benchmark harness, and verify the exact compiler/platform matrix."
+        }
+      }
+    ]
+  }
+}

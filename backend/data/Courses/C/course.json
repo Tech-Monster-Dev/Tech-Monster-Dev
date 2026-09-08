@@ -1,0 +1,1770 @@
+{
+  "course": {
+    "id": "c-complete-2026",
+    "title": "C",
+    "slug": "c",
+    "description": "A complete, research-based C course progressing from the language and compilation model through pointers, memory ownership, data modeling, multi-file builds, I/O, debugging, testing, concurrency, secure coding, portability, and a realistic final project. It uses C23 as the current standard reference while emphasizing durable C11/C17 concepts used in existing codebases.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 80,
+    "prerequisites": [
+      "Basic computer literacy and terminal/IDE use.",
+      "Basic arithmetic and logical reasoning.",
+      "No prior programming language is required."
+    ],
+    "learningOutcomes": [
+      "Compile C with an explicit standard and strong diagnostics.",
+      "Use core C types, control flow, functions, arrays, pointers, strings, structs, enums, and unions correctly.",
+      "Design safe dynamic-memory ownership and lifetime contracts.",
+      "Build multi-file C projects with CMake.",
+      "Implement robust file and command-line I/O with validation and error handling.",
+      "Diagnose memory errors and undefined behavior with gdb, sanitizers, and Memcheck.",
+      "Reason about C11 threading, mutexes, atomics, and synchronization.",
+      "Apply defensive coding practices for bounds, integer arithmetic, parsing, and resource cleanup.",
+      "Deliver a tested, maintainable C application with a reproducible build."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Getting Started",
+        "description": "Establish the compilation model, C23 context, basic syntax, types, expressions, and control flow.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "C standards and compiler modes",
+            "description": "C23 is the current published C revision; GCC and Clang expose explicit language modes.",
+            "learningObjectives": [
+              "Explain ISO C versus compiler extensions.",
+              "Use an explicit -std mode and recognize C11/C17/C23 codebases."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "C23 is the current published C revision; GCC and Clang expose explicit language modes."
+              },
+              {
+                "type": "code",
+                "text": "#include <stdio.h>\nint main(void) { printf(\"%ld\\n\", (long)__STDC_VERSION__); }"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01",
+              "question": "Which GCC option requests C23?",
+              "options": [
+                "-std=c23",
+                "-std=c++23",
+                "-c23",
+                "--c23"
+              ],
+              "answer": "-std=c23",
+              "explanation": "GCC documents -std=c23 for ISO C23."
+            },
+            "summary": [
+              [
+                "GCC standards",
+                "https://gcc.gnu.org/onlinedocs/gcc/Standards.html"
+              ],
+              [
+                "C23 reference",
+                "https://en.cppreference.com/w/c/23"
+              ],
+              [
+                "Clang C status",
+                "https://clang.llvm.org/c_status.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Program lifecycle",
+            "description": "Understand preprocessing, compilation, assembly, linking, and execution.",
+            "learningObjectives": [
+              "Describe the main build stages.",
+              "Compile a warning-clean hello program."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Understand preprocessing, compilation, assembly, linking, and execution."
+              },
+              {
+                "type": "code",
+                "text": "gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o main\n./main"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02",
+              "question": "What does the linker do?",
+              "options": [
+                "Resolve external symbols and combine objects",
+                "Parse C syntax",
+                "Read stdin",
+                "Allocate heap objects"
+              ],
+              "answer": "Resolve external symbols and combine objects",
+              "explanation": "The linker combines object files and resolves references."
+            },
+            "summary": [
+              [
+                "C reference",
+                "https://en.cppreference.com/w/c"
+              ],
+              [
+                "GCC standards",
+                "https://gcc.gnu.org/onlinedocs/gcc/Standards.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Types, declarations, and conversions",
+            "description": "Use scalar types, initialization, fixed-width integers, and conversions deliberately.",
+            "learningObjectives": [
+              "Choose suitable types and explain common conversions.",
+              "Use stdint.h and inttypes.h when exact widths matter."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use scalar types, initialization, fixed-width integers, and conversions deliberately."
+              },
+              {
+                "type": "code",
+                "text": "#include <inttypes.h>\n#include <stdint.h>\nint main(void) { int32_t x=42; printf(\"%\" PRId32 \"\\n\", x); }"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03",
+              "question": "Which header provides PRId32?",
+              "options": [
+                "<inttypes.h>",
+                "<limits.h>",
+                "<ctype.h>",
+                "<time.h>"
+              ],
+              "answer": "<inttypes.h>",
+              "explanation": "The formatted integer macros are defined by inttypes.h."
+            },
+            "summary": [
+              [
+                "C reference",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Operators and control flow",
+            "description": "Write conditions and loops with correct precedence and short-circuit reasoning.",
+            "learningObjectives": [
+              "Use if/switch/loops correctly.",
+              "Explain && and || short-circuiting."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Write conditions and loops with correct precedence and short-circuit reasoning."
+              },
+              {
+                "type": "code",
+                "text": "if (ptr != NULL && *ptr > 0) { /* dereference is guarded */ }"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04",
+              "question": "What is short-circuiting useful for?",
+              "options": [
+                "Guarding a dereference with a preceding condition",
+                "Allocating memory",
+                "Linking libraries",
+                "Changing source text"
+              ],
+              "answer": "Guarding a dereference with a preceding condition",
+              "explanation": "The right operand can be skipped when the left operand determines the result."
+            },
+            "summary": [
+              [
+                "C reference",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01",
+            "title": "Command-line temperature analyzer",
+            "level": "Easy",
+            "description": "Parse numeric command-line arguments and report aggregate statistics.",
+            "problemStatement": "Reject malformed input and compute count, min, max, and average.",
+            "objectives": [
+              "Use argc/argv.",
+              "Use strtod with end-pointer and errno validation.",
+              "Avoid division by zero."
+            ],
+            "requirements": [
+              "C23 compiler"
+            ],
+            "hint": "Use strtod and compare end to the input.",
+            "solutionCode": "#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\nint main(int argc,char **argv){if(argc<2)return 2;double min=0,max=0,sum=0;for(int i=1;i<argc;i++){char *e;errno=0;double v=strtod(argv[i],&e);if(errno||e==argv[i]||*e)return 2;if(i==1)min=max=v;else{if(v<min)min=v;if(v>max)max=v;}sum+=v;}printf(\"count=%d min=%.2f max=%.2f avg=%.2f\\n\",argc-1,min,max,sum/(argc-1));}",
+            "solutionExplanation": "The task combines argv handling, numeric conversion, validation, and basic control flow."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Functions, arrays, and strings",
+        "description": "Build reusable functions and work safely with arrays and null-terminated strings.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "Functions and scope",
+            "description": "Design function interfaces, parameters, returns, and scope.",
+            "learningObjectives": [
+              "Explain pass-by-value and pointer parameters.",
+              "Keep functions focused and contracts explicit."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Design function interfaces, parameters, returns, and scope."
+              },
+              {
+                "type": "code",
+                "text": "void increment(int *x) { if (x) ++*x; }"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05",
+              "question": "How can a function modify caller-owned int data?",
+              "options": [
+                "Pass its address as int *",
+                "Return void",
+                "Use a macro",
+                "Make it global"
+              ],
+              "answer": "Pass its address as int *",
+              "explanation": "The function receives a copy of the address and can modify the pointed-to object."
+            },
+            "summary": [
+              [
+                "C functions",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Arrays and pointer arithmetic",
+            "description": "Understand contiguous arrays, explicit lengths, and one-past-the-end rules.",
+            "learningObjectives": [
+              "Pass arrays with lengths.",
+              "Avoid out-of-bounds access."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Understand contiguous arrays, explicit lengths, and one-past-the-end rules."
+              },
+              {
+                "type": "code",
+                "text": "int sum(const int *a, size_t n) { int s=0; for(size_t i=0;i<n;i++) s+=a[i]; return s; }"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06",
+              "question": "What is a[i] equivalent to?",
+              "options": [
+                "*(a+i)",
+                "&a[i]",
+                "a+sizeof(a)",
+                "a*i"
+              ],
+              "answer": "*(a+i)",
+              "explanation": "C defines subscript in terms of pointer arithmetic."
+            },
+            "summary": [
+              [
+                "C arrays and pointers",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "Strings and memory functions",
+            "description": "Use strlen, memcpy, memmove, and comparisons with capacity awareness.",
+            "learningObjectives": [
+              "Explain the null terminator.",
+              "Validate destination capacity before copying."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use strlen, memcpy, memmove, and comparisons with capacity awareness."
+              },
+              {
+                "type": "code",
+                "text": "int copy(char *dst,size_t cap,const char *src){size_t n=strlen(src);if(n+1>cap)return 0;memcpy(dst,src,n+1);return 1;}"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07",
+              "question": "What terminates a C string?",
+              "options": [
+                "A null character",
+                "A newline",
+                "An automatic length field",
+                "EOF"
+              ],
+              "answer": "A null character",
+              "explanation": "C strings are null-terminated byte sequences."
+            },
+            "summary": [
+              [
+                "C strings",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "Headers and translation units",
+            "description": "Split programs into interfaces and implementations using linkage.",
+            "learningObjectives": [
+              "Use include guards and static helpers.",
+              "Compile multiple .c files."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Split programs into interfaces and implementations using linkage."
+              },
+              {
+                "type": "code",
+                "text": "#ifndef UTIL_H\n#define UTIL_H\nint add(int,int);\n#endif"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08",
+              "question": "Why use file-scope static for a helper?",
+              "options": [
+                "Internal linkage",
+                "Heap allocation",
+                "Thread safety",
+                "Macro expansion"
+              ],
+              "answer": "Internal linkage",
+              "explanation": "A file-scope static function has internal linkage."
+            },
+            "summary": [
+              [
+                "C declarations",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02",
+            "title": "Reusable statistics library",
+            "level": "Intermediate",
+            "description": "Split statistics functions into a header and implementation and link them into a CLI.",
+            "problemStatement": "Expose mean and min/max with explicit lengths and failure handling.",
+            "objectives": [
+              "Use a public header.",
+              "Use const pointers and size_t.",
+              "Reject empty input."
+            ],
+            "requirements": [
+              "C23 compiler",
+              "Two .c files"
+            ],
+            "hint": "Keep private helpers static.",
+            "solutionCode": "/* stats.h */\n#ifndef STATS_H\n#define STATS_H\n#include <stddef.h>\nint mean(const double*,size_t,double*);\n#endif\n\n/* stats.c */\n#include \"stats.h\"\nint mean(const double*v,size_t n,double*out){if(!v||!out||!n)return 0;double s=0;for(size_t i=0;i<n;i++)s+=v[i];*out=s/n;return 1;}",
+            "solutionExplanation": "The interface is separate from implementation and explicitly communicates length and output ownership."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Pointers and memory",
+        "description": "Master pointer validity, dynamic allocation, ownership, lifetime, and resource cleanup.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Pointers and indirection",
+            "description": "Use addresses, dereference, NULL, const pointers, and pointer contracts.",
+            "learningObjectives": [
+              "Trace pointer/object relationships.",
+              "Avoid invalid dereference."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use addresses, dereference, NULL, const pointers, and pointer contracts."
+              },
+              {
+                "type": "code",
+                "text": "void set_zero(int *p) { if (p) *p=0; }"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09",
+              "question": "What does *p mean for a valid pointer?",
+              "options": [
+                "Access the pointed-to object",
+                "Get p address",
+                "Allocate memory",
+                "Convert to string"
+              ],
+              "answer": "Access the pointed-to object",
+              "explanation": "Unary * performs indirection."
+            },
+            "summary": [
+              [
+                "C pointers",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Dynamic allocation",
+            "description": "Use malloc/calloc/realloc/free and failure-safe ownership patterns.",
+            "learningObjectives": [
+              "Check allocation sizes.",
+              "Use a temporary pointer for realloc."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use malloc/calloc/realloc/free and failure-safe ownership patterns."
+              },
+              {
+                "type": "code",
+                "text": "int *tmp = realloc(old, new_count * sizeof *old); if (!tmp) { /* old remains valid */ }"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-10",
+              "question": "Why use a temporary pointer with realloc?",
+              "options": [
+                "Preserve the original allocation if realloc fails",
+                "Prevent fragmentation",
+                "Make realloc synchronous",
+                "Free on failure"
+              ],
+              "answer": "Preserve the original allocation if realloc fails",
+              "explanation": "On failure the original allocation remains valid."
+            },
+            "summary": [
+              [
+                "C dynamic memory",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Lifetime and ownership",
+            "description": "Reason about automatic, static, allocated, and thread storage durations.",
+            "learningObjectives": [
+              "Identify dangling pointers.",
+              "Document borrowed versus owned memory."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Reason about automatic, static, allocated, and thread storage durations."
+              },
+              {
+                "type": "code",
+                "text": "const char *bad(void){ char local[8]=\"x\"; return local; } /* dangling */"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-11",
+              "question": "Why is returning a local array address invalid?",
+              "options": [
+                "Its lifetime ends on return",
+                "Arrays cannot be pointers",
+                "Strings cannot be local",
+                "return is forbidden"
+              ],
+              "answer": "Its lifetime ends on return",
+              "explanation": "The pointer becomes dangling when the local object lifetime ends."
+            },
+            "summary": [
+              [
+                "C storage duration",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03",
+            "title": "Growable integer vector",
+            "level": "Intermediate",
+            "description": "Implement a dynamically growing vector with correct realloc and destruction semantics.",
+            "problemStatement": "Append integers while preserving data across growth and releasing all owned memory.",
+            "objectives": [
+              "Track data,length,capacity.",
+              "Check allocation size overflow.",
+              "Use temporary realloc pointer."
+            ],
+            "requirements": [
+              "C23 compiler",
+              "stdlib.h",
+              "stdint.h"
+            ],
+            "hint": "Grow geometrically and validate byte counts before realloc.",
+            "solutionCode": "typedef struct{int *data;size_t len,cap;} Vec;\nint push(Vec*v,int x){if(v->len==v->cap){size_t c=v->cap?v->cap*2:8;if(c<v->cap||c>SIZE_MAX/sizeof(int))return 0;int*t=realloc(v->data,c*sizeof(int));if(!t)return 0;v->data=t;v->cap=c;}v->data[v->len++]=x;return 1;}\nvoid destroy(Vec*v){free(v->data);v->data=NULL;v->len=v->cap=0;}",
+            "solutionExplanation": "Ownership stays with the vector; realloc failure leaves the original allocation untouched."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Data modeling",
+        "description": "Use structs, enums, unions, alignment, and explicit serialization boundaries.",
+        "lessons": [
+          {
+            "id": "lesson-12",
+            "title": "Structs and designated initialization",
+            "description": "Model domain objects with structs and readable initialization.",
+            "learningObjectives": [
+              "Define and initialize structs.",
+              "Use const-correct interfaces."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Model domain objects with structs and readable initialization."
+              },
+              {
+                "type": "code",
+                "text": "typedef struct { int id; double balance; } Account;\nAccount a={.id=1,.balance=10.0};"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-12",
+              "question": "Why use designated initializers?",
+              "options": [
+                "Explicit member intent",
+                "Heap allocation",
+                "No padding",
+                "JSON conversion"
+              ],
+              "answer": "Explicit member intent",
+              "explanation": "They name members directly and improve clarity."
+            },
+            "summary": [
+              [
+                "C declarations",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13",
+            "title": "Enums and tagged unions",
+            "description": "Represent finite states and variant data safely.",
+            "learningObjectives": [
+              "Design a discriminator plus union.",
+              "Handle invalid enum values."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Represent finite states and variant data safely."
+              },
+              {
+                "type": "code",
+                "text": "typedef enum { TEXT, CODE } Kind;\ntypedef struct { Kind kind; union { const char *text; int code; } u; } Message;"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-13",
+              "question": "Why pair a union with a tag?",
+              "options": [
+                "To record the active variant",
+                "To enlarge storage",
+                "To make all members active",
+                "To serialize automatically"
+              ],
+              "answer": "To record the active variant",
+              "explanation": "The tag tells code which interpretation is intended."
+            },
+            "summary": [
+              [
+                "C unions",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "Alignment and serialization",
+            "description": "Understand padding, alignment, byte order, and portable wire formats.",
+            "learningObjectives": [
+              "Use sizeof/alignof.",
+              "Avoid raw struct dumping for portable formats."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Understand padding, alignment, byte order, and portable wire formats."
+              },
+              {
+                "type": "code",
+                "text": "#include <stdalign.h>\ntypedef struct { char c; int n; } Item;\n_Static_assert(alignof(Item) >= alignof(int), \"alignment\");"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-14",
+              "question": "Why can sizeof(struct) exceed member sizes?",
+              "options": [
+                "Padding for alignment",
+                "Hidden code",
+                "Automatic length field",
+                "Duplicate members"
+              ],
+              "answer": "Padding for alignment",
+              "explanation": "Implementations may insert padding."
+            },
+            "summary": [
+              [
+                "C objects",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04",
+            "title": "Tagged message model",
+            "level": "Intermediate",
+            "description": "Implement a tagged union for text, integer code, and numeric value messages.",
+            "problemStatement": "Print only the union member selected by the tag.",
+            "objectives": [
+              "Define an enum discriminator.",
+              "Switch on the tag.",
+              "Handle invalid values."
+            ],
+            "requirements": [
+              "C23 compiler"
+            ],
+            "hint": "Treat the tag and payload as one invariant.",
+            "solutionCode": "typedef enum{MSG_TEXT,MSG_CODE,MSG_VALUE}Kind;\ntypedef struct{Kind kind;union{const char*text;int code;double value;}u;}Message;\nvoid print_message(const Message*m){if(!m)return;switch(m->kind){case MSG_TEXT:printf(\"%s\\n\",m->u.text);break;case MSG_CODE:printf(\"%d\\n\",m->u.code);break;case MSG_VALUE:printf(\"%.2f\\n\",m->u.value);break;default:puts(\"invalid\");}}",
+            "solutionExplanation": "The discriminator selects the active interpretation of the union."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Build systems",
+        "description": "Move to maintainable builds with preprocessing, static libraries, and CMake.",
+        "lessons": [
+          {
+            "id": "lesson-15",
+            "title": "Preprocessor and macros",
+            "description": "Use #include, conditional compilation, and safe macros sparingly.",
+            "learningObjectives": [
+              "Explain textual substitution.",
+              "Prefer functions when macros add no value."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use #include, conditional compilation, and safe macros sparingly."
+              },
+              {
+                "type": "code",
+                "text": "#if defined(DEBUG)\n#define LOG(x) fprintf(stderr,\"DEBUG: %s\\n\",(x))\n#endif"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-15",
+              "question": "What is #include?",
+              "options": [
+                "Preprocessor inclusion",
+                "Runtime loading",
+                "Dynamic linking",
+                "Heap allocation"
+              ],
+              "answer": "Preprocessor inclusion",
+              "explanation": "It incorporates preprocessing tokens into a translation unit."
+            },
+            "summary": [
+              [
+                "C preprocessor",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Separate compilation and static libraries",
+            "description": "Compile objects and link static libraries while diagnosing symbol errors.",
+            "learningObjectives": [
+              "Build .o and .a artifacts.",
+              "Interpret undefined references."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Compile objects and link static libraries while diagnosing symbol errors."
+              },
+              {
+                "type": "code",
+                "text": "gcc -std=c23 -c add.c\nar rcs libadd.a add.o\ngcc main.o -L. -ladd -o app"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-16",
+              "question": "What usually causes an undefined reference?",
+              "options": [
+                "Missing linked definition",
+                "Too many comments",
+                "Bad stdin",
+                "No CPU integer"
+              ],
+              "answer": "Missing linked definition",
+              "explanation": "The linker cannot resolve a referenced symbol."
+            },
+            "summary": [
+              [
+                "GCC standards",
+                "https://gcc.gnu.org/onlinedocs/gcc/Standards.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-17",
+            "title": "CMake projects",
+            "description": "Use target-based CMake and out-of-source builds.",
+            "learningObjectives": [
+              "Write a minimal CMakeLists.txt.",
+              "Build libraries and executables as targets."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use target-based CMake and out-of-source builds."
+              },
+              {
+                "type": "code",
+                "text": "cmake_minimum_required(VERSION 3.20)\nproject(app C)\nset(CMAKE_C_STANDARD 23)\nadd_executable(app main.c)"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-17",
+              "question": "Why use an out-of-source build?",
+              "options": [
+                "Separate generated artifacts",
+                "Faster CPU",
+                "Replace compiler",
+                "Remove headers"
+              ],
+              "answer": "Separate generated artifacts",
+              "explanation": "It keeps generated files outside the source tree."
+            },
+            "summary": [
+              [
+                "CMake tutorial",
+                "https://cmake.org/cmake/help/latest/guide/tutorial/index.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05",
+            "title": "Multi-file CMake utility",
+            "level": "Intermediate",
+            "description": "Build a library and executable with CMake and target-specific settings.",
+            "problemStatement": "Use C23 and warnings while keeping generated files in build/.",
+            "objectives": [
+              "Create include/src structure.",
+              "Add library and executable targets.",
+              "Link the executable to the library."
+            ],
+            "requirements": [
+              "CMake",
+              "C23 compiler"
+            ],
+            "hint": "Use target_include_directories and target_link_libraries.",
+            "solutionCode": "cmake_minimum_required(VERSION 3.20)\nproject(util C)\nset(CMAKE_C_STANDARD 23)\nset(CMAKE_C_STANDARD_REQUIRED ON)\nadd_library(util src/util.c)\ntarget_include_directories(util PUBLIC include)\nadd_executable(app src/main.c)\ntarget_link_libraries(app PRIVATE util)",
+            "solutionExplanation": "CMake models the library dependency explicitly and keeps build artifacts separate."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "I/O and robust CLI",
+        "description": "Build reliable command-line tools with streams, files, parsing, and errno.",
+        "lessons": [
+          {
+            "id": "lesson-18",
+            "title": "stdio and formatted I/O",
+            "description": "Use stdin/stdout/stderr and correct format strings.",
+            "learningObjectives": [
+              "Choose diagnostic versus data streams.",
+              "Avoid format-string bugs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use stdin/stdout/stderr and correct format strings."
+              },
+              {
+                "type": "code",
+                "text": "fprintf(stderr,\"error: %s\\n\", path);\nprintf(\"count=%zu\\n\", count);"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-18",
+              "question": "Where should diagnostics normally go?",
+              "options": [
+                "stderr",
+                "stdin",
+                "stdout only",
+                "preprocessor"
+              ],
+              "answer": "stderr",
+              "explanation": "stderr separates diagnostics from normal data output."
+            },
+            "summary": [
+              [
+                "C I/O",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "File I/O",
+            "description": "Open, read, write, seek, and close streams while checking errors.",
+            "learningObjectives": [
+              "Use fread/fwrite/fgets/fclose.",
+              "Distinguish EOF from I/O failure."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Open, read, write, seek, and close streams while checking errors."
+              },
+              {
+                "type": "code",
+                "text": "FILE *fp=fopen(path,\"rb\");\nif(!fp){perror(path);return 1;}\n/* read */\nfclose(fp);"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-19",
+              "question": "Which function tests a stream error indicator?",
+              "options": [
+                "ferror",
+                "strlen",
+                "feof only",
+                "errno_clear"
+              ],
+              "answer": "ferror",
+              "explanation": "ferror tests the stream error indicator."
+            },
+            "summary": [
+              [
+                "C I/O",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Numeric parsing and errno",
+            "description": "Parse text with strtol/strtod and validate conversion results.",
+            "learningObjectives": [
+              "Use end pointers and ERANGE.",
+              "Return meaningful exit statuses."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Parse text with strtol/strtod and validate conversion results."
+              },
+              {
+                "type": "code",
+                "text": "errno=0; char *end; long v=strtol(text,&end,10); if(errno==ERANGE||end==text||*end) return 1;"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-20",
+              "question": "What does end==text after strtol mean?",
+              "options": [
+                "No characters converted",
+                "Zero was parsed",
+                "Perfect success",
+                "Only digits found"
+              ],
+              "answer": "No characters converted",
+              "explanation": "The conversion consumed no characters."
+            },
+            "summary": [
+              [
+                "C conversion functions",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06",
+            "title": "Safe line-oriented file copier",
+            "level": "Intermediate",
+            "description": "Copy a file using bounded buffers and checked stdio operations.",
+            "problemStatement": "Handle partial writes, read errors, and close failures.",
+            "objectives": [
+              "Use fread/fwrite.",
+              "Loop on partial writes.",
+              "Report errors to stderr."
+            ],
+            "requirements": [
+              "C23 compiler",
+              "Readable source and writable destination"
+            ],
+            "hint": "fwrite can write fewer bytes than requested.",
+            "solutionCode": "FILE*in=fopen(src,\"rb\");FILE*out=fopen(dst,\"wb\");unsigned char b[8192];size_t n;int ok=in&&out;while(ok&&(n=fread(b,1,sizeof b,in))){size_t o=0;while(o<n){size_t w=fwrite(b+o,1,n-o,out);if(!w){ok=0;break;}o+=w;}}if(in&&ferror(in))ok=0;if(in)fclose(in);if(out&&fclose(out)!=0)ok=0;return ok?0:1;",
+            "solutionExplanation": "The solution treats I/O as fallible and handles partial writes."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Debugging and testing",
+        "description": "Find undefined behavior and memory defects using gdb, sanitizers, Memcheck, and tests.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "Undefined behavior",
+            "description": "Recognize UB and avoid reasoning from accidental machine behavior.",
+            "learningObjectives": [
+              "Distinguish defined, implementation-defined, and undefined behavior.",
+              "Identify common UB patterns."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Recognize UB and avoid reasoning from accidental machine behavior."
+              },
+              {
+                "type": "code",
+                "text": "int a[3]={1,2,3};\n/* a[3] = 4; */ /* UB */"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-21",
+              "question": "What is UB?",
+              "options": [
+                "Behavior for which the standard imposes no requirements",
+                "Always a segfault",
+                "Guaranteed wraparound",
+                "A compiler exception"
+              ],
+              "answer": "Behavior for which the standard imposes no requirements",
+              "explanation": "The standard does not specify requirements after UB occurs."
+            },
+            "summary": [
+              [
+                "C language",
+                "https://en.cppreference.com/w/c"
+              ],
+              [
+                "UBSan",
+                "https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "gdb workflow",
+            "description": "Use breakpoints, stepping, stack inspection, and watchpoints.",
+            "learningObjectives": [
+              "Compile with -g.",
+              "Inspect state at failure."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use breakpoints, stepping, stack inspection, and watchpoints."
+              },
+              {
+                "type": "code",
+                "text": "gcc -std=c23 -g -O0 app.c -o app\ngdb ./app\n# break main\n# run\n# backtrace"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-22",
+              "question": "Which gdb command shows the stack?",
+              "options": [
+                "backtrace",
+                "heap",
+                "compile",
+                "watchfile"
+              ],
+              "answer": "backtrace",
+              "explanation": "backtrace (bt) prints stack frames."
+            },
+            "summary": [
+              [
+                "GCC documentation",
+                "https://gcc.gnu.org/onlinedocs/gcc/Standards.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Sanitizers and Memcheck",
+            "description": "Use ASan, UBSan, and Valgrind to detect memory and undefined-behavior defects.",
+            "learningObjectives": [
+              "Compile with sanitizer flags.",
+              "Interpret first-failure diagnostics."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Use ASan, UBSan, and Valgrind to detect memory and undefined-behavior defects."
+              },
+              {
+                "type": "code",
+                "text": "clang -std=c23 -g -O1 -fsanitize=address,undefined app.c -o app\n./app\nvalgrind --leak-check=yes ./app"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-23",
+              "question": "Which tool detects many use-after-free errors?",
+              "options": [
+                "AddressSanitizer",
+                "ar",
+                "printf",
+                "cpp"
+              ],
+              "answer": "AddressSanitizer",
+              "explanation": "ASan is a memory error detector covering many out-of-bounds and lifetime bugs."
+            },
+            "summary": [
+              [
+                "AddressSanitizer",
+                "https://clang.llvm.org/docs/AddressSanitizer.html"
+              ],
+              [
+                "UBSan",
+                "https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html"
+              ],
+              [
+                "Valgrind",
+                "https://valgrind.org/docs/manual/quick-start.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "Assertions and regression tests",
+            "description": "Design testable functions and exercise boundaries and failures.",
+            "learningObjectives": [
+              "Use assert for invariants.",
+              "Create repeatable tests."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Design testable functions and exercise boundaries and failures."
+              },
+              {
+                "type": "code",
+                "text": "#include <assert.h>\nassert(size <= capacity);"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-24",
+              "question": "What makes a test suite stronger?",
+              "options": [
+                "Boundary and failure cases",
+                "One happy path",
+                "No diagnostics",
+                "Undefined behavior"
+              ],
+              "answer": "Boundary and failure cases",
+              "explanation": "Tests should exercise the contract and its edges."
+            },
+            "summary": [
+              [
+                "C assert",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07",
+            "title": "Diagnose a memory bug",
+            "level": "Advanced",
+            "description": "Use ASan/UBSan or Memcheck to find and fix a heap defect.",
+            "problemStatement": "End with correct allocation size, lifetime, and cleanup.",
+            "objectives": [
+              "Compile with -g.",
+              "Run a sanitizer.",
+              "Explain root cause."
+            ],
+            "requirements": [
+              "Clang or GCC",
+              "ASan/UBSan or Valgrind"
+            ],
+            "hint": "Fix the first meaningful diagnostic rather than suppressing it.",
+            "solutionCode": "const char*s=\"secure-c\";size_t n=strlen(s);char*p=malloc(n+1);if(!p)return 1;memcpy(p,s,n+1);puts(p);free(p);",
+            "solutionExplanation": "The allocation includes the null terminator, the copy matches the allocation, and ownership is released exactly once."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Concurrency and security",
+        "description": "Use C11 concurrency primitives and defensive coding practices for real software.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Threads and mutexes",
+            "description": "Create/join threads and protect shared invariants.",
+            "learningObjectives": [
+              "Use thrd_create/thrd_join and mutexes.",
+              "Keep thread arguments alive."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Create/join threads and protect shared invariants."
+              },
+              {
+                "type": "code",
+                "text": "#include <threads.h>\nint worker(void *p){return *(int*)p;}\n/* thrd_create(&t, worker, &value); */"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-25",
+              "question": "When is a mutex better than one atomic increment?",
+              "options": [
+                "When several operations form one invariant",
+                "No shared state",
+                "Single-threaded code",
+                "Formatting strings"
+              ],
+              "answer": "When several operations form one invariant",
+              "explanation": "A mutex can protect a multi-step invariant."
+            },
+            "summary": [
+              [
+                "C concurrency",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Atomics and memory ordering",
+            "description": "Understand atomic objects, acquire/release, and happens-before reasoning.",
+            "learningObjectives": [
+              "Explain acquire/release.",
+              "Avoid copying lock-free patterns without proof."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Understand atomic objects, acquire/release, and happens-before reasoning."
+              },
+              {
+                "type": "code",
+                "text": "#include <stdatomic.h>\n_Atomic int ready=0;\natomic_store_explicit(&ready,1,memory_order_release);"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-26",
+              "question": "What can release/acquire establish?",
+              "options": [
+                "A synchronization/happens-before relationship",
+                "Global immutability",
+                "No optimization",
+                "Heap allocation"
+              ],
+              "answer": "A synchronization/happens-before relationship",
+              "explanation": "Matching release/acquire operations can synchronize prior writes."
+            },
+            "summary": [
+              [
+                "C atomics",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Integer and bounds safety",
+            "description": "Prevent arithmetic overflow from becoming memory-safety bugs.",
+            "learningObjectives": [
+              "Check multiplication before allocation.",
+              "Separate representational from application limits."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Prevent arithmetic overflow from becoming memory-safety bugs."
+              },
+              {
+                "type": "code",
+                "text": "if (count > SIZE_MAX / sizeof(Item)) return 0;\nsize_t bytes=count*sizeof(Item);"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-27",
+              "question": "When check count > SIZE_MAX/sizeof(T)?",
+              "options": [
+                "Before multiplication",
+                "After allocation",
+                "After overflow",
+                "Never"
+              ],
+              "answer": "Before multiplication",
+              "explanation": "The check avoids overflowing the multiplication."
+            },
+            "summary": [
+              [
+                "CERT C",
+                "https://sei.cmu.edu/library/sei-cert-c-coding-standard-rules-for-developing-safe-reliable-and-secure-systems-2016-edition/"
+              ],
+              [
+                "C types",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Input validation and secure interfaces",
+            "description": "Treat external data as untrusted and make parsing/resource ownership explicit.",
+            "learningObjectives": [
+              "Validate syntax, ranges, lengths.",
+              "Avoid format-string vulnerabilities."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Treat external data as untrusted and make parsing/resource ownership explicit."
+              },
+              {
+                "type": "code",
+                "text": "printf(\"%s\", input); /* fixed format */"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-28",
+              "question": "Which safely prints untrusted text?",
+              "options": [
+                "printf(\"%s\", input)",
+                "printf(input)",
+                "fprintf(stdout,input)",
+                "sprintf(input)"
+              ],
+              "answer": "printf(\"%s\", input)",
+              "explanation": "A fixed format string keeps input as data."
+            },
+            "summary": [
+              [
+                "CERT C",
+                "https://sei.cmu.edu/library/sei-cert-c-coding-standard-rules-for-developing-safe-reliable-and-secure-systems-2016-edition/"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08",
+            "title": "Defensive packet parser",
+            "level": "Advanced",
+            "description": "Parse a small binary header without assuming alignment, padding, or host byte order.",
+            "problemStatement": "Reject short buffers, unsupported versions, and payload lengths larger than available data.",
+            "objectives": [
+              "Use fixed-width integer types.",
+              "Bounds-check before every read.",
+              "Decode big-endian fields explicitly."
+            ],
+            "requirements": [
+              "C23 compiler",
+              "stdint.h",
+              "stddef.h"
+            ],
+            "hint": "Read bytes and assemble integers with shifts.",
+            "solutionCode": "static uint16_t be16(const uint8_t*p){return (uint16_t)(((uint16_t)p[0]<<8)|p[1]);}\nint parse(const uint8_t*b,size_t n,uint8_t*v,uint16_t*plen){if(!b||!v||!plen||n<4)return 0;*v=b[0];if(*v!=1)return 0;uint16_t p=be16(b+2);if((size_t)p>n-4)return 0;*plen=p;return 1;}",
+            "solutionExplanation": "The parser validates length before reading and defines endianness explicitly."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Production C",
+        "description": "Integrate performance, portability, deployment, and a realistic final project.",
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Performance and optimization",
+            "description": "Measure before optimizing and preserve correctness.",
+            "learningObjectives": [
+              "Reason about algorithmic cost and allocation patterns.",
+              "Use profiling/measurement to guide work."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Measure before optimizing and preserve correctness."
+              },
+              {
+                "type": "code",
+                "text": "/* Measure first; optimize the measured hot path. */"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-29",
+              "question": "What should precede optimization?",
+              "options": [
+                "Evidence of a bottleneck",
+                "Removing tests",
+                "Disabling warnings",
+                "Changing all loops"
+              ],
+              "answer": "Evidence of a bottleneck",
+              "explanation": "Optimization should address a measured problem."
+            },
+            "summary": [
+              [
+                "C reference",
+                "https://en.cppreference.com/w/c"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "Portability and release builds",
+            "description": "Document standards, toolchains, and debug/release/sanitizer configurations.",
+            "learningObjectives": [
+              "Create reproducible build commands.",
+              "Separate test and production configurations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Document standards, toolchains, and debug/release/sanitizer configurations."
+              },
+              {
+                "type": "code",
+                "text": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release\ncmake --build build\nctest --test-dir build --output-on-failure"
+              },
+              {
+                "type": "warning",
+                "text": "Treat warnings and failed preconditions as defects during development."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-30",
+              "question": "Why document the C standard mode?",
+              "options": [
+                "It defines language/portability expectations",
+                "It guarantees no UB",
+                "It makes compilers identical",
+                "It removes tests"
+              ],
+              "answer": "It defines language/portability expectations",
+              "explanation": "The mode defines which language dialect the project expects."
+            },
+            "summary": [
+              [
+                "GCC standards",
+                "https://gcc.gnu.org/onlinedocs/gcc/Standards.html"
+              ],
+              [
+                "CMake tutorial",
+                "https://cmake.org/cmake/help/latest/guide/tutorial/index.html"
+              ]
+            ],
+            "resources": [
+              {
+                "title": "C reference",
+                "url": "https://en.cppreference.com/w/c"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Secure Log Indexer",
+          "description": "A modular C command-line application that parses newline-delimited records, validates input, stores records in an owned growable index, summarizes severity, and is built/tested with CMake and sanitizers. It is intentionally framework-free so the student practices the language and standard library directly.",
+          "conceptsCovered": [
+            "C23 language mode",
+            "Functions and translation units",
+            "Structs and enums",
+            "Strings",
+            "Dynamic allocation and ownership",
+            "File I/O",
+            "Validation and error handling",
+            "CMake",
+            "Assertions and tests",
+            "Sanitizers",
+            "Defensive integer/bounds checks"
+          ],
+          "steps": [
+            "Create include/, src/, tests/, and build/ directories.",
+            "Define LogLevel, LogRecord, and LogStore.",
+            "Implement log parsing with two delimiters and strict severity validation.",
+            "Duplicate timestamp/message strings so the store owns their lifetime.",
+            "Grow LogStore with realloc using overflow checks and a temporary pointer.",
+            "Read files with fgets into a bounded buffer and reject detected overlong records.",
+            "Count records by severity and print a summary.",
+            "Add assertions covering valid parsing, invalid severity, and store growth.",
+            "Build and test with CMake, then run sanitizer-enabled builds.",
+            "Audit every allocation and file handle for one clear cleanup path."
+          ],
+          "code": {
+            "CMakeLists.txt": "cmake_minimum_required(VERSION 3.20)\nproject(logindexer C)\nset(CMAKE_C_STANDARD 23)\nset(CMAKE_C_STANDARD_REQUIRED ON)\nset(CMAKE_C_EXTENSIONS OFF)\nadd_library(logcore src/log.c)\ntarget_include_directories(logcore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)\ntarget_compile_options(logcore PRIVATE -Wall -Wextra -Wpedantic)\nadd_executable(logindexer src/main.c)\ntarget_link_libraries(logindexer PRIVATE logcore)\nadd_executable(log_tests tests/test_log.c)\ntarget_link_libraries(log_tests PRIVATE logcore)\nenable_testing()\nadd_test(NAME log_tests COMMAND log_tests)\n",
+            "include/log.h": "#ifndef LOG_H\n#define LOG_H\n#include <stddef.h>\ntypedef enum { LOG_INFO, LOG_WARN, LOG_ERROR } LogLevel;\ntypedef struct { char *timestamp; LogLevel level; char *message; } LogRecord;\ntypedef struct { LogRecord *items; size_t len, cap; } LogStore;\nvoid log_store_init(LogStore*);\nvoid log_store_destroy(LogStore*);\nvoid log_record_destroy(LogRecord*);\nint log_parse_line(const char*,LogRecord*);\nint log_store_push(LogStore*,LogRecord*);\nsize_t log_count_level(const LogStore*,LogLevel);\n#endif\n",
+            "src/log.c": "#include \"log.h\"\n#include <stdint.h>\n#include <stdlib.h>\n#include <string.h>\nstatic char*dup_text(const char*s,size_t n){if(n>SIZE_MAX-1)return NULL;char*p=malloc(n+1);if(!p)return NULL;memcpy(p,s,n);p[n]=0;return p;}\nvoid log_store_init(LogStore*s){if(s){s->items=NULL;s->len=s->cap=0;}}\nvoid log_record_destroy(LogRecord*r){if(r){free(r->timestamp);free(r->message);r->timestamp=r->message=NULL;}}\nvoid log_store_destroy(LogStore*s){if(!s)return;for(size_t i=0;i<s->len;i++)log_record_destroy(&s->items[i]);free(s->items);log_store_init(s);}\nstatic int level(const char*s,LogLevel*out){if(strcmp(s,\"INFO\")==0)*out=LOG_INFO;else if(strcmp(s,\"WARN\")==0)*out=LOG_WARN;else if(strcmp(s,\"ERROR\")==0)*out=LOG_ERROR;else return 0;return 1;}\nint log_parse_line(const char*line,LogRecord*out){if(!line||!out)return 0;out->timestamp=out->message=NULL;const char*a=strchr(line,'|');if(!a)return 0;const char*b=strchr(a+1,'|');if(!b||a==line||b==a+1)return 0;const char*e=strchr(b+1,'\\n');size_t mn=e?(size_t)(e-b-1):strlen(b+1);if(!mn)return 0;char*ls=dup_text(a+1,(size_t)(b-a-1));if(!ls)return 0;LogLevel lv;if(!level(ls,&lv)){free(ls);return 0;}free(ls);char*ts=dup_text(line,(size_t)(a-line));char*msg=dup_text(b+1,mn);if(!ts||!msg){free(ts);free(msg);return 0;}out->timestamp=ts;out->message=msg;return (out->level=lv),1;}\nint log_store_push(LogStore*s,LogRecord*r){if(!s||!r)return 0;if(s->len==s->cap){size_t c=s->cap?s->cap*2:8;if(c<s->cap||c>SIZE_MAX/sizeof(*s->items))return 0;LogRecord*t=realloc(s->items,c*sizeof(*s->items));if(!t)return 0;s->items=t;s->cap=c;}s->items[s->len++]=*r;r->timestamp=r->message=NULL;return 1;}\nsize_t log_count_level(const LogStore*s,LogLevel lv){size_t n=0;if(!s)return 0;for(size_t i=0;i<s->len;i++)if(s->items[i].level==lv)n++;return n;}\n",
+            "src/main.c": "#include \"log.h\"\n#include <stdio.h>\n#include <string.h>\nint main(int argc,char**argv){if(argc!=2){fprintf(stderr,\"usage: %s FILE\\n\",argv[0]);return 2;}FILE*f=fopen(argv[1],\"r\");if(!f){perror(argv[1]);return 1;}LogStore s;log_store_init(&s);char line[4096];size_t no=0;int rc=0;while(fgets(line,sizeof line,f)){no++;size_t n=strlen(line);if(n==sizeof line-1&&line[n-1]!='\\n'&&!feof(f)){fprintf(stderr,\"line %zu too long\\n\",no);rc=1;break;}LogRecord r;if(!log_parse_line(line,&r)){fprintf(stderr,\"invalid line %zu\\n\",no);rc=1;break;}if(!log_store_push(&s,&r)){log_record_destroy(&r);rc=1;break;}}if(ferror(f))rc=1;fclose(f);if(!rc)printf(\"records=%zu info=%zu warn=%zu error=%zu\\n\",s.len,log_count_level(&s,LOG_INFO),log_count_level(&s,LOG_WARN),log_count_level(&s,LOG_ERROR));log_store_destroy(&s);return rc;}\n",
+            "tests/test_log.c": "#include \"log.h\"\n#include <assert.h>\n#include <string.h>\n#include <stdio.h>\nint main(void){LogRecord r;assert(log_parse_line(\"t|INFO|hello\\n\",&r));assert(strcmp(r.message,\"hello\")==0);log_record_destroy(&r);assert(!log_parse_line(\"t|TRACE|bad\\n\",&r));LogStore s;log_store_init(&s);for(int i=0;i<20;i++){assert(log_parse_line(\"t|WARN|x\\n\",&r));assert(log_store_push(&s,&r));}assert(s.len==20&&log_count_level(&s,LOG_WARN)==20);log_store_destroy(&s);puts(\"all tests passed\");}\n"
+          },
+          "explanation": "The library owns each stored record and its strings. Parsing allocates independent copies, log_store_push transfers ownership into the growable array, and destruction frees every owned string exactly once. The CLI treats input as untrusted, bounds each line, checks parsing and allocation failures, and releases the file/store on every path. Tests cover valid parsing, invalid severity, dynamic growth, and counting. CMake provides a reproducible target graph. Development builds should use warnings and sanitizers; release builds should not ship sanitizer runtimes merely because they were used for testing."
+        }
+      }
+    ]
+  }
+}

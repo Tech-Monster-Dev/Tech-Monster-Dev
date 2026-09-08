@@ -1,6 +1,6 @@
 const isModuleApproved = (module, taskStatusMap) => {
     const tasks = module.tasks || [];
-    return tasks.length > 0 &&
+    return tasks.length === 0 ||
         tasks.every((task) => taskStatusMap[task.id] === "approved");
 };
 

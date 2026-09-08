@@ -29,6 +29,7 @@ export default function LessonAccordion({
     const navigate = useNavigate();
 
     // All lessons in this module must be completed before the task unlocks.
+    const hasTasks = Array.isArray(lesson?.tasks) && lesson.tasks.length > 0;
     const isModuleCompleted = (module || []).length > 0 && (module || []).every((item) => item.completed);
 
     // Whether this module's task submission has been APPROVED by an admin.
@@ -154,7 +155,7 @@ export default function LessonAccordion({
 
                         {/* Module Task Bar */}
 
-                        {isModuleCompleted && (
+                        {hasTasks && isModuleCompleted && (
                             <motion.div
                                 whileHover={{ x: 6 }}
                                 whileTap={{ scale: 0.98 }}

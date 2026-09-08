@@ -14,6 +14,8 @@ import {
     extendSubmissionDeadline
 } from "../../../../services/api/adminTask.service";
 
+import CodeBlock from "../../../student/lessons/components/LessonContent/components/LessonPage/components/CodeBlock/CodeBlock";
+
 import "./TaskApprovalDetails.css";
 
 export default function TaskApprovalDetails() {
@@ -273,9 +275,18 @@ export default function TaskApprovalDetails() {
                 </div>
                 <div className="detailRow">
                     <span>Code</span>
-                    <pre>
-                        {task.code || "-"}
-                    </pre>
+                    {task.code ? (
+                        <CodeBlock
+                            code={task.code}
+                            language={
+                                task.language ||
+                                task.programmingLanguage ||
+                                "text"
+                            }
+                        />
+                    ) : (
+                        <pre>-</pre>
+                    )}
                 </div>
 
                 <textarea

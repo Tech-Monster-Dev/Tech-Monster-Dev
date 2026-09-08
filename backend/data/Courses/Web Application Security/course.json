@@ -1,0 +1,1911 @@
+{
+  "course": {
+    "id": "web-application-security",
+    "title": "Web Application Security",
+    "slug": "web-application-security",
+    "description": "A practical, research-grounded course for understanding and assessing modern web applications. It covers HTTP and browser security controls, assessment methodology, authentication and authorization testing, injection and input validation, CSRF/SSRF/file-upload and business-logic issues, API and client-side security, configuration and supply-chain review, secure SDLC practices, professional reporting, retesting, and a self-contained local capstone. Offensive testing is constrained to authorized environments and paired with remediation and verification.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 84,
+    "prerequisites": [
+      "Basic computer and web-browser literacy.",
+      "Basic understanding of IP networking, HTTP, and command-line use.",
+      "A local environment capable of running Python and a modern browser.",
+      "Only test systems and data you are explicitly authorized to assess."
+    ],
+    "learningOutcomes": [
+      "Explain browser, HTTP, application, identity, and data-layer trust boundaries.",
+      "Plan an authorized web security assessment with scope and safe stop conditions.",
+      "Perform structured tests for authentication, authorization, sessions, input validation, and common web weaknesses.",
+      "Assess cookies, TLS, CORS, CSP, and related browser and transport controls.",
+      "Evaluate API object/function authorization, schema validation, resource-consumption controls, and client-side trust boundaries.",
+      "Review application configuration, secrets, dependencies, and secure-development controls.",
+      "Write reproducible security findings with impact, remediation, and retest criteria.",
+      "Complete a local end-to-end assessment and verify remediation with repeatable tests."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Web Security Foundations and Testing Methodology",
+        "description": "Build the testing mindset: scope, trust boundaries, attack surface, evidence, and a repeatable security-testing lifecycle.",
+        "lessons": [
+          {
+            "id": "lesson-01",
+            "title": "How Web Applications Work",
+            "description": "Understand the browser, server, HTTP, sessions, APIs, and data stores well enough to locate security boundaries.",
+            "learningObjectives": [
+              "Trace a browser-to-server request path.",
+              "Identify client-side and server-side trust boundaries.",
+              "Explain why HTTP semantics and application logic must be assessed separately."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A web application typically combines browser code, HTTP requests/responses, server-side business logic, identity/session handling, and data services. Security failures often occur where assumptions change between these components."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authentication answers who the requester is; authorization answers what that principal may do.",
+                  "Client-side controls improve user experience but are not a trustworthy enforcement boundary.",
+                  "Security testing should identify where untrusted input, identities, and privileges cross components."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "GET /account/42 HTTP/1.1\nHost: app.example.test\nAccept: application/json"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which boundary must always be enforced server-side?",
+              "options": [
+                "UI field hiding",
+                "Authorization",
+                "Browser layout",
+                "Client-side validation"
+              ],
+              "answer": "Authorization",
+              "explanation": "Server-side authorization is required because clients are not trusted."
+            },
+            "summary": [
+              "Web security starts with understanding data flow and trust boundaries."
+            ],
+            "resources": [
+              {
+                "title": "RFC 9110 HTTP Semantics",
+                "url": "https://www.rfc-editor.org/rfc/rfc9110"
+              },
+              {
+                "title": "OWASP Web Security Testing Guide (Stable)",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02",
+            "title": "Scope, Rules of Engagement, and Safe Testing",
+            "description": "Plan an authorized assessment so testing is useful, reproducible, and non-destructive.",
+            "learningObjectives": [
+              "Define in-scope and out-of-scope targets.",
+              "Specify test accounts, timing, rate limits, and escalation paths.",
+              "Explain why evidence and stop conditions belong in the rules of engagement."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A professional web assessment begins before technical testing. Scope should identify applications, environments, domains, API hosts, accounts, excluded systems, test windows, and contact/escalation procedures."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Prefer staging or dedicated lab systems when possible.",
+                  "Define prohibited actions such as destructive testing, production data changes, or uncontrolled load.",
+                  "Document assumptions that could invalidate conclusions."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not test systems you do not own or lack explicit authorization to assess."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "What should be established before active security testing?",
+              "options": [
+                "A payload list only",
+                "Rules of engagement and scope",
+                "A public disclosure post",
+                "A malware sample"
+              ],
+              "answer": "Rules of engagement and scope",
+              "explanation": "Authorized scope and test constraints reduce operational and legal risk."
+            },
+            "summary": [
+              "Authorization and scope are part of technical quality, not paperwork overhead."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Testing Framework",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/3-The_OWASP_Testing_Framework/"
+              },
+              {
+                "title": "NIST SP 800-115",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03",
+            "title": "Attack Surface Mapping and Information Gathering",
+            "description": "Build a structured inventory of web entry points and application components without treating passive discovery as proof of a vulnerability.",
+            "learningObjectives": [
+              "Inventory domains, hosts, endpoints, parameters, roles, and exposed functionality.",
+              "Differentiate passive reconnaissance from active testing.",
+              "Record evidence and confidence for discovered assets."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Map public-facing hosts, applications, APIs, authentication paths, upload features, admin interfaces, and third-party integrations.",
+                  "Use application documentation, browser developer tools, proxy history, and authorized enumeration to build an attack-surface map.",
+                  "Do not equate an exposed endpoint with a vulnerability; exposure becomes meaningful when behavior violates a security requirement."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Inventory example:\nportal.example.test\napi.example.test/v1\n/admin\n/upload\n/oauth/callback"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01",
+                "title": "Map a Local Web Attack Surface",
+                "description": "Create an evidence-backed inventory for a local training application.",
+                "steps": [
+                  "Read supplied application documentation and identify pages and API endpoints.",
+                  "Record HTTP methods, parameters, roles, objects, and trust boundaries.",
+                  "Mark evidence source and confidence for each item.",
+                  "Turn the inventory into a prioritized test list."
+                ],
+                "solution": "Produce a structured attack-surface table and prioritized test list.",
+                "output": "A reproducible inventory suitable for driving later security tests."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "Which statement is correct?",
+              "options": [
+                "An endpoint is a vulnerability by definition",
+                "Discovery establishes what exists; testing determines whether security properties fail",
+                "Passive discovery is always illegal",
+                "A hidden endpoint is automatically safe"
+              ],
+              "answer": "Discovery establishes what exists; testing determines whether security properties fail",
+              "explanation": "Inventory and vulnerability validation are distinct activities."
+            },
+            "summary": [
+              "A useful attack-surface map records evidence, not assumptions."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide (Stable)",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04",
+            "title": "Evidence, Reproducibility, and Reporting Basics",
+            "description": "Learn how testers turn observations into defensible findings.",
+            "learningObjectives": [
+              "Capture request/response evidence safely.",
+              "Write reproducible finding steps.",
+              "Separate fact, impact, and inference in a report."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A strong finding identifies affected component, precondition, exact steps, observed result, security impact, and remediation.",
+                  "Redact secrets and unnecessary personal data from evidence.",
+                  "Use timestamps and stable test identifiers when correlating evidence."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Finding structure:\nTitle\nAsset\nPrecondition\nSteps\nObserved result\nImpact\nEvidence\nRemediation"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-04",
+              "question": "Which report element makes a finding easiest to verify?",
+              "options": [
+                "A dramatic title",
+                "Reproducible steps with evidence",
+                "A screenshot without context",
+                "A guess about attacker identity"
+              ],
+              "answer": "Reproducible steps with evidence",
+              "explanation": "Repeatable steps and supporting evidence enable verification."
+            },
+            "summary": [
+              "Good reporting is part of testing accuracy."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide (Stable)",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Create an Assessment Scope Sheet",
+            "level": "Easy",
+            "description": "Draft a scope sheet for an authorized web application assessment.",
+            "problemStatement": "Define target applications, exclusions, accounts, time window, allowed testing, evidence rules, and escalation contacts.",
+            "objectives": [
+              "Specify scope and exclusions.",
+              "Define safe-testing constraints.",
+              "Add a stop condition."
+            ],
+            "requirements": [
+              "No software required; use a document or markdown file."
+            ],
+            "hint": "Think about what would prevent an otherwise correct test from causing an operational incident.",
+            "solutionCode": "Example:\nIn scope: https://lab.example.test, api.lab.example.test\nOut of scope: third-party IdP, production payments\nLimits: no destructive actions, max 1 request/sec for active enumeration",
+            "solutionExplanation": "The solution is intentionally procedural because safe testing depends on context and authorization."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "HTTP, Browser Controls, and Transport Security",
+        "description": "Understand the protocol and browser security controls that web applications depend on.",
+        "lessons": [
+          {
+            "id": "lesson-05",
+            "title": "HTTP Requests, Responses, Headers, and Methods",
+            "description": "Read HTTP traffic precisely so application behavior can be tested rather than guessed.",
+            "learningObjectives": [
+              "Interpret methods, status codes, headers, and body semantics.",
+              "Distinguish idempotent/read-oriented operations from state-changing workflows.",
+              "Identify security-relevant headers."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "POST /login HTTP/1.1\nHost: lab.example.test\nContent-Type: application/json\n\n{\"username\":\"alice\",\"password\":\"example\"}"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Headers can affect caching, content handling, authentication context, and browser behavior.",
+                  "Status codes communicate semantics but application-specific authorization decisions still need testing."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "Which HTTP method is normally used to request a resource representation without asking the server to change state?",
+              "options": [
+                "GET",
+                "POST",
+                "PATCH",
+                "DELETE"
+              ],
+              "answer": "GET",
+              "explanation": "GET is defined as retrieving a current representation of a target resource."
+            },
+            "summary": [
+              "HTTP knowledge is foundational to both manual and automated testing."
+            ],
+            "resources": [
+              {
+                "title": "RFC 9110 HTTP Semantics",
+                "url": "https://www.rfc-editor.org/rfc/rfc9110"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06",
+            "title": "Cookies, Sessions, and Browser State",
+            "description": "Assess session security across issuance, storage, rotation, expiration, and invalidation.",
+            "learningObjectives": [
+              "Explain Secure, HttpOnly, and SameSite cookie attributes.",
+              "Identify session fixation and session invalidation risks.",
+              "Test session behavior across login and privilege changes."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Cookies commonly carry session identifiers. Secure limits transmission to secure channels; HttpOnly prevents document.cookie access by scripts in supporting browsers; SameSite controls cross-site sending behavior."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Regenerate session identifiers when privilege changes require it.",
+                  "Expire sessions according to risk and operational needs.",
+                  "Do not put sensitive authorization decisions only in browser-controlled state."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "Which cookie attribute helps prevent JavaScript from reading the cookie value?",
+              "options": [
+                "Secure",
+                "HttpOnly",
+                "SameSite=None",
+                "Path"
+              ],
+              "answer": "HttpOnly",
+              "explanation": "HttpOnly restricts access from document.cookie."
+            },
+            "summary": [
+              "Session security is a lifecycle property, not just a cookie flag."
+            ],
+            "resources": [
+              {
+                "title": "MDN Set-Cookie",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+              },
+              {
+                "title": "OWASP Session Management Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07",
+            "title": "TLS and Certificate Validation",
+            "description": "Understand what HTTPS protects and how certificate validation affects endpoint authenticity.",
+            "learningObjectives": [
+              "Explain TLS confidentiality and integrity at a high level.",
+              "Describe certificate-chain and hostname validation.",
+              "Recognize why TLS does not fix server-side application flaws."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "TLS creates a protected channel and authenticates the peer through certificate-based trust mechanisms. The application must still enforce authentication, authorization, input validation, and safe data handling."
+              },
+              {
+                "type": "warning",
+                "text": "Disabling certificate validation in clients can convert endpoint authentication into a trust-on-first-look or trust-anything model and should not be used as a general workaround."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "What does TLS not guarantee by itself?",
+              "options": [
+                "Encrypted transport",
+                "Endpoint authentication",
+                "Correct authorization logic in the application",
+                "Integrity protection of the protected channel"
+              ],
+              "answer": "Correct authorization logic in the application",
+              "explanation": "TLS protects transport; it does not enforce application business rules."
+            },
+            "summary": [
+              "Transport security and application security are complementary."
+            ],
+            "resources": [
+              {
+                "title": "RFC 8446 TLS 1.3",
+                "url": "https://www.rfc-editor.org/rfc/rfc8446"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08",
+            "title": "CORS, CSP, and Browser Security Headers",
+            "description": "Learn how browser-enforced policies affect cross-origin requests and script/resource execution.",
+            "learningObjectives": [
+              "Explain the purpose of CORS.",
+              "Explain how CSP restricts resource execution.",
+              "Identify insecure header configurations and test their effect."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "CORS controls whether a browser may expose cross-origin response data to requesting scripts; it is not an authorization system.",
+                  "CSP controls what a page may load or execute and can reduce XSS impact.",
+                  "Security headers should be tested against the application’s actual behavior."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Content-Security-Policy: default-src 'self'; object-src 'none'\nAccess-Control-Allow-Origin: https://trusted.example.test"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "What is CORS primarily controlling?",
+              "options": [
+                "Database permissions",
+                "Browser access to cross-origin responses",
+                "TLS cipher selection",
+                "Password hashing"
+              ],
+              "answer": "Browser access to cross-origin responses",
+              "explanation": "CORS is a browser policy mechanism for controlled cross-origin sharing."
+            },
+            "summary": [
+              "Browser policy controls must be tested in context."
+            ],
+            "resources": [
+              {
+                "title": "MDN CORS",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS"
+              },
+              {
+                "title": "MDN Content Security Policy",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Review Browser Security Headers",
+            "level": "Easy",
+            "description": "Assess a fictional response-header set for common browser-security weaknesses.",
+            "problemStatement": "Identify insecure or missing CSP, CORS, cookie, and transport-related controls and recommend corrected policies.",
+            "objectives": [
+              "Analyze at least four headers.",
+              "Explain compatibility trade-offs for each proposed control."
+            ],
+            "requirements": [
+              "Use only the supplied response headers."
+            ],
+            "hint": "Do not recommend a restrictive policy without considering the resources the application actually needs.",
+            "solutionCode": "A good solution explains both the security benefit and the operational effect of each header.",
+            "solutionExplanation": "The task reinforces browser-side policy analysis rather than memorizing header names."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Authentication, Authorization, and Session Testing",
+        "description": "Test the identity controls that protect accounts, roles, and sensitive operations.",
+        "lessons": [
+          {
+            "id": "lesson-09",
+            "title": "Authentication Testing",
+            "description": "Assess login, password policy, MFA, recovery, lockout, and error behavior.",
+            "learningObjectives": [
+              "Test positive and negative authentication paths.",
+              "Identify account-enumeration and recovery weaknesses.",
+              "Evaluate MFA and reauthentication requirements for sensitive actions."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Authentication testing includes login, logout, password changes, reset flows, registration, and alternate authentication channels.",
+                  "Error messages should avoid unnecessarily revealing whether an account exists.",
+                  "Rate limiting and abuse controls need to be tested with safe, bounded traffic."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "Which area belongs in authentication testing?",
+              "options": [
+                "Only the login form",
+                "Login, recovery, password change, registration, and related identity flows",
+                "Only CSS validation",
+                "Only database indexes"
+              ],
+              "answer": "Login, recovery, password change, registration, and related identity flows",
+              "explanation": "Authentication is a lifecycle, not one endpoint."
+            },
+            "summary": [
+              "Test the complete identity lifecycle."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authentication Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+              },
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10",
+            "title": "Authorization and Access-Control Testing",
+            "description": "Find horizontal and vertical privilege failures using role and object comparisons.",
+            "learningObjectives": [
+              "Differentiate horizontal from vertical authorization failures.",
+              "Test object ownership and role boundaries.",
+              "Verify denial behavior at the server boundary."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Horizontal escalation involves access to another principal’s resources at a similar privilege level. Vertical escalation crosses role/privilege boundaries.",
+                  "Authorization should be checked for each sensitive operation, not inferred from menu visibility.",
+                  "Compare allowed and denied cases systematically."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Request A: GET /api/orders/1001 as user-A\nRequest B: GET /api/orders/1002 as user-A\nExpected: user-A receives only authorized objects."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02",
+                "title": "Test Object-Level Authorization",
+                "description": "Compare allowed and denied object access using two fictional lab identities.",
+                "steps": [
+                  "Use the owner identity to request its object.",
+                  "Use the peer identity to request the owner object.",
+                  "Record expected and observed status codes and response bodies.",
+                  "Document any authorization mismatch as a finding."
+                ],
+                "solution": "Show that object authorization must be enforced server-side for each requested resource.",
+                "output": "A before/after authorization matrix with evidence."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "A user can access another customer’s record by changing an object ID. What class of issue is this?",
+              "options": [
+                "Horizontal authorization failure",
+                "TLS misconfiguration",
+                "CSP bypass",
+                "CSRF token reuse"
+              ],
+              "answer": "Horizontal authorization failure",
+              "explanation": "The same user is reaching a peer user’s resource without permission."
+            },
+            "summary": [
+              "Authorization must be enforced on the requested resource and action."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authorization Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+              },
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11",
+            "title": "Session Fixation and Session Lifecycle",
+            "description": "Test whether session identifiers remain safe across authentication and privilege changes.",
+            "learningObjectives": [
+              "Explain session fixation.",
+              "Test session rotation and invalidation.",
+              "Check concurrent session behavior where relevant."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Session fixation occurs when an attacker can cause a victim to authenticate using a session identifier the attacker already knows. A common defense is to issue a new session identifier after successful authentication or privilege changes."
+              },
+              {
+                "type": "code",
+                "text": "Test sequence:\n1. Obtain pre-auth session cookie.\n2. Authenticate.\n3. Compare session identifier.\nExpected: identifier changes when the application requires rotation."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "What is the central defense against session fixation?",
+              "options": [
+                "Keeping the same session ID after login",
+                "Rotating the session identifier at the appropriate authentication boundary",
+                "Disabling HTTPS",
+                "Hiding the logout button"
+              ],
+              "answer": "Rotating the session identifier at the appropriate authentication boundary",
+              "explanation": "Rotation breaks the attacker’s knowledge of the pre-auth session identifier."
+            },
+            "summary": [
+              "Session identifiers need lifecycle controls."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Session Management Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12",
+            "title": "MFA, Recovery, and Sensitive Actions",
+            "description": "Evaluate stronger authentication requirements around account recovery and high-impact operations.",
+            "learningObjectives": [
+              "Identify high-risk account recovery paths.",
+              "Explain why MFA reset flows can bypass strong primary authentication.",
+              "Test reauthentication requirements for sensitive changes."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Account recovery is an authentication path and must be protected accordingly.",
+                  "Sensitive actions such as changing MFA factors, recovery addresses, or payment details may justify reauthentication or step-up authentication.",
+                  "Security questions are generally weak when answers are guessable or publicly knowable."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-04",
+              "question": "Why must MFA reset be tested separately from normal login?",
+              "options": [
+                "It is not part of security",
+                "Recovery can become an alternate path around stronger authentication",
+                "MFA is only for developers",
+                "Reset flows never affect access"
+              ],
+              "answer": "Recovery can become an alternate path around stronger authentication",
+              "explanation": "A weaker recovery path can negate a stronger primary flow."
+            },
+            "summary": [
+              "Strong authentication can be undermined by weak recovery or step-up controls."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Authentication Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+              },
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Design an Authorization Test Matrix",
+            "level": "Intermediate",
+            "description": "Create a matrix to test role and ownership boundaries for an application with viewer, editor, and admin roles.",
+            "problemStatement": "Build cases for allowed and denied access to records and administrative functions, including object-ownership changes.",
+            "objectives": [
+              "Include horizontal and vertical cases.",
+              "Record expected status/behavior and evidence.",
+              "Include a default-deny case."
+            ],
+            "requirements": [
+              "Use a controlled lab or fictional scenario appropriate to the task."
+            ],
+            "hint": "Vary one authorization dimension at a time so a failure is attributable.",
+            "solutionCode": "Example rows: viewer reads own report=allow; viewer reads another user report=deny; editor deletes user account=deny; admin changes role=allow.",
+            "solutionExplanation": "A matrix makes authorization testing systematic and repeatable."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Input Validation and Injection",
+        "description": "Learn to identify interpreter-boundary failures while using safe, non-destructive lab techniques.",
+        "lessons": [
+          {
+            "id": "lesson-13",
+            "title": "SQL Injection and Parameterized Queries",
+            "description": "Understand how untrusted input can become SQL code and how parameterization separates data from syntax.",
+            "learningObjectives": [
+              "Explain SQL injection at the query-construction level.",
+              "Recognize vulnerable string concatenation.",
+              "Verify parameterized query behavior in code review and testing."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "# Vulnerable pattern (do not deploy)\nquery = \"SELECT * FROM users WHERE name='\" + username + \"'\"\n\n# Safer parameterized pattern\ncur.execute('SELECT * FROM users WHERE name = ?', (username,))"
+              },
+              {
+                "type": "warning",
+                "text": "Use controlled lab data for injection exercises. Do not probe production databases without explicit authorization."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03",
+                "title": "Verify Parameterized SQLite Queries",
+                "description": "Practice safe data binding against an in-memory SQLite database.",
+                "steps": [
+                  "Create an in-memory SQLite database and users table.",
+                  "Insert two fictional users with parameterized statements.",
+                  "Query by a user-provided name using a parameter marker.",
+                  "Explain why the input remains data rather than SQL syntax."
+                ],
+                "solution": "import sqlite3\nconn = sqlite3.connect(\":memory:\")\nconn.execute(\"CREATE TABLE users (id INTEGER, name TEXT)\")\nconn.executemany(\"INSERT INTO users VALUES (?, ?)\", [(1, \"alice\"), (2, \"bob\")])\nname = \"alice\"\nprint(conn.execute(\"SELECT id, name FROM users WHERE name = ?\", (name,)).fetchone())",
+                "output": "The query returns the matching row without constructing SQL from the input string."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "What is the primary protection against SQL injection in database APIs?",
+              "options": [
+                "String concatenation",
+                "Parameterized queries",
+                "Longer URLs",
+                "Client-side validation only"
+              ],
+              "answer": "Parameterized queries",
+              "explanation": "Parameterization keeps user data separate from SQL syntax."
+            },
+            "summary": [
+              "Treat database statements as code/data boundaries."
+            ],
+            "resources": [
+              {
+                "title": "OWASP SQL Injection Prevention Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-14",
+            "title": "XSS: Reflected, Stored, and DOM-Based",
+            "description": "Understand cross-site scripting variants and context-aware defenses.",
+            "learningObjectives": [
+              "Differentiate reflected, stored, and DOM-based XSS.",
+              "Choose context-appropriate output encoding.",
+              "Explain CSP as a defense layer rather than a primary fix."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Reflected XSS occurs when input is returned in a response; stored XSS persists in application data; DOM-based XSS arises from unsafe client-side data flow.",
+                  "Output encoding must match the context where data is inserted.",
+                  "HTML sanitization and safe templating can help in contexts where HTML is intentionally allowed."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Safe principle:\nTreat user content as data, not executable markup.\nUse a framework/template system with contextual escaping by default."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "Why is context-specific output encoding important for XSS defense?",
+              "options": [
+                "All contexts parse output identically",
+                "Different contexts interpret characters differently",
+                "Encoding removes authentication",
+                "CSP makes encoding unnecessary"
+              ],
+              "answer": "Different contexts interpret characters differently",
+              "explanation": "HTML, attribute, script, URL, and CSS contexts have different parsers and rules."
+            },
+            "summary": [
+              "XSS defenses depend on the output context."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Cross Site Scripting Prevention Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+              },
+              {
+                "title": "MDN Content Security Policy",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP"
+              }
+            ]
+          },
+          {
+            "id": "lesson-15",
+            "title": "Command and Template Injection",
+            "description": "Recognize dangerous interpreter boundaries beyond SQL and HTML.",
+            "learningObjectives": [
+              "Identify command-injection patterns.",
+              "Explain why shell invocation is risky with untrusted input.",
+              "Choose allowlist validation and safe APIs where possible."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Command injection occurs when application-controlled data changes the meaning of a command interpreter invocation.",
+                  "Prefer APIs that accept structured arguments without a shell.",
+                  "If an operation requires a limited set of values, validate against an allowlist."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "Preferred pattern:\nsubprocess.run([\"convert\", input_path, output_path], check=True)\nAvoid building a shell command string from untrusted data."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "Which design most reduces shell-command injection risk?",
+              "options": [
+                "Concatenate strings into a shell command",
+                "Use structured process APIs without a shell when possible",
+                "Trust inputs from the browser",
+                "Base64-encode the command"
+              ],
+              "answer": "Use structured process APIs without a shell when possible",
+              "explanation": "Structured arguments reduce the chance that data is interpreted as shell syntax."
+            },
+            "summary": [
+              "Interpreter boundaries should be explicit and narrow."
+            ],
+            "resources": [
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          },
+          {
+            "id": "lesson-16",
+            "title": "Path Traversal and File Handling",
+            "description": "Test whether user-controlled paths can escape intended directories or access unintended files.",
+            "learningObjectives": [
+              "Explain path traversal conceptually.",
+              "Use canonicalization and allowlists safely.",
+              "Design file-storage paths that do not depend directly on user input."
+            ],
+            "notes": [
+              {
+                "type": "code",
+                "text": "Safer design idea:\nbase_dir = Path(\"/srv/app/uploads\")\nfile_id = lookup_server_side_identifier(request_id)\npath = base_dir / file_id\n# Do not derive file_id directly from a raw user path."
+              },
+              {
+                "type": "warning",
+                "text": "Do not use traversal payloads against real systems without explicit authorization."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "Which design is safest for stored files?",
+              "options": [
+                "Use raw user-supplied filesystem paths",
+                "Map user-controlled IDs to server-side known file paths",
+                "Disable authorization",
+                "Store uploads in the application source directory"
+              ],
+              "answer": "Map user-controlled IDs to server-side known file paths",
+              "explanation": "Server-side mapping reduces dependence on untrusted path strings."
+            },
+            "summary": [
+              "File operations need explicit containment and authorization."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Path Traversal",
+                "url": "https://owasp.org/www-community/attacks/Path_Traversal"
+              },
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Review an Injection-Prone Handler",
+            "level": "Intermediate",
+            "description": "Analyze a fictional handler containing SQL and shell-construction risks and rewrite it using safer boundaries.",
+            "problemStatement": "Replace string-built SQL and shell commands with parameterized or structured APIs and add validation.",
+            "objectives": [
+              "Identify two interpreter boundaries.",
+              "Provide safer code.",
+              "Explain why validation is not a substitute for parameterization."
+            ],
+            "requirements": [
+              "Use Python standard-library examples only."
+            ],
+            "hint": "Ask what part of the input is data and what part is executable syntax.",
+            "solutionCode": "Use sqlite3 parameter substitution and subprocess.run with an argument list and shell=False.",
+            "solutionExplanation": "The solution removes ambiguity at the interpreter boundary instead of attempting to sanitize arbitrary code syntax."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "CSRF, SSRF, File Uploads, and Business Logic",
+        "description": "Test application workflows where security failures arise from trust assumptions and business processes rather than one simple input parser.",
+        "lessons": [
+          {
+            "id": "lesson-17",
+            "title": "CSRF and State-Changing Requests",
+            "description": "Assess cross-site request risks for cookie-authenticated state changes.",
+            "learningObjectives": [
+              "Explain CSRF conditions.",
+              "Test CSRF tokens and SameSite controls.",
+              "Differentiate CSRF from XSS and authorization failures."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "CSRF relies on a victim’s browser carrying ambient authentication to a target site while an attacker induces a request.",
+                  "Synchronizer tokens, double-submit patterns, SameSite cookies, and origin checks can contribute to defense depending on architecture.",
+                  "APIs using bearer tokens in non-browser clients may have different CSRF properties."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Which condition is central to classic CSRF?",
+              "options": [
+                "The server has no database",
+                "The browser automatically sends authentication context with a cross-site request",
+                "The application uses HTTPS",
+                "The user has no account"
+              ],
+              "answer": "The browser automatically sends authentication context with a cross-site request",
+              "explanation": "Ambient authentication context is a key part of classic CSRF."
+            },
+            "summary": [
+              "CSRF testing must consider authentication transport and browser behavior."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Cross-Site Request Forgery Prevention Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+              },
+              {
+                "title": "MDN Set-Cookie",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie"
+              }
+            ]
+          },
+          {
+            "id": "lesson-18",
+            "title": "SSRF and Server-Side Fetching",
+            "description": "Understand how server-side URL fetching can cross security boundaries.",
+            "learningObjectives": [
+              "Explain SSRF at the server-request layer.",
+              "Identify risky URL-fetch features such as webhooks and importers.",
+              "Describe allowlist and network-egress controls."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "SSRF can cause a server to make requests the attacker cannot directly make, including requests to internal services when network placement allows it.",
+                  "Prefer strict destination allowlists and validated protocols/ports.",
+                  "Network controls should limit the blast radius of application-layer mistakes."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Validate SSRF controls in isolated environments. Do not use internal-network targets you are not authorized to access."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What makes SSRF different from a client-side request?",
+              "options": [
+                "The server performs the outbound request",
+                "It always uses DNS",
+                "It is always harmless",
+                "It requires JavaScript"
+              ],
+              "answer": "The server performs the outbound request",
+              "explanation": "The security boundary is that the application server is induced to make the request."
+            },
+            "summary": [
+              "SSRF combines application validation with network egress control."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Server-Side Request Forgery Prevention Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html"
+              },
+              {
+                "title": "OWASP API Security Top 10 2023",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-19",
+            "title": "File Upload Security",
+            "description": "Design and test upload features for content validation, storage isolation, and safe serving.",
+            "learningObjectives": [
+              "Assess filename, type, size, and storage controls.",
+              "Explain why extension checks alone are insufficient.",
+              "Design safe storage and serving policies."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Validate uploads against business-appropriate type and size rules.",
+                  "Store uploads outside executable application paths when architecture permits and use generated server-side names.",
+                  "Serve user-uploaded content with safe content types and download semantics as appropriate."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-03",
+              "question": "Why should server-side generated filenames be preferred for uploads?",
+              "options": [
+                "They are prettier",
+                "They reduce path and naming control from untrusted input",
+                "They make files immutable",
+                "They bypass authorization"
+              ],
+              "answer": "They reduce path and naming control from untrusted input",
+              "explanation": "Server-generated names reduce direct influence of untrusted path and filename components."
+            },
+            "summary": [
+              "Uploads create both input-validation and storage-boundary risks."
+            ],
+            "resources": [
+              {
+                "title": "OWASP File Upload Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-20",
+            "title": "Business Logic Abuse and Workflow Testing",
+            "description": "Find security problems that arise when individually valid actions can be combined into an invalid business outcome.",
+            "learningObjectives": [
+              "Map critical workflows and invariants.",
+              "Design abuse cases around sequencing and state transitions.",
+              "Test server-side enforcement of business rules."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Business-logic testing asks whether the application preserves business invariants across a sequence of valid requests.",
+                  "Examples include replaying one-time actions, changing workflow order, bypassing approval states, or manipulating quantity/price assumptions.",
+                  "These flaws often require understanding expected business behavior rather than only technical syntax."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-04",
+              "question": "What is a business-logic vulnerability?",
+              "options": [
+                "A compiler warning",
+                "A valid sequence of operations that violates intended business rules",
+                "Only an XSS flaw",
+                "A DNS failure"
+              ],
+              "answer": "A valid sequence of operations that violates intended business rules",
+              "explanation": "Business logic flaws can involve technically valid requests producing an invalid business outcome."
+            },
+            "summary": [
+              "Model security around workflows and invariants, not only inputs."
+            ],
+            "resources": [
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Build a Secure Upload Design",
+            "level": "Advanced",
+            "description": "Design an upload workflow for a document portal with preview and download functions.",
+            "problemStatement": "Specify validation, storage, naming, authorization, scanning hooks, and safe response headers.",
+            "objectives": [
+              "Define trust boundaries.",
+              "Prevent path injection and unauthorized retrieval.",
+              "Document failure behavior."
+            ],
+            "requirements": [
+              "Keep malware scanning as an integration boundary; do not implement malware analysis."
+            ],
+            "hint": "Treat the upload as untrusted data from ingestion through retrieval.",
+            "solutionCode": "Use server-generated opaque IDs, store outside executable paths, authorize download per object, enforce size/type policy, and serve with safe content handling.",
+            "solutionExplanation": "The design reduces both storage and retrieval risks while preserving an auditable workflow."
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "API, Client-Side, and Modern Web Architecture Testing",
+        "description": "Extend testing into APIs, SPAs, GraphQL-like patterns, and client-side trust boundaries.",
+        "lessons": [
+          {
+            "id": "lesson-21",
+            "title": "API Authorization and Object-Level Access",
+            "description": "Test object and function-level authorization in APIs.",
+            "learningObjectives": [
+              "Differentiate object-level and function-level authorization.",
+              "Test IDOR/BOLA-style cases in a controlled lab.",
+              "Check property-level data exposure."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "OWASP API1:2023 describes broken object level authorization as a major API risk.",
+                  "Test every sensitive object access with different principals and object IDs.",
+                  "Property-level authorization matters when an endpoint returns fields a caller should not receive."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "Which OWASP API category focuses on object identifiers and unauthorized access to individual objects?",
+              "options": [
+                "API1:2023 Broken Object Level Authorization",
+                "API8:2023 Security Misconfiguration",
+                "API9:2023 Improper Inventory Management",
+                "API10:2023 Unsafe Consumption of APIs"
+              ],
+              "answer": "API1:2023 Broken Object Level Authorization",
+              "explanation": "API1 addresses authorization checks on object access."
+            },
+            "summary": [
+              "APIs require explicit object and function authorization."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10 2023",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              },
+              {
+                "title": "OWASP Authorization Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-22",
+            "title": "API Schema, Rate Limits, and Resource Consumption",
+            "description": "Assess API input schemas and abuse controls without generating uncontrolled load.",
+            "learningObjectives": [
+              "Explain schema validation and content-type controls.",
+              "Assess bounded rate limiting.",
+              "Identify resource-intensive operations that require protection."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Rate limiting is one layer of protection for resource consumption and sensitive business flows.",
+                  "Validate request structure before deep processing.",
+                  "Use safe lab rates; do not conduct volumetric load testing against shared systems."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "What is the main security purpose of rate limiting?",
+              "options": [
+                "To guarantee authorization",
+                "To reduce abuse and uncontrolled resource consumption",
+                "To encrypt requests",
+                "To identify users"
+              ],
+              "answer": "To reduce abuse and uncontrolled resource consumption",
+              "explanation": "Rate limiting constrains request frequency or cost but does not replace authorization."
+            },
+            "summary": [
+              "API availability and abuse controls must be tested within safe bounds."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10 2023",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-23",
+            "title": "Client-Side Security and DOM Trust Boundaries",
+            "description": "Inspect browser code for unsafe sinks and assumptions about attacker-controlled data.",
+            "learningObjectives": [
+              "Identify common DOM sinks conceptually.",
+              "Trace data from URL/storage/network into client-side rendering.",
+              "Explain why client-side validation cannot enforce authorization."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Client-side code handles attacker-influenced inputs such as URL fragments, query parameters, storage values, and API responses.",
+                  "Unsafe DOM manipulation can create client-side XSS even when server responses are safe.",
+                  "Authorization decisions must not depend only on JavaScript state."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "Why is client-side role hiding insufficient for authorization?",
+              "options": [
+                "JavaScript is always disabled",
+                "Users can alter client state or call the server directly",
+                "Browsers cannot send HTTP",
+                "CSS controls authentication"
+              ],
+              "answer": "Users can alter client state or call the server directly",
+              "explanation": "The server remains the authority for sensitive operations."
+            },
+            "summary": [
+              "Treat the browser as an untrusted execution environment."
+            ],
+            "resources": [
+              {
+                "title": "MDN Fetch API",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"
+              },
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          },
+          {
+            "id": "lesson-24",
+            "title": "GraphQL and Structured API Considerations",
+            "description": "Understand testing concerns unique to query-based APIs.",
+            "learningObjectives": [
+              "Identify schema exposure and authorization risks.",
+              "Explain query-cost and depth controls.",
+              "Test field-level authorization and introspection assumptions in a lab."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "GraphQL can expose many fields and nested relationships through a single endpoint, making authorization and resource-consumption analysis important.",
+                  "Schema visibility does not equal authorization.",
+                  "Query complexity controls can limit expensive nested operations."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-04",
+              "question": "Why can nested API queries require explicit cost controls?",
+              "options": [
+                "They cannot return data",
+                "A single request can trigger substantial server-side work",
+                "They always use UDP",
+                "They disable authorization"
+              ],
+              "answer": "A single request can trigger substantial server-side work",
+              "explanation": "Nested queries can expand server-side computation and data access."
+            },
+            "summary": [
+              "Modern APIs concentrate security responsibility in resolver/data-access logic."
+            ],
+            "resources": [
+              {
+                "title": "OWASP API Security Top 10 2023",
+                "url": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Create an API Authorization Test Plan",
+            "level": "Intermediate",
+            "description": "Create a test plan for an API exposing customer, invoice, and admin endpoints.",
+            "problemStatement": "Test object ownership, role restrictions, field exposure, rate limits, and error behavior.",
+            "objectives": [
+              "Cover at least six test cases.",
+              "Include expected denial behavior.",
+              "Map at least two tests to OWASP API categories."
+            ],
+            "requirements": [
+              "Use only fictional object IDs and test accounts."
+            ],
+            "hint": "Vary principal, endpoint, method, object, and role independently.",
+            "solutionCode": "A strong plan includes API1, API3, and API5 style cases with evidence fields.",
+            "solutionExplanation": "The plan converts API security concepts into repeatable tests."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Secure Configuration, Secrets, Dependencies, and DevSecOps",
+        "description": "Assess application configuration and software supply-chain controls throughout development and deployment.",
+        "lessons": [
+          {
+            "id": "lesson-25",
+            "title": "Security Misconfiguration and Deployment Review",
+            "description": "Find insecure defaults, debug exposure, excessive permissions, and unsafe deployment settings.",
+            "learningObjectives": [
+              "Inspect configuration against a documented baseline.",
+              "Identify debug/admin exposure and unsafe defaults.",
+              "Explain configuration drift."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Configuration testing covers deployment, infrastructure integration, headers, error handling, admin interfaces, and unused functionality.",
+                  "A secure baseline should be role- and environment-specific.",
+                  "Avoid reporting a configuration as insecure without understanding its operational purpose and exposure."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Which is a strong approach to configuration assessment?",
+              "options": [
+                "Compare actual settings to an approved security baseline",
+                "Assume defaults are always secure",
+                "Only check port numbers",
+                "Ignore environment differences"
+              ],
+              "answer": "Compare actual settings to an approved security baseline",
+              "explanation": "A baseline makes configuration assessment repeatable."
+            },
+            "summary": [
+              "Configuration findings need both technical evidence and context."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Top 10:2025",
+                "url": "https://owasp.org/Top10/2025/"
+              },
+              {
+                "title": "OWASP WSTG Web Application Security Testing",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/README"
+              }
+            ]
+          },
+          {
+            "id": "lesson-26",
+            "title": "Secrets Management",
+            "description": "Assess how applications store, inject, rotate, and revoke secrets.",
+            "learningObjectives": [
+              "Identify common secret-leak paths.",
+              "Design separation between code and secret material.",
+              "Explain rotation and revocation after exposure."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Secrets include API keys, tokens, passwords, certificates, and private keys.",
+                  "Do not commit secrets to source code. Use protected secret-management or deployment mechanisms appropriate to the environment.",
+                  "Exposure response should include revocation/rotation and scope analysis."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "What should happen after a production credential is accidentally committed to a repository?",
+              "options": [
+                "Rename the variable",
+                "Treat it as exposed, revoke/rotate it, and assess possible use",
+                "Leave it if the repository is private",
+                "Only delete the branch"
+              ],
+              "answer": "Treat it as exposed, revoke/rotate it, and assess possible use",
+              "explanation": "The credential should be considered potentially compromised."
+            },
+            "summary": [
+              "Secrets have a lifecycle: issuance, storage, use, rotation, and revocation."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Secrets Management Cheat Sheet",
+                "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+              }
+            ]
+          },
+          {
+            "id": "lesson-27",
+            "title": "Dependency and Supply-Chain Review",
+            "description": "Assess third-party components, lockfiles, provenance, and update risk.",
+            "learningObjectives": [
+              "Inventory dependencies.",
+              "Identify outdated or untrusted components.",
+              "Explain why provenance and reproducibility matter."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Third-party packages become part of the application attack surface.",
+                  "Pinning and lockfiles improve reproducibility but do not guarantee package trust.",
+                  "A dependency review should consider known vulnerabilities, maintenance, provenance, and exposure."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "What does a lockfile primarily improve?",
+              "options": [
+                "Reproducibility of dependency resolution",
+                "Password strength",
+                "TLS authentication",
+                "Business authorization"
+              ],
+              "answer": "Reproducibility of dependency resolution",
+              "explanation": "Lockfiles record resolved dependency versions and related metadata."
+            },
+            "summary": [
+              "Dependency security combines visibility, provenance, version management, and response."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-218 Secure Software Development Framework",
+                "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+              },
+              {
+                "title": "OWASP Software Component Verification Standard",
+                "url": "https://owasp.org/www-project-software-component-verification-standard/"
+              },
+              {
+                "title": "NVD",
+                "url": "https://nvd.nist.gov/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-28",
+            "title": "Secure SDLC and Security Gates",
+            "description": "Integrate security requirements, review, testing, and remediation into the development lifecycle.",
+            "learningObjectives": [
+              "Place security activities across design, coding, testing, release, and operations.",
+              "Differentiate SAST, DAST, dependency scanning, and manual review.",
+              "Design practical release gates based on risk."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "NIST SSDF organizes secure-development practices across preparation, protecting software, producing well-secured software, and responding to vulnerabilities.",
+                  "No single scanner covers all application risk.",
+                  "Security gates should focus on meaningful risk thresholds, not merely counts of tool findings."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-04",
+              "question": "Which statement about security testing tools is most accurate?",
+              "options": [
+                "One scanner finds every vulnerability",
+                "Different methods cover different classes of weaknesses",
+                "Manual review is never useful",
+                "Dependency scanning replaces dynamic testing"
+              ],
+              "answer": "Different methods cover different classes of weaknesses",
+              "explanation": "Static, dynamic, dependency, and manual techniques provide complementary coverage."
+            },
+            "summary": [
+              "Secure development is a lifecycle capability."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-218 Secure Software Development Framework",
+                "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Design a Secure Release Gate",
+            "level": "Advanced",
+            "description": "Create a security gate for releasing a web application.",
+            "problemStatement": "Define blocking and non-blocking criteria for code review findings, secrets, dependencies, authentication defects, and high-risk testing results.",
+            "objectives": [
+              "Use risk-based criteria.",
+              "Include an exception path with owner and expiry.",
+              "Avoid arbitrary severity thresholds without rationale."
+            ],
+            "requirements": [
+              "The gate should support engineering delivery while preventing unacceptable risk."
+            ],
+            "hint": "Think about what evidence a release manager would actually need to make a decision.",
+            "solutionCode": "Block confirmed exploitable critical authorization defects and leaked production secrets; document accepted lower risks with compensating controls and review dates.",
+            "solutionExplanation": "A useful gate translates security evidence into a release decision."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Testing Automation, Risk Rating, Reporting, and Final Assessment",
+        "description": "Turn individual tests into repeatable assessment programs and a professional final deliverable.",
+        "lessons": [
+          {
+            "id": "lesson-29",
+            "title": "Manual vs Automated Testing",
+            "description": "Choose appropriate automation for repeatable checks while preserving human reasoning for context-heavy issues.",
+            "learningObjectives": [
+              "Identify tests suited to automation.",
+              "Explain false positives/negatives.",
+              "Create repeatable test evidence."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Automation is strong for deterministic checks such as headers, cookie flags, known endpoints, and regression cases.",
+                  "Business logic, authorization nuance, and workflow abuse often require human analysis.",
+                  "Store test inputs and expected outcomes so regressions can be rerun."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Which category often benefits most from human analysis?",
+              "options": [
+                "Deterministic header checks",
+                "Business-logic workflows",
+                "File hashing",
+                "URL syntax validation"
+              ],
+              "answer": "Business-logic workflows",
+              "explanation": "Workflow semantics require contextual reasoning."
+            },
+            "summary": [
+              "Use automation for repeatability, not as a substitute for reasoning."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide (Stable)",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "OWASP Testing Framework",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/3-The_OWASP_Testing_Framework/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-30",
+            "title": "Finding Severity and Risk Context",
+            "description": "Rate findings using technical impact plus business context rather than a single magic number.",
+            "learningObjectives": [
+              "Explain severity versus business risk.",
+              "Use impact, exploit preconditions, exposure, and affected assets in prioritization.",
+              "Write concise risk statements."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A vulnerability can have high technical impact but low business exposure, or moderate technical impact on a critical asset.",
+                  "Organizations may use CVSS or internal risk models; the method should be documented and consistent.",
+                  "Risk statements should identify affected asset, security property, consequence, and assumptions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "Why should a vulnerability rating include business context?",
+              "options": [
+                "Technical details never matter",
+                "The same weakness can have different consequences depending on the asset and exposure",
+                "Business context removes the need for evidence",
+                "It makes all findings critical"
+              ],
+              "answer": "The same weakness can have different consequences depending on the asset and exposure",
+              "explanation": "Risk depends on the environment and business consequence."
+            },
+            "summary": [
+              "Separate standardized severity from organization-specific risk."
+            ],
+            "resources": [
+              {
+                "title": "FIRST CVSS v4.0",
+                "url": "https://www.first.org/cvss/v4.0/specification-document"
+              }
+            ]
+          },
+          {
+            "id": "lesson-31",
+            "title": "Reporting Findings and Remediation Guidance",
+            "description": "Produce a report that developers and owners can act on.",
+            "learningObjectives": [
+              "Write actionable remediation advice.",
+              "Separate root cause from symptom.",
+              "Include verification steps for remediation."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A good remediation explains the root cause and the security control that should change, not only the vulnerable line.",
+                  "Verification criteria should state what the retest must demonstrate.",
+                  "Avoid proposing controls that create a new trust assumption or break required functionality without discussion."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04",
+                "title": "Perform a Security Retest",
+                "description": "Verify that a remediation changes a previously observed security condition.",
+                "steps": [
+                  "Record the original finding and evidence.",
+                  "Apply the documented remediation in the local lab.",
+                  "Repeat the original test with identical preconditions.",
+                  "Record corrected behavior and any regression concerns."
+                ],
+                "solution": "A valid retest demonstrates the original failure, corrected behavior, and residual-risk note.",
+                "output": "A completed retest record with a clear pass/fail conclusion."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "What makes remediation advice actionable?",
+              "options": [
+                "It says “fix security”",
+                "It explains the root cause, recommended control, and verification condition",
+                "It blames the developer",
+                "It omits technical details"
+              ],
+              "answer": "It explains the root cause, recommended control, and verification condition",
+              "explanation": "Actionable remediation supports implementation and retesting."
+            },
+            "summary": [
+              "Reports should shorten the path from finding to fix to verification."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide (Stable)",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "OWASP ASVS 5.0.0",
+                "url": "https://owasp.org/www-project-application-security-verification-standard/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-32",
+            "title": "Retesting and Closure",
+            "description": "Verify that remediation actually changes the security property and did not introduce regressions.",
+            "learningObjectives": [
+              "Reproduce the original condition.",
+              "Verify the corrected behavior.",
+              "Check for regression and residual risk."
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "A retest should start from the original evidence and reproduce the original condition when safe.",
+                  "A corrected status is supported only when the relevant security property is verified.",
+                  "If the root cause is not fixed, a superficial symptom change may leave residual risk."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-04",
+              "question": "What is the purpose of a security retest?",
+              "options": [
+                "To produce new vulnerabilities only",
+                "To verify the remediation changed the previously observed security condition",
+                "To replace the original report",
+                "To hide unresolved risk"
+              ],
+              "answer": "To verify the remediation changed the previously observed security condition",
+              "explanation": "Retesting establishes whether the finding was actually addressed."
+            },
+            "summary": [
+              "Closure requires evidence of changed security behavior."
+            ],
+            "resources": [
+              {
+                "title": "NIST SP 800-115",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              },
+              {
+                "title": "OWASP Web Security Testing Guide (Stable)",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Write a Professional Security Finding",
+            "level": "Easy",
+            "description": "Turn a fictional authorization defect into a report-ready finding.",
+            "problemStatement": "Include title, affected endpoint, prerequisites, steps, impact, remediation, references, and retest criteria.",
+            "objectives": [
+              "Make the steps reproducible.",
+              "Separate evidence from inference.",
+              "Provide a concrete retest condition."
+            ],
+            "requirements": [
+              "Use a fictional lab endpoint and data."
+            ],
+            "hint": "Write the finding so a developer can understand both the flaw and the fix without a verbal explanation.",
+            "solutionCode": "Include a minimal proof, server-side authorization fix, and a retest that verifies cross-user access is denied.",
+            "solutionExplanation": "The task reinforces professional reporting discipline."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Final Module — Secure Web Application Assessment Capstone",
+        "description": "Perform a complete authorized assessment of a small local web application and deliver evidence, findings, remediation guidance, and retest criteria. This final module contains the project only; it has no separate module tasks.",
+        "lessons": [
+          {
+            "id": "lesson-33",
+            "title": "Capstone Planning and Test Design",
+            "description": "Define the final scope, test objectives, evidence rules, and safety boundaries.",
+            "learningObjectives": [
+              "Translate the application design into security test objectives.",
+              "Map tests to relevant OWASP WSTG and ASVS concepts.",
+              "Define evidence and stopping conditions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The capstone is intentionally local and self-contained. Focus on authorization, input validation, error handling, evidence, and retesting rather than external exploitation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use only 127.0.0.1:8000.",
+                  "Record exact requests and expected security properties.",
+                  "Do not add destructive or external-network actions."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "What should happen before active testing begins?",
+              "options": [
+                "Change the code",
+                "Define scope and a test plan",
+                "Publish findings",
+                "Run uncontrolled load tests"
+              ],
+              "answer": "Define scope and a test plan",
+              "explanation": "Assessment quality starts with scope, objectives, and safety constraints."
+            },
+            "summary": [
+              "The capstone starts with planning rather than exploitation."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Testing Framework",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/3-The_OWASP_Testing_Framework/"
+              },
+              {
+                "title": "OWASP ASVS 5.0.0",
+                "url": "https://owasp.org/www-project-application-security-verification-standard/"
+              },
+              {
+                "title": "NIST SP 800-115",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          },
+          {
+            "id": "lesson-34",
+            "title": "Capstone Evidence, Findings, and Retest",
+            "description": "Document confirmed issues and verify remediation through repeatable testing.",
+            "learningObjectives": [
+              "Capture evidence for confirmed findings.",
+              "Write remediation and retest criteria.",
+              "Run the integration test after remediation."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A complete assessment links each finding to a security property, evidence, remediation, and verification. The supplied integration test checks the intended authorization behavior and input validation boundary."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What provides the strongest closure evidence?",
+              "options": [
+                "A severity label alone",
+                "A screenshot only",
+                "Verified remediation and repeatable retest evidence",
+                "A scanner count"
+              ],
+              "answer": "Verified remediation and repeatable retest evidence",
+              "explanation": "Closure requires evidence that the security condition changed and remained correct."
+            },
+            "summary": [
+              "The deliverable connects discovery, remediation, and verification."
+            ],
+            "resources": [
+              {
+                "title": "OWASP Web Security Testing Guide (Stable)",
+                "url": "https://owasp.org/www-project-web-security-testing-guide/stable/"
+              },
+              {
+                "title": "NIST SP 800-115",
+                "url": "https://csrc.nist.gov/pubs/sp/800/115/final"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Secure Web Application Assessment Capstone",
+          "description": "Assess a deliberately structured local web application with a focus on object-level authorization, input validation, reporting quality, and retesting. All data is fictional and all requests remain on localhost.",
+          "conceptsCovered": [
+            "Scope and rules of engagement",
+            "HTTP/API analysis",
+            "Object-level authorization",
+            "Input validation",
+            "Error handling",
+            "Evidence capture",
+            "Risk-based reporting",
+            "Remediation",
+            "Retesting and regression checks"
+          ],
+          "steps": [
+            "Create a local Python environment; no third-party package is required for the application.",
+            "Run app.py on 127.0.0.1:8000.",
+            "Map endpoints and trust boundaries before testing.",
+            "Run the supplied test_app.py and record the baseline.",
+            "Compare owner and peer-object requests using the X-Lab-User identities.",
+            "Document any confirmed authorization or validation finding with reproducible evidence.",
+            "Apply the necessary remediation and keep the fix server-side.",
+            "Run the integration checks again and verify corrected behavior.",
+            "Produce a final report containing scope, methodology, findings, remediation, and retest evidence."
+          ],
+          "code": {
+            "app.py": "from http.server import BaseHTTPRequestHandler, HTTPServer\nimport json\n\nUSERS = {\"alice\": {\"role\": \"user\"}, \"admin\": {\"role\": \"admin\"}}\nORDERS = {\"1001\": {\"owner\": \"alice\", \"amount\": 120}, \"1002\": {\"owner\": \"admin\", \"amount\": 90}}\n\nclass Handler(BaseHTTPRequestHandler):\n    def _json(self, status, value):\n        body = json.dumps(value).encode(\"utf-8\")\n        self.send_response(status)\n        self.send_header(\"Content-Type\", \"application/json\")\n        self.send_header(\"Content-Length\", str(len(body)))\n        self.end_headers()\n        self.wfile.write(body)\n\n    def do_GET(self):\n        prefix = \"/api/orders/\"\n        if not self.path.startswith(prefix):\n            return self._json(404, {\"error\": \"not found\"})\n        order_id = self.path[len(prefix):]\n        username = self.headers.get(\"X-Lab-User\", \"alice\")\n        user, order = USERS.get(username), ORDERS.get(order_id)\n        if user is None or order is None:\n            return self._json(404, {\"error\": \"not found\"})\n        if username != order[\"owner\"] and user[\"role\"] != \"admin\":\n            return self._json(404, {\"error\": \"not found\"})\n        return self._json(200, {\"id\": order_id, \"amount\": order[\"amount\"]})\n\n    def do_POST(self):\n        if self.path != \"/api/report\":\n            return self._json(404, {\"error\": \"not found\"})\n        length = int(self.headers.get(\"Content-Length\", \"0\"))\n        try:\n            payload = json.loads(self.rfile.read(length).decode(\"utf-8\"))\n        except (ValueError, UnicodeDecodeError):\n            return self._json(400, {\"error\": \"invalid json\"})\n        if not isinstance(payload, dict) or not {\"event\", \"severity\"}.issubset(payload):\n            return self._json(400, {\"error\": \"invalid request\"})\n        if payload[\"severity\"] not in {\"low\", \"medium\", \"high\", \"critical\"}:\n            return self._json(400, {\"error\": \"invalid severity\"})\n        return self._json(202, {\"accepted\": True})\n\n    def log_message(self, format, *args):\n        return\n\nif __name__ == \"__main__\":\n    HTTPServer((\"127.0.0.1\", 8000), Handler).serve_forever()\n",
+            "test_app.py": "import json\nimport subprocess\nimport sys\nimport time\nfrom pathlib import Path\nfrom urllib.request import Request, urlopen\nfrom urllib.error import HTTPError\n\nROOT = Path(__file__).resolve().parent\n\ndef req(path, method=\"GET\", body=None, user=\"alice\"):\n    data = None if body is None else json.dumps(body).encode()\n    request = Request(f\"http://127.0.0.1:8000{path}\", data=data, method=method, headers={\"X-Lab-User\": user})\n    if data is not None:\n        request.add_header(\"Content-Type\", \"application/json\")\n    try:\n        with urlopen(request, timeout=2) as response:\n            return response.status, json.loads(response.read())\n    except HTTPError as exc:\n        return exc.code, json.loads(exc.read())\n\nserver = subprocess.Popen([sys.executable, str(ROOT / \"app.py\")])\ntry:\n    time.sleep(0.6)\n    assert req(\"/api/orders/1001\", user=\"alice\")[0] == 200\n    assert req(\"/api/orders/1002\", user=\"alice\")[0] == 404\n    assert req(\"/api/orders/1002\", user=\"admin\")[0] == 200\n    assert req(\"/api/report\", method=\"POST\", body={\"event\":\"login\",\"severity\":\"unknown\"})[0] == 400\n    assert req(\"/api/report\", method=\"POST\", body={\"event\":\"login\",\"severity\":\"high\"})[0] == 202\nfinally:\n    server.terminate()\n    server.wait(timeout=2)\n",
+            "README.md": "# Secure Web Application Assessment Capstone\n\nThis project is local-only and uses fictional in-memory data. The target is 127.0.0.1:8000.\nAssess authorization and input validation, document evidence, and verify corrected behavior with the supplied test script.\n"
+          },
+          "explanation": "The capstone uses only the Python standard library so it can be executed and validated offline. The primary security boundary is object-level authorization: the server must decide whether the authenticated lab principal may access the requested order. The report endpoint demonstrates input validation and safe failure behavior. The final assessment emphasizes method—scope, evidence, remediation, and verification—rather than uncontrolled exploitation."
+        }
+      }
+    ]
+  }
+}

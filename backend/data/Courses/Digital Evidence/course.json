@@ -1,0 +1,1828 @@
+{
+  "course": {
+    "id": "digital-evidence",
+    "title": "Digital Evidence",
+    "slug": "digital-evidence",
+    "description": "A research-led, practical course on the complete digital-evidence lifecycle: identifying and preserving potential evidence, planning acquisition, documenting provenance and chain of custody, validating integrity with cryptographic hashes, examining storage and operating-system artifacts, analyzing volatile memory, network and timeline evidence, handling mobile and cloud sources, validating forensic tools and methods, and producing traceable technical findings. The course is designed for students who want practical competency in evidence handling and analysis while learning to distinguish observation, interpretation, attribution, and uncertainty. It emphasizes controlled lab work, authoritative guidance, version-aware tooling, and explicit limitations rather than unsupported claims or tool-dependent shortcuts.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 72,
+    "prerequisites": [
+      "Basic computer and operating-system concepts",
+      "Basic command-line familiarity on Windows or Linux",
+      "Basic understanding of files, directories, permissions, and networking",
+      "Python 3 familiarity is helpful for automation practicals but not required for conceptual lessons",
+      "A controlled lab environment such as a virtual machine; do not use third-party or personal data as training evidence"
+    ],
+    "learningOutcomes": [
+      "explain digital-evidence concepts, provenance, integrity, authenticity, relevance, and common source types",
+      "plan and document preservation and acquisition decisions using volatility and scope as explicit constraints",
+      "calculate and verify SHA-256 hashes and maintain an evidence manifest",
+      "analyze disk-image and filesystem structures, metadata, deleted entries, unallocated space, and carved content with appropriate caveats",
+      "interpret Windows and Linux/macOS evidence sources without treating individual artifacts as conclusive",
+      "perform basic memory-sample analysis with Volatility 3 and validate sample/tool compatibility",
+      "correlate PCAP, network logs, filesystem artifacts, application records, and timelines into evidence-backed findings",
+      "analyze mobile and cloud evidence at a preservation and audit-log level while documenting acquisition limitations",
+      "design a basic forensic-tool validation test and distinguish repeatability, reproducibility, and limitations",
+      "produce a technically traceable forensic-style report that separates observations, interpretation, alternatives, and uncertainty",
+      "complete a practical evidence-management capstone that records integrity, provenance, custody events, and verification results"
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Foundations of Digital Evidence",
+        "description": "Establish the vocabulary, purpose, scope, forensic reasoning, and standards that govern defensible handling of digital evidence.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "What Digital Evidence Is",
+            "description": "Define digital evidence, distinguish source, artifact, and evidential proposition, and understand why context and process matter.",
+            "learningObjectives": [
+              "explain what makes information potentially evidential",
+              "distinguish a source device from an extracted artifact",
+              "identify integrity, authenticity, relevance, and reliability as separate concerns"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence is more than a file"
+              },
+              {
+                "type": "paragraph",
+                "text": "Digital evidence is information or data of investigative value that is stored on, received by, or transmitted by an electronic device. In practice, an examiner studies both the content and the context: where it came from, how it was obtained, how it was preserved, and what proposition it can support."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A device is a source; a filesystem object, log record, message, or memory structure is an artifact derived from a source.",
+                  "Relevance asks whether evidence bears on the investigative question; integrity asks whether it changed; authenticity asks whether it is what it purports to be.",
+                  "A timestamp is an observation that needs interpretation, not automatically a proof of a human action."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-01",
+              "question": "Which statement best separates integrity from relevance?",
+              "options": [
+                "Integrity concerns whether data changed; relevance concerns whether it bears on the question.",
+                "Integrity means the data is legally admissible; relevance means the hash matches.",
+                "Integrity identifies the suspect; relevance guarantees authenticity.",
+                "They are interchangeable terms."
+              ],
+              "answer": "Integrity concerns whether data changed; relevance concerns whether it bears on the question.",
+              "explanation": "A hash or other validation process can support integrity, while relevance is an evidential assessment about the investigative question."
+            },
+            "summary": [
+              "Digital evidence must be interpreted in context.",
+              "Integrity, authenticity, relevance, and reliability are related but distinct properties."
+            ],
+            "resources": [
+              "https://www.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition",
+              "https://www.swgde.org/documents/published-complete-listing/05-f-001-swgde-digital-multimedia-evidence-glossary/"
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Forensic Principles and Standards",
+            "description": "Map the evidence lifecycle to major standards and understand the distinction between guidance, organizational procedure, and law.",
+            "learningObjectives": [
+              "outline identification, collection, acquisition, preservation, examination, analysis, and reporting",
+              "relate ISO/IEC 27037 and 27042 to evidence handling and interpretation",
+              "explain why local policy and applicable law must govern operational decisions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Standards as a framework"
+              },
+              {
+                "type": "paragraph",
+                "text": "ISO/IEC 27037 addresses identification, collection, acquisition, and preservation of potential digital evidence. ISO/IEC 27042 addresses analysis and interpretation with emphasis on continuity, validity, reproducibility, and repeatability. ISO/IEC 27043 describes broader incident-investigation processes. NIST SP 800-86 provides an IT-oriented forensic workflow, while NIJ guidance emphasizes first-responder preservation."
+              },
+              {
+                "type": "warning",
+                "text": "Standards and technical guidance do not replace jurisdiction-specific law, warrants, consent, contracts, internal policy, or discovery obligations."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-02",
+              "question": "Which standard is specifically focused on identification, collection, acquisition, and preservation of digital evidence?",
+              "options": [
+                "ISO/IEC 27037",
+                "ISO/IEC 27042",
+                "ISO/IEC 27043",
+                "RFC 3227"
+              ],
+              "answer": "ISO/IEC 27037",
+              "explanation": "ISO/IEC 27037 is scoped to identification, collection, acquisition, and preservation."
+            },
+            "summary": [
+              "Use standards to structure repeatable work.",
+              "Legal authority and organizational policy remain separate decision layers."
+            ],
+            "resources": [
+              "https://www.iso.org/standard/44381.html",
+              "https://www.iso.org/standard/44406.html",
+              "https://www.iso.org/standard/44407.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Evidence Types, Sources, and Constraints",
+            "description": "Classify endpoint, removable, mobile, network, cloud, application, and volatile sources and identify their different acquisition constraints.",
+            "learningObjectives": [
+              "classify evidence sources by volatility and accessibility",
+              "identify likely evidence from endpoints, network telemetry, mobile devices, and cloud services",
+              "select a source based on the investigative question rather than convenience"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Source taxonomy"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Endpoint: storage media, OS artifacts, application data, system logs.",
+                  "Volatile: RAM contents, processes, sockets, encryption keys, transient sessions.",
+                  "Network: packet captures, flow data, DNS, proxy, firewall, IDS/IPS logs.",
+                  "Mobile: device databases, app data, call/message records, location and account artifacts.",
+                  "Cloud: provider audit logs, object activity, identity events, snapshots and exports."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The source determines what can be recovered and what acquisition methods may alter, omit, or transform data. A cloud log is not equivalent to a disk image, even when both record the same activity."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-01-03",
+              "question": "Why can two sources that describe the same event still be different evidence?",
+              "options": [
+                "They can have different provenance, granularity, clocks, retention, and collection methods.",
+                "Digital evidence always duplicates perfectly across systems.",
+                "Only one source can be valid.",
+                "Because hashes are never useful."
+              ],
+              "answer": "They can have different provenance, granularity, clocks, retention, and collection methods.",
+              "explanation": "Different systems observe different layers of an event and may use different clocks, schemas, retention periods, and collection paths."
+            },
+            "summary": [
+              "Choose sources based on the question and volatility.",
+              "Preserve provenance for every derived artifact."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.iso.org/standard/44407.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Build an Evidence Source Matrix",
+            "level": "Easy",
+            "description": "Create a case matrix that maps investigative questions to likely digital evidence sources and acquisition priorities.",
+            "problemStatement": "An incident response team needs to determine which evidence to collect first from a suspected compromised workstation and its connected services.",
+            "objectives": [
+              "map each question to one or more sources",
+              "rank sources by volatility and likely evidential value",
+              "record acquisition constraints and expected limitations"
+            ],
+            "requirements": [
+              "A spreadsheet or Markdown file",
+              "Knowledge of evidence types"
+            ],
+            "hint": "Start with the investigative questions, then classify each source as volatile, persistent, remote, or provider-controlled.",
+            "solutionCode": "| Question | Source | Priority | Constraint |\n|---|---|---:|---|\n| What processes are running now? | RAM / live endpoint | 1 | Highly volatile |\n| What user actions left traces? | Endpoint storage | 2 | Preserve source and metadata |\n| What network connections existed? | RAM + network logs/PCAP | 1-2 | Retention/clock alignment |\n| Who accessed cloud resources? | Provider audit logs | 2 | Provider retention and scope |",
+            "solutionExplanation": "The matrix forces the investigator to connect each question to an evidence source and exposes volatility and access constraints before collection begins."
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Preservation, Acquisition, and Chain of Custody",
+        "description": "Teach scene handling, volatile evidence priorities, forensic acquisition, integrity validation, documentation, and defensible chain of custody.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Scene Documentation and First Response",
+            "description": "Document the state of a digital scene before changing it and distinguish observation from interpretation.",
+            "learningObjectives": [
+              "document device state, connections, screens, and identifiers",
+              "separate observed facts from assumptions",
+              "prepare a collection record that another examiner can reproduce"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Document before interpretation"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record date/time, time zone, device identifiers, power state, network connections, visible applications, and physical condition when authorized.",
+                  "Photographs or screenshots may document transient state, but the capture method itself can change state.",
+                  "Write contemporaneous notes that distinguish direct observations from later analytical conclusions."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not interact with a live device simply to make evidence easier to collect. Every action can alter state and should be justified and recorded."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-01",
+              "question": "What is the main purpose of contemporaneous scene notes?",
+              "options": [
+                "To preserve a record of observations and actions that supports later reconstruction.",
+                "To replace all forensic acquisition.",
+                "To prove a suspect committed an offense.",
+                "To calculate hash values."
+              ],
+              "answer": "To preserve a record of observations and actions that supports later reconstruction.",
+              "explanation": "Notes preserve process context and make later reconstruction possible; they do not by themselves prove the investigative conclusion."
+            },
+            "summary": [
+              "Document state and actions.",
+              "Treat every live interaction as a potential change to evidence."
+            ],
+            "resources": [
+              "https://www.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Order of Volatility and Live Evidence",
+            "description": "Use volatility as a planning concept for choosing what to capture first while recognizing that the exact order depends on the case.",
+            "learningObjectives": [
+              "explain why RAM and live sessions can disappear",
+              "prioritize volatile sources in a defensible collection plan",
+              "document the trade-off between preserving state and minimizing changes"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Volatility is a planning heuristic"
+              },
+              {
+                "type": "paragraph",
+                "text": "RFC 3227 presents an order-of-volatility concept: collect information likely to disappear first. Digital-forensic practice should treat this as guidance rather than a universal fixed sequence. Operational decisions depend on the device, encryption state, authorization, tooling, and investigative objective."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "RAM can contain running processes, network state, credentials, decrypted content, and other transient information.",
+                  "Powering a system down can destroy volatile state; continuing to operate it can also change state.",
+                  "A live response plan should explicitly record why a particular action was taken and what limitations it introduced."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-02",
+              "question": "Why is a fixed universal order of volatility inappropriate?",
+              "options": [
+                "The best sequence depends on system state, authorization, acquisition capability, and the investigative objective.",
+                "Volatility does not matter in digital forensics.",
+                "All evidence is equally volatile.",
+                "Only cloud evidence is volatile."
+              ],
+              "answer": "The best sequence depends on system state, authorization, acquisition capability, and the investigative objective.",
+              "explanation": "RFC 3227 provides a guiding concept, but real systems and cases introduce constraints that require documented judgment."
+            },
+            "summary": [
+              "Use volatility to prioritize, not to blindly automate decisions."
+            ],
+            "resources": [
+              "https://www.rfc-editor.org/rfc/rfc3227.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Forensic Acquisition and Write Protection",
+            "description": "Understand physical, logical, targeted, and remote acquisition models and why write protection and validated procedures matter.",
+            "learningObjectives": [
+              "distinguish physical imaging from logical acquisition",
+              "explain the purpose of a write blocker",
+              "document source, tool/version, errors, hashes, and acquisition time"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Acquisition models"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Physical acquisition attempts to capture a larger representation of media, including structures outside ordinary file views, subject to device and encryption constraints.",
+                  "Logical acquisition captures selected files, records, or application data according to scope.",
+                  "Targeted acquisition is appropriate when the scope is intentionally narrow and documented.",
+                  "Remote acquisition can be useful for managed endpoints, but it introduces transport, authorization, endpoint-state, and tool-dependence considerations."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "SWGDE acquisition guidance emphasizes documenting identifiers, acquisition method, imaging tool/version, hash values, timestamps, errors, and chain-of-custody transfers."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-02-03",
+              "question": "What is a write blocker intended to prevent during storage-media acquisition?",
+              "options": [
+                "Writes to the source media during acquisition.",
+                "Hash calculation on the image.",
+                "Reading filesystem metadata.",
+                "Creating a working copy."
+              ],
+              "answer": "Writes to the source media during acquisition.",
+              "explanation": "A hardware or software write-protection mechanism is intended to prevent changes to the source while it is being read, consistent with the acquisition method."
+            },
+            "summary": [
+              "Match acquisition scope to investigative need.",
+              "Record tool version and errors, not just the final hash."
+            ],
+            "resources": [
+              "https://www.swgde.org/17-f-002/",
+              "https://www.iso.org/standard/44381.html",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Hashing and Evidence Integrity",
+            "description": "Use cryptographic hashes to validate evidence and explain what a matching hash can and cannot establish.",
+            "learningObjectives": [
+              "calculate SHA-256 hashes for evidence files",
+              "compare source and acquired hashes",
+              "explain why a hash supports integrity but does not independently prove provenance or meaning"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Integrity with cryptographic hashes"
+              },
+              {
+                "type": "paragraph",
+                "text": "A cryptographic hash is a fixed-length value derived from input data. Recomputing the same algorithm over a byte sequence can support a claim that the bytes are unchanged relative to the recorded value. It does not, by itself, establish who created the file, whether the file is truthful, or whether a court must admit it."
+              },
+              {
+                "type": "code",
+                "text": "python\nfrom hashlib import sha256\n\npath = \"evidence.bin\"\nh = sha256()\nwith open(path, \"rb\") as f:\n    for block in iter(lambda: f.read(1024 * 1024), b\"\"):\n        h.update(block)\nprint(h.hexdigest())"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-04",
+                "title": "Hash and verify an evidence copy",
+                "description": "Hash a sample evidence file, copy it without modification, and verify that the digest matches.",
+                "steps": [
+                  "Create a small lab file named evidence.bin.",
+                  "Compute its SHA-256 digest.",
+                  "Copy it to evidence-copy.bin.",
+                  "Recompute the digest and compare values.",
+                  "Modify one byte in the copy and hash it again."
+                ],
+                "solution": "from hashlib import sha256\nfrom pathlib import Path\n\ndef sha256_file(path: Path) -> str:\n    digest = sha256()\n    with path.open(\"rb\") as f:\n        for chunk in iter(lambda: f.read(1024 * 1024), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\noriginal = Path(\"evidence.bin\")\ncopy = Path(\"evidence-copy.bin\")\nprint(\"original:\", sha256_file(original))\nprint(\"copy:    \", sha256_file(copy))\nprint(\"match:   \", sha256_file(original) == sha256_file(copy))",
+                "output": "The unmodified copy should produce the same SHA-256 digest. After a byte change, the digest should differ."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-02-04",
+              "question": "What does a matching SHA-256 value most directly support?",
+              "options": [
+                "That the hashed byte sequences are the same.",
+                "That the file is legally admissible.",
+                "That the file was created by a specific person.",
+                "That the file is benign."
+              ],
+              "answer": "That the hashed byte sequences are the same.",
+              "explanation": "A matching digest supports byte-level integrity relative to the digest record; it does not answer legal, authorship, or semantic questions."
+            },
+            "summary": [
+              "Hash values support integrity verification.",
+              "Record the algorithm and scope of what was hashed."
+            ],
+            "resources": [
+              "https://www.swgde.org/17-f-002/",
+              "https://www.swgde.org/documents/published-complete-listing/05-f-001-swgde-digital-multimedia-evidence-glossary/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Create an Acquisition Manifest",
+            "level": "Intermediate",
+            "description": "Write a Python utility that creates a manifest for a directory of evidence files, records SHA-256, size, and UTC collection timestamp, and emits deterministic JSON.",
+            "problemStatement": "The lab requires a repeatable evidence manifest before analysis. The utility must never overwrite the source files.",
+            "objectives": [
+              "walk a chosen evidence directory",
+              "calculate SHA-256 for each regular file",
+              "record relative path, byte size, hash, and ISO 8601 UTC timestamp",
+              "write manifest.json outside the evidence directory"
+            ],
+            "requirements": [
+              "Python 3",
+              "Standard library only"
+            ],
+            "hint": "Use pathlib.rglob and hash in chunks. Sort records by relative path so repeated runs are easy to compare.",
+            "solutionCode": "from hashlib import sha256\nfrom pathlib import Path\nfrom datetime import datetime, timezone\nimport json\n\nEVIDENCE_DIR = Path(\"evidence\")\nOUTPUT = Path(\"manifest.json\")\n\nrecords = []\ncollected_at = datetime.now(timezone.utc).isoformat()\n\nfor path in sorted(p for p in EVIDENCE_DIR.rglob(\"*\") if p.is_file()):\n    digest = sha256()\n    with path.open(\"rb\") as f:\n        for chunk in iter(lambda: f.read(1024 * 1024), b\"\"):\n            digest.update(chunk)\n    records.append({\n        \"path\": path.relative_to(EVIDENCE_DIR).as_posix(),\n        \"size\": path.stat().st_size,\n        \"sha256\": digest.hexdigest(),\n        \"collectedAt\": collected_at,\n    })\n\nOUTPUT.write_text(json.dumps({\"algorithm\":\"SHA-256\",\"records\":records}, indent=2), encoding=\"utf-8\")\nprint(f\"Wrote {len(records)} records to {OUTPUT}\")",
+            "solutionExplanation": "The manifest contains one record per file, a consistent hash algorithm, byte size, and a UTC timestamp. Sorting makes the manifest reproducible in structure even if filesystem enumeration order differs."
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Storage Media, Filesystems, and Deleted Data",
+        "description": "Teach how storage structures become evidence: partitions, filesystems, metadata, deleted data, slack/unallocated space, and carving.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Disks, Partitions, and Filesystems",
+            "description": "Connect physical storage to partitions, volumes, filesystems, and directory structures.",
+            "learningObjectives": [
+              "locate partition and filesystem layers in a forensic image",
+              "distinguish physical sectors, filesystem allocation units, and files",
+              "explain why filesystem metadata can survive independently of file content"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Layered storage view"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A disk image may contain a partition table, one or more partitions, and filesystems inside those partitions.",
+                  "Filesystem metadata tracks objects such as names, allocation status, timestamps, and references to data blocks.",
+                  "Forensic examination often begins by identifying image format, partition boundaries, and filesystem type before inspecting files."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "bash\n# Example Sleuth Kit workflow against a lab image\nmmls disk.img\nfsstat disk.img\nfls -r -m / disk.img > bodyfile.txt"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-01",
+              "question": "Why inspect partition and filesystem structure before searching files?",
+              "options": [
+                "It establishes where files and metadata are located and which parsers are appropriate.",
+                "Because keyword search cannot operate on images.",
+                "Because partition tables are user documents.",
+                "Because hashing only works on partitions."
+              ],
+              "answer": "It establishes where files and metadata are located and which parsers are appropriate.",
+              "explanation": "Understanding the image layout prevents incorrect offsets and helps select the correct filesystem analysis methods."
+            },
+            "summary": [
+              "Think in layers: media, partition, filesystem, object."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php"
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "Filesystem Metadata and Timestamps",
+            "description": "Interpret metadata carefully and understand common timestamp types and timezone issues.",
+            "learningObjectives": [
+              "interpret creation, modification, metadata-change, and access concepts where the filesystem supports them",
+              "convert and compare timestamps using explicit time zones",
+              "avoid treating a single timestamp as proof of human intent"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Timestamps are measurements"
+              },
+              {
+                "type": "paragraph",
+                "text": "Filesystem timestamp semantics vary by filesystem and operating system. A displayed time can be transformed by timezone, daylight-saving rules, application logic, or copying. Analysts should preserve the original value and timezone context when available, then document any normalization."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "MAC times often refer to modification, access, and metadata/change-related observations, but exact semantics depend on the filesystem.",
+                  "Application databases can contain their own event times that are not identical to filesystem timestamps.",
+                  "Clock skew should be tested when correlating multiple sources."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-02",
+              "question": "What is the safest interpretation of a single file modification timestamp?",
+              "options": [
+                "It is evidence of a recorded filesystem event that requires contextual interpretation.",
+                "It proves a human edited the file at that exact instant.",
+                "It proves the file was created at that time.",
+                "It is always UTC."
+              ],
+              "answer": "It is evidence of a recorded filesystem event that requires contextual interpretation.",
+              "explanation": "Timestamps reflect recorded system or application events; they do not directly encode human intent and may be transformed by copying or clock behavior."
+            },
+            "summary": [
+              "Preserve raw time values and timezone assumptions."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php",
+              "https://www.iso.org/standard/44406.html"
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Deleted Files, Unallocated Space, and Carving",
+            "description": "Explain why deleted data may remain recoverable and when file carving is useful or misleading.",
+            "learningObjectives": [
+              "distinguish deleted directory entries from unallocated content",
+              "explain the purpose and limitations of file carving",
+              "validate recovered content against source structures and hashes where possible"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Recovery is not guaranteed"
+              },
+              {
+                "type": "paragraph",
+                "text": "Deletion usually changes allocation metadata; it does not universally overwrite every former byte immediately. Recovery depends on filesystem behavior, later writes, SSD/controller behavior, encryption, fragmentation, and acquisition method."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "File carving identifies content using signatures or structural patterns without relying entirely on filesystem metadata.",
+                  "Carved fragments may be incomplete or reconstructed incorrectly, especially when files are fragmented.",
+                  "A recovered file should be documented as recovered evidence with its acquisition context and validation results."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-03-03",
+              "question": "What is a major limitation of file carving?",
+              "options": [
+                "It may recover incomplete or incorrectly reconstructed files when metadata is absent or fragmentation is involved.",
+                "It always preserves original filenames.",
+                "It guarantees original directory paths.",
+                "It only works on encrypted volumes."
+              ],
+              "answer": "It may recover incomplete or incorrectly reconstructed files when metadata is absent or fragmentation is involved.",
+              "explanation": "Carving is content-oriented and can lose filesystem context; fragmentation can make reconstruction ambiguous."
+            },
+            "summary": [
+              "Treat carved files differently from intact filesystem records."
+            ],
+            "resources": [
+              "https://www.sleuthkit.org/sleuthkit/docs.php",
+              "https://www.swgde.org/documents/published-complete-listing/05-f-001-swgde-digital-multimedia-evidence-glossary/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Recover and Validate a Deleted Lab Artifact",
+            "level": "Intermediate",
+            "description": "Use a supplied forensic image and document a deleted-file recovery attempt, distinguishing metadata recovery from content carving.",
+            "problemStatement": "The case contains a removable-media image where a document was deleted. Determine whether the content or metadata can still be recovered and document the limitations.",
+            "objectives": [
+              "identify the image filesystem",
+              "locate deleted entries using an appropriate TSK command",
+              "export any recoverable content",
+              "hash the recovered output and document the original metadata available"
+            ],
+            "requirements": [
+              "Sleuth Kit",
+              "A legal lab image designed for analysis"
+            ],
+            "hint": "Do not assume a successful export means the original file was fully recovered. Record whether the result is metadata-backed or carved.",
+            "solutionCode": "# Example command sequence; adapt the image path and inode identifiers to the lab image.\nfsstat lab.img\nfls -r -d lab.img\n# If the deleted entry exposes an inode/meta address:\nicat lab.img <meta-address> > recovered.bin\nsha256sum recovered.bin",
+            "solutionExplanation": "The student should produce a recovery note stating what the filesystem exposed, whether content was intact, and how the recovered bytes were validated. The exact filename, inode, and hash depend on the supplied image."
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Windows Digital Evidence",
+        "description": "Analyze high-value Windows evidence sources including Event Logs, Registry, user activity artifacts, and command execution traces.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Windows Event Logs",
+            "description": "Understand Windows Event Log structure and use event records as one source in an evidence correlation process.",
+            "learningObjectives": [
+              "identify Application, Security, and System logs",
+              "extract event IDs and contextual fields from exported EVTX records",
+              "correlate log records without treating an event ID in isolation as a conclusion"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Windows Event Log"
+              },
+              {
+                "type": "paragraph",
+                "text": "Windows Event Log provides a standardized event infrastructure. Microsoft documents Application, Security, and System logs as common sources, with providers generating event records consumed by tools such as Event Viewer. Modern Windows uses Windows Event Log rather than the legacy Event Logging API."
+              },
+              {
+                "type": "code",
+                "text": "powershell\nGet-WinEvent -LogName Security -MaxEvents 20 |\n  Select-Object TimeCreated, Id, ProviderName, Message"
+              },
+              {
+                "type": "warning",
+                "text": "Event availability depends on audit policy, logging configuration, retention, permissions, and whether an event source was disabled or cleared."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-01",
+              "question": "Which PowerShell cmdlet is appropriate for modern Windows Event Log technology?",
+              "options": [
+                "Get-WinEvent",
+                "Show-EventLog only",
+                "Get-RegistryEvent",
+                "Read-EVTX"
+              ],
+              "answer": "Get-WinEvent",
+              "explanation": "Microsoft documents Get-WinEvent for Windows Event Log technology, while older EventLog cmdlets target classic logs."
+            },
+            "summary": [
+              "Event logs are configured telemetry, not omniscient records."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/wes/windows-event-log",
+              "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/show-eventlog?view=powershell-5.1"
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Windows Registry as Evidence",
+            "description": "Understand Registry hives, keys, values, and how configuration/state can provide forensic context.",
+            "learningObjectives": [
+              "explain the hierarchical Registry model",
+              "identify system- and user-related configuration evidence",
+              "separate registry presence from proof of execution or user intent"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Registry structure"
+              },
+              {
+                "type": "paragraph",
+                "text": "Microsoft describes the Windows Registry as a hierarchical database of keys and values used by Windows, applications, and services. Its forensic value comes from configuration and state traces, but interpretation depends on the specific key, value semantics, hive provenance, and corroborating evidence."
+              },
+              {
+                "type": "code",
+                "text": "powershell\nreg query HKCU\\Software /s /f \"Example\" /t REG_SZ"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "HKLM commonly contains machine-wide configuration; HKCU contains per-user configuration.",
+                  "Registry artifacts can reveal installed software, preferences, shell behavior, and other state depending on the key.",
+                  "A registry value is not automatically proof that a user intentionally performed an action."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-02",
+              "question": "What is the Registry best described as?",
+              "options": [
+                "A hierarchical database of keys and values used by Windows and applications.",
+                "A filesystem containing only deleted files.",
+                "A network packet capture store.",
+                "A cryptographic hash database."
+              ],
+              "answer": "A hierarchical database of keys and values used by Windows and applications.",
+              "explanation": "Microsoft documents the Registry as a hierarchical database of keys and values."
+            },
+            "summary": [
+              "Interpret keys according to documented semantics."
+            ],
+            "resources": [
+              "https://learn.microsoft.com/en-us/windows/win32/sysinfo/structure-of-the-registry"
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "User Activity Artifacts",
+            "description": "Correlate shortcuts, recent-file traces, browser records, prefetch-style artifacts, and shell history while documenting parser limitations.",
+            "learningObjectives": [
+              "identify user-activity artifact families",
+              "compare multiple artifacts before inferring user activity",
+              "document artifact collection and parser assumptions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Behavioral traces are indirect"
+              },
+              {
+                "type": "paragraph",
+                "text": "User-activity artifacts can record application launches, recently accessed items, URLs, shell commands, and other state. They are valuable precisely because many applications leave multiple traces, but no single artifact should be assumed to encode a complete human narrative."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A shortcut or recent-item artifact may support that a path or item was referenced, but context is required.",
+                  "Browser history and downloads can be incomplete because of private browsing, retention, synchronization, deletion, and profile differences.",
+                  "Execution artifacts should be correlated with logs, file timestamps, and other evidence."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-04-03",
+              "question": "Why is cross-artifact correlation important?",
+              "options": [
+                "Different artifacts observe different aspects of activity and can confirm, qualify, or contradict each other.",
+                "Because every artifact is always false.",
+                "Because timestamps cannot be used.",
+                "Because hashes are irrelevant."
+              ],
+              "answer": "Different artifacts observe different aspects of activity and can confirm, qualify, or contradict each other.",
+              "explanation": "Correlation reduces overreliance on a single indirect trace and exposes inconsistencies."
+            },
+            "summary": [
+              "State what each artifact can support, then correlate."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://github.com/sleuthkit/autopsy"
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Windows Evidence Collection with Read-Only Copies",
+            "description": "Practice exporting selected Windows artifacts without altering the source and record exact paths and collection context.",
+            "learningObjectives": [
+              "collect specified files to a working area",
+              "preserve original paths and metadata in notes",
+              "hash the collected outputs"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Targeted collection"
+              },
+              {
+                "type": "paragraph",
+                "text": "A targeted collection is appropriate when the investigation has a defined scope. The collector should record source paths, acquisition method, timestamps, access conditions, and hashes rather than copying files with no provenance."
+              },
+              {
+                "type": "code",
+                "text": "powershell\n$src = \"$env:WINDIR\\System32\\winevt\\Logs\\Security.evtx\"\n$dst = \"C:\\Lab\\Case001\\Security.evtx\"\nCopy-Item -LiteralPath $src -Destination $dst\nGet-FileHash -Algorithm SHA256 $dst"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-04",
+                "title": "Export and hash a Windows event log",
+                "description": "Create a lab copy of an exported EVTX file and record its SHA-256 digest.",
+                "steps": [
+                  "Use a permitted lab Windows VM.",
+                  "Export or copy an EVTX file to a case working directory without editing the source.",
+                  "Record the source path and collection time.",
+                  "Run Get-FileHash -Algorithm SHA256 on the copied file."
+                ],
+                "solution": "$source = \"C:\\Lab\\Security.evtx\"\n$copy = \"C:\\Lab\\Case001\\Security.evtx\"\nCopy-Item -LiteralPath $source -Destination $copy -Force\nGet-FileHash -LiteralPath $copy -Algorithm SHA256",
+                "output": "The copied EVTX remains a separate working artifact and the SHA-256 value is recorded for integrity verification."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-04-04",
+              "question": "What should be recorded alongside a copied Windows artifact?",
+              "options": [
+                "Original source path, acquisition/collection context, time, and hash information.",
+                "Only the filename.",
+                "Only the file size.",
+                "Only the analyst name."
+              ],
+              "answer": "Original source path, acquisition/collection context, time, and hash information.",
+              "explanation": "Provenance and validation require more than the output filename."
+            },
+            "summary": [
+              "Preserve provenance for targeted collections."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.swgde.org/17-f-002/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Correlate a Windows Login Investigation",
+            "level": "Intermediate",
+            "description": "Build a small correlation report from supplied Windows event exports and endpoint artifacts.",
+            "problemStatement": "A workstation is suspected of an unauthorized login during a two-hour window. Determine which records support the timeline and identify contradictions.",
+            "objectives": [
+              "parse or inspect exported event data",
+              "normalize times with timezone context",
+              "correlate login events with endpoint artifacts",
+              "write conclusions with confidence and limitations"
+            ],
+            "requirements": [
+              "Windows VM or pre-exported EVTX/CSV lab data",
+              "Python optional"
+            ],
+            "hint": "Do not begin with a suspect name. Begin with event times and machine/user identifiers, then test whether independent artifacts agree.",
+            "solutionCode": "import csv\nfrom datetime import datetime, timezone\n\nrows = []\nwith open(\"events.csv\", newline=\"\", encoding=\"utf-8\") as f:\n    for row in csv.DictReader(f):\n        row[\"time\"] = datetime.fromisoformat(row[\"time\"].replace(\"Z\", \"+00:00\"))\n        rows.append(row)\n\nfor row in sorted(rows, key=lambda r: r[\"time\"]):\n    print(row[\"time\"].isoformat(), row.get(\"event_id\"), row.get(\"user\"), row.get(\"source\"))",
+            "solutionExplanation": "The solution establishes a normalized chronological view first. The report should then cite which artifacts support each event and flag missing logs, clock uncertainty, or ambiguous identifiers."
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "Linux and macOS Evidence",
+        "description": "Develop cross-platform evidence reasoning using logs, shell histories, filesystem metadata, and system artifacts without assuming identical semantics.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "Linux Logs and System State",
+            "description": "Identify Linux logs, process state, shell history, configuration, and service traces relevant to evidence collection.",
+            "learningObjectives": [
+              "locate common Linux evidence sources",
+              "distinguish persistent logs from live state",
+              "collect selected logs while recording file metadata"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Linux evidence varies by distribution"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "/var/log and systemd journal are common log sources, but exact configuration varies.",
+                  "Shell history files record commands written to history; they are not guaranteed to contain every command executed.",
+                  "Process lists and socket state are live evidence and can change rapidly."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "bash\nps aux\nss -tupn\njournalctl --since \"2026-09-07 10:00:00\"\nhistory"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-01",
+              "question": "Why should shell history not be treated as a complete execution log?",
+              "options": [
+                "History can be disabled, altered, truncated, configured differently, or omit commands for several reasons.",
+                "Because Linux has no shell history.",
+                "Because commands are never recorded.",
+                "Because history is encrypted by default."
+              ],
+              "answer": "History can be disabled, altered, truncated, configured differently, or omit commands for several reasons.",
+              "explanation": "Shell history is user/session state, not a guaranteed audit trail."
+            },
+            "summary": [
+              "Know the limits of each evidence source."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "macOS Evidence Overview",
+            "description": "Identify macOS evidence categories and account for APFS, unified logging, application databases, and metadata.",
+            "learningObjectives": [
+              "list common macOS evidence categories",
+              "explain why APFS and application stores require context-aware analysis",
+              "document acquisition limitations"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "macOS as a distinct evidence environment"
+              },
+              {
+                "type": "paragraph",
+                "text": "macOS investigations commonly involve filesystem metadata, user account data, application stores, system logs, browser records, and cloud-synchronized information. APFS introduces copy-on-write and snapshot concepts that can complicate naive assumptions about deletion and disk layout."
+              },
+              {
+                "type": "warning",
+                "text": "Tool support and artifact paths change with OS/application versions. Treat parser coverage as something to validate against the actual system and tool version."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-05-02",
+              "question": "What is a sound approach to macOS artifact analysis?",
+              "options": [
+                "Validate artifact locations and semantics against the specific macOS/application version and acquisition context.",
+                "Assume every artifact path is stable forever.",
+                "Ignore application databases.",
+                "Treat cloud synchronization as local evidence."
+              ],
+              "answer": "Validate artifact locations and semantics against the specific macOS/application version and acquisition context.",
+              "explanation": "Version-specific changes and application storage models make validation necessary."
+            },
+            "summary": [
+              "Platform expertise includes knowing what can change between versions."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://www.iso.org/standard/44406.html"
+            ]
+          }
+        ],
+        "tasks": []
+      },
+      {
+        "id": "module-06",
+        "title": "Memory, Network, and Timeline Evidence",
+        "description": "Teach volatile-memory analysis, packet/log evidence, timeline construction, and multi-source correlation.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Memory Acquisition and Volatility",
+            "description": "Understand why RAM can contain unique transient evidence and how Volatility 3 is used to analyze supplied memory samples.",
+            "learningObjectives": [
+              "explain the evidential value of volatile memory",
+              "use Volatility 3 against a compatible lab memory sample",
+              "interpret processes, command lines, network state, and other memory-derived structures with caveats"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Memory is runtime state"
+              },
+              {
+                "type": "paragraph",
+                "text": "RAM may expose running processes, sockets, command lines, loaded modules, memory-mapped data, and other runtime information. Volatility 3 analyzes memory images; it does not itself provide memory acquisition. The framework documentation recommends checking symbol/support compatibility for the sample."
+              },
+              {
+                "type": "code",
+                "text": "bash\npython3 vol.py -f mem.raw windows.info\npython3 vol.py -f mem.raw windows.pslist\npython3 vol.py -f mem.raw windows.netscan"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-01",
+                "title": "Inspect a Windows memory sample",
+                "description": "Run Volatility 3 information and process plugins against a known lab sample and record the sample type and key findings.",
+                "steps": [
+                  "Install Volatility 3 in an isolated Python environment.",
+                  "Run windows.info against the sample.",
+                  "Run windows.pslist and record notable processes.",
+                  "Run a network-oriented plugin supported by the sample.",
+                  "Record the exact Volatility version and commands used."
+                ],
+                "solution": "python3 vol.py -f mem.raw windows.info\npython3 vol.py -f mem.raw windows.pslist\npython3 vol.py -f mem.raw windows.netscan",
+                "output": "The output provides runtime-state artifacts if the sample and symbol support are compatible. Findings must be tied to the specific sample and plugin version."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-06-01",
+              "question": "What is a key limitation of Volatility 3 in an acquisition workflow?",
+              "options": [
+                "It analyzes memory images but does not acquire memory itself.",
+                "It can only analyze filesystem images.",
+                "It automatically proves attribution.",
+                "It modifies the original RAM sample."
+              ],
+              "answer": "It analyzes memory images but does not acquire memory itself.",
+              "explanation": "The project documentation explicitly separates memory acquisition from memory analysis."
+            },
+            "summary": [
+              "Validate sample compatibility before interpreting results."
+            ],
+            "resources": [
+              "https://github.com/volatilityfoundation/volatility3",
+              "https://github.com/volatilityfoundation/volatility3/blob/develop/doc/source/getting-started-windows-tutorial.rst"
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "Network Evidence: PCAP, DNS, and Logs",
+            "description": "Use network evidence to reconstruct communication while accounting for encryption, retention, and clock differences.",
+            "learningObjectives": [
+              "differentiate packet captures, flow records, DNS logs, proxy logs, and firewall records",
+              "extract a communication narrative from supplied PCAP/log data",
+              "document what cannot be observed because of encryption or missing telemetry"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Network evidence is layered"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "PCAP can expose packet-level details when captured, but encrypted application payloads may remain unreadable.",
+                  "DNS, proxy, firewall, and flow logs often provide metadata rather than full content.",
+                  "Source/destination IP addresses do not automatically identify a human user; NAT, proxies, shared hosts, and cloud services can intervene."
+                ]
+              },
+              {
+                "type": "code",
+                "text": "text\nExample analytical questions:\n- Which endpoint initiated the connection?\n- At what UTC-normalized time?\n- Which DNS answer preceded the connection?\n- Does the packet capture cover both directions?\n- Is the observed address a client, proxy, NAT, or shared service?"
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-06-02",
+              "question": "Why is an IP address alone weak evidence of human attribution?",
+              "options": [
+                "Network architecture can include NAT, proxies, shared devices, and cloud infrastructure.",
+                "IP addresses are always fake.",
+                "IP addresses contain usernames.",
+                "Because packet captures cannot include IP addresses."
+              ],
+              "answer": "Network architecture can include NAT, proxies, shared devices, and cloud infrastructure.",
+              "explanation": "An address identifies a network endpoint or observed address at a layer; additional evidence is needed to attribute activity to a person."
+            },
+            "summary": [
+              "Separate communication facts from attribution claims."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Timeline Construction with Plaso",
+            "description": "Build an event timeline from multiple artifact sources and understand how normalized timestamps support correlation.",
+            "learningObjectives": [
+              "explain why timelines combine multiple evidence sources",
+              "use log2timeline/Plaso on a lab directory or image",
+              "inspect extracted events and record source provenance"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Timeline first, story second"
+              },
+              {
+                "type": "paragraph",
+                "text": "Plaso log2timeline extracts supported events from files, directories, or storage-media images into a Plaso storage file that can be analyzed with pinfo and psort. The timeline is a structured collection of observations; interpretation still requires source validation and correlation."
+              },
+              {
+                "type": "code",
+                "text": "bash\nlog2timeline.py timeline.plaso /path/to/evidence\npinfo.py timeline.plaso\npsort.py -o l2tcsv -w timeline.csv timeline.plaso"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-03",
+                "title": "Generate a lab timeline",
+                "description": "Generate a Plaso timeline from a supplied evidence directory, then identify one corroborated event using at least two artifacts.",
+                "steps": [
+                  "Run log2timeline.py against the lab evidence directory.",
+                  "Inspect the Plaso store with pinfo.py.",
+                  "Export a CSV timeline with psort.py.",
+                  "Filter the output to a narrow time window.",
+                  "Document one event supported by two separate source artifacts."
+                ],
+                "solution": "log2timeline.py timeline.plaso ./evidence\npinfo.py timeline.plaso\npsort.py -o l2tcsv -w timeline.csv timeline.plaso",
+                "output": "The resulting CSV contains normalized event records generated from parsers supported by the installed Plaso version. The corroboration step must identify both sources and any timezone assumptions."
+              }
+            ],
+            "quiz": {
+              "id": "quiz-06-03",
+              "question": "What does Plaso primarily provide in this workflow?",
+              "options": [
+                "A structured store of extracted events that can be sorted and analyzed as a timeline.",
+                "A replacement for evidence acquisition.",
+                "A court admissibility decision.",
+                "A network intrusion prevention system."
+              ],
+              "answer": "A structured store of extracted events that can be sorted and analyzed as a timeline.",
+              "explanation": "Plaso extracts events and associated metadata; analysis and interpretation remain the examiner’s responsibility."
+            },
+            "summary": [
+              "A timeline organizes evidence; it does not create certainty."
+            ],
+            "resources": [
+              "https://plaso.readthedocs.io/en/latest/sources/user/Using-log2timeline.html",
+              "https://www.iso.org/standard/44406.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Correlate Memory, Disk, and Network Evidence",
+            "level": "Advanced",
+            "description": "Create a cross-source event table that correlates a process, its network connection, and a persistent artifact from a controlled lab case.",
+            "problemStatement": "A supplied case contains a memory sample, endpoint artifacts, and network records. Determine whether the same process and time window are represented across all three sources.",
+            "objectives": [
+              "extract a process from memory",
+              "identify a corresponding network observation",
+              "locate a persistent endpoint artifact",
+              "normalize time and document gaps",
+              "state conclusions with explicit confidence"
+            ],
+            "requirements": [
+              "Volatility 3",
+              "Plaso optional",
+              "PCAP or network log sample"
+            ],
+            "hint": "Use unique identifiers such as process ID, executable path, remote endpoint, and normalized UTC time together; no single field is sufficient.",
+            "solutionCode": "# Pseudocode-like analysis script for already-exported CSV findings.\nimport csv\nfrom datetime import datetime\n\ndef read_csv(path):\n    with open(path, newline='', encoding='utf-8') as f:\n        return list(csv.DictReader(f))\n\nmemory = read_csv('memory_findings.csv')\nnetwork = read_csv('network_findings.csv')\ndisk = read_csv('disk_findings.csv')\n\nfor m in memory:\n    matches = [n for n in network if n.get('pid') == m.get('pid') and n.get('remote_ip') == m.get('remote_ip')]\n    for n in matches:\n        disk_matches = [d for d in disk if d.get('exe') == m.get('exe')]\n        print({'process': m.get('exe'), 'pid': m.get('pid'), 'network': n, 'disk_matches': len(disk_matches)})",
+            "solutionExplanation": "The solution is intentionally correlation-oriented: it joins independent exported findings and makes the analyst explain why the fields are strong or weak identifiers. A real report should preserve the original tool outputs rather than relying only on the derived CSV."
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "Mobile and Cloud Digital Evidence",
+        "description": "Cover preservation and acquisition challenges in mobile devices and provider-controlled cloud evidence, including scope, retention, and audit logs.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Mobile Device Preservation",
+            "description": "Explain mobile-specific preservation risks such as connectivity, lock state, encryption, synchronization, and remote changes.",
+            "learningObjectives": [
+              "identify preservation risks unique to mobile devices",
+              "document device state before acquisition",
+              "distinguish physical/logical/file-system/full extraction concepts at a high level"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Mobile devices are stateful ecosystems"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST SP 800-101 Rev. 1 and SWGDE mobile guidance address collection, preservation, acquisition, and the realities of modern smartphones. Device state, network connectivity, lock state, encryption, account synchronization, and acquisition method can materially affect what evidence remains available."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Do not improvise bypasses or unsupported extraction methods in a live case.",
+                  "Record make/model, OS/build where observable, power/lock state, network state, and acquisition path.",
+                  "Use approved tools and preserve original exports plus validation metadata."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-01",
+              "question": "Why is network connectivity a preservation concern for a mobile device?",
+              "options": [
+                "Remote synchronization or account activity can change the device or associated data while you are working.",
+                "Connectivity always deletes all evidence.",
+                "Connectivity changes the device serial number.",
+                "Connectivity prevents hashing."
+              ],
+              "answer": "Remote synchronization or account activity can change the device or associated data while you are working.",
+              "explanation": "Connected services may update or remove data, and a device can receive new state while connected."
+            },
+            "summary": [
+              "Preservation planning is device- and case-specific."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/101/r1/final",
+              "https://www.swgde.org/wp-content/uploads/2023/11/2020-09-17-SWGDE-Best-Practices-for-Mobile-Device-Evidence-Collection-_-Preservation-Handling-and-Acquisition_v1.2.pdf"
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Mobile Extraction Models and Validation",
+            "description": "Compare acquisition levels and validate exports without assuming the extractor captured everything.",
+            "learningObjectives": [
+              "explain logical, filesystem-level, and physical-oriented extraction distinctions",
+              "validate an export against tool logs and device scope",
+              "document unavailable or unsupported data"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Extraction is not binary"
+              },
+              {
+                "type": "paragraph",
+                "text": "A mobile extraction may capture application-level records without exposing raw flash contents. A filesystem-level acquisition may expose a broader set of files and databases; physical methods can depend on device architecture and security controls. The correct method depends on authorization, device state, tool capability, and the investigative question."
+              },
+              {
+                "type": "warning",
+                "text": "Tool labels such as \"full\" or \"complete\" should not be accepted uncritically; verify what data categories were actually acquired and which failed."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-02",
+              "question": "What should an examiner do when an extraction tool reports unsupported data?",
+              "options": [
+                "Document the limitation and avoid representing the unavailable data as examined.",
+                "Assume the missing records are irrelevant.",
+                "Fill the gap with guessed values.",
+                "Delete the tool log."
+              ],
+              "answer": "Document the limitation and avoid representing the unavailable data as examined.",
+              "explanation": "A defensible report distinguishes acquired, unavailable, unsupported, and failed data."
+            },
+            "summary": [
+              "Validate coverage, not just successful completion."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/101/r1/final",
+              "https://www.swgde.org/wp-content/uploads/2023/11/2020-09-17-SWGDE-Best-Practices-for-Mobile-Device-Evidence-Collection-_-Preservation-Handling-and-Acquisition_v1.2.pdf"
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Cloud Evidence and Audit Logs",
+            "description": "Use provider-controlled logs and exports as evidence while accounting for retention, region, permissions, and service-specific logging.",
+            "learningObjectives": [
+              "interpret cloud audit events as records of service activity",
+              "identify management versus data-plane activity where documented",
+              "preserve provider exports and context such as account, region, and time range"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "AWS CloudTrail example"
+              },
+              {
+                "type": "paragraph",
+                "text": "AWS documents CloudTrail events as records of activity in an AWS account. Event history provides searchable, downloadable management events for the previous 90 days in a region; data events are separately configurable and may be high-volume. This example illustrates a general cloud-forensics principle: the provider’s logging model defines what can be observed."
+              },
+              {
+                "type": "code",
+                "text": "bash\naws cloudtrail lookup-events   --lookup-attributes AttributeKey=EventName,AttributeValue=ConsoleLogin   --max-results 50 > cloudtrail.json"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve the raw provider export before transforming it.",
+                  "Record account, region, event store/trail context, time range, and filters.",
+                  "Understand service-specific logging gaps and retention limits."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-07-03",
+              "question": "What is a documented limitation of CloudTrail Event history?",
+              "options": [
+                "It shows management events for a limited historical window and does not by itself provide all data events.",
+                "It stores every possible application payload.",
+                "It covers every AWS account at once.",
+                "It is an immutable disk image."
+              ],
+              "answer": "It shows management events for a limited historical window and does not by itself provide all data events.",
+              "explanation": "AWS documents a 90-day Event history window for management events and separates data events and other event types into other mechanisms."
+            },
+            "summary": [
+              "Cloud investigations require service-specific logging knowledge."
+            ],
+            "resources": [
+              "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-events.html",
+              "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html",
+              "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-working-with-log-files.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Analyze a Cloud Audit Trail Export",
+            "level": "Intermediate",
+            "description": "Produce an evidence note from a supplied CloudTrail JSON export, identifying actor, action, region, target resource, and time context.",
+            "problemStatement": "A case contains an exported CloudTrail dataset. Determine what actions occurred and which fields are sufficient to support each statement.",
+            "objectives": [
+              "parse JSON events",
+              "extract identity, event name, source, region, resource, and event time when present",
+              "distinguish management/data events if the dataset indicates it",
+              "preserve raw event IDs and note missing fields"
+            ],
+            "requirements": [
+              "Python 3 standard library",
+              "Sample CloudTrail JSON export"
+            ],
+            "hint": "Do not infer a person from an IAM role without examining how the identity fields are represented.",
+            "solutionCode": "import json\nfrom pathlib import Path\n\nrecords = json.loads(Path('cloudtrail.json').read_text(encoding='utf-8'))\nfor event in records.get('Records', []):\n    print({\n        'eventTime': event.get('eventTime'),\n        'eventName': event.get('eventName'),\n        'eventSource': event.get('eventSource'),\n        'awsRegion': event.get('awsRegion'),\n        'userIdentity': event.get('userIdentity', {}),\n        'resources': event.get('resources', []),\n        'eventID': event.get('eventID')\n    })",
+            "solutionExplanation": "The script exposes the principal audit fields while retaining event IDs for traceability back to the original export. The analyst must still interpret identity context and note fields that are absent."
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Forensic Examination, Tool Validation, and Reproducibility",
+        "description": "Teach tool-aware examination, known-file filtering, test datasets, repeatability, and validation of analytical methods.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Forensic Tools and Tool Validation",
+            "description": "Treat tools as measurement instruments whose capabilities and failure modes must be understood.",
+            "learningObjectives": [
+              "explain why tool validation matters",
+              "record tool name/version, input, options, and output",
+              "design a small repeatability test using a known dataset"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Tools are not magic"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST’s Computer Forensics Tool Testing (CFTT) project exists to develop specifications and test methods for automated computer-forensics tools. ISO/IEC 27042 emphasizes analytical methods that can be scrutinized and reproduced."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "A result is more defensible when the examiner can explain the input, method, version, configuration, and expected behavior.",
+                  "Different tools may parse an artifact differently; discrepancies should be investigated rather than silently averaged.",
+                  "A negative result may mean \"not found with this method,\" not \"does not exist.\""
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-01",
+              "question": "Why is tool validation important?",
+              "options": [
+                "It establishes expected behavior and exposes limitations before a tool result is relied on.",
+                "It guarantees every output is correct.",
+                "It replaces examiner judgment.",
+                "It eliminates the need for documentation."
+              ],
+              "answer": "It establishes expected behavior and exposes limitations before a tool result is relied on.",
+              "explanation": "Validation helps characterize tool behavior and supports reproducible interpretation; it does not guarantee correctness in every case."
+            },
+            "summary": [
+              "Document assumptions and test edge cases."
+            ],
+            "resources": [
+              "https://www.nist.gov/publications/computer-forensics-tool-testing-cftt",
+              "https://www.iso.org/standard/44406.html"
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Known Files, Hash Sets, and the NSRL",
+            "description": "Use known-file references to reduce review volume while understanding what they do and do not mean.",
+            "learningObjectives": [
+              "explain how known-file hash sets support filtering",
+              "distinguish known application files from known-malicious or illicit-content classifications",
+              "apply allow-list style filtering cautiously"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "NSRL is a reference set"
+              },
+              {
+                "type": "paragraph",
+                "text": "NIST’s National Software Reference Library provides a Reference Data Set of file profiles associated with known software. Matching can reduce manual review of standard software files. NIST explicitly notes that the NSRL should not be treated as a database of \"known good\" or \"known bad\" files."
+              },
+              {
+                "type": "warning",
+                "text": "Filtering is an efficiency technique, not a semantic conclusion. A known application file can still matter in a case, and an unknown file is not automatically malicious."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-02",
+              "question": "What is the safest characterization of an NSRL match?",
+              "options": [
+                "It identifies a file profile as matching a known software reference record.",
+                "It proves the file is harmless.",
+                "It proves the user did not use the file.",
+                "It proves the file is malware."
+              ],
+              "answer": "It identifies a file profile as matching a known software reference record.",
+              "explanation": "The NSRL is intended to identify known software files and aid filtering; classification as good or bad depends on case context."
+            },
+            "summary": [
+              "Use hash sets to focus review, not to replace it."
+            ],
+            "resources": [
+              "https://www.nist.gov/itl/csd/secure-systems-and-applications/national-software-reference-library-nsrl",
+              "https://www.swgde.org/documents/published-complete-listing/05-f-001-swgde-digital-multimedia-evidence-glossary/"
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "Repeatability, Reproducibility, and Examination Notes",
+            "description": "Create examination notes that let another examiner understand and repeat the analysis.",
+            "learningObjectives": [
+              "distinguish repeatability from reproducibility conceptually",
+              "record commands, options, versions, inputs, and observed errors",
+              "separate raw evidence from derived findings"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A reproducible analytical record"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Identify the evidence object by stable case ID and hash.",
+                  "Record tool and version, operating environment when material, command/options, input scope, and output location.",
+                  "Preserve errors and warnings; they can define the boundaries of a conclusion.",
+                  "Record manual interpretation steps, not only automated output."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "ISO/IEC 27042 specifically emphasizes continuity, validity, reproducibility, and repeatability and recording enough information for independent scrutiny."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-08-03",
+              "question": "Which record most directly improves independent scrutiny?",
+              "options": [
+                "Exact evidence identifier, tool/version, method/options, outputs, and interpretation notes.",
+                "Only the analyst conclusion.",
+                "Only a screenshot of the final report.",
+                "Only the filename."
+              ],
+              "answer": "Exact evidence identifier, tool/version, method/options, outputs, and interpretation notes.",
+              "explanation": "Independent scrutiny requires enough context to understand and repeat the analytical process."
+            },
+            "summary": [
+              "A good forensic note captures both what was done and what was observed."
+            ],
+            "resources": [
+              "https://www.iso.org/standard/44406.html",
+              "https://www.swgde.org/17-f-002/"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Design a Mini Tool-Validation Test",
+            "level": "Advanced",
+            "description": "Create a small test dataset and validation protocol for a parser that extracts timestamps from a known file set.",
+            "problemStatement": "You need to evaluate whether a parser correctly interprets five known timestamps and handles one malformed record.",
+            "objectives": [
+              "define expected results before running the tool",
+              "construct test inputs with known ground truth",
+              "record tool/version and output",
+              "compare expected vs observed and classify discrepancies"
+            ],
+            "requirements": [
+              "Any parser capable of timestamp extraction",
+              "A text or CSV test dataset",
+              "A written protocol"
+            ],
+            "hint": "The key is to define ground truth before testing; do not change the expected result to match the tool.",
+            "solutionCode": "import csv\nfrom datetime import datetime\n\nexpected = {\n    'a.txt': '2026-01-01T10:00:00+00:00',\n    'b.txt': '2026-01-02T10:00:00+00:00',\n    'c.txt': '2026-01-03T10:00:00+00:00',\n    'd.txt': '2026-01-04T10:00:00+00:00',\n    'e.txt': '2026-01-05T10:00:00+00:00',\n}\n\nwith open('parser_output.csv', newline='', encoding='utf-8') as f:\n    for row in csv.DictReader(f):\n        expected_value = expected.get(row['file'])\n        status = 'UNTESTED'\n        if expected_value is not None:\n            status = 'PASS' if row['timestamp'] == expected_value else 'DISCREPANCY'\n        print(row['file'], status)",
+            "solutionExplanation": "The output classifies each known result against predeclared ground truth. The malformed case should be reported as a parser-behavior finding rather than silently converted into a valid timestamp."
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "Analysis, Interpretation, Reporting, and Ethical Practice",
+        "description": "Teach hypothesis-driven analysis, uncertainty, privacy, report construction, quality review, and communication of conclusions.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Hypotheses and Analytical Reasoning",
+            "description": "Structure analysis around testable propositions instead of narrative-first assumptions.",
+            "learningObjectives": [
+              "write testable investigative hypotheses",
+              "map each conclusion to supporting and contradicting evidence",
+              "express uncertainty explicitly"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Evidence supports propositions"
+              },
+              {
+                "type": "paragraph",
+                "text": "A disciplined analyst asks what each artifact can support and what alternative explanations remain. The goal is not to force a single story but to make the strongest defensible statement supported by the evidence."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record proposition → evidence → alternative explanation → residual uncertainty.",
+                  "Prefer multiple independent observations over repeated observations from the same source.",
+                  "Avoid certainty language when the evidence is indirect or incomplete."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-01",
+              "question": "What is a strong analytical practice?",
+              "options": [
+                "State the proposition, evaluate supporting and contradicting evidence, and document remaining uncertainty.",
+                "Start with a suspect and search only for confirming evidence.",
+                "Treat every artifact as conclusive.",
+                "Ignore missing data."
+              ],
+              "answer": "State the proposition, evaluate supporting and contradicting evidence, and document remaining uncertainty.",
+              "explanation": "Hypothesis-driven analysis reduces confirmation bias and makes evidential reasoning explicit."
+            },
+            "summary": [
+              "Analysis is an argument from evidence, not a story written first."
+            ],
+            "resources": [
+              "https://www.iso.org/standard/44406.html"
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Report Structure and Evidence Citations",
+            "description": "Write a technical forensic report that lets a reviewer trace conclusions back to evidence and methods.",
+            "learningObjectives": [
+              "build a report with scope, methods, findings, limitations, and conclusion sections",
+              "reference evidence objects by stable identifiers and hashes",
+              "separate observation from interpretation"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "A defensible report"
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Executive summary: concise question and outcome.",
+                  "Scope and authority: what was examined and under what defined scope.",
+                  "Evidence inventory: sources, identifiers, acquisition details, hashes.",
+                  "Methods: tools, versions, procedures, filters, and validation.",
+                  "Findings: observable facts with citations to evidence.",
+                  "Interpretation/conclusion: what the evidence supports and what remains uncertain.",
+                  "Limitations: missing logs, unsupported artifacts, time uncertainty, encryption, acquisition errors, and scope boundaries."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-02",
+              "question": "What belongs in a limitations section?",
+              "options": [
+                "Material gaps or constraints that affect how findings should be interpreted.",
+                "Only successful findings.",
+                "A list of unrelated security tips.",
+                "Personal opinions about the suspect."
+              ],
+              "answer": "Material gaps or constraints that affect how findings should be interpreted.",
+              "explanation": "Limitations are part of the evidential context and prevent overstatement."
+            },
+            "summary": [
+              "A limitation is not a weakness in the report; hiding it is."
+            ],
+            "resources": [
+              "https://www.iso.org/standard/44406.html",
+              "https://www.swgde.org/17-f-002/"
+            ]
+          },
+          {
+            "id": "lesson-09-03",
+            "title": "Privacy, Data Minimization, and Ethical Handling",
+            "description": "Minimize unnecessary exposure of personal information while preserving evidential value.",
+            "learningObjectives": [
+              "identify privacy-sensitive content in digital evidence",
+              "apply scoped review and minimization where authorized",
+              "document redaction or exclusion decisions"
+            ],
+            "notes": [
+              {
+                "type": "heading",
+                "level": 2,
+                "text": "Least exposure"
+              },
+              {
+                "type": "paragraph",
+                "text": "Digital evidence can contain unrelated personal information. Review should follow the authorized scope and organizational/legal requirements, with access controls and minimization used where appropriate. The analyst should be able to explain why excluded material was outside scope or not necessary to the question."
+              },
+              {
+                "type": "warning",
+                "text": "Never include unnecessary personal information in training datasets, reports, or examples. Use neutral lab data whenever possible."
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "quiz-09-03",
+              "question": "What is the most appropriate privacy principle for a scoped forensic review?",
+              "options": [
+                "Access and report only information necessary and authorized for the investigative purpose.",
+                "Copy everything into the final report.",
+                "Publish all acquired evidence.",
+                "Ignore access controls."
+              ],
+              "answer": "Access and report only information necessary and authorized for the investigative purpose.",
+              "explanation": "Scope and data minimization reduce unnecessary exposure while preserving the evidence required for the task."
+            },
+            "summary": [
+              "Protect the evidence and the people represented in it."
+            ],
+            "resources": [
+              "https://www.iso.org/standard/44407.html",
+              "https://www.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Write a Defensible Mini Forensic Report",
+            "level": "Advanced",
+            "description": "Turn a provided evidence package and analyst notes into a traceable technical report with findings, methods, and limitations.",
+            "problemStatement": "A review board will read the report without access to the analyst’s memory. The report must allow a second examiner to trace every important conclusion.",
+            "objectives": [
+              "create evidence inventory and hash table",
+              "describe methods and versions",
+              "state findings as observable claims",
+              "link each conclusion to evidence identifiers",
+              "document limitations and alternative explanations"
+            ],
+            "requirements": [
+              "Word/Markdown/HTML report tool",
+              "The provided lab evidence and notes"
+            ],
+            "hint": "For each conclusion, ask: \"Which exact artifact or observation supports this statement?\" Then cite it.",
+            "solutionCode": "# Example report skeleton in Markdown\n# Digital Evidence Examination Report\n\n## Scope\nDescribe the authorized question and evidence boundary.\n\n## Evidence\nList case IDs, source identifiers, acquisition method, and SHA-256 values.\n\n## Methods\nList tools, versions, commands/options, and validation performed.\n\n## Findings\n1. Observation with evidence ID and source.\n2. Corroborating observation from an independent source.\n\n## Interpretation\nExplain what the combined observations support and why.\n\n## Limitations\nDocument missing telemetry, unsupported artifacts, time uncertainty, and scope limits.\n\n## Conclusion\nState only propositions supported by the documented evidence.",
+            "solutionExplanation": "The structure keeps observations, methods, interpretation, and limitations distinct. A completed student report must replace the placeholders with case-specific facts and evidence citations."
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Final Real-World Project — Forensic Evidence Case Manager",
+        "description": "Capstone assessment combining evidence inventory, integrity validation, chain-of-custody documentation, verification, analytical notes, and defensible reporting. This module contains the final project only and no separate graded tasks.",
+        "lessons": [],
+        "tasks": [],
+        "project": {
+          "name": "Forensic Evidence Case Manager",
+          "description": "A local educational utility that operationalizes evidence integrity and chain-of-custody concepts taught in the course. It builds a SHA-256 manifest over a controlled evidence working set, records transfer events in append-only JSON Lines form, and verifies the working set against the manifest.",
+          "conceptsCovered": [
+            "evidence inventory",
+            "SHA-256 integrity validation",
+            "relative-path evidence identifiers",
+            "chain-of-custody event recording",
+            "UTC timestamps",
+            "repeatable verification",
+            "provenance and auditability",
+            "limitations of derived tooling"
+          ],
+          "steps": [
+            "Create a lab evidence directory containing only authorized, non-sensitive test files.",
+            "Run create-manifest to generate a manifest outside the evidence directory.",
+            "Inspect the manifest and confirm each record contains a relative path, size, SHA-256, and UTC timestamp.",
+            "Record at least two simulated custody transfers using distinct actors and a storage location.",
+            "Copy the evidence directory to a separate working location and run verify-manifest.",
+            "Modify or remove one test file in the working copy and rerun verification to observe a mismatch or missing status.",
+            "Use the verification results and chain log to write a short findings section with explicit limitations.",
+            "Preserve the original manifest, custody log, commands, and hashes as project outputs."
+          ],
+          "code": {
+            "README.md": "# Forensic Evidence Case Manager (Lab)\n\nThis project is a local, educational case-management utility for preserving metadata about a digital-evidence working set. It does not bypass encryption, acquire locked devices, or replace validated forensic tooling.\n\n## Run\n\npython -m evidence_manager.cli create-manifest ./evidence ./case-output\npython -m evidence_manager.cli add-transfer ./case-output/chain_of_custody.jsonl \"evidence-001\" \"Collector\" \"Examiner\" \"Sealed storage\"\npython -m evidence_manager.cli verify-manifest ./case-output/manifest.json ./evidence\n\nThe project records SHA-256 hashes for evidence files, keeps an append-oriented transfer log, and verifies a later working set against the manifest.\n",
+            "evidence_manager/__init__.py": "__all__ = []\n",
+            "evidence_manager/core.py": "from __future__ import annotations\n\nimport hashlib\nimport json\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\n\ndef utc_now() -> str:\n    return datetime.now(timezone.utc).isoformat()\n\n\ndef sha256_file(path: Path) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as handle:\n        for chunk in iter(lambda: handle.read(1024 * 1024), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\ndef build_manifest(evidence_root: Path) -> dict:\n    collected_at = utc_now()\n    records = []\n    for path in sorted(p for p in evidence_root.rglob(\"*\") if p.is_file()):\n        records.append({\n            \"relativePath\": path.relative_to(evidence_root).as_posix(),\n            \"size\": path.stat().st_size,\n            \"sha256\": sha256_file(path),\n            \"collectedAt\": collected_at,\n        })\n    return {\n        \"schemaVersion\": 1,\n        \"algorithm\": \"SHA-256\",\n        \"evidenceRoot\": str(evidence_root.resolve()),\n        \"createdAt\": collected_at,\n        \"records\": records,\n    }\n\n\ndef verify_manifest(manifest_path: Path, evidence_root: Path) -> list[dict]:\n    manifest = json.loads(manifest_path.read_text(encoding=\"utf-8\"))\n    results = []\n    for record in manifest[\"records\"]:\n        path = evidence_root / record[\"relativePath\"]\n        result = {\"path\": record[\"relativePath\"], \"status\": \"MISSING\"}\n        if path.is_file():\n            actual_hash = sha256_file(path)\n            result[\"status\"] = \"MATCH\" if actual_hash == record[\"sha256\"] else \"MISMATCH\"\n            result[\"expectedSha256\"] = record[\"sha256\"]\n            result[\"actualSha256\"] = actual_hash\n        results.append(result)\n    return results\n\n\ndef append_chain_event(path: Path, evidence_id: str, from_actor: str, to_actor: str, location: str) -> None:\n    event = {\n        \"timestamp\": utc_now(),\n        \"evidenceId\": evidence_id,\n        \"from\": from_actor,\n        \"to\": to_actor,\n        \"location\": location,\n    }\n    with path.open(\"a\", encoding=\"utf-8\") as handle:\n        handle.write(json.dumps(event, sort_keys=True) + \"\\n\")\n",
+            "evidence_manager/cli.py": "from __future__ import annotations\n\nimport argparse\nimport json\nfrom pathlib import Path\nfrom .core import append_chain_event, build_manifest, verify_manifest\n\n\ndef cmd_create_manifest(args: argparse.Namespace) -> None:\n    evidence = Path(args.evidence).resolve()\n    output_dir = Path(args.output).resolve()\n    output_dir.mkdir(parents=True, exist_ok=True)\n    manifest = build_manifest(evidence)\n    path = output_dir / \"manifest.json\"\n    path.write_text(json.dumps(manifest, indent=2), encoding=\"utf-8\")\n    (output_dir / \"chain_of_custody.jsonl\").touch(exist_ok=True)\n    print(f\"Manifest: {path}\")\n    print(f\"Files: {len(manifest['records'])}\")\n\n\ndef cmd_add_transfer(args: argparse.Namespace) -> None:\n    append_chain_event(Path(args.log), args.evidence_id, args.from_actor, args.to_actor, args.location)\n    print(\"Transfer recorded\")\n\n\ndef cmd_verify(args: argparse.Namespace) -> None:\n    results = verify_manifest(Path(args.manifest), Path(args.evidence).resolve())\n    for result in results:\n        print(json.dumps(result, sort_keys=True))\n    bad = [r for r in results if r[\"status\"] != \"MATCH\"]\n    raise SystemExit(1 if bad else 0)\n\n\ndef build_parser() -> argparse.ArgumentParser:\n    parser = argparse.ArgumentParser(description=\"Educational evidence manifest utility\")\n    sub = parser.add_subparsers(required=True)\n\n    p = sub.add_parser(\"create-manifest\")\n    p.add_argument(\"evidence\")\n    p.add_argument(\"output\")\n    p.set_defaults(func=cmd_create_manifest)\n\n    p = sub.add_parser(\"add-transfer\")\n    p.add_argument(\"log\")\n    p.add_argument(\"evidence_id\")\n    p.add_argument(\"from_actor\")\n    p.add_argument(\"to_actor\")\n    p.add_argument(\"location\")\n    p.set_defaults(func=cmd_add_transfer)\n\n    p = sub.add_parser(\"verify-manifest\")\n    p.add_argument(\"manifest\")\n    p.add_argument(\"evidence\")\n    p.set_defaults(func=cmd_verify)\n    return parser\n\n\nif __name__ == \"__main__\":\n    parser = build_parser()\n    args = parser.parse_args()\n    args.func(args)\n"
+          },
+          "explanation": "Architecture: core.py contains deterministic hashing, manifest generation, verification, and custody-event functions. cli.py exposes three narrowly scoped commands. The manifest is an integrity reference, not a replacement for a forensic image or acquisition record. The chain log records transfers but does not cryptographically sign them, so students must not represent it as tamper-proof custody evidence. The workflow mirrors defensible practices: identify the source, preserve metadata, hash the bytes, record transfers, and verify before analysis. The project intentionally avoids privileged device access and unsupported recovery techniques so it can be safely run on ordinary lab files."
+        }
+      }
+    ],
+    "researchSources": [
+      {
+        "title": "NIST SP 800-86 — Guide to Integrating Forensic Techniques into Incident Response",
+        "publisher": "NIST",
+        "url": "https://csrc.nist.gov/pubs/sp/800/86/final"
+      },
+      {
+        "title": "NIST SP 800-101 Rev. 1 — Guidelines on Mobile Device Forensics",
+        "publisher": "NIST",
+        "url": "https://csrc.nist.gov/pubs/sp/800/101/r1/final"
+      },
+      {
+        "title": "NIST SP 800-88 Rev. 2 — Guidelines for Media Sanitization",
+        "publisher": "NIST",
+        "url": "https://csrc.nist.gov/pubs/sp/800/88/r2/final"
+      },
+      {
+        "title": "ISO/IEC 27037:2012 — Guidelines for identification, collection, acquisition and preservation of digital evidence",
+        "publisher": "ISO",
+        "url": "https://www.iso.org/standard/44381.html"
+      },
+      {
+        "title": "ISO/IEC 27042:2015 — Guidelines for the analysis and interpretation of digital evidence",
+        "publisher": "ISO",
+        "url": "https://www.iso.org/standard/44406.html"
+      },
+      {
+        "title": "ISO/IEC 27043:2015 — Incident investigation principles and processes",
+        "publisher": "ISO",
+        "url": "https://www.iso.org/standard/44407.html"
+      },
+      {
+        "title": "RFC 3227 — Guidelines for Evidence Collection and Archiving",
+        "publisher": "RFC Editor",
+        "url": "https://www.rfc-editor.org/rfc/rfc3227.html"
+      },
+      {
+        "title": "Best Practices for Digital Evidence Collection",
+        "publisher": "SWGDE",
+        "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+      },
+      {
+        "title": "Best Practices for Computer Forensic Acquisitions",
+        "publisher": "SWGDE",
+        "url": "https://www.swgde.org/17-f-002/"
+      },
+      {
+        "title": "Electronic Crime Scene Investigation: A Guide for First Responders, Second Edition",
+        "publisher": "NIJ/OJP",
+        "url": "https://www.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition"
+      },
+      {
+        "title": "National Software Reference Library",
+        "publisher": "NIST",
+        "url": "https://www.nist.gov/itl/csd/secure-systems-and-applications/national-software-reference-library-nsrl"
+      },
+      {
+        "title": "Computer Forensics Tool Testing",
+        "publisher": "NIST",
+        "url": "https://www.nist.gov/publications/computer-forensics-tool-testing-cftt"
+      },
+      {
+        "title": "Volatility 3",
+        "publisher": "Volatility Foundation",
+        "url": "https://github.com/volatilityfoundation/volatility3"
+      },
+      {
+        "title": "The Sleuth Kit Documentation",
+        "publisher": "The Sleuth Kit",
+        "url": "https://www.sleuthkit.org/sleuthkit/docs.php"
+      },
+      {
+        "title": "Autopsy",
+        "publisher": "The Sleuth Kit",
+        "url": "https://github.com/sleuthkit/autopsy"
+      },
+      {
+        "title": "Plaso log2timeline documentation",
+        "publisher": "Plaso",
+        "url": "https://plaso.readthedocs.io/en/latest/sources/user/Using-log2timeline.html"
+      },
+      {
+        "title": "Microsoft Windows Event Log",
+        "publisher": "Microsoft Learn",
+        "url": "https://learn.microsoft.com/en-us/windows/win32/wes/windows-event-log"
+      },
+      {
+        "title": "Microsoft Windows Registry structure",
+        "publisher": "Microsoft Learn",
+        "url": "https://learn.microsoft.com/en-us/windows/win32/sysinfo/structure-of-the-registry"
+      },
+      {
+        "title": "AWS CloudTrail events",
+        "publisher": "AWS Documentation",
+        "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-events.html"
+      },
+      {
+        "title": "AWS CloudTrail Event history",
+        "publisher": "AWS Documentation",
+        "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html"
+      }
+    ]
+  }
+}

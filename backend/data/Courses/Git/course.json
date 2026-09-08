@@ -1,0 +1,3576 @@
+{
+  "course": {
+    "id": "git-github",
+    "title": "Git/GitHub",
+    "slug": "git-github",
+    "description": "A complete Git/GitHub course that progresses from Git's repository and commit model through staging, branches, merges, rebases, history recovery, remotes, pull requests, repository governance, GitHub Actions, security, repository hygiene, advanced maintenance, and release engineering. It combines command-line Git fluency with the collaboration and operational controls required for serious software repositories.",
+    "level": "Beginner to Advanced",
+    "language": "English",
+    "duration": 167.6,
+    "prerequisites": [
+      "Basic command-line usage.",
+      "Basic familiarity with files, directories, and text editors."
+    ],
+    "learningOutcomes": [
+      "Explain Git's working tree, index, commits, references, and graph.",
+      "Create focused, reviewable commit history.",
+      "Use branches, remotes, fetch, pull, push, merge, rebase, and conflict recovery safely.",
+      "Investigate and recover history with reflog and bisect.",
+      "Use stash, cherry-pick, tags, worktrees, hooks, attributes, and large-file strategies appropriately.",
+      "Collaborate through GitHub forks, pull requests, reviews, templates, and ownership.",
+      "Design protected branches and rulesets.",
+      "Build least-privilege GitHub Actions CI.",
+      "Prevent and respond to credential leaks.",
+      "Design traceable releases, hotfixes, and rollback processes.",
+      "Complete a governed Git/GitHub repository workflow."
+    ],
+    "modules": [
+      {
+        "id": "module-01",
+        "title": "Git Foundations",
+        "description": "Build a precise mental model of Git before using collaboration features.",
+        "lessons": [
+          {
+            "id": "lesson-01-01",
+            "title": "Git's repository model",
+            "description": "Git is a distributed version-control system. A repository contains objects, references, configuration, and an index; the working tree is the checked-out filesystem.",
+            "learningObjectives": [
+              "Explain repository, working tree, index, commit, and reference roles."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git is a distributed version-control system. A repository contains objects, references, configuration, and an index; the working tree is the checked-out filesystem."
+              },
+              {
+                "type": "code",
+                "text": "git status\ngit rev-parse --show-toplevel"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-01",
+                "title": "Inspect a repository boundary",
+                "description": "A focused exercise for the concept.",
+                "steps": [
+                  "Create a repository.",
+                  "Run status and rev-parse.",
+                  "Identify the working tree and .git directory."
+                ],
+                "solution": "git init demo\ncd demo\ngit status\ngit rev-parse --show-toplevel",
+                "output": "Git reports repository state and its top-level directory."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-01-01-quiz",
+              "question": "What is the index used for?",
+              "options": [
+                "Selecting content for the next commit",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Selecting content for the next commit",
+              "explanation": "The index is Git's staging area."
+            },
+            "summary": [
+              "Git is a distributed version-control system. A repository contains objects, references, configuration, and an index; the working tree is the checked-out filesystem."
+            ],
+            "resources": [
+              {
+                "title": "Book",
+                "url": "https://git-scm.com/book/en/v2"
+              },
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-02",
+            "title": "Commits and snapshots",
+            "description": "A commit records a project snapshot plus metadata and parent relationships. Commit history forms a directed graph.",
+            "learningObjectives": [
+              "Describe commits as graph nodes and explain parent relationships."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A commit records a project snapshot plus metadata and parent relationships. Commit history forms a directed graph."
+              },
+              {
+                "type": "code",
+                "text": "git log --oneline --graph --decorate"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-02",
+                "title": "Read a commit graph",
+                "description": "A focused exercise for the concept.",
+                "steps": [
+                  "Create two commits.",
+                  "Run the graph command.",
+                  "Identify each commit's parent."
+                ],
+                "solution": "git log --oneline --graph --decorate --all",
+                "output": "The graph shows commit ancestry."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-01-02-quiz",
+              "question": "What does a normal commit point to?",
+              "options": [
+                "Its parent commit or commits",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Its parent commit or commits",
+              "explanation": "Commit objects record parent relationships."
+            },
+            "summary": [
+              "A commit records a project snapshot plus metadata and parent relationships. Commit history forms a directed graph."
+            ],
+            "resources": [
+              {
+                "title": "Book",
+                "url": "https://git-scm.com/book/en/v2"
+              },
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-03",
+            "title": "Git configuration and identity",
+            "description": "Git configuration has system, global, and local scopes. Author identity is part of commit metadata.",
+            "learningObjectives": [
+              "Configure and inspect local identity without storing real credentials."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git configuration has system, global, and local scopes. Author identity is part of commit metadata."
+              },
+              {
+                "type": "code",
+                "text": "git config user.name \"Training Author\"\ngit config user.email \"training@example.invalid\""
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-03",
+                "title": "Configure local identity",
+                "description": "A focused exercise for the concept.",
+                "steps": [
+                  "Set local name and email.",
+                  "Inspect local config.",
+                  "Create a test commit and inspect author metadata."
+                ],
+                "solution": "git config user.name \"Training Author\"\ngit config user.email \"training@example.invalid\"\ngit config --local --list",
+                "output": "The repository has local identity settings."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-01-03-quiz",
+              "question": "Which scope affects one repository?",
+              "options": [
+                "--local",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "--local",
+              "explanation": "Local configuration applies to the current repository."
+            },
+            "summary": [
+              "Git configuration has system, global, and local scopes. Author identity is part of commit metadata."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-01-04",
+            "title": "Status, diff, and show",
+            "description": "Git's inspection commands let you verify state before changing history.",
+            "learningObjectives": [
+              "Compare working-tree, staged, and committed content."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git's inspection commands let you verify state before changing history."
+              },
+              {
+                "type": "code",
+                "text": "git status\ngit diff\ngit diff --cached\ngit show HEAD"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-01-04",
+                "title": "Audit a proposed commit",
+                "description": "A focused exercise for the concept.",
+                "steps": [
+                  "Edit a file.",
+                  "Inspect unstaged diff.",
+                  "Stage it.",
+                  "Inspect staged diff.",
+                  "Show the resulting commit."
+                ],
+                "solution": "git diff\ngit add README.md\ngit diff --cached\ngit show --stat HEAD",
+                "output": "The staged diff identifies exactly what will be committed."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-01-04-quiz",
+              "question": "Which command shows staged changes?",
+              "options": [
+                "git diff --cached",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "git diff --cached",
+              "explanation": "It compares the index with HEAD."
+            },
+            "summary": [
+              "Git's inspection commands let you verify state before changing history."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-01-01",
+            "title": "Create and audit a clean repository",
+            "level": "Easy",
+            "description": "Create a repository with a verified first commit.",
+            "problemStatement": "The repository must have one useful README and a clean working tree.",
+            "objectives": "Initialize, configure local identity, stage, commit, inspect.",
+            "requirements": "Use only Git; do not edit .git manually.",
+            "hint": "git init\ngit config user.name \"Training Author\"\ngit config user.email \"training@example.invalid\"\nprintf '# Project\\n' > README.md\ngit add README.md\ngit commit -m \"docs: add project readme\"\ngit status\ngit show --stat HEAD",
+            "solutionCode": "This establishes the minimum safe Git lifecycle.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-02",
+        "title": "Staging and Commit Craft",
+        "description": "Turn working-tree changes into deliberate, reviewable history.",
+        "lessons": [
+          {
+            "id": "lesson-02-01",
+            "title": "Staging complete files and hunks",
+            "description": "The index lets a developer choose precisely what enters the next commit.",
+            "learningObjectives": [
+              "Stage files and selected hunks."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The index lets a developer choose precisely what enters the next commit."
+              },
+              {
+                "type": "code",
+                "text": "git add -p"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-01",
+                "title": "Separate two changes in one file",
+                "description": "The index lets a developer choose precisely what enters the next commit.",
+                "steps": [
+                  "Make two unrelated edits.",
+                  "Use git add -p.",
+                  "Commit them separately."
+                ],
+                "solution": "git add -p\ngit commit -m \"docs: clarify usage\"\ngit add -p\ngit commit -m \"fix: correct behavior\"",
+                "output": "Two focused commits result."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-02-01-quiz",
+              "question": "Why use git add -p?",
+              "options": [
+                "To select specific hunks for staging",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "To select specific hunks for staging",
+              "explanation": "Interactive staging selects hunks."
+            },
+            "summary": [
+              "The index lets a developer choose precisely what enters the next commit."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-02",
+            "title": "Commit message design",
+            "description": "Git accepts arbitrary messages; teams can adopt conventions such as Conventional Commits to make intent machine-readable.",
+            "learningObjectives": [
+              "Write specific subjects and recognize feat/fix/docs conventions."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git accepts arbitrary messages; teams can adopt conventions such as Conventional Commits to make intent machine-readable."
+              },
+              {
+                "type": "code",
+                "text": "git commit -m \"fix(api): reject empty input\""
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-02",
+                "title": "Improve three commit messages",
+                "description": "Git accepts arbitrary messages; teams can adopt conventions such as Conventional Commits to make intent machine-readable.",
+                "steps": [
+                  "Replace vague subjects with specific intent.",
+                  "Use a scope only when useful.",
+                  "Keep each subject concise."
+                ],
+                "solution": "git commit -m \"fix(api): reject empty input\"\ngit commit -m \"docs: clarify setup\"\ngit commit -m \"test: cover invalid input\"",
+                "output": "Messages communicate purpose."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-02-02-quiz",
+              "question": "What is Conventional Commits?",
+              "options": [
+                "A commit-message convention layered on Git",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A commit-message convention layered on Git",
+              "explanation": "It is a convention, not a Git requirement."
+            },
+            "summary": [
+              "Git accepts arbitrary messages; teams can adopt conventions such as Conventional Commits to make intent machine-readable."
+            ],
+            "resources": [
+              {
+                "title": "Conv",
+                "url": "https://www.conventionalcommits.org/en/v1.0.0/"
+              },
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-03",
+            "title": "Amending the latest local commit",
+            "description": "Amend replaces the latest commit with a new commit object, so it is best used before shared history depends on the old object.",
+            "learningObjectives": [
+              "Amend a forgotten file or message and identify the collaboration risk."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Amend replaces the latest commit with a new commit object, so it is best used before shared history depends on the old object."
+              },
+              {
+                "type": "code",
+                "text": "git add forgotten.md\ngit commit --amend --no-edit"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-03",
+                "title": "Add an omitted file",
+                "description": "Amend replaces the latest commit with a new commit object, so it is best used before shared history depends on the old object.",
+                "steps": [
+                  "Make a commit.",
+                  "Stage a related forgotten file.",
+                  "Amend without changing the message."
+                ],
+                "solution": "git add forgotten.md\ngit commit --amend --no-edit",
+                "output": "The latest commit includes the file."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-02-03-quiz",
+              "question": "When is amend safest?",
+              "options": [
+                "Before the commit is shared",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Before the commit is shared",
+              "explanation": "Amend rewrites the latest commit."
+            },
+            "summary": [
+              "Amend replaces the latest commit with a new commit object, so it is best used before shared history depends on the old object."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-02-04",
+            "title": "Restore and clean undo operations",
+            "description": "Modern restore commands distinguish working-tree restoration from removing content from the index.",
+            "learningObjectives": [
+              "Restore unstaged content and unstage without destroying working-tree edits."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Modern restore commands distinguish working-tree restoration from removing content from the index."
+              },
+              {
+                "type": "code",
+                "text": "git restore file\ngit restore --staged file"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-02-04",
+                "title": "Undo one accidental edit",
+                "description": "Modern restore commands distinguish working-tree restoration from removing content from the index.",
+                "steps": [
+                  "Edit two files.",
+                  "Restore only one.",
+                  "Confirm the other remains modified."
+                ],
+                "solution": "git restore first.txt\ngit status",
+                "output": "Only the selected file is restored."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-02-04-quiz",
+              "question": "What does restore --staged do?",
+              "options": [
+                "It removes changes from the index",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "It removes changes from the index",
+              "explanation": "The working-tree edit can remain."
+            },
+            "summary": [
+              "Modern restore commands distinguish working-tree restoration from removing content from the index."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-02-01",
+            "title": "Build a coherent commit series",
+            "level": "Intermediate",
+            "description": "Separate mixed work into focused commits.",
+            "problemStatement": "Documentation, behavior, and tests are mixed in the same working tree.",
+            "objectives": "Use interactive staging and specific messages.",
+            "requirements": "Stage by intent, not by file count.",
+            "hint": "git add -p\ngit commit -m \"fix: correct input handling\"\ngit add -p\ngit commit -m \"test: cover invalid input\"\ngit add -p\ngit commit -m \"docs: clarify input rules\"",
+            "solutionCode": "The resulting history is easier to review and revert.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-03",
+        "title": "Branching and Parallel Work",
+        "description": "Use branches and upstream relationships to isolate work without losing the shared graph.",
+        "lessons": [
+          {
+            "id": "lesson-03-01",
+            "title": "Branches as movable references",
+            "description": "A branch name points to a commit and advances when new commits are created on that branch.",
+            "learningObjectives": [
+              "Create, switch, and inspect branches."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A branch name points to a commit and advances when new commits are created on that branch."
+              },
+              {
+                "type": "code",
+                "text": "git switch -c feature/reporting\ngit log --graph --all"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-01",
+                "title": "Create a feature branch",
+                "description": "A branch name points to a commit and advances when new commits are created on that branch.",
+                "steps": [
+                  "Create and switch to a branch.",
+                  "Commit a change.",
+                  "Inspect all refs."
+                ],
+                "solution": "git switch -c feature/reporting\ngit add .\ngit commit -m \"feat: add reporting skeleton\"\ngit log --graph --oneline --all",
+                "output": "The feature branch advances independently."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-03-01-quiz",
+              "question": "What is a branch?",
+              "options": [
+                "A movable reference to a commit",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A movable reference to a commit",
+              "explanation": "A branch name identifies a commit tip."
+            },
+            "summary": [
+              "A branch name points to a commit and advances when new commits are created on that branch."
+            ],
+            "resources": [
+              {
+                "title": "Branch",
+                "url": "https://git-scm.com/docs/git-branch"
+              },
+              {
+                "title": "Book",
+                "url": "https://git-scm.com/book/en/v2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-02",
+            "title": "Tracking branches and upstreams",
+            "description": "Local branches can track remote-tracking branches so push and pull can infer a destination.",
+            "learningObjectives": [
+              "Inspect branch -vv and establish upstream."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Local branches can track remote-tracking branches so push and pull can infer a destination."
+              },
+              {
+                "type": "code",
+                "text": "git push -u origin feature/reporting"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-02",
+                "title": "Establish an upstream",
+                "description": "Local branches can track remote-tracking branches so push and pull can infer a destination.",
+                "steps": [
+                  "Push a new branch.",
+                  "Use -u.",
+                  "Inspect branch -vv."
+                ],
+                "solution": "git push -u origin feature/reporting\ngit branch -vv",
+                "output": "The local branch records its upstream."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-03-02-quiz",
+              "question": "What does -u establish?",
+              "options": [
+                "An upstream tracking relationship",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "An upstream tracking relationship",
+              "explanation": "It records the remote branch used by later synchronization."
+            },
+            "summary": [
+              "Local branches can track remote-tracking branches so push and pull can infer a destination."
+            ],
+            "resources": [
+              {
+                "title": "Push",
+                "url": "https://git-scm.com/docs/git-push"
+              },
+              {
+                "title": "Remote",
+                "url": "https://git-scm.com/docs/git-remote"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-03",
+            "title": "Branch naming and lifecycle",
+            "description": "Branch names are references, so teams can adopt short-lived naming conventions and delete merged topic branches.",
+            "learningObjectives": [
+              "Design branch names and safely delete merged branches."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Branch names are references, so teams can adopt short-lived naming conventions and delete merged topic branches."
+              },
+              {
+                "type": "code",
+                "text": "git branch --merged\ngit branch -d feature/reporting"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-03",
+                "title": "Clean a merged branch",
+                "description": "Branch names are references, so teams can adopt short-lived naming conventions and delete merged topic branches.",
+                "steps": [
+                  "List merged branches.",
+                  "Verify the feature is merged.",
+                  "Delete it with -d."
+                ],
+                "solution": "git branch --merged\ngit branch -d feature/reporting",
+                "output": "The merged local branch is removed."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-03-03-quiz",
+              "question": "Why does -d check merge status?",
+              "options": [
+                "To avoid deleting unmerged work",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "To avoid deleting unmerged work",
+              "explanation": "The safe delete checks reachability/merge status."
+            },
+            "summary": [
+              "Branch names are references, so teams can adopt short-lived naming conventions and delete merged topic branches."
+            ],
+            "resources": [
+              {
+                "title": "Branch",
+                "url": "https://git-scm.com/docs/git-branch"
+              }
+            ]
+          },
+          {
+            "id": "lesson-03-04",
+            "title": "Remote-tracking branches",
+            "description": "A remote-tracking name such as origin/main is a local reference to the last fetched state, not a live network object.",
+            "learningObjectives": [
+              "Inspect and compare remote-tracking refs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A remote-tracking name such as origin/main is a local reference to the last fetched state, not a live network object."
+              },
+              {
+                "type": "code",
+                "text": "git fetch origin\ngit branch -r\ngit log HEAD..origin/main"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-03-04",
+                "title": "Inspect incoming history",
+                "description": "A remote-tracking name such as origin/main is a local reference to the last fetched state, not a live network object.",
+                "steps": [
+                  "Fetch.",
+                  "List remote branches.",
+                  "Compare local and remote history."
+                ],
+                "solution": "git fetch origin\ngit log --oneline HEAD..origin/main",
+                "output": "Incoming commits can be inspected before integration."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-03-04-quiz",
+              "question": "What is origin/main?",
+              "options": [
+                "A local remote-tracking reference",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A local remote-tracking reference",
+              "explanation": "It records the state observed from the origin remote."
+            },
+            "summary": [
+              "A remote-tracking name such as origin/main is a local reference to the last fetched state, not a live network object."
+            ],
+            "resources": [
+              {
+                "title": "Fetch",
+                "url": "https://git-scm.com/docs/git-fetch"
+              },
+              {
+                "title": "Remote",
+                "url": "https://git-scm.com/docs/git-remote"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-03-01",
+            "title": "Design a branch policy",
+            "level": "Easy",
+            "description": "Define a practical branch naming and cleanup policy.",
+            "problemStatement": "The team needs feature, fix, and release work without long-lived uncontrolled branches.",
+            "objectives": "Define names, merge expectations, and cleanup rules.",
+            "requirements": "Keep protected branches separate from short-lived topic branches.",
+            "hint": "feature/<topic>\nfix/<topic>\nrelease/<version>\nPolicy: protect main; merge reviewed changes; delete merged topic branches.",
+            "solutionCode": "The policy translates Git references into a predictable team workflow.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-04",
+        "title": "Merging, Rebasing and Conflicts",
+        "description": "Integrate divergent work while preserving intended behavior and understanding history rewriting.",
+        "lessons": [
+          {
+            "id": "lesson-04-01",
+            "title": "Fast-forward and three-way merge",
+            "description": "A merge can move a branch directly when histories permit or create a merge commit when branches diverged.",
+            "learningObjectives": [
+              "Predict merge results from a commit graph."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A merge can move a branch directly when histories permit or create a merge commit when branches diverged."
+              },
+              {
+                "type": "code",
+                "text": "git merge feature/reporting\ngit log --graph --oneline --all"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-01",
+                "title": "Inspect a merge",
+                "description": "A merge can move a branch directly when histories permit or create a merge commit when branches diverged.",
+                "steps": [
+                  "Create divergent commits.",
+                  "Merge.",
+                  "Inspect the graph."
+                ],
+                "solution": "git merge feature/reporting\ngit log --graph --oneline --decorate --all",
+                "output": "The graph reveals the resulting topology."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-04-01-quiz",
+              "question": "When is fast-forward possible?",
+              "options": [
+                "When the target is an ancestor of the source tip",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "When the target is an ancestor of the source tip",
+              "explanation": "No divergent target-side commit must be combined."
+            },
+            "summary": [
+              "A merge can move a branch directly when histories permit or create a merge commit when branches diverged."
+            ],
+            "resources": [
+              {
+                "title": "Merge",
+                "url": "https://git-scm.com/docs/git-merge"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-02",
+            "title": "Rebase and rewritten commit identity",
+            "description": "Rebase replays commits onto a new base, creating new commit objects.",
+            "learningObjectives": [
+              "Rebase a private branch and explain rewritten IDs."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Rebase replays commits onto a new base, creating new commit objects."
+              },
+              {
+                "type": "code",
+                "text": "git switch feature/reporting\ngit rebase main"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-02",
+                "title": "Rebase a private topic branch",
+                "description": "Rebase replays commits onto a new base, creating new commit objects.",
+                "steps": [
+                  "Ensure the branch is private.",
+                  "Rebase onto main.",
+                  "Inspect the graph."
+                ],
+                "solution": "git switch feature/reporting\ngit rebase main\ngit log --graph --oneline --all",
+                "output": "The feature commits have new identities because their parents changed."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-04-02-quiz",
+              "question": "Why can rebase change commit IDs?",
+              "options": [
+                "It creates commits with different parent relationships",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "It creates commits with different parent relationships",
+              "explanation": "Parent references contribute to commit identity."
+            },
+            "summary": [
+              "Rebase replays commits onto a new base, creating new commit objects."
+            ],
+            "resources": [
+              {
+                "title": "Rebase",
+                "url": "https://git-scm.com/docs/git-rebase"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-03",
+            "title": "Conflict anatomy and resolution",
+            "description": "Git stops when it cannot safely combine overlapping changes; conflict markers expose the competing text.",
+            "learningObjectives": [
+              "Resolve a conflict and stage the result."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git stops when it cannot safely combine overlapping changes; conflict markers expose the competing text."
+              },
+              {
+                "type": "code",
+                "text": "<<<<<<< HEAD\ncurrent\n=======\nincoming\n>>>>>>> feature"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-03",
+                "title": "Resolve a controlled conflict",
+                "description": "Git stops when it cannot safely combine overlapping changes; conflict markers expose the competing text.",
+                "steps": [
+                  "Create different edits to the same lines.",
+                  "Merge.",
+                  "Edit markers away.",
+                  "Stage and complete."
+                ],
+                "solution": "git status\n# edit conflict markers away\ngit add conflicted.txt\ngit commit",
+                "output": "The resolved file becomes the merge result."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-04-03-quiz",
+              "question": "What follows manual conflict resolution?",
+              "options": [
+                "Stage the resolved file and finish the operation",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Stage the resolved file and finish the operation",
+              "explanation": "Git records the resolution through the index."
+            },
+            "summary": [
+              "Git stops when it cannot safely combine overlapping changes; conflict markers expose the competing text."
+            ],
+            "resources": [
+              {
+                "title": "Merge",
+                "url": "https://git-scm.com/docs/git-merge"
+              },
+              {
+                "title": "Rebase",
+                "url": "https://git-scm.com/docs/git-rebase"
+              }
+            ]
+          },
+          {
+            "id": "lesson-04-04",
+            "title": "Abort and continue integration",
+            "description": "Merge and rebase provide explicit continuation and abort paths when integration cannot proceed.",
+            "learningObjectives": [
+              "Use rebase --continue and --abort safely."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Merge and rebase provide explicit continuation and abort paths when integration cannot proceed."
+              },
+              {
+                "type": "code",
+                "text": "git add resolved.txt\ngit rebase --continue\n# or\ngit rebase --abort"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-04-04",
+                "title": "Practice aborting",
+                "description": "Merge and rebase provide explicit continuation and abort paths when integration cannot proceed.",
+                "steps": [
+                  "Start a disposable conflicting rebase.",
+                  "Inspect status.",
+                  "Abort.",
+                  "Verify original branch state."
+                ],
+                "solution": "git rebase --abort\ngit status",
+                "output": "The pre-rebase state is restored."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-04-04-quiz",
+              "question": "Which command abandons a rebase?",
+              "options": [
+                "git rebase --abort",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "git rebase --abort",
+              "explanation": "It restores the branch to the pre-rebase state."
+            },
+            "summary": [
+              "Merge and rebase provide explicit continuation and abort paths when integration cannot proceed."
+            ],
+            "resources": [
+              {
+                "title": "Rebase",
+                "url": "https://git-scm.com/docs/git-rebase"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-04-01",
+            "title": "Resolve a multi-file integration conflict",
+            "level": "Advanced",
+            "description": "Integrate overlapping application and test changes.",
+            "problemStatement": "Two branches changed related behavior and tests.",
+            "objectives": "Resolve conflicts semantically, stage every resolved file, then run tests.",
+            "requirements": "Treat each conflict as a behavior decision, not merely marker deletion.",
+            "hint": "git merge feature/update\n# resolve files\ngit add src/ test/\ngit commit -m \"merge: integrate update\"\nnpm test",
+            "solutionCode": "A correct resolution preserves intended behavior and passes validation.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-05",
+        "title": "History, Debugging and Recovery",
+        "description": "Turn Git history into an investigation and recovery toolkit.",
+        "lessons": [
+          {
+            "id": "lesson-05-01",
+            "title": "History search with log and show",
+            "description": "Git history can be filtered by paths, messages, authors, and graph relationships.",
+            "learningObjectives": [
+              "Locate a candidate change and inspect its patch."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git history can be filtered by paths, messages, authors, and graph relationships."
+              },
+              {
+                "type": "code",
+                "text": "git log --oneline -- path/to/file\ngit show <commit>"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-01",
+                "title": "Trace a file change",
+                "description": "Git history can be filtered by paths, messages, authors, and graph relationships.",
+                "steps": [
+                  "List path history.",
+                  "Inspect likely commits.",
+                  "Compare a commit with its parent."
+                ],
+                "solution": "git log --oneline -- path/to/file\ngit show <commit>\ngit diff <commit>^ <commit> -- path/to/file",
+                "output": "The investigation identifies concrete changes."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-05-01-quiz",
+              "question": "Which command shows a commit patch?",
+              "options": [
+                "git show",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "git show",
+              "explanation": "show displays commit metadata and its patch."
+            },
+            "summary": [
+              "Git history can be filtered by paths, messages, authors, and graph relationships."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              },
+              {
+                "title": "Book",
+                "url": "https://git-scm.com/book/en/v2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-02",
+            "title": "Blame as a change-tracing tool",
+            "description": "Blame maps lines to commits and is useful for finding context, but it is not proof that the named author is responsible for a bug.",
+            "learningObjectives": [
+              "Use blame to locate the commit that introduced a line."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Blame maps lines to commits and is useful for finding context, but it is not proof that the named author is responsible for a bug."
+              },
+              {
+                "type": "code",
+                "text": "git blame -L 20,40 src/app.js"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-02",
+                "title": "Trace ownership of a line",
+                "description": "Blame maps lines to commits and is useful for finding context, but it is not proof that the named author is responsible for a bug.",
+                "steps": [
+                  "Select a line range.",
+                  "Run blame.",
+                  "Inspect the cited commit with show."
+                ],
+                "solution": "git blame -L 20,40 src/app.js\ngit show <commit>",
+                "output": "Each line is associated with a commit in the current file state."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-05-02-quiz",
+              "question": "What is blame best for?",
+              "options": [
+                "Tracing a line to a commit for context",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Tracing a line to a commit for context",
+              "explanation": "It points you toward history; it is not a judgment of fault."
+            },
+            "summary": [
+              "Blame maps lines to commits and is useful for finding context, but it is not proof that the named author is responsible for a bug."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-03",
+            "title": "Reset versus revert",
+            "description": "Reset moves references and can alter local history; revert records a new inverse commit and is suited to shared history.",
+            "learningObjectives": [
+              "Choose reset or revert based on sharing and safety."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Reset moves references and can alter local history; revert records a new inverse commit and is suited to shared history."
+              },
+              {
+                "type": "code",
+                "text": "git reset --soft HEAD~1\ngit revert <commit>"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-03",
+                "title": "Compare undo strategies",
+                "description": "Reset moves references and can alter local history; revert records a new inverse commit and is suited to shared history.",
+                "steps": [
+                  "Use a disposable repository.",
+                  "Observe soft reset state.",
+                  "Use revert in a shared-style branch.",
+                  "Compare graphs."
+                ],
+                "solution": "git reset --soft HEAD~1\ngit revert <commit>",
+                "output": "Reset and revert have different history consequences."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-05-03-quiz",
+              "question": "Which is normally appropriate on shared history?",
+              "options": [
+                "git revert",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "git revert",
+              "explanation": "Revert avoids rewriting existing shared commits."
+            },
+            "summary": [
+              "Reset moves references and can alter local history; revert records a new inverse commit and is suited to shared history."
+            ],
+            "resources": [
+              {
+                "title": "Reset",
+                "url": "https://git-scm.com/docs/git-reset"
+              },
+              {
+                "title": "Revert",
+                "url": "https://git-scm.com/docs/git-revert"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-04",
+            "title": "Reflog recovery",
+            "description": "Reflogs record local reference movements and can reveal commits that a branch name no longer points to.",
+            "learningObjectives": [
+              "Recover a lost local tip."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Reflogs record local reference movements and can reveal commits that a branch name no longer points to."
+              },
+              {
+                "type": "code",
+                "text": "git reflog\ngit switch -c recovery HEAD@{1}"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-04",
+                "title": "Recover after an accidental reset",
+                "description": "Reflogs record local reference movements and can reveal commits that a branch name no longer points to.",
+                "steps": [
+                  "Make several commits.",
+                  "Reset in a disposable repo.",
+                  "Inspect reflog.",
+                  "Create a recovery branch."
+                ],
+                "solution": "git reflog\ngit switch -c recovery HEAD@{1}",
+                "output": "The recovery branch points at the prior reflog entry."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-05-04-quiz",
+              "question": "What does reflog record?",
+              "options": [
+                "Local reference movements",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Local reference movements",
+              "explanation": "It records updates such as HEAD and branch movements locally."
+            },
+            "summary": [
+              "Reflogs record local reference movements and can reveal commits that a branch name no longer points to."
+            ],
+            "resources": [
+              {
+                "title": "Reflog",
+                "url": "https://git-scm.com/docs/git-reflog"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-05",
+            "title": "Stash for temporary work",
+            "description": "A stash temporarily records working-tree/index changes without turning unfinished work into normal project history.",
+            "learningObjectives": [
+              "Create, inspect, and apply a stash."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A stash temporarily records working-tree/index changes without turning unfinished work into normal project history."
+              },
+              {
+                "type": "code",
+                "text": "git stash push -m \"wip\"\ngit stash list\ngit stash pop"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-05",
+                "title": "Shelve unfinished work",
+                "description": "A stash temporarily records working-tree/index changes without turning unfinished work into normal project history.",
+                "steps": [
+                  "Edit a tracked file.",
+                  "Stash it.",
+                  "Switch branches.",
+                  "Return and pop the stash."
+                ],
+                "solution": "git stash push -m \"wip: investigation\"\ngit stash list\ngit stash pop",
+                "output": "The unfinished change returns to the working tree."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-05-05-quiz",
+              "question": "What is stash intended for?",
+              "options": [
+                "Temporary local work",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Temporary local work",
+              "explanation": "It is a short-term shelving mechanism."
+            },
+            "summary": [
+              "A stash temporarily records working-tree/index changes without turning unfinished work into normal project history."
+            ],
+            "resources": [
+              {
+                "title": "Stash",
+                "url": "https://git-scm.com/docs/git-stash"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-06",
+            "title": "Cherry-pick for targeted transfer",
+            "description": "Cherry-pick applies the change introduced by an existing commit onto another branch.",
+            "learningObjectives": [
+              "Backport one self-contained fix."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Cherry-pick applies the change introduced by an existing commit onto another branch."
+              },
+              {
+                "type": "code",
+                "text": "git cherry-pick <commit>"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-06",
+                "title": "Backport a fix",
+                "description": "Cherry-pick applies the change introduced by an existing commit onto another branch.",
+                "steps": [
+                  "Identify a focused fix.",
+                  "Switch to maintenance.",
+                  "Cherry-pick.",
+                  "Run tests."
+                ],
+                "solution": "git switch maintenance\ngit cherry-pick <fix-commit>\nnpm test",
+                "output": "The fix appears as a new commit on maintenance."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-05-06-quiz",
+              "question": "What does cherry-pick transfer?",
+              "options": [
+                "The changes introduced by selected commits",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "The changes introduced by selected commits",
+              "explanation": "It creates a new commit on the current branch."
+            },
+            "summary": [
+              "Cherry-pick applies the change introduced by an existing commit onto another branch."
+            ],
+            "resources": [
+              {
+                "title": "Cherry",
+                "url": "https://git-scm.com/docs/git-cherry-pick"
+              }
+            ]
+          },
+          {
+            "id": "lesson-05-07",
+            "title": "Bisect for reproducible regressions",
+            "description": "Bisect performs a binary search over commit history and is effective when a deterministic test can classify commits.",
+            "learningObjectives": [
+              "Automate a regression search."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Bisect performs a binary search over commit history and is effective when a deterministic test can classify commits."
+              },
+              {
+                "type": "code",
+                "text": "git bisect start\ngit bisect bad\ngit bisect good <known-good>\ngit bisect run ./test.sh"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-05-07",
+                "title": "Locate the first bad commit",
+                "description": "Bisect performs a binary search over commit history and is effective when a deterministic test can classify commits.",
+                "steps": [
+                  "Mark known good/bad points.",
+                  "Run the automated test.",
+                  "Reset bisect after identification."
+                ],
+                "solution": "git bisect start\ngit bisect bad\ngit bisect good <known-good>\ngit bisect run ./test.sh\ngit bisect reset",
+                "output": "Git narrows the candidate set using the test result."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-05-07-quiz",
+              "question": "What does bisect require?",
+              "options": [
+                "Reliable good/bad classification",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Reliable good/bad classification",
+              "explanation": "An unreliable test produces unreliable search results."
+            },
+            "summary": [
+              "Bisect performs a binary search over commit history and is effective when a deterministic test can classify commits."
+            ],
+            "resources": [
+              {
+                "title": "Bisect",
+                "url": "https://git-scm.com/docs/git-bisect"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-05-01",
+            "title": "Investigate and recover a regression",
+            "level": "Advanced",
+            "description": "Use reflog to recover a moved reference and bisect to isolate a reproducible regression.",
+            "problemStatement": "A disposable repository contains an accidental reset and a deterministic failing test.",
+            "objectives": "Use reflog first, then bisect with the test command.",
+            "requirements": "Do not rewrite shared history during the exercise.",
+            "hint": "git reflog\ngit switch -c recovered HEAD@{1}\ngit bisect start\ngit bisect bad\ngit bisect good <known-good>\ngit bisect run ./test.sh\ngit bisect reset",
+            "solutionCode": "The exercise demonstrates reference recovery and evidence-based regression isolation.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-06",
+        "title": "Remotes, Synchronization and Releases",
+        "description": "Synchronize local and remote histories deliberately and make release points traceable.",
+        "lessons": [
+          {
+            "id": "lesson-06-01",
+            "title": "Remote names and fetch",
+            "description": "Remote names identify configured repositories; fetch updates remote-tracking refs without integrating them.",
+            "learningObjectives": [
+              "Inspect remotes and fetch safely."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Remote names identify configured repositories; fetch updates remote-tracking refs without integrating them."
+              },
+              {
+                "type": "code",
+                "text": "git remote -v\ngit fetch origin\ngit branch -r"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-01",
+                "title": "Inspect incoming changes",
+                "description": "Remote names identify configured repositories; fetch updates remote-tracking refs without integrating them.",
+                "steps": [
+                  "List remotes.",
+                  "Fetch.",
+                  "List remote branches.",
+                  "Compare incoming commits."
+                ],
+                "solution": "git remote -v\ngit fetch origin\ngit log --oneline HEAD..origin/main",
+                "output": "Incoming history is visible without changing the current branch."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-06-01-quiz",
+              "question": "What does fetch do?",
+              "options": [
+                "Downloads updates and updates remote-tracking refs",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Downloads updates and updates remote-tracking refs",
+              "explanation": "Fetch separates download from integration."
+            },
+            "summary": [
+              "Remote names identify configured repositories; fetch updates remote-tracking refs without integrating them."
+            ],
+            "resources": [
+              {
+                "title": "Remote",
+                "url": "https://git-scm.com/docs/git-remote"
+              },
+              {
+                "title": "Fetch",
+                "url": "https://git-scm.com/docs/git-fetch"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-02",
+            "title": "Pull as fetch plus integration",
+            "description": "Pull combines fetching with an integration strategy, so teams should choose explicit merge/rebase behavior.",
+            "learningObjectives": [
+              "Explain pull --ff-only and pull --rebase."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Pull combines fetching with an integration strategy, so teams should choose explicit merge/rebase behavior."
+              },
+              {
+                "type": "code",
+                "text": "git pull --ff-only\ngit pull --rebase"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-02",
+                "title": "Compare pull strategies",
+                "description": "Pull combines fetching with an integration strategy, so teams should choose explicit merge/rebase behavior.",
+                "steps": [
+                  "Create divergence in a disposable setup.",
+                  "Try ff-only.",
+                  "Try rebase in a separate simulation.",
+                  "Inspect graphs."
+                ],
+                "solution": "git pull --ff-only\n# or an explicitly chosen workflow:\ngit pull --rebase",
+                "output": "The outcome depends on graph shape and chosen strategy."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-06-02-quiz",
+              "question": "Why can pull surprise users?",
+              "options": [
+                "It combines fetch with an integration step",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "It combines fetch with an integration step",
+              "explanation": "Pull is more than downloading."
+            },
+            "summary": [
+              "Pull combines fetching with an integration strategy, so teams should choose explicit merge/rebase behavior."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-03",
+            "title": "Push, rejection, and force-with-lease",
+            "description": "A non-fast-forward push protects remote history. Force-with-lease rewrites only when the remote still matches the expected state.",
+            "learningObjectives": [
+              "Handle a rejected push and explain force-with-lease."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A non-fast-forward push protects remote history. Force-with-lease rewrites only when the remote still matches the expected state."
+              },
+              {
+                "type": "code",
+                "text": "git push origin main\ngit push --force-with-lease"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-03",
+                "title": "Recover from a rejected push",
+                "description": "A non-fast-forward push protects remote history. Force-with-lease rewrites only when the remote still matches the expected state.",
+                "steps": [
+                  "Simulate two clones.",
+                  "Create remote divergence.",
+                  "Fetch and integrate.",
+                  "Push again."
+                ],
+                "solution": "git fetch origin\ngit rebase origin/main\ngit push origin main",
+                "output": "The push succeeds after local history includes the required remote ancestry."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-06-03-quiz",
+              "question": "Why is force-with-lease safer than force?",
+              "options": [
+                "It checks the remote ref before rewriting",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "It checks the remote ref before rewriting",
+              "explanation": "The lease reduces accidental overwrites of unseen remote work."
+            },
+            "summary": [
+              "A non-fast-forward push protects remote history. Force-with-lease rewrites only when the remote still matches the expected state."
+            ],
+            "resources": [
+              {
+                "title": "Push",
+                "url": "https://git-scm.com/docs/git-push"
+              },
+              {
+                "title": "Protected",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches"
+              }
+            ]
+          },
+          {
+            "id": "lesson-06-04",
+            "title": "Tags and release references",
+            "description": "Annotated tags identify exact commits and can be pushed independently of branches.",
+            "learningObjectives": [
+              "Create and inspect annotated tags."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Annotated tags identify exact commits and can be pushed independently of branches."
+              },
+              {
+                "type": "code",
+                "text": "git tag -a v1.0.0 -m \"Release 1.0.0\"\ngit show v1.0.0"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-06-04",
+                "title": "Create a release tag",
+                "description": "Annotated tags identify exact commits and can be pushed independently of branches.",
+                "steps": [
+                  "Choose a validated commit.",
+                  "Create an annotated tag.",
+                  "Inspect it.",
+                  "Push the tag."
+                ],
+                "solution": "git tag -a v1.0.0 -m \"Release 1.0.0\"\ngit show v1.0.0\ngit push origin v1.0.0",
+                "output": "The tag names a specific commit."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-06-04-quiz",
+              "question": "Why tag a release?",
+              "options": [
+                "To name an exact repository state",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "To name an exact repository state",
+              "explanation": "A tag gives a stable reference to a release commit."
+            },
+            "summary": [
+              "Annotated tags identify exact commits and can be pushed independently of branches."
+            ],
+            "resources": [
+              {
+                "title": "Tag",
+                "url": "https://git-scm.com/docs/git-tag"
+              },
+              {
+                "title": "Releases",
+                "url": "https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-06-01",
+            "title": "Build a safe remote synchronization workflow",
+            "level": "Intermediate",
+            "description": "Define and demonstrate fetch, inspect, integrate, and push steps.",
+            "problemStatement": "The team wants to minimize accidental overwrites and surprise merges.",
+            "objectives": "Use explicit fetch, graph inspection, chosen integration, and ordinary push.",
+            "requirements": "Inspect both incoming and outgoing commit ranges before integration.",
+            "hint": "git fetch origin\ngit log --oneline HEAD..origin/main\ngit log --oneline origin/main..HEAD\n# integrate according to policy\ngit push origin feature/example",
+            "solutionCode": "The workflow makes divergence visible before synchronization.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-07",
+        "title": "GitHub Collaboration",
+        "description": "Use GitHub repositories, forks, pull requests, review, and merge policy as a professional collaboration layer.",
+        "lessons": [
+          {
+            "id": "lesson-07-01",
+            "title": "Git versus GitHub",
+            "description": "Git is the version-control system; GitHub hosts repositories and adds collaboration, review, automation, and security features.",
+            "learningObjectives": [
+              "Distinguish local Git from hosted GitHub functionality."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git is the version-control system; GitHub hosts repositories and adds collaboration, review, automation, and security features."
+              },
+              {
+                "type": "code",
+                "text": "git clone <url>\ngit remote -v"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-01",
+                "title": "Inspect a contribution repository",
+                "description": "Git is the version-control system; GitHub hosts repositories and adds collaboration, review, automation, and security features.",
+                "steps": [
+                  "Read README/contribution guidance.",
+                  "Inspect the default branch.",
+                  "Identify the repository's contribution path."
+                ],
+                "solution": "git clone <repository-url>\ngit remote -v",
+                "output": "The contributor understands repository expectations before changing code."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-07-01-quiz",
+              "question": "What does GitHub add to Git?",
+              "options": [
+                "Hosting and collaboration capabilities",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Hosting and collaboration capabilities",
+              "explanation": "Git itself works without GitHub."
+            },
+            "summary": [
+              "Git is the version-control system; GitHub hosts repositories and adds collaboration, review, automation, and security features."
+            ],
+            "resources": [
+              {
+                "title": "Github",
+                "url": "https://docs.github.com/en/get-started"
+              },
+              {
+                "title": "Book",
+                "url": "https://git-scm.com/book/en/v2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-02",
+            "title": "Forks versus clones",
+            "description": "A clone creates a local copy; a fork is a GitHub-hosted copy used commonly for contributions to repositories where direct write access is not available.",
+            "learningObjectives": [
+              "Set up origin and upstream for a fork workflow."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A clone creates a local copy; a fork is a GitHub-hosted copy used commonly for contributions to repositories where direct write access is not available."
+              },
+              {
+                "type": "code",
+                "text": "git remote add upstream <url>\ngit fetch upstream"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-02",
+                "title": "Configure a fork workflow",
+                "description": "A clone creates a local copy; a fork is a GitHub-hosted copy used commonly for contributions to repositories where direct write access is not available.",
+                "steps": [
+                  "Clone the fork.",
+                  "Add upstream.",
+                  "Fetch upstream.",
+                  "Inspect both remote names."
+                ],
+                "solution": "git clone <fork-url>\ngit remote add upstream <original-url>\ngit fetch upstream\ngit remote -v",
+                "output": "origin and upstream represent distinct hosted repositories."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-07-02-quiz",
+              "question": "What is a fork?",
+              "options": [
+                "A GitHub-hosted copy of a repository",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A GitHub-hosted copy of a repository",
+              "explanation": "A fork supports independent contribution and pull requests."
+            },
+            "summary": [
+              "A clone creates a local copy; a fork is a GitHub-hosted copy used commonly for contributions to repositories where direct write access is not available."
+            ],
+            "resources": [
+              {
+                "title": "Fork",
+                "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks"
+              },
+              {
+                "title": "Clone",
+                "url": "https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-03",
+            "title": "Pull requests as reviewable change sets",
+            "description": "A pull request proposes a branch change and supplies a review and automation boundary before integration.",
+            "learningObjectives": [
+              "Create a focused PR description with testing and risk."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A pull request proposes a branch change and supplies a review and automation boundary before integration."
+              },
+              {
+                "type": "code",
+                "text": "git push -u origin feature/search"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-03",
+                "title": "Draft a reviewable PR",
+                "description": "A pull request proposes a branch change and supplies a review and automation boundary before integration.",
+                "steps": [
+                  "Describe the problem.",
+                  "Summarize the implementation.",
+                  "List tests.",
+                  "Describe risk.",
+                  "Request appropriate review."
+                ],
+                "solution": "## Summary\nAdd exact-name filtering.\n\n## Testing\nnpm test\n\n## Risk\nExisting default behavior remains unchanged.",
+                "output": "The PR communicates intent and evidence."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-07-03-quiz",
+              "question": "What makes a PR reviewable?",
+              "options": [
+                "Focused scope and clear context",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Focused scope and clear context",
+              "explanation": "Reviewers need purpose, scope, tests, and risk."
+            },
+            "summary": [
+              "A pull request proposes a branch change and supplies a review and automation boundary before integration."
+            ],
+            "resources": [
+              {
+                "title": "Pr",
+                "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/about-pull-requests"
+              },
+              {
+                "title": "Templates",
+                "url": "https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-04",
+            "title": "Review conversations and requested changes",
+            "description": "Code review evaluates correctness, tests, security, maintainability, and repository standards.",
+            "learningObjectives": [
+              "Write actionable review comments and respond with evidence."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Code review evaluates correctness, tests, security, maintainability, and repository standards."
+              },
+              {
+                "type": "code",
+                "text": "Review a diff, leave specific comments, update branch"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-04",
+                "title": "Perform a structured review",
+                "description": "Code review evaluates correctness, tests, security, maintainability, and repository standards.",
+                "steps": [
+                  "Check behavior.",
+                  "Check tests.",
+                  "Check security.",
+                  "Check maintainability.",
+                  "Request specific changes when needed."
+                ],
+                "solution": "# Review checklist\nCorrectness\nTests\nSecurity\nCompatibility\nMaintainability",
+                "output": "The review produces actionable feedback."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-07-04-quiz",
+              "question": "What is a useful review comment?",
+              "options": [
+                "A specific observation with reasoning",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A specific observation with reasoning",
+              "explanation": "Specific evidence helps authors act."
+            },
+            "summary": [
+              "Code review evaluates correctness, tests, security, maintainability, and repository standards."
+            ],
+            "resources": [
+              {
+                "title": "Review",
+                "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests"
+              }
+            ]
+          },
+          {
+            "id": "lesson-07-05",
+            "title": "Merge methods",
+            "description": "GitHub can integrate pull requests using repository-configured methods such as merge commits, squash, or rebase-style history.",
+            "learningObjectives": [
+              "Compare topology consequences."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "GitHub can integrate pull requests using repository-configured methods such as merge commits, squash, or rebase-style history."
+              },
+              {
+                "type": "code",
+                "text": "Inspect `git log --graph` after different integration strategies"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-07-05",
+                "title": "Compare merge histories",
+                "description": "GitHub can integrate pull requests using repository-configured methods such as merge commits, squash, or rebase-style history.",
+                "steps": [
+                  "Create multiple feature commits.",
+                  "Integrate in disposable repositories using different methods.",
+                  "Compare graphs."
+                ],
+                "solution": "git log --graph --oneline --decorate --all",
+                "output": "The graphs show different history shapes."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-07-05-quiz",
+              "question": "Which method condenses PR commits into one base-branch commit?",
+              "options": [
+                "Squash and merge",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Squash and merge",
+              "explanation": "Squashing creates one new commit representing the PR changes."
+            },
+            "summary": [
+              "GitHub can integrate pull requests using repository-configured methods such as merge commits, squash, or rebase-style history."
+            ],
+            "resources": [
+              {
+                "title": "Merge",
+                "url": "https://git-scm.com/docs/git-merge"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-07-01",
+            "title": "Run a complete pull-request workflow",
+            "level": "Intermediate",
+            "description": "Take one feature from branch creation through PR, review, update, and merge.",
+            "problemStatement": "The default branch accepts reviewed changes only.",
+            "objectives": "Create a focused branch and commit, push it, open a PR, respond to review, and merge according to policy.",
+            "requirements": "Inspect the diff before pushing and verify tests.",
+            "hint": "git switch -c feature/search-filter\ngit add .\ngit commit -m \"feat(search): add exact-name filtering\"\ngit push -u origin feature/search-filter\n# open/review/update/merge PR",
+            "solutionCode": "The task simulates the full collaboration lifecycle.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-08",
+        "title": "Governance, Ownership and Repository Policy",
+        "description": "Make safe collaboration enforceable through GitHub's repository controls.",
+        "lessons": [
+          {
+            "id": "lesson-08-01",
+            "title": "Protected branches",
+            "description": "Protected branches can require reviews, status checks, signed commits, conversation resolution, and can block force pushes/deletion.",
+            "learningObjectives": [
+              "Design a sensible default-branch policy."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Protected branches can require reviews, status checks, signed commits, conversation resolution, and can block force pushes/deletion."
+              },
+              {
+                "type": "code",
+                "text": "Repository settings → branch protection"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08-01",
+                "title": "Design default-branch protection",
+                "description": "Protected branches can require reviews, status checks, signed commits, conversation resolution, and can block force pushes/deletion.",
+                "steps": [
+                  "Require PRs.",
+                  "Require CI.",
+                  "Choose review count.",
+                  "Block force pushes.",
+                  "Document exceptions."
+                ],
+                "solution": "Policy: PR required; CI required; review required; force push blocked; deletion blocked.",
+                "output": "The policy turns expectations into enforceable controls."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-08-01-quiz",
+              "question": "What does protection primarily prevent?",
+              "options": [
+                "Unsafe or unreviewed changes",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Unsafe or unreviewed changes",
+              "explanation": "Protection adds repository-level guardrails."
+            },
+            "summary": [
+              "Protected branches can require reviews, status checks, signed commits, conversation resolution, and can block force pushes/deletion."
+            ],
+            "resources": [
+              {
+                "title": "Protected",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-02",
+            "title": "Rulesets",
+            "description": "Rulesets provide flexible controls for branches and tags and can layer with other applicable rules.",
+            "learningObjectives": [
+              "Identify branch/tag and push controls."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Rulesets provide flexible controls for branches and tags and can layer with other applicable rules."
+              },
+              {
+                "type": "code",
+                "text": "Rulesets can require PRs, status checks, signed commits, linear history, and block force pushes"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08-02",
+                "title": "Design a release-tag ruleset",
+                "description": "Rulesets provide flexible controls for branches and tags and can layer with other applicable rules.",
+                "steps": [
+                  "Target `v*` tags.",
+                  "Restrict creation/update.",
+                  "Define justified bypass actors.",
+                  "Document enforcement."
+                ],
+                "solution": "Target: v*\nControls: restricted updates; signed commits where required; limited bypass",
+                "output": "Release governance becomes explicit."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-08-02-quiz",
+              "question": "What can rulesets target?",
+              "options": [
+                "Branches or tags",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Branches or tags",
+              "explanation": "Rulesets govern interactions with selected branches/tags."
+            },
+            "summary": [
+              "Rulesets provide flexible controls for branches and tags and can layer with other applicable rules."
+            ],
+            "resources": [
+              {
+                "title": "Rules",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-03",
+            "title": "CODEOWNERS",
+            "description": "CODEOWNERS maps paths to responsible reviewers and supports ownership-aware review.",
+            "learningObjectives": [
+              "Write narrow ownership rules and explain their limits."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "CODEOWNERS maps paths to responsible reviewers and supports ownership-aware review."
+              },
+              {
+                "type": "code",
+                "text": "/src/security/ @security-team\n/.github/workflows/ @platform-team"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08-03",
+                "title": "Create ownership rules",
+                "description": "CODEOWNERS maps paths to responsible reviewers and supports ownership-aware review.",
+                "steps": [
+                  "Assign security paths.",
+                  "Assign workflow paths.",
+                  "Assign application paths.",
+                  "Keep ownership specific."
+                ],
+                "solution": "/.github/workflows/ @platform-team\n/src/security/ @security-team\n/src/ @application-team",
+                "output": "GitHub can use the mapping for review ownership."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-08-03-quiz",
+              "question": "What is CODEOWNERS for?",
+              "options": [
+                "Path-based ownership and review responsibility",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Path-based ownership and review responsibility",
+              "explanation": "It does not replace branch protection."
+            },
+            "summary": [
+              "CODEOWNERS maps paths to responsible reviewers and supports ownership-aware review."
+            ],
+            "resources": [
+              {
+                "title": "Codeowners",
+                "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners"
+              }
+            ]
+          },
+          {
+            "id": "lesson-08-04",
+            "title": "PR templates",
+            "description": "Templates standardize useful context such as summary, testing, risk, and checklists.",
+            "learningObjectives": [
+              "Create a concise PR template."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Templates standardize useful context such as summary, testing, risk, and checklists."
+              },
+              {
+                "type": "code",
+                "text": "## Summary\n## Testing\n## Risk\n## Checklist"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-08-04",
+                "title": "Create a useful template",
+                "description": "Templates standardize useful context such as summary, testing, risk, and checklists.",
+                "steps": [
+                  "Add summary.",
+                  "Add testing evidence.",
+                  "Add risk/migration.",
+                  "Add a small checklist."
+                ],
+                "solution": "## Summary\n<!-- what and why -->\n## Testing\n<!-- commands/results -->\n## Risk\n<!-- compatibility/security -->\n## Checklist\n- [ ] Tests updated",
+                "output": "The template improves review consistency."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-08-04-quiz",
+              "question": "Why use a PR template?",
+              "options": [
+                "To consistently collect useful change context",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "To consistently collect useful change context",
+              "explanation": "Templates improve the quality of submitted review information."
+            },
+            "summary": [
+              "Templates standardize useful context such as summary, testing, risk, and checklists."
+            ],
+            "resources": [
+              {
+                "title": "Templates",
+                "url": "https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-08-01",
+            "title": "Design repository governance",
+            "level": "Advanced",
+            "description": "Design governance for a production repository with protected main, required CI, ownership, release rules, and controlled bypass.",
+            "problemStatement": "Prevent accidental or unreviewed changes without blocking normal work.",
+            "objectives": "Use protection/rulesets, CODEOWNERS, PR templates, and explicit exceptions.",
+            "requirements": "Prefer least privilege and documented emergency bypasses.",
+            "hint": "main: PR required; reviews; CI; no force push\nworkflows: platform ownership\nsecurity paths: security ownership\nv*: release rules\nPR template: summary/testing/risk",
+            "solutionCode": "The governance model is enforceable rather than merely documented.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-09",
+        "title": "GitHub Actions CI/CD",
+        "description": "Build automated validation and delivery workflows with explicit permissions and security boundaries.",
+        "lessons": [
+          {
+            "id": "lesson-09-01",
+            "title": "Workflow anatomy and triggers",
+            "description": "A GitHub Actions workflow is YAML containing events, jobs, runners, and steps.",
+            "learningObjectives": [
+              "Create push and pull_request CI."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A GitHub Actions workflow is YAML containing events, jobs, runners, and steps."
+              },
+              {
+                "type": "code",
+                "text": "name: CI\non: [push, pull_request]"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09-01",
+                "title": "Create basic CI",
+                "description": "A GitHub Actions workflow is YAML containing events, jobs, runners, and steps.",
+                "steps": [
+                  "Create .github/workflows/ci.yml.",
+                  "Check out code.",
+                  "Install dependencies.",
+                  "Run tests."
+                ],
+                "solution": "name: CI\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm test",
+                "output": "The workflow runs tests for repository changes."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-09-01-quiz",
+              "question": "Where are workflow files stored?",
+              "options": [
+                "`.github/workflows`",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "`.github/workflows`",
+              "explanation": "GitHub discovers workflows there."
+            },
+            "summary": [
+              "A GitHub Actions workflow is YAML containing events, jobs, runners, and steps."
+            ],
+            "resources": [
+              {
+                "title": "Actions",
+                "url": "https://docs.github.com/en/actions"
+              },
+              {
+                "title": "Workflow",
+                "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-02",
+            "title": "Matrix testing",
+            "description": "A matrix runs parameterized job variants and is useful for supported runtime versions.",
+            "learningObjectives": [
+              "Configure a version matrix without testing unsupported combinations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A matrix runs parameterized job variants and is useful for supported runtime versions."
+              },
+              {
+                "type": "code",
+                "text": "strategy:\n  matrix:\n    node: [20,22,24]"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09-02",
+                "title": "Test a runtime matrix",
+                "description": "A matrix runs parameterized job variants and is useful for supported runtime versions.",
+                "steps": [
+                  "Choose supported versions.",
+                  "Set up each version.",
+                  "Run tests.",
+                  "Inspect failures per matrix entry."
+                ],
+                "solution": "strategy:\n  matrix:\n    node: [22,24]",
+                "output": "The workflow identifies compatibility failures by version."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-09-02-quiz",
+              "question": "What does a matrix provide?",
+              "options": [
+                "Parameterized job executions",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Parameterized job executions",
+              "explanation": "Each matrix value creates a job variant."
+            },
+            "summary": [
+              "A matrix runs parameterized job variants and is useful for supported runtime versions."
+            ],
+            "resources": [
+              {
+                "title": "Workflow",
+                "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-03",
+            "title": "Least-privilege GITHUB_TOKEN",
+            "description": "Workflow token permissions can be explicitly reduced so compromised jobs have less authority.",
+            "learningObjectives": [
+              "Set contents read-only for CI."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Workflow token permissions can be explicitly reduced so compromised jobs have less authority."
+              },
+              {
+                "type": "code",
+                "text": "permissions:\n  contents: read"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09-03",
+                "title": "Harden a CI workflow",
+                "description": "Workflow token permissions can be explicitly reduced so compromised jobs have less authority.",
+                "steps": [
+                  "Add permissions.",
+                  "Grant contents read.",
+                  "Confirm no write capability is needed."
+                ],
+                "solution": "permissions:\n  contents: read",
+                "output": "The workflow uses a reduced token permission set."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-09-03-quiz",
+              "question": "Why minimize token permissions?",
+              "options": [
+                "To reduce blast radius",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "To reduce blast radius",
+              "explanation": "A compromised workflow has fewer permitted actions."
+            },
+            "summary": [
+              "Workflow token permissions can be explicitly reduced so compromised jobs have less authority."
+            ],
+            "resources": [
+              {
+                "title": "Workflow",
+                "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+              },
+              {
+                "title": "Secrets",
+                "url": "https://docs.github.com/en/actions/concepts/security/secrets"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-04",
+            "title": "Secrets and environments",
+            "description": "GitHub Actions secrets keep sensitive values out of source and can be scoped to repositories, organizations, or environments.",
+            "learningObjectives": [
+              "Reference a secret without printing it."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "GitHub Actions secrets keep sensitive values out of source and can be scoped to repositories, organizations, or environments."
+              },
+              {
+                "type": "code",
+                "text": "env:\n  DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09-04",
+                "title": "Pass a deployment secret safely",
+                "description": "GitHub Actions secrets keep sensitive values out of source and can be scoped to repositories, organizations, or environments.",
+                "steps": [
+                  "Create secret in GitHub.",
+                  "Reference it only in required step.",
+                  "Never echo it.",
+                  "Use environment controls for production when appropriate."
+                ],
+                "solution": "env:\n  DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}",
+                "output": "The workflow receives the secret at runtime."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-09-04-quiz",
+              "question": "Where should a deployment credential live?",
+              "options": [
+                "A GitHub secret or external secret manager",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A GitHub secret or external secret manager",
+              "explanation": "Credentials should not be committed."
+            },
+            "summary": [
+              "GitHub Actions secrets keep sensitive values out of source and can be scoped to repositories, organizations, or environments."
+            ],
+            "resources": [
+              {
+                "title": "Secrets",
+                "url": "https://docs.github.com/en/actions/concepts/security/secrets"
+              }
+            ]
+          },
+          {
+            "id": "lesson-09-05",
+            "title": "Artifacts, caching and deployment gates",
+            "description": "Caches accelerate repeatable work; artifacts carry outputs; deployment should depend on validated jobs.",
+            "learningObjectives": [
+              "Separate test, build, and deploy stages."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Caches accelerate repeatable work; artifacts carry outputs; deployment should depend on validated jobs."
+              },
+              {
+                "type": "code",
+                "text": "jobs: test → build → deploy"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-09-05",
+                "title": "Design a gated pipeline",
+                "description": "Caches accelerate repeatable work; artifacts carry outputs; deployment should depend on validated jobs.",
+                "steps": [
+                  "Test first.",
+                  "Build only after test.",
+                  "Upload artifact.",
+                  "Deploy only after build and required approvals."
+                ],
+                "solution": "jobs:\n  build:\n    needs: test\n  deploy:\n    needs: build",
+                "output": "Deployment depends on validation."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-09-05-quiz",
+              "question": "What is a cache primarily for?",
+              "options": [
+                "Faster reuse of repeatable data",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Faster reuse of repeatable data",
+              "explanation": "Caches are optimization, not release storage."
+            },
+            "summary": [
+              "Caches accelerate repeatable work; artifacts carry outputs; deployment should depend on validated jobs."
+            ],
+            "resources": [
+              {
+                "title": "Actions",
+                "url": "https://docs.github.com/en/actions"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-09-01",
+            "title": "Build a least-privilege CI pipeline",
+            "level": "Advanced",
+            "description": "Test supported runtimes, use read-only repository permissions, and produce an artifact only after tests pass.",
+            "problemStatement": "A failing test must prevent build output from becoming a deployment input.",
+            "objectives": "Use matrix jobs, permissions, setup-node, tests, and artifacts.",
+            "requirements": "Start from `contents: read` and add permissions only when required.",
+            "hint": "name: CI\non: [push, pull_request]\npermissions:\n  contents: read\njobs:\n  test:\n    strategy:\n      matrix: { node: [22,24] }\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: ${{ matrix.node }}, cache: npm }\n      - run: npm ci\n      - run: npm test",
+            "solutionCode": "The pipeline encodes validation before downstream delivery.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-10",
+        "title": "Security and Repository Hygiene",
+        "description": "Protect source history, automation, credentials, and repository quality.",
+        "lessons": [
+          {
+            "id": "lesson-10-01",
+            "title": "Secret prevention and remediation",
+            "description": "A committed credential can remain in older Git history even after deletion from the latest commit.",
+            "learningObjectives": [
+              "Prevent secret files and define leak response."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A committed credential can remain in older Git history even after deletion from the latest commit."
+              },
+              {
+                "type": "code",
+                "text": ".env\n.env.*\n!.env.example"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10-01",
+                "title": "Create a secret-safe baseline",
+                "description": "A committed credential can remain in older Git history even after deletion from the latest commit.",
+                "steps": [
+                  "Ignore local secrets.",
+                  "Commit only an example configuration.",
+                  "Verify status."
+                ],
+                "solution": "printf '.env\\n.env.*\\n!.env.example\\n' > .gitignore\nprintf 'TOKEN=\\n' > .env.example\ngit add .gitignore .env.example",
+                "output": "Only non-secret configuration is tracked."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-10-01-quiz",
+              "question": "Why isn't deleting a leaked secret in a new commit sufficient?",
+              "options": [
+                "Older commits can still contain it",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Older commits can still contain it",
+              "explanation": "History persists previous versions."
+            },
+            "summary": [
+              "A committed credential can remain in older Git history even after deletion from the latest commit."
+            ],
+            "resources": [
+              {
+                "title": "Ignore",
+                "url": "https://git-scm.com/docs/gitignore"
+              },
+              {
+                "title": "Pushprot",
+                "url": "https://docs.github.com/en/code-security/concepts/secret-security/push-protection"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-02",
+            "title": "Secret scanning and push protection",
+            "description": "GitHub secret scanning detects supported credentials; push protection can block supported secrets before they enter the repository.",
+            "learningObjectives": [
+              "Respond to blocked pushes without normalizing bypasses."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "GitHub secret scanning detects supported credentials; push protection can block supported secrets before they enter the repository."
+              },
+              {
+                "type": "code",
+                "text": "If blocked: identify, revoke/rotate real credential, remove, retry"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10-02",
+                "title": "Write an incident response",
+                "description": "GitHub secret scanning detects supported credentials; push protection can block supported secrets before they enter the repository.",
+                "steps": [
+                  "Determine whether detected value is real.",
+                  "Rotate/revoke if real.",
+                  "Remove it from pending/history as appropriate.",
+                  "Retry after remediation."
+                ],
+                "solution": "1. Stop.\n2. Verify.\n3. Revoke/rotate.\n4. Remove.\n5. Recheck.\n6. Retry.",
+                "output": "The response prioritizes invalidation and removal."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-10-02-quiz",
+              "question": "What does push protection do?",
+              "options": [
+                "Blocks pushes containing detected supported secrets",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Blocks pushes containing detected supported secrets",
+              "explanation": "It is preventative."
+            },
+            "summary": [
+              "GitHub secret scanning detects supported credentials; push protection can block supported secrets before they enter the repository."
+            ],
+            "resources": [
+              {
+                "title": "Pushprot",
+                "url": "https://docs.github.com/en/code-security/concepts/secret-security/push-protection"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-03",
+            "title": "Signed commits and provenance",
+            "description": "Commit signing provides a cryptographic provenance signal; it does not prove code correctness or security.",
+            "learningObjectives": [
+              "Explain signed-commit policy and limitations."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Commit signing provides a cryptographic provenance signal; it does not prove code correctness or security."
+              },
+              {
+                "type": "code",
+                "text": "git log --show-signature -1"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10-03",
+                "title": "Design a signing policy",
+                "description": "Commit signing provides a cryptographic provenance signal; it does not prove code correctness or security.",
+                "steps": [
+                  "Choose protected branches.",
+                  "Require signed commits where justified.",
+                  "Document contributor setup and exceptions."
+                ],
+                "solution": "Protected branches require signed commits; emergency bypass is documented and restricted.",
+                "output": "The policy separates provenance from correctness."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-10-03-quiz",
+              "question": "What does signing primarily provide?",
+              "options": [
+                "A provenance/authorship signal",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A provenance/authorship signal",
+              "explanation": "Signing does not guarantee secure code."
+            },
+            "summary": [
+              "Commit signing provides a cryptographic provenance signal; it does not prove code correctness or security."
+            ],
+            "resources": [
+              {
+                "title": "Protected",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches"
+              },
+              {
+                "title": "Rules",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-04",
+            "title": "Workflow supply-chain security",
+            "description": "Workflow files can access source, tokens, secrets, and deployment systems, making changes under .github/workflows security-sensitive.",
+            "learningObjectives": [
+              "Audit permissions, actions, secrets, and untrusted input."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Workflow files can access source, tokens, secrets, and deployment systems, making changes under .github/workflows security-sensitive."
+              },
+              {
+                "type": "code",
+                "text": "permissions:\n  contents: read"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10-04",
+                "title": "Audit a workflow",
+                "description": "Workflow files can access source, tokens, secrets, and deployment systems, making changes under .github/workflows security-sensitive.",
+                "steps": [
+                  "List actions.",
+                  "List token permissions.",
+                  "Identify secrets.",
+                  "Check fork/PR trust boundaries.",
+                  "Document remediations."
+                ],
+                "solution": "# Audit findings\nminimal permissions\nno unnecessary secrets\ntrusted action versions\nno privileged operation driven directly by untrusted PR input",
+                "output": "The review produces concrete mitigations."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-10-04-quiz",
+              "question": "Why are workflow files security-sensitive?",
+              "options": [
+                "They can control privileged automation",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "They can control privileged automation",
+              "explanation": "Workflows can execute commands and access repository resources."
+            },
+            "summary": [
+              "Workflow files can access source, tokens, secrets, and deployment systems, making changes under .github/workflows security-sensitive."
+            ],
+            "resources": [
+              {
+                "title": "Workflow",
+                "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+              },
+              {
+                "title": "Secrets",
+                "url": "https://docs.github.com/en/actions/concepts/security/secrets"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-05",
+            "title": "Repository hygiene with ignore and attributes",
+            "description": "`.gitignore` controls untracked files; `.gitattributes` can normalize text and mark binary content.",
+            "learningObjectives": [
+              "Create both files for a generic project."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "`.gitignore` controls untracked files; `.gitattributes` can normalize text and mark binary content."
+              },
+              {
+                "type": "code",
+                "text": "* text=auto\n*.sh text eol=lf\n*.png binary"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10-05",
+                "title": "Create hygiene files",
+                "description": "`.gitignore` controls untracked files; `.gitattributes` can normalize text and mark binary content.",
+                "steps": [
+                  "Ignore dependencies/build/secrets.",
+                  "Normalize text.",
+                  "Mark binary assets.",
+                  "Check attributes."
+                ],
+                "solution": "node_modules/\ndist/\ncoverage/\n.env\n\n# .gitattributes\n* text=auto\n*.sh text eol=lf\n*.png binary",
+                "output": "The repository has explicit content rules."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-10-05-quiz",
+              "question": "Does .gitignore untrack an existing file?",
+              "options": [
+                "No",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "No",
+              "explanation": "Tracked content remains tracked until index state changes."
+            },
+            "summary": [
+              "`.gitignore` controls untracked files; `.gitattributes` can normalize text and mark binary content."
+            ],
+            "resources": [
+              {
+                "title": "Ignore",
+                "url": "https://git-scm.com/docs/gitignore"
+              },
+              {
+                "title": "Attr",
+                "url": "https://git-scm.com/docs/gitattributes"
+              }
+            ]
+          },
+          {
+            "id": "lesson-10-06",
+            "title": "Large files and Git LFS",
+            "description": "Large versioned binaries can make normal Git history costly; Git LFS stores pointer files in Git and large content separately.",
+            "learningObjectives": [
+              "Classify files for Git, LFS, or external artifact storage."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Large versioned binaries can make normal Git history costly; Git LFS stores pointer files in Git and large content separately."
+              },
+              {
+                "type": "code",
+                "text": "Large versioned binaries → consider LFS"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-10-06",
+                "title": "Plan large-file policy",
+                "description": "Large versioned binaries can make normal Git history costly; Git LFS stores pointer files in Git and large content separately.",
+                "steps": [
+                  "Classify source.",
+                  "Classify small text.",
+                  "Classify large binaries.",
+                  "Classify generated output."
+                ],
+                "solution": "Source → Git\nLarge versioned binary → consider LFS\nGenerated output → CI/artifact storage",
+                "output": "The policy prevents repository bloat."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-10-06-quiz",
+              "question": "What is stored in Git for an LFS file?",
+              "options": [
+                "A pointer file",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "A pointer file",
+              "explanation": "LFS keeps large content outside ordinary Git object storage."
+            },
+            "summary": [
+              "Large versioned binaries can make normal Git history costly; Git LFS stores pointer files in Git and large content separately."
+            ],
+            "resources": [
+              {
+                "title": "Lfs",
+                "url": "https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-10-01",
+            "title": "Secure a repository before production",
+            "level": "Advanced",
+            "description": "Create a security baseline for secrets, protected branches, workflows, ownership, and release tags.",
+            "problemStatement": "Make common leak and unreviewed-change paths difficult.",
+            "objectives": "Use Git/GitHub security controls from the module.",
+            "requirements": "Apply preventative controls first, then detection and response.",
+            "hint": ".env ignored; no credentials in history\nmain protected; PR + CI required\nworkflow permissions minimal\nCODEOWNERS for workflows/security\npush protection/secret scanning where available\nrelease tags governed",
+            "solutionCode": "The baseline combines prevention, governance, and response.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-11",
+        "title": "Advanced Git Maintenance",
+        "description": "Use advanced local capabilities for parallel work, repeated conflicts, hooks, patch exchange, and repository maintenance.",
+        "lessons": [
+          {
+            "id": "lesson-11-01",
+            "title": "Worktrees",
+            "description": "Worktrees let one repository have multiple working directories checked out at different branches.",
+            "learningObjectives": [
+              "Create and remove worktrees safely."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Worktrees let one repository have multiple working directories checked out at different branches."
+              },
+              {
+                "type": "code",
+                "text": "git worktree add ../release-work release/1.2\ngit worktree list"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-11-01",
+                "title": "Work on release and feature simultaneously",
+                "description": "Worktrees let one repository have multiple working directories checked out at different branches.",
+                "steps": [
+                  "Add second worktree.",
+                  "Inspect list.",
+                  "Make a change.",
+                  "Remove it."
+                ],
+                "solution": "git worktree add ../release-work release/1.2\ngit worktree list\ngit worktree remove ../release-work",
+                "output": "Two branches can be active in separate directories."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-11-01-quiz",
+              "question": "What does a worktree provide?",
+              "options": [
+                "Multiple working directories attached to one repository",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Multiple working directories attached to one repository",
+              "explanation": "It avoids repeated branch switching."
+            },
+            "summary": [
+              "Worktrees let one repository have multiple working directories checked out at different branches."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11-02",
+            "title": "rerere",
+            "description": "rerere records conflict resolutions and can reuse them when the same conflict recurs.",
+            "learningObjectives": [
+              "Enable and inspect rerere in a disposable repository."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "rerere records conflict resolutions and can reuse them when the same conflict recurs."
+              },
+              {
+                "type": "code",
+                "text": "git config rerere.enabled true\ngit rerere status\ngit rerere diff"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-11-02",
+                "title": "Practice repeated conflict resolution",
+                "description": "rerere records conflict resolutions and can reuse them when the same conflict recurs.",
+                "steps": [
+                  "Enable rerere.",
+                  "Resolve a controlled conflict.",
+                  "Recreate it.",
+                  "Inspect reuse."
+                ],
+                "solution": "git config rerere.enabled true\ngit rerere status\ngit rerere diff",
+                "output": "Git can reuse a recorded resolution."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-11-02-quiz",
+              "question": "What does rerere reduce?",
+              "options": [
+                "Repeated manual conflict resolution",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Repeated manual conflict resolution",
+              "explanation": "It records prior resolutions."
+            },
+            "summary": [
+              "rerere records conflict resolutions and can reuse them when the same conflict recurs."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11-03",
+            "title": "Hooks",
+            "description": "Git hooks run local automation at lifecycle points, but local hooks alone cannot enforce shared policy.",
+            "learningObjectives": [
+              "Create a safe pre-commit hook and explain its limits."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git hooks run local automation at lifecycle points, but local hooks alone cannot enforce shared policy."
+              },
+              {
+                "type": "code",
+                "text": "#!/bin/sh\nnpm test"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-11-03",
+                "title": "Create a local check hook",
+                "description": "Git hooks run local automation at lifecycle points, but local hooks alone cannot enforce shared policy.",
+                "steps": [
+                  "Create pre-commit.",
+                  "Run a deterministic test.",
+                  "Exit non-zero on failure.",
+                  "Explain why CI is still needed."
+                ],
+                "solution": "#!/bin/sh\nnpm test\nstatus=$?\n[ $status -eq 0 ] || exit $status",
+                "output": "The hook blocks a local commit when tests fail."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-11-03-quiz",
+              "question": "Why are local hooks insufficient for policy?",
+              "options": [
+                "They are local and can be absent or bypassed",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "They are local and can be absent or bypassed",
+              "explanation": "Shared enforcement belongs in CI/repository controls."
+            },
+            "summary": [
+              "Git hooks run local automation at lifecycle points, but local hooks alone cannot enforce shared policy."
+            ],
+            "resources": [
+              {
+                "title": "Hooks",
+                "url": "https://git-scm.com/docs/githooks"
+              },
+              {
+                "title": "Protected",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11-04",
+            "title": "Patch workflows",
+            "description": "format-patch exports commits as patch files; git am applies patch series while preserving commit-style metadata.",
+            "learningObjectives": [
+              "Exchange a commit without a shared remote."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "format-patch exports commits as patch files; git am applies patch series while preserving commit-style metadata."
+              },
+              {
+                "type": "code",
+                "text": "git format-patch -1 HEAD\ngit am 0001-*.patch"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-11-04",
+                "title": "Transfer one commit as a patch",
+                "description": "format-patch exports commits as patch files; git am applies patch series while preserving commit-style metadata.",
+                "steps": [
+                  "Create a commit.",
+                  "Export patch.",
+                  "Apply in another clone.",
+                  "Inspect history."
+                ],
+                "solution": "git format-patch -1 HEAD\ngit am 0001-*.patch\ngit log --oneline -1",
+                "output": "The target receives a reconstructed commit."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-11-04-quiz",
+              "question": "What does format-patch create?",
+              "options": [
+                "Patch files representing commits",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Patch files representing commits",
+              "explanation": "They can be applied with git am."
+            },
+            "summary": [
+              "format-patch exports commits as patch files; git am applies patch series while preserving commit-style metadata."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              }
+            ]
+          },
+          {
+            "id": "lesson-11-05",
+            "title": "Repository maintenance and reachability",
+            "description": "Git stores reachable and temporarily unreachable objects; maintenance can repack and prune according to Git's rules.",
+            "learningObjectives": [
+              "Inspect object statistics and understand cleanup risk."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git stores reachable and temporarily unreachable objects; maintenance can repack and prune according to Git's rules."
+              },
+              {
+                "type": "code",
+                "text": "git count-objects -v\ngit gc"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-11-05",
+                "title": "Inspect repository storage",
+                "description": "Git stores reachable and temporarily unreachable objects; maintenance can repack and prune according to Git's rules.",
+                "steps": [
+                  "Count objects.",
+                  "Run maintenance in disposable repo.",
+                  "Count again.",
+                  "Explain recovery implications."
+                ],
+                "solution": "git count-objects -v\ngit gc\ngit count-objects -v",
+                "output": "Storage statistics may change after maintenance."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-11-05-quiz",
+              "question": "Why can cleanup affect recovery?",
+              "options": [
+                "Unreachable objects can eventually be pruned",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Unreachable objects can eventually be pruned",
+              "explanation": "Recovery through old references has limits."
+            },
+            "summary": [
+              "Git stores reachable and temporarily unreachable objects; maintenance can repack and prune according to Git's rules."
+            ],
+            "resources": [
+              {
+                "title": "Git",
+                "url": "https://git-scm.com/docs/"
+              },
+              {
+                "title": "Reflog",
+                "url": "https://git-scm.com/docs/git-reflog"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-11-01",
+            "title": "Write an advanced maintenance runbook",
+            "level": "Advanced",
+            "description": "Create a runbook covering worktrees, rerere, repository statistics, safe cleanup, and recovery.",
+            "problemStatement": "The team needs a repeatable procedure for repository maintenance without casual history destruction.",
+            "objectives": "Use the advanced Git commands from this module.",
+            "requirements": "Every destructive operation needs a preview, backup, or recovery explanation.",
+            "hint": "1. Inspect count-objects.\n2. Use worktrees for parallel release work.\n3. Enable rerere for recurring conflicts.\n4. Preview cleanup.\n5. Preserve backups before invasive rewrites.\n6. Verify after maintenance.",
+            "solutionCode": "The runbook makes advanced Git operationally safe.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-12",
+        "title": "Release Engineering",
+        "description": "Turn Git history into traceable releases, hotfixes, and rollback procedures.",
+        "lessons": [
+          {
+            "id": "lesson-12-01",
+            "title": "Branching models are choices",
+            "description": "Git does not mandate GitFlow, trunk-based development, or another model; the correct design depends on release cadence and constraints.",
+            "learningObjectives": [
+              "Select a branching model from requirements."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git does not mandate GitFlow, trunk-based development, or another model; the correct design depends on release cadence and constraints."
+              },
+              {
+                "type": "code",
+                "text": "main continuously releasable\nfeature/* short-lived\nrelease/* only when needed"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-12-01",
+                "title": "Design a release branch policy",
+                "description": "Git does not mandate GitFlow, trunk-based development, or another model; the correct design depends on release cadence and constraints.",
+                "steps": [
+                  "Define default branch.",
+                  "Define feature lifetime.",
+                  "Define stabilization.",
+                  "Define hotfix propagation."
+                ],
+                "solution": "main = releasable\nfeature/* = short-lived\nrelease/* = optional stabilization\nhotfix/* = urgent production fix",
+                "output": "The policy is justified by needs rather than a named trend."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-12-01-quiz",
+              "question": "Does Git require one branching model?",
+              "options": [
+                "No",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "No",
+              "explanation": "Branching policy is an engineering choice."
+            },
+            "summary": [
+              "Git does not mandate GitFlow, trunk-based development, or another model; the correct design depends on release cadence and constraints."
+            ],
+            "resources": [
+              {
+                "title": "Book",
+                "url": "https://git-scm.com/book/en/v2"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12-02",
+            "title": "Release tags and notes",
+            "description": "A release should point to an exact validated commit and have change documentation derived from actual history.",
+            "learningObjectives": [
+              "Create annotated release tags and release notes."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A release should point to an exact validated commit and have change documentation derived from actual history."
+              },
+              {
+                "type": "code",
+                "text": "git log --oneline v1.9.0..HEAD\ngit tag -a v2.0.0 -m \"Release 2.0.0\""
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-12-02",
+                "title": "Prepare a traceable release",
+                "description": "A release should point to an exact validated commit and have change documentation derived from actual history.",
+                "steps": [
+                  "Verify CI.",
+                  "Identify commit.",
+                  "Tag it.",
+                  "Publish notes from actual changes."
+                ],
+                "solution": "git tag -a v2.0.0 -m \"Release 2.0.0\"\ngit show v2.0.0",
+                "output": "The release is tied to an exact commit."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-12-02-quiz",
+              "question": "Why use an annotated tag?",
+              "options": [
+                "To identify a release commit with tag metadata",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "To identify a release commit with tag metadata",
+              "explanation": "It gives a named release reference."
+            },
+            "summary": [
+              "A release should point to an exact validated commit and have change documentation derived from actual history."
+            ],
+            "resources": [
+              {
+                "title": "Tag",
+                "url": "https://git-scm.com/docs/git-tag"
+              },
+              {
+                "title": "Releases",
+                "url": "https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12-03",
+            "title": "Hotfix and rollback",
+            "description": "Git revert changes source history; deployment rollback changes what artifact is running, and database/external side effects complicate rollback.",
+            "learningObjectives": [
+              "Design a hotfix and rollback process."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Git revert changes source history; deployment rollback changes what artifact is running, and database/external side effects complicate rollback."
+              },
+              {
+                "type": "code",
+                "text": "git switch -c hotfix/1.2.1\n# fix, test, review, tag"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-12-03",
+                "title": "Write a hotfix runbook",
+                "description": "Git revert changes source history; deployment rollback changes what artifact is running, and database/external side effects complicate rollback.",
+                "steps": [
+                  "Identify deployed tag.",
+                  "Create hotfix.",
+                  "Test/review.",
+                  "Tag and deploy.",
+                  "Propagate fix back to active development."
+                ],
+                "solution": "Identify production tag → hotfix branch → fix/test → reviewed merge → tag → deploy → propagate fix",
+                "output": "The workflow avoids a production-only fix."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-12-03-quiz",
+              "question": "Does git revert automatically roll back production?",
+              "options": [
+                "No",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "No",
+              "explanation": "Deployment systems must deploy the resulting source/artifact."
+            },
+            "summary": [
+              "Git revert changes source history; deployment rollback changes what artifact is running, and database/external side effects complicate rollback."
+            ],
+            "resources": [
+              {
+                "title": "Revert",
+                "url": "https://git-scm.com/docs/git-revert"
+              },
+              {
+                "title": "Releases",
+                "url": "https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository"
+              }
+            ]
+          },
+          {
+            "id": "lesson-12-04",
+            "title": "Changelog and commit-range discipline",
+            "description": "Release notes should derive from actual commit ranges, pull requests, and user-visible changes rather than invented summaries.",
+            "learningObjectives": [
+              "Generate a release summary from history."
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Release notes should derive from actual commit ranges, pull requests, and user-visible changes rather than invented summaries."
+              },
+              {
+                "type": "code",
+                "text": "git log --oneline v1.9.0..v2.0.0"
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-12-04",
+                "title": "Build release notes",
+                "description": "Release notes should derive from actual commit ranges, pull requests, and user-visible changes rather than invented summaries.",
+                "steps": [
+                  "Choose previous/current tags.",
+                  "Inspect commits.",
+                  "Group user-visible changes.",
+                  "Record breaking changes explicitly."
+                ],
+                "solution": "git log --oneline v1.9.0..v2.0.0",
+                "output": "The summary is traceable to repository history."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-12-04-quiz",
+              "question": "What should release notes be based on?",
+              "options": [
+                "Actual released changes",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Actual released changes",
+              "explanation": "Traceability prevents invented release claims."
+            },
+            "summary": [
+              "Release notes should derive from actual commit ranges, pull requests, and user-visible changes rather than invented summaries."
+            ],
+            "resources": [
+              {
+                "title": "Tag",
+                "url": "https://git-scm.com/docs/git-tag"
+              },
+              {
+                "title": "Book",
+                "url": "https://git-scm.com/book/en/v2"
+              }
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task-12-01",
+            "title": "Create a production release runbook",
+            "level": "Intermediate",
+            "description": "Define a release process from validated commit to tag, deployment, verification, rollback, and hotfix propagation.",
+            "problemStatement": "The runbook must separate source state from deployment state.",
+            "objectives": "Use tags, PR review, CI, and governance concepts.",
+            "requirements": "Name exact commits and artifacts at each stage.",
+            "hint": "1. Review + CI\n2. Identify exact commit\n3. Annotated tag\n4. Release notes\n5. Deploy artifact\n6. Verify\n7. Roll back to known-good artifact if needed\n8. Propagate hotfix",
+            "solutionCode": "The runbook makes release state auditable.",
+            "solutionExplanation": ""
+          }
+        ]
+      },
+      {
+        "id": "module-13",
+        "title": "Final Project — Governed Delivery Repository",
+        "description": "The final module combines the important Git/GitHub concepts into one realistic repository workflow. It intentionally has no Easy/Intermediate/Advanced module task; the project itself is the final assessment.",
+        "lessons": [
+          {
+            "id": "lesson-13-01",
+            "title": "Project architecture and governance plan",
+            "description": "Plan the repository as an integrated delivery system rather than a collection of unrelated files.",
+            "learningObjectives": [
+              "define source, test, documentation, workflow, ownership, and release boundaries"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Git layer: focused commits, branches, tags, history inspection.",
+                  "GitHub layer: pull requests, reviews, ownership, protected branches/rulesets.",
+                  "Automation layer: CI with least privilege.",
+                  "Security layer: no committed secrets and explicit response guidance.",
+                  "Release layer: exact tags and deployment/rollback runbook."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-13-01",
+                "title": "Create the project baseline",
+                "description": "Create the project files, initialize Git, and make a baseline commit.",
+                "steps": [
+                  "Create files from the project code map.",
+                  "Run npm test.",
+                  "Inspect git status and git diff.",
+                  "Commit the baseline."
+                ],
+                "solution": "npm test\ngit init\ngit add .\ngit commit -m \"chore: establish governed repository\"",
+                "output": "The baseline repository contains the required project artifacts and passes its tests."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-13-01-quiz",
+              "question": "Which layer should enforce shared repository policy?",
+              "options": [
+                "GitHub repository/CI controls",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "GitHub repository/CI controls",
+              "explanation": "Local conventions alone are insufficient."
+            },
+            "summary": [
+              "Plan the repository as an integrated delivery system rather than a collection of unrelated files."
+            ],
+            "resources": [
+              {
+                "title": "Git Documentation",
+                "url": "https://git-scm.com/docs/"
+              },
+              {
+                "title": "GitHub Actions",
+                "url": "https://docs.github.com/en/actions"
+              },
+              {
+                "title": "Protected Branches",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches"
+              }
+            ]
+          },
+          {
+            "id": "lesson-13-02",
+            "title": "Feature-to-release delivery drill",
+            "description": "Execute the complete workflow: feature branch, focused commit, pull request, CI, review, merge, tag, and release audit.",
+            "learningObjectives": [
+              "perform the complete workflow and audit its evidence"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The final assessment is the complete project object below. Create the files in a disposable or authorized GitHub repository, configure governance, and execute the delivery flow without using real credentials. The project is deliberately small so the Git/GitHub mechanics remain visible."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "practical-13-02",
+                "title": "Run the delivery drill",
+                "description": "Execute one complete feature delivery through the repository's governance controls.",
+                "steps": [
+                  "Create a feature branch.",
+                  "Make a focused change and commit.",
+                  "Push and open a PR.",
+                  "Pass CI and complete review.",
+                  "Merge.",
+                  "Create an annotated release tag.",
+                  "Audit the graph and release evidence."
+                ],
+                "solution": "git switch -c feature/example\ngit add .\ngit commit -m \"feat: improve title validation\"\ngit push -u origin feature/example\n# complete PR/review/CI in GitHub\ngit tag -a v1.0.0 -m \"Release 1.0.0\"\ngit push origin v1.0.0",
+                "output": "The repository has traceable source history, review evidence, CI results, and a release tag."
+              }
+            ],
+            "quiz": {
+              "id": "lesson-13-02-quiz",
+              "question": "Which evidence best proves the workflow succeeded?",
+              "options": [
+                "Passing CI plus reviewed PR history and an exact release tag",
+                "A remote-only Git service",
+                "A branch-protection rule",
+                "A filesystem backup"
+              ],
+              "answer": "Passing CI plus reviewed PR history and an exact release tag",
+              "explanation": "One successful local commit is not enough."
+            },
+            "summary": [
+              "Execute the complete workflow: feature branch, focused commit, pull request, CI, review, merge, tag, and release audit."
+            ],
+            "resources": [
+              {
+                "title": "Pull Requests",
+                "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/about-pull-requests"
+              },
+              {
+                "title": "Protected Branches",
+                "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches"
+              },
+              {
+                "title": "Managing Releases",
+                "url": "https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository"
+              }
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Governed Delivery Repository",
+          "description": "A realistic Git/GitHub repository that demonstrates disciplined commits, branching, pull-request review, ownership, protected governance, least-privilege CI, secret-safe configuration, repository hygiene, and traceable releases.",
+          "conceptsCovered": [
+            "Git repository model",
+            "staging and commits",
+            "branches and remotes",
+            "pull requests and review",
+            "protected branches and rulesets",
+            "CODEOWNERS",
+            "PR templates",
+            "GitHub Actions",
+            "matrix CI",
+            "GITHUB_TOKEN least privilege",
+            "secret prevention",
+            "gitignore and gitattributes",
+            "release tags",
+            "hotfix and rollback"
+          ],
+          "steps": [
+            "Create the project files from the code map.",
+            "Run npm test.",
+            "Initialize Git and create a baseline commit.",
+            "Create a short-lived feature branch.",
+            "Make a focused change and commit it.",
+            "Push the branch and open a pull request.",
+            "Verify CI and complete review.",
+            "Merge using repository policy.",
+            "Create an annotated release tag.",
+            "Audit source history, governance, CI, security controls, and release traceability."
+          ],
+          "code": {
+            "README.md": "# Governed Delivery Repository\n\nA neutral Git/GitHub training repository demonstrating focused commits, pull requests,\nownership, CI, security controls, and traceable releases.\n\n## Workflow\n1. Create a short-lived feature branch.\n2. Make a focused commit.\n3. Run local tests and inspect the diff.\n4. Open a pull request.\n5. Pass required CI and review.\n6. Merge according to repository policy.\n7. Tag validated releases.\n",
+            "package.json": "{\n  \"name\": \"governed-delivery-repository\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": { \"test\": \"node --test\" }\n}",
+            "src/index.js": "export function normalizeTitle(value) {\n  if (typeof value !== 'string') throw new TypeError('title must be a string');\n  const title = value.trim().replace(/\\s+/g, ' ');\n  if (title.length < 3) throw new Error('title must contain at least 3 characters');\n  return title;\n}\n",
+            "test/index.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { normalizeTitle } from '../src/index.js';\n\ntest('normalizes whitespace', () => {\n  assert.equal(normalizeTitle('  Example   change  '), 'Example change');\n});\ntest('rejects short titles', () => {\n  assert.throws(() => normalizeTitle('x'), /at least 3 characters/);\n});\n",
+            ".gitignore": ".env\n.env.*\n!.env.example\nnode_modules/\ndist/\ncoverage/\n*.log\n",
+            ".gitattributes": "* text=auto\n*.sh text eol=lf\n*.png binary\n*.jpg binary\n",
+            ".env.example": "APP_ENV=development\n",
+            ".github/CODEOWNERS": "/.github/workflows/ @platform-team\n/src/ @application-team\n/test/ @application-team\n/.github/CODEOWNERS @platform-team\n",
+            ".github/pull_request_template.md": "## Summary\n\n## Testing\n- [ ] npm test\n- [ ] Manual verification where applicable\n\n## Risk / migration\n\n## Checklist\n- [ ] No secrets committed\n- [ ] Documentation considered\n- [ ] Tests updated where needed\n",
+            ".github/workflows/ci.yml": "name: CI\n\non:\n  push:\n  pull_request:\n\npermissions:\n  contents: read\n\njobs:\n  test:\n    strategy:\n      matrix:\n        node: [20, 22, 24]\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: ${{ matrix.node }}\n      - run: npm test\n",
+            "SECURITY.md": "# Security\n\nNever commit credentials, tokens, private keys, or production configuration.\n\nIf a credential is exposed, revoke/rotate it, remove it from relevant pending/history\nwhere appropriate, investigate downstream copies, and document remediation.\n\nWorkflow files under `.github/workflows/` are security-sensitive and require review.\n",
+            "RELEASE.md": "# Release Runbook\n\n1. Confirm review and required CI checks.\n2. Identify the exact commit to release.\n3. Create an annotated version tag.\n4. Publish release notes from actual changes.\n5. Deploy the artifact built from that commit.\n6. Verify production.\n7. If necessary, redeploy a known-good artifact/tag.\n8. Propagate source hotfixes back to active development.\n",
+            "CONTRIBUTING.md": "# Contributing\n\nUse short-lived feature/fix branches and focused commits.\n\nExamples:\n- feat: add filtering\n- fix: reject empty title\n- test: cover validation\n\nBefore a pull request:\n- run npm test\n- inspect git diff\n- verify no secrets are present\n- describe testing and risk\n"
+          },
+          "explanation": "The application is intentionally small: `src/index.js` and its tests provide a real change surface without distracting from Git/GitHub. `.gitignore` and `.gitattributes` establish repository hygiene. CODEOWNERS and the PR template make review responsibilities and required context explicit. The CI workflow tests multiple Node versions and grants the workflow token only contents-read permission. SECURITY.md treats credentials and workflow files as security-sensitive. RELEASE.md separates source-control state from deployment state and provides a rollback-oriented process. The student is expected to configure protected branches/rulesets and then execute a real pull-request workflow on an authorized repository. The project therefore assesses both Git command fluency and GitHub governance/automation competence."
+        }
+      }
+    ]
+  }
+}

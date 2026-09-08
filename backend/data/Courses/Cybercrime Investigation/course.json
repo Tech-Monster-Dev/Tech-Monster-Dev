@@ -1,0 +1,1333 @@
+{
+  "course": {
+    "id": "cybercrime-investigation-001",
+    "title": "Cybercrime Investigation",
+    "slug": "cybercrime-investigation",
+    "description": "A practical, evidence-centered course covering cybercrime investigation from case intake and lawful scope through preservation, acquisition concepts, endpoint and application evidence, network and log analysis, mobile and cloud evidence, timeline correlation, hypothesis testing, attribution discipline, and professional reporting. The course uses controlled synthetic or examiner-created data and emphasizes integrity, provenance, chain of custody, uncertainty, and defensible conclusions.",
+    "level": "Intermediate",
+    "language": "English",
+    "duration": 82,
+    "prerequisites": [
+      "Basic computer and operating-system literacy",
+      "Basic networking concepts including IP, DNS, TCP/UDP, and logs",
+      "Basic command-line familiarity",
+      "Basic Python is recommended for automation labs",
+      "Awareness that real evidence collection requires appropriate legal and organizational authority"
+    ],
+    "learningOutcomes": [
+      "Explain the evidence-centered workflow of a cybercrime investigation.",
+      "Plan preservation and acquisition activities with scope, authority, provenance, and chain-of-custody controls.",
+      "Calculate and verify SHA-256 hashes for supplied or examiner-created evidence copies.",
+      "Interpret endpoint, application, network, mobile, cloud, and online evidence with appropriate limitations.",
+      "Normalize heterogeneous event records into traceable timelines.",
+      "Correlate independent evidence sources and test competing hypotheses.",
+      "Recognize attribution limitations and possible anti-forensics indicators.",
+      "Produce professional findings and reports that distinguish observations, inferences, and limitations.",
+      "Complete an end-to-end synthetic cybercrime investigation and produce a structured case report."
+    ],
+    "modules": [
+      {
+        "id": "m01",
+        "title": "Foundations and Case Management",
+        "description": "Build the investigative mindset, terminology, scope discipline, and case-planning skills required before technical examination.",
+        "lessons": [
+          {
+            "id": "l01-01",
+            "title": "Cybercrime Investigation Fundamentals",
+            "description": "Establish the investigative scope, evidence mindset, and distinction between cybercrime investigation, incident response, and digital forensic examination.",
+            "learningObjectives": [
+              "define cybercrime investigation in evidence-centered terms",
+              "distinguish operational response from forensic examination",
+              "identify evidence sources relevant to an investigative question"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "A cybercrime investigation seeks to establish facts about an event, systems, accounts, actions, timing, relationships, and impact using lawful and documented methods. Digital forensics supplies disciplined examination methods; incident response supplies operational context."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Evidence is useful only in relation to an investigative question and source context.",
+                  "A technically interesting artifact is not automatically probative.",
+                  "Observations, interpretations, and conclusions should be kept distinct."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "This course is educational and does not replace legal authority, organizational policy, or jurisdiction-specific advice."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p01",
+                "title": "Evidence-source map",
+                "description": "Map a synthetic account-compromise allegation to evidence sources.",
+                "steps": [
+                  "Create the investigative question.",
+                  "List endpoint, identity, network, cloud, mobile, and online sources.",
+                  "For each source state the fact it may support and one limitation.",
+                  "Mark potentially volatile sources."
+                ],
+                "solution": "Use a table with source, artifact, question, volatility, and limitation.",
+                "output": "Expected result: a scoped evidence map connecting sources to investigative questions."
+              }
+            ],
+            "quiz": {
+              "id": "q01",
+              "question": "Which statement best describes digital forensics in a cybercrime investigation?",
+              "options": [
+                "It replaces legal authority.",
+                "It provides disciplined methods for preserving and examining digital evidence.",
+                "It guarantees attribution.",
+                "It is only used after prosecution."
+              ],
+              "answer": "It provides disciplined methods for preserving and examining digital evidence.",
+              "explanation": "Forensic methods contribute evidence handling and examination; they do not establish legal authority or automatically prove attribution."
+            },
+            "summary": [
+              "Investigation starts with questions, scope, authority, and evidence preservation.",
+              "Forensics is one part of the broader investigative process."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement"
+            ]
+          },
+          {
+            "id": "l01-02",
+            "title": "Case Intake, Scope, and Investigative Questions",
+            "description": "Turn an allegation into a structured case plan with scope boundaries, assumptions, and evidence priorities.",
+            "learningObjectives": [
+              "write precise investigative questions",
+              "define in-scope and out-of-scope systems",
+              "document assumptions and preservation priorities"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Record the allegation and affected assets.",
+                  "Confirm authority and scope.",
+                  "Define questions the evidence must answer.",
+                  "Prioritize preservation.",
+                  "Record assumptions and open questions.",
+                  "Set reporting milestones."
+                ]
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Scope prevents investigative drift.",
+                  "An assumption is not an established fact.",
+                  "Preservation priorities depend on volatility, relevance, and risk of loss."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q02",
+              "question": "Why record assumptions separately from facts?",
+              "options": [
+                "To make reports longer.",
+                "To expose hypotheses that can be tested or revised.",
+                "To avoid evidence collection.",
+                "To prove attribution."
+              ],
+              "answer": "To expose hypotheses that can be tested or revised.",
+              "explanation": "Visible assumptions make reasoning auditable and prevent hypotheses from silently becoming facts."
+            },
+            "summary": [
+              "A good case plan is question-driven.",
+              "Explicit scope and assumptions improve reviewability."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://nij.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t01",
+            "title": "Create a defensible cybercrime case plan",
+            "level": "Intermediate",
+            "description": "Plan a synthetic unauthorized-access investigation.",
+            "problemStatement": "Create a case plan identifying questions, evidence targets, preservation priorities, assumptions, limitations, and reporting milestones.",
+            "objectives": [
+              "define investigative questions",
+              "prioritize evidence",
+              "document assumptions",
+              "set scope"
+            ],
+            "requirements": [
+              "Python optional",
+              "Synthetic data only"
+            ],
+            "hint": "Map each question to at least one evidence source and state what would weaken the hypothesis.",
+            "solutionCode": "case_plan = {\n    \"case_id\":\"CASE-001\",\n    \"questions\":[\"What authentication events occurred?\",\"Which systems recorded them?\",\"What corroborates the sequence?\"],\n    \"evidence_targets\":[\n        {\"source\":\"identity logs\",\"priority\":\"high\"},\n        {\"source\":\"endpoint logs\",\"priority\":\"medium\"},\n        {\"source\":\"network records\",\"priority\":\"medium\"}\n    ],\n    \"limitations\":[\"IP address alone does not identify a person.\",\"Clock skew or retention gaps may affect the timeline.\"]\n}\nprint(case_plan)",
+            "solutionExplanation": "The plan is intentionally evidence-centered and records limitations rather than assuming attribution."
+          }
+        ]
+      },
+      {
+        "id": "m02",
+        "title": "Digital Evidence and Integrity",
+        "description": "Teach evidence characteristics, integrity controls, chain of custody, and documentation.",
+        "lessons": [
+          {
+            "id": "l02-01",
+            "title": "Digital Evidence Characteristics",
+            "description": "Understand integrity, provenance, relevance, reliability, volatility, and the major locations where digital evidence can exist.",
+            "learningObjectives": [
+              "explain why digital evidence is fragile and contextual",
+              "classify evidence by source and volatility",
+              "distinguish integrity from authenticity and attribution"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Digital evidence may be stored on computers, servers, mobile devices, network infrastructure, cloud services, or online platforms. Its meaning depends on source, acquisition method, system state, timestamps, and corroboration."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Live collection can change system state.",
+                  "Preservation includes data and the documentation describing its handling.",
+                  "A working copy can be examined while a preserved source remains protected."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p02",
+                "title": "Evidence classification",
+                "description": "Classify synthetic artifacts by source and handling concern.",
+                "steps": [
+                  "Create ten synthetic artifact descriptions.",
+                  "Assign endpoint, network, mobile, cloud, or online category.",
+                  "Record volatility and preservation concern.",
+                  "Explain one limitation per category."
+                ],
+                "solution": "Use a classification table rather than real data.",
+                "output": "Expected result: a justified evidence-source matrix."
+              }
+            ],
+            "quiz": {
+              "id": "q03",
+              "question": "What is a defensible role for a hash?",
+              "options": [
+                "It proves who created a file.",
+                "It detects changes to compared bytes.",
+                "It proves a crime occurred.",
+                "It replaces chain of custody."
+              ],
+              "answer": "It detects changes to compared bytes.",
+              "explanation": "Cryptographic hashes support integrity checking; they do not establish authorship or legal conclusions."
+            },
+            "summary": [
+              "Evidence must be evaluated with provenance and context.",
+              "Integrity, authenticity, relevance, and attribution are different concepts."
+            ],
+            "resources": [
+              "https://www.iso.org/standard/44381.html",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "l02-02",
+            "title": "Chain of Custody and Evidence Documentation",
+            "description": "Create traceable custody records and understand how documentation supports defensibility.",
+            "learningObjectives": [
+              "construct a chain-of-custody record",
+              "record acquisition and verification hashes",
+              "document transfers and examination actions"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use a unique evidence identifier.",
+                  "Record date/time, handler, transfer, storage, and access information.",
+                  "Record acquisition method and hashes when applicable.",
+                  "Document the evidence state and relevant examiner actions."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A cryptographic hash provides a compact integrity check. A matching digest supports byte-level consistency but does not by itself establish the provenance, meaning, or authorship of the data."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p03",
+                "title": "Hash a synthetic evidence file",
+                "description": "Calculate and record SHA-256 for a harmless lab file.",
+                "steps": [
+                  "Create a small text evidence file.",
+                  "Run the supplied hashing script.",
+                  "Record evidence ID, size, SHA-256, and receipt time.",
+                  "Copy the file and verify the digest.",
+                  "Use the supplied Python script and a lab-created file only."
+                ],
+                "solution": "from pathlib import Path\nimport hashlib\nimport sys\n\ndef sha256_file(path: Path) -> str:\n    h = hashlib.sha256()\n    with path.open(\"rb\") as f:\n        for chunk in iter(lambda: f.read(1024 * 1024), b\"\"):\n            h.update(chunk)\n    return h.hexdigest()\n\nif __name__ == \"__main__\":\n    if len(sys.argv) != 2:\n        raise SystemExit(\"Usage: python hash_file.py <file>\")\n    p = Path(sys.argv[1])\n    if not p.is_file():\n        raise SystemExit(f\"Not a file: {p}\")\n    print(sha256_file(p))\n",
+                "output": "Expected result: a repeatable SHA-256 value and a documented verification event."
+              }
+            ],
+            "quiz": {
+              "id": "q04",
+              "question": "What does a matching SHA-256 digest primarily support?",
+              "options": [
+                "Person-level attribution",
+                "Byte-level consistency of compared data",
+                "Legal admissibility",
+                "User intent"
+              ],
+              "answer": "Byte-level consistency of compared data",
+              "explanation": "Hash verification is an integrity control, not an attribution or legal test."
+            },
+            "summary": [
+              "Chain of custody records possession and handling.",
+              "Hashes help demonstrate integrity of compared data."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.rfc-editor.org/rfc/rfc3227.html",
+              "https://docs.python.org/3/library/hashlib.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t02",
+            "title": "Build an evidence ledger",
+            "level": "Intermediate",
+            "description": "Create a machine-readable evidence ledger for synthetic evidence.",
+            "problemStatement": "Validate evidence IDs, timestamps, required metadata, and SHA-256 format.",
+            "objectives": [],
+            "requirements": [
+              "Python 3.14",
+              "json and pathlib",
+              "Synthetic metadata"
+            ],
+            "hint": "Validate structure and hash format without inferring legal admissibility.",
+            "solutionCode": "import json, re\nfrom pathlib import Path\ndata=json.loads(Path(\"evidence_ledger.json\").read_text(encoding=\"utf-8\"))\nrequired={\"evidence_id\",\"sha256\",\"received_at\",\"custodian\"}\nfor item in data[\"evidence\"]:\n    missing=required-item.keys()\n    if missing: raise ValueError(f\"Missing: {sorted(missing)}\")\n    if not re.fullmatch(r\"[0-9a-fA-F]{64}\", item[\"sha256\"]):\n        raise ValueError(f\"Bad SHA-256: {item['evidence_id']}\")\nprint(\"Ledger structure and hash formats are valid.\")",
+            "solutionExplanation": "The validator tests structural properties only; it deliberately avoids legal or attribution conclusions."
+          }
+        ]
+      },
+      {
+        "id": "m03",
+        "title": "Preservation and Acquisition",
+        "description": "Develop first-response, preservation, acquisition planning, and working-copy discipline.",
+        "lessons": [
+          {
+            "id": "l03-01",
+            "title": "First Response and Crime Scene Preservation",
+            "description": "Plan a safe, minimally disruptive response to a digital crime scene.",
+            "learningObjectives": [
+              "prioritize safety and scene control",
+              "document device state before interaction",
+              "identify volatile evidence considerations"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Ensure safety.",
+                  "Establish authority and roles.",
+                  "Control unnecessary access.",
+                  "Document physical and device state.",
+                  "Identify potentially volatile evidence.",
+                  "Hand off to trained forensic personnel under procedure."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not improvise live-system collection on real devices. Interaction can change evidence and should be performed only under approved procedures."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p04",
+                "title": "Synthetic scene record",
+                "description": "Create a scene record from a written scenario.",
+                "steps": [
+                  "Describe layout and device state.",
+                  "Record visible conditions and connections.",
+                  "Identify volatile evidence.",
+                  "List actions that should be deferred."
+                ],
+                "solution": "Use observations rather than assumptions.",
+                "output": "Expected result: a complete scene record and forensic handoff note."
+              }
+            ],
+            "quiz": {
+              "id": "q05",
+              "question": "What should generally precede unnecessary interaction with a digital device at a scene?",
+              "options": [
+                "Run cleanup tools",
+                "Document state and follow the preservation procedure",
+                "Open applications",
+                "Connect it to the internet"
+              ],
+              "answer": "Document state and follow the preservation procedure",
+              "explanation": "Documentation and controlled preservation reduce the risk of changing evidence."
+            },
+            "summary": [
+              "First response emphasizes safety, control, documentation, and preservation.",
+              "Live systems require special care."
+            ],
+            "resources": [
+              "https://nij.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.rfc-editor.org/rfc/rfc3227.html"
+            ]
+          },
+          {
+            "id": "l03-02",
+            "title": "Acquisition Concepts and Working Copies",
+            "description": "Understand logical and physical acquisition concepts, verification, controlled storage, and working copies.",
+            "learningObjectives": [
+              "differentiate logical and physical acquisition concepts",
+              "explain acquisition and verification hashing",
+              "describe controlled working-copy workflows"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Logical acquisition collects selected accessible data; physical or forensic imaging aims to represent storage media at a lower level, subject to device and tool capabilities. The appropriate method depends on the question, authority, device, time, and technical feasibility."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record source, method, date/time, tool or process, destination, and verification values.",
+                  "Use controlled working copies for routine examination.",
+                  "Stop and escalate when evidence identity or integrity is uncertain."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p05",
+                "title": "Write an acquisition plan",
+                "description": "Plan acquisition of a supplied synthetic image without collecting from a live device.",
+                "steps": [
+                  "Define evidence ID and source.",
+                  "Specify working-copy workflow.",
+                  "Specify hash and verification points.",
+                  "Define storage and access controls.",
+                  "List stop conditions."
+                ],
+                "solution": "Keep the plan tool-neutral and lab-safe.",
+                "output": "Expected result: a reviewable acquisition worksheet."
+              }
+            ],
+            "quiz": {
+              "id": "q06",
+              "question": "Why use a forensic working copy?",
+              "options": [
+                "To edit the original",
+                "To examine data while protecting the preserved source",
+                "To eliminate hashes",
+                "To prove attribution"
+              ],
+              "answer": "To examine data while protecting the preserved source",
+              "explanation": "Working copies reduce the risk of accidental changes to preserved evidence."
+            },
+            "summary": [
+              "Acquisition is a controlled evidence-representation process.",
+              "The method must match the investigative question and be documented."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://www.iso.org/standard/44381.html",
+              "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t03",
+            "title": "Create an evidence-preservation runbook",
+            "level": "Advanced",
+            "description": "Write a lab-safe runbook for preserving a supplied disk image.",
+            "problemStatement": "The runbook must cover intake, hash verification, working-copy handling, access control, notes, and escalation.",
+            "objectives": [],
+            "requirements": [
+              "Synthetic disk image or test file",
+              "Python optional",
+              "No live-system collection"
+            ],
+            "hint": "Use explicit who/what/when/why/how fields for important actions.",
+            "solutionCode": "steps=[\n\"Confirm case identifier and authority reference.\",\n\"Record source identity and supplied hash if available.\",\n\"Calculate an independent SHA-256 verification hash.\",\n\"Compare and record the result.\",\n\"Create a controlled working copy according to lab procedure.\",\n\"Record working-copy hash and storage location.\",\n\"Restrict access and log transfers.\",\n\"Stop if hashes disagree or evidence identity is ambiguous.\"\n]\nfor i,s in enumerate(steps,1): print(f\"{i}. {s}\")",
+            "solutionExplanation": "The runbook is deliberately tool-neutral and emphasizes integrity, custody, access control, and stop conditions."
+          }
+        ]
+      },
+      {
+        "id": "m04",
+        "title": "Endpoint and Application Evidence",
+        "description": "Interpret OS, application, filesystem, browser, and communication artifacts with appropriate caution.",
+        "lessons": [
+          {
+            "id": "l04-01",
+            "title": "Endpoint and Application Artifacts",
+            "description": "Interpret operating-system, browser, email, and messaging evidence while distinguishing observations from user intent.",
+            "learningObjectives": [
+              "categorize endpoint and application artifacts",
+              "correlate multiple artifacts",
+              "state version and interpretation limitations"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "OS artifacts may include authentication records, process activity, filesystem metadata, configuration records, and system logs.",
+                  "Browser and messaging evidence can exist in local databases, caches, downloads, synchronized data, or provider records.",
+                  "A record of an action is not automatically proof of who intentionally performed it."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Artifact paths and formats change with operating-system and application versions. Verify the target version and current documentation in real cases."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p06",
+                "title": "Artifact correlation matrix",
+                "description": "Correlate synthetic endpoint and application artifacts to one hypothesis.",
+                "steps": [
+                  "Record source and direct observation.",
+                  "Record an inference separately.",
+                  "List an alternative explanation.",
+                  "Identify corroborating evidence."
+                ],
+                "solution": "Use observation/inference/alternative columns.",
+                "output": "Expected result: a defensible correlation matrix."
+              }
+            ],
+            "quiz": {
+              "id": "q07",
+              "question": "Why correlate independent artifacts?",
+              "options": [
+                "One artifact always proves the case",
+                "Correlation can increase confidence and expose contradictions",
+                "Artifacts are never useful alone",
+                "Tools require multiple files"
+              ],
+              "answer": "Correlation can increase confidence and expose contradictions",
+              "explanation": "Independent evidence can corroborate or weaken a hypothesis."
+            },
+            "summary": [
+              "Endpoint evidence is contextual.",
+              "Version, provenance, and alternative explanations matter."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement"
+            ]
+          },
+          {
+            "id": "l04-02",
+            "title": "Filesystem Metadata and Deleted Data",
+            "description": "Interpret filenames, paths, sizes, timestamps, permissions, and deleted-data recovery limits.",
+            "learningObjectives": [
+              "explain common metadata fields",
+              "interpret timestamps cautiously",
+              "describe limits of deleted-file recovery"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Metadata can include names, paths, sizes, timestamps, permissions, ownership, and application attributes. Timestamp semantics differ by filesystem, operating system, and application."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve original metadata values before normalization.",
+                  "A timestamp should be interpreted according to its documented event semantics.",
+                  "Deleted data may remain recoverable if relevant storage has not been overwritten, but recovery is not guaranteed."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p07",
+                "title": "Metadata interpretation worksheet",
+                "description": "Interpret a synthetic file inventory.",
+                "steps": [
+                  "Explain what each timestamp may represent.",
+                  "Identify timezone and clock concerns.",
+                  "State what the metadata cannot establish.",
+                  "List corroborating evidence."
+                ],
+                "solution": "Use cautious language such as 'indicates' or 'consistent with'.",
+                "output": "Expected result: a limitation-aware metadata analysis."
+              }
+            ],
+            "quiz": {
+              "id": "q08",
+              "question": "Which statement about a filesystem timestamp is safest?",
+              "options": [
+                "It proves user intent",
+                "Its meaning depends on the system and event semantics",
+                "It is never useful",
+                "It proves identity"
+              ],
+              "answer": "Its meaning depends on the system and event semantics",
+              "explanation": "Timestamp interpretation requires artifact context and corroboration."
+            },
+            "summary": [
+              "Metadata can support reconstruction but is not automatic proof of intent.",
+              "Deleted-data recovery is probabilistic."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t04",
+            "title": "Correlate endpoint and communication artifacts",
+            "level": "Advanced",
+            "description": "Build a synthetic timeline combining endpoint and communication events.",
+            "problemStatement": "Normalize timestamps to UTC, preserve original timestamp strings, sort events, and flag events within five minutes.",
+            "objectives": [],
+            "requirements": [
+              "Python 3.14",
+              "Synthetic CSV files"
+            ],
+            "hint": "Normalize timezones before comparison and retain original values for traceability.",
+            "solutionCode": "import csv\nfrom datetime import datetime, timezone\n\ndef load_events(path):\n    events = []\n    with open(path, newline=\"\", encoding=\"utf-8\") as f:\n        for row in csv.DictReader(f):\n            dt = datetime.fromisoformat(row[\"timestamp\"].replace(\"Z\", \"+00:00\"))\n            events.append({**row, \"_utc\": dt.astimezone(timezone.utc)})\n    return sorted(events, key=lambda x: x[\"_utc\"])\n\nfor e in load_events(\"events.csv\"):\n    print(e[\"_utc\"].isoformat(), e[\"source\"], e[\"event\"])\n",
+            "solutionExplanation": "Temporal proximity is a correlation aid, not proof of causation or attribution."
+          }
+        ]
+      },
+      {
+        "id": "m05",
+        "title": "Network and Log Investigation",
+        "description": "Develop network evidence, log management, normalization, and timeline-analysis skills.",
+        "lessons": [
+          {
+            "id": "l05-01",
+            "title": "Network Evidence and Attribution Limits",
+            "description": "Interpret firewall, DNS, VPN, proxy, flow, and authentication records while understanding IP attribution limitations.",
+            "learningObjectives": [
+              "categorize network evidence",
+              "extract facts from synthetic logs",
+              "explain why IP addresses do not directly identify people"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Network sources may include packet captures, firewall logs, DNS, proxy, VPN, and flow records.",
+                  "An IP address can represent shared, dynamic, proxied, or compromised infrastructure.",
+                  "Attribution requires corroboration across identity, endpoint, network, and contextual evidence."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p08",
+                "title": "Synthetic network-log analysis",
+                "description": "Analyze paired DNS and firewall records.",
+                "steps": [
+                  "Identify source/destination and ports.",
+                  "Correlate DNS with connections.",
+                  "Record time and timezone assumptions.",
+                  "List alternative explanations."
+                ],
+                "solution": "Use synthetic logs only.",
+                "output": "Expected result: an evidence/observation/inference table."
+              }
+            ],
+            "quiz": {
+              "id": "q09",
+              "question": "What is the main attribution limitation of an IP address?",
+              "options": [
+                "It is never logged",
+                "It may represent shared, dynamic, proxied, or compromised infrastructure",
+                "It contains no information",
+                "It always identifies a device owner"
+              ],
+              "answer": "It may represent shared, dynamic, proxied, or compromised infrastructure",
+              "explanation": "An address identifies network context, not necessarily a human operator."
+            },
+            "summary": [
+              "Network records provide temporal and communication context.",
+              "Attribution requires corroboration."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://nij.ojp.gov/library/publications/investigations-involving-internet-and-computer-networks",
+              "https://csrc.nist.gov/pubs/sp/800/92/final"
+            ]
+          },
+          {
+            "id": "l05-02",
+            "title": "Log Management and Timeline Normalization",
+            "description": "Normalize heterogeneous logs while preserving provenance, timezone assumptions, and gaps.",
+            "learningObjectives": [
+              "explain log management",
+              "normalize timestamps",
+              "identify gaps and clock-skew concerns"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Log management includes generating, transmitting, storing, accessing, and disposing of log data. Investigators must preserve original records and understand retention and clock synchronization."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Preserve original timestamp text.",
+                  "Add source identifiers to normalized events.",
+                  "Use timezone-aware datetimes.",
+                  "Do not infer that a missing event proves the event never happened unless logging coverage supports that conclusion."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p09",
+                "title": "Normalize synthetic logs",
+                "description": "Merge three CSV sources into a UTC timeline.",
+                "steps": [
+                  "Read each CSV with DictReader.",
+                  "Parse timezone-aware timestamps.",
+                  "Preserve original timestamp and source.",
+                  "Sort by normalized time.",
+                  "Write a new timeline.",
+                  "Use only synthetic CSV records."
+                ],
+                "solution": "import csv\nfrom datetime import datetime, timezone\n\ndef load_events(path):\n    events = []\n    with open(path, newline=\"\", encoding=\"utf-8\") as f:\n        for row in csv.DictReader(f):\n            dt = datetime.fromisoformat(row[\"timestamp\"].replace(\"Z\", \"+00:00\"))\n            events.append({**row, \"_utc\": dt.astimezone(timezone.utc)})\n    return sorted(events, key=lambda x: x[\"_utc\"])\n\nfor e in load_events(\"events.csv\"):\n    print(e[\"_utc\"].isoformat(), e[\"source\"], e[\"event\"])\n",
+                "output": "Expected result: an ordered timeline retaining provenance."
+              }
+            ],
+            "quiz": {
+              "id": "q10",
+              "question": "Why preserve the original timestamp in a normalized timeline?",
+              "options": [
+                "It is unnecessary",
+                "It allows traceability back to the source and review of timezone assumptions",
+                "It proves the time is correct",
+                "It replaces hashing"
+              ],
+              "answer": "It allows traceability back to the source and review of timezone assumptions",
+              "explanation": "Normalization is an analytical transformation and should remain traceable."
+            },
+            "summary": [
+              "Timeline normalization is an analysis step, not replacement of original evidence.",
+              "Clock and retention issues affect reliability."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://docs.python.org/3/library/csv.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t05",
+            "title": "Investigate a synthetic network timeline",
+            "level": "Advanced",
+            "description": "Correlate synthetic DNS, firewall, VPN, and endpoint logs.",
+            "problemStatement": "Produce a normalized timeline, identify a plausible sequence, document gaps, and separate facts from inferences.",
+            "objectives": [],
+            "requirements": [
+              "Python 3.14",
+              "Synthetic CSV files"
+            ],
+            "hint": "Validate timestamp parsing and source provenance before interpretation.",
+            "solutionCode": "import csv\nfrom datetime import datetime, timezone\n\ndef load_events(path):\n    events = []\n    with open(path, newline=\"\", encoding=\"utf-8\") as f:\n        for row in csv.DictReader(f):\n            dt = datetime.fromisoformat(row[\"timestamp\"].replace(\"Z\", \"+00:00\"))\n            events.append({**row, \"_utc\": dt.astimezone(timezone.utc)})\n    return sorted(events, key=lambda x: x[\"_utc\"])\n\nfor e in load_events(\"events.csv\"):\n    print(e[\"_utc\"].isoformat(), e[\"source\"], e[\"event\"])\n",
+            "solutionExplanation": "Use the timeline to support cautious correlation; do not make person-level attribution from network metadata alone."
+          }
+        ]
+      },
+      {
+        "id": "m06",
+        "title": "Mobile, Cloud, and Online Evidence",
+        "description": "Extend preservation and investigative planning to mobile devices, cloud providers, and public online content.",
+        "lessons": [
+          {
+            "id": "l06-01",
+            "title": "Mobile Device Evidence",
+            "description": "Understand mobile evidence categories, device state, preservation, and acquisition constraints.",
+            "learningObjectives": [
+              "identify mobile evidence categories",
+              "explain why device state matters",
+              "document mobile-device handling"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Potential sources include messages, calls, application data, media, identifiers, location-related records, and authentication artifacts.",
+                  "Acquisition possibilities depend on device, operating system, lock state, encryption, and authority.",
+                  "Document device state and examiner interaction before and during approved collection."
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Do not improvise unlock or bypass procedures on real devices. Use trained personnel and approved methods."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p10",
+                "title": "Mobile intake record",
+                "description": "Create a synthetic mobile-device evidence record.",
+                "steps": [
+                  "Record make/model and supplied identifier.",
+                  "Record state and visible conditions.",
+                  "List potential evidence categories.",
+                  "Record preservation risks and handoff requirements."
+                ],
+                "solution": "Use only a written scenario.",
+                "output": "Expected result: a complete intake and preservation record."
+              }
+            ],
+            "quiz": {
+              "id": "q11",
+              "question": "What should be documented during mobile evidence collection?",
+              "options": [
+                "Only brand",
+                "Device state, identifiers, condition, and relevant interactions",
+                "Only the passcode",
+                "Nothing until extraction"
+              ],
+              "answer": "Device state, identifiers, condition, and relevant interactions",
+              "explanation": "Contemporaneous documentation supports reproducibility and custody."
+            },
+            "summary": [
+              "Mobile acquisition is device- and state-dependent.",
+              "Preservation and documentation precede unnecessary interaction."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/18-f-003-swgde-best-practices-for-mobile-device-evidence-collection-and-preservation-handling-and-acquisition/",
+              "https://nij.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition"
+            ]
+          },
+          {
+            "id": "l06-02",
+            "title": "Cloud and Online Evidence",
+            "description": "Plan preservation of provider-held cloud records and public online content with provenance and scope controls.",
+            "learningObjectives": [
+              "identify cloud evidence categories",
+              "explain provider retention and export context",
+              "document online-content preservation"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "Cloud evidence may include authentication records, audit logs, stored objects, messages, configuration records, and provider-generated activity. Public online content may change or disappear after observation."
+              },
+              {
+                "type": "notePoints",
+                "items": [
+                  "Record provider, account/resource identifiers, date/time, timezone, acquisition method, and export metadata.",
+                  "Keep source context with received data.",
+                  "Public-content preservation should capture relevant content and examiner-generated documentation where appropriate.",
+                  "Provider or cross-border data may require specific legal process."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p11",
+                "title": "Cloud/online preservation plan",
+                "description": "Draft a synthetic preservation plan for a cloud account and public webpage.",
+                "steps": [
+                  "Define investigative questions and date range.",
+                  "List exact data categories needed.",
+                  "Record source identifiers and time boundaries.",
+                  "Define hashing and storage controls.",
+                  "Record legal-process assumptions for later review."
+                ],
+                "solution": "Keep the request narrow and evidence-linked.",
+                "output": "Expected result: a focused preservation/acquisition plan."
+              }
+            ],
+            "quiz": {
+              "id": "q12",
+              "question": "Why is provider context important for cloud evidence?",
+              "options": [
+                "Cloud data cannot be copied",
+                "Retention, export scope, timestamps, and acquisition context can differ by provider",
+                "Provider data is automatically admissible",
+                "Local copies are always invalid"
+              ],
+              "answer": "Retention, export scope, timestamps, and acquisition context can differ by provider",
+              "explanation": "Provenance and scope affect interpretation."
+            },
+            "summary": [
+              "Cloud and online evidence require source-specific provenance.",
+              "Do not assume a downloaded dataset is complete without understanding its export scope."
+            ],
+            "resources": [
+              "https://www.swgde.org/documents/published-complete-listing/23-f-004-best-practices-for-digital-evidence-acquisition-preservation-and-analysis-from-cloud-service-providers/",
+              "https://www.swgde.org/documents/published-complete-listing/21-f-001-best-practices-for-acquiring-online-content/",
+              "https://www.iso.org/standard/44381.html"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t06",
+            "title": "Design a multi-source preservation plan",
+            "level": "Advanced",
+            "description": "Design a preservation plan combining mobile, cloud, and online evidence.",
+            "problemStatement": "Address authority, volatility, acquisition context, hashing, custody, storage, and limitations without directing unauthorized access.",
+            "objectives": [],
+            "requirements": [
+              "Synthetic scenario",
+              "Course guidance",
+              "No real account access"
+            ],
+            "hint": "Treat each source as its own evidence stream before defining correlation.",
+            "solutionCode": "plan={\n \"mobile\":[\"document state\",\"trained acquisition\",\"custody\"],\n \"cloud\":[\"define provider scope\",\"record export metadata\",\"hash received data\"],\n \"online\":[\"record URL/time\",\"preserve content\",\"hash archive\"],\n \"common\":[\"authority and scope\",\"unique evidence IDs\",\"restricted access\",\"transfer logging\"]\n}\nprint(plan)",
+            "solutionExplanation": "The plan separates source-specific risks from common evidence controls."
+          }
+        ]
+      },
+      {
+        "id": "m07",
+        "title": "Correlation, Attribution, and Reporting",
+        "description": "Develop hypothesis testing, attribution discipline, anti-forensics awareness, and professional reporting skills.",
+        "lessons": [
+          {
+            "id": "l07-01",
+            "title": "Hypothesis Testing and Attribution",
+            "description": "Test competing explanations and avoid unsupported person-level attribution.",
+            "learningObjectives": [
+              "form competing hypotheses",
+              "map evidence to predictions",
+              "identify alternative explanations"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "State the primary hypothesis.",
+                  "State plausible alternatives.",
+                  "List predictions for each.",
+                  "Map evidence to predictions.",
+                  "Record contradictions and gaps.",
+                  "Update the assessment."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Attribution is a high-risk inference. Strong conclusions require converging evidence and should explicitly consider alternatives. Anti-forensics indicators can motivate examination but do not identify the actor by themselves."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p12",
+                "title": "Competing-hypotheses matrix",
+                "description": "Evaluate a synthetic suspicious-login scenario.",
+                "steps": [
+                  "Define legitimate-user, compromised-credential, and shared/automated-access hypotheses.",
+                  "List expected evidence.",
+                  "Map supplied observations.",
+                  "Identify unresolved questions."
+                ],
+                "solution": "Do not choose a hypothesis solely because it seems suspicious.",
+                "output": "Expected result: a transparent hypothesis matrix."
+              }
+            ],
+            "quiz": {
+              "id": "q13",
+              "question": "Which approach is strongest for attribution?",
+              "options": [
+                "One IP address",
+                "One username",
+                "Corroborated evidence plus alternative-hypothesis testing",
+                "Assume the account owner did it"
+              ],
+              "answer": "Corroborated evidence plus alternative-hypothesis testing",
+              "explanation": "Attribution should be based on converging evidence and explicit consideration of alternatives."
+            },
+            "summary": [
+              "Attribution is an inference, not a default property of an artifact.",
+              "Anti-forensics indicators require careful interpretation."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://nij.ojp.gov/library/publications/investigations-involving-internet-and-computer-networks",
+              "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement"
+            ]
+          },
+          {
+            "id": "l07-02",
+            "title": "Forensic Reporting and Expert Communication",
+            "description": "Write findings that are traceable, reproducible, and calibrated to the evidence.",
+            "learningObjectives": [
+              "structure a forensic report",
+              "separate observation from inference",
+              "state limitations clearly"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Case and authority context",
+                  "Scope and questions",
+                  "Evidence inventory and custody",
+                  "Methods",
+                  "Findings and supporting evidence",
+                  "Timeline/correlation",
+                  "Limitations and alternatives",
+                  "Conclusion",
+                  "Appendices and hash records"
+                ]
+              },
+              {
+                "type": "warning",
+                "text": "Avoid unsupported claims about intent, identity, causation, or guilt. Use evidence-calibrated language such as 'the records show' or 'consistent with' when appropriate."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p13",
+                "title": "Rewrite overconfident findings",
+                "description": "Convert unsupported conclusions into evidence-calibrated findings.",
+                "steps": [
+                  "Identify the direct observation.",
+                  "Identify the inference.",
+                  "Remove unsupported attribution.",
+                  "Add supporting evidence IDs and limitations."
+                ],
+                "solution": "Keep each finding traceable.",
+                "output": "Expected result: concise defensible findings."
+              }
+            ],
+            "quiz": {
+              "id": "q14",
+              "question": "Which statement is more defensible?",
+              "options": [
+                "The IP proves the suspect committed the crime.",
+                "The log records show an authentication from the recorded source at the stated time; the records alone do not establish the person operating that source.",
+                "The account owner definitely acted.",
+                "The malware proves intent"
+              ],
+              "answer": "The log records show an authentication from the recorded source at the stated time; the records alone do not establish the person operating that source.",
+              "explanation": "It states the observation and limits attribution."
+            },
+            "summary": [
+              "A forensic report should be reproducible and traceable.",
+              "Findings should distinguish evidence from interpretation."
+            ],
+            "resources": [
+              "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+              "https://csrc.nist.gov/pubs/sp/800/86/final"
+            ]
+          }
+        ],
+        "tasks": [
+          {
+            "id": "t07",
+            "title": "Write a defensible investigation report",
+            "level": "Advanced",
+            "description": "Produce a short report from synthetic evidence and event records.",
+            "problemStatement": "Include scope, evidence inventory, methods, timeline, findings, limitations, and conclusion. Every finding must cite an evidence identifier.",
+            "objectives": [],
+            "requirements": [
+              "Synthetic evidence only",
+              "Python optional"
+            ],
+            "hint": "Write observations first, then add only the inference supported by the evidence.",
+            "solutionCode": "report={\n \"scope\":\"Synthetic unauthorized-access scenario\",\n \"evidence\":[\"EV-001\",\"EV-002\"],\n \"methods\":[\"verified SHA-256\",\"normalized timestamps\",\"correlated authentication and endpoint records\"],\n \"findings\":[{\n   \"id\":\"F-001\",\n   \"statement\":\"Authentication events were recorded from the source shown in EV-001 during the scoped period.\",\n   \"support\":[\"EV-001\"],\n   \"limitation\":\"The record does not identify the person operating the source.\"\n }],\n \"conclusion\":\"The documented event sequence is supported within the stated scope; person-level attribution remains unresolved.\"\n}\nimport json\nprint(json.dumps(report,indent=2))",
+            "solutionExplanation": "The report ties findings to evidence identifiers and avoids unsupported attribution."
+          }
+        ]
+      },
+      {
+        "id": "m08",
+        "title": "Final Real-World Project: Synthetic Cybercrime Investigation Casework",
+        "description": "Complete a realistic but lab-safe end-to-end cybercrime investigation using synthetic records and examiner-created copies.",
+        "lessons": [
+          {
+            "id": "l08-01",
+            "title": "Project Intake and Evidence Ledger",
+            "description": "Prepare the final synthetic case and establish traceable evidence records.",
+            "learningObjectives": [
+              "initialize the case database",
+              "record evidence IDs and hashes",
+              "separate preserved evidence from working products"
+            ],
+            "notes": [
+              {
+                "type": "notePoints",
+                "items": [
+                  "Use unique evidence identifiers.",
+                  "Record size, SHA-256, receipt time, and notes.",
+                  "Keep generated reports separate from preserved evidence copies."
+                ]
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p14",
+                "title": "Initialize project ledger",
+                "description": "Create the project database and add a synthetic file.",
+                "steps": [
+                  "Save the supplied code as casework.py.",
+                  "Run init against a new database.",
+                  "Create a harmless lab file.",
+                  "Run add-evidence with a documented time.",
+                  "Inspect the evidence row."
+                ],
+                "solution": "Use a file created for the course only.",
+                "output": "Expected result: a complete evidence row."
+              }
+            ],
+            "quiz": {
+              "id": "q15",
+              "question": "What should be established before analysis?",
+              "options": [
+                "Guilt",
+                "Evidence identity, provenance, scope, and integrity",
+                "A final conclusion",
+                "A public accusation"
+              ],
+              "answer": "Evidence identity, provenance, scope, and integrity",
+              "explanation": "The project follows an evidence-first workflow."
+            },
+            "summary": [
+              "Intake establishes traceability before interpretation."
+            ],
+            "resources": [
+              "https://docs.python.org/3/library/sqlite3.html",
+              "https://docs.python.org/3/library/hashlib.html",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          },
+          {
+            "id": "l08-02",
+            "title": "Project Timeline and Correlation",
+            "description": "Use the pipeline to turn synthetic records into a defensible timeline and findings.",
+            "learningObjectives": [
+              "import event records",
+              "normalize timestamps",
+              "identify relationships and gaps",
+              "draft evidence-linked findings"
+            ],
+            "notes": [
+              {
+                "type": "paragraph",
+                "text": "The timeline is an analytical model of source records, not the conclusion itself. Students should preserve original values, identify contradictions, and use temporal relationships as clues rather than proof."
+              }
+            ],
+            "practicals": [
+              {
+                "id": "p15",
+                "title": "Build the project timeline",
+                "description": "Import the synthetic events and generate the report.",
+                "steps": [
+                  "Validate timestamps.",
+                  "Run import-events.",
+                  "Run report.",
+                  "Review gaps and contradictions.",
+                  "Draft three evidence-linked findings."
+                ],
+                "solution": "Do not modify source data to fit a hypothesis.",
+                "output": "Expected result: a traceable timeline and findings."
+              }
+            ],
+            "quiz": {
+              "id": "q16",
+              "question": "What is the proper role of temporal proximity?",
+              "options": [
+                "It proves causation",
+                "It is a correlation clue requiring other evidence",
+                "It proves authorship",
+                "It replaces provenance"
+              ],
+              "answer": "It is a correlation clue requiring other evidence",
+              "explanation": "Temporal proximity alone cannot establish causation or attribution."
+            },
+            "summary": [
+              "Timeline analysis supports reasoning but does not replace evidence.",
+              "Findings must remain traceable."
+            ],
+            "resources": [
+              "https://csrc.nist.gov/pubs/sp/800/86/final",
+              "https://csrc.nist.gov/pubs/sp/800/92/final",
+              "https://docs.python.org/3/library/csv.html"
+            ]
+          },
+          {
+            "id": "l08-03",
+            "title": "Final Quality Gate and Case Closure",
+            "description": "Audit the final report for technical correctness, traceability, uncertainty, and scope.",
+            "learningObjectives": [
+              "verify hashes and timeline ordering",
+              "audit finding support",
+              "state limitations and unresolved questions",
+              "close the case without overclaiming"
+            ],
+            "notes": [
+              {
+                "type": "orderedList",
+                "items": [
+                  "Confirm scope and authority assumptions.",
+                  "Confirm every evidence item has an identifier and integrity record.",
+                  "Confirm timeline provenance.",
+                  "Confirm every finding has support.",
+                  "Confirm limitations and alternatives.",
+                  "Remove unsupported attribution claims.",
+                  "Confirm no unauthorized collection occurred."
+                ]
+              }
+            ],
+            "practicals": [],
+            "quiz": {
+              "id": "q17",
+              "question": "Which condition requires revision before submission?",
+              "options": [
+                "A finding supported by evidence and limitations",
+                "A person-level attribution unsupported by the supplied evidence",
+                "A hash value is recorded",
+                "The timeline is sorted"
+              ],
+              "answer": "A person-level attribution unsupported by the supplied evidence",
+              "explanation": "Unsupported attribution is a substantive reporting defect."
+            },
+            "summary": [
+              "Case closure is both technical and analytical review.",
+              "A strong report states what is known, how it was established, and what remains uncertain."
+            ],
+            "resources": [
+              "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement",
+              "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+              "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/"
+            ]
+          }
+        ],
+        "tasks": [],
+        "project": {
+          "name": "Synthetic Cybercrime Investigation Casework Pipeline",
+          "description": "An end-to-end lab-safe investigation using examiner-created evidence copies and synthetic event records. Students verify evidence integrity, maintain an evidence ledger, normalize timelines, correlate events, and produce a structured investigative report. No live-system acquisition, credential bypass, unauthorized access, or real-target interaction is required.",
+          "conceptsCovered": [
+            "case intake",
+            "scope and authority",
+            "chain of custody",
+            "SHA-256 integrity verification",
+            "CSV log parsing",
+            "UTC timeline normalization",
+            "SQLite evidence ledger",
+            "correlation",
+            "hypothesis testing",
+            "evidence-calibrated reporting"
+          ],
+          "steps": [
+            "Create a case workspace containing only synthetic or examiner-created evidence copies.",
+            "Initialize the SQLite evidence ledger.",
+            "Record each evidence item with a unique ID, size, SHA-256 digest, receipt time, and notes.",
+            "Import synthetic event CSV records and validate timestamps.",
+            "Generate a UTC-normalized timeline while preserving original timestamp strings.",
+            "Identify clusters, gaps, contradictions, and alternative explanations.",
+            "Write at least three findings, each linked to evidence identifiers.",
+            "Generate the JSON report and preserve the database and report as working products.",
+            "Perform a final quality review of scope, hashes, timeline ordering, finding support, and limitations.",
+            "Submit the report with a concise examiner narrative explaining the reasoning."
+          ],
+          "code": "#!/usr/bin/env python3\n\"\"\"Lab-safe Cybercrime Investigation Case Ledger and Timeline Reporter.\"\"\"\n\nimport argparse, csv, hashlib, json, sqlite3\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nSCHEMA = \"\"\"\nCREATE TABLE IF NOT EXISTS evidence(\n id INTEGER PRIMARY KEY,\n evidence_id TEXT UNIQUE NOT NULL,\n path TEXT NOT NULL,\n size INTEGER NOT NULL,\n sha256 TEXT NOT NULL,\n received_at TEXT NOT NULL,\n notes TEXT\n);\nCREATE TABLE IF NOT EXISTS events(\n id INTEGER PRIMARY KEY,\n timestamp TEXT NOT NULL,\n source TEXT NOT NULL,\n event TEXT NOT NULL,\n subject TEXT,\n details TEXT\n);\n\"\"\"\n\ndef sha256_file(path):\n    h=hashlib.sha256()\n    with path.open(\"rb\") as f:\n        for chunk in iter(lambda:f.read(1024*1024), b\"\"):\n            h.update(chunk)\n    return h.hexdigest()\n\ndef init(db):\n    with sqlite3.connect(db) as con:\n        con.executescript(SCHEMA)\n\ndef add_evidence(db, evidence_id, path, received_at, notes):\n    p=Path(path)\n    if not p.is_file(): raise FileNotFoundError(p)\n    digest=sha256_file(p)\n    with sqlite3.connect(db) as con:\n        con.execute(\n            \"INSERT INTO evidence(evidence_id,path,size,sha256,received_at,notes) VALUES(?,?,?,?,?,?)\",\n            (evidence_id,str(p),p.stat().st_size,digest,received_at,notes)\n        )\n\ndef import_events(db, csv_path):\n    n=0\n    with open(csv_path,newline=\"\",encoding=\"utf-8\") as f, sqlite3.connect(db) as con:\n        for row in csv.DictReader(f):\n            datetime.fromisoformat(row[\"timestamp\"].replace(\"Z\",\"+00:00\"))\n            con.execute(\n                \"INSERT INTO events(timestamp,source,event,subject,details) VALUES(?,?,?,?,?)\",\n                (row[\"timestamp\"],row[\"source\"],row[\"event\"],row.get(\"subject\",\"\"),row.get(\"details\",\"\"))\n            )\n            n+=1\n    return n\n\ndef report(db, output, case_id):\n    with sqlite3.connect(db) as con:\n        evidence=con.execute(\n            \"SELECT evidence_id,path,size,sha256,received_at,notes FROM evidence ORDER BY id\"\n        ).fetchall()\n        events=con.execute(\n            \"SELECT timestamp,source,event,subject,details FROM events ORDER BY timestamp,id\"\n        ).fetchall()\n    timeline=[]\n    for ts,src,ev,sub,det in events:\n        dt=datetime.fromisoformat(ts.replace(\"Z\",\"+00:00\"))\n        timeline.append({\n            \"timestamp_original\":ts,\n            \"timestamp_utc\":dt.astimezone(timezone.utc).isoformat(),\n            \"source\":src,\"event\":ev,\"subject\":sub,\"details\":det\n        })\n    data={\n      \"case_id\":case_id,\n      \"generated_at\":datetime.now(timezone.utc).isoformat(),\n      \"evidence\":[\n        {\"evidence_id\":e,\"path\":p,\"size\":s,\"sha256\":h,\"received_at\":r,\"notes\":n}\n        for e,p,s,h,r,n in evidence\n      ],\n      \"timeline\":timeline,\n      \"limitations\":[\n        \"The dataset is examiner-created or synthetic.\",\n        \"A hash verifies consistency of compared bytes; it does not prove authorship or guilt.\",\n        \"Timeline proximity does not by itself prove causation or attribution.\",\n        \"Legal conclusions require jurisdiction-specific authority and qualified legal review.\"\n      ]\n    }\n    Path(output).write_text(json.dumps(data,indent=2),encoding=\"utf-8\")\n\ndef main():\n    ap=argparse.ArgumentParser()\n    sp=ap.add_subparsers(dest=\"cmd\",required=True)\n    p=sp.add_parser(\"init\"); p.add_argument(\"db\")\n    p=sp.add_parser(\"add-evidence\"); p.add_argument(\"db\"); p.add_argument(\"evidence_id\"); p.add_argument(\"path\"); p.add_argument(\"--received-at\",required=True); p.add_argument(\"--notes\",default=\"\")\n    p=sp.add_parser(\"import-events\"); p.add_argument(\"db\"); p.add_argument(\"csv\")\n    p=sp.add_parser(\"report\"); p.add_argument(\"db\"); p.add_argument(\"output\"); p.add_argument(\"--case-id\",required=True)\n    a=ap.parse_args()\n    if a.cmd==\"init\": init(a.db)\n    elif a.cmd==\"add-evidence\": add_evidence(a.db,a.evidence_id,a.path,a.received_at,a.notes)\n    elif a.cmd==\"import-events\": print(import_events(a.db,a.csv))\n    elif a.cmd==\"report\": report(a.db,a.output,a.case_id)\n\nif __name__==\"__main__\":\n    main()\n",
+          "explanation": "The project uses Python's standard library to create a local SQLite evidence ledger, hash examiner-created files with SHA-256, import synthetic CSV events, normalize timestamps to UTC, and generate a JSON report. It intentionally does not acquire live systems or alter source evidence. Hashes support integrity checking of compared bytes, not authorship or guilt. Timeline proximity supports correlation but does not prove causation. The report explicitly records limitations and keeps legal conclusions outside the program."
+        }
+      }
+    ]
+  },
+  "researchBasis": [
+    {
+      "title": "NIST SP 800-61 Rev. 3",
+      "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "purpose": "Current incident-response recommendations; Rev. 3 supersedes Rev. 2."
+    },
+    {
+      "title": "NIST SP 800-86",
+      "url": "https://csrc.nist.gov/pubs/sp/800/86/final",
+      "purpose": "Computer and network forensic techniques integrated with incident response."
+    },
+    {
+      "title": "NIST SP 800-92",
+      "url": "https://csrc.nist.gov/pubs/sp/800/92/final",
+      "purpose": "Computer security log-management guidance."
+    },
+    {
+      "title": "ISO/IEC 27037:2012",
+      "url": "https://www.iso.org/standard/44381.html",
+      "purpose": "Identification, collection, acquisition, and preservation of digital evidence."
+    },
+    {
+      "title": "SWGDE Digital Evidence Collection",
+      "url": "https://www.swgde.org/documents/published-complete-listing/18-f-002-2-0/",
+      "purpose": "Evidence integrity, collection, hashing, and documentation best practices."
+    },
+    {
+      "title": "SWGDE Mobile Evidence Guidance",
+      "url": "https://www.swgde.org/documents/published-complete-listing/18-f-003-swgde-best-practices-for-mobile-device-evidence-collection-and-preservation-handling-and-acquisition/",
+      "purpose": "Mobile-device evidence preservation and acquisition considerations."
+    },
+    {
+      "title": "SWGDE Cloud Evidence Guidance",
+      "url": "https://www.swgde.org/documents/published-complete-listing/23-f-004-best-practices-for-digital-evidence-acquisition-preservation-and-analysis-from-cloud-service-providers/",
+      "purpose": "Cloud-provider evidence acquisition, preservation, and analysis."
+    },
+    {
+      "title": "SWGDE Online Content Guidance",
+      "url": "https://www.swgde.org/documents/published-complete-listing/21-f-001-best-practices-for-acquiring-online-content/",
+      "purpose": "Preservation of public online content."
+    },
+    {
+      "title": "RFC 3227",
+      "url": "https://www.rfc-editor.org/rfc/rfc3227.html",
+      "purpose": "Evidence collection, archiving, volatility, and custody guidance."
+    },
+    {
+      "title": "NIJ Electronic Crime Scene Investigation",
+      "url": "https://nij.ojp.gov/library/publications/electronic-crime-scene-investigation-guide-first-responders-second-edition",
+      "purpose": "First-responder preservation and collection guidance."
+    },
+    {
+      "title": "NIJ Forensic Examination of Digital Evidence",
+      "url": "https://nij.ojp.gov/library/publications/forensic-examination-digital-evidence-guide-law-enforcement",
+      "purpose": "Digital evidence examination and documentation principles."
+    },
+    {
+      "title": "NIJ Internet and Network Investigations",
+      "url": "https://nij.ojp.gov/library/publications/investigations-involving-internet-and-computer-networks",
+      "purpose": "Internet/network investigation and courtroom-context guidance."
+    },
+    {
+      "title": "Python hashlib",
+      "url": "https://docs.python.org/3/library/hashlib.html",
+      "purpose": "Standard-library cryptographic hashing used in labs."
+    },
+    {
+      "title": "Python csv",
+      "url": "https://docs.python.org/3/library/csv.html",
+      "purpose": "Standard-library CSV parsing used in timeline labs."
+    },
+    {
+      "title": "Python pathlib",
+      "url": "https://docs.python.org/3/library/pathlib.html",
+      "purpose": "Standard-library filesystem path handling."
+    },
+    {
+      "title": "Python sqlite3",
+      "url": "https://docs.python.org/3/library/sqlite3.html",
+      "purpose": "SQLite evidence ledger used in the final project."
+    }
+  ],
+  "scopeNote": "Legal requirements, admissibility, privacy rules, warrants, disclosure duties, retention requirements, and jurisdiction-specific procedures vary. This course is educational and does not provide legal advice. All practical exercises are designed for synthetic or examiner-created data.",
+  "researchCutoff": "2026-09-08"
+}
