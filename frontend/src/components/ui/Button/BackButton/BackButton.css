@@ -1,112 +1,44 @@
+@import "tailwindcss";
+
 /* =========================================================
    BACK BUTTON
 ========================================================= */
 
 .back-button {
-    position: relative;
+    @apply relative flex shrink-0 size-11 items-center justify-center rounded-(--radius) border bg-(--surface-overlay) text-(--neon) p-0 backdrop-blur-sm transition-all duration-300 ease-in-out z-1000 sm:size-10 sm:rounded-[.625rem] max-[29.375rem]:size-9;
 
-    width: 44px;
-    height: 44px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: 1px solid rgba(0, 234, 255, 0.3);
-
-    border-radius: 12px;
-
-    background: rgba(2, 6, 23, 0.9);
-
-    color: var(--neon, #00eaff);
-
-    cursor: pointer;
-
-    backdrop-filter: blur(10px);
-
-    box-shadow:
-        0 0 15px rgba(0, 234, 255, 0.08);
-
-    z-index: 1000;
-
-    transition:
-        border-color 0.3s ease,
-        background 0.3s ease,
-        box-shadow 0.3s ease;
+    border-color: var(--neon-blue-soft);
+    box-shadow: 0 0 clamp(.5rem, 2vw, .9375rem) var(--neon-blue-faint);
 }
-
 
 /* =========================================================
    ICON
 ========================================================= */
 
 .back-button-icon {
-    display: flex;
+    @apply flex items-center justify-center text-(--neon) transition-transform duration-300 ease-in-out;
 
-    align-items: center;
-    justify-content: center;
-
-    color: var(--neon, #00eaff);
-
-    font-size: 1.2rem;
-
-    transition:
-        transform 0.3s ease;
+    font-size: clamp(.95rem, 2vw, 1.2rem);
 }
-
 
 /* =========================================================
    TOOLTIP
 ========================================================= */
 
 .back-button-tooltip {
-    position: absolute;
+    @apply absolute top-1/2 whitespace-nowrap rounded-lg border bg-(--dark) text-(--text) opacity-0 invisible pointer-events-none z-9999 transition-all duration-250 ease-in-out;
 
-    left: calc(100% + 12px);
+    left: 100%;
+    margin-left: 0.75rem;
 
-    top: 50%;
-
-    transform:
-        translateY(-50%)
-        translateX(-8px);
-
-    white-space: nowrap;
-
-    padding: 0.55rem 0.85rem;
-
-    border: 1px solid rgba(0, 234, 255, 0.3);
-
-    border-radius: 8px;
-
-    background: rgba(2, 6, 23, 0.98);
-
-    color: #e2e8f0;
-
-    font-size: 0.75rem;
-
+    transform: translateY(-50%) translateX(-.5rem);
+    padding: clamp(.45rem, 1vw, .55rem) clamp(.65rem, 1.5vw, .85rem);
+    border-color: var(--neon-blue-soft);
+    font-size: clamp(.62rem, 1vw, .75rem);
     font-weight: 700;
-
-    letter-spacing: 0.3px;
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
-
-    box-shadow:
-        0 0 20px rgba(0, 234, 255, 0.12);
-
-    z-index: 9999;
-
-    transition:
-        opacity 0.25s ease,
-        transform 0.25s ease,
-        visibility 0.25s ease;
+    letter-spacing: clamp(.015rem, .05vw, .01875rem);
+    box-shadow: 0 0 clamp(.75rem, 2.5vw, 1.25rem) var(--neon-blue-faint);
 }
-
 
 /* =========================================================
    TOOLTIP ARROW
@@ -115,122 +47,40 @@
 .back-button-tooltip::before {
     content: "";
 
-    position: absolute;
+    @apply absolute -left-1.25 top-1/2 size-2.25 -translate-y-1/2 rotate-45 border-l border-b bg-(--surface-overlay);
 
-    left: -5px;
-
-    top: 50%;
-
-    width: 9px;
-    height: 9px;
-
-    transform:
-        translateY(-50%)
-        rotate(45deg);
-
-    border-left:
-        1px solid rgba(0, 234, 255, 0.3);
-
-    border-bottom:
-        1px solid rgba(0, 234, 255, 0.3);
-
-    background: rgba(2, 6, 23, 0.98);
+    border-color: var(--neon-blue-soft);
 }
-
 
 /* =========================================================
    HOVER
 ========================================================= */
 
 .back-button:hover {
+    @apply border-(--neon) bg-(--neon-overlay);
 
-    border-color:
-        var(--neon, #00eaff);
+    box-shadow: 0 0 clamp(1rem, 3vw, 1.25rem) var(--neon-cyan-soft);
 
-    background:
-        rgba(0, 234, 255, 0.08);
-
-    box-shadow:
-        0 0 20px rgba(0, 234, 255, 0.18),
-        0 0 40px rgba(0, 234, 255, 0.06);
 }
-
 
 .back-button:hover .back-button-icon {
-    transform: translateX(-3px);
+    @apply -translate-x-0.5;
 }
-
 
 .back-button:hover .back-button-tooltip {
+    @apply visible opacity-100;
 
-    opacity: 1;
-
-    visibility: visible;
-
-    transform:
-        translateY(-50%)
-        translateX(0);
+    transform: translateY(-50%) translateX(0);
 }
-
 
 /* =========================================================
    FOCUS
 ========================================================= */
 
 .back-button:focus-visible {
-
-    outline: none;
-
-    border-color:
-        var(--neon, #00eaff);
+    @apply outline-none border-(--neon);
 
     box-shadow:
-        0 0 0 3px rgba(0, 234, 255, 0.12),
-        0 0 25px rgba(0, 234, 255, 0.15);
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 767px) {
-
-    .back-button {
-        width: 40px;
-        height: 40px;
-
-        border-radius: 10px;
-    }
-
-    .back-button-icon {
-        font-size: 1rem;
-    }
-
-    .back-button-tooltip {
-        font-size: 0.68rem;
-
-        padding: 0.5rem 0.7rem;
-
-        left: calc(100% + 8px);
-    }
-}
-
-
-/* =========================================================
-   SMALL PHONE
-========================================================= */
-
-@media (max-width: 470px) {
-
-    .back-button {
-        width: 38px;
-        height: 38px;
-    }
-
-    .back-button-tooltip {
-        font-size: 0.62rem;
-
-        padding: 0.45rem 0.65rem;
-    }
+        0 0 0 clamp(.1rem, .3vw, .1875rem) var(--neon-blue-faint),
+        0 0 clamp(1rem, 3vw, 1.5625rem) var(--neon-blue-soft);
 }

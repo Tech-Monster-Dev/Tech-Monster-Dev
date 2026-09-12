@@ -2,7 +2,7 @@ import "./Loader.css";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import logo from "../../../assets/logo/logo.png";
+import logo from "../../../assets/logo/logo.webp";
 
 function Loading({ finish }) {
 

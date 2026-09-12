@@ -1,4 +1,4 @@
-import Rating from "../../../../../components/ui/Rating";
+import Rating from "../../../../../components/ui/Form/component/Rating";
 import Card from "../../../../../components/ui/Card";
 import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 import { FaQuoteLeft } from "react-icons/fa";

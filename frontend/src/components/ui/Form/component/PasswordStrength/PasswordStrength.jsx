@@ -1,7 +1,7 @@
 import "./PasswordStrength.css";
 
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import { calculatePasswordStrength } from "../../../shared/utils/passwordStrength";
+import { calculatePasswordStrength } from "../../../../../shared/utils/passwordStrength";
 
 function PasswordStrength({ password }) {
 

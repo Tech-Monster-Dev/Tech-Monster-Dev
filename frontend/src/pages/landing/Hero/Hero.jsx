@@ -11,10 +11,11 @@ import { motion } from 'framer-motion';
 import { FaArrowRight, FaPlayCircle, FaShieldAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { heroContent } from './HeroData';
-import HeroImage from '../../../assets/logo/logo.png';
+import HeroImage from '../../../assets/logo/logo.webp';
 
 import PublicButton from '../../../components/ui/Button/PublicButton';
-import Card from '../../../components/ui/Card';
+import StatsCard from "../../../components/ui/Card/StatsCard";
+import Spinner from '../../../features/dashboard/common/LoaderPage/Spinner';
 
 
 const fadeUp = {
@@ -85,12 +86,28 @@ function Hero() {
         <>
             <section className='hero' data-section='home'>
 
-
                 <div className="hero-container">
                     {/* LEFT */}
                     <div className="hero-left">
                         <motion.span className='hero-badge' variants={fadeUp} initial='hidden' animate='show' custom={0}>{heroContent.badge}</motion.span>
-                        <motion.h1 className='hero-title' variants={fadeUp} initial='hidden' animate='show' custom={0.2}>{heroContent.title} <span> <FaShieldAlt /></span> <span>{heroContent.highlight}</span></motion.h1>
+                        <motion.h1
+                            className="hero-title"
+                            variants={fadeUp}
+                            initial="hidden"
+                            animate="show"
+                            custom={0.2}
+                        >
+                            <span className="hero-title-main">
+                                {heroContent.title}
+                            </span>
+
+                            <span className="hero-title-highlight">
+                                <span className="hero-title-icon">
+                                    <FaShieldAlt />
+                                </span>
+                                {heroContent.highlight}
+                            </span>
+                        </motion.h1>
                         <motion.p className='hero-description' variants={fadeUp} initial='hidden' animate='show' custom={0.4}>{heroContent.description}</motion.p>
                         <motion.div className='hero-buttons' variants={fadeUp} initial='hidden' animate='show' custom={0.6}>
                             <PublicButton
@@ -116,47 +133,49 @@ function Hero() {
                         </motion.div>
 
                         <motion.div className='hero-stats' variants={fadeUp} initial='hidden' animate='show' custom={0.8}>
-                            <Card className="stat-card">
-                                <h2>
-                                    {statsLoading
-                                        ? "..."
-                                        : `${heroStats.students || 0}`}
-                                </h2>
-                                <p>Students</p>
-                            </Card>
+                            <StatsCard
+                                count={statsLoading ? <Spinner size={45} /> : heroStats.students || 0}
+                                title="Students"
+                            />
 
-                            <Card className="stat-card">
-                                <h2>
-                                    {statsLoading
-                                        ? "..."
-                                        : `${heroStats.internships || 0}`}
-                                </h2>
-                                <p>Internships</p>
-                            </Card>
+                            <StatsCard
+                                count={statsLoading ? <Spinner size={45} /> : heroStats.internships || 0}
+                                title="Internships"
+                            />
 
-                            <Card className="stat-card">
-                                <h2>
-                                    {statsLoading
-                                        ? "..."
-                                        : `${heroStats.courses || 0}`}
-                                </h2>
-                                <p>Courses</p>
-                            </Card>
+                            <StatsCard
+                                count={statsLoading ? <Spinner size={45} /> : heroStats.courses || 0}
+                                title="Courses"
+                            />
 
-                            <Card className="stat-card">
-                                <h2>
-                                    {statsLoading
-                                        ? "..."
-                                        : `${heroStats.admins || 0}`}
-                                </h2>
-                                <p>Mentors</p>
-                            </Card>
+                            <StatsCard
+                                count={statsLoading ? <Spinner size={45} /> : heroStats.admins || 0}
+                                title="Mentors"
+                            />
                         </motion.div>
                     </div>
 
                     {/* RIGHT */}
-                    <motion.div className='hero-right' initial={{ opacity: 0, x: 80 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-                        <motion.img src={HeroImage} alt='Hero image' animate={{ y: [0, -30, 0] }} transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }} />
+                    <motion.div
+                        className="hero-right"
+                        initial={{ opacity: 0, x: 80 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <motion.div
+                            className="hero-image-wrapper"
+                            animate={{ y: [0, -30, 0] }}
+                            transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                        >
+                            <img
+                                src={HeroImage}
+                                alt="Hero image"
+                            />
+                        </motion.div>
                     </motion.div>
                 </div>
             </section>

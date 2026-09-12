@@ -2,10 +2,10 @@ import './About.css';
 import { aboutData } from './AboutData';
 
 import { motion } from 'framer-motion';
-import AboutImage from '../../../assets/illustrations/About.png';
+import AboutImage from '../../../assets/illustrations/About.webp';
 import { FaBullseye, FaLightbulb, FaBookOpen, FaUsers, FaShieldAlt } from "react-icons/fa";
 
-import Card from "../../../components/ui/Card";
+import StatsCard from "../../../components/ui/Card/StatsCard";
 
 
 function About() {
@@ -44,17 +44,29 @@ function About() {
 
           <div className="values">
             {aboutData.values.map((value) => (
-              <motion.div key={value.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: value * .2 }}>
-                <Card className="value-card">
-
-                  {value.title === "Innovation" && <FaLightbulb />}
-                  {value.title === "Learning" && <FaBookOpen />}
-                  {value.title === "Team Work" && <FaUsers />}
-                  {value.title === "Integrity" && <FaShieldAlt />}
-
-                  <h3>{value.title}</h3>
-                  <p>{value.description}</p>
-                </Card>
+              <motion.div
+                key={value.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: value * .2 }}
+              >
+                <StatsCard
+                  className="value-card"
+                  titleClass="title"
+                  descriptionClass="description"
+                  count={null}
+                  title={value.title}
+                  description={value.description}
+                  icon={
+                    <>
+                      {value.title === "Innovation" && <FaLightbulb />}
+                      {value.title === "Learning" && <FaBookOpen />}
+                      {value.title === "Team Work" && <FaUsers />}
+                      {value.title === "Integrity" && <FaShieldAlt />}
+                    </>
+                  }
+                />
               </motion.div>
             ))}
           </div>

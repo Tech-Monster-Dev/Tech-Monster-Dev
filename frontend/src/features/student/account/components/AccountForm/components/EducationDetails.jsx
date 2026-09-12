@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Input from "../../../../../../components/ui/Input";
+import Textinput from "../../../../../../components/ui/Form/component/Textinput";
 import {SkillsInput} from "./index";
 
 function EducationDetails({
@@ -24,7 +24,7 @@ function EducationDetails({
 
             <div id="form-grid">
 
-                <Input
+                <Textinput
                     label="What are you studying?"
                     type="text"
                     placeholder="e.g. B.Tech / BCA"
@@ -35,7 +35,7 @@ function EducationDetails({
                     required
                 />
 
-                <Input
+                <Textinput
                     label="College Name"
                     type="text"
                     name="college"
@@ -45,7 +45,7 @@ function EducationDetails({
                     required
                 />
 
-                <Input
+                <Textinput
                     label="Branch"
                     type="text"
                     name="branch"
@@ -55,7 +55,7 @@ function EducationDetails({
                     required
                 />
 
-                <Input
+                <Textinput
                     label="Year"
                     type="text"
                     placeholder="e.g. 3rd Year"
@@ -66,7 +66,7 @@ function EducationDetails({
                     required
                 />
 
-                <Input
+                <Textinput
                     label="Semester"
                     type="text"
                     placeholder="e.g. 5th Sem"

@@ -1,65 +1,42 @@
+@import "tailwindcss";
+
 /* ==========================================
    HERO
 ========================================== */
 
 .hero {
-    --hero-min-height: 100vh;
-    --hero-container-width: min(calc(100% - 3rem), 1440px);
-    --hero-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
-    --hero-gap: clamp(2rem, 5vw, 5rem);
-    --hero-padding: calc(110px + 2rem) 0 3rem;
-    --hero-visual-display: flex;
-    --hero-stats-columns: repeat(4, minmax(0, 1fr));
-    --hero-stats-width: min(100%, 720px);
-    --hero-title-size: clamp(2.25rem, 4vw, 3.75rem);
+    @apply relative z-9 flex items-start overflow-hidden;
 
-    position: relative;
-    z-index: 9;
-    min-height: var(--hero-min-height);
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    margin-top: 0;
+    min-height: auto;
+
     background:
-        linear-gradient(rgba(0, 0, 20, .75), rgba(0, 0, 20, .95)),
-        url("../../../assets/illustrations/cyber-bg.jpg");
+        linear-gradient(var(--dark),
+            var(--overlay-dark)),
+        url("../../../assets/illustrations/cyber-bg.webp");
+
     background-size: cover;
     background-position: center;
-
-    @media (max-width: 991px) {
-        --hero-min-height: auto;
-        --hero-container-width: min(calc(100% - 2rem), 720px);
-        --hero-columns: 1fr;
-        --hero-gap: 0;
-        --hero-padding: calc(110px + 1.5rem) 0 2rem;
-        --hero-visual-display: none;
-    }
-
-    @media (max-width: 767px) {
-        --hero-container-width: min(calc(100% - 2rem), 600px);
-        --hero-padding: calc(110px + 1rem) 0 2rem;
-        --hero-stats-columns: repeat(2, minmax(0, 1fr));
-        --hero-stats-width: min(100%, 320px);
-        --hero-title-size: clamp(1.9rem, 7vw, 2.5rem);
-    }
-
-    @media (max-width: 480px) {
-        --hero-container-width: min(calc(100% - 1.5rem), 420px);
-        --hero-padding: calc(80px + 1rem) 0 2rem;
-        --hero-title-size: clamp(1.7rem, 8vw, 2.25rem);
-    }
 }
 
+/* ==========================================
+   HERO GRID
+========================================== */
+
 .hero::before {
+    @apply pointer-events-none absolute inset-0;
+
     content: "";
-    position: absolute;
-    inset: 0;
+
     background-image:
-        linear-gradient(90deg, rgba(0, 234, 255, .08) 1px, transparent 1px),
-        linear-gradient(0deg, rgba(0, 234, 255, .08) 1px, transparent 1px);
-    background-size: 40px 40px;
+        linear-gradient(90deg,
+            var(--neon-grid) 1px,
+            transparent 1px),
+        linear-gradient(0deg,
+            var(--neon-grid) 1px,
+            transparent 1px);
+
+    background-size: 2.5rem 2.5rem;
     animation: heroGridMove 2s linear infinite;
-    pointer-events: none;
 }
 
 @keyframes heroGridMove {
@@ -68,7 +45,7 @@
     }
 
     to {
-        transform: translateY(40px);
+        transform: translateY(2.5rem);
     }
 }
 
@@ -77,15 +54,12 @@
 ========================================== */
 
 .hero-container {
-    position: relative;
-    z-index: 1;
-    width: var(--hero-container-width);
-    margin-inline: auto;
-    display: grid;
-    grid-template-columns: var(--hero-columns);
-    align-items: center;
-    gap: var(--hero-gap);
-    padding: var(--hero-padding);
+    @apply relative z-1 mx-auto grid w-[calc(100%-3rem)] grid-cols-1 items-center gap-8 min-[992px]:grid-cols-2 xl:w-[calc(100%-5rem)] xl:gap-20;
+
+    max-width: 90rem;
+
+    padding-top: clamp(8.5rem, 9.5vw, 10rem);
+    padding-bottom: clamp(5rem, 6vw, 5rem);
 }
 
 /* ==========================================
@@ -93,63 +67,58 @@
 ========================================== */
 
 .hero-left {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    @apply flex min-w-0 flex-col items-center text-center;
 }
 
 .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 100%;
-    margin-bottom: 1.5rem;
-    padding: .7rem 1.2rem;
-    border: 1px solid rgba(96, 165, 250, .3);
-    border-radius: 2rem;
-    background: rgba(37, 99, 235, .2);
+    @apply inline-flex max-w-full items-center justify-center rounded-full px-5 py-2.5 text-center font-semibold;
+
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+
+    border: 1px solid var(--neon-blue-soft);
+    background: var(--neon-overlay);
     color: var(--neon);
-    font-size: 1rem;
-    font-weight: 600;
-    text-align: center;
+
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
 }
 
 .hero-title {
-    max-width: 800px;
-    font-size: var(--hero-title-size);
-    font-weight: 700;
-    line-height: 1.15;
+    @apply max-w-4xl font-bold leading-tight;
+
+    font-size: clamp(1.7rem, 5vw, 3.75rem);
     text-wrap: balance;
 }
 
-.hero-title span {
-    color: var(--neon);
+.hero-title-main {
+    @apply block text-(--text);
+}
+
+.hero-title-highlight {
+    @apply flex items-center justify-center gap-3 text-(--neon);
+
     text-shadow:
-        0 0 20px var(--neon),
-        0 0 40px var(--glow);
+        0 0 1.25rem var(--neon),
+        0 0 2.5rem var(--glow);
+}
+
+.hero-title-icon {
+    @apply inline-flex shrink-0 items-center justify-center;
 }
 
 .hero-description {
-    max-width: 720px;
-    margin-top: 1rem;
+    @apply mt-4 max-w-3xl leading-relaxed;
+
     color: var(--muted);
-    font-size: clamp(.9rem, 1.2vw, 1.05rem);
-    line-height: 1.6;
+
+    font-size: clamp(0.82rem, 1.2vw, 1.05rem);
 }
 
 .hero-buttons {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    @apply mt-6 flex w-full flex-wrap items-center justify-center gap-4;
 }
 
 .hero-buttons .public-button {
-    max-width: 100%;
+    @apply max-w-full;
 }
 
 /* ==========================================
@@ -157,42 +126,9 @@
 ========================================== */
 
 .hero-stats {
-    width: var(--hero-stats-width);
-    display: grid;
-    grid-template-columns: var(--hero-stats-columns);
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
+    @apply mt-7 grid w-full grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4;
 
-.stat-card {
-    width: 100%;
-    min-width: 0;
-    padding: 1.25rem 1rem;
-    border-radius: 1rem;
-    background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, .08);
-    backdrop-filter: blur(10px);
-    transition:
-        transform .35s ease,
-        border-color .35s ease,
-        box-shadow .35s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--neon) !important;
-    box-shadow: 0 0 10px var(--glow) !important;
-}
-
-.stat-card h2 {
-    margin-bottom: .5rem;
-    color: var(--neon);
-    font-size: clamp(1.25rem, 2.5vw, 2rem);
-}
-
-.stat-card p {
-    color: var(--glow);
-    font-size: .95rem;
+    max-width: 45rem;
 }
 
 /* ==========================================
@@ -200,61 +136,58 @@
 ========================================== */
 
 .hero-right {
-    min-width: 0;
-    display: var(--hero-visual-display);
-    align-items: center;
-    justify-content: center;
+    @apply flex min-w-0 items-center justify-center max-[991px]:hidden;
+}
+
+.hero-image-wrapper {
+    @apply max-w-full;
+
+    width: min(100%, 28.75rem);
 }
 
 .hero-right img {
-    display: block;
-    width: min(100%, 460px);
-    height: auto;
-    user-select: none;
-    border-radius: 4rem;
-    box-shadow: 0 0 20px var(--glow);
+    @apply block h-auto w-full select-none rounded-[4rem];
+
+    box-shadow: 0 0 2.5rem var(--glow);
+
     transition:
-        border-radius .5s ease,
-        box-shadow .5s ease,
-        transform .5s ease;
+        transform 0.5s ease-in-out,
+        border-radius 0.5s ease-in-out,
+        box-shadow 0.5s ease-in-out;
 }
 
 .hero-right img:hover {
+    transform: scale(1.05);
     border-radius: 50%;
-    box-shadow: 0 0 50px var(--neon);
-    transform: scale(1.08);
+
+    box-shadow: 0 0 3.125rem var(--neon);
 }
 
 /* ==========================================
-   SMALL-SCREEN LAYOUT
+   RESPONSIVE BUTTONS
 ========================================== */
 
-@media (max-width: 480px) {
-    .hero-buttons {
-        width: 100%;
-        flex-direction: column;
-    }
+.hero-buttons .public-button {
+    @apply w-full sm:w-auto;
+}
 
-    .hero-buttons .public-button {
-        width: min(100%, 280px);
-    }
+/* ==========================================
+   AUTOMATIC CONTENT FIT
+========================================== */
 
-    .stat-card {
-        padding: 1rem .75rem;
-    }
+.hero-container,
+.hero-left,
+.hero-right,
+.hero-title,
+.hero-description,
+.hero-buttons,
+.hero-stats {
+    @apply max-w-full;
+}
 
-    .stat-card h2 {
-        font-size: 1.25rem;
-    }
-
-    .stat-card p {
-        font-size: .8rem;
-    }
-
-    .hero-description {
-        font-size: .82rem;
-        line-height: 1.5;
-    }
+.hero-title,
+.hero-description {
+    overflow-wrap: anywhere;
 }
 
 /* ==========================================
@@ -262,6 +195,7 @@
 ========================================== */
 
 @media (prefers-reduced-motion: reduce) {
+
     .hero::before,
     .hero-right img {
         animation: none;

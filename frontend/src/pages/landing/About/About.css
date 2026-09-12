@@ -1,115 +1,59 @@
+@import "tailwindcss";
 /* ==========================================
    ABOUT SECTION
 ========================================== */
 
 .about-page {
-    --about-content-width: min(100%, 1400px);
-    --about-layout-columns: minmax(320px, .9fr) minmax(0, 1.1fr);
-    --about-gap: clamp(2rem, 5vw, 5rem);
-    --about-image-width: min(100%, 440px);
-    --about-value-columns: repeat(4, minmax(0, 1fr));
-    --about-value-gap: clamp(1rem, 2vw, 1.5rem);
-    --about-heading-size: clamp(1.8rem, 3vw, 2.5rem);
-    --about-body-size: clamp(.9rem, 1.2vw, 1rem);
+    @apply w-full rounded-(--radius) bg-transparent p-[clamp(1rem,2vw,1.5rem)] backdrop-blur-[0.3125rem] motion-reduce:animate-none;
 
-    width: 100%;
-    padding: clamp(1rem, 2vw, 1.5rem);
-    background: transparent;
-    backdrop-filter: blur(5px);
-    border-radius: 1rem;
     animation: blueNeon 3s linear infinite;
-    transition: .3s;
+    transition: all 0.3s ease;
+}
 
-    @media (max-width: 991px) {
-        --about-layout-columns: 1fr;
-        --about-gap: 2rem;
-        --about-image-width: min(100%, 360px);
-        --about-value-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    @media (max-width: 767px) {
-        --about-gap: 1.5rem;
-        --about-value-gap: 1rem;
-        --about-heading-size: clamp(1.5rem, 6vw, 2rem);
-    }
-
-    @media (max-width: 439px) {
-        --about-gap: 1.25rem;
-        --about-value-columns: 1fr;
-        --about-value-gap: .75rem;
-        --about-heading-size: 1.35rem;
-    }
+.about-container {
+    @apply mx-auto grid w-full grid-cols-1 items-center gap-[clamp(1.25rem,5vw,5rem)] lg:grid-cols-2;
 }
 
 /* ==========================================
    MAIN CONTENT
 ========================================== */
 
-.about-container {
-    width: min(100%, 1400px);
-    margin-inline: auto;
-    display: grid;
-    grid-template-columns: var(--about-layout-columns);
-    align-items: center;
-    gap: var(--about-gap);
-}
-
 .about-image {
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @apply flex min-w-0 items-center justify-center max-lg:hidden;
 }
 
 .about-image img {
-    display: block;
-    width: var(--about-image-width);
-    height: auto;
-    border-radius: 3rem;
-    box-shadow: 0 0 10px var(--glow);
-    transition:
-        transform .4s ease,
-        border-radius .4s ease,
-        box-shadow .4s ease;
+    @apply block h-auto w-full max-w-110 rounded-[3rem] shadow-[0_0_0.625rem_var(--glow)] transition-[transform,border-radius,box-shadow] duration-400 ease-in-out motion-reduce:transition-none;
+
+    width: min(100%, 27.5rem);
 }
 
 .about-image img:hover {
-    transform: scale(1.05);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--neon);
+    @apply scale-105 rounded-full shadow-[0_0_0.625rem_var(--neon)];
 }
 
 .about-content {
-    min-width: 0;
+    @apply min-w-0 w-full max-w-full max-md:flex max-md:flex-col max-md:items-center;
 }
 
 .about-badge {
-    display: inline-flex;
-    align-items: center;
-    max-width: 100%;
-    padding: .7rem 1.2rem;
-    border-radius: 3rem;
-    background: rgba(37, 99, 235, .15);
-    border: 1px solid rgba(37, 99, 235, .3);
+    @apply mb-[clamp(1rem,2vw,1.3rem)] inline-flex max-w-full items-center rounded-full px-[clamp(1rem,2vw,1.2rem)] py-[clamp(0.6rem,1.5vw,0.7rem)] text-[clamp(0.85rem,1.2vw,1rem)] font-semibold;
+
+    background: var(--neon-overlay);
+    border: 0.0625rem solid var(--neon-blue-soft);
     color: var(--neon);
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1.3rem;
 }
 
 .about-content h2 {
-    font-size: var(--about-heading-size);
-    line-height: 1.3;
-    margin-bottom: 1.2rem;
+    @apply mb-[clamp(1rem,2vw,1.2rem)] leading-[1.3] text-[clamp(1.35rem,3vw,2.5rem)];
+
     text-wrap: balance;
 }
 
 .about-content > p {
-    max-width: 760px;
+    @apply mb-[clamp(1.5rem,3vw,2rem)] max-w-190 leading-[1.6] text-[clamp(0.82rem,1.2vw,1rem)] max-md:text-center;
+
     color: var(--muted);
-    font-size: var(--about-body-size);
-    line-height: 1.6;
-    margin-bottom: 2rem;
 }
 
 /* ==========================================
@@ -118,43 +62,36 @@
 
 .mission,
 .vision {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    border-radius: 1rem;
+    @apply mb-4 flex items-start gap-4 rounded-2xl p-[clamp(1rem,2vw,1.2rem)] transition-[transform,border-color,box-shadow] duration-300 ease-in-out max-md:w-full max-md:flex-col max-md:items-center max-md:text-center motion-reduce:transition-none;
+
     background: var(--surface);
-    border: 1px solid rgba(255, 255, 255, .08);
-    transition:
-        transform .3s ease,
-        border-color .3s ease,
-        box-shadow .3s ease;
+    border: 0.0625rem solid var(--neon-grid);
 }
 
 .mission:hover,
 .vision:hover {
-    transform: translateY(-6px);
+    @apply -translate-y-1.5 shadow-[0_0_0.625rem_var(--neon)];
+
     border-color: var(--primary);
-    box-shadow: 0 0 10px var(--neon);
 }
 
 .mission svg,
 .vision svg {
-    flex-shrink: 0;
-    font-size: 1.5rem;
+    @apply shrink-0 text-[clamp(1.35rem,2vw,1.5rem)];
+
     color: var(--primary);
 }
 
 .mission h3,
 .vision h3 {
-    margin-bottom: .5rem;
+    @apply mb-2;
 }
 
 .mission p,
 .vision p {
+    @apply text-[clamp(0.82rem,1.2vw,1rem)] leading-[1.7];
+
     color: var(--muted);
-    line-height: 1.7;
 }
 
 /* ==========================================
@@ -162,158 +99,75 @@
 ========================================== */
 
 .values {
-    width: min(100%, 1400px);
-    margin: clamp(2rem, 4vw, 3rem) auto 0;
-    display: grid;
-    grid-template-columns: var(--about-value-columns);
-    gap: var(--about-value-gap);
+    @apply mx-auto mt-[clamp(2rem,4vw,3rem)] grid w-full max-w-350 grid-cols-1 gap-[clamp(0.75rem,2vw,1.5rem)] sm:grid-cols-2 lg:grid-cols-4;
 }
 
 .value-card {
-    min-width: 0;
-    height: 100%;
-    text-align: center;
-    background: var(--surface) !important;
-    border: 1px solid rgba(255, 255, 255, .08);
-    transition:
-        transform .35s ease,
-        border-color .35s ease,
-        box-shadow .35s ease;
+    @apply h-full min-w-0 p-[clamp(1rem,2vw,1.1rem)] text-center transition-[transform,border-color,box-shadow] duration-350 ease-in-out motion-reduce:transition-none;
+
+    background: var(--surface);
+    border: 0.0625rem solid var(--neon-grid);
 }
 
 .value-card:hover {
-    transform: translateY(-8px);
+    @apply -translate-y-2 shadow-[0_0_1.25rem_var(--neon)];
+
     border-color: var(--neon);
-    box-shadow: 0 0 20px var(--neon) !important;
 }
 
 .value-card svg {
-    margin-bottom: 1.1rem;
+    @apply mb-[clamp(0.75rem,1.5vw,1.1rem)] text-[clamp(1.75rem,3vw,2rem)] transition-[transform,filter] duration-300 ease-in-out motion-reduce:transition-none;
+
     color: var(--golden);
-    font-size: 2rem;
-    transition: transform .3s ease, filter .3s ease;
 }
 
 .value-card:hover svg {
-    filter: drop-shadow(0 0 10px var(--golden));
-    transform: scale(1.1);
+    @apply scale-110;
+
+    filter: drop-shadow(0 0 0.625rem var(--golden));
 }
 
-.value-card h3 {
-    margin-bottom: .8rem;
-    font-size: 1.2rem;
+.value-card .title {
+    @apply mb-[clamp(0.6rem,1.5vw,0.8rem)] text-[clamp(1rem,1.5vw,1.2rem)];
 }
 
-.value-card p {
+.value-card .description {
+    @apply text-[clamp(0.82rem,1.2vw,1rem)] leading-normal;
+
     color: var(--muted);
-    line-height: 1.5;
 }
 
 /* ==========================================
-   SMALL SCREENS
+   RESPONSIVE CONTENT
 ========================================== */
 
-@media (max-width: 991px) {
-    .about-image {
-        display: none;
-    }
+.about-container,
+.about-image,
+.about-content,
+.about-content > p,
+.mission,
+.vision,
+.values,
+.value-card {
+    @apply max-w-full;
 }
 
-@media (max-width: 767px) {
-    .about-container {
-        text-align: center;
-    }
-
-    .about-image img {
-        width: min(100%, 360px);
-    }
-
-    .about-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .about-content > p {
-        margin-bottom: 1.5rem;
-    }
-
-    .mission,
-    .vision {
-        width: 100%;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .mission svg,
-    .vision svg {
-        font-size: 1.35rem;
-    }
-
-    .value-card h3 {
-        font-size: 1.05rem;
-    }
-}
-
-@media (max-width: 439px) {
-    .about-page {
-        padding: 1rem;
-    }
-
-    .about-image {
-        display: none;
-    }
-
-    .about-badge {
-        padding: .6rem 1rem;
-        font-size: .85rem;
-    }
-
-    .about-content > p {
-        font-size: .82rem;
-    }
-
-    .mission,
-    .vision {
-        padding: 1rem;
-    }
-
-    .mission p,
-    .vision p {
-        font-size: .82rem;
-    }
-
-    .value-card {
-        padding: 1.1rem;
-    }
-
-    .value-card svg {
-        margin-bottom: .8rem;
-        font-size: 1.75rem;
-    }
-
-    .value-card h3 {
-        font-size: 1rem;
-    }
-
-    .value-card p {
-        font-size: .82rem;
-    }
+.about-content > p,
+.mission p,
+.vision p,
+.value-card p {
+    overflow-wrap: anywhere;
 }
 
 /* ==========================================
    ACCESSIBILITY
 ========================================== */
 
-@media (prefers-reduced-motion: reduce) {
-    .about-page,
-    .about-image img,
-    .mission,
-    .vision,
-    .value-card,
-    .value-card svg {
-        animation: none;
-        transition: none;
-    }
+.about-page,
+.about-image img,
+.mission,
+.vision,
+.value-card,
+.value-card svg {
+    @apply motion-reduce:animate-none motion-reduce:transition-none;
 }

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Input from "../../../../../../components/ui/Input";
+import Textinput from "../../../../../../components/ui/Form/component/Textinput";
 
 function AddressDetails({
     formData,
@@ -19,7 +19,7 @@ function AddressDetails({
 
             <div id="form-grid">
 
-                <Input
+                <Textinput
                     label="Current Address"
                     type="text"
                     placeholder="Enter current address"
@@ -47,7 +47,7 @@ function AddressDetails({
                     />
                 </motion.div>
 
-                <Input
+                <Textinput
                     label="Pincode"
                     type="text"
                     placeholder="Enter 6 digit pincode"

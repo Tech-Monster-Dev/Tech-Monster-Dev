@@ -71,11 +71,6 @@ import SupportInbox from '../features/admin/support';
 import InternshipsForm from '../features/admin/internships/components/InternshipsForm';
 import Notice from '../features/admin/notices';
 
-
-
-
-
-
 function AppRoutes() {
     return (
         <>

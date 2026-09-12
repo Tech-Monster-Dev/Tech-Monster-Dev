@@ -11,6 +11,7 @@ export default function NoticeDetailed({
     onClose,
     onEdit,
 }) {
+    
     useModalScrollLock(open);
 
     if (!notice) return null;

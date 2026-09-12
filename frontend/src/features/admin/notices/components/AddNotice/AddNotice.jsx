@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import Button from "../../../../../components/ui/Button";
-import Input from "../../../../../components/ui/Input";
-import Textarea from "../../../../../components/ui/TextArea";
+import Textinput from "../../../../../components/ui/Form/component/Textinput";
+import TextArea from "../../../../../components/ui/Form/component/TextArea";
 
 import "./AddNotice.css";
 
@@ -93,7 +93,7 @@ export default function AddNotice({ editNotice = null, onSaved }) {
 
     return (
         <form className="admin-notice-form" onSubmit={handleSubmit}>
-            <Input
+            <Textinput
                 label="Short Title"
                 type="text"
                 name="shortTitle"
@@ -103,7 +103,7 @@ export default function AddNotice({ editNotice = null, onSaved }) {
                 required
             />
 
-            <Input
+            <Textinput
                 label="Notice Subject"
                 type="text"
                 name="subject"
@@ -113,7 +113,7 @@ export default function AddNotice({ editNotice = null, onSaved }) {
                 required
             />
 
-            <Textarea
+            <TextArea
                 label="Notice Description"
                 name="description"
                 value={formData.description}

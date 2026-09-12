@@ -8,13 +8,13 @@ function SectionHeader({
 
     return (
 
-        <div id="section-header">
+        <div className="section-header">
 
             <span>{badge}</span>
 
-            <h2>{title}</h2>
+            {title && <h2>{title}</h2>}
 
-            <p>{description}</p>
+            {description && <p>{description}</p>}
 
         </div>
 

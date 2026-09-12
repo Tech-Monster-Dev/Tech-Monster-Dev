@@ -1,6 +1,6 @@
-import "./Input.css";
+import "./TextInput.css";
 
-function Input({
+function TextInput({
     label,
     type = "text",
     name,
@@ -9,6 +9,7 @@ function Input({
     onChange,
     error,
     required,
+    className,
     maxLength,
     ...props
 }) {
@@ -16,15 +17,15 @@ function Input({
 
     return (
 
-        <div id="input-group">
+        <div className="input-group">
             {label && (
-                <label id="input-label" htmlFor={name}>
+                <label className="input-label" htmlFor={name}>
                     {label}
-                    <span id={value?.trim() ? 'labelSpanGreen' : 'labelSpanRed'}>{required && "*"}</span>
+                    <span className={value?.trim() ? 'labelSpanGreen' : 'labelSpanRed'}>{required && "*"}</span>
                 </label>
             )}
 
-            <div id="input-wrapper">
+            <div className="input-wrapper">
 
                 <input
                     id={name}
@@ -33,15 +34,15 @@ function Input({
                     value={value}
                     placeholder={placeholder}
                     onChange={onChange}
-                    className={error ? "inputError" : ""}
+                    className={`input ${error ? "inputError" : ""} ${className}`.trim()}
                     maxLength={maxLength}
                     {...props}
                 />
             </div>
 
-            {error && <small id="errorText">{error} </small> }
+            {error && <small className="errorText">{error} </small> }
         </div>
     );
 }
 
-export default Input;
+export default TextInput;

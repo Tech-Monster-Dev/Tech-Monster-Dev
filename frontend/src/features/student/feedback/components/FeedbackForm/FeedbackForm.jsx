@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import Input from "../../../../../components/ui/Input";
-import Select from "../../../../../components/ui/Select";
-import TextArea from "../../../../../components/ui/TextArea";
+import Textinput from "../../../../../components/ui/Form/component/Textinput";
+import Select from "../../../../../components/ui/Form/component/Select";
+import TextArea from "../../../../../components/ui/Form/component/TextArea";
 import Button from "../../../../../components/ui/Button";
 import FeedbackRating from "../FeedbackRating";
 import { submitFeedback } from "../../../../../services/api/feedback.service";
@@ -124,7 +124,7 @@ export default function FeedbackForm({
                 />
             )}
 
-            <Input
+            <Textinput
                 label="Subject"
                 name="subject"
                 value={form.subject}

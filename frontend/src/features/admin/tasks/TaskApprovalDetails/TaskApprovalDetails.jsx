@@ -290,6 +290,7 @@ export default function TaskApprovalDetails() {
                 </div>
 
                 <textarea
+                    className="taskapprovalDetails-textarea"
 
                     placeholder="Admin Comment..."
 

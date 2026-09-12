@@ -1,48 +1,45 @@
-.custom-loader {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 18px;
-    padding: 40px 20px;
-    box-sizing: border-box;
-}
+@import "tailwindcss";
 
+/* =========================================
+   CUSTOM LOADER
+========================================= */
+
+.custom-loader {
+    @apply flex h-full w-full flex-col items-center justify-center box-border;
+    gap: clamp(.75rem, 2vw, 1.125rem);
+    padding-left: clamp(.75rem, 4vw, 1.25rem);
+    padding-right: clamp(.75rem, 4vw, 1.25rem);
+    padding-bottom: clamp(1.5rem, 5vw, 2.5rem);
+    padding-top: clamp(1.5rem, 5vw, 2.5rem);
+}
 
 /* =========================================
    OUTER CIRCLE
 ========================================= */
 
 .loader-circle {
-    position: relative;
-    border-radius: 50%;
-    border: 5px solid transparent;
+    @apply relative shrink-0 rounded-full border-solid border-transparent;
+
+    border-width: clamp(.1875rem, 1vw, .3125rem);
     border-bottom-color: var(--neon);
     border-top-color: var(--neon);
-    animation: loaderRotate 0.9s linear infinite;
-    box-sizing: border-box;
-    flex-shrink: 0;
+
+    animation: loaderRotate .9s linear infinite;
 }
-
-
 
 /* =========================================
    MESSAGE
 ========================================= */
 
 .loader-message {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--muted);
-    text-shadow: 0 0 10px var(--neon);
-    text-align: center;
-    letter-spacing: 0.2px;
+    @apply m-0 text-center font-medium text-(--muted) tracking-[.0125rem];
+
+    font-size: clamp(.8rem, 1.5vw, 1rem);
+
+    text-shadow: 0 0 .625rem var(--neon);
+
     animation: messageFade 1.5s ease-in-out infinite;
 }
-
 
 /* =========================================
    ROTATION
@@ -58,16 +55,16 @@
     }
 }
 
-
 /* =========================================
    INNER PULSE
 ========================================= */
 
 @keyframes loaderPulse {
+
     0%,
     100% {
-        transform: translate(-50%, -50%) scale(0.7);
-        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(.7);
+        opacity: .5;
     }
 
     50% {
@@ -76,15 +73,15 @@
     }
 }
 
-
 /* =========================================
    MESSAGE ANIMATION
 ========================================= */
 
 @keyframes messageFade {
+
     0%,
     100% {
-        opacity: 0.5;
+        opacity: .5;
     }
 
     50% {
@@ -92,12 +89,12 @@
     }
 }
 
-
 /* =========================================
    REDUCED MOTION
 ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
     .loader-circle,
     .loader-circle-inner,
     .loader-message {

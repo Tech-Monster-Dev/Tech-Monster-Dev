@@ -12,10 +12,10 @@ import Hash from '../../../../features/dashboard/common/LoaderPage/Hash';
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import Input from "../../../../components/ui/Input";
-import PasswordInput from "../../../../components/ui/PasswordInput";
+import Textinput from "../../../../components/ui/Form/component/Textinput";
+import PasswordInput from "../../../../components/ui/Form/component/PasswordInput";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
-import PasswordStrength from "../../../../components/ui/PasswordStrength";
+import PasswordStrength from "../../../../components/ui/Form/component/PasswordStrength";
 
 import { signup as signupService } from "../../../../services/api/authService";
 
@@ -122,7 +122,7 @@ function Signup() {
           id="signup-form"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <Input
+          <Textinput
             label="Username"
             placeholder="@Username"
             value={username}
@@ -130,7 +130,7 @@ function Signup() {
             error={errors.username?.message}
           />
 
-          <Input
+          <Textinput
             label="Email"
             type="email"
             placeholder="Enter your email"

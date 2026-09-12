@@ -1,77 +1,46 @@
+@import "tailwindcss";
+
+/* =========================
+   BASE BUTTON
+========================= */
+
 .public-button {
-    position: relative;
+    @apply relative inline-flex items-center justify-center border border-transparent rounded-[0.625rem] text-inherit font-bold tracking-[0.0125em] cursor-pointer overflow-hidden transition-all duration-300 ease-in-out;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 1px solid transparent;
-    border-radius: 10px;
-
-    font-family: inherit;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-
-    cursor: pointer;
-
-    overflow: hidden;
-
-    transition:
-        transform 0.25s ease,
-        background 0.25s ease,
-        border-color 0.25s ease,
-        box-shadow 0.25s ease,
-        color 0.25s ease;
+    min-height: clamp(2.375rem, 5vw, 3.625rem);
+    padding-inline: clamp(0.875rem, 3vw, 2.125rem);
+    font-size: clamp(0.8125rem, 1.5vw, 1.0625rem);
 }
-
 
 /* =========================
    CONTENT
 ========================= */
 
 .public-button-content {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
+    @apply inline-flex items-center justify-center gap-2;
 }
 
 .public-button-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 18px;
-
-    transition: transform 0.25s ease;
+    @apply inline-flex items-center justify-center text-lg transition-transform duration-300 ease-in-out;
 }
-
 
 /* =========================
    SIZE
 ========================= */
 
 .public-button-small {
-    min-height: 40px;
-    padding: 0 17px;
-
-    font-size: 14px;
+    @apply min-h-10 px-4 text-sm;
 }
 
 .public-button-medium {
-    min-height: 52px;
-    padding: 0 28px;
-
-    font-size: 16px;
+    @apply min-h-12 px-6 text-base;
 }
 
 .public-button-large {
-    min-height: 58px;
-    padding: 0 34px;
+    @apply min-h-14 px-8;
 
-    font-size: 17px;
+    font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
 }
-
 
 /* =========================
    PRIMARY
@@ -79,89 +48,59 @@
 ========================= */
 
 .public-button-primary {
-    color: #ffffff;
+    @apply text-white border-none;
 
-    background: linear-gradient(
-        135deg,
-        #2563eb,
-        #0ea5e9
-    );
-
-    border-color: rgba(0, 191, 255, 0.45);
-
-    box-shadow:
-        0 6px 20px rgba(0, 102, 255, 0.20);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
 }
 
-
-/* Primary Hover */
+/* =========================
+   PRIMARY HOVER
+========================= */
 
 .public-button-primary:not(:disabled):hover {
-    background: linear-gradient(
-        135deg,
-        #3b82f6,
-        #06b6d4
-    );
+    @apply border-(--neon) -translate-y-0.5;
 
-    border-color: #00eaff;
-
-    box-shadow:
-        0 8px 28px rgba(0, 191, 255, 0.30);
-
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 0 1rem var(--glow);
 }
-
 
 /* =========================
    OUTLINE
-   No Background Button
 ========================= */
 
 .public-button-outline {
-    color: #ffffff;
-
-    background: transparent;
-
-    border-color: rgba(0, 191, 255, 0.45);
+    @apply text-(--text) bg-transparent border-cyan-400/45;
 }
 
-
-/* Outline Hover */
+/* =========================
+   OUTLINE HOVER
+========================= */
 
 .public-button-outline:not(:disabled):hover {
-    color: #00eaff;
+    @apply text-(--neon) border-(--neon) -translate-y-0.5;
 
-    background: rgba(0, 191, 255, 0.07);
-
-    border-color: #00eaff;
-
-    box-shadow:
-        0 0 18px rgba(0, 234, 255, 0.18);
-
-    transform: translateY(-2px);
+    background: var(--neon-overlay);
+    box-shadow: 0 0 1.125rem var(--neon-fog);
 }
-
 
 /* =========================
    GHOST
 ========================= */
 
 .public-button-ghost {
-    color: #00d9ff;
-
-    background: transparent;
-
-    border-color: transparent;
+    @apply text-(--neon) bg-transparent border-transparent;
 }
+
+/* =========================
+   GHOST HOVER
+========================= */
 
 .public-button-ghost:not(:disabled):hover {
-    color: #ffffff;
+    @apply text-white;
 
-    background: rgba(0, 191, 255, 0.08);
-
-    border-color: rgba(0, 191, 255, 0.25);
+    background: var(--neon-overlay);
+    border-color: var(--neon-cyan-soft);
 }
-
 
 /* =========================
    BACKGROUND PROP
@@ -176,144 +115,104 @@
 */
 
 .public-button-no-background {
-    background: transparent !important;
-    box-shadow: none;
-}
+    @apply bg-transparent shadow-none;
 
+    background: transparent !important;
+}
 
 /* =========================
    ICON HOVER
 ========================= */
 
 .public-button:not(:disabled):hover .public-button-icon {
-    transform: translateX(3px);
+    @apply translate-x-0.5;
 }
-
 
 /* Left icon should not move right */
 
-.public-button:not(:disabled):hover
-.public-button-content:has(.public-button-icon:first-child)
-.public-button-icon:first-child {
-    transform: translateX(-3px);
+.public-button:not(:disabled):hover .public-button-content:has(.public-button-icon:first-child) .public-button-icon:first-child {
+    @apply -translate-x-0.5;
 }
-
 
 /* =========================
    ACTIVE
 ========================= */
 
 .public-button:not(:disabled):active {
-    transform: translateY(0);
+    @apply translate-y-0;
 }
-
 
 /* =========================
    FOCUS
 ========================= */
 
 .public-button:focus-visible {
-    outline: 2px solid #00eaff;
-    outline-offset: 3px;
+    @apply outline-2 outline-(--neon) outline-offset-2;
 }
-
 
 /* =========================
    DISABLED
 ========================= */
 
 .public-button:disabled {
-    opacity: 0.5;
-
-    cursor: not-allowed;
-
-    box-shadow: none;
-
-    transform: none;
+    @apply opacity-50 cursor-not-allowed shadow-none translate-y-0;
 }
-
 
 /* =========================
    LOADING
 ========================= */
 
 .public-button-loading {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 9px;
+    @apply inline-flex items-center justify-center gap-2;
 }
 
 .public-button-spinner {
-    width: 17px;
-    height: 17px;
-
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: #ffffff;
-
-    border-radius: 50%;
-
-    animation: publicButtonSpin 0.7s linear infinite;
+    @apply size-4 rounded-full border-2 border-white/35 border-t-white animate-spin;
 }
-
-@keyframes publicButtonSpin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 
 /* =========================
    FULL WIDTH
 ========================= */
 
 .public-button-full-width {
-    width: 100%;
+    @apply w-full;
 }
-
 
 /* =========================
-   MOBILE
+   FLUID RESPONSIVENESS
 ========================= */
 
-@media (max-width: 768px) {
-
-    .public-button-large {
-        min-height: 54px;
-        padding: 0 26px;
-
-        font-size: 16px;
-    }
-
+.public-button-small {
+    min-height: clamp(2.25rem, 5vw, 2.5rem);
+    padding-inline: clamp(0.75rem, 3vw, 1.0625rem);
+    font-size: clamp(0.8125rem, 1.4vw, 0.875rem);
 }
 
+.public-button-medium {
+    min-height: clamp(3rem, 6vw, 3.25rem);
+    padding-inline: clamp(1rem, 4vw, 1.75rem);
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
 
-@media (max-width: 480px) {
+.public-button-large {
+    min-height: clamp(3.125rem, 7vw, 3.625rem);
+    padding-inline: clamp(1.375rem, 5vw, 2.125rem);
+    font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+}
 
-    .public-button {
-        border-radius: 9px;
-    }
+/* =========================
+   AUTOMATIC FIT
+========================= */
 
-    .public-button-small {
-        min-height: 38px;
-        padding: 0 14px;
+.public-button {
+    max-width: 100%;
+    text-wrap: balance;
+}
 
-        font-size: 13px;
-    }
+.public-button-content {
+    max-width: 100%;
+}
 
-    .public-button-medium {
-        min-height: 48px;
-        padding: 0 20px;
-
-        font-size: 15px;
-    }
-
-    .public-button-large {
-        min-height: 50px;
-        padding: 0 22px;
-
-        font-size: 15px;
-    }
-
+.public-button-content>* {
+    min-width: 0;
 }
