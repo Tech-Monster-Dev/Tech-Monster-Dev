@@ -10,8 +10,8 @@ import useAuth from "../../../../shared/hooks/useAuth";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import Input from "../../../../components/ui/Input";
-import PasswordInput from "../../../../components/ui/PasswordInput";
+import Textinput from "../../../../components/ui/Form/component/Textinput";
+import PasswordInput from "../../../../components/ui/Form/component/PasswordInput";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 import { adminLogin } from "../../../../services/api/authService";
@@ -97,7 +97,7 @@ function AdminLogin() {
 
                 <motion.form onSubmit={handleSubmit(onSubmit)} className="admin-login-form">
 
-                    <Input
+                    <Textinput
                         label="Admin Email"
                         type="email"
                         placeholder="admin@gmail.com"

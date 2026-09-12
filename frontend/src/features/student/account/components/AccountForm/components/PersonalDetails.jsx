@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Input from "../../../../../../components/ui/Input";
+import Textinput from "../../../../../../components/ui/Form/component/Textinput";
 import { ProfileImageInput } from "./index";
 
 function PersonalDetails({
@@ -28,7 +28,7 @@ function PersonalDetails({
                     onChange={handleImageChange}
                 />
 
-                <Input
+                <Textinput
                     label="First Name"
                     type="text"
                     placeholder="Enter First Name"
@@ -39,7 +39,7 @@ function PersonalDetails({
                     required
                 />
 
-                <Input
+                <Textinput
                     label="Middle Name"
                     type="text"
                     name="middleName"
@@ -47,7 +47,7 @@ function PersonalDetails({
                     onChange={handleChange}
                 />
 
-                <Input
+                <Textinput
                     label="Last Name"
                     type="text"
                     name="lastName"

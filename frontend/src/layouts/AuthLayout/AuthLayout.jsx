@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 
 import { Link } from "react-router-dom";
 
-import logo from "../../assets/logo/logo.png";
-import authImage from "../../assets/auth/auth-image.jpg";
+import logo from "../../assets/logo/logo.webp";
+import authImage from "../../assets/auth/auth-image.webp";
 
 import BackButton from "../../components/ui/Button/BackButton/BackButton";
 

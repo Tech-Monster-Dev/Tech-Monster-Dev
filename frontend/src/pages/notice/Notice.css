@@ -1,185 +1,166 @@
+@import "tailwindcss";
+
+/* ==========================================
+   PUBLIC NOTICE PAGE
+========================================== */
+
 .public-notice-page {
-    width: min(100%, 1200px);
-    min-height: 100dvh;
-    margin: 0 auto;
-    padding: clamp(1rem, 2vw, 2rem);
+    @apply mx-auto min-h-dvh w-full p-4 sm:p-5 md:p-6 lg:p-8;
+    max-width: 75rem;
 }
+
+/* ==========================================
+   BACK BUTTON
+========================================== */
 
 .public-notice-back-button {
-    margin-bottom: 2rem;
+    @apply mb-6 md:mb-8;
 }
+
+/* ==========================================
+   HEADER
+========================================== */
 
 .public-notice-header {
-    margin-bottom: 2rem;
-    text-align: center;
+    @apply mb-6 text-center md:mb-8;
 }
+
+/* ==========================================
+   EYEBROW
+========================================== */
 
 .public-notice-eyebrow {
-    margin: 0 0 0.4rem;
-    color: var(--neon);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    @apply m-0 mb-1 text-(--neon) text-[0.625rem] font-extrabold uppercase sm:text-[0.6875rem];
+    letter-spacing: 0.0625rem;
 }
+
+/* ==========================================
+   TITLE
+========================================== */
 
 .public-notice-header h1 {
-    margin: 0;
-    color: var(--text);
-    font-size: clamp(28px, 4vw, 40px);
-    line-height: 1.2;
+    @apply m-0 text-(--text) text-3xl leading-tight sm:text-4xl;
 }
+
+/* ==========================================
+   DESCRIPTION
+========================================== */
 
 .public-notice-header p {
-    max-width: 680px;
-    margin: 0.7rem auto 0;
-    color: var(--gray);
-    font-size: 14px;
-    line-height: 1.6;
+    @apply mx-auto mt-2 max-w-170 text-(--gray) text-sm leading-relaxed max-sm:text-[0.8125rem];
 }
+
+/* ==========================================
+   NOTICE LIST
+========================================== */
 
 .public-notice-list {
-    width: min(100%, 900px);
-    margin: 0 auto;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+    @apply mx-auto flex w-full max-w-225 flex-col gap-3 m-0 p-0 max-sm:gap-2;
 }
 
+/* ==========================================
+   NOTICE ITEM
+========================================== */
+
 .public-notice-list-item {
-    width: 100%;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1.2rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    color: var(--text);
-    text-align: left;
-    cursor: pointer;
-    transition:
-        transform var(--transition),
-        border-color var(--transition),
-        box-shadow var(--transition);
+    @apply relative z-10 pointer-events-auto flex w-full min-w-0 cursor-pointer items-center justify-between gap-4 rounded-(--radius) border bg-(--surface) p-4 text-left text-(--text) transition-all duration-300 ease-in-out sm:p-[1rem_1.2rem] max-sm:items-start;
+
+    border-color: var(--border);
 }
+
+/* ==========================================
+   HOVER / FOCUS
+========================================== */
 
 .public-notice-list-item:hover,
 .public-notice-list-item:focus-visible {
-    transform: translateY(-2px);
-    border-color: var(--neon);
-    box-shadow: 0 0 18px rgba(0, 234, 255, 0.16);
-    outline: none;
+    @apply -translate-y-0.5 border-(--neon) outline-none;
+
+    box-shadow: 0 0 1.125rem var(--neon-blue-faint);
 }
 
-.public-notice-list-item > span {
-    min-width: 0;
+/* ==========================================
+   NOTICE TITLE
+========================================== */
+
+.public-notice-list-item>span {
+    @apply min-w-0 text-sm font-bold sm:text-[0.9375rem];
+
     overflow-wrap: anywhere;
-    font-size: 15px;
-    font-weight: 700;
 }
 
-.public-notice-list-item > time {
-    flex-shrink: 0;
-    color: var(--gray);
-    font-size: 11px;
-    white-space: nowrap;
+/* ==========================================
+   NOTICE DATE
+========================================== */
+
+.public-notice-list-item>time {
+    @apply shrink-0 whitespace-nowrap text-[0.6875rem] text-(--gray) max-sm:text-[0.625rem];
 }
+
+/* ==========================================
+   ERROR
+========================================== */
 
 .public-notice-error {
-    width: min(100%, 700px);
-    margin: 2rem auto;
-    padding: 1.5rem;
-    border: 1px solid rgba(239, 68, 68, 0.35);
-    border-radius: var(--radius);
-    background: var(--surface);
-    text-align: center;
+    @apply mx-auto my-8 w-full max-w-175 rounded-(--radius) border bg-(--surface) p-6 text-center;
+
+    border-color: var(--danger);
 }
+
+/* ==========================================
+   ERROR TITLE
+========================================== */
 
 .public-notice-error h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: 20px;
+    @apply m-0 text-(--text) text-xl;
 }
+
+/* ==========================================
+   ERROR DESCRIPTION
+========================================== */
 
 .public-notice-error p {
-    margin: 0.6rem 0 1rem;
-    color: var(--gray);
-    font-size: 14px;
-    line-height: 1.5;
+    @apply m-0 mb-4 mt-2 text-sm leading-relaxed text-(--gray) max-sm:text-[0.8125rem];
 }
 
+/* ==========================================
+   ERROR BUTTON
+========================================== */
+
 .public-notice-error button {
-    min-height: 40px;
-    padding: 0.55rem 1rem;
-    border: 1px solid var(--neon);
-    border-radius: var(--radius);
-    background: transparent;
-    color: var(--neon);
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
+    @apply min-h-10 cursor-pointer rounded-(--radius) border bg-transparent px-4 py-2 text-(--neon) font-bold transition-all duration-300 ease-in-out;
+
+    border-color: var(--neon);
 }
 
 .public-notice-error button:hover {
-    background: rgba(0, 234, 255, 0.1);
-    box-shadow: 0 0 16px rgba(0, 234, 255, 0.16);
+    @apply bg-(--neon-overlay);
+
+    box-shadow:
+        0 0 1rem var(--neon-blue-faint);
 }
 
-@media (max-width: 767px) {
-    .public-notice-page {
-        padding: 1rem;
-    }
+/* ==========================================
+   SMALL PHONE
+========================================== */
 
-    .public-notice-back-button {
-        margin-bottom: 1.5rem;
-    }
-
-    .public-notice-header {
-        margin-bottom: 1.5rem;
-    }
-
-    .public-notice-list-item {
-        align-items: flex-start;
-        padding: 0.9rem 1rem;
-    }
+.public-notice-page {
+    @apply max-[27.5rem]:p-3;
 }
 
-@media (max-width: 439px) {
-    .public-notice-page {
-        padding: 0.75rem;
-    }
-
-    .public-notice-header h1 {
-        font-size: 28px;
-    }
-
-    .public-notice-header p {
-        font-size: 13px;
-    }
-
-    .public-notice-list {
-        gap: 0.65rem;
-    }
-
-    .public-notice-list-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.45rem;
-    }
-
-    .public-notice-list-item > time {
-        font-size: 10px;
-    }
+.public-notice-header h1 {
+    @apply max-[27.5rem]:text-2xl;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .public-notice-list-item,
-    .public-notice-error button {
-        transition: none;
-    }
+.public-notice-list-item {
+    @apply max-[27.5rem]:flex-col max-[27.5rem]:items-start max-[27.5rem]:gap-2;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.public-notice-list-item,
+.public-notice-error button {
+    @apply motion-reduce:transition-none;
 }

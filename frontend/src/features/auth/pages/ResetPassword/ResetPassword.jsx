@@ -12,9 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import PasswordInput from "../../../../components/ui/PasswordInput";
+import PasswordInput from "../../../../components/ui/Form/component/PasswordInput";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
-import PasswordStrength from "../../../../components/ui/PasswordStrength";
+import PasswordStrength from "../../../../components/ui/Form/component/PasswordStrength";
 
 import { resetPasswordSchema } from "../../../../validations/auth/resetPasswordSchema";
 import { resetPassword } from "../../../../services/api/authService";

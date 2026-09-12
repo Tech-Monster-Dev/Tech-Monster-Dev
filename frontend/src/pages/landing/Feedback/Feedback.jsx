@@ -1,6 +1,7 @@
 import "./Feedback.css";
 
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 
@@ -13,8 +14,11 @@ import Spinner from "../../../features/dashboard/common/LoaderPage/Spinner";
 import { getWebsiteFeedback } from "../../../services/api/feedback.service";
 import { socket } from "../../../services/socket/socket";
 import useFeedbackAutoScroll from "./hooks/useFeedbackAutoScroll";
+import useAuth from '../../../shared/hooks/useAuth'; 
 
 function Feedback() {
+    const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth();
     const [feedback, setFeedback] = useState([]);
     const [loading, setLoading] = useState(true);
     const cardsRef = useRef(null);
@@ -69,6 +73,20 @@ function Feedback() {
             socket.off("feedbackCreated", handleFeedbackCreated);
         };
     }, []);
+
+    const handleNavigateFeedbackPage = () => {
+        if (!isAuthenticated) {
+            navigate("/login");
+        }
+
+        if (user?.role === "student") {
+            navigate("/student/feedback");
+        } else if(user?.role === "admin") {
+            navigate("/admin/feedback");
+        } else(
+            navigate("/login")
+        )
+    }
 
     return (
         <section className="section" data-section="feedback">
@@ -144,12 +162,11 @@ function Feedback() {
 
                         <PublicButton
                             variant="outline"
+                            background={false}
                             size="medium"
                             icon={<FaArrowRight />}
                             iconPosition="right"
-                            onClick={() => {
-                                window.location.href = "/login";
-                            }}
+                            onClick={() => handleNavigateFeedbackPage()}
                         >
                             Share Your Feedback
                         </PublicButton>

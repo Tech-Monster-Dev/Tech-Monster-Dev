@@ -1,159 +1,142 @@
+@import "tailwindcss";
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
 .empty-state {
-    position: relative;
-    z-index: 9;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    @apply relative z-9 flex w-full items-center justify-center text-center;
 }
+
+/* ==========================================
+   SECTION
+========================================== */
 
 .empty-state--section {
-    min-height: 260px;
-    margin: 0.5rem 0;
-    padding: 2.5rem 1.5rem;
-    border: 1px dashed rgba(148, 163, 184, 0.35);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.025);
-    box-shadow: inset 0 0 35px rgba(0, 234, 255, 0.025);
+    @apply my-2 rounded-[1.25rem] border border-dashed border-(--border-muted) p-6 sm:p-8;
+
+    min-height: clamp(13.75rem, 25vw, 16.25rem);
+    background: var(--surface-overlay);
+    box-shadow: inset 0 0 clamp(.75rem, 3vw, 2.1875rem) var(--neon-fog);
 }
 
+/* ==========================================
+   COMPACT
+========================================== */
+
 .empty-state--compact {
-    min-height: 0;
-    padding: 1rem 0;
+    @apply min-h-0 py-4;
 }
 
 .empty-state--compact .empty-state__icon {
-    width: 46px;
-    height: 46px;
-    margin-bottom: 0.75rem;
+    @apply mb-3;
+    width: clamp(2.5rem, 8vw, 2.875rem);
+    height: clamp(2.5rem, 8vw, 2.875rem);
 }
 
 .empty-state--compact .empty-state__icon span {
-    width: 17px;
-    height: 17px;
+    width: clamp(.9375rem, 4vw, 1.0625rem);
+    height: clamp(.9375rem, 4vw, 1.0625rem);
 }
 
 .empty-state--compact .empty-state__icon span::after {
-    width: 6px;
-    height: 2px;
-    margin-top: 6px;
+    @apply rounded-full;
+    width: clamp(.3125rem, 1.5vw, .375rem);
+    height: clamp(.0625rem, .5vw, .125rem);
+    margin-top: clamp(.25rem, 1vw, .375rem);
 }
 
 .empty-state--compact h2 {
-    margin-bottom: 0.35rem;
-    font-size: 0.95rem;
+    @apply mb-1;
+
+    font-size: clamp(.85rem, 1.5vw, .95rem);
 }
 
 .empty-state--compact p {
-    max-width: 320px;
-    font-size: 0.78rem;
+    @apply max-w-xs;
+
+    font-size: clamp(.72rem, 1.2vw, .78rem);
     line-height: 1.5;
 }
 
+/* ==========================================
+   FULL PAGE
+========================================== */
+
 .empty-state--full-page {
-    min-height: calc(100vh - 16rem);
-    padding: 2rem 1.5rem;
+    @apply min-h-[calc(100svh-16rem)] px-4 py-6 sm:px-6 sm:py-8;
 }
+
+/* ==========================================
+   CONTENT
+========================================== */
 
 .empty-state__content {
-    width: min(100%, 520px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @apply flex w-full max-w-130 flex-col items-center;
 }
 
+/* ==========================================
+   ICON
+========================================== */
+
 .empty-state__icon {
-    width: 68px;
-    height: 68px;
-    margin-bottom: 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(0, 234, 255, 0.2);
-    border-radius: 50%;
-    background: rgba(0, 234, 255, 0.04);
-    box-shadow: 0 0 25px rgba(0, 234, 255, 0.06);
+    @apply mb-4 flex shrink-0 items-center justify-center rounded-full border;
+
+    width: clamp(3.625rem, 10vw, 4.25rem);
+    height: clamp(3.625rem, 10vw, 4.25rem);
+
+    border-color: var(--neon-blue-soft);
+    background: var(--neon-overlay);
+    box-shadow: 0 0 clamp(.75rem, 3vw, 1.5625rem) var(--neon-fog);
 }
 
 .empty-state__icon span {
-    width: 22px;
-    height: 22px;
-    display: block;
-    border: 2px solid var(--muted);
-    border-radius: 5px;
-    opacity: 0.8;
+    @apply block rounded-[.3125rem] border-2 border-(--muted);
+
+    width: clamp(1.125rem, 5vw, 1.375rem);
+    height: clamp(1.125rem, 5vw, 1.375rem);
+
+    opacity: .8;
 }
 
 .empty-state__icon span::after {
+    @apply mx-auto block rounded-full bg-(--muted);
+
     content: "";
-    display: block;
-    width: 8px;
-    height: 2px;
-    margin: 8px auto 0;
-    border-radius: 2px;
-    background: var(--muted);
-    opacity: 0.7;
+
+    width: clamp(.3125rem, 1.5vw, .5rem);
+    height: clamp(.0625rem, .5vw, .125rem);
+
+    margin-top: clamp(.375rem, 1vw, .5rem);
+    opacity: .7;
 }
+
+/* ==========================================
+   TITLE
+========================================== */
 
 .empty-state h2 {
-    margin: 0 0 0.6rem;
-    color: var(--gray);
-    font-size: 1.15rem;
-    font-weight: 600;
-    line-height: 1.4;
+    @apply m-0 mb-2 text-(--gray) font-semibold leading-snug;
+
+    font-size: clamp(.95rem, 2vw, 1.15rem);
 }
 
+/* ==========================================
+   DESCRIPTION
+========================================== */
+
 .empty-state p {
-    max-width: 460px;
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.9rem;
+    @apply m-0 w-full max-w-115 text-(--muted) leading-relaxed;
+
+    font-size: clamp(.78rem, 1.5vw, .9rem);
     line-height: 1.7;
-    opacity: 0.9;
+    opacity: .9;
 }
+
+/* ==========================================
+   FULL PAGE CONTENT POSITION
+========================================== */
 
 .empty-state--full-page .empty-state__content {
     transform: translateY(-2vh);
-}
-
-@media (max-width: 439px) {
-    .empty-state--section {
-        min-height: 220px;
-        padding: 1.5rem 1rem;
-    }
-
-    .empty-state--full-page {
-        min-height: 100svh;
-        padding: 1.5rem 1rem;
-    }
-
-    .empty-state__icon {
-        width: 58px;
-        height: 58px;
-        margin-bottom: 1rem;
-    }
-
-    .empty-state h2 {
-        font-size: 1rem;
-    }
-
-    .empty-state p {
-        font-size: 0.82rem;
-        line-height: 1.6;
-    }
-}
-
-@media (min-width: 440px) and (max-width: 767px) {
-    .empty-state--section {
-        min-height: 240px;
-    }
-
-    .empty-state h2 {
-        font-size: 1.05rem;
-    }
-
-    .empty-state p {
-        font-size: 0.86rem;
-    }
 }

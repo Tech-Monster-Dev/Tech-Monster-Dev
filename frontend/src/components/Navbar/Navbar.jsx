@@ -9,7 +9,7 @@ import useAuth from '../../shared/hooks/useAuth';
 
 import Systembar from "../common/navbar/SystemBar";
 
-import logo from "../../assets/logo/logo.png"
+import logo from "../../assets/logo/logo.webp"
 import PublicButton from '../ui/Button/PublicButton/PublicButton.jsx';
 
 function Navbar() {
@@ -19,6 +19,9 @@ function Navbar() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [activeLink, setActiveLink] = useState("home");
+
+    const userName = user?.username || '';
+    const capitalName = userName.toUpperCase() || userName;
 
 
     const handleSignUp = () => {
@@ -45,7 +48,7 @@ function Navbar() {
 
     const scrollToSection = (section) => {
         const target = document.querySelector(`[data-section="${section}"]`);
-        const navbar = document.querySelector(".navbar");
+        const navbar = document.querySelector("[data-navbar]");
 
         if (target) {
             const navbarHeight = navbar?.getBoundingClientRect().height ?? 0;
@@ -83,35 +86,44 @@ function Navbar() {
         return () => observer.disconnect();
     }, []);
 
+    useEffect(() => {
+        document.body.style.overflow = isOpen ? "hidden" : "";
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
 
     return (
         <>
-
             <motion.nav
-                className='navbar'
+                data-navbar
+                className='navbar-wrapper'
                 initial={{ y: -80, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6 }}
             >
-                <Systembar user='DEB' />
+                <Systembar user={capitalName} />
 
-                <div className='navbar-container'>
+                <div className='navbar'>
                     <button
                         type='button'
-                        className='nav-logo'
+                        className='navbar-logo'
                         onClick={() => scrollToSection('home')}
                         aria-label='Go to Home'
                     >
-                        <img src={logo} alt='Tech monster Logo' />
+                        <img className='navbar-logo-img' src={logo} alt='Tech monster Logo' />
 
-                        <div className='nav-logo-text'>
-                            <h2>Tech <span>Monster</span></h2>
+                        <div>
+                            <h2 className='navbar-logo-title'>Tech <span className='navbar-logo-title-accent'>Monster</span></h2>
                         </div>
                     </button>
 
-                    <div className='toggle-bar'>
+                    <div className='navbar-toggle'>
                         <button
                             type='button'
+                            className='navbar-toggle-menu-button'
                             onClick={() => setIsOpen(true)}
                             aria-label='Open navigation menu'
                         >
@@ -119,11 +131,11 @@ function Navbar() {
                         </button>
                     </div>
 
-                    <div className='nav-links'>
+                    <div className='navbar-right'>
                         {navLinks.map((link) => (
                             <button
                                 type='button'
-                                className={`nav-link ${activeLink === link.section ? 'active' : ''}`}
+                                className={`navbar-link ${activeLink === link.section ? 'active' : ''}`}
                                 key={link.id}
                                 onClick={() => scrollToSection(link.section)}
                             >
@@ -131,7 +143,7 @@ function Navbar() {
                             </button>
                         ))}
 
-                        <div className='auth-buttons'>
+                        <div className='navbar-action-buttons'>
                             <PublicButton
                                 variant='outline'
                                 background={false}
@@ -157,7 +169,7 @@ function Navbar() {
                 {isOpen && (
                     <>
                         <motion.div
-                            className='sidebar-overlay'
+                            className='navbar-sidebar-overlay'
                             onClick={() => setIsOpen(false)}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -165,17 +177,17 @@ function Navbar() {
                         />
 
                         <motion.div
-                            className='nav-sidebar'
+                            className='navbar-sidebar'
                             initial={{ x: '100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ duration: 0.35, ease: 'easeInOut' }}
                         >
-                            <div className="nav-sidebar-wrapper">
+                            <div className="flex flex-col gap-3">
 
                                 <button
                                     type='button'
-                                    className='close-btn'
+                                    className='navbar-sidebar-close-button'
                                     onClick={() => setIsOpen(false)}
                                     aria-label='Close navigation menu'
                                 >
@@ -185,7 +197,7 @@ function Navbar() {
                                 {navLinks.map((link) => (
                                     <button
                                         type='button'
-                                        className={`sidebar-link ${activeLink === link.section ? 'active' : ''}`}
+                                        className={`navbar-sidebar-link ${activeLink === link.section ? 'navbar-sidebar-link-active' : ''}`}
                                         key={link.id}
                                         onClick={() => scrollToSection(link.section)}
                                     >
@@ -194,19 +206,19 @@ function Navbar() {
                                 ))}
                             </div>
 
-                            <div className="nav-sidebar-btn">
-                                <PublicButton 
-                                    variant='primary' 
-                                    size='medium' 
+                            <div className="flex flex-col gap-3">
+                                <PublicButton
+                                    variant='primary'
+                                    size='medium'
                                     onClick={() => handleSignUp()}
                                 >
                                     Get Started
                                 </PublicButton>
-                                
+
                                 <PublicButton
-                                    variant='outline' 
-                                    background={false} 
-                                    size='medium' 
+                                    variant='outline'
+                                    background={false}
+                                    size='medium'
                                     onClick={() => handleSignIn()}
                                 >
                                     Sign In

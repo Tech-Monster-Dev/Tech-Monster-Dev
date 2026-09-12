@@ -1,223 +1,84 @@
-/* NAVBAR */
-.navbar{
-    position: fixed;
-    top: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    height: 110px;
-    width: 100%;
-    padding: 0 3rem;
-    background:rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid var(--neon);
-    box-shadow: 0 0 20px var(--glow);
-    transition: 0.3s ease;
+@import "tailwindcss";
+
+.navbar-wrapper {
+    @apply fixed top-0 z-1000 flex h-27.5 w-full flex-col items-center bg-(--surface-overlay) backdrop-blur-[15px] border-b border-(--neon) shadow-[0_0_20px_var(--glow)] transition duration-300 ease-in-out max-[439px]:h-20;
 }
 
-
-/* CONTAINER */
-.navbar-container{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.navbar {
+    @apply flex h-full w-full items-center justify-between px-12 max-[439px]:px-4;
 }
 
-
-/* LOGO */
-.nav-logo{
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
+/* Navabar Logo */
+.navbar-logo {
+    @apply flex items-center gap-6 border-0 bg-transparent p-2 px-4 text-inherit [font:inherit] cursor-pointer max-[439px]:p-0;
 }
 
-.nav-logo img{
-    width: 70px;
-    border-radius: 50%;
-    animation: blueNeon 6s linear infinite;
-    transition: all 0.3s ease;
+.navbar-logo-img {
+    @apply w-17.5 rounded-full transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-[0_0_10px_var(--neon)] max-[439px]:w-12.5;
 }
 
-.nav-logo img:hover{
-    box-shadow: 0 0 20px var(--neon);
-    transform: scale(1.2);
+.navbar-logo-title {
+    @apply text-2xl font-bold text-(--text);
 }
 
-.nav-logo-text h2{
-    color: var(--text);
-    font-size: 1.5rem;
-    font-weight: 700;
+.navbar-logo-title-accent {
+    @apply text-2xl text-(--neon) [text-shadow:0_0_12px_var(--neon)];
 }
 
-.nav-logo-text h2 span{
-    color: var(--neon);
-    font-size: 1.5rem;
+/* Navbar Toggle */
+.navbar-toggle {
+    @apply hidden max-[991px]:block;
 }
 
-.nav-links{
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin: 0;
-    padding: 0;
+.navbar-toggle-menu-button {
+    @apply text-2xl text-(--glow) border-2 p-2 rounded bg-transparent cursor-pointer hover:text-(--neon);
 }
 
-.nav-links .nav-link {
-    text-decoration: none;
-    color: var(--text);
-    border: 1px solid transparent;
-    padding: 0.7rem;
-    position: relative;
-    background: transparent;
-    font: inherit;
-    cursor: pointer;
-    transition: 0.3s ease;
+/* Navbar Right */
+.navbar-right {
+    @apply hidden items-center gap-4 m-0 p-0 min-[992px]:flex transition duration-300 ease-in-out;
 }
 
-.nav-links .nav-link::after{
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 2px;
-    width: 0;
-    background-color: var(--glow);
-    border-radius: 50%;
-    box-shadow: 0 5px 10px var(--neon);
-    transition: width 0.5s ease-in;
-}
-.nav-links .nav-link:hover,
-.nav-links .nav-link.active{
-    color: var(--neon);
-    text-shadow: 0 0 12px var(--neon);
+.navbar-link {
+    @apply relative border border-transparent bg-transparent p-2.5 text-(--text) [font:inherit] cursor-pointer transition duration-300 ease-in-out hover:text-(--neon) hover:[text-shadow:0_0_12px_var(--neon)];
 }
 
-.nav-links .nav-link:hover::after,
-.nav-links .nav-link.active::after {
-    width: 100%;
-}
-.auth-buttons{
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.navbar-link::after {
+    @apply content-[""] absolute bottom-0 left-0 right-0 h-[0.15rem] w-0 bg-(--glow) rounded-[50%] transition-all duration-300 ease-in-out shadow-[0_5px_12px_var(--neon)];
 }
 
-.toggle-bar{
-    display: none;
-}
-.toggle-bar button{
-    font-size: 1.5rem;
-    margin: 0;
-    padding: 0.7rem 0.7rem 0.3rem 0.7rem;
-    border: 1px solid var(--neon);
-    color: var(--glow);
-    border-radius: 0.3rem;
-    background-color: var(--surface);
-}
-.toggle-bar button:hover,
-.toggle-bar button.active{
-    color: var(--dark);
-    text-shadow: var(--neon);
+.active {
+    @apply text-(--neon) [text-shadow:0_0_12px_var(--neon)];
 }
 
-
-/* After toggle */
-.sidebar-overlay {
-    z-index: 1001;
-    position: fixed;
-    inset: 0;
-    background-color: rgba(2, 6, 23, 0.62);
-    backdrop-filter: blur(5px);
+.navbar-link:hover::after,
+.navbar-link.active::after {
+    @apply w-full;
 }
 
-.nav-sidebar {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 75%;
-    max-width: 350px;
-    height: 100vh;
-    background-color: var(--dark);
-    z-index: 999999;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1.2rem;
-    gap: 0.8rem;
-    box-shadow: -8px 0 15px var(--neon);
+.navbar-action-buttons {
+    @apply flex items-center gap-2;
 }
 
-.nav-sidebar-wrapper{
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+/* navbar sidebar overlay */
+.navbar-sidebar-overlay {
+    @apply fixed inset-0 z-1001 bg-(--overlay-dark) backdrop-blur-[5px];
 }
 
-.nav-sidebar .sidebar-link, .nav-sidebar .signup-btn {
-    text-decoration: none;
-    color: var(--neon);
-    padding: 0.9rem 0.8rem;
-    border-radius: 6px;
-    background-color: var(--surface);
-    transition: 0.3s ease;
+.navbar-sidebar {
+    @apply fixed inset-y-0 right-0 z-999999 flex h-dvh min-h-dvh w-3/4 max-w-87.5 flex-col justify-between gap-3 overflow-y-auto bg-(--dark) shadow-[-0.5rem_0_0.9375rem_var(--neon)];
+
+    padding: clamp(1rem, 2vw, 1.3rem);
 }
 
-.nav-sidebar .sidebar-link:hover,
-.nav-sidebar .sidebar-link.active,
-.nav-sidebar .signup-btn:hover {
-    color: var(--neon);
-    background-color: var(--glow);
-    text-shadow: 0 0 12px var(--neon);
+.navbar-sidebar-close-button {
+    @apply self-end mr-4 mb-1 rounded-[0.3rem] border border-(--neon) bg-(--surface) p-2 text-[1.5rem] text-(--glow) cursor-pointer transition-all duration-300 ease-in-out;
 }
 
-.close-btn {
-    align-self: flex-end;
-    font-size: 1.5rem;
-    background-color: var(--surface);
-    border: 1px solid var(--neon);
-    border-radius: 0.3rem;
-    color: var(--glow);
-    padding: 0.5rem 0.5rem 0.2rem 0.5rem;
-    margin-right: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
+.navbar-sidebar-link {
+    @apply border-0 p-[0.9rem_0.8rem] rounded-md bg-(--surface) text-(--neon) [font:inherit] cursor-pointer transition duration-300 ease-in-out hover:bg-(--glow) hover:text-(--neon) hover:[text-shadow:0_0_12px_var(--neon)];
 }
 
-.nav-sidebar-btn {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-
-/* RESPONSIVE */
-/* Mobile (Portrait + Small Phones) */
-@media (max-width: 439px) {
-    .navbar{
-        height: 80px;
-        padding: 0 1rem;
-    }
-    .nav-logo img{
-        width: 50px;
-    }
-}
-
-/* Tablet */
-@media(max-width: 991px) {
-    .nav-links{
-        display: none;
-    }
-    .toggle-bar{
-        display: block;
-    }
+.navbar-sidebar-link-active {
+    @apply bg-(--glow) text-(--neon) text-[1rem] font-bold [text-shadow:0_0_12px_var(--neon)];
 }

@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import Input from "../../../../components/ui/Input";
+import Textinput from "../../../../components/ui/Form/component/Textinput";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 import { forgotPasswordSchema } from "../../../../validations/auth/forgotPasswordSchema";
@@ -112,7 +112,7 @@ function ForgotPassword() {
 
                 >
 
-                    <Input
+                    <Textinput
 
                         label="Email"
 

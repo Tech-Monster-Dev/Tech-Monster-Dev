@@ -1,28 +1,41 @@
-import "./Textarea.css";
+import "./TextArea.css";
 
-function Textarea({
+function TextArea({
   label,
   name,
-  value,
+  value = "",
   placeholder,
   onChange,
   rows = 5,
   error,
+  className = "",
   ...props
 }) {
   return (
     <div className="textarea-group">
 
       {label && (
-        <label className="textarea-label" htmlFor={name}>
+        <label
+          className="textarea-label"
+          htmlFor={name}
+        >
           {label}
-          <span className={value.trim() ? "labelSpanGreen" : "labelSpanRed"}>*</span>
+
+          <span
+            className={
+              value?.trim()
+                ? "labelSpanGreen"
+                : "labelSpanRed"
+            }
+          >
+            *
+          </span>
         </label>
       )}
 
       <textarea
         id={name}
-        className={`textarea ${error ? "inputError" : ""}`}
+        className={`textarea ${className} ${error ? "inputError" : ""}`.trim()}
         name={name}
         value={value}
         placeholder={placeholder}
@@ -41,4 +54,4 @@ function Textarea({
   );
 }
 
-export default Textarea;
+export default TextArea;

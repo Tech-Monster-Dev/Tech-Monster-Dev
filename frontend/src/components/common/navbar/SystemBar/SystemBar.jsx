@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./SystemBar.css";
 
-const SystemBar = ({user = "DEB"}) => {
+const SystemBar = ({user = ''}) => {
 
   const [dateTime, setDateTime] = useState(new Date());
 

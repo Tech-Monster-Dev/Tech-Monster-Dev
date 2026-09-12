@@ -6,7 +6,7 @@ import {
     FaLock
 } from "react-icons/fa";
 
-import Input from "../Input";
+import Textinput from "../Textinput";
 
 import "./PasswordInput.css";
 
@@ -58,7 +58,7 @@ function PasswordInput({
 
         <div className="password-group">
 
-            <Input
+            <Textinput
 
                 label={label}
 

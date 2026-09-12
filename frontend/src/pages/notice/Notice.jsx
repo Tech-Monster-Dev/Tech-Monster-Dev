@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import "./Notice.css";
 
+import { useCallback, useEffect, useState } from "react";
 import BackButton from "../../components/ui/Button/BackButton";
 import EmptyState from "../../components/ui/EmptyState";
 import Spinner from "../../features/dashboard/common/LoaderPage/Spinner";
@@ -7,13 +8,16 @@ import NoticeDetailed from "../../features/admin/notices/components/NoticeDetail
 import { getNotices } from "../../services/api/notice.service";
 import { socket } from "../../services/socket/socket";
 
-import "./Notice.css";
 
 export default function Notice() {
     const [notices, setNotices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [selectedNotice, setSelectedNotice] = useState(null);
+
+    const handleNoticeSelect = (notice) => {
+        setSelectedNotice(notice);
+    };
 
     const fetchNotices = useCallback(async () => {
         setLoading(true);
@@ -121,9 +125,7 @@ export default function Notice() {
                             <button
                                 type="button"
                                 className="public-notice-list-item"
-                                onClick={() =>
-                                    setSelectedNotice(notice)
-                                }
+                                onClick={() => handleNoticeSelect(notice)}
                             >
                                 <span>{notice.shortTitle}</span>
                                 <time

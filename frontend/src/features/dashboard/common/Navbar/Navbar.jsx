@@ -13,7 +13,7 @@ import {
     FiMessageSquare,
     FiMenu,
 } from "react-icons/fi";
-import logo from "../../../../assets/logo/logo.png";
+import logo from "../../../../assets/logo/logo.webp";
 import SystemBar from '../../../../components/common/navbar/SystemBar';
 import SearchBar from '../../../../components/ui/SearchBar';
 import Loader from "../../../../components/ui/Loader";

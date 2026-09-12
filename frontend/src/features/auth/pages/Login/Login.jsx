@@ -8,8 +8,8 @@ import Hash from "../../../dashboard/common/LoaderPage/Hash";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import Input from "../../../../components/ui/Input";
-import PasswordInput from "../../../../components/ui/PasswordInput";
+import Textinput from "../../../../components/ui/Form/component/Textinput";
+import PasswordInput from "../../../../components/ui/Form/component/PasswordInput";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
 
 import { FaEnvelope } from "react-icons/fa";
@@ -204,7 +204,7 @@ function Login() {
           animate={{ opacity: 1 }}
         >
 
-          <Input
+          <Textinput
             label="Email"
             type="email"
             name="email"

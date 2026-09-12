@@ -2,7 +2,7 @@ import "./Notice.css";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiArrowRight, FiBell } from "react-icons/fi";
+import { FiArrowRight } from "react-icons/fi";
 
 import SectionHeader from "../../../components/ui/SectionHeader";
 import PublicButton from "../../../components/ui/Button/PublicButton/PublicButton";
@@ -27,6 +27,7 @@ function Notice() {
         const loadNotices = async () => {
             try {
                 const response = await getNotices();
+                console.log("NOTICES:", response);
 
                 if (mounted) {
                     setNotices(
@@ -117,70 +118,73 @@ function Notice() {
     }, []);
 
     return (
-        <section className="section">
-            <div className="landing-notice-page">
-                <SectionHeader
-                    badge="NOTICE"
-                    title="Latest Notices"
-                    description="Stay updated with the latest announcements from Tech Monster."
-                />
+        <>
+            <section className="section">
+                <div className="landing-notice-page">
+                    <SectionHeader
+                        badge="NOTICE"
+                        description="Stay updated with the latest announcements from Tech Monster."
+                    />
 
-                <div className="landing-notice-content">
-                    {loading && (
-                        <Spinner
-                            message="Loading notices..."
-                            size={60}
-                        />
-                    )}
+                    <div className="landing-notice-content">
+                        {loading && (
+                            <Spinner
+                                message="Loading notices..."
+                                size={60}
+                            />
+                        )}
 
-                    {!loading && notices.length === 0 && (
-                        <EmptyState
-                            paragraph="No notices available yet."
-                        />
-                    )}
+                        {!loading && notices.length === 0 && (
+                            <EmptyState
+                                paragraph="No notices available yet."
+                            />
+                        )}
 
-                    {!loading && notices.length > 0 && (
-                        <ul className="landing-notice-list">
-                            {notices.map((notice) => (
-                                <li key={notice._id}>
-                                    <button
-                                        type="button"
-                                        className="landing-notice-item"
-                                        onClick={() => setSelectedNotice(notice)}
-                                    >
-                                        <span className="landing-notice-icon">
-                                            <FiBell />
-                                        </span>
+                        {!loading && notices.length > 0 && (
+                            <ul className="landing-notice-list">
+                                {notices.map((notice) => (
+                                    <li key={notice._id} className="landing-notice-list-item">
+                                        <button
+                                            type="button"
+                                            className="landing-notice-item"
+                                            onClick={() => setSelectedNotice(notice)}
+                                        >
+                                            <span className="landing-notice-arrow">
+                                                <FiArrowRight />
+                                            </span>
 
-                                        <span className="landing-notice-title">
-                                            {notice.shortTitle}
-                                        </span>
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                                            <span className="landing-notice-title">
+                                                {notice.shortTitle}
+                                            </span>
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
 
-                    <div className="landing-notice-cta">
-                        <PublicButton
-                            variant="outline"
-                            size="medium"
-                            icon={<FiArrowRight />}
-                            iconPosition="right"
-                            onClick={() => navigate("/notice")}
-                        >
-                            All Notice
-                        </PublicButton>
+                        <div className="landing-notice-cta">
+                            <PublicButton
+                                variant="outline"
+                                background={false}
+                                size="medium"
+                                icon={<FiArrowRight />}
+                                iconPosition="right"
+                                onClick={() => navigate("/notice")}
+                            >
+                                All Notice
+                            </PublicButton>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </section>
+            
             <NoticeDetailed
                 open={Boolean(selectedNotice)}
                 notice={selectedNotice}
                 onClose={() => setSelectedNotice(null)}
             />
-        </section>
+        </>
     );
 }
 

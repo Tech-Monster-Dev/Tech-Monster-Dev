@@ -7,7 +7,7 @@ import useAuth from "../../../../shared/hooks/useAuth";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import OTPInput from "../../../../components/ui/OTPInput";
+import OTPInput from "../../../../components/ui/Form/component/OTPInput";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
 import Hash from '../../../../features/dashboard/common/LoaderPage/Hash';
 
