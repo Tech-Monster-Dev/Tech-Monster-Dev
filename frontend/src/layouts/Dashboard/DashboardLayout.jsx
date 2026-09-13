@@ -71,15 +71,11 @@ function DashboardLayout({ role = "student" }) {
         loadTodayActiveTime();
     }, [role, user]);
 
-
     // ==========================================
     // GET ACTIVE / ENROLLED LEARNING
     // ==========================================
-
     useEffect(() => {
-
         const loadActiveLearning = () => {
-
             try {
                 const storedLearning = localStorage.getItem("activeLearning");
 
@@ -91,7 +87,6 @@ function DashboardLayout({ role = "student" }) {
                 }
 
             } catch (error) {
-
                 console.error(
                     "Failed to parse activeLearning:",
                     error
@@ -100,7 +95,6 @@ function DashboardLayout({ role = "student" }) {
                 setEnrolledCourse(null);
             }
         };
-
 
         loadActiveLearning();
 
@@ -113,9 +107,9 @@ function DashboardLayout({ role = "student" }) {
     }, []);
 
 
-// ==========================================
-// DAILY TASK ACCESS Locked or Unlocked
-// ==========================================
+    // ==========================================
+    // DAILY TASK ACCESS Locked or Unlocked
+    // ==========================================
 
     useEffect(() => {
         if (role !== "student" || !enrolledCourseSlug) {
@@ -153,7 +147,7 @@ function DashboardLayout({ role = "student" }) {
         };
     }, [role, enrolledCourseSlug, enrolledCourse?.slug]);
 
-// ========================================================================================================
+    // ========================================================================================================
 
 
     // ==========================================
@@ -257,7 +251,6 @@ function DashboardLayout({ role = "student" }) {
                 "connect",
                 handleConnect
             );
-
             socket.off(
                 "taskApproved",
                 handleTaskApproved
@@ -270,44 +263,30 @@ function DashboardLayout({ role = "student" }) {
         enrolledCourse,
     ]);
 
-
     // ==========================================
     // SIDEBAR COLLAPSE
     // ==========================================
-
     const handleToggleCollapse = () => {
-
         setCollapsed((prev) => !prev);
-
     };
-
 
     // ==========================================
     // MOBILE SIDEBAR
     // ==========================================
-
     const handleOpenMobileSidebar = () => {
-
         setMobileSidebarOpen(true);
-
     };
-
 
     const handleCloseMobileSidebar = () => {
-
         setMobileSidebarOpen(false);
-
     };
-
 
     // ==========================================
     // COURSE COMPLETION
     // ==========================================
 
     const readAllTasksCompleted = () => {
-
         try {
-
             return (
                 allTasksCompleted ||
                 localStorage.getItem(
@@ -316,9 +295,7 @@ function DashboardLayout({ role = "student" }) {
             );
 
         } catch {
-
             return false;
-
         }
     };
 
@@ -326,14 +303,9 @@ function DashboardLayout({ role = "student" }) {
     return (
 
         <div
-            className={`dashboardContainer ${collapsed
-                ? "sidebar-collapsed"
-                : ""
-                }`}
+            className={`dashboardContainer ${collapsed ? "sidebar-collapsed" : ""}`}
         >
-
             {/* ================= NAVBAR ================= */}
-
             <Navbar
                 role={role}
                 onMobileMenuClick={
@@ -341,13 +313,8 @@ function DashboardLayout({ role = "student" }) {
                 }
             />
 
-
-
-
-            <div id="sideMain">
-
+            <div className="sidebar-main">
                 {/* ================= SIDEBAR ================= */}
-
                 <Sidebar
                     role={role}
                     dailyTaskUnlocked={dailyTaskUnlocked}
@@ -364,17 +331,11 @@ function DashboardLayout({ role = "student" }) {
                     }
                     enrolledCourse={enrolledCourse}
                 />
-
-
                 {/* ================= MAIN ================= */}
-
                 <Main />
 
             </div>
-
-
             {/* ================= FOOTER ================= */}
-
             <Footer />
 
         </div>
