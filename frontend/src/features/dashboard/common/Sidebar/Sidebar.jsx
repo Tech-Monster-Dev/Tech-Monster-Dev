@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
+import Tooltip from '../../../../components/ui/Tooltip';
 
 
 import SearchBar from "../../../../components/ui/SearchBar";
@@ -66,8 +67,8 @@ function Sidebar({
     const lessonPath = enrolledCourse?.type && enrolledCourse?.slug ? `/student/lessons/${enrolledCourse.type}/${enrolledCourse.slug}` : "/student/lessons";
 
     const taskPath = enrolledCourse?.type && enrolledCourse?.slug
-            ? `/student/tasks/${enrolledCourse.type}/${enrolledCourse.slug}`
-            : `/student/tasks/`;
+        ? `/student/tasks/${enrolledCourse.type}/${enrolledCourse.slug}`
+        : `/student/tasks/`;
 
     const studentLinks = [
         { name: "Home", path: "/student", icon: <FiHome /> },
@@ -205,152 +206,138 @@ function Sidebar({
 
 
                 {/* ================= DESKTOP COLLAPSE ================= */}
-                <button
-                    id="sidebar-collapse-btn"
-                    onClick={() =>
-                        onToggleCollapse && onToggleCollapse()
-                    }
-                    title={
-                        collapsed
-                            ? "Expand sidebar"
-                            : "Collapse sidebar"
-                    }
+                <Tooltip
+                    label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                 >
-                    {collapsed ? <FiMenu /> : <FiChevronLeft />}
-                </button>
+                    <button
+                        className="sidebar-collapse-btn"
+                        onClick={() =>
+                            onToggleCollapse && onToggleCollapse()
+                        }
+                        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    >
+                        {collapsed ? <FiMenu /> : <FiChevronLeft />}
+                    </button>
+                </Tooltip>
 
 
                 {/* ================= MENU ================= */}
-                <ul className="sidebar-menu">
+                <div className="sidebar-menu-scroll">
+                    <ul className="sidebar-menubar">
 
-                    {navLinks.map((link, index) => {
+                        {navLinks.map((link, index) => {
 
-                        const isActive =
-                            link.name === "Lessons"
-                                ? location.pathname.startsWith("/student/lessons")
-                                : location.pathname === link.path;
+                            const isActive =
+                                link.name === "Lessons"
+                                    ? location.pathname.startsWith("/student/lessons")
+                                    : location.pathname === link.path;
 
-                        return (
-                            <li
-                                key={index}
-                                ref={isActive ? activeLinkRef : null}
-                                className={`
-                                ${isActive ? "active" : ""}
-                                ${link.locked ? "locked-link" : ""}
-                            `}
-                            >
-
-                                <Link
-                                    to={link.locked ? "#" : link.path}
-                                    state={
-                                        (link.name === "Daily Task" || link.name === "Certificate") && enrolledCourse
-                                            ? {
-                                                programId: enrolledCourse.programId,
-    programType: enrolledCourse.type,
-    courseTitle: enrolledCourse.title,
-    courseSlug: enrolledCourse.slug,
-    type: enrolledCourse.type
-                                            }
-                                            : undefined
-                                    }
-                                    onClick={(e) => {
-
-                                        handleLinkClick(e, link);
-
-                                        if (!link.locked) {
-                                            onCloseMobileSidebar?.();
-                                        }
-
-                                    }}
+                            return (
+                                <li
+                                    key={index}
+                                    ref={isActive ? activeLinkRef : null}
+                                    className={`${isActive ? "active" : ""} ${link.locked ? "locked-link" : ""}`}
                                 >
+                                    <Tooltip
+                                        label={link.name}
+                                        disabled={!collapsed}
+                                    >
+                                        <Link
+                                            to={link.locked ? "#" : link.path}
+                                            state={
+                                                (link.name === "Daily Task" || link.name === "Certificate") && enrolledCourse
+                                                    ? {
+                                                        programId: enrolledCourse.programId,
+                                                        programType: enrolledCourse.type,
+                                                        courseTitle: enrolledCourse.title,
+                                                        courseSlug: enrolledCourse.slug,
+                                                        type: enrolledCourse.type
+                                                    }
+                                                    : undefined
+                                            }
+                                            onClick={(e) => {
+                                                handleLinkClick(e, link);
 
-                                    <span className="sidebar-link-icon">
-                                        {link.linkIcon || link.icon}
-                                    </span>
+                                                if (!link.locked) {
+                                                    onCloseMobileSidebar?.();
+                                                }
+                                            }}
+                                        >
+                                            <span className="sidebar-link-icon">
+                                                {link.linkIcon || link.icon}
+                                            </span>
 
-                                    {!collapsed && (
-                                        <span className="sidebar-link-label">
-                                            {link.name}
-                                        </span>
-                                    )}
+                                            {!collapsed && (
+                                                <span className="sidebar-link-label">
+                                                    {link.name}
+                                                </span>
+                                            )}
 
-                                    {link.locked && !collapsed && (
-                                        <FiLock className="lock-icon-right" />
-                                    )}
+                                            {link.locked && !collapsed && (
+                                                <FiLock className="lock-icon-right" />
+                                            )}
+                                        </Link>
+                                    </Tooltip>
 
-                                    {collapsed && (
-                                        <span className="sidebar-tooltip">
-                                            {link.name}
-                                        </span>
-                                    )}
+                                </li>
+                            );
+                        })}
 
-                                </Link>
-
-                            </li>
-                        );
-                    })}
-
-                </ul>
+                    </ul>
+                </div>
 
 
                 {/* ================= FOOTER ================= */}
                 <div className="sidebar-footer">
 
-                    <Link
-                        to={`/${role}/settings`}
-                        className={
-                            location.pathname.includes("settings")
-                                ? "active"
-                                : ""
-                        }
-                        title={collapsed ? "Setting" : undefined}
-                        onClick={onCloseMobileSidebar}
+                    <Tooltip
+                        label="Setting"
+                        disabled={!collapsed}
                     >
-
-                        <span className="sidebar-link-icon">
-                            <FiSettings />
-                        </span>
-
-                        {!collapsed && (
-                            <span className="sidebar-link-label">
-                                Setting
+                        <Link
+                            to={`/${role}/settings`}
+                            className={
+                                location.pathname.includes("settings")
+                                    ? "active"
+                                    : ""
+                            }
+                            onClick={onCloseMobileSidebar}
+                        >
+                            <span className="sidebar-link-icon">
+                                <FiSettings />
                             </span>
-                        )}
 
-                        {collapsed && (
-                            <span className="sidebar-tooltip">
-                                Setting
-                            </span>
-                        )}
+                            {!collapsed && (
+                                <span className="sidebar-link-label">
+                                    Setting
+                                </span>
+                            )}
+                        </Link>
+                    </Tooltip>
 
-                    </Link>
 
-
-                    <button
-                        onClick={async () => {
-                            await handleLogout();
-                            onCloseMobileSidebar?.();
-                        }}
-                        className="logout-btn"
+                    <Tooltip
+                        label="Logout"
+                        disabled={!collapsed}
                     >
-
-                        <span className="sidebar-link-icon">
-                            <FiLogOut />
-                        </span>
-
-                        {!collapsed && (
-                            <span className="sidebar-link-label">
-                                Logout
+                        <button
+                            onClick={async () => {
+                                await handleLogout();
+                                onCloseMobileSidebar?.();
+                            }}
+                            className="logout-btn"
+                        >
+                            <span className="sidebar-link-icon">
+                                <FiLogOut />
                             </span>
-                        )}
 
-                        {collapsed && (
-                            <span className="sidebar-tooltip">
-                                Logout
-                            </span>
-                        )}
-
-                    </button>
+                            {!collapsed && (
+                                <span className="sidebar-link-label">
+                                    Logout
+                                </span>
+                            )}
+                        </button>
+                    </Tooltip>
 
                 </div>
 
