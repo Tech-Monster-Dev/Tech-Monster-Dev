@@ -61,7 +61,7 @@ export const verifyOTP = asyncHandler(async (req, res) => {
 
 export const resendOTP = asyncHandler(async (req, res) => {
 
-    const { email } = req.body;
+    const { email, purpose } = req.body;
 
     if (!email) {
         throw new AppError(
@@ -79,7 +79,7 @@ export const resendOTP = asyncHandler(async (req, res) => {
         );
     }
 
-    if (user.isVerified) {
+    if (purpose === "signup" && user.isVerified) {
         throw new AppError(
             "Email already verified",
             400
