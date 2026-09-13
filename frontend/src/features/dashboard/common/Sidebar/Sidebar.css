@@ -63,13 +63,13 @@
    COLLAPSE TOGGLE
 ========================================== */
 
-#sidebar-collapse-btn {
-    @apply absolute right-5 top-5 z-5 flex h-8 w-8 items-center justify-center rounded-full border bg-(--dark) text-(--text) shadow-[0_0_0.625rem_var(--glow)] transition-all duration-300 ease-in-out;
-    
+.sidebar-collapse-btn {
+    @apply absolute right-5 z-5 flex h-8 w-8 items-center justify-center rounded-full border bg-(--dark) text-(--text) shadow-[0_0_0.625rem_var(--glow)] transition-all duration-300 ease-in-out;
+    top: 1rem;
     border-color: var(--neon-grid);
 }
 
-#sidebar-collapse-btn:hover {
+.sidebar-collapse-btn:hover {
     @apply text-(--neon);
     
     border-color: var(--neon);
@@ -79,28 +79,51 @@
    SIDEBAR MENU
 ========================================== */
 
-.sidebar-menu {
-    @apply m-0 flex min-h-0 flex-1 list-none flex-col overflow-y-auto px-2.5 py-5;
+.sidebar-menu-scroll {
+    @apply min-h-0 flex-1;
+    overflow-y: auto;
+    overflow-x: clip;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-.sidebar-menu li {
+.sidebar-menu-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-menubar {
+    @apply flex min-h-0 list-none flex-col px-2.5;
+    margin-top: 2.5rem;
+}
+
+.sidebar-menubar::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-menubar li {
     @apply relative mb-2 rounded-lg;
 }
 
-.sidebar-menu li a,
+.sidebar-menubar li a,
 .sidebar-footer a,
 .logout-btn {
     @apply flex w-full cursor-pointer items-center gap-[clamp(0.65rem,1vw,0.95rem)] rounded-lg border-0 bg-transparent px-[clamp(0.75rem,1.2vw,0.95rem)] py-3 text-left text-[clamp(0.85rem,1.1vw,0.95rem)] text-(--text) no-underline transition-all duration-300 ease-in-out;
 }
 
-.sidebar-menu li.active,
+.sidebar-menubar li.active,
 .sidebar-footer a.active,
-.sidebar-menu li:hover,
+.sidebar-menubar li:hover,
 .sidebar-footer a:hover,
 .logout-btn:hover {
-    @apply text-(--neon);
-    
     background: var(--surface);
+}
+
+.sidebar-menubar li.active a,
+.sidebar-menubar li:hover a,
+.sidebar-footer a.active,
+.sidebar-footer a:hover {
+    color: var(--neon);
+    text-shadow: none;
 }
 
 /* ==========================================
@@ -158,13 +181,14 @@
 
 .dashboard-sidebar.collapsed {
     width: 4.625rem;
+    overflow: visible;
 }
 
-.dashboard-sidebar.collapsed .sidebar-menu {
-    @apply px-2.5 py-5;
+.dashboard-sidebar.collapsed .sidebar-menubar {
+    @apply px-2.5;
 }
 
-.dashboard-sidebar.collapsed .sidebar-menu li a,
+.dashboard-sidebar.collapsed .sidebar-menubar li a,
 .dashboard-sidebar.collapsed .sidebar-footer a,
 .dashboard-sidebar.collapsed .logout-btn {
     @apply justify-center gap-0 px-3 py-3;
@@ -180,34 +204,6 @@
 
 .dashboard-sidebar.collapsed .sidebar-footer {
     @apply p-2.5;
-}
-
-/* ==========================================
-   TOOLTIP ANCHOR
-========================================== */
-
-.sidebar-menu li,
-.sidebar-footer a,
-.sidebar-footer .logout-btn {
-    @apply relative;
-}
-
-/* ==========================================
-   COLLAPSED TOOLTIP
-========================================== */
-
-.sidebar-tooltip {
-    @apply pointer-events-none invisible absolute left-full top-1/2 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md border px-2.5 py-1.5 text-[0.8rem] text-(--text) opacity-0 shadow-[0_0.25rem_0.75rem_var(--surface-overlay)] transition-[opacity,visibility] duration-200 ease-in-out;
-    
-    background: var(--dark);
-    border-color: var(--neon-grid);
-    z-index: 999;
-}
-
-.dashboard-sidebar.collapsed .sidebar-menu li a:hover .sidebar-tooltip,
-.dashboard-sidebar.collapsed .sidebar-footer a:hover .sidebar-tooltip,
-.dashboard-sidebar.collapsed .logout-btn:hover .sidebar-tooltip {
-    @apply visible opacity-100;
 }
 
 /* ==========================================
@@ -262,19 +258,23 @@
         @apply block shrink-0 px-4 pb-2.5 pt-4;
     }
 
-    .dashboard-sidebar.mobile-open #sidebar-collapse-btn {
+    .dashboard-sidebar.mobile-open .sidebar-collapse-btn {
         @apply hidden;
     }
 
-    .dashboard-sidebar.mobile-open .sidebar-menu {
-        @apply block w-full min-h-0 flex-1 overflow-y-auto m-0 px-3 py-2.5;
+    .dashboard-sidebar.mobile-open .sidebar-menu-scroll {
+        @apply block w-full min-h-0 flex-1 overflow-y-auto;
     }
 
-    .dashboard-sidebar.mobile-open .sidebar-menu li {
+    .dashboard-sidebar.mobile-open .sidebar-menubar {
+        @apply block w-full min-h-0 m-0 px-3 py-2.5;
+    }
+
+    .dashboard-sidebar.mobile-open .sidebar-menubar li {
         @apply mb-1.5;
     }
 
-    .dashboard-sidebar.mobile-open .sidebar-menu li a {
+    .dashboard-sidebar.mobile-open .sidebar-menubar li a {
         @apply min-h-12 gap-4 px-4 py-3 text-[0.95rem];
     }
 
