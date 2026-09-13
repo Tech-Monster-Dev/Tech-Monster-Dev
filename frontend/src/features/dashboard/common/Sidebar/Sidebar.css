@@ -1,87 +1,96 @@
-/* SIDEBAR STYLING */
+@import "tailwindcss";
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
 .dashboard-sidebar {
-    width: 260px;
-    background-color: rgba(7, 11, 25, 0.96);
-    backdrop-filter: blur(12px);
+    @apply relative z-1200 flex min-h-0 min-w-0 shrink-0 flex-col justify-between overflow-hidden rounded-r-(--radius) border-r backdrop-blur-xl my-2 py-5 transition-[width,transform] duration-300 ease-in-out;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    width: clamp(16.25rem, 19vw, 20rem);
 
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    border-top-right-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+    background: color-mix(
+        in srgb,
+        var(--dark) 96%,
+        transparent
+    );
 
-    box-shadow: 0 0 10px var(--glow);
+    border-color: var(--neon-grid);
 
-    padding: 1.25rem 0;
-
-    height: calc(100vh - 8rem);
-
-    margin: 0.5rem 0.5rem 0.5rem 0;
-
-    flex-shrink: 0;
-
-    z-index: 1200;
-
-    position: relative;
-
-    transition: width 0.35s ease;
+    box-shadow: 0 0 0.625rem var(--glow);
 }
 
+/* ==========================================
+   MOBILE HEADER
+========================================== */
+
 .sidebar-header-mobile {
-    display: none;
-    padding: 0 20px 20px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    align-items: center;
-    justify-content: space-between;
+    @apply hidden items-center justify-between border-b px-4 py-4;
+    
+    border-color: var(--neon-grid);
 }
 
 .sidebar-header-mobile h3 {
-    font-size: 1.2rem;
-    color: #fff;
+    @apply m-0 text-[clamp(1.1rem,2vw,1.25rem)] font-semibold text-(--text);
 }
 
 .sidebar-header-mobile h3 span {
-    color: #3b82f6;
+    @apply text-(--neon);
 }
 
 .close-menu-btn {
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 1.2rem;
-    cursor: pointer;
+    @apply flex h-10 w-10 items-center justify-center rounded-lg border bg-transparent text-[clamp(1.1rem,2vw,1.25rem)] text-(--text) transition-all duration-300 ease-in-out;
+    
+    border-color: var(--neon-grid);
 }
 
+.close-menu-btn:hover {
+    @apply text-(--neon);
+    
+    border-color: var(--neon);
+    background: var(--neon-overlay);
+}
+
+/* ==========================================
+   MOBILE SEARCH
+========================================== */
+
+.mobile-sidebar-search {
+    @apply hidden w-full;
+}
+
+/* ==========================================
+   COLLAPSE TOGGLE
+========================================== */
+
+#sidebar-collapse-btn {
+    @apply absolute right-5 top-5 z-5 flex h-8 w-8 items-center justify-center rounded-full border bg-(--dark) text-(--text) shadow-[0_0_0.625rem_var(--glow)] transition-all duration-300 ease-in-out;
+    
+    border-color: var(--neon-grid);
+}
+
+#sidebar-collapse-btn:hover {
+    @apply text-(--neon);
+    
+    border-color: var(--neon);
+}
+
+/* ==========================================
+   SIDEBAR MENU
+========================================== */
+
 .sidebar-menu {
-    list-style: none;
-    padding: 20px 10px;
-    flex-grow: 1;
-    overflow-y: auto;
+    @apply m-0 flex min-h-0 flex-1 list-none flex-col overflow-y-auto px-2.5 py-5;
 }
 
 .sidebar-menu li {
-    margin-bottom: 8px;
-    border-radius: 8px;
+    @apply relative mb-2 rounded-lg;
 }
 
 .sidebar-menu li a,
 .sidebar-footer a,
 .logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px 15px;
-    text-decoration: none;
-    font-size: 0.95rem;
-    background: transparent;
-    border: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: 0.3s;
+    @apply flex w-full cursor-pointer items-center gap-[clamp(0.65rem,1vw,0.95rem)] rounded-lg border-0 bg-transparent px-[clamp(0.75rem,1.2vw,0.95rem)] py-3 text-left text-[clamp(0.85rem,1.1vw,0.95rem)] text-(--text) no-underline transition-all duration-300 ease-in-out;
 }
 
 .sidebar-menu li.active,
@@ -89,411 +98,203 @@
 .sidebar-menu li:hover,
 .sidebar-footer a:hover,
 .logout-btn:hover {
-    color: var(--neon);
-    background-color: #0f172a;
+    @apply text-(--neon);
+    
+    background: var(--surface);
 }
 
-.sidebar-footer {
-    padding: 10px 10px 0 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+/* ==========================================
+   SIDEBAR ICON
+========================================== */
+
+.sidebar-link-icon {
+    @apply inline-flex shrink-0 items-center justify-center text-[clamp(1rem,1.4vw,1.2rem)];
 }
 
+/* ==========================================
+   LOCKED LINK
+========================================== */
 
 .locked-link {
-    opacity: 0.7;
-    cursor: pointer;
+    @apply cursor-pointer opacity-70;
 }
 
 .lock-icon-right {
-    margin-left: auto;
-    font-size: 14px;
-    color: #ff3366;
+    @apply ml-auto shrink-0 text-[clamp(0.65rem,1vw,0.875rem)] text-(--danger);
 }
 
+/* ==========================================
+   SIDEBAR FOOTER
+========================================== */
+
+.sidebar-footer {
+    @apply shrink-0 border-t px-2.5 pt-2.5;
+    
+    border-color: var(--neon-grid);
+}
+
+.sidebar-footer a,
 .logout-btn {
-    color: #f87171;
+    @apply min-h-12;
+}
+
+/* ==========================================
+   LOGOUT
+========================================== */
+
+.logout-btn {
+    @apply text-(--danger);
 }
 
 .logout-btn:hover {
-    background-color: rgba(248, 113, 113, 0.1);
-    color: #ef4444;
+    @apply text-(--danger);
+    
+    background: var(--danger-soft);
 }
 
-/* ---------- COLLAPSE TOGGLE BUTTON ---------- */
-#sidebar-collapse-btn {
-    position: absolute;
-    right: 1.2rem;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background-color: #0f172a;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 5;
-    box-shadow: 0 0 10px var(--glow);
-    transition: 0.3s;
-}
-
-#sidebar-collapse-btn:hover {
-    color: var(--neon);
-    border-color: var(--neon);
-}
-
-/* ---------- COLLAPSED MODE ---------- */
-.dashboard-sidebar {
-    position: relative;
-    transition: width 0.35s ease;
-}
+/* ==========================================
+   COLLAPSED SIDEBAR
+========================================== */
 
 .dashboard-sidebar.collapsed {
-    width: 74px;
+    width: 4.625rem;
 }
 
 .dashboard-sidebar.collapsed .sidebar-menu {
-    padding: 20px 10px;
+    @apply px-2.5 py-5;
 }
 
 .dashboard-sidebar.collapsed .sidebar-menu li a,
 .dashboard-sidebar.collapsed .sidebar-footer a,
 .dashboard-sidebar.collapsed .logout-btn {
-    justify-content: center;
-    gap: 0;
-    padding: 12px;
+    @apply justify-center gap-0 px-3 py-3;
 }
 
 .dashboard-sidebar.collapsed .sidebar-link-icon {
-    font-size: 1.25rem;
-    display: inline-flex;
+    @apply inline-flex text-[clamp(1.1rem,1.8vw,1.3rem)];
 }
 
 .dashboard-sidebar.collapsed .lock-icon-right {
-    position: absolute;
-    top: 4px;
-    right: 6px;
-    font-size: 11px;
-    margin-left: 0;
+    @apply absolute right-1.5 top-1 text-[0.6875rem];
 }
 
 .dashboard-sidebar.collapsed .sidebar-footer {
-    padding: 10px;
+    @apply p-2.5;
 }
 
-/* Make collapsed list items position-relative so tooltips anchor correctly */
+/* ==========================================
+   TOOLTIP ANCHOR
+========================================== */
+
 .sidebar-menu li,
 .sidebar-footer a,
 .sidebar-footer .logout-btn {
-    position: relative;
+    @apply relative;
 }
 
-/* ---------- TOOLTIPS (collapsed mode) ---------- */
-.sidebar-link-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
+/* ==========================================
+   COLLAPSED TOOLTIP
+========================================== */
 
 .sidebar-tooltip {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-left: 12px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    background-color: #0f172a;
-    color: #fff;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+    @apply pointer-events-none invisible absolute left-full top-1/2 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md border px-2.5 py-1.5 text-[0.8rem] text-(--text) opacity-0 shadow-[0_0.25rem_0.75rem_var(--surface-overlay)] transition-[opacity,visibility] duration-200 ease-in-out;
+    
+    background: var(--dark);
+    border-color: var(--neon-grid);
     z-index: 999;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .dashboard-sidebar.collapsed .sidebar-menu li a:hover .sidebar-tooltip,
 .dashboard-sidebar.collapsed .sidebar-footer a:hover .sidebar-tooltip,
 .dashboard-sidebar.collapsed .logout-btn:hover .sidebar-tooltip {
-    opacity: 1;
-    visibility: visible;
+    @apply visible opacity-100;
 }
 
-
-/* =====================================================
-   MOBILE SIDEBAR
-===================================================== */
+/* ==========================================
+   MOBILE SIDEBAR OVERLAY
+========================================== */
 
 .mobile-sidebar-overlay {
-    display: none;
+    @apply hidden;
 }
 
+/* ==========================================
+   RESPONSIVE SIDEBAR
+========================================== */
 
-/* Search inside mobile sidebar */
-.mobile-sidebar-search {
-    display: none;
-}
+/*
+   Tailwind responsive utilities replace the old
+   CSS media-query based mobile implementation.
+*/
 
-
-/* Mobile header */
-.sidebar-header-mobile {
-    display: none;
-}
-
-
-/* =====================================================
-   MAX WIDTH 756px
-===================================================== */
-
-@media (max-width: 756px) {
-
-    /* ---------------------------------------------
-       DESKTOP SIDEBAR HIDE
-    --------------------------------------------- */
-
+@variant max-md {
     .dashboard-sidebar {
-        display: none;
+        @apply hidden;
     }
-
-
-    /* ---------------------------------------------
-       MOBILE SIDEBAR OPEN
-    --------------------------------------------- */
 
     .dashboard-sidebar.mobile-open {
-        display: flex;
-
-        position: fixed;
-
-        top: 0;
-        left: 0;
-
-        width: 85%;
-        max-width: 340px;
-
-        height: 100vh;
-
-        margin: 0;
-
-        border-radius: 0;
-
-        background: rgba(7, 11, 25, 0.98);
-
-        backdrop-filter: blur(18px);
+        @apply fixed inset-y-0 left-0 z-3000 flex h-full w-[min(85%,21.25rem)] max-w-full m-0 rounded-none p-0 overflow-y-auto;
+        
+        background: color-mix(
+            in srgb,
+            var(--dark) 98%,
+            transparent
+        );
 
         box-shadow:
-            10px 0 40px rgba(0, 0, 0, 0.6),
-            0 0 20px var(--glow);
-
-        z-index: 3000;
-
-        padding: 0;
-
-        overflow-y: auto;
+            0.625rem 0 2.5rem var(--surface-overlay),
+            0 0 1.25rem var(--glow);
     }
-
-
-    /* ---------------------------------------------
-       MOBILE HEADER
-    --------------------------------------------- */
 
     .dashboard-sidebar.mobile-open .sidebar-header-mobile {
-        display: flex;
-
-        min-height: 60px;
-
-        padding: 0 18px;
-
-        align-items: center;
-        justify-content: space-between;
-
-        border-bottom:
-            1px solid rgba(255, 255, 255, 0.08);
+        @apply flex min-h-15 shrink-0;
     }
-
 
     .dashboard-sidebar.mobile-open .sidebar-header-mobile h3 {
-
-        margin: 0;
-
-        font-size: 1.2rem;
-
-        color: #fff;
+        @apply m-0 text-[clamp(1.1rem,2vw,1.25rem)] text-(--text);
     }
-
 
     .dashboard-sidebar.mobile-open .sidebar-header-mobile h3 span {
-
-        color: var(--neon);
+        @apply text-(--neon);
     }
 
-
-    .close-menu-btn {
-        width: 38px;
-        height: 38px;
-
-        display: flex;
-
-        align-items: center;
-        justify-content: center;
-
-        background: transparent;
-
-        border: 1px solid rgba(255, 255, 255, 0.1);
-
-        border-radius: 8px;
-
-        color: #fff;
-
-        font-size: 1.2rem;
-
-        cursor: pointer;
+    .dashboard-sidebar.mobile-open .mobile-sidebar-search {
+        @apply block shrink-0 px-4 pb-2.5 pt-4;
     }
-
-
-    .close-menu-btn:hover {
-        color: var(--neon);
-
-        border-color: var(--neon);
-
-        background: rgba(0, 240, 255, 0.08);
-    }
-
-
-    /* ---------------------------------------------
-       SEARCH BAR INSIDE MOBILE SIDEBAR
-    --------------------------------------------- */
-
-    .mobile-sidebar-search {
-        display: block;
-
-        width: 100%;
-
-        padding: 15px 15px 10px;
-    }
-
-
-    .mobile-sidebar-search .search-bar-container {
-
-        display: flex;
-
-        width: 100%;
-    }
-
-
-    .mobile-sidebar-search .search-results-dropdown {
-
-        position: fixed;
-
-        top: 70px;
-
-        left: 15px;
-
-        width: calc(85% - 30px);
-
-        max-width: 310px;
-
-        z-index: 4000;
-    }
-
-
-    /* ---------------------------------------------
-       HIDE DESKTOP COLLAPSE BUTTON ON MOBILE
-    --------------------------------------------- */
 
     .dashboard-sidebar.mobile-open #sidebar-collapse-btn {
-
-        display: none;
+        @apply hidden;
     }
-
-
-    /* ---------------------------------------------
-       MOBILE MENU
-    --------------------------------------------- */
 
     .dashboard-sidebar.mobile-open .sidebar-menu {
-
-        display: block;
-
-        width: 100%;
-
-        padding: 10px 12px;
-
-        margin: 0;
-
-        overflow-y: auto;
-
-        flex: 1;
+        @apply block w-full min-h-0 flex-1 overflow-y-auto m-0 px-3 py-2.5;
     }
-
 
     .dashboard-sidebar.mobile-open .sidebar-menu li {
-
-        margin-bottom: 6px;
+        @apply mb-1.5;
     }
-
 
     .dashboard-sidebar.mobile-open .sidebar-menu li a {
-
-        min-height: 48px;
-
-        padding: 12px 15px;
-
-        gap: 15px;
-
-        font-size: 0.95rem;
+        @apply min-h-12 gap-4 px-4 py-3 text-[0.95rem];
     }
-
 
     .dashboard-sidebar.mobile-open .sidebar-link-label {
-
-        display: inline;
+        @apply inline;
     }
-
-
-    /* ---------------------------------------------
-       MOBILE FOOTER
-    --------------------------------------------- */
 
     .dashboard-sidebar.mobile-open .sidebar-footer {
-
-        padding: 10px 12px 15px;
-
-        flex-shrink: 0;
+        @apply shrink-0 px-3 pb-4 pt-2.5;
     }
-
 
     .dashboard-sidebar.mobile-open .sidebar-footer a,
     .dashboard-sidebar.mobile-open .sidebar-footer .logout-btn {
-
-        min-height: 48px;
-
-        padding: 12px 15px;
+        @apply min-h-12 px-4 py-3;
     }
-
-
-    /* ---------------------------------------------
-       OVERLAY
-    --------------------------------------------- */
 
     .mobile-sidebar-overlay {
-
-        display: block;
-
-        position: fixed;
-
-        inset: 0;
-
-        background: rgba(0, 0, 0, 0.65);
-
-        backdrop-filter: blur(3px);
-
-        z-index: 2500;
+        @apply fixed inset-0 z-2500 block;
+        
+        background: var(--surface-overlay);
+        backdrop-filter: blur(0.1875rem);
     }
-
 }
