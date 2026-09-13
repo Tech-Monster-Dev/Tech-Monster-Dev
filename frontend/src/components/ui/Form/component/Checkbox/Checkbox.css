@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/* ==========================================
+   CHECKBOX
+========================================== */
+
+.checkbox-wrapper {
+    @apply flex w-full min-w-0 flex-col gap-1.5;
+}
+
+/* ==========================================
+   LABEL
+========================================== */
+
+.checkbox-label {
+    @apply flex w-full min-w-0 cursor-pointer items-start gap-[clamp(0.5rem,1.5vw,0.75rem)] text-[clamp(0.8rem,1.2vw,0.9375rem)] leading-[1.6] text-white transition-all duration-300 ease-in-out;
+}
+
+.checkbox-label:has(.checkbox-input:disabled) {
+    @apply cursor-not-allowed opacity-60;
+}
+
+/* ==========================================
+   INPUT
+========================================== */
+
+.checkbox-input {
+    @apply mt-1 size-[clamp(1rem,2vw,1.3rem)] shrink-0 cursor-pointer appearance-none rounded border transition-all duration-300 ease-in-out;
+
+    background-color: var(--surface);
+    border: 1px solid var(--glow);
+}
+
+.checkbox-input:checked {
+    @apply shadow-[0_0_0.625rem_var(--neon)];
+
+    background-color: transparent;
+    border: 1px solid var(--neon);
+    position: relative;
+}
+
+.checkbox-input:checked::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 0.3rem;
+    height: 0.6rem;
+    border-right: 0.125rem solid var(--success);
+    border-bottom: 0.125rem solid var(--success);
+    transform: rotate(45deg);
+}
+
+.checkbox-input:hover:not(:disabled) {
+    @apply shadow-[0_0_0.5rem_var(--neon)];
+
+    border: 1px solid var(--neon);
+}
+
+.checkbox-input:active:not(:disabled) {
+    @apply scale-95;
+}
+
+.checkbox-input:disabled {
+    @apply cursor-not-allowed;
+}
+
+/* ==========================================
+   CHECKBOX CONTENT
+========================================== */
+
+.checkbox-content {
+    @apply flex min-w-0 flex-1 flex-col;
+}
+
+.checkbox-text {
+    @apply min-w-0 wrap-break-word;
+    color: var(--text);
+}
+
+.checkbox-text a {
+    @apply ml-1.5;
+    color: var(--glow);
+    text-decoration: underline;
+}
+
+.checkbox-description {
+    @apply mt-0.5 wrap-break-word text-[clamp(0.75rem,1vw,0.8125rem)] leading-normal;
+    color: var(--muted);
+}
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.checkbox-error {
+    @apply ml-[calc(clamp(1rem,2vw,1.125rem)+clamp(0.5rem,1.5vw,0.75rem))] wrap-break-word text-[clamp(0.75rem,1vw,0.8125rem)] leading-[1.4];
+
+    color: var(--danger);
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+.checkbox-wrapper,
+.checkbox-label,
+.checkbox-content,
+.checkbox-text,
+.checkbox-description,
+.checkbox-error {
+    @apply max-w-full;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.checkbox-input,
+.checkbox-label {
+    @apply motion-reduce:transition-none;
+}

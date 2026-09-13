@@ -2,52 +2,63 @@ import "./AdminLogin.css";
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
-import {toast} from "react-toastify";
+
+import { toast } from "react-toastify";
 
 import useAuth from "../../../../shared/hooks/useAuth";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import Textinput from "../../../../components/ui/Form/component/Textinput";
-import PasswordInput from "../../../../components/ui/Form/component/PasswordInput";
+import Form from '../../../../components/ui/Form';
 import AuthButton from "../../../../components/ui/Button/AuthButton";
-
-import { adminLogin } from "../../../../services/api/authService";
 import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
 
+import { adminLogin } from "../../../../services/api/authService";
+import { fields, loginRules } from "../Login/loginData";
+import { validateField, validateForm } from "../../../../shared/utils/validation/formValidation";
+
 function AdminLogin() {
-    const [loading, setLoading] = useState(false);
-
-    const { login } = useAuth();
-
-    const [error, setError] = useState("");
 
     const navigate = useNavigate();
+    const { login } = useAuth();
 
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors }
-    } = useForm({
-
-        defaultValues: {
-            email: "",
-            password: "",
-        }
-
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
     });
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
 
-    const onSubmit = async (data) => {
 
-        setError("");
-        setLoading(true);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+
+        setErrors((prev) => ({
+            ...prev,
+            [name]: validateField(name, value, loginRules)
+        }));
+    };
+
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const {
+            errors: newErrors,
+            isValid
+        } = validateForm(formData, loginRules)
+        setErrors(newErrors);
+        if (!isValid) return;
+
 
         try {
-
-            const response = await adminLogin(data);
+            setLoading(true);
+            const response = await adminLogin(formData);
 
             const {
                 accessToken,
@@ -62,24 +73,26 @@ function AdminLogin() {
             navigate("/admin");
 
         } catch (err) {
-
-            setError(
-                err.response?.data?.message ||
-                "Admin Login Failed"
-            );
-
-            toast.error(err.response?.data?.message);
-
+            const msg = err.response?.data?.message || "Something went wrong";
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
-
     };
+
+    const actions = [
+        {
+            label: "Admin Login",
+            type: "submit",
+            component: AuthButton,
+            fullwidth: true,
+            disabled: loading
+        }
+    ]
 
     return (
 
         <>
-
             {
                 loading && (
                     <Hash
@@ -94,58 +107,26 @@ function AdminLogin() {
                 title="Admin Login"
                 subtitle="Tech Monster Admin Panel"
             >
-
-                <motion.form onSubmit={handleSubmit(onSubmit)} className="admin-login-form">
-
-                    <Textinput
-                        label="Admin Email"
-                        type="email"
-                        placeholder="admin@gmail.com"
-                        // eslint-disable-next-line react-hooks/incompatible-library
-                        value={watch("email")}
-                        {...register("email", {
-                            required: "Email is required",
-                        })}
-                        error={errors.email?.message}
-                    />
-
-                    <PasswordInput
-                        label="Password"
-                        value={watch("password")}
-                        {...register("password", {
-                            required: "Password is required",
-                        })}
-                        error={errors.password?.message}
-                    />
-
-                    {error && (
-                        <p className="admin-error">
-                            {error}
-                        </p>
-                    )}
-
-                    <AuthButton
-                        type="submit"
-                        fullWidth
-                        disabled={loading}
-                    >
-                        {loading ? "Logging in..." : "Login as Admin"}
-                    </AuthButton>
-
-                    <p id="user-login-link">
+                <Form
+                    fields={fields}
+                    values={formData}
+                    errors={errors}
+                    onChange={handleChange}
+                    onSubmit={handleSubmit}
+                    formClassName="admin-login-form"
+                    actions={actions}
+                >
+                    <p className="user-login-link">
                         User login !
                         <Link to="/login">
                             Login
                         </Link>
                     </p>
-
-                </motion.form>
+                </Form>
 
             </AuthLayout>
-
         </>
     );
-
 }
 
 export default AdminLogin;
