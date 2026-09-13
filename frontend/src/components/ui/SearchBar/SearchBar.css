@@ -1,166 +1,123 @@
-#search-bar-container {
-    position: relative;
-    width: 500px;
-    display: flex;
-    align-items: center;
+@import "tailwindcss";
+
+/* ==========================================
+   SEARCH BAR
+========================================== */
+
+.search-bar-container {
+    @apply relative z-10001 flex h-full w-full items-center;
 }
 
-#search-bar-container input {
-    width: 100%;
-    background-color: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 0.7rem 2rem 0.75rem 2.5rem;
-    border-radius: 1.5rem;
-    color: var(--text);
-    outline: none;
-    font-size: 0.9rem;
-    backdrop-filter: blur(6px);
-    transition: all 0.3s ease;
+.search-bar-container input {
+    @apply w-full rounded-3xl border border-(--neon-grid) bg-(--surface-overlay) px-[clamp(2rem,4vw,2.5rem)] py-[clamp(0.6rem,1.5vw,0.75rem)] pr-[clamp(1.5rem,3vw,2rem)] text-[clamp(0.8rem,1.5vw,0.9rem)] text-(--text) outline-none backdrop-blur-[0.375rem] transition-all duration-300 ease-in-out;
 }
 
-#search-bar-container input:focus {
-    border-color: var(--neon);
-    box-shadow: 0 0 10px var(--glow);
+.search-bar-container input:focus {
+    @apply border-(--neon) shadow-[0_0_0.625rem_var(--glow)];
 }
 
-#search-bar-container input::placeholder {
-    color: var(--muted);
+.search-bar-container input::placeholder {
+    @apply text-(--muted);
 }
 
-#search-icon {
-    position: absolute;
-    left: 15px;
-    color: var(--muted);
-    font-size: 1rem;
-    pointer-events: none;
+.search-icon {
+    @apply pointer-events-none absolute left-[clamp(0.625rem,1.5vw,0.9375rem)] text-[clamp(0.875rem,1.5vw,1rem)] text-(--muted);
 }
 
-#clear-search-btn {
-    position: absolute;
-    right: 12px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    transition: color 0.2s;
+.clear-search-btn {
+    @apply absolute right-[clamp(0.5rem,1.2vw,0.75rem)] flex cursor-pointer items-center justify-center border-0 bg-transparent text-[clamp(0.875rem,1.5vw,1rem)] text-(--muted) transition-[color] duration-200;
 }
 
-#clear-search-btn:hover {
-    color: #fff;
+.clear-search-btn:hover {
+    @apply text-(--text);
 }
 
-/* =====================================================
-   SEARCH RESULTS DROPDOWN
-===================================================== */
-#search-results-dropdown {
-    position: absolute;
-    top: 44px;
-    left: 0;
-    width: 100%;
-    max-height: 420px;
-    overflow-y: auto;
-    background: rgba(13, 27, 42, 0.98);
-    border: 1px solid rgba(0, 240, 255, 0.25);
-    backdrop-filter: blur(16px);
-    border-radius: 14px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-    z-index: 2000;
+.search-results-layer {
+    @apply fixed inset-0 z-10000 pointer-events-none;
 }
 
-#search-loading {
-    padding: 18px 16px;
-    color: var(--neon);
-    font-size: 13px;
-    text-align: center;
-    letter-spacing: 0.5px;
+.search-results-backdrop {
+    @apply absolute right-0 bottom-0 left-0 pointer-events-auto;
+
+    top: var(--search-overlay-top);
+
+    background: color-mix(
+        in srgb,
+        var(--dark) 65%,
+        transparent
+    );
+
+    -webkit-backdrop-filter: blur(clamp(0.375rem, 1vw, 0.625rem));
+    backdrop-filter: blur(clamp(0.375rem, 1vw, 0.625rem));
 }
 
-#search-group {
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-}
-#search-group:last-child {
-    border-bottom: none;
+.search-results-dropdown {
+    @apply fixed z-10001 pointer-events-auto max-h-[calc(100vh-var(--search-dropdown-top))] overflow-y-auto rounded-b-[clamp(0.625rem,2vw,0.875rem)] border border-t-0 border-(--neon-cyan-soft);
+
+    top: var(--search-dropdown-top);
+    left: var(--search-dropdown-left);
+    width: var(--search-dropdown-width);
+
+    background: var(--dark);
+
+    box-shadow:
+        0 0.75rem 1.875rem color-mix(
+            in srgb,
+            var(--dark) 70%,
+            transparent
+        );
 }
 
-#search-group-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--neon);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.search-loading {
+    @apply px-[clamp(0.875rem,2vw,1rem)] py-[clamp(0.875rem,2vw,1.125rem)] text-center text-[clamp(0.75rem,1.5vw,0.8125rem)] tracking-[0.03125rem] text-(--neon);
 }
 
-#search-result-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    cursor: pointer;
-    transition: background 0.2s;
+.search-group {
+    @apply border-b border-(--neon-grid) py-2;
 }
 
-#search-result-item:hover {
-    background: rgba(0, 240, 255, 0.08);
+.search-group:last-child {
+    @apply border-b-0;
 }
 
-#search-result-icon {
-    color: var(--neon);
-    font-size: 18px;
-    flex-shrink: 0;
+.search-group-title {
+    @apply flex items-center gap-2 border-b border-(--neon-grid) px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.375rem,1vw,0.5rem)] text-[clamp(0.65rem,1.2vw,0.6875rem)] font-bold uppercase tracking-[0.0625rem] text-(--neon);
 }
 
-#search-result-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #3b82f6;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
+.search-result-item {
+    @apply flex min-w-0 cursor-pointer items-center gap-[clamp(0.625rem,1.5vw,0.75rem)] px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.625rem,1.5vw,0.75rem)] transition-[background] duration-200;
 }
 
-#search-result-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.search-result-item:hover {
+    background: var(--neon-overlay);
 }
 
-#search-result-text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+.search-result-icon {
+    @apply shrink-0 text-[clamp(1rem,2vw,1.125rem)] text-(--neon);
 }
 
-#search-result-title {
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.search-result-avatar {
+    @apply flex h-[clamp(2rem,5vw,2.125rem)] w-[clamp(2rem,5vw,2.125rem)] shrink-0 items-center justify-center overflow-hidden rounded-full text-(--text);
+
+    background: var(--primary);
 }
 
-#search-result-sub {
-    color: var(--muted);
-    font-size: 12px;
+.search-result-avatar img {
+    @apply block h-full w-full object-cover;
 }
 
-#search-empty {
-    padding: 10px 16px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.5;
+.search-result-text {
+    @apply flex min-w-0 flex-col;
+}
+
+.search-result-title {
+    @apply truncate text-[clamp(0.8rem,1.5vw,0.875rem)] font-semibold text-(--text);
+}
+
+.search-result-sub {
+    @apply text-[clamp(0.7rem,1.2vw,0.75rem)] text-(--muted);
+}
+
+.search-empty {
+    @apply px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.625rem,1.5vw,0.75rem)] text-[clamp(0.75rem,1.5vw,0.8125rem)] leading-normal text-(--muted);
 }

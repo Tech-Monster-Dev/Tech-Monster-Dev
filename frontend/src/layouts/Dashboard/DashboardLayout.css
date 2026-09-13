@@ -1,38 +1,33 @@
-/* Hide scrollbar completely while keeping scroll functionality */
-.dashboard-content::-webkit-scrollbar,
-.sidebar-menu::-webkit-scrollbar {
-    display: none;
-}
+@import "tailwindcss";
+
+/* ==========================================
+   HIDE SCROLLBAR
+   ========================================== */
 
 .dashboard-content,
 .sidebar-menu {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    @apply scrollbar-none [-ms-overflow-style:none];
 }
+
+.dashboard-content::-webkit-scrollbar,
+.sidebar-menu::-webkit-scrollbar {
+    @apply hidden;
+}
+
+/* ==========================================
+   DASHBOARD CONTAINER
+   ========================================== */
 
 .dashboardContainer {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    background-color: transparent;
+    @apply relative z-10 flex h-screen w-full flex-col overflow-hidden bg-transparent;
+
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden;
 }
 
-#sideMain{
-    display: flex;
-    flex: 1;
-    align-items: stretch;       
-    overflow: hidden;
-}
+/* ==========================================
+   SIDEBAR MAIN
+   ========================================== */
 
-@media (max-width: 756px) {
-
-    #sideMain {
-        width: 100%;
-    }
-
+.sidebar-main{
+    @apply flex min-h-0 min-w-0 flex-1 items-stretch overflow-hidden;
 }

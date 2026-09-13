@@ -66,13 +66,13 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
     return (
         <>
-            <nav id='navDash'>
+            <nav className='navDash'>
                 <SystemBar user={capitalName} />
 
-                <header id="dashboard-navbar">
-                    <div id="nav-left-section">
+                <header className="dashboard-navbar">
+                    <div className="dashboard-navbar-left-section">
                         <button
-                            id="menu-toggle-btn"
+                            className="dashboard-navbar-menu-toggle-btn"
                             onClick={onMobileMenuClick}
                             aria-label="Open menu"
                         >
@@ -80,22 +80,22 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                         </button>
 
                         {/* Logo placed in Navbar */}
-                        <div id="navbar-logo">
+                        <div className="dashboard-navbar-logo">
                             <img src={logo} alt="Logo" />
                             <h2>Tech <span>Monster</span></h2>
                         </div>
                     </div>
 
-                    <div id="navbar-search">
+                    <div className="dashboard-navbar-search">
                         <SearchBar />
                     </div>
 
                     {/* Right Icons & User Profile */}
-                    <div id="navbar-right">
+                    <div className="dashboard-navbar-right">
 
                         {/* Notification Bell with Dropdown & Badge Counter */}
                         <div
-                            className="notification-wrapper"
+                            className="dashboard-navbar-notification-wrapper"
                             onMouseEnter={() =>
                                 setShowNotificationPopup(true)
                             }
@@ -108,8 +108,8 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                 to={`/${role}/notification`}
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "notification-btn active"
-                                        : "notification-btn"
+                                        ? "dashboard-navbar-notification-btn active"
+                                        : "dashboard-navbar-notification-btn"
                                 }
                             >
 
@@ -118,7 +118,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                 {unreadCount > 0 && (
 
                                     <motion.span
-                                        className="navbar-notification-badge"
+                                        className="dashboard-navbar-notification-badge"
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
                                         transition={{
@@ -131,19 +131,14 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                             : unreadCount
                                         }
                                     </motion.span>
-
                                 )}
-
                             </NavLink>
 
 
                             <AnimatePresence>
-
                                 {showNotificationPopup && (
-
                                     <motion.div
-                                        className="navbar-notification-dropdown"
-
+                                        className="dashboard-navbar-notification-dropdown"
                                         initial={{
                                             opacity: 0,
                                             y: 10,
@@ -167,7 +162,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                         }}
                                     >
 
-                                        <div className="nav-notif-header">
+                                        <div className="dashboard-navbar-notif-header">
 
                                             <span>
                                                 Notifications
@@ -185,11 +180,11 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                         </div>
 
 
-                                        <div className="nav-notif-list">
+                                        <div className="dashboard-navbar-notif-list">
 
                                             {notifications.length === 0 ? (
 
-                                                <div className="nav-notif-item">
+                                                <div className="dashboard-navbar-notif-item">
                                                     No notifications
                                                 </div>
 
@@ -203,7 +198,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                                             key={item._id}
 
                                                             className={
-                                                                `nav-notif-item ${!item.isRead
+                                                                `dashboard-navbar-notif-item-notif-item ${!item.isRead
                                                                     ? "unread"
                                                                     : ""
                                                                 }`
@@ -239,7 +234,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                         </div>
 
 
-                                        <div className="nav-notif-footer">
+                                        <div className="dashboard-navbar-notif-footer">
 
                                             <Link
                                                 to={`/${role}/notification`}
@@ -257,46 +252,46 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
                         </div>
 
-                        <NavLink to={`/${role}/message`} className={({ isActive }) => isActive ? 'message-btn active' : 'message-btn'}>
+                        <NavLink to={`/${role}/message`} className={({ isActive }) => isActive ? 'dashboard-navbar-message-btn active' : 'dashboard-navbar-message-btn'}>
                             <FiMessageSquare />
                         </NavLink>
 
-                        <div id="verticalLine"></div>
+                        <div className="dashboard-navbar-verticalLine"></div>
 
                         {/* User Profile with Hover Popup */}
                         <div
-                            id="user-profile-wrapper"
+                            className="dashboard-navbar-user-profile-wrapper"
                             onMouseEnter={() => setShowProfilePopup(true)}
                             onMouseLeave={() => setShowProfilePopup(false)}
                         >
-                            <div id="user-profile">
-                                <div id="avatar-circle">
+                            <div className="dashboard-navbar-user-profile">
+                                <div className="dashboard-navbar-avatar-circle">
                                     {profileImg ? (
                                         <img
                                             src={profileImg}
                                             alt={userName || "User"}
-                                            className="user-profile-img"
+                                            className="dashboard-navbar-user-profile-img"
                                         />
                                     ) : (
                                         <img src={defaultProfileImg} alt="defaultProfile" />
                                     )}
                                 </div>
-                                <span className="username">{userName || 'username'}</span>
+                                <span className="dashboard-navbar-username">{userName || 'username'}</span>
                             </div>
 
                             <AnimatePresence>
                                 {showProfilePopup && (
                                     <motion.div
-                                        className="profile-popup"
+                                        className="dashboard-navbar-profile-popup"
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
                                         transition={{ duration: 0.2 }}
                                     >
-                                        <Link to={`/${role}/account`} className="popup-item">
+                                        <Link to={`/${role}/account`} className="dashboard-navbar-popup-item">
                                             <FiUser /> Profile
                                         </Link>
-                                        <button onClick={handleLogout} className="popup-item logout">
+                                        <button onClick={handleLogout} className="dashboard-navbar-popup-item logout">
                                             <FiLogOut /> Logout
                                         </button>
                                     </motion.div>
