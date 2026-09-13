@@ -1,121 +1,173 @@
 import "./ResetPassword.css";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
-import {
-    useForm,
-    useWatch,
-} from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import PasswordInput from "../../../../components/ui/Form/component/PasswordInput";
-import AuthButton from "../../../../components/ui/Button/AuthButton";
+import Form from "../../../../components/ui/Form";
 import PasswordStrength from "../../../../components/ui/Form/component/PasswordStrength";
-
-import { resetPasswordSchema } from "../../../../validations/auth/resetPasswordSchema";
-import { resetPassword } from "../../../../services/api/authService";
+import AuthButton from "../../../../components/ui/Button/AuthButton";
 import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
+
+import { resetPassword } from "../../../../services/api/authService";
+import { validateField, validateForm } from "../../../../shared/utils/validation/formValidation.js";
+
+const resetPasswordRules = {
+    password: {
+        required: true,
+        minLength: 8,
+        minLengthMessage: "Password must be at least 8 characters",
+        pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$/,
+        patternMessage: "At least one uppercase letter, one lowercase letter, one number and one special character",
+    },
+
+    confirmPassword: {
+        required: true,
+        requiredMessage: "Password confirmation is required",
+    },
+}
 
 function ResetPassword() {
 
     const navigate = useNavigate();
-
     const location = useLocation();
-
     const email = location.state?.email;
 
-    const [serverError, setServerError] = useState("");
-
     const [loading, setLoading] = useState(false);
-
-    const {
-
-        register,
-
-        handleSubmit,
-
-        control,
-
-        formState: {
-
-            errors
-
-        }
-
-    } = useForm({
-
-        resolver: zodResolver(resetPasswordSchema)
-
+    const [errors, setErrors] = useState({});
+    const [formData, setFormData] = useState({
+        password: "",
+        confirmPassword: ""
     });
 
-    const password =
-        useWatch({
-            control,
-            name: "password"
-        });
+    useEffect(() => {
+        if (!email) {
+            navigate("/forgot-password", {
+                replace: true
+            });
+        }
+    }, [email, navigate]);
 
-    const onSubmit = async (data) => {
+    const fields = [
+        {
+            name: "password",
+            label: "Password",
+            type: "password",
+            required: true,
+        },
+        {
+            name: "confirmPassword",
+            label: "Confirm Password",
+            type: "password",
+            required: true,
+        },
+    ]
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+
+        const updatedFormData = {
+            ...formData,
+            [name]: value
+        };
+
+        setFormData(updatedFormData);
+
+        const fieldError = validateField(
+            name,
+            value,
+            resetPasswordRules
+        );
+
+        setErrors((prev) => ({
+            ...prev,
+            [name]: fieldError,
+            ...(name === "confirmPassword" &&
+                value !== updatedFormData.password && {
+                confirmPassword: "Passwords do not match"
+            }),
+            ...(name === "password" &&
+                updatedFormData.confirmPassword &&
+                value !== updatedFormData.confirmPassword && {
+                confirmPassword: "Passwords do not match"
+            })
+        }));
+    };
+
+    const handleUpdatePassword = async (event) => {
+        event.preventDefault();
+
+        const {
+            errors: newErrors,
+            isValid: formIsValid
+        } = validateForm(
+            formData,
+            resetPasswordRules
+        );
+
+        const validationErrors = {
+            ...newErrors,
+        };
+
+        if (formData.password !== formData.confirmPassword) {
+            validationErrors.confirmPassword = "Passwords do not match";
+        }
+
+        const isValid =
+            formIsValid &&
+            formData.password === formData.confirmPassword;
+
+        setErrors(validationErrors);
+
+        if (!isValid) {
+            return;
+        }
+
+        setLoading(true);
 
         try {
-
-            setLoading(true);
-
-            setServerError("");
-
             await resetPassword({
-
                 email,
-
-                newPassword: data.password,
-
-                confirmPassword: data.confirmPassword
-
+                newPassword: formData.password,
+                confirmPassword: formData.confirmPassword
             });
 
             navigate("/login", {
-
                 replace: true,
-
                 state: {
-
-                    success:
-
-                        "Password changed successfully."
-
+                    success: "Password changed successfully."
                 }
-
             });
 
-        }
+            toast.success("Password changed successfully.");
 
-        catch (error) {
+        } catch (err) {
+            const message =
+                err.response?.data?.message ||
+                err.message ||
+                "Something went wrong";
 
-            setServerError(
+            toast.error(message);
 
-                error.response?.data?.message ||
-
-                "Unable to reset password."
-
-            );
-
-        }
-
-        finally {
-
+        } finally {
             setLoading(false);
-
         }
-
     };
 
+    const actions = [
+        {
+            label: "Update Password",
+            type: "submit",
+            component: AuthButton,
+            fullWidth: true,
+            disabled: loading,
+        },
+    ];
+
     return (
-
         <>
-
             {
                 loading && (
                     <Hash
@@ -125,95 +177,25 @@ function ResetPassword() {
                     />
                 )
             }
-
             <AuthLayout
-
                 title="Reset Password"
-
                 subtitle="Create a strong password."
-
             >
 
-                <motion.form
-
-                    className="reset-form"
-
-                    onSubmit={handleSubmit(onSubmit)}
-
-                    initial={{
-
-                        opacity: 0,
-
-                        y: 20
-
-                    }}
-
-                    animate={{
-
-                        opacity: 1,
-
-                        y: 0
-
-                    }}
-
+                <Form
+                    fields={fields}
+                    values={formData}
+                    onChange={handleInputChange}
+                    onSubmit={handleUpdatePassword}
+                    errors={errors}
+                    formClassName="reset-form"
+                    actions={actions}
                 >
-
-                    <PasswordInput
-
-                        label="New Password"
-
-                        placeholder="Enter new password"
-
-                        showStrength
-
-                        {...register("password")}
-
-                        error={errors.password?.message}
-
-                    />
-
-                    <PasswordInput
-
-                        label="Confirm Password"
-
-                        placeholder="Confirm password"
-
-                        {...register("confirmPassword")}
-
-                        error={errors.confirmPassword?.message}
-
-                    />
-
-                    <PasswordStrength password={password} />
-
-                    {
-
-                        serverError &&
-
-                        <p className="reset-error">
-
-                            {serverError}
-
-                        </p>
-
-                    }
-
-                    <AuthButton
-                        fullWidth
-                        type="submit"
-                        disabled={loading}
-                    >
-                        {loading ? "Updating..." : "Update Password"}
-
-                    </AuthButton>
-
-                </motion.form>
-
+                    <PasswordStrength password={formData.password} />
+                </Form>
             </AuthLayout>
-
         </>
     );
-
 }
 
 export default ResetPassword;

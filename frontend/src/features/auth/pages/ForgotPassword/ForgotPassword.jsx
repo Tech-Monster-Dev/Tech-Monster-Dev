@@ -1,90 +1,105 @@
 import "./ForgotPassword.css";
 
-import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope } from "react-icons/fa";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import Textinput from "../../../../components/ui/Form/component/Textinput";
+import Form from "../../../../components/ui/Form/Form";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
+import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
 
-import { forgotPasswordSchema } from "../../../../validations/auth/forgotPasswordSchema";
 
 import { forgotPassword } from "../../../../services/api/authService";
-import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
+import { validateField, validateForm } from "../../../../shared/utils/validation/formValidation.js";
+
+
+const forgotPasswordRules = {
+    email: {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        patternMessage: "Please enter a valid email",
+    },
+}
 
 function ForgotPassword() {
 
     const navigate = useNavigate();
-
     const [loading, setLoading] = useState(false);
-
-    const [serverError, setServerError] = useState("");
-
-    const {
-
-        register,
-        handleSubmit,
-        formState: { errors }
-
-    } = useForm({
-
-        resolver: zodResolver(forgotPasswordSchema)
-
+    const [formData, setFormData] = useState({
+        email: "",
     });
+    const [errors, setErrors] = useState({});
 
-    const onSubmit = async (data) => {
+    const fields = [
+        {
+            name: "email",
+            label: "Email",
+            type: "email",
+            placeholder: "Enter your email",
+            required: true,
+        },
+    ]
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+
+        setErrors((prev) => ({
+            ...prev,
+            [name]: validateField(name, value, forgotPasswordRules)
+        }));
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const {
+            errors: newErrors,
+            isValid
+        } = validateForm(formData, forgotPasswordRules);
+
+        setErrors(newErrors);
+        if (!isValid) return;
 
         try {
-
             setLoading(true);
-
-            setServerError("");
-
-            await forgotPassword(data);
-
+            await forgotPassword(formData);
             navigate("/verify-reset-otp", {
-
                 state: {
-
-                    email: data.email
-
+                    email: formData.email
                 }
-
             });
 
+            toast.success("OTP sent to your email");
         }
 
         catch (error) {
-
-            setServerError(
-
-                error.response?.data?.message ||
-
-                "Something went wrong"
-
-            );
-
+            toast.error(error.response.data.message || "Something went wrong");
         }
-
         finally {
-
             setLoading(false);
-
         }
-
     }
+
+    const actions = [
+        {
+            label: "Send OTP",
+            type: "submit",
+            component: AuthButton,
+            fullWidth: true,
+            disabled: loading
+        }
+    ]
 
 
 
     return (
-
         <>
-
             {
                 loading && (
                     <Hash
@@ -95,72 +110,28 @@ function ForgotPassword() {
                 )
             }
 
-
             <AuthLayout
-
                 title="Forgot Password"
-
                 subtitle="Enter your registered email."
-
             >
 
-                <motion.form
-
-                    className="forgot-form"
-
-                    onSubmit={handleSubmit(onSubmit)}
-
+                <Form
+                    fields={fields}
+                    values={formData}
+                    errors={errors}
+                    onChange={handleInputChange}
+                    onSubmit={handleSubmit}
+                    formClassName="forgot-form"
+                    actions={actions}
                 >
-
-                    <Textinput
-
-                        label="Email"
-
-                        type="email"
-
-                        placeholder="Enter registered email"
-
-                        icon={<FaEnvelope />}
-
-                        {...register("email")}
-
-                        error={errors.email?.message}
-
-                    />
-
-                    {
-
-                        serverError &&
-
-                        <p className="forgot-error">
-
-                            {serverError}
-
-                        </p>
-
-                    }
-
-                    <AuthButton
-                        type="submit"
-                        fullWidth
-                        disabled={loading}
-                    >
-                        {loading ? "Sending OTP..." : "Send OTP"}
-                    </AuthButton>
-
                     <p className="login-back">
-
                         Remember password?
-
                         <Link to="/login">
-
                             Login
-
                         </Link>
-
                     </p>
 
-                </motion.form>
+                </Form>
 
             </AuthLayout>
 

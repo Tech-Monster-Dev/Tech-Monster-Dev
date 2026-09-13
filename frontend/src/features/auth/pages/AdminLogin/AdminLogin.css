@@ -1,32 +1,42 @@
-.admin-login-form{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
+@import "tailwindcss";
+
+/* ==========================================
+   ADMIN LOGIN PAGE
+========================================== */
+
+.admin-login-form {
+    @apply flex w-full flex-col gap-[clamp(1rem,3vw,1.25rem)];
 }
 
-.admin-error{
-    color:red;
-    font-size:14px;
-    margin:10px 0;
-    text-align:center;
+/* ==========================================
+   USER LOGIN LINK
+========================================== */
+
+.user-login-link {
+    @apply mx-auto my-[clamp(0.75rem,2vw,1rem)]
+        text-center
+        text-[clamp(0.8125rem,1.2vw,0.9375rem)]
+        font-semibold
+        text-(--muted);
 }
 
-#user-login-link{
-    margin: 1rem auto;
-    color: var(--muted);
-    font-weight: 600;
-    text-decoration: none;
-    transition: .3s;
+.user-login-link a {
+    @apply ml-1.5
+        font-semibold
+        text-(--primary)
+        no-underline
+        transition-colors
+        duration-300
+        ease-in-out
+        hover:underline;
 }
 
-#user-login-link a {
-    margin-left: 6px;
-    color: var(--primary);
-    font-weight: 600;
-    text-decoration: none;
-    transition: .3s;
-}
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
 
-#user-login-link a:hover {
-    text-decoration: underline;
+.admin-login-form,
+.user-login-link,
+.user-login-link a {
+    @apply motion-reduce:transition-none;
 }

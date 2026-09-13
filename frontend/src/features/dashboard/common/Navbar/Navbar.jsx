@@ -281,7 +281,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                         <img src={defaultProfileImg} alt="defaultProfile" />
                                     )}
                                 </div>
-                                <span id="username">{userName || 'username'}</span>
+                                <span className="username">{userName || 'username'}</span>
                             </div>
 
                             <AnimatePresence>

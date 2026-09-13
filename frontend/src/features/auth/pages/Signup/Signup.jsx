@@ -1,197 +1,191 @@
 import "./Signup.css";
 
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Hash from '../../../../features/dashboard/common/LoaderPage/Hash';
 
+import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
 
-import Textinput from "../../../../components/ui/Form/component/Textinput";
-import PasswordInput from "../../../../components/ui/Form/component/PasswordInput";
+import Form from "../../../../components/ui/Form/Form";
+import Checkbox from "../../../../components/ui/Form/component/Checkbox";
 import AuthButton from "../../../../components/ui/Button/AuthButton";
 import PasswordStrength from "../../../../components/ui/Form/component/PasswordStrength";
 
 import { signup as signupService } from "../../../../services/api/authService";
 
-import { signupSchema } from "../../../../validations/auth/signupSchema";
-
-
-
+import { validateField, validateForm } from "../../../../shared/utils/validation/formValidation.js";
+import { signupRules, fields } from "./signupData.js";
 
 function Signup() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const {
-
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors }
-
-  } = useForm({
-
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      terms: false,
-      role: "student",
-    }
-
-  });
-
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const username = watch("username") || "";
-  const email = watch("email") || "";
-  const password = watch("password") || "";
-  const confirmPassword = watch("confirmPassword") || "";
-
 
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
 
-  const onSubmit = async (data) => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    terms: false,
+    role: "student",
+  });
 
-    setError("");
+
+
+  const handleInputChange = (event) => {
+    const { name, value, type, checked } = event.target;
+
+    const updatedValue = type === "checkbox" ? checked : value;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: updatedValue
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: validateField(name, updatedValue, signupRules)
+    }));
+
+    if (error) {
+      setError("");
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const {
+      errors: newErrors,
+      isValid: formIsValid
+    } = validateForm(
+      formData,
+      signupRules
+    );
+
+    const validationErrors = {
+      ...newErrors,
+    };
+
+    if (
+      formData.password !== formData.confirmPassword
+    ) {
+      validationErrors.confirmPassword = "Passwords do not match";
+    }
+
+    if (!formData.terms) {
+      validationErrors.terms = "Please accept Terms & Conditions";
+    }
+
+    const isValid = formIsValid && formData.password === formData.confirmPassword && formData.terms;
+
+    setErrors(validationErrors);
+
+    if (!isValid) {
+      return;
+    }
+
     setLoading(true);
 
     try {
-
-      await signupService(data);
-
-      toast.success("OTP sent to your Gmail account.");
+      await signupService(formData);
 
       setTimeout(() => {
-
-        navigate("/verify-signup-otp", {
-          state: {
-            email: data.email
+        navigate(
+          "/verify-signup-otp",
+          {
+            state: {
+              email: formData.email,
+            },
           }
-        });
-
-      }, 800);
-
+        );
+      }, 100);
+      toast.success("OTP sent to your Gmail account.");
     } catch (err) {
+      const message = err.response?.data?.message || err.message || "Something went wrong";
 
-      toast.error(
-        err.response?.data?.message ||
-        err.message ||
-        "Something went wrong"
-      );
-
-      setError(
-        err.response?.data?.message ||
-        err.message ||
-        "Sign up failed"
-      );
+      toast.error(message);
+      setError(message);
     } finally {
-
       setLoading(false);
-
     }
-
   };
+
+  const actions = [
+    {
+      label: "Create Account",
+      type: "submit",
+      component: AuthButton,
+      fullWidth: true,
+      disabled: loading,
+    },
+  ];
 
   return (
     <>
+      {loading && (
+        <Hash
+          fullScreen
+          message="Sending OTP to your Gmail..."
+          size={70}
+        />
+      )}
 
-      {
-        loading && (
-
-          <Hash
-            fullScreen
-            message="Sending OTP to your Gmail..."
-            size={70}
-          />
-
-        )
-      }
       <AuthLayout
         title="Create Account"
         subtitle="Join Tech Monster Pvt. Ltd."
       >
-        <motion.form
-          id="signup-form"
-          onSubmit={handleSubmit(onSubmit)}
+        <Form
+          fields={fields}
+          values={formData}
+          errors={errors}
+          onChange={handleInputChange}
+          onSubmit={handleSubmit}
+          formClassName="signup-form"
+          actions={actions}
         >
-          <Textinput
-            label="Username"
-            placeholder="@Username"
-            value={username}
-            {...register("username")}
-            error={errors.username?.message}
+          <PasswordStrength
+            password={formData.password}
           />
 
-          <Textinput
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            {...register("email")}
-            error={errors.email?.message}
-          />
+          {error && (
+            <p className="signup-error">
+              {error}
+            </p>
+          )}
 
-
-          <PasswordInput
-            label="Password"
-            showStrength
-            value={password}
-            {...register("password")}
-            error={errors.password?.message}
-          />
-
-          <PasswordInput
-            label="Confirm Password"
-            value={confirmPassword}
-            {...register("confirmPassword")}
-            error={errors.confirmPassword?.message}
-          />
-
-
-          <PasswordStrength password={watch("password")} />
-
-          {error && <p className="signup-error">{error}</p>}
-
-          <label id="terms">
-            <input
-              type="checkbox"
-              {...register("terms")}
+          <div>
+            <Checkbox
+              id="terms"
+              name="terms"
+              checked={formData.terms}
+              onChange={handleInputChange}
+              label={
+                <>
+                  I accept{" "}
+                  <Link to="/terms-and-conditions">
+                    Terms & Conditions
+                  </Link>
+                </>
+              }
+              error={errors.terms}
             />
-            I accept Terms & Conditions
-            <Link to="/terms-and-conditions"> Terms & Conditions</Link>
-          </label>
-          <p id="terms-error">{errors.terms?.message}</p>
+          </div>
 
-          <AuthButton
-            type="submit"
-            fullWidth
-            disabled={loading}
-          >
-            {loading ? "Creating Account..." : "Create Account"}
-          </AuthButton>
-
-          <p id="login-link">
+          <p className="login-link">
             Already have an account?
             <Link to="/login">
               Login
             </Link>
           </p>
-
-
-        </motion.form>
-
+        </Form>
       </AuthLayout>
     </>
-  )
-
+  );
 }
 
 export default Signup;

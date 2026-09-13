@@ -17,21 +17,7 @@ import BackButton from "../../ui/Button/BackButton";
 function TermsAndConditions() {
     return (
         <div className="terms-page">
-
-            {/* Background Effects */}
-            <div className="terms-grid"></div>
-            <div className="terms-glow terms-glow-one"></div>
-            <div className="terms-glow terms-glow-two"></div>
-
             <div className="terms-container">
-
-                {/* Back */}
-                <BackButton
-                    to="/signup"
-                    label="Back to Signup page"
-                    className="terms-back"
-                />
-
                 {/* Header */}
                 <motion.header
                     className="terms-header"
@@ -39,6 +25,13 @@ function TermsAndConditions() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7 }}
                 >
+
+                    <BackButton
+                        to="/signup"
+                        label="Back to Signup page"
+                        className="terms-back"
+                    />
+                    
                     <div className="terms-icon">
                         <FaFileContract />
                     </div>
