@@ -1,47 +1,36 @@
-/* MAIN AREA */
+@import "tailwindcss";
+
+/* ==========================================
+   MAIN AREA
+========================================== */
+
 .dashboard-main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 8rem);
-    margin: 0.5rem;
-    background-color: transparent;
-    backdrop-filter: blur(5px);
-    border-radius: 1rem;
-    box-shadow: 0 0 10px var(--glow);
-    padding: 1rem;
-    z-index: 0;
-    overflow: hidden;
-    min-width: 0;
-    transition: width 0.35s ease, flex-basis 0.35s ease;
+    @apply relative z-0 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-(--radius) m-2 p-4 backdrop-blur-[0.3125rem] transition-[width,flex-basis] duration-300 ease-in-out;
+    
+    background: transparent;
+    box-shadow: 0 0 0.625rem var(--glow);
 }
 
-/* Smoothly expand the main area when the sidebar collapses */
+/* ==========================================
+   COLLAPSED SIDEBAR SUPPORT
+========================================== */
+
 .dashboardContainer.sidebar-collapsed .dashboard-main {
-    flex: 1 1 auto;
-    min-width: 0;
+    @apply min-w-0 flex-1;
 }
 
+/* ==========================================
+   CONTENT WRAPPER
+========================================== */
 
-
-/* CONTENT CONTAINER WRAPPER */
 .dashboard-content-wrapper {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    @apply flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden;
 }
+
+/* ==========================================
+   SCROLLABLE CONTENT
+========================================== */
 
 .dashboard-content {
-    position: relative;
-    flex-grow: 1;
-    padding: 0.5rem;
-    overflow-y: auto;
-}
-
-
-@media (max-width: 439px){
-    .dashboard-main{
-        padding: 0.5rem;
-    }
+    @apply relative min-h-0 min-w-0 flex-1 overflow-y-auto p-2;
 }

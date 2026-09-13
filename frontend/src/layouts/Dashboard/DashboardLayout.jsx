@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 
 import Navbar from "../../features/dashboard/common/Navbar";
 import Sidebar from "../../features/dashboard/common/Sidebar";
-import Footer from "../../features/dashboard/common/Footer";
 import Main from "../../features/dashboard/common/Main";
+import Footer from "../../features/dashboard/common/Footer";
+
 import { socket } from "../../services/socket/socket";
 import useAuth from "../../shared/hooks/useAuth";
 import useActiveWebsiteTime from "../../shared/hooks/useActiveWebsiteTime";
