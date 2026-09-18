@@ -1,0 +1,491 @@
+@import "tailwindcss";
+
+
+/* ==========================================
+   CHAT HEADER
+========================================== */
+
+.chatHeader {
+    @apply relative z-200 flex min-h-18 shrink-0 items-center border-b px-[clamp(0.75rem,2vw,1.125rem)] py-2.5 backdrop-blur-lg;
+    border-color: var(--neon-grid);
+    background: color-mix(
+        in srgb,
+        var(--dark) 88%,
+        transparent
+    );
+}
+
+
+/* ==========================================
+   CHAT HEADER LEFT
+========================================== */
+
+.chatHeaderLeft {
+    @apply flex min-w-0 items-center gap-[clamp(0.5625rem,1.5vw,0.75rem)];
+}
+
+.chatHeaderLeft img {
+    @apply block h-11 w-11 shrink-0 rounded-full border-2 object-cover;
+    border-color: var(--neon-blue-soft);
+}
+
+.chatHeaderLeft > div {
+    @apply min-w-0;
+}
+
+.chatHeaderLeft h3 {
+    @apply mb-0.5 overflow-hidden text-[clamp(0.875rem,1.5vw,0.9375rem)] font-bold leading-[1.2] text-(--text) text-ellipsis whitespace-nowrap;
+}
+
+.chatHeaderLeft small {
+    @apply block text-[clamp(0.6875rem,1.2vw,0.75rem)] leading-[1.2] text-(--gray);
+}
+
+
+/* ==========================================
+   MOBILE BACK BUTTON
+========================================== */
+
+.mobileChatBack {
+    @apply hidden h-9.5 w-9.5 shrink-0 items-center justify-center rounded-full border-0 bg-transparent p-0 text-[1.25rem] text-(--muted) transition-[background,color] duration-200 ease-in-out;
+}
+
+.mobileChatBack:hover {
+    @apply text-(--text);
+    background: var(--neon-overlay);
+}
+
+
+/* ==========================================
+   MESSAGE SEARCH
+========================================== */
+
+.messageSearch {
+    @apply flex shrink-0 items-center gap-2.5 border-b px-4 py-2.5;
+    border-color: var(--neon-grid);
+    background: color-mix(
+        in srgb,
+        var(--dark) 72%,
+        transparent
+    );
+}
+
+.messageSearch input {
+    @apply h-9.5 min-w-0 flex-1 rounded-[0.625rem] border bg-(--surface) px-3.5 text-[0.8125rem] text-(--text) outline-none transition-[border-color,background] duration-200 ease-in-out;
+    border-color: var(--neon-grid);
+}
+
+.messageSearch input::placeholder {
+    @apply text-(--gray);
+}
+
+.messageSearch input:focus {
+    border-color: var(--primary);
+    background: color-mix(
+        in srgb,
+        var(--surface) 95%,
+        var(--dark)
+    );
+}
+
+
+/* ==========================================
+   MEDIA BUTTON
+========================================== */
+
+.mediaBtn {
+    @apply h-9.5 shrink-0 rounded-[0.625rem] border px-3.25 text-[0.75rem] font-bold text-(--secondary) transition-[background,border-color,transform] duration-200 ease-in-out;
+    border-color: var(--neon-blue-faint);
+    background: var(--neon-blue-faint);
+}
+
+.mediaBtn:hover {
+    border-color: var(--neon-blue-soft);
+    background: var(--neon-blue-soft);
+    transform: translateY(-0.0625rem);
+}
+
+
+/* ==========================================
+   MESSAGES CONTAINER
+========================================== */
+
+.messagesContainer {
+    @apply flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto px-[clamp(0.5rem,2vw,1.125rem)] py-[clamp(0.75rem,2vw,1.25rem)];
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            var(--neon-blue-faint),
+            transparent 28%
+        ),
+        var(--dark);
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+}
+
+
+/* ==========================================
+   MESSAGE SCROLLBAR
+========================================== */
+
+.messagesContainer::-webkit-scrollbar,
+.mediaGrid::-webkit-scrollbar {
+    width: 0.375rem;
+}
+
+.messagesContainer::-webkit-scrollbar-track,
+.mediaGrid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb,
+.mediaGrid::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: var(--muted);
+    opacity: 0.4;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb:hover,
+.mediaGrid::-webkit-scrollbar-thumb:hover {
+    opacity: 0.65;
+}
+
+
+/* ==========================================
+   LOADING OLDER
+========================================== */
+
+.loadingOlder {
+    @apply shrink-0 self-center rounded-full border px-3 py-1.5 text-[0.6875rem] text-(--gray);
+    border-color: var(--neon-grid);
+    background: var(--surface);
+}
+
+
+/* ==========================================
+   TYPING INDICATOR
+========================================== */
+
+.typingIndicator {
+    @apply flex min-h-6 min-w-10.5 items-center gap-1 self-start rounded-xl border px-3 py-2 text-[0.75rem] italic text-(--gray);
+    margin: 0.25rem 0 0.125rem 0.5rem;
+    border-color: var(--neon-grid);
+    background: var(--surface);
+}
+
+.typingDot {
+    @apply block h-1.5 w-1.5 shrink-0 rounded-full;
+    background: currentColor;
+    opacity: 0.45;
+    animation: typingBounce 1.2s infinite ease-in-out;
+}
+
+.typingDot:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.typingDot:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+
+/* ==========================================
+   TYPING ANIMATION
+========================================== */
+
+@keyframes typingBounce {
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+
+    30% {
+        transform: translateY(-0.25rem);
+        opacity: 1;
+    }
+}
+
+
+/* ==========================================
+   EMPTY CHAT
+========================================== */
+
+.emptyChat {
+    @apply flex min-h-0 flex-1 flex-col items-center justify-center p-[clamp(1.25rem,4vw,1.875rem)] text-center text-(--gray);
+    background:
+        radial-gradient(
+            circle at center,
+            var(--neon-blue-soft),
+            transparent 38%
+        ),
+        var(--dark);
+}
+
+.emptyChat h2 {
+    @apply mb-2 text-[clamp(1.25rem,3vw,1.375rem)] text-(--text);
+}
+
+.emptyChat p {
+    @apply m-0 max-w-70 text-[0.8125rem] leading-normal text-(--gray);
+}
+
+
+/* ==========================================
+   MOBILE CHAT
+========================================== */
+
+@variant max-md {
+    .chatHeader {
+        @apply min-h-16 px-3 py-2;
+    }
+
+    .mobileChatBack {
+        @apply inline-flex;
+    }
+
+    .chatHeaderLeft {
+        @apply gap-2.25;
+    }
+
+    .chatHeaderLeft img {
+        @apply h-10 w-10;
+    }
+
+    .messageSearch {
+        @apply px-2.5 py-2;
+    }
+
+    .messagesContainer {
+        @apply px-2.5 py-3.5;
+    }
+}
+
+
+/* ==========================================
+   EXTRA SMALL MOBILE
+========================================== */
+
+@variant max-sm {
+    .chatHeaderLeft h3 {
+        @apply text-sm;
+    }
+
+    .chatHeaderLeft small {
+        @apply text-[0.6875rem];
+    }
+
+    .messageSearch input {
+        @apply h-9 text-xs;
+    }
+
+    .mediaBtn {
+        @apply h-9 px-2.5 text-[0.6875rem];
+    }
+
+    .messagesContainer {
+        @apply px-2 py-3;
+    }
+}
+
+
+/* ==========================================
+   DELETE CONVERSATION
+========================================== */
+
+.deleteConversationBtn {
+    @apply cursor-pointer rounded-lg border-0 bg-transparent p-2 text-[1.125rem] transition-[background] duration-200 ease-in-out;
+}
+
+.deleteConversationBtn:hover {
+    background: var(--danger-soft);
+}
+
+
+/* ==========================================
+   CHAT HEADER MENU
+========================================== */
+
+.chatHeaderMenu {
+    @apply relative ml-auto;
+}
+
+.chatMenuBtn {
+    @apply cursor-pointer rounded-lg border-0 bg-transparent p-2 text-[1.5rem] leading-none text-inherit;
+}
+
+.chatMenuBtn:hover {
+    background: var(--surface);
+}
+
+
+/* ==========================================
+   CHAT MENU DROPDOWN
+========================================== */
+.chatMenuDropdown {
+    @apply absolute right-0 top-[calc(100%+0.375rem)] z-100 min-w-57.5 max-h-[calc(100dvh-24.375rem)] overflow-x-hidden overflow-y-auto rounded-[0.625rem] border py-2;
+    border-color: var(--neon-grid);
+    background: var(--background);
+    box-shadow: 0 0.5rem 1.5rem var(--surface-overlay);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.chatMenuDropdown::-webkit-scrollbar {
+    display: none;
+}
+
+.chatMenuDropdown button {
+    @apply flex items-center gap-2 w-full cursor-pointer bg-transparent px-4 py-2.5 text-left text-[0.875rem] text-(--text) border-0;
+}
+
+.chatMenuDropdown button:hover {
+    background: var(--surface);
+}
+
+.chatMenuDropdown .danger {
+    color: var(--danger);
+}
+
+/* ==========================================
+   MESSAGE SEARCH CLOSE
+========================================== */
+
+.messageSearchClose {
+    @apply flex h-9.5 w-9.5 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-[1.5rem] text-(--muted);
+}
+
+.messageSearchClose:hover {
+    @apply text-(--text);
+    background: var(--surface);
+}
+
+
+/* ==========================================
+   SELECT ALL
+========================================== */
+
+.selectAllBtn {
+    @apply mr-0.5 cursor-pointer rounded-lg border-0 bg-transparent p-2 text-[1.25rem] leading-none text-(--muted);
+}
+
+.selectAllBtn:hover {
+    @apply text-(--text);
+    background: var(--surface);
+}
+
+
+/* ==========================================
+   STARRED MESSAGES OVERLAY
+========================================== */
+
+.starredMessagesOverlay {
+    @apply absolute inset-0 z-250 flex items-center justify-center p-5;
+    background: var(--overlay-dark);
+}
+
+
+/* ==========================================
+   STARRED MESSAGES PANEL
+========================================== */
+
+.starredMessagesPanel {
+    @apply flex max-h-[min(42.5rem,85dvh)] w-[min(32.5rem,100%)] flex-col overflow-hidden rounded-2xl border;
+    border-color: var(--neon-grid);
+    background: var(--dark);
+    box-shadow: 0 1.25rem 3.75rem var(--surface-overlay);
+}
+
+
+/* ==========================================
+   STARRED MESSAGES HEADER
+========================================== */
+
+.starredMessagesHeader {
+    @apply flex items-center justify-between gap-3 border-b px-[clamp(1rem,3vw,1.125rem)] py-4;
+    border-color: var(--neon-grid);
+}
+
+.starredMessagesHeader h3 {
+    @apply m-0 flex items-center gap-2 text-base text-(--text);
+}
+
+.starredMessagesHeader h3 svg {
+    color: var(--golden);
+}
+
+.starredMessagesHeader button {
+    @apply h-8 w-8 cursor-pointer rounded-lg border-0 bg-transparent text-[1.5rem] text-(--muted);
+}
+
+.starredMessagesHeader button:hover {
+    background: var(--surface);
+}
+
+
+/* ==========================================
+   STARRED MESSAGES LIST
+========================================== */
+
+.starredMessagesList {
+    @apply min-h-0 flex-1 overflow-y-auto p-3;
+    scrollbar-width: none;
+}
+
+.starredMessagesList::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* ==========================================
+   STARRED MESSAGE ITEM
+========================================== */
+
+.starredMessageItem {
+    @apply mb-2 rounded-[0.625rem] p-3.5;
+    background: var(--surface);
+}
+
+.starredMessageText {
+    @apply wrap-break-word text-sm leading-normal text-(--text);
+}
+
+.starredMessageTime {
+    @apply mt-1.5 text-[0.6875rem] text-(--gray);
+}
+
+.starredMessagesEmpty {
+    @apply m-0 px-5 py-10 text-center text-sm text-(--gray);
+}
+
+
+/* ==========================================
+   STARRED MESSAGES MOBILE
+========================================== */
+
+@variant max-[37.5rem] {
+    .starredMessagesOverlay {
+        @apply p-3;
+    }
+
+    .starredMessagesPanel {
+        @apply max-h-[88dvh] rounded-[0.875rem];
+    }
+}
+
+
+/* ==========================================
+   CHAT START MESSAGE
+========================================== */
+
+.chatStartMessage {
+    @apply m-auto self-center rounded-[1.125rem] border px-[clamp(1rem,3vw,1.125rem)] py-2.5 text-center text-xs leading-[1.45] text-(--gray);
+    border-color: var(--neon-grid);
+    background: var(--surface);
+    box-shadow: 0 0.5rem 1.5rem var(--surface-overlay);
+}
+
+.chatStartMessage strong {
+    @apply mb-0.5 block text-[0.8125rem] text-(--text);
+}

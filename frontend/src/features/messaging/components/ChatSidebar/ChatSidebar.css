@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+/* ==========================================
+   CHAT SIDEBAR
+========================================== */
+
+.chatSidebar {
+    @apply flex h-full min-h-0 min-w-0 shrink-0 flex-col overflow-hidden border-r;
+    width: clamp(17.5rem, 23vw, 20rem);
+    border-color: var(--neon-grid);
+    background: color-mix(
+        in srgb,
+        var(--dark) 92%,
+        transparent
+    );
+}
+
+
+/* ==========================================
+   SIDEBAR HEADING
+========================================== */
+
+.chatSidebar h2 {
+    @apply m-0 shrink-0 px-[clamp(0.875rem,1.5vw,1.125rem)] pb-3 pt-5 text-[clamp(1.25rem,2vw,1.375rem)] font-bold tracking-[-0.02em] text-(--text);
+}
+
+
+/* ==========================================
+   CHAT SEARCH
+========================================== */
+
+.chatSearch {
+    @apply mx-3.5 mb-3.5 mt-1 h-10 w-[calc(100%-1.75rem)] shrink-0 rounded-[0.6875rem] border bg-(--surface) px-3.5 text-[0.8125rem] text-(--text) outline-none transition-[border-color,background,box-shadow] duration-200 ease-in-out;
+    border-color: var(--neon-grid);
+}
+
+.chatSearch::placeholder {
+    @apply text-(--gray);
+}
+
+.chatSearch:focus {
+    border-color: var(--primary);
+    background: color-mix(
+        in srgb,
+        var(--surface) 95%,
+        var(--dark)
+    );
+    box-shadow: 0 0 0 0.1875rem var(--neon-blue-faint);
+}
+
+
+/* ==========================================
+   USER LIST
+========================================== */
+
+.chatUserList {
+    @apply min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-2 pb-2.5 pt-0.5;
+    overscroll-behavior: contain;
+}
+
+.chatUserList::-webkit-scrollbar {
+    width: 0.3125rem;
+}
+
+.chatUserList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chatUserList::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: var(--muted);
+    opacity: 0.35;
+}
+
+.chatUserList::-webkit-scrollbar-thumb:hover {
+    opacity: 0.6;
+}
+
+
+/* ==========================================
+   CHAT USER
+========================================== */
+
+.chatUser {
+    @apply relative mb-1 flex min-h-17 cursor-pointer items-center gap-2.75 rounded-(--radius) border border-transparent px-2.5 py-2.25 transition-[background,border-color,transform] duration-200 ease-in-out;
+}
+
+.chatUser:hover {
+    border-color: var(--neon-grid);
+    background: var(--surface);
+}
+
+.chatUser.active {
+    border-color: var(--neon-blue-faint);
+    background: var(--neon-cyan-faint);
+}
+
+
+/* ==========================================
+   AVATAR
+========================================== */
+
+.chatAvatarBox {
+    @apply relative h-11 w-11 shrink-0;
+}
+
+.chatAvatar {
+    @apply block h-11 w-11 rounded-full border object-cover;
+    border-color: var(--neon-grid);
+}
+
+
+/* ==========================================
+   ONLINE INDICATOR
+========================================== */
+
+.onlineDot {
+    @apply absolute -bottom-px -right-px h-3 w-3 rounded-full border-2;
+    border-color: var(--dark);
+    background: var(--success);
+    box-shadow: 0 0 0 0.125rem var(--neon-sky-faint);
+}
+
+
+/* ==========================================
+   USER INFORMATION
+========================================== */
+
+.chatUserInfo {
+    @apply relative min-w-0 flex-1 pr-9 text-(--text);
+}
+
+.chatUserInfo h4 {
+    @apply mb-0.5 overflow-hidden text-[0.8125rem] font-bold leading-tight text-(--text) text-ellipsis whitespace-nowrap;
+}
+
+.chatUserInfo small {
+    @apply block max-w-full overflow-hidden text-[0.6875rem] leading-[1.35] text-(--gray) text-ellipsis whitespace-nowrap;
+}
+
+.chatUserInfo > small:last-child {
+    @apply mt-0.5 text-[0.625rem] font-semibold capitalize;
+    color: var(--secondary);
+}
+
+
+/* ==========================================
+   CHAT TIME
+========================================== */
+
+.chatTime {
+    @apply absolute right-0 top-0 text-[0.625rem] leading-[1.2] text-(--gray) whitespace-nowrap;
+}
+
+
+/* ==========================================
+   UNREAD BADGE
+========================================== */
+
+.unreadBadge {
+    @apply absolute bottom-2.5 right-2.5 flex h-4.75 min-w-4.75 items-center justify-center rounded-full px-1.25 text-[0.625rem] font-extrabold leading-none text-(--white);
+    background: var(--primary);
+}
+
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.noUsers {
+    @apply p-5 text-center text-(--gray);
+}
+
+
+/* ==========================================
+   TABLET / SMALL LAPTOP
+========================================== */
+
+@variant max-[56.25rem] {
+    .chatSidebar {
+        width: clamp(16.25rem, 30vw, 18.125rem);
+    }
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@variant max-md {
+    .chatSidebar {
+        @apply w-full min-w-0 border-r-0;
+    }
+
+    .chatSidebar h2 {
+        @apply px-4 pb-2.75 pt-4.5 text-[clamp(1.25rem,4vw,1.3125rem)];
+    }
+
+    .chatSearch {
+        @apply mx-3 mb-3 mt-1 w-[calc(100%-1.5rem)];
+    }
+
+    .chatUserList {
+        @apply px-1.75 pb-2.5 pt-0.5;
+    }
+
+    .chatUser {
+        @apply min-h-17.5 px-2.25 py-2.5;
+    }
+}
+
+
+/* ==========================================
+   EXTRA SMALL MOBILE
+========================================== */
+
+@variant max-sm {
+    .chatSidebar h2 {
+        @apply px-3.5 pb-2.5 pt-4 text-[1.25rem];
+    }
+
+    .chatSearch {
+        @apply mx-2.5 mb-2.5 mt-0.75 w-[calc(100%-1.25rem)];
+    }
+}
+
+
+/* ==========================================
+   MUTED CHAT ICON
+========================================== */
+
+.mutedChatIcon {
+    @apply ml-1.75 inline-flex items-center justify-center text-[0.75rem] leading-none align-middle opacity-80;
+}

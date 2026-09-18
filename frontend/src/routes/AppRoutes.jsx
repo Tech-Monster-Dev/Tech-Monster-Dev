@@ -53,7 +53,7 @@ import StudentProfile from '../features/profile/StudentProfile';
 
 
 import Notification from '../features/dashboard/common/Notification';
-import Message from '../features/messaging/Message';
+import Message from '../features/messaging';
 import HelpSupport from '../features/dashboard/common/HelpSupport';
 
 // Admin Dashboard
