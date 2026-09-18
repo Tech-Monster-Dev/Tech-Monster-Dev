@@ -1,0 +1,265 @@
+@import "tailwindcss";
+
+
+/* ==========================================
+   MESSAGE ROW
+========================================== */
+
+.messageRow {
+    @apply flex w-full my-0.5;
+}
+
+.messageRow.mine {
+    @apply justify-end;
+}
+
+.messageRow.other {
+    @apply justify-start;
+}
+
+
+/* ==========================================
+   MESSAGE BUBBLE
+========================================== */
+
+.messageBubble {
+    @apply relative max-w-[min(72%,32.5rem)] rounded-2xl border border-transparent px-2.75 pb-1.5 pt-2.25 wrap-break-word;
+    box-shadow: 0 0.25rem 0.875rem var(--surface-overlay);
+    animation: messageIn 0.2s ease-out;
+}
+
+.mine .messageBubble {
+    @apply rounded-br-[0.3125rem] text-(--white);
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--glow)
+    );
+}
+
+.other .messageBubble {
+    @apply rounded-bl-[0.3125rem] text-(--text);
+    border-color: var(--neon-grid);
+    background: var(--border);
+}
+
+
+/* ==========================================
+   MESSAGE TEXT
+========================================== */
+
+.messageBubble > p {
+    @apply m-0 pr-6 text-sm leading-normal;
+}
+
+
+/* ==========================================
+   CHAT IMAGE
+========================================== */
+
+.chatImage {
+    @apply mt-1.75 block w-[min(17.5rem,100%)] max-h-90 rounded-[0.6875rem] object-cover;
+}
+
+
+/* ==========================================
+   CHAT FILE
+========================================== */
+
+.chatFile {
+    @apply mt-1.75 inline-flex items-center gap-1.5 rounded-[0.5625rem] border px-2.5 py-2 text-xs font-semibold text-(--secondary) no-underline transition-[background,border-color] duration-200 ease-in-out;
+    border-color: var(--neon-grid);
+}
+
+.chatFile:hover {
+    border-color: var(--neon-blue-soft);
+    background: var(--surface);
+}
+
+
+/* ==========================================
+   MESSAGE FOOTER
+========================================== */
+
+.messageFooter {
+    @apply flex min-h-3.75 items-center justify-end gap-1.25 mt-0.75 pl-6 text-[0.625rem];
+    color: var(--muted);
+}
+
+.messageFooter small {
+    @apply text-inherit;
+}
+
+.sent,
+.delivered {
+    @apply text-[0.6875rem] tracking-[-0.125rem];
+    color: var(--muted);
+}
+
+.seen {
+    @apply text-[0.6875rem] font-extrabold tracking-[-0.125rem];
+    color: var(--neon);
+}
+
+
+/* ==========================================
+   MESSAGE MENU BUTTON
+========================================== */
+
+.msgMenuBtn {
+    @apply absolute right-1.25 top-1 flex h-6.25 w-6.25 items-center justify-center rounded-full border-0 bg-transparent p-0 text-[0.9375rem] text-(--muted) opacity-100 transition-[background,color,opacity] duration-200 ease-in-out;
+    z-index: 2;
+}
+
+.messageBubble:hover .msgMenuBtn,
+.msgMenuBtn:focus-visible {
+    @apply opacity-100;
+}
+
+.msgMenuBtn:hover {
+    @apply text-(--white);
+    background: var(--surface);
+}
+
+
+/* ==========================================
+   MESSAGE MENU
+========================================== */
+
+.msgMenu {
+    @apply absolute right-1 top-8 z-20 w-42.5 overflow-hidden rounded-[0.6875rem] border;
+    border-color: var(--neon-grid);
+    background: var(--dark);
+    box-shadow: 0 0.75rem 1.875rem var(--surface-overlay);
+}
+
+.msgMenu button {
+    @apply block w-full cursor-pointer border-0 bg-transparent px-3 py-2.5 text-left text-xs text-(--muted) transition-[background,color] duration-150 ease-in-out;
+}
+
+.msgMenu button:hover {
+    @apply text-(--white);
+    background: var(--neon-overlay);
+}
+
+
+/* ==========================================
+   DELETED MESSAGE
+========================================== */
+
+.deletedMessage {
+    @apply m-0 pr-0! text-xs! italic text-(--gray);
+}
+
+
+/* ==========================================
+   REPLY BOX
+========================================== */
+
+.replyBox {
+    @apply mb-1.75 rounded-[0.4375rem] border-l-[0.1875rem] px-2.25 py-1.75;
+    border-left-color: var(--secondary);
+    background: var(--surface);
+}
+
+.replyBox strong {
+    @apply mb-0.5 block overflow-hidden text-[0.6875rem] text-(--secondary) text-ellipsis whitespace-nowrap;
+}
+
+.replyBox p {
+    @apply m-0 overflow-hidden p-0 text-[0.6875rem] leading-[1.35] text-ellipsis whitespace-nowrap;
+    color: var(--muted);
+}
+
+
+/* ==========================================
+   MESSAGE ANIMATION
+========================================== */
+
+@keyframes messageIn {
+    from {
+        opacity: 0;
+        transform: translateY(0.25rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ==========================================
+   MOBILE MESSAGE
+========================================== */
+
+@variant max-md {
+    .messageBubble {
+        @apply max-w-[82%];
+    }
+
+    .messageBubble > p {
+        @apply text-[0.8125rem];
+    }
+
+    .msgMenuBtn {
+        @apply opacity-100;
+    }
+
+    .chatImage {
+        @apply w-[min(15rem,100%)] max-h-75;
+    }
+}
+
+
+/* ==========================================
+   EXTRA SMALL MOBILE
+========================================== */
+
+@variant max-sm {
+    .messageBubble {
+        @apply max-w-[88%] rounded-[0.875rem] px-2.25 pb-1.25 pt-2;
+    }
+
+    .messageBubble > p {
+        @apply text-[0.8125rem];
+    }
+}
+
+
+/* ==========================================
+   SELECTED MESSAGE
+========================================== */
+
+.messageRow.selected {
+    @apply rounded-[0.625rem];
+    background: var(--success);
+    background: color-mix(
+        in srgb,
+        var(--success) 12%,
+        transparent
+    );
+}
+
+.messageRow.selected .messageBubble {
+    outline: 0.125rem solid var(--success);
+}
+
+
+/* ==========================================
+   MESSAGE STAR
+========================================== */
+
+.messageStar {
+    @apply pointer-events-none absolute bottom-1 right-1.5 text-xs leading-none;
+    color: var(--golden);
+}
+
+
+/* ==========================================
+   OTHER MESSAGE MENU POSITION
+========================================== */
+
+.other .msgMenu {
+    @apply left-1 right-auto;
+}

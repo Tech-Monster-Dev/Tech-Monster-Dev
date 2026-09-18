@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/* ==========================================
+   CHAT CONTAINER
+========================================== */
+
+.chatContainer {
+    @apply relative flex h-full min-h-0 w-full overflow-hidden rounded-(--radius) border isolate;
+
+    border-color: var(--neon-grid);
+
+    background:
+        radial-gradient(
+            circle at top right,
+            var(--neon-faint),
+            transparent 34%
+        ),
+        var(--dark);
+
+    color: var(--text);
+}
+
+/* ==========================================
+   CHAT CONTAINER OVERLAY
+========================================== */
+
+.chatContainer::before {
+    @apply pointer-events-none absolute inset-0 -z-10;
+
+    content: "";
+
+    background: linear-gradient(
+        135deg,
+        var(--surface),
+        transparent 35%
+    );
+}
+
+/* ==========================================
+   CHAT RIGHT PANEL
+========================================== */
+
+.chatRight {
+    @apply relative flex min-h-0 min-w-0 flex-1 flex-col overflow-visible;
+
+    background: var(--surface-overlay);
+}
+
+/* ==========================================
+   REPLY PREVIEW
+========================================== */
+
+.replyPreview {
+    @apply flex min-h-14.5 shrink-0 items-center gap-3 border-l-[0.1875rem] border-t px-4 py-2.5;
+
+    border-color: var(--neon-grid);
+    border-left-color: var(--primary);
+
+    background: var(--surface-overlay);
+}
+
+.replyPreview > div {
+    @apply min-w-0 flex-1;
+}
+
+.replyPreview strong {
+    @apply mb-0.5 block text-[0.8125rem] font-bold;
+
+    color: var(--secondary);
+}
+
+.replyPreview p {
+    @apply m-0 overflow-hidden truncate text-[0.75rem] leading-[1.4] text-(--muted);
+}
+
+.replyPreview button {
+    @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-[1.125rem] text-(--muted) transition-[background,color] duration-200 ease-in-out;
+}
+
+.replyPreview button:hover {
+    @apply text-(--text);
+
+    background: var(--neon-overlay);
+}
+
+/* ==========================================
+   MEDIA MODAL
+========================================== */
+
+.mediaModal {
+    @apply absolute inset-0 z-50 flex flex-col overflow-hidden p-5;
+
+    background: var(--overlay-dark);
+    backdrop-filter: blur(1.125rem);
+}
+
+/* ==========================================
+   MEDIA HEADER
+========================================== */
+
+.mediaHeader {
+    @apply flex shrink-0 items-center justify-between border-b pb-4;
+
+    border-color: var(--neon-grid);
+}
+
+.mediaHeader h3 {
+    @apply m-0 text-[clamp(1rem,2vw,1.125rem)] text-(--text);
+}
+
+.mediaHeader button {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-0 bg-(--surface) text-[1.0625rem] text-(--text);
+}
+
+/* ==========================================
+   MEDIA GRID
+========================================== */
+
+.mediaGrid {
+    @apply grid min-h-0 flex-1 grid-cols-[repeat(auto-fill,minmax(min(9.375rem,100%),1fr))] gap-3 overflow-y-auto pt-4.5;
+}
+
+.mediaGrid img {
+    @apply block w-full rounded-(--radius) object-cover;
+    
+    aspect-ratio: 1;
+}
+
+.mediaGrid a {
+    @apply flex min-h-27.5 items-center justify-center rounded-(--radius) border p-4 text-center no-underline transition-[border-color,background] duration-200 ease-in-out;
+
+    border-color: var(--neon-grid);
+    background: var(--surface);
+    color: var(--secondary);
+}
+
+.mediaGrid a:hover {
+    border-color: var(--primary);
+    background: var(--neon-overlay);
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+/*
+    Tailwind responsive utilities replace
+    the previous CSS media queries.
+*/
+
+@variant max-[63.875rem] {
+    .chatContainer {
+        @apply min-h-0 rounded-(--radius);
+    }
+
+    .chatContainer:not(.mobile-chat-open) .chatRight {
+        @apply hidden;
+    }
+
+    .chatContainer.mobile-chat-open .chatSidebar {
+        @apply hidden;
+    }
+
+    .chatContainer.mobile-chat-open .chatRight {
+        @apply flex w-full;
+    }
+
+    .replyPreview {
+        @apply px-3 py-2;
+    }
+
+    .mediaModal {
+        @apply p-3.5;
+    }
+
+    .mediaGrid {
+        @apply grid-cols-2;
+    }
+}
+
+@variant max-sm {
+    .chatContainer {
+        @apply rounded-none border-0;
+    }
+
+    .replyPreview {
+        @apply min-h-13;
+    }
+
+    .mediaGrid {
+        @apply gap-2;
+    }
+}

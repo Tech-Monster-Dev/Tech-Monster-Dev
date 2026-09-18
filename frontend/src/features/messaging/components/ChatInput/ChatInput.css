@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+.chatInputContainer {
+    @apply relative z-10 flex shrink-0 items-center gap-2 px-3.5 pb-3 pt-2.5 border-t backdrop-blur-lg;
+    border-color: var(--neon-grid);
+    background: color-mix(in srgb, var(--dark) 92%, transparent);
+}
+
+.chatIconBtn {
+    @apply inline-flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-full border bg-transparent p-0 text-[1.1875rem] cursor-pointer transition-[background,color,border-color,transform] duration-200 ease-in-out;
+    border-color: var(--neon-grid);
+    background: color-mix(in srgb, var(--border) 72%, transparent);
+    color: var(--gray);
+}
+
+.chatIconBtn:hover {
+    border-color: var(--neon-blue-soft);
+    background: var(--neon-blue-faint);
+    color: var(--secondary);
+    transform: translateY(-0.0625rem);
+}
+
+.chatTextInput {
+    @apply h-10.5 min-w-0 w-full flex-1 rounded-[1.3125rem] border bg-transparent px-4 py-0 text-[0.8125rem] outline-none transition-[border-color,background,box-shadow] duration-200 ease-in-out;
+    border-color: var(--neon-grid);
+    background: color-mix(in srgb, var(--border) 78%, transparent);
+    color: var(--text);
+}
+
+.chatTextInput::placeholder {
+    color: var(--gray);
+    opacity: 0.7;
+}
+
+.chatTextInput:focus {
+    border-color: var(--neon-blue-soft);
+    background: color-mix(in srgb, var(--border) 96%, transparent);
+    box-shadow: 0 0 0 0.1875rem var(--neon-blue-faint);
+}
+
+.sendBtn {
+    @apply inline-flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full border-0 p-0 text-[1.125rem] text-(--white) cursor-pointer transition-[transform,box-shadow] duration-200 ease-in-out;
+    background: linear-gradient(135deg, var(--primary), var(--glow));
+    box-shadow: 0 0.3125rem 1rem var(--neon-blue-faint);
+}
+
+.sendBtn:hover {
+    transform: translateY(-0.0625rem) scale(1.04);
+    box-shadow: 0 0.4375rem 1.25rem var(--neon-blue-soft);
+}
+
+.sendBtn:active {
+    transform: scale(0.96);
+}
+
+.emojiPicker {
+    @apply absolute left-2.5 bottom-[calc(100%+0.5rem)] z-1000 overflow-hidden rounded-[0.875rem];
+    box-shadow: 0 1.125rem 2.8125rem var(--surface-overlay);
+}
+
+@variant max-md {
+    .chatInputContainer {
+        @apply gap-1.5 px-2.25 pb-2.5 pt-2;
+    }
+
+    .chatIconBtn {
+        @apply h-9 w-9 shrink-0 text-lg;
+    }
+
+    .chatTextInput {
+        @apply h-10 px-3.5;
+    }
+
+    .sendBtn {
+        @apply h-10 w-10 shrink-0 text-[1.0625rem];
+    }
+}
+
+@variant max-sm {
+    .chatInputContainer {
+        @apply gap-1.25 px-1.75 pb-2.25 pt-1.75;
+    }
+
+    .chatIconBtn {
+        @apply h-8.5 w-8.5 shrink-0;
+    }
+
+    .chatTextInput {
+        @apply h-9.5 px-3 text-xs;
+    }
+
+    .sendBtn {
+        @apply h-9.5 w-9.5 shrink-0;
+    }
+
+    .emojiPicker {
+        @apply left-1 max-w-[calc(100vw-0.5rem)];
+    }
+}
+
+.emojiPicker .epr-body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.emojiPicker .epr-body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
