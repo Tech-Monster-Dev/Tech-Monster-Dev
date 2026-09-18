@@ -1,281 +1,170 @@
+@import "tailwindcss";
+
+/* =========================================
+   LEARNING STREAK
+========================================= */
+
 .learning-streak {
-    position: relative;
-    overflow: hidden;
-
-    width: 100%;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 35px;
-
-    padding: 32px;
-
-    border-radius: 22px;
+    @apply relative flex w-full flex-col items-center justify-between
+        gap-6 overflow-hidden rounded-[1.375rem]
+        border p-4
+        backdrop-blur-lg
+        transition-[transform,border-color,box-shadow]
+        duration-400 ease-in-out
+        sm:p-5
+        lg:flex-row lg:gap-8 lg:p-8;
 
     background: var(--dark);
-
-    border:
-        1px solid rgba(255, 255, 255, 0.08);
-
-    backdrop-filter: blur(18px);
-
-    box-shadow:
-        0 15px 35px rgba(0, 0, 0, 0.35);
-
-    transition: 0.4s;
+    border-color: var(--golden);
+    box-shadow: 0 0.9375rem 2.1875rem var(--surface-overlay);
 }
 
-
-.learning-streak:hover {
-    transform: translateY(-8px);
-
-    border-color: #ff7b00;
-
-    box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.45),
-        0 0 35px rgba(255, 123, 0, 0.25);
-}
-
-
+/* =========================================
+   GLOW
+========================================= */
 .streak-glow {
-    position: absolute;
+    @apply pointer-events-none absolute
+        size-[clamp(10rem,20vw,16.25rem)]
+        rounded-full;
 
-    width: 260px;
-    height: 260px;
+    background: color-mix(
+        in srgb,
+        var(--golden) 18%,
+        transparent
+    );
 
-    background:
-        rgba(255, 123, 0, 0.18);
+    filter: blur(5.625rem);
 
-    border-radius: 50%;
+    right: -5rem;
+    top: -5rem;
 
-    filter: blur(90px);
-
-    right: -80px;
-    top: -80px;
-
-    animation:
-        glowMove 6s ease-in-out infinite;
-
-    pointer-events: none;
+    animation: glowMove 6s ease-in-out infinite;
 }
 
+/* =========================================
+   LEFT
+========================================= */
 
 .streak-left {
-    display: flex;
-    align-items: center;
-
-    gap: 22px;
-
-    flex: 1;
-
-    min-width: 0;
-
-    z-index: 2;
+    @apply z-2 flex w-full min-w-0 flex-1
+        items-center gap-4
+        sm:gap-5
+        lg:gap-5.5;
 }
-
 
 .fire-icon {
-    width: 85px;
-    height: 85px;
+    @apply flex size-[clamp(3.125rem,9vw,5.3125rem)]
+        shrink-0 items-center justify-center
+        rounded-full
+        text-(--text)
+        text-[clamp(1.4rem,4vw,2.375rem)];
 
-    flex-shrink: 0;
-
-    border-radius: 50%;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    background:
-        linear-gradient(135deg,
-            #ff9800,
-            #ff5722);
-
-    color: #fff;
-
-    font-size: 38px;
+    background: linear-gradient(
+        135deg,
+        var(--golden),
+        var(--danger)
+    );
 
     box-shadow:
-        0 0 30px rgba(255, 123, 0, 0.35);
+        0 0 1.875rem var(--neon-cyan-faint);
 }
-
 
 .streak-left h2 {
-    color: #fff;
-
-    font-size: 30px;
-
-    margin-bottom: 10px;
+    @apply mb-2
+        text-[clamp(1.2rem,3vw,1.875rem)]
+        font-bold
+        text-(--text)
+        sm:mb-2.5;
 }
-
 
 .streak-left p {
-    color: #b9c3cf;
+    @apply text-[clamp(0.8rem,1.5vw,1rem)]
+        leading-relaxed;
 
-    line-height: 28px;
+    color: var(--muted);
 }
 
+/* =========================================
+   RIGHT
+========================================= */
 
 .streak-right {
-    width: 340px;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 20px;
-
-    z-index: 2;
+    @apply z-2 flex w-full flex-col gap-4
+        sm:gap-5
+        lg:w-85;
 }
 
+/* =========================================
+   PROGRESS
+========================================= */
 
 .streak-progress {
-    width: 100%;
-    height: 12px;
+    @apply h-2 w-full overflow-hidden rounded-full
+        sm:h-2.5
+        lg:h-3;
 
-    border-radius: 20px;
-
-    overflow: hidden;
-
-    background: #1d293d;
+    background: var(--border);
 }
-
 
 .streak-fill {
-    height: 100%;
+    @apply h-full rounded-full;
 
-    border-radius: 20px;
-
-    background:
-        linear-gradient(90deg,
-            #ff9800,
-            #ff5722);
+    background: linear-gradient(
+        90deg,
+        var(--golden),
+        var(--danger)
+    );
 
     box-shadow:
-        0 0 18px rgba(255, 123, 0, 0.5);
+        0 0 1.125rem var(--neon-cyan-soft);
 }
 
+/* =========================================
+   FOOTER
+========================================= */
 
 .streak-footer {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
+    @apply flex items-center justify-between gap-3;
 }
-
 
 .streak-footer span {
-    display: flex;
-    align-items: center;
+    @apply flex min-w-0 items-center gap-2
+        text-[clamp(0.75rem,1.5vw,0.9375rem)];
 
-    gap: 8px;
-
-    color: #b8c2cf;
+    color: var(--muted);
 }
-
 
 .streak-footer svg {
-    color: #ff9800;
+    @apply shrink-0 text-(--golden);
 }
-
 
 .streak-footer strong {
-    color: #fff;
-
-    font-size: 20px;
+    @apply text-[clamp(1rem,2.5vw,1.25rem)]
+        text-(--text);
 }
 
+/* =========================================
+   CONTINUE BUTTON
+========================================= */
 
 .continue-streak-btn {
-    height: 50px;
+    @apply flex min-h-10 w-full cursor-pointer
+        items-center justify-center gap-2.5
+        rounded-[0.875rem] border-0
+        px-4
+        text-(--text)
+        font-semibold
+        transition-shadow duration-350 ease-in-out
+        sm:min-h-12
+        lg:w-full;
 
-    border: none;
-
-    border-radius: 14px;
-
-    cursor: pointer;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    gap: 10px;
-
-    color: #fff;
-
-    font-weight: 600;
-
-    background:
-        linear-gradient(135deg,
-            #ff9800,
-            #ff5722);
-
-    transition: 0.35s;
+    background: linear-gradient(
+        135deg,
+        var(--golden),
+        var(--danger)
+    );
 }
-
 
 .continue-streak-btn:hover {
-    box-shadow:
-        0 0 25px rgba(255, 123, 0, 0.35);
-}
-
-
-@media (max-width: 1140px) {
-
-    .learning-streak {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .streak-left {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .streak-right {
-        width: 100%;
-    }
-}
-
-
-@media (max-width: 576px) {
-
-    .learning-streak {
-        padding: 1rem;
-    }
-
-    .fire-icon {
-        width: 50px;
-        height: 50px;
-
-        font-size: 1.4rem;
-    }
-
-    .streak-left {
-        justify-content: flex-start;
-        gap: 1rem;
-    }
-
-    .streak-left h2 {
-        font-size: 1.2rem;
-    }
-
-    .streak-left p {
-        font-size: 0.8rem;
-        line-height: 1.4;
-    }
-
-    .streak-progress {
-        height: 8px;
-    }
-
-    .streak-footer strong {
-        font-size: 1rem;
-    }
-
-    .continue-streak-btn {
-        height: 40px;
-    }
+    box-shadow: 0 0 1.5625rem var(--neon-cyan-soft);
 }

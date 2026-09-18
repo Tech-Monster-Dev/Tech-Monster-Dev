@@ -1,3 +1,4 @@
+import "./Notification.css";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -13,12 +14,12 @@ import EmptyState from "../../../../components/ui/EmptyState";
 import useNotification from "../../../../shared/hooks/useNotification";
 import { followUser } from "../../../../services/api/follow.service";
 
-import "./Notification.css";
 
 export default function Notification() {
   const location = useLocation();
   const navigate = useNavigate();
   const autoReadTriggered = useRef(false);
+
   const [followedBackIds, setFollowedBackIds] = useState(new Set());
   const [followLoadingIds, setFollowLoadingIds] = useState(new Set());
 
@@ -59,10 +60,7 @@ export default function Notification() {
     const type = notification.type;
 
     if (type === "message" && context.conversationId) {
-      navigate(
-        role === "admin"
-          ? "/admin/support"
-          : "/student/help&support",
+      navigate(role === "admin" ? "/admin/support" : "/student/help&support",
         {
           state: {
             notificationConversationId: String(
@@ -78,9 +76,7 @@ export default function Notification() {
       navigate(`/${role}/message`, {
         state: {
           notificationUserId: String(context.senderId),
-          notificationMessageId: context.messageId
-            ? String(context.messageId)
-            : null,
+          notificationMessageId: context.messageId ? String(context.messageId) : null,
         },
       });
       return;
@@ -92,10 +88,7 @@ export default function Notification() {
     }
 
     if (type === "certificate") {
-      const programId =
-        context.programId ||
-        context.internshipId ||
-        context.courseId;
+      const programId = context.programId || context.internshipId || context.courseId;
 
       if (programId) {
         navigate("/student/certificate", {
@@ -118,10 +111,7 @@ export default function Notification() {
       }
 
       if (context.courseSlug) {
-        const type =
-          context.internshipId && !context.courseId
-            ? "internship"
-            : "course";
+        const type = context.internshipId && !context.courseId ? "internship" : "course";
 
         navigate(`/student/tasks/${type}/${context.courseSlug}`, {
           state: {
@@ -193,7 +183,7 @@ export default function Notification() {
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          "Unable to follow back."
+        "Unable to follow back."
       );
     } finally {
       setFollowLoadingIds((prev) => {
@@ -318,9 +308,8 @@ export default function Notification() {
             return (
               <motion.div
                 key={item._id}
-                className={`notification-card ${
-                  !item.isRead ? "unread" : ""
-                }`}
+                className={`notification-card ${!item.isRead ? "unread" : ""
+                  }`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -361,9 +350,7 @@ export default function Notification() {
                 </div>
 
                 <div
-                  className={`read-status-dot ${
-                    item.isRead ? "read" : ""
-                  }`}
+                  className={`read-status-dot ${item.isRead ? "read" : ""}`}
                 />
 
                 <button

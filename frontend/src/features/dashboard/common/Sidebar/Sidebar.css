@@ -5,18 +5,15 @@
 ========================================== */
 
 .dashboard-sidebar {
-    @apply relative z-1200 flex min-h-0 min-w-0 shrink-0 flex-col justify-between overflow-hidden rounded-r-(--radius) border-r backdrop-blur-xl my-2 py-5 transition-[width,transform] duration-300 ease-in-out;
+    @apply relative z-1200 my-2 flex min-h-0 min-w-0 shrink-0 flex-col justify-between overflow-hidden rounded-r-(--radius) border-r py-5 backdrop-blur-xl transition-all duration-300 ease-in-out;
 
     width: clamp(16.25rem, 19vw, 20rem);
-
     background: color-mix(
         in srgb,
         var(--dark) 96%,
         transparent
     );
-
     border-color: var(--neon-grid);
-
     box-shadow: 0 0 0.625rem var(--glow);
 }
 
@@ -26,7 +23,7 @@
 
 .sidebar-header-mobile {
     @apply hidden items-center justify-between border-b px-4 py-4;
-    
+
     border-color: var(--neon-grid);
 }
 
@@ -39,14 +36,14 @@
 }
 
 .close-menu-btn {
-    @apply flex h-10 w-10 items-center justify-center rounded-lg border bg-transparent text-[clamp(1.1rem,2vw,1.25rem)] text-(--text) transition-all duration-300 ease-in-out;
-    
+    @apply flex size-10 items-center justify-center rounded-lg border bg-transparent text-[clamp(1.1rem,2vw,1.25rem)] text-(--text) transition-all duration-300 ease-in-out;
+
     border-color: var(--neon-grid);
 }
 
 .close-menu-btn:hover {
     @apply text-(--neon);
-    
+
     border-color: var(--neon);
     background: var(--neon-overlay);
 }
@@ -64,14 +61,14 @@
 ========================================== */
 
 .sidebar-collapse-btn {
-    @apply absolute right-5 z-5 flex h-8 w-8 items-center justify-center rounded-full border bg-(--dark) text-(--text) shadow-[0_0_0.625rem_var(--glow)] transition-all duration-300 ease-in-out;
-    top: 1rem;
+    @apply absolute right-5 top-4 z-5 flex size-8 items-center justify-center rounded-full border bg-(--dark) text-(--text) shadow-[0_0_0.625rem_var(--glow)] transition-all duration-300 ease-in-out;
+
     border-color: var(--neon-grid);
 }
 
 .sidebar-collapse-btn:hover {
     @apply text-(--neon);
-    
+
     border-color: var(--neon);
 }
 
@@ -80,24 +77,11 @@
 ========================================== */
 
 .sidebar-menu-scroll {
-    @apply min-h-0 flex-1;
-    overflow-y: auto;
-    overflow-x: clip;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.sidebar-menu-scroll::-webkit-scrollbar {
-    display: none;
+    @apply mt-10 min-h-0 flex-1 overflow-y-auto overflow-x-clip scrollbar-none [-ms-overflow-style:none];
 }
 
 .sidebar-menubar {
     @apply flex min-h-0 list-none flex-col px-2.5;
-    margin-top: 2.5rem;
-}
-
-.sidebar-menubar::-webkit-scrollbar {
-    display: none;
 }
 
 .sidebar-menubar li {
@@ -152,7 +136,7 @@
 
 .sidebar-footer {
     @apply shrink-0 border-t px-2.5 pt-2.5;
-    
+
     border-color: var(--neon-grid);
 }
 
@@ -171,7 +155,7 @@
 
 .logout-btn:hover {
     @apply text-(--danger);
-    
+
     background: var(--danger-soft);
 }
 
@@ -207,94 +191,83 @@
 }
 
 /* ==========================================
-   MOBILE SIDEBAR OVERLAY
+   MOBILE SIDEBAR
 ========================================== */
 
 .mobile-sidebar-overlay {
     @apply hidden;
 }
 
-/* ==========================================
-   RESPONSIVE SIDEBAR
-========================================== */
+.dashboard-sidebar {
+    @apply md:flex;
+}
 
-/*
-   Tailwind responsive utilities replace the old
-   CSS media-query based mobile implementation.
-*/
+.dashboard-sidebar.mobile-open {
+    @apply fixed inset-y-0 left-0 z-3000 m-0 flex h-full w-[min(85%,21.25rem)] max-w-full flex-col overflow-y-auto rounded-none p-0;
 
-@variant max-md {
-    .dashboard-sidebar {
-        @apply hidden;
-    }
+    background: color-mix(
+        in srgb,
+        var(--dark) 98%,
+        transparent
+    );
 
-    .dashboard-sidebar.mobile-open {
-        @apply fixed inset-y-0 left-0 z-3000 flex h-full w-[min(85%,21.25rem)] max-w-full m-0 rounded-none p-0 overflow-y-auto;
-        
-        background: color-mix(
-            in srgb,
-            var(--dark) 98%,
-            transparent
-        );
+    box-shadow:
+        0.625rem 0 2.5rem var(--surface-overlay),
+        0 0 1.25rem var(--glow);
+}
 
-        box-shadow:
-            0.625rem 0 2.5rem var(--surface-overlay),
-            0 0 1.25rem var(--glow);
-    }
+.dashboard-sidebar.mobile-open .sidebar-header-mobile {
+    @apply flex min-h-15 shrink-0;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-header-mobile {
-        @apply flex min-h-15 shrink-0;
-    }
+.dashboard-sidebar.mobile-open .sidebar-header-mobile h3 {
+    @apply m-0 text-[clamp(1.1rem,2vw,1.25rem)] text-(--text);
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-header-mobile h3 {
-        @apply m-0 text-[clamp(1.1rem,2vw,1.25rem)] text-(--text);
-    }
+.dashboard-sidebar.mobile-open .sidebar-header-mobile h3 span {
+    @apply text-(--neon);
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-header-mobile h3 span {
-        @apply text-(--neon);
-    }
+.dashboard-sidebar.mobile-open .mobile-sidebar-search {
+    @apply block shrink-0 px-4 pb-2.5 pt-4;
+}
 
-    .dashboard-sidebar.mobile-open .mobile-sidebar-search {
-        @apply block shrink-0 px-4 pb-2.5 pt-4;
-    }
+.dashboard-sidebar.mobile-open .sidebar-collapse-btn {
+    @apply hidden;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-collapse-btn {
-        @apply hidden;
-    }
+.dashboard-sidebar.mobile-open .sidebar-menu-scroll {
+    @apply block min-h-0 w-full flex-1 overflow-y-auto;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-menu-scroll {
-        @apply block w-full min-h-0 flex-1 overflow-y-auto;
-    }
+.dashboard-sidebar.mobile-open .sidebar-menubar {
+    @apply m-0 block min-h-0 w-full px-3 py-2.5;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-menubar {
-        @apply block w-full min-h-0 m-0 px-3 py-2.5;
-    }
+.dashboard-sidebar.mobile-open .sidebar-menubar li {
+    @apply mb-1.5;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-menubar li {
-        @apply mb-1.5;
-    }
+.dashboard-sidebar.mobile-open .sidebar-menubar li a {
+    @apply min-h-12 gap-4 px-4 py-3 text-[0.95rem];
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-menubar li a {
-        @apply min-h-12 gap-4 px-4 py-3 text-[0.95rem];
-    }
+.dashboard-sidebar.mobile-open .sidebar-link-label {
+    @apply inline;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-link-label {
-        @apply inline;
-    }
+.dashboard-sidebar.mobile-open .sidebar-footer {
+    @apply shrink-0 px-3 pb-4 pt-2.5;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-footer {
-        @apply shrink-0 px-3 pb-4 pt-2.5;
-    }
+.dashboard-sidebar.mobile-open .sidebar-footer a,
+.dashboard-sidebar.mobile-open .sidebar-footer .logout-btn {
+    @apply min-h-12 px-4 py-3;
+}
 
-    .dashboard-sidebar.mobile-open .sidebar-footer a,
-    .dashboard-sidebar.mobile-open .sidebar-footer .logout-btn {
-        @apply min-h-12 px-4 py-3;
-    }
+.mobile-sidebar-overlay {
+    @apply fixed inset-0 z-2500 md:hidden;
 
-    .mobile-sidebar-overlay {
-        @apply fixed inset-0 z-2500 block;
-        
-        background: var(--surface-overlay);
-        backdrop-filter: blur(0.1875rem);
-    }
+    background: var(--surface-overlay);
+    backdrop-filter: blur(0.1875rem);
 }

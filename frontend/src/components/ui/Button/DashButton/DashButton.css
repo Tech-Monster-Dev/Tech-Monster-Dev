@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+/* ==========================================
+   BASE
+========================================== */
+
+.dash-button {
+    @apply relative inline-flex max-w-full cursor-pointer items-center justify-center
+        overflow-hidden rounded-(--radius) border border-transparent
+        font-semibold tracking-[0.0125em]
+        text-(--text)
+        transition-all duration-300 ease-in-out
+        min-h-[clamp(2.375rem,5vw,3.5rem)]
+        px-[clamp(0.875rem,2.5vw,1.75rem)]
+        text-[clamp(0.8125rem,1.5vw,1rem)]
+        text-balance;
+}
+
+/* ==========================================
+   CONTENT
+========================================== */
+
+.dash-button-content {
+    @apply inline-flex max-w-full min-w-0 items-center justify-center gap-2;
+}
+
+.dash-button-text {
+    @apply min-w-0;
+}
+
+.dash-button-icon {
+    @apply inline-flex shrink-0 items-center justify-center text-[1.125rem] transition-transform duration-300 ease-in-out;
+}
+
+/* ==========================================
+   SIZES
+========================================== */
+
+.dash-button-small {
+    @apply min-h-[clamp(2.25rem,4vw,2.5rem)] px-[clamp(0.75rem,2.5vw,1.125rem)] text-[clamp(0.75rem,1.4vw,0.875rem)];
+}
+
+.dash-button-medium {
+    @apply min-h-[clamp(2.75rem,5vw,3.25rem)] px-[clamp(0.875rem,3vw,1.5rem)] text-[clamp(0.8125rem,1.5vw,1rem)];
+}
+
+.dash-button-large {
+    @apply min-h-[clamp(3rem,6vw,3.5rem)] px-[clamp(1.125rem,4vw,1.875rem)] text-[clamp(0.875rem,1.6vw,1.0625rem)];
+}
+
+/* ==========================================
+   PRIMARY
+========================================== */
+
+.dash-button-primary {
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+}
+
+/* ==========================================
+   PRIMARY HOVER
+========================================== */
+
+.dash-button-primary:not(:disabled):hover {
+    @apply -translate-y-0.5 border-(--neon) shadow-[0_0_1rem_var(--glow)];
+}
+
+/* ==========================================
+   SECONDARY
+========================================== */
+
+.dash-button-secondary {
+    @apply border-(--neon-grid);
+    background: var(--surface);
+}
+
+.dash-button-secondary:not(:disabled):hover {
+    @apply -translate-y-0.5 border-(--secondary);
+    background: var(--neon-overlay);
+}
+
+/* ==========================================
+   OUTLINE
+========================================== */
+
+.dash-button-outline {
+    @apply border-(--neon-grid) bg-transparent text-(--secondary);
+}
+
+.dash-button-outline:not(:disabled):hover {
+    @apply -translate-y-0.5 border-(--neon) text-(--neon) shadow-[0_0_1rem_var(--neon-fog)];
+    background: var(--neon-overlay);
+}
+
+/* ==========================================
+   GHOST
+========================================== */
+
+.dash-button-ghost {
+    @apply border-transparent bg-transparent text-(--muted);
+}
+
+.dash-button-ghost:not(:disabled):hover {
+    @apply border-(--neon-cyan-soft) text-(--text);
+    background: var(--neon-overlay);
+}
+
+/* ==========================================
+   SUCCESS
+========================================== */
+
+.dash-button-success {
+    @apply bg-(--success) text-(--text);
+}
+
+.dash-button-success:not(:disabled):hover {
+    @apply -translate-y-0.5 shadow-[0_0_1rem_var(--success)];
+}
+
+/* ==========================================
+   DANGER
+========================================== */
+
+.dash-button-danger {
+    @apply bg-(--danger) text-(--text);
+}
+
+.dash-button-danger:not(:disabled):hover {
+    @apply -translate-y-0.5 shadow-[0_0_1rem_var(--danger)];
+}
+
+/* ==========================================
+   ICON HOVER
+========================================== */
+
+.dash-button:not(:disabled):hover .dash-button-icon {
+    @apply translate-x-0.5;
+}
+
+.dash-button:not(:disabled):hover
+.dash-button-content:has(.dash-button-icon:first-child)
+.dash-button-icon:first-child {
+    @apply -translate-x-0.5;
+}
+
+/* ==========================================
+   ACTIVE
+========================================== */
+
+.dash-button:not(:disabled):active {
+    @apply translate-y-0;
+}
+
+/* ==========================================
+   FOCUS
+========================================== */
+
+.dash-button:focus-visible {
+    @apply outline-2 outline-(--neon) outline-offset-2;
+}
+
+/* ==========================================
+   DISABLED
+========================================== */
+
+.dash-button:disabled {
+    @apply cursor-not-allowed opacity-50 shadow-none translate-y-0;
+}
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.dash-button-loading {
+    @apply inline-flex items-center justify-center gap-2;
+}
+
+.dash-button-spinner {
+    @apply size-4 animate-spin rounded-full border-2 border-white/35 border-t-white;
+}
+
+/* ==========================================
+   FULL WIDTH
+========================================== */
+
+.dash-button-full-width {
+    @apply w-full;
+}
+
+/* ==========================================
+   CONTENT CHILDREN
+========================================== */
+
+.dash-button-content > * {
+    @apply min-w-0;
+}

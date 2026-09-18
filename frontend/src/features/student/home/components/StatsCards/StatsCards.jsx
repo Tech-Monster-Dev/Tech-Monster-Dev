@@ -1,5 +1,4 @@
 import "./StatsCards.css";
-
 import { motion } from "framer-motion";
 
 import {
@@ -9,9 +8,7 @@ import {
   HiTrophy,
 } from "react-icons/hi2";
 
-
 const StatsCards = ({ stats }) => {
-
   const totalinternships = stats?.internships?.total || 0;
   const totalCourses = stats?.courses?.total || 0;
   const showTotalJoinInternshipandCourses = `${totalinternships} / ${totalCourses}`;
@@ -51,45 +48,35 @@ const StatsCards = ({ stats }) => {
     },
   ];
 
-
   return (
     <div className="stats-grid">
-
       {data.map((item, index) => {
-
         const Icon = item.icon;
-
         return (
           <motion.div
             key={item.id}
             className="stats-card"
-
             initial={{
               opacity: 0,
               y: 70,
             }}
-
             whileInView={{
               opacity: 1,
               y: 0,
             }}
-
             viewport={{
               once: true,
               amount: 0.25,
             }}
-
             transition={{
               delay: index * 0.15,
               duration: 0.6,
             }}
-
             whileHover={{
               y: -8,
               scale: 1.02,
             }}
           >
-
             <div
               className="stats-icon"
               style={{
@@ -98,27 +85,22 @@ const StatsCards = ({ stats }) => {
             >
               <Icon />
             </div>
-
             <h4>
               {item.title}
             </h4>
-
             <h2>
               {item.value}
               {item.suffix}
             </h2>
-
             <div
               className="stats-line"
               style={{
                 background: item.color,
               }}
             />
-
           </motion.div>
         );
       })}
-
     </div>
   );
 };

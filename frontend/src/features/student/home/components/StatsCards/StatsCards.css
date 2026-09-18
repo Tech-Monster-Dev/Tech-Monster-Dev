@@ -1,206 +1,126 @@
-.stats-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-
-    gap: 25px;
-
-    width: 100%;
-}
-
-
-.stats-card {
-    position: relative;
-    overflow: hidden;
-
-    min-width: 0;
-
-    background:
-        rgba(10, 18, 32, 0.92);
-
-    border:
-        1px solid rgba(255, 255, 255, 0.08);
-
-    border-radius: 22px;
-
-    padding: 28px;
-
-    backdrop-filter: blur(15px);
-
-    cursor: pointer;
-
-    box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.35);
-
-    transition:
-        border-color 0.4s,
-        box-shadow 0.4s;
-}
-
-
-.stats-card:hover {
-    border-color: #00E5FF;
-
-    box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.45),
-        0 0 35px rgba(0, 229, 255, 0.18);
-}
-
-
-.stats-card::before {
-    content: "";
-
-    position: absolute;
-
-    width: 180px;
-    height: 180px;
-
-    background:
-        rgba(0, 229, 255, 0.12);
-
-    border-radius: 50%;
-
-    filter: blur(70px);
-
-    top: -70px;
-    right: -70px;
-
-    transition: 0.5s;
-
-    pointer-events: none;
-}
-
-
-.stats-card:hover::before {
-    transform: scale(1.4);
-}
-
-
-.stats-icon {
-    width: 65px;
-    height: 65px;
-
-    border-radius: 18px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    color: #fff;
-
-    font-size: 28px;
-
-    margin-bottom: 22px;
-
-    transition: 0.4s;
-}
-
-
-.stats-card:hover .stats-icon {
-    transform:
-        rotate(8deg) scale(1.08);
-}
-
-
-.stats-card h4 {
-    color: #B7C3D2;
-
-    font-size: 15px;
-    font-weight: 500;
-
-    margin-bottom: 12px;
-}
-
-
-.stats-card h2 {
-    color: #fff;
-
-    font-size: 38px;
-    font-weight: 700;
-
-    margin-bottom: 22px;
-}
-
-
-.stats-line {
-    width: 0;
-    height: 4px;
-
-    border-radius: 20px;
-
-    transition: 0.45s;
-}
-
-
-.stats-card:hover .stats-line {
-    width: 100%;
-}
-
+@import "tailwindcss";
 
 /* =========================================
-   RESPONSIVE
+   STATS GRID
 ========================================= */
 
-@media (max-width: 1140px) {
-
-    .stats-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-    }
-
-    .stats-card {
-        padding: 1.25rem;
-    }
+.stats-grid {
+    @apply grid w-full grid-cols-1 gap-3
+        sm:grid-cols-2 sm:gap-4
+        lg:grid-cols-4 lg:gap-6;
 }
 
+/* =========================================
+   STATS CARD
+========================================= */
 
-@media (max-width: 756px) {
+.stats-card {
+    @apply relative min-w-0 cursor-pointer overflow-hidden
+        rounded-[1.375rem] border p-3
+        backdrop-blur-md
+        transition-[border-color,box-shadow]
+        duration-400 ease-in-out
+        sm:p-5
+        lg:p-7;
 
-    .stats-grid {
-        gap: 1rem;
-    }
+    background: color-mix(
+        in srgb,
+        var(--dark) 92%,
+        transparent
+    );
 
-    .stats-icon {
-        width: 55px;
-        height: 55px;
-        font-size: 1.5rem;
-    }
+    border-color: var(--neon-grid);
 
-    .stats-card h2 {
-        font-size: 2rem;
-    }
+    box-shadow:
+        0 0.625rem 1.5625rem var(--surface-overlay);
 }
 
+.stats-card:hover {
+    border-color: var(--neon);
 
-@media (max-width: 439px) {
+    box-shadow:
+        0 1.125rem 2.5rem var(--surface-overlay),
+        0 0 2.1875rem var(--neon-cyan-faint);
+}
 
-    .stats-grid {
-        gap: 0.75rem;
-    }
+/* =========================================
+   CARD GLOW
+========================================= */
 
-    .stats-card {
-        padding: 0.8rem;
-    }
+.stats-card::before {
+    @apply pointer-events-none absolute size-[clamp(7.5rem,14vw,11.25rem)]
+        rounded-full;
 
-    .stats-icon {
-        width: 40px;
-        height: 40px;
+    content: "";
 
-        font-size: 1.1rem;
+    background: var(--neon-cyan-soft);
 
-        margin-bottom: 0.8rem;
+    filter: blur(4.375rem);
 
-        border-radius: 0.7rem;
-    }
+    top: -4.375rem;
+    right: -4.375rem;
 
-    .stats-card h4 {
-        font-size: 0.75rem;
-        margin-bottom: 0.4rem;
-    }
+    transition: transform 500ms ease-in-out;
+}
 
-    .stats-card h2 {
-        font-size: 1.5rem;
-        margin-bottom: 0.8rem;
-    }
+.stats-card:hover::before {
+    @apply scale-140;
+}
+
+/* =========================================
+   STATS ICON
+========================================= */
+
+.stats-icon {
+    @apply mb-3 flex size-[clamp(2.5rem,6vw,4.0625rem)]
+        items-center justify-center
+        rounded-[1.125rem]
+        text-(--text)
+        text-[clamp(1.1rem,2.5vw,1.75rem)]
+        transition-transform duration-400 ease-in-out
+        sm:mb-4
+        lg:mb-5.5;
+}
+
+.stats-card:hover .stats-icon {
+    @apply rotate-8 scale-105;
+}
+
+/* =========================================
+   TITLE
+========================================= */
+
+.stats-card h4 {
+    @apply mb-2
+        text-[clamp(0.75rem,1.5vw,0.9375rem)]
+        font-medium
+        text-(--muted)
+        sm:mb-3;
+}
+
+/* =========================================
+   VALUE
+========================================= */
+
+.stats-card h2 {
+    @apply mb-3
+        text-[clamp(1.5rem,4vw,2.375rem)]
+        font-bold
+        text-(--text)
+        sm:mb-4
+        lg:mb-5.5;
+}
+
+/* =========================================
+   STATS LINE
+========================================= */
+
+.stats-line {
+    @apply h-1 w-0 rounded-full
+        transition-[width]
+        duration-450 ease-in-out;
+}
+
+.stats-card:hover .stats-line {
+    @apply w-full;
 }

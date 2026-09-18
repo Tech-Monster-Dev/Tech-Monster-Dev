@@ -1,7 +1,7 @@
 import "./Home.css";
 
 import { useEffect, useState } from "react";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 import api from "../../../services/api/axios";
 import { socket } from "../../../services/socket/socket";
@@ -10,10 +10,10 @@ import { API } from "../../../services/api/endpoints";
 import WelcomeCard from "./components/WelcomeCard";
 import ProfileSummary from "./components/ProfileSummary";
 import StatsCards from "./components/StatsCards";
-import InternshipRecommendation from "./components/InternshipRecommendation";
-import SuggestedUsers from "./components/SuggestedUsers";
 import LearningStreak from "./components/LearningStreak";
 import LearningAnalytics from "./components/LearningAnalytics";
+import InternshipRecommendation from "./components/InternshipRecommendation";
+import SuggestedUsers from "./components/SuggestedUsers";
 
 import Skeleton from "../../dashboard/common/LoaderPage/Skeleton";
 import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
@@ -31,7 +31,7 @@ const Home = () => {
 
       setDashboard(response.data?.dashboard || null);
     } catch (error) {
-      
+
       console.error("Status:", error.response?.status);
       toast.error(error.response?.data?.message || "Something went wrong");
 
@@ -153,24 +153,14 @@ const Home = () => {
   }
 
   const analytics = {
-    completedCourses:
-      dashboard?.analytics?.completedCourses || 0,
-
-    hours:
-      dashboard?.analytics?.hours || 0,
-
-    growth:
-      dashboard?.analytics?.growth || 0,
-
-    weeklyData:
-      dashboard?.analytics?.weeklyData?.length === 7
-        ? dashboard.analytics.weeklyData
-        : [0, 0, 0, 0, 0, 0, 0],
+    completedCourses: dashboard?.analytics?.completedCourses || 0,
+    hours: dashboard?.analytics?.hours || 0,
+    growth: dashboard?.analytics?.growth || 0,
+    weeklyData: dashboard?.analytics?.weeklyData?.length === 7 ? dashboard.analytics.weeklyData : [0, 0, 0, 0, 0, 0, 0],
   };
 
   return (
     <main className="home-page">
-
       <WelcomeCard
         username={dashboard?.user}
         stats={dashboard?.stats}
@@ -206,7 +196,6 @@ const Home = () => {
           dashboard?.suggestedUsers || []
         }
       />
-
     </main>
   );
 };
