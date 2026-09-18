@@ -1,463 +1,179 @@
+@import "tailwindcss";
+
 .profile-summary {
-    position: relative;
-    overflow: hidden;
+    @apply relative flex w-full flex-col items-center justify-between gap-6
+        overflow-hidden rounded-3xl border p-3
+        transition-[transform,border-color,box-shadow] duration-400 ease-in-out
+        sm:gap-6 sm:p-4
+        md:gap-8 md:p-8
+        lg:flex-row;
 
-    width: 100%;
-
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 2rem;
-
-    padding: 2rem;
-
-    border-radius: 24px;
-
-    background:
-        rgba(10, 18, 32, 0.88);
-
-    backdrop-filter: blur(18px);
-
-    border:
-        1px solid rgba(0, 229, 255, 0.15);
-
-    box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.45),
-        inset 0 1px rgba(255, 255, 255, 0.03);
-
-    transition: 0.4s;
+    background: color-mix(in srgb, var(--dark) 88%, transparent);
+    border-color: var(--neon-cyan-soft);
+    backdrop-filter: blur(1.125rem);
 }
-
-
-.profile-summary:hover {
-    transform: translateY(-6px);
-
-    border-color: #00E5FF;
-
-    box-shadow:
-        0 25px 55px rgba(0, 0, 0, 0.55),
-        0 0 30px rgba(0, 229, 255, 0.18);
-}
-
 
 .profile-glow {
-    position: absolute;
+    @apply pointer-events-none absolute rounded-full;
 
-    border-radius: 50%;
-
-    filter: blur(80px);
-
-    pointer-events: none;
+    filter: blur(5rem);
 }
-
 
 .profile-glow-one {
-    width: 260px;
-    height: 260px;
+    @apply size-[clamp(11rem,18vw,16.25rem)];
 
-    background: #00d4ff15;
-
-    top: -80px;
-    left: -70px;
-
-    animation:
-        glowOne 7s infinite ease-in-out;
+    top: -5rem;
+    left: -4.375rem;
+    background: var(--neon-cyan-faint);
+    animation: glowOne 7s infinite ease-in-out;
 }
-
 
 .profile-glow-two {
-    width: 220px;
-    height: 220px;
+    @apply size-[clamp(10rem,16vw,13.75rem)];
 
-    background: #3b82f620;
-
-    bottom: -90px;
-    right: -80px;
-
-    animation:
-        glowTwo 6s infinite ease-in-out;
+    right: -5rem;
+    bottom: -5.625rem;
+    background: var(--neon-blue-faint);
+    animation: glowTwo 6s infinite ease-in-out;
 }
 
+/* =========================================
+   LEFT
+========================================= */
 
 .profile-left {
-    flex: 1;
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-
-    gap: 25px;
-
-    z-index: 2;
+    @apply z-2 flex w-full min-w-0 flex-1 items-center gap-3
+        sm:gap-4
+        md:gap-6;
 }
-
 
 .profile-image {
-    width: 120px;
-    height: 120px;
+    @apply size-[clamp(4.6875rem,10vw,7.5rem)] shrink-0 rounded-full p-1;
 
-    flex-shrink: 0;
-
-    border-radius: 50%;
-
-    padding: 4px;
-
-    background:
-        linear-gradient(135deg,
-            var(--neon),
-            var(--glow));
+    background: linear-gradient(
+        135deg,
+        var(--neon),
+        var(--glow)
+    );
 }
-
 
 .profile-image img {
-    width: 100%;
-    height: 100%;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-
-    display: block;
+    @apply block size-full rounded-full object-cover;
 }
-
 
 .profile-info {
-    min-width: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 14px;
+    @apply flex min-w-0 flex-col gap-2
+        sm:gap-3
+        md:gap-3.5;
 }
-
 
 .profile-info h2 {
-    font-size: 28px;
-
-    font-weight: 700;
-
-    color: #fff;
+    @apply text-[clamp(1.1rem,3vw,1.75rem)] font-bold text-(--text);
 
     overflow-wrap: anywhere;
 }
-
 
 .profile-info p {
-    display: flex;
-    align-items: center;
+    @apply flex min-w-0 items-center gap-2
+        text-[clamp(0.75rem,1.5vw,0.9375rem)];
 
-    gap: 8px;
-
-    font-size: 15px;
-
-    color: #b6c1d0;
-
+    color: var(--muted);
     overflow-wrap: anywhere;
 }
 
-
 .skills-wrapper {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 10px;
-
-    margin-top: 8px;
+    @apply mt-1.5 flex flex-wrap gap-1.5
+        sm:mt-2 sm:gap-2.5;
 }
-
 
 .skill-chip {
-    padding: 8px 16px;
+    @apply cursor-pointer rounded-full border
+        px-2.5 py-1.5
+        text-[clamp(0.65rem,1.3vw,0.8125rem)]
+        font-semibold
+        transition-[background,color,transform,box-shadow]
+        duration-300 ease-in-out
+        sm:px-4 sm:py-2;
 
-    border-radius: 999px;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    color: #00E5FF;
-
-    background:
-        rgba(255, 255, 255, 0.05);
-
-    border:
-        1px solid rgba(0, 229, 255, 0.25);
-
-    transition: 0.3s;
-
-    cursor: pointer;
+    color: var(--neon);
+    background: var(--surface);
+    border-color: var(--neon-cyan-soft);
 }
-
 
 .skill-chip:hover {
-    background: #00D4FF;
-
-    color: #04121d;
-
-    transform: translateY(-3px);
-
-    box-shadow:
-        0 0 18px #00D4FF;
+    background: var(--neon);
+    color: var(--dark);
+    transform: translateY(-0.1875rem);
+    box-shadow: 0 0 1.125rem var(--neon);
 }
-
 
 .profile-divider {
-    width: 2px;
-    height: 190px;
+    @apply h-0.75 w-[90%] shrink-0
+        sm:w-[80%]
+        lg:h-47.5 lg:w-0.5;
 
-    flex-shrink: 0;
-
-    background:
-        linear-gradient(to bottom,
-            transparent,
-            #00D4FF,
-            transparent);
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        var(--neon),
+        transparent
+    );
 }
 
+/* =========================================
+   RIGHT
+========================================= */
 
 .profile-right {
-    width: 320px;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-
-    z-index: 2;
+    @apply z-2 flex w-full flex-col justify-center px-2
+        sm:px-4
+        lg:w-[20rem] lg:px-0;
 }
-
 
 .progress-title {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    color: #fff;
-
-    font-size: 17px;
-    font-weight: 600;
-
-    margin-bottom: 20px;
+    @apply mb-3 flex items-center gap-2
+        text-[clamp(0.85rem,1.7vw,1.0625rem)]
+        font-semibold text-(--text)
+        sm:mb-4
+        md:mb-5;
 }
-
 
 .progress-title svg {
-    color: #00D4FF;
-    font-size: 22px;
+    @apply text-[clamp(0.9rem,2vw,1.375rem)] text-(--neon);
 }
-
 
 .progress-bar {
-    width: 100%;
-    height: 12px;
+    @apply mb-3 h-2 w-full overflow-hidden rounded-full
+        sm:mb-4 sm:h-2.5
+        md:mb-5 md:h-3;
 
-    border-radius: 30px;
-
-    background: #162338;
-
-    overflow: hidden;
-
-    margin-bottom: 20px;
+    background: var(--border);
 }
-
 
 .progress-fill {
-    height: 100%;
+    @apply h-full rounded-full;
 
-    border-radius: 30px;
-
-    background:
-        linear-gradient(90deg,
-            #00D4FF,
-            #3B82F6);
-
-    box-shadow:
-        0 0 15px #00D4FF;
+    background: linear-gradient(
+        90deg,
+        var(--neon),
+        var(--primary)
+    );
+    box-shadow: 0 0 0.9375rem var(--neon);
 }
-
 
 .profile-right h1 {
-    font-size: 40px;
-
-    color: #00D4FF;
-
-    margin-bottom: 10px;
+    @apply mb-2
+        text-[clamp(1.2rem,4vw,2.5rem)]
+        text-(--neon)
+        sm:mb-2.5;
 }
-
 
 .profile-right p {
-    font-size: 15px;
+    @apply mb-3
+        text-[clamp(0.75rem,1.5vw,0.9375rem)]
+        leading-relaxed
+        sm:mb-5
+        md:mb-7 md:leading-7;
 
-    line-height: 28px;
-
-    color: #aeb7c5;
-
-    margin-bottom: 28px;
-}
-
-
-.complete-btn {
-    height: 52px;
-
-    border: none;
-
-    border-radius: 14px;
-
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 10px;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    background:
-        linear-gradient(135deg,
-            #00D4FF,
-            #3B82F6);
-
-    color: var(--text);
-
-    transition: 0.35s;
-}
-
-
-.complete-btn:hover {
-    box-shadow:
-        0 0 25px rgba(0, 229, 255, 0.45);
-}
-
-
-@media (max-width: 1037px) {
-
-    .profile-summary {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .profile-left {
-        width: 100%;
-    }
-
-    .profile-divider {
-        height: 3px;
-        width: 70%;
-    }
-
-    .profile-right {
-        width: 100%;
-        padding: 0 1rem;
-    }
-}
-
-
-@media (max-width: 756px) {
-
-    .profile-summary {
-        padding: 1rem;
-    }
-
-    .profile-image {
-        width: 100px;
-        height: 100px;
-    }
-
-    .profile-info h2 {
-        font-size: 1.5rem;
-    }
-
-    .profile-right h1 {
-        font-size: 1.6rem;
-    }
-
-    .progress-bar {
-        height: 10px;
-    }
-
-    .complete-btn {
-        height: 42px;
-    }
-}
-
-
-@media (max-width: 439px) {
-
-    .profile-summary {
-        padding: 0.75rem;
-    }
-
-    .profile-left {
-        gap: 0.75rem;
-    }
-
-    .profile-image {
-        width: 75px;
-        height: 75px;
-    }
-
-    .profile-info {
-        gap: 0.4rem;
-    }
-
-    .profile-info h2 {
-        font-size: 1.1rem;
-    }
-
-    .profile-info p {
-        font-size: 0.75rem;
-    }
-
-    .skills-wrapper {
-        gap: 5px;
-        margin-top: 3px;
-    }
-
-    .skill-chip {
-        padding: 0.35rem 0.55rem;
-        font-size: 0.65rem;
-    }
-
-    .profile-divider {
-        width: 90%;
-    }
-
-    .profile-right {
-        padding: 0 0.5rem;
-    }
-
-    .progress-title {
-        font-size: 0.85rem;
-        margin-bottom: 0.7rem;
-    }
-
-    .progress-title svg {
-        font-size: 0.9rem;
-    }
-
-    .progress-bar {
-        height: 8px;
-        margin-bottom: 0.7rem;
-    }
-
-    .profile-right h1 {
-        font-size: 1.2rem;
-    }
-
-    .profile-right p {
-        font-size: 0.75rem;
-        line-height: 1.4;
-        margin-bottom: 0.8rem;
-    }
-
-    .complete-btn {
-        height: 34px;
-        font-size: 0.7rem;
-    }
+    color: var(--muted);
 }

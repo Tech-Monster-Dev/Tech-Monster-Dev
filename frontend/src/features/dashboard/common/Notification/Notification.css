@@ -1,178 +1,109 @@
+@import "tailwindcss";
+
 .notification-page-wrapper {
-  padding: 24px;
-  color: #ffffff;
-  font-family: 'Inter', sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+  @apply mx-auto flex w-full max-w-300 flex-col px-4 py-4 text-(--text) sm:px-6 sm:py-6;
+  font-family: "Inter", sans-serif;
 }
 
 .notification-page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  @apply mb-4 flex flex-col items-start justify-between gap-3 sm:mb-5 sm:flex-row sm:items-center sm:gap-4;
 }
 
 .notification-main-title {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin: 0;
+  @apply m-0 text-xl font-bold tracking-wide sm:text-2xl md:text-[1.75rem];
 }
 
 .mark-all-btn {
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid #00f0ff;
-  color: #00f0ff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
+  @apply inline-flex min-h-9 cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-semibold transition-all duration-200 ease-in-out sm:px-4 sm:text-[0.8125rem];
+
+  border-color: var(--neon);
+  background: var(--neon-blue-faint);
+  color: var(--neon);
 }
 
 .mark-all-btn:hover {
-  background: rgba(0, 240, 255, 0.2);
+  background: var(--neon-blue-soft);
 }
 
 .notifications-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  @apply flex w-full flex-col gap-3;
 }
 
 .notification-card {
-  background: rgba(13, 27, 42, 0.6);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  backdrop-filter: blur(12px);
-  padding: 16px 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  @apply flex w-full min-w-0 items-start justify-between gap-3 rounded-(--radius) border p-3 backdrop-blur-md transition-all duration-300 ease-in-out sm:items-center sm:gap-4 sm:px-5 sm:py-4;
+
+  background: color-mix(in srgb, var(--dark) 60%, transparent);
+  border-color: var(--neon-cyan-soft);
+  box-shadow: 0 0.25rem 1.25rem var(--surface-overlay);
 }
 
 .notification-card.unread {
-  border-color: #00f0ff;
-  background: rgba(0, 240, 255, 0.05);
+  border-color: var(--neon);
+  background: var(--neon-overlay);
+}
+
+.notif-content {
+  @apply min-w-0 flex-1;
 }
 
 .notif-content h4 {
-  margin: 0 0 6px 0;
-  font-size: 15px;
-  color: #fff;
+  @apply m-0 mb-1 text-sm text-(--white) sm:text-[0.9375rem];
 }
 
 .notif-content p {
-  margin: 0 0 6px 0;
-  font-size: 13px;
-  color: #8a9bb8;
+  @apply m-0 mb-1 text-xs leading-relaxed sm:text-[0.8125rem];
+
+  color: var(--gray);
 }
 
 .notif-time {
-  font-size: 11px;
-  color: #00f0ff;
+  @apply text-[0.6875rem] text-(--neon);
 }
 
 .read-status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ff3366;
-  box-shadow: 0 0 10px #ff3366;
+  @apply h-2.5 w-2.5 shrink-0 rounded-full;
+
+  background: var(--danger);
+  box-shadow: 0 0 0.625rem var(--danger);
 }
 
 .read-status-dot.read {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--surface);
   box-shadow: none;
 }
+
 .notification-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
+  @apply mt-3 flex flex-wrap gap-1.5 sm:gap-2;
 }
 
 .notification-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 34px;
-  padding: 7px 12px;
-  border: 1px solid rgba(0, 240, 255, 0.35);
-  border-radius: 8px;
-  background: rgba(0, 240, 255, 0.08);
-  color: #00f0ff;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  @apply inline-flex min-h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[0.6875rem] font-semibold transition-all duration-200 ease-in-out sm:min-h-8.5 sm:px-3 sm:py-1.75 sm:text-xs;
+
+  border-color: var(--neon-cyan-soft);
+  background: var(--neon-cyan-faint);
+  color: var(--neon);
 }
 
 .notification-action-btn:hover:not(:disabled) {
-  background: rgba(0, 240, 255, 0.16);
-  border-color: #00f0ff;
-  transform: translateY(-1px);
+  background: var(--neon-cyan-soft);
+  border-color: var(--neon);
+  transform: translateY(-0.0625rem);
 }
 
 .notification-action-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+  @apply cursor-not-allowed opacity-[0.55];
 }
 
 .notification-delete-btn {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 1px solid rgba(255, 51, 102, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 51, 102, 0.06);
-  color: #ff3366;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  @apply inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border p-0 transition-all duration-200 ease-in-out sm:h-8.5 sm:w-8.5;
+
+  border-color: var(--danger-soft);
+  background: color-mix(in srgb, var(--danger) 6%, transparent);
+  color: var(--danger);
 }
 
 .notification-delete-btn:hover {
-  background: rgba(255, 51, 102, 0.14);
-  border-color: #ff3366;
-  transform: translateY(-1px);
-}
-
-@media (max-width: 640px) {
-  .notification-page-wrapper {
-    padding: 16px;
-  }
-
-  .notification-card {
-    align-items: flex-start;
-    gap: 10px;
-    padding: 14px;
-  }
-
-  .notification-card .notif-content {
-    min-width: 0;
-    flex: 1;
-  }
-
-  .notification-actions {
-    gap: 6px;
-  }
-
-  .notification-action-btn {
-    font-size: 11px;
-    padding: 7px 10px;
-  }
-
-  .notification-delete-btn {
-    width: 32px;
-    height: 32px;
-  }
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  border-color: var(--danger);
+  transform: translateY(-0.0625rem);
 }

@@ -1,449 +1,243 @@
+@import "tailwindcss";
+
+/* =========================================
+   SUGGESTED USERS
+========================================= */
+
 .suggested-users {
-    width: 100%;
-    margin-top: 20px;
+    @apply mt-4 w-full sm:mt-5;
 }
 
+/* =========================================
+   HEADER
+========================================= */
 
 .users-header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 1rem;
-
-    margin-bottom: 30px;
+    @apply mb-5 ml-2 flex flex-col items-start justify-between gap-3
+        sm:mb-6 sm:ml-4 sm:flex-row sm:items-center sm:gap-4;
 }
-
 
 .users-header h2 {
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    color: #fff;
-
-    font-size: 28px;
-    font-weight: 700;
+    @apply flex items-center gap-2
+        text-[clamp(1rem,3vw,1.75rem)]
+        font-bold text-(--text);
 }
-
 
 .users-header h2 svg {
-    color: #00E5FF;
-    font-size: 30px;
+    @apply shrink-0
+        text-[clamp(1rem,3vw,1.875rem)]
+        text-(--neon);
 }
-
 
 .users-header p {
-    margin-top: 8px;
-    color: #AEB7C5;
+    @apply mt-1
+        text-[clamp(0.7rem,1.5vw,0.9375rem)];
+    color: var(--muted);
 }
 
-
+/* =========================================
+   VIEW ALL
+========================================= */
 .view-all-users {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 12px 22px;
-
-    border: none;
-
-    border-radius: 12px;
-
-    cursor: pointer;
-
-    color: #fff;
-
-    background:
-        linear-gradient(135deg,
-            #00D4FF,
-            #2563EB);
-
-    transition: 0.35s;
+    @apply shrink-0;
 }
 
-
-.view-all-users:hover {
-    box-shadow:
-        0 0 25px rgba(0, 229, 255, 0.35);
-}
-
+/* =========================================
+   USERS GRID
+========================================= */
 
 .users-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit,
-            minmax(280px, 1fr));
-
-    gap: 25px;
+    @apply grid w-full grid-cols-1 gap-4
+        sm:grid-cols-2 sm:gap-5
+        lg:grid-cols-3 lg:gap-6;
 }
 
+/* =========================================
+   USER CARD
+========================================= */
 
 .user-card {
-    position: relative;
-    overflow: hidden;
+    @apply relative min-w-0 cursor-pointer
+        overflow-hidden rounded-3xl border
+        p-4 backdrop-blur-lg
+        transition-[border-color,box-shadow]
+        duration-400 ease-in-out
+        sm:p-5 lg:p-6;
 
-    background:
-        rgba(10, 18, 32, 0.92);
+    background: color-mix(
+        in srgb,
+        var(--dark) 92%,
+        transparent
+    );
 
-    border:
-        1px solid rgba(255, 255, 255, 0.08);
-
-    border-radius: 22px;
-
-    padding: 25px;
-
-    backdrop-filter: blur(16px);
-
-    cursor: pointer;
-
-    transition: 0.4s;
+    border-color: var(--neon-grid);
 }
-
 
 .user-card:hover {
-    border-color: #00E5FF;
+    border-color: var(--neon);
 
     box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.45),
-        0 0 30px rgba(0, 229, 255, 0.20);
+        0 1.125rem 2.5rem var(--surface-overlay),
+        0 0 1.875rem var(--neon-cyan-faint);
 }
 
+/* =========================================
+   CARD GLOW
+========================================= */
 
 .user-card::before {
+    @apply pointer-events-none absolute
+        size-[clamp(10rem,25vw,11.25rem)]
+        rounded-full;
+
     content: "";
 
-    position: absolute;
+    top: -3.75rem;
+    right: -3.75rem;
 
-    width: 180px;
-    height: 180px;
+    background: var(--neon-cyan-faint);
 
-    background:
-        #00D4FF15;
-
-    border-radius: 50%;
-
-    filter: blur(70px);
-
-    top: -60px;
-    right: -60px;
+    filter: blur(4.375rem);
 
     opacity: 0;
 
-    transition: 0.4s;
-
-    pointer-events: none;
+    transition: opacity 400ms ease-in-out;
 }
-
 
 .user-card:hover::before {
-    opacity: 1;
+    @apply opacity-100;
 }
 
+/* =========================================
+   USER TOP
+========================================= */
 
 .user-top {
-    display: flex;
-    align-items: center;
-
-    gap: 18px;
-
-    margin-bottom: 22px;
+    @apply mb-5 flex flex-col items-center gap-4 text-center
+        sm:mb-6 sm:flex-row sm:gap-5 sm:text-left;
 }
 
+/* =========================================
+   AVATAR
+========================================= */
 
 .user-avatar {
-    position: relative;
-
-    width: 75px;
-    height: 75px;
-
-    flex-shrink: 0;
+    @apply relative size-[clamp(3.75rem,12vw,4.6875rem)] shrink-0;
 }
-
 
 .user-avatar img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    border-radius: 50%;
-
-    border:
-        3px solid #00D4FF;
+    @apply block size-full rounded-full
+        border-[0.1875rem] border-(--secondary)
+        object-cover;
 }
 
+/* =========================================
+   ONLINE STATUS
+========================================= */
 
 .online-dot {
-    position: absolute;
+    @apply absolute bottom-1 right-1
+        size-3.5 rounded-full
+        border-2 border-(--dark)
+        bg-(--success);
 
-    right: 5px;
-    bottom: 5px;
-
-    width: 14px;
-    height: 14px;
-
-    background: #22C55E;
-
-    border-radius: 50%;
-
-    border:
-        2px solid #08111F;
-
-    animation:
-        pulse 1.8s infinite;
+    animation: pulse 1.8s infinite;
 }
 
+/* =========================================
+   USER INFO
+========================================= */
 
 .user-info {
-    min-width: 0;
+    @apply min-w-0;
 }
-
 
 .user-info h3 {
-    color: #fff;
-
-    font-size: 22px;
-
-    margin-bottom: 5px;
-
     overflow-wrap: anywhere;
+    @apply mb-1
+        text-[clamp(1.1rem,2.5vw,1.375rem)]
+        font-semibold text-(--text);
 }
-
 
 .user-info p {
-    color: #AEB7C5;
-
-    font-size: 15px;
+    @apply text-[clamp(0.75rem,1.5vw,0.9375rem)];
+    color: var(--muted);
 }
 
+/* =========================================
+   SKILLS
+========================================= */
 
 .user-skills {
-    display: flex;
-    flex-wrap: wrap;
-
-    gap: 10px;
-
-    margin-bottom: 22px;
+    @apply mb-5 flex flex-wrap justify-center gap-2
+        sm:mb-6 sm:justify-start;
 }
-
 
 .user-skills span {
-    padding: 7px 14px;
+    @apply inline-block rounded-full
+        border px-3 py-1.5
+        text-xs text-(--neon)
+        transition-[background-color,transform,color]
+        duration-300 ease-in-out;
 
-    border-radius: 999px;
-
-    background:
-        rgba(0, 229, 255, 0.10);
-
-    border:
-        1px solid rgba(0, 229, 255, 0.20);
-
-    color: #00E5FF;
-
-    font-size: 13px;
-
-    transition: 0.3s;
+    background: var(--neon-cyan-faint);
+    border-color: var(--neon-cyan-soft);
 }
-
 
 .user-skills span:hover {
-    background: #00D4FF;
+    @apply -translate-y-0.5 text-(--dark);
 
-    color: #08111F;
-
-    transform: translateY(-3px);
+    background: var(--secondary);
 }
 
+/* =========================================
+   MUTUAL
+========================================= */
 
 .mutual {
-    display: flex;
-    align-items: center;
+    @apply mb-5 flex items-center justify-center gap-2
+        text-[clamp(0.75rem,1.5vw,0.9375rem)]
+        sm:mb-6 sm:justify-start;
 
-    gap: 8px;
-
-    color: #B9C3CF;
-
-    margin-bottom: 25px;
+    color: var(--muted);
 }
-
 
 .mutual svg {
-    color: #FFD700;
+    @apply shrink-0 text-(--golden);
 }
 
-
+/* =========================================
+   ACTION BUTTONS
+========================================= */
 .user-buttons {
-    display: flex;
-
-    gap: 15px;
+    @apply flex flex-col gap-3 sm:flex-row sm:gap-4;
 }
 
-
-.follow-btn,
-.profile-btn {
-    flex: 1;
-
-    height: 48px;
-
-    border-radius: 12px;
-
-    cursor: pointer;
-
-    font-weight: 600;
-
-    transition: 0.35s;
-}
-
-
-.follow-btn {
-    border: none;
-
-    color: #fff;
-
-    background:
-        linear-gradient(135deg,
-            #00D4FF,
-            #2563EB);
-}
-
-
-.follow-btn:hover {
-    box-shadow:
-        0 0 20px rgba(0, 229, 255, 0.35);
-}
-
-
-.profile-btn {
-    background: transparent;
-
-    color: #fff;
-
-    border:
-        1px solid rgba(255, 255, 255, 0.12);
-}
-
-
-.profile-btn:hover {
-    background:
-        rgba(255, 255, 255, 0.08);
-
-    border-color: #00E5FF;
-}
-
+/* =========================================
+   EMPTY STATE
+========================================= */
 
 .users-empty {
-    min-height: 200px;
+    @apply flex min-h-44 w-full
+        flex-col items-center justify-center
+        gap-2 rounded-3xl border
+        p-6 text-center
+        sm:min-h-48 sm:p-8;
 
-    display: flex;
-    flex-direction: column;
+    background: color-mix(
+        in srgb,
+        var(--dark) 70%,
+        transparent
+    );
 
-    justify-content: center;
-    align-items: center;
-
-    text-align: center;
-
-    gap: 0.5rem;
-
-    border-radius: 1.5rem;
-
-    background:
-        rgba(10, 18, 32, 0.7);
-
-    border:
-        1px solid rgba(255, 255, 255, 0.08);
-
-    color: #aeb7c5;
+    border-color: var(--neon-grid);
+    color: var(--muted);
 }
-
 
 .users-empty svg {
-    font-size: 2.5rem;
-    color: #00E5FF;
+    @apply text-[2.5rem] text-(--neon);
 }
-
 
 .users-empty h3 {
-    color: #fff;
-}
-
-
-@media (max-width: 768px) {
-
-    .users-header {
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 15px;
-    }
-
-    .view-all-users {
-        width: 100%;
-
-        justify-content: center;
-    }
-
-    .user-buttons {
-        flex-direction: column;
-    }
-}
-
-
-@media (max-width: 500px) {
-
-    .users-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .user-top {
-        flex-direction: column;
-
-        text-align: center;
-    }
-
-    .user-skills {
-        justify-content: center;
-    }
-
-    .mutual {
-        justify-content: center;
-    }
-}
-
-
-@media (max-width: 439px) {
-
-    .users-header h2 {
-        font-size: 1.2rem;
-    }
-
-    .users-header h2 svg {
-        font-size: 1.2rem;
-    }
-
-    .users-header p {
-        font-size: 0.75rem;
-    }
-
-    .user-card {
-        padding: 1rem;
-    }
-
-    .user-avatar {
-        width: 65px;
-        height: 65px;
-    }
-
-    .user-info h3 {
-        font-size: 1.1rem;
-    }
-
-    .user-info p {
-        font-size: 0.75rem;
-    }
+    @apply text-(--text);
 }

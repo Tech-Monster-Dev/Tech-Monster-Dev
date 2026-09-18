@@ -1,374 +1,130 @@
+@import "tailwindcss";
+
 .welcome-card {
-    position: relative;
-    overflow: hidden;
-
-    width: 100%;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 3rem;
-    padding: 2rem;
-
-    border-radius: 1.5rem;
-
-    border: 1px solid var(--neon);
-
+    @apply relative flex w-full flex-col items-start justify-between gap-6 overflow-hidden rounded-3xl border p-4 sm:gap-8 sm:p-6 lg:flex-row lg:items-center lg:gap-10 lg:p-8;
+    border-color: var(--neon-cyan-soft);
     background:
-        linear-gradient(270deg,
-            rgba(7, 11, 25, 0.95),
-            rgba(59, 130, 246, 0.12),
-            rgba(168, 85, 247, 0.12),
-            rgba(236, 72, 153, 0.12),
-            rgba(14, 165, 233, 0.12),
-            rgba(7, 11, 25, 0.95));
-
+        linear-gradient(
+            270deg,
+            color-mix(in srgb, var(--dark) 95%, transparent),
+            var(--neon-blue-faint),
+            var(--neon-cyan-faint),
+            var(--neon-bright-faint),
+            var(--neon-sky-faint),
+            color-mix(in srgb, var(--dark) 95%, transparent)
+        );
     background-size: 400% 400%;
-
-    backdrop-filter: blur(10px);
-
-    box-shadow:
-        0 0 10px var(--neon);
-
-    animation:
-        infiniteRainbowGlow 12s ease infinite;
+    backdrop-filter: blur(0.625rem);
+    animation: infiniteRainbowGlow 12s ease infinite;
 }
-
 
 .welcome-card::before {
     content: "";
 
-    position: absolute;
+    @apply pointer-events-none absolute size-[min(40vw,21.875rem)] rounded-full;
 
-    width: 350px;
-    height: 350px;
-
-    border-radius: 50%;
-
-    background: #00d4ff15;
-
-    filter: blur(100px);
-
-    right: -120px;
-    top: -120px;
-
-    animation:
-        heroGlow 6s infinite ease-in-out;
-
-    pointer-events: none;
+    right: -7.5rem;
+    top: -7.5rem;
+    background: var(--neon-cyan-faint);
+    filter: blur(6.25rem);
+    animation: heroGlow 6s infinite ease-in-out;
 }
-
 
 .welcome-glow {
-    position: absolute;
-    inset: 0;
+    @apply pointer-events-none absolute inset-0;
 
     background:
-        radial-gradient(circle at 20% 20%,
-            rgba(0, 229, 255, 0.08),
-            transparent 35%);
-
-    pointer-events: none;
+        radial-gradient(
+            circle at 20% 20%,
+            var(--neon-overlay),
+            transparent 35%
+        );
 }
-
 
 /* =========================================
    LEFT
 ========================================= */
 
 .welcome-left {
-    flex: 1;
-    min-width: 0;
-    z-index: 2;
+    @apply z-2 flex min-w-0 w-full flex-1 flex-col gap-4 lg:w-auto lg:gap-6;
 }
-
 
 .welcome-badge {
-    display: inline-flex;
-    align-items: center;
-
-    gap: 0.5rem;
-
-    padding: 0.5rem 1rem;
-
-    border-radius: 10rem;
-
-    background: rgba(255, 255, 255, 0.05);
-
+    @apply mb-2 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-xs sm:mb-4 sm:px-4 sm:py-2 sm:text-sm;
+    
+    background: var(--surface);
     color: var(--neon);
-
-    margin-bottom: 1.3rem;
 }
-
 
 .welcome-badge-icon {
-    display: flex;
+    @apply flex transition-[filter] duration-300 ease-in-out;
+    
     color: var(--golden);
-
-    transition: 0.3s ease;
 }
-
 
 .welcome-card:hover .welcome-badge-icon {
-    filter:
-        drop-shadow(0 0 10px var(--golden));
+    filter: drop-shadow(0 0 0.625rem var(--golden));
 }
 
+.welcome-content {
+    @apply min-w-0;
+}
 
 .welcome-content h1 {
-    font-size: 48px;
-    color: var(--text);
-
-    line-height: 1.2;
-
-    margin-bottom: 1rem;
+    @apply mb-3 text-[clamp(1.7rem,5vw,3rem)] leading-tight text-(--text) sm:mb-4;
 }
 
-
 .welcome-content h1 span {
-    display: block;
+    @apply mt-1 block bg-clip-text text-transparent sm:mt-2;
 
-    margin-top: 0.5rem;
-
-    background:
-        linear-gradient(90deg,
-            var(--neon),
-            var(--glow));
-
-    text-shadow:
-        0 0 10px var(--neon);
-
-    -webkit-background-clip: text;
+    background-image: linear-gradient(
+        90deg,
+        var(--neon),
+        var(--glow)
+    );
+    text-shadow: 0 0 0.625rem var(--neon);
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-
 .welcome-content p {
-    font-size: 1rem;
-
-    color: var(--muted);
-
-    margin-bottom: 2rem;
+    @apply mb-4 max-w-3xl text-sm text-(--muted) sm:mb-6 sm:text-base lg:mb-8;
 }
-
-
-.welcome-btn {
-    height: 55px;
-
-    padding: 0 28px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 10px;
-
-    border: none;
-    border-radius: 14px;
-
-    cursor: pointer;
-
-    background: linear-gradient(135deg,#00D4FF, #2563EB);
-
-    color: var(--text);
-
-    font-weight: 600;
-
-    transition: 0.35s;
-}
-
-
-.welcome-btn:hover {
-    box-shadow: 0 0 25px rgba(0, 229, 255, 0.35);
-}
-
 
 /* =========================================
    RIGHT
 ========================================= */
-
 .welcome-right {
-    display: flex;
-    gap: 1.5rem;
-
-    z-index: 2;
+    @apply z-2 grid w-full grid-cols-1 gap-3
+        sm:grid-cols-2 sm:gap-4
+        lg:w-auto lg:min-w-0 lg:grid-cols-3 lg:gap-5;
 }
-
 
 .welcome-mini-card {
-    width: 180px;
-
-    padding: 1.2rem;
-
-    border-radius: 1.5rem;
+    @apply flex min-w-0 w-full cursor-pointer items-center gap-3
+        rounded-3xl border p-3
+        transition-[border-color,box-shadow] duration-300 ease-in-out
+        sm:gap-4 sm:p-4
+        lg:block lg:p-5;
 
     background: var(--surface);
-
-    backdrop-filter: blur(20px);
-
-    border:
-        1px solid rgba(255, 255, 255, 0.08);
-
-    transition: 0.35s;
-
-    cursor: pointer;
+    border-color: var(--neon-grid);
+    backdrop-filter: blur(1.25rem);
 }
-
 
 .welcome-mini-card:hover {
     border-color: var(--neon);
-
-    box-shadow:
-        0 0 20px var(--neon);
+    box-shadow: 0 0 1.25rem var(--neon);
 }
 
-
-.welcome-mini-card>svg {
-    font-size: 2rem;
-
-    color: var(--neon);
-
-    margin-bottom: 1rem;
+.welcome-mini-card > svg {
+    @apply mb-0 shrink-0 text-2xl text-(--neon) sm:text-[2rem] lg:mb-4;
 }
-
 
 .welcome-mini-card h2 {
-    color: var(--text);
-
-    font-size: 1.8rem;
-
-    margin-bottom: 0.5rem;
+    @apply mb-1 text-xl text-(--text) sm:text-2xl lg:mb-2 lg:text-[1.8rem];
 }
-
 
 .welcome-mini-card span {
-    color: var(--muted);
-}
-
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
-@media (max-width: 1260px) {
-
-    .welcome-card {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .welcome-left {
-        width: 100%;
-
-        display: flex;
-        justify-content: space-between;
-
-        gap: 2rem;
-    }
-
-    .welcome-right {
-        width: 100%;
-
-        justify-content: center;
-        align-items: stretch;
-
-        gap: 1rem;
-    }
-
-    .welcome-mini-card {
-        flex: 1;
-        width: auto;
-    }
-}
-
-
-@media (max-width: 933px) {
-
-    .welcome-content h1 {
-        font-size: 2.3rem;
-    }
-}
-
-
-@media (max-width: 756px) {
-
-    .welcome-card {
-        padding: 1rem;
-    }
-
-    .welcome-left {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .welcome-content h1 {
-        font-size: 2rem;
-    }
-
-    .welcome-content p {
-        margin-bottom: 1rem;
-    }
-
-    .welcome-right {
-        flex-direction: column;
-    }
-
-    .welcome-mini-card {
-        width: 100%;
-
-        display: flex;
-        align-items: center;
-
-        gap: 1rem;
-    }
-
-    .welcome-mini-card>svg {
-        margin-bottom: 0;
-    }
-}
-
-
-@media (max-width: 439px) {
-
-    .welcome-card {
-        padding: 0.75rem;
-        gap: 1rem;
-    }
-
-    .welcome-badge {
-        margin-bottom: 0.5rem;
-        padding: 0.4rem 0.75rem;
-        font-size: 0.8rem;
-    }
-
-    .welcome-content h1 {
-        font-size: 1.7rem;
-    }
-
-    .welcome-content h1 span {
-        margin-top: 0.2rem;
-    }
-
-    .welcome-content p {
-        font-size: 0.8rem;
-    }
-
-    .welcome-btn {
-        width: 100%;
-        height: 42px;
-        padding: 0 15px;
-    }
-
-    .welcome-mini-card {
-        padding: 0.8rem;
-    }
-
-    .welcome-mini-card>svg {
-        font-size: 1.5rem;
-    }
-
-    .welcome-mini-card h2 {
-        font-size: 1.4rem;
-    }
+    @apply min-w-0 text-xs text-(--muted) sm:text-sm;
 }

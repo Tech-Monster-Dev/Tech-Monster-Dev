@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import useAuth from "../../../../../shared/hooks/useAuth";
 
+import DashButton from "../../../../../components/ui/Button/DashButton";
+
 import {
   HiFire,
   HiAcademicCap,
@@ -12,20 +14,14 @@ import {
   HiArrowRight,
 } from "react-icons/hi2";
 
-
 const WelcomeCard = ({
   username,
   stats,
   streak,
 }) => {
-
-  console.log("Welcome card Stats",stats)
-
   const { user } = useAuth();
   const navigate = useNavigate();
-
   const hour = new Date().getHours();
-
   let greeting = "Good Evening";
 
   if (hour < 12) {
@@ -34,19 +30,11 @@ const WelcomeCard = ({
     greeting = "Good Afternoon";
   }
 
-  const displayName =
-    username?.fullName?.trim()
-      ? username.fullName
-      : user?.username
-        ? user.username.charAt(0).toUpperCase() +
-        user.username.slice(1)
-        : "Student";
+  const displayName = username?.fullName?.trim() ? username.fullName : user?.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : "Student";
 
   const internshipCount = stats?.internships?.total || 0;
   const courseCount = stats?.courses?.total || 0;
-
   const badgeCount = stats?.badges || 0;
-
   const streakDays = streak?.days || 0;
 
 
@@ -65,21 +53,14 @@ const WelcomeCard = ({
         duration: 0.8,
       }}
     >
-
       <div className="welcome-glow"></div>
-
       <div className="welcome-left">
-
         <div className="welcome-content">
-
           <span className="welcome-badge">
-
             <span className="welcome-badge-icon">
               <HiSun />
             </span>
-
             {greeting}
-
           </span>
 
           <h1>
@@ -93,32 +74,22 @@ const WelcomeCard = ({
             Continue your learning journey and
             complete today's goals.
           </p>
-
         </div>
 
-        <motion.button
+        <DashButton
           type="button"
-          className="welcome-btn"
-          whileHover={{
-            scale: 1.05,
-            x: 5,
-          }}
-          whileTap={{
-            scale: 0.97,
-          }}
-          onClick={() =>
-            navigate("/student/dashboard")
-          }
+          variant="primary"
+          size="medium"
+          icon={<HiArrowRight />}
+          iconPosition="right"
+          onClick={() => navigate("/student/dashboard")}
+          className="w-fit"
         >
           Continue Learning
-          <HiArrowRight />
-        </motion.button>
-
+        </DashButton>
       </div>
 
-
       <div className="welcome-right">
-
         <motion.div
           className="welcome-mini-card"
           whileHover={{
@@ -126,13 +97,11 @@ const WelcomeCard = ({
           }}
         >
           <HiFire />
-
           <div>
             <h2>{streakDays}</h2>
             <span>Day Streak</span>
           </div>
         </motion.div>
-
 
         <motion.div
           className="welcome-mini-card"
@@ -141,13 +110,11 @@ const WelcomeCard = ({
           }}
         >
           <HiAcademicCap />
-
           <div>
             <h2>{internshipCount} / {courseCount}</h2>
             <span>Internships/Courses</span>
           </div>
         </motion.div>
-
 
         <motion.div
           className="welcome-mini-card"
@@ -156,15 +123,12 @@ const WelcomeCard = ({
           }}
         >
           <HiTrophy />
-
           <div>
             <h2>{badgeCount}</h2>
             <span>Badges</span>
           </div>
         </motion.div>
-
       </div>
-
     </motion.section>
   );
 };
