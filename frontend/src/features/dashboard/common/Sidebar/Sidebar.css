@@ -5,7 +5,9 @@
 ========================================== */
 
 .dashboard-sidebar {
-    @apply relative z-1200 my-2 flex min-h-0 min-w-0 shrink-0 flex-col justify-between overflow-hidden rounded-r-(--radius) border-r py-5 backdrop-blur-xl transition-all duration-300 ease-in-out;
+    @apply relative z-1200 my-2 flex min-h-0 min-w-0 shrink-0 flex-col justify-between
+        overflow-hidden rounded-r-(--radius) border-r py-5 backdrop-blur-xl
+        max-md:hidden md:flex;
 
     width: clamp(16.25rem, 19vw, 20rem);
     background: color-mix(
@@ -15,6 +17,10 @@
     );
     border-color: var(--neon-grid);
     box-shadow: 0 0 0.625rem var(--glow);
+    transition:
+        width 300ms ease-in-out,
+        box-shadow 300ms ease-in-out,
+        background-color 300ms ease-in-out;
 }
 
 /* ==========================================
@@ -36,7 +42,9 @@
 }
 
 .close-menu-btn {
-    @apply flex size-10 items-center justify-center rounded-lg border bg-transparent text-[clamp(1.1rem,2vw,1.25rem)] text-(--text) transition-all duration-300 ease-in-out;
+    @apply flex size-10 items-center justify-center rounded-lg border bg-transparent
+        text-[clamp(1.1rem,2vw,1.25rem)] text-(--text)
+        transition-all duration-300 ease-in-out;
 
     border-color: var(--neon-grid);
 }
@@ -61,7 +69,10 @@
 ========================================== */
 
 .sidebar-collapse-btn {
-    @apply absolute right-5 top-4 z-5 flex size-8 items-center justify-center rounded-full border bg-(--dark) text-(--text) shadow-[0_0_0.625rem_var(--glow)] transition-all duration-300 ease-in-out;
+    @apply absolute right-5 top-4 z-5 flex size-8 items-center justify-center
+        rounded-full border bg-(--dark) text-(--text)
+        shadow-[0_0_0.625rem_var(--glow)]
+        transition-all duration-300 ease-in-out;
 
     border-color: var(--neon-grid);
 }
@@ -77,7 +88,8 @@
 ========================================== */
 
 .sidebar-menu-scroll {
-    @apply mt-10 min-h-0 flex-1 overflow-y-auto overflow-x-clip scrollbar-none [-ms-overflow-style:none];
+    @apply mt-10 min-h-0 flex-1 overflow-y-auto overflow-x-clip
+        scrollbar-none [-ms-overflow-style:none];
 }
 
 .sidebar-menubar {
@@ -91,7 +103,13 @@
 .sidebar-menubar li a,
 .sidebar-footer a,
 .logout-btn {
-    @apply flex w-full cursor-pointer items-center gap-[clamp(0.65rem,1vw,0.95rem)] rounded-lg border-0 bg-transparent px-[clamp(0.75rem,1.2vw,0.95rem)] py-3 text-left text-[clamp(0.85rem,1.1vw,0.95rem)] text-(--text) no-underline transition-all duration-300 ease-in-out;
+    @apply flex w-full cursor-pointer items-center
+        gap-[clamp(0.65rem,1vw,0.95rem)]
+        rounded-lg border-0 bg-transparent
+        px-[clamp(0.75rem,1.2vw,0.95rem)] py-3
+        text-left text-[clamp(0.85rem,1.1vw,0.95rem)]
+        text-(--text) no-underline
+        transition-all duration-300 ease-in-out;
 }
 
 .sidebar-menubar li.active,
@@ -115,7 +133,8 @@
 ========================================== */
 
 .sidebar-link-icon {
-    @apply inline-flex shrink-0 items-center justify-center text-[clamp(1rem,1.4vw,1.2rem)];
+    @apply inline-flex shrink-0 items-center justify-center
+        text-[clamp(1rem,1.4vw,1.2rem)];
 }
 
 /* ==========================================
@@ -127,7 +146,9 @@
 }
 
 .lock-icon-right {
-    @apply ml-auto shrink-0 text-[clamp(0.65rem,1vw,0.875rem)] text-(--danger);
+    @apply ml-auto shrink-0
+        text-[clamp(0.65rem,1vw,0.875rem)]
+        text-(--danger);
 }
 
 /* ==========================================
@@ -165,7 +186,6 @@
 
 .dashboard-sidebar.collapsed {
     width: 4.625rem;
-    overflow: visible;
 }
 
 .dashboard-sidebar.collapsed .sidebar-menubar {
@@ -195,15 +215,16 @@
 ========================================== */
 
 .mobile-sidebar-overlay {
-    @apply hidden;
-}
+    @apply fixed inset-0 z-2500 md:hidden;
 
-.dashboard-sidebar {
-    @apply md:flex;
+    background: var(--surface-overlay);
+    backdrop-filter: blur(0.1875rem);
 }
 
 .dashboard-sidebar.mobile-open {
-    @apply fixed inset-y-0 left-0 z-3000 m-0 flex h-full w-[min(85%,21.25rem)] max-w-full flex-col overflow-y-auto rounded-none p-0;
+    @apply fixed inset-y-0 left-0 z-3000 m-0 flex h-full
+        w-[min(85%,21.25rem)] max-w-full flex-col
+        overflow-y-auto rounded-none p-0;
 
     background: color-mix(
         in srgb,
@@ -218,14 +239,6 @@
 
 .dashboard-sidebar.mobile-open .sidebar-header-mobile {
     @apply flex min-h-15 shrink-0;
-}
-
-.dashboard-sidebar.mobile-open .sidebar-header-mobile h3 {
-    @apply m-0 text-[clamp(1.1rem,2vw,1.25rem)] text-(--text);
-}
-
-.dashboard-sidebar.mobile-open .sidebar-header-mobile h3 span {
-    @apply text-(--neon);
 }
 
 .dashboard-sidebar.mobile-open .mobile-sidebar-search {
@@ -263,11 +276,4 @@
 .dashboard-sidebar.mobile-open .sidebar-footer a,
 .dashboard-sidebar.mobile-open .sidebar-footer .logout-btn {
     @apply min-h-12 px-4 py-3;
-}
-
-.mobile-sidebar-overlay {
-    @apply fixed inset-0 z-2500 md:hidden;
-
-    background: var(--surface-overlay);
-    backdrop-filter: blur(0.1875rem);
 }
