@@ -162,7 +162,6 @@ const SuggestedUsers = ({
                     type="button"
                     variant="primary"
                     size="small"
-                    className="follow-btn"
                   >
                     Follow
                   </DashButton>
@@ -171,7 +170,8 @@ const SuggestedUsers = ({
                     type="button"
                     variant="outline"
                     size="small"
-                    className="profile-btn"
+                    icon={<HiArrowRight />}
+                    iconPosition="right"
                   >
                     View Profile
                   </DashButton>

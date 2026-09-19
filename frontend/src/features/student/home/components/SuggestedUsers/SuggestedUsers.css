@@ -13,12 +13,17 @@
 ========================================= */
 
 .users-header {
-    @apply mb-5 ml-2 flex flex-col items-start justify-between gap-3
-        sm:mb-6 sm:ml-4 sm:flex-row sm:items-center sm:gap-4;
+    @apply mb-5 flex w-full min-w-0 flex-row items-center
+        justify-between gap-2 pl-2
+        sm:mb-6 sm:gap-4 sm:pl-4;
+}
+
+.users-header > div:first-child {
+    @apply min-w-0 flex-1;
 }
 
 .users-header h2 {
-    @apply flex items-center gap-2
+    @apply flex min-w-0 items-center gap-2
         text-[clamp(1rem,3vw,1.75rem)]
         font-bold text-(--text);
 }
@@ -39,7 +44,7 @@
    VIEW ALL
 ========================================= */
 .view-all-users {
-    @apply shrink-0;
+    @apply shrink-0 whitespace-nowrap;
 }
 
 /* =========================================
@@ -211,33 +216,4 @@
 ========================================= */
 .user-buttons {
     @apply flex flex-col gap-3 sm:flex-row sm:gap-4;
-}
-
-/* =========================================
-   EMPTY STATE
-========================================= */
-
-.users-empty {
-    @apply flex min-h-44 w-full
-        flex-col items-center justify-center
-        gap-2 rounded-3xl border
-        p-6 text-center
-        sm:min-h-48 sm:p-8;
-
-    background: color-mix(
-        in srgb,
-        var(--dark) 70%,
-        transparent
-    );
-
-    border-color: var(--neon-grid);
-    color: var(--muted);
-}
-
-.users-empty svg {
-    @apply text-[2.5rem] text-(--neon);
-}
-
-.users-empty h3 {
-    @apply text-(--text);
 }
