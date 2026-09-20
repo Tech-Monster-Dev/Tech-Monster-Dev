@@ -1,319 +1,272 @@
+@import "tailwindcss";
+
 /* ==========================================
-   ACCOUNT FORM
+   ACCOUNT FORM CONTAINER
 ========================================== */
 
-#username-box h2 {
-  color: var(--neon);
-  margin: 0;
-  text-shadow: 0 0 10px var(--neon);
+.account-form-container {
+    @apply w-full
+        min-w-0
+        rounded-(--radius)
+        p-[clamp(0.875rem,3vw,1.6rem)];
+
+    background: var(--surface-overlay);
+    border: 0.0625rem solid var(--neon-grid);
+    backdrop-filter: blur(0.75rem);
+    box-shadow: 0 0.5rem 2rem var(--overlay-dark);
+    color: var(--text);
 }
 
-#account-form-container {
-  background: rgba(13, 27, 42, 0.6);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  backdrop-filter: blur(12px);
-  padding: 1.6rem;
-  border-radius: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-  color: var(--text);
-  margin-top: 0.8rem;
-}
+/* ==========================================
+   ACCOUNT FORM SECTION
+========================================== */
 
+.account-form-section {
+    @apply w-full min-w-0;
+}
 
 /* ==========================================
    SECTION TITLE
 ========================================== */
 
-#form-section-title {
-  color: var(--neon);
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
-  padding-bottom: 0.5rem;
-}
+.account-form-section-title {
+    @apply mb-[clamp(0.75rem,2vw,1rem)]
+        border-b
+        pb-[clamp(0.375rem,1vw,0.5rem)]
+        text-[clamp(0.875rem,1.5vw,1rem)]
+        font-semibold;
 
+    color: var(--neon);
+    border-color: var(--neon-grid);
+}
 
 /* ==========================================
-   FORM GRID
+   ACCOUNT FORM GRID
 ========================================== */
 
-#form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+.account-form-grid {
+    @apply grid
+        grid-cols-1
+        items-start
+        md:grid-cols-2;
 }
-
 
 /* ==========================================
-   FORM GROUP
+   ACCOUNT FORM GROUP
 ========================================== */
 
-#form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+.account-form-group {
+    @apply flex
+        w-full
+        min-w-0
+        flex-col
+        gap-[clamp(0.35rem,0.8vw,0.5rem)];
 }
 
-#form-group label {
-  font-size: 1rem;
-  color: var(--text);
+.account-form-label {
+    @apply flex
+        w-full
+        min-w-0
+        items-center
+        text-[clamp(0.875rem,1.2vw,1rem)]
+        font-medium
+        leading-[1.4];
+
+    color: var(--text);
 }
-
-
-/* ==========================================
-   INPUT / SELECT / TEXTAREA
-========================================== */
-
-#form-group input,
-#form-group select,
-#form-group textarea {
-  width: 100%;
-  box-sizing: border-box;
-
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  padding: 12px;
-  border-radius: 8px;
-
-  color: var(--text);
-  font-size: 14px;
-
-  outline: none;
-
-  transition: all 0.3s ease;
-}
-
-#form-group textarea {
-  resize: none;
-  margin: 0;
-}
-
-
-/* ==========================================
-   SELECT
-========================================== */
-
-#form-group select option {
-  background-color: #0d1b2a;
-  color: var(--text);
-}
-
-#form-group select option:hover,
-#form-group select option:checked {
-  background-color: var(--neon) !important;
-  color: var(--dark) !important;
-}
-
-
-/* ==========================================
-   FOCUS
-========================================== */
-
-#form-group input:focus,
-#form-group select:focus,
-#form-group textarea:focus {
-  border-color: var(--neon);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-}
-
 
 /* ==========================================
    PROFILE IMAGE
 ========================================== */
 
 .profile-preview {
-  width: 120px;
-  height: 120px;
+    @apply mt-[clamp(0.625rem,1.5vw,0.9375rem)]
+        size-[clamp(5rem,15vw,7.5rem)]
+        rounded-full
+        object-cover;
 
-  border-radius: 50%;
-  object-fit: cover;
-
-  margin-top: 15px;
-
-  border: 2px solid #ddd;
+    border: 0.125rem solid var(--gray);
 }
-
 
 /* ==========================================
    WHATSAPP
 ========================================== */
 
-#whatsapp-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.account-whatsapp-row {
+    @apply flex
+        w-full
+        min-w-0
+        flex-col
+        items-stretch
+        gap-[clamp(0.5rem,1.5vw,0.75rem)]
+        md:flex-row
+        md:items-center;
 }
 
-#whatsapp-row input {
-  flex: 1;
-  min-width: 0;
+.account-whatsapp-row .input-group {
+    @apply min-w-0 flex-1;
 }
 
-#whatsapp-link {
-  font-size: 12px;
-  color: #00ff66;
+.account-whatsapp-link {
+    @apply w-full
+        shrink-0
+        rounded-lg
+        px-[clamp(0.625rem,2vw,0.75rem)]
+        py-[clamp(0.4rem,1vw,0.5rem)]
+        text-center
+        text-[clamp(0.6875rem,1vw,0.75rem)]
+        no-underline
+        transition-all
+        duration-300
+        ease-in-out
+        md:w-auto;
 
-  text-decoration: none;
-
-  background: rgba(0, 255, 102, 0.1);
-
-  padding: 8px 12px;
-  border-radius: 8px;
-
-  border: 1px solid rgba(0, 255, 102, 0.3);
-
-  white-space: nowrap;
+    color: var(--success);
+    background: var(--surface);
+    border: 0.0625rem solid var(--success);
+    white-space: nowrap;
 }
 
+.account-whatsapp-link:hover {
+    background: var(--neon-overlay);
+    border-color: var(--secondary);
+}
 
 /* ==========================================
    SKILLS
 ========================================== */
 
-#skills-input-container {
-  display: flex;
-  gap: 10px;
+.skills-input-container {
+    @apply flex
+        w-full
+        min-w-0
+        flex-col
+        items-stretch
+        gap-[clamp(0.5rem,1.5vw,0.75rem)]
+        md:flex-row
+        md:items-center;
 }
 
-#skills-input-container input {
-  flex: 1;
-  min-width: 0;
+.skills-input-container input {
+    @apply min-w-0
+        flex-1
+        rounded-lg
+        bg-(--surface)
+        px-[clamp(0.75rem,2vw,1rem)]
+        py-[clamp(0.6rem,1.5vw,0.8rem)]
+        text-(--text)
+        outline-none
+        transition-all
+        duration-300
+        ease-in-out;
+
+    border: 0.0625rem solid var(--neon-grid);
 }
 
-#add-skill-btn {
-  background: var(--neon);
-  color: #000;
-
-  border: none;
-
-  padding: 0 16px;
-
-  border-radius: 8px;
-
-  font-weight: 600;
-  cursor: pointer;
+.skills-input-container input:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 0.625rem var(--neon-fog);
 }
 
-#skills-tags {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
+.add-skill-btn {
+    @apply w-full
+        shrink-0
+        cursor-pointer
+        rounded-lg
+        px-[clamp(0.75rem,2vw,1rem)]
+        py-[clamp(0.6rem,1.5vw,0.8rem)]
+        font-semibold
+        transition-all
+        duration-300
+        ease-in-out
+        md:w-auto;
+
+    background: var(--neon);
+    color: var(--dark);
 }
 
-#skill-tag {
-  background: rgba(0, 240, 255, 0.1);
+.add-skill-btn:hover:not(:disabled) {
+    @apply -translate-y-0.5;
 
-  border: 1px solid var(--neon);
-
-  padding: 4px 10px;
-
-  border-radius: 6px;
-
-  font-size: 12px;
-
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    box-shadow: 0 0 0.75rem var(--neon-fog);
 }
 
-#skill-tag span {
-  cursor: pointer;
-  color: #ff3366;
+.add-skill-btn:disabled {
+    @apply cursor-not-allowed opacity-50;
 }
 
+.skills-tags {
+    @apply mt-[clamp(0.5rem,1vw,0.625rem)]
+        flex
+        w-full
+        min-w-0
+        flex-wrap
+        gap-[clamp(0.375rem,1vw,0.5rem)];
+}
+
+.skill-tag {
+    @apply inline-flex
+        max-w-full
+        min-w-0
+        items-center
+        gap-[clamp(0.3rem,0.8vw,0.375rem)]
+        rounded-md
+        px-[clamp(0.5rem,1.5vw,0.625rem)]
+        py-[clamp(0.25rem,0.8vw,0.375rem)]
+        text-[clamp(0.6875rem,1vw,0.75rem)];
+
+    background: var(--neon-overlay);
+    border: 0.0625rem solid var(--neon);
+}
+
+.skill-tag-remove {
+    @apply shrink-0
+        cursor-pointer
+        border-0
+        bg-transparent
+        p-0
+        text-[1rem]
+        leading-none
+        transition-colors
+        duration-300
+        ease-in-out;
+
+    color: var(--danger);
+}
+
+.skill-tag-remove:hover:not(:disabled) {
+    color: var(--neon);
+}
+
+.skill-tag-remove:disabled {
+    @apply cursor-not-allowed opacity-50;
+}
 
 /* ==========================================
-   SUBMIT
+   PERSONAL ACCOUNT GRID
 ========================================== */
 
-#submit-btn {
-  background:
-    linear-gradient(135deg,
-      var(--neon) 0%,
-      var(--glow) 100%);
-
-  color: var(--dark);
-
-  border: none;
-
-  padding: 0.8rem 2rem;
-
-  margin: 2rem auto 0;
-
-  display: block;
-
-  border-radius: 10px;
-
-  font-size: 1rem;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 0 20px rgba(0, 240, 255, 0.4);
-
-  transition: all 0.2s ease;
+.account-personal-grid {
+    @apply grid
+        grid-cols-1
+        md:grid-cols-2
+        lg:grid-cols-6;
 }
 
-#submit-btn:hover {
-  transform: translateY(-2px);
+.account-form-profile-image {
+    @apply md:col-span-full;
 }
 
-#submit-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+.account-form-first-name,
+.account-form-middle-name,
+.account-form-last-name {
+    @apply md:col-span-1
+        lg:col-span-2;
 }
 
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 767px) {
-
-  #username-box h2 {
-    font-size: 1.2rem;
-  }
-
-  #account-form-container {
-    padding: 1rem;
-  }
-
-  #form-grid {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
-
-  #whatsapp-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  #whatsapp-link {
-    text-align: center;
-  }
-
-  #skills-input-container {
-    flex-direction: column;
-  }
-
-  #add-skill-btn {
-    min-height: 40px;
-  }
-}
-
-
-@media (max-width: 439px) {
-
-  #account-form-container {
-    padding: 0.7rem;
-  }
-
-  #form-section-title {
-    font-size: 0.9rem;
-  }
+.account-form-email,
+.account-form-gender,
+.account-form-phone,
+.account-form-date-of-birth {
+    @apply lg:col-span-3;
 }

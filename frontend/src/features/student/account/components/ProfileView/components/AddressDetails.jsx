@@ -1,5 +1,6 @@
 import EditableField from "./EditableField";
 
+
 export default function AddressDetails({
     data,
 
@@ -16,12 +17,12 @@ export default function AddressDetails({
 
     return (
         <>
-            <h3 id="form-section-title">
+            <h3 className="form-section-title">
                 3. Address Details
             </h3>
 
 
-            <div id="form-grid">
+            <div className="form-grid">
 
                 {/* Current Address */}
 

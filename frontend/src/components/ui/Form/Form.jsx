@@ -9,6 +9,7 @@ import ImageInput from "./component/ImageInput";
 
 function Form({
     fields = [],
+    sections = [],
     values = {},
     errors = {},
     onChange,
@@ -68,6 +69,8 @@ function Form({
             });
         }
 
+        const { wrapperClassName: _wrapperClassName, ...safeFieldProps } = fieldProps;
+
         const commonProps = {
             name,
             value: fieldValue,
@@ -77,7 +80,7 @@ function Form({
             required,
             disabled: isDisabled,
             className: fieldClassName,
-            ...fieldProps
+            ...safeFieldProps
         };
 
         switch (type) {
@@ -112,7 +115,6 @@ function Form({
             case "otp":
                 return (
                     <div className="form-field">
-
                         {label && (
                             <label className="form-label">
                                 {label}
@@ -159,13 +161,13 @@ function Form({
                         required={required}
                         disabled={isDisabled}
                         accept={
-                            fieldProps.accept ||
+                            safeFieldProps.accept ||
                             (type === "image"
                                 ? "image/*"
                                 : undefined)
                         }
-                        preview={fieldProps.preview}
-                        {...fieldProps}
+                        preview={safeFieldProps.preview}
+                        {...safeFieldProps}
                     />
                 );
 
@@ -181,6 +183,25 @@ function Form({
         }
     };
 
+    const renderFields = (fieldList, className = "") => (
+        <div className={`form-fields ${className}`.trim()}>
+            {fieldList.map((field) => {
+                if (!field?.name) {
+                    return null;
+                }
+
+                return (
+                    <div
+                        key={field.id || field.name}
+                        className={field.wrapperClassName || ""}
+                    >
+                        {renderField(field)}
+                    </div>
+                );
+            })}
+        </div>
+    );
+
     return (
         <form
             className={`form ${formClassName} ${className}`.trim()}
@@ -189,32 +210,30 @@ function Form({
             {...props}
         >
 
-            {fields.length > 0 && (
-                <div className="form-fields">
+            {fields.length > 0 && renderFields(fields)}
 
-                    {fields.map((field) => {
+            {sections.map((section) => (
+                <section
+                    key={section.id || section.title}
+                    className={section.className || "form-section"}
+                >
+                    {section.title && (
+                        <h3
+                            className={
+                                section.titleClassName ||
+                                "form-section-title"
+                            }
+                        >
+                            {section.title}
+                        </h3>
+                    )}
 
-                        if (!field?.name) {
-                            return null;
-                        }
-
-                        return (
-                            <div
-                                key={
-                                    field.id ||
-                                    field.name
-                                }
-                                className={
-                                    field.wrapperClassName || ""
-                                }
-                            >
-                                {renderField(field)}
-                            </div>
-                        );
-                    })}
-
-                </div>
-            )}
+                    {renderFields(
+                        section.fields || [],
+                        section.fieldsClassName
+                    )}
+                </section>
+            ))}
 
             {children}
 
@@ -251,17 +270,11 @@ function Form({
                                     actionProps.disabled ||
                                     loading
                                 }
+                                loading={loading}
                                 className={
                                     `form-action ${actionClassName}`.trim()
                                 }
                             >
-                                {loading && (
-                                    <span
-                                        className="auth-button-spinner"
-                                        aria-hidden="true"
-                                    />
-                                )}
-
                                 {actionChildren || label}
                             </ButtonComponent>
                         );

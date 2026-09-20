@@ -1,274 +1,368 @@
+@import "tailwindcss";
+
+/* =========================================
+   LEARNING PREVIEW OVERLAY
+========================================= */
+
 .learning-preview-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    overflow: hidden;
-    background: rgba(1, 8, 20, 0.82);
-    backdrop-filter: blur(10px);
+    @apply fixed inset-0 z-9999
+        flex items-center justify-center
+        overflow-hidden
+        p-2
+        sm:p-4;
+
+    background: color-mix(
+        in srgb,
+        var(--dark) 82%,
+        transparent
+    );
+
+    backdrop-filter: blur(0.625rem);
+    -webkit-backdrop-filter: blur(0.625rem);
 }
+
+/* =========================================
+   MODAL
+========================================= */
 
 .learning-preview-modal {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: min(760px, 100%);
-    max-height: calc(100dvh - 32px);
-    overflow: hidden;
-    border: 1px solid rgba(0, 224, 255, 0.45);
-    border-radius: 22px;
+    @apply relative flex
+        w-full
+        max-w-190
+        min-h-0
+        max-h-[calc(100dvh-1rem)]
+        flex-col
+        overflow-hidden
+        rounded-[1.125rem]
+        border
+        text-(--text)
+        sm:max-h-[calc(100dvh-2rem)]
+        sm:rounded-[1.375rem];
+
+    border-color: var(--neon-cyan-soft);
+
     background:
-        radial-gradient(circle at 85% 0%, rgba(0, 224, 255, 0.13), transparent 32%),
-        linear-gradient(145deg, #07182a 0%, #08101f 55%, #050b16 100%);
-    color: #f4f8ff;
+        radial-gradient(
+            circle at 85% 0%,
+            var(--neon-cyan-faint),
+            transparent 32%
+        ),
+        linear-gradient(
+            145deg,
+            color-mix(
+                in srgb,
+                var(--secondary) 18%,
+                var(--dark)
+            ),
+            color-mix(
+                in srgb,
+                var(--dark) 92%,
+                transparent
+            ) 55%,
+            var(--dark)
+        );
+
     box-shadow:
-        0 0 0 1px rgba(0, 224, 255, 0.08),
-        0 24px 80px rgba(0, 0, 0, 0.6),
-        0 0 45px rgba(0, 224, 255, 0.12);
+        0 0 0 0.0625rem var(--neon-cyan-faint),
+        0 1.5rem 5rem var(--surface-overlay),
+        0 0 2.8125rem var(--neon-cyan-faint);
 }
 
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
 .learning-preview-close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    background: rgba(3, 10, 22, 0.78);
-    color: #ffffff;
-    cursor: pointer;
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease;
+    @apply absolute
+        right-3
+        top-3
+        z-20
+        flex
+        size-9
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        border
+        bg-(--overlay-dark)
+        text-(--text)
+        cursor-pointer
+        transition-[transform,border-color,background-color]
+        duration-200
+        ease-in-out
+        sm:right-3.5
+        sm:top-3.5;
+
+    border-color: var(--surface);
 }
 
 .learning-preview-close:hover {
-    transform: rotate(90deg) scale(1.06);
-    border-color: #00e0ff;
-    background: rgba(0, 224, 255, 0.14);
+    @apply rotate-90 scale-105
+        border-(--neon)
+        bg-(--neon-cyan-faint);
 }
 
+/* =========================================
+   THUMBNAIL
+========================================= */
+
 .learning-preview-thumbnail {
-    position: relative;
-    flex: 0 0 220px;
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
-    border-bottom: 1px solid rgba(0, 224, 255, 0.18);
+    @apply relative
+        w-full
+        shrink-0
+        overflow-hidden
+        border-b
+        h-[clamp(8rem,24dvh,13rem)];
+
+    border-color: var(--neon-cyan-faint);
+
     background:
-        radial-gradient(circle at 50% 45%, rgba(0, 224, 255, 0.2), transparent 34%),
-        #071322;
+        radial-gradient(
+            circle at 50% 45%,
+            var(--neon-cyan-soft),
+            transparent 34%
+        ),
+        color-mix(
+            in srgb,
+            var(--secondary) 10%,
+            var(--dark)
+        );
 }
 
 .learning-preview-thumbnail::after {
-    position: absolute;
-    inset: 0;
+    @apply pointer-events-none
+        absolute
+        inset-0;
+
     content: "";
+
     background: linear-gradient(
         to top,
-        rgba(3, 10, 22, 0.72),
+        var(--overlay-dark),
         transparent 55%
     );
-    pointer-events: none;
 }
 
 .learning-preview-thumbnail img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    transition: transform 0.45s ease;
+    @apply block
+        size-full
+        object-cover
+        transition-transform
+        duration-450
+        ease-in-out;
 }
 
-.learning-preview-modal:hover .learning-preview-thumbnail img {
-    transform: scale(1.025);
+.learning-preview-modal:hover
+.learning-preview-thumbnail img {
+    @apply scale-[1.025];
 }
+
+/* =========================================
+   TYPE
+========================================= */
 
 .learning-preview-type {
-    position: absolute;
-    left: 20px;
-    bottom: 16px;
-    z-index: 2;
-    padding: 6px 12px;
-    border: 1px solid rgba(0, 224, 255, 0.5);
-    border-radius: 999px;
-    background: rgba(2, 12, 25, 0.84);
-    color: #00e0ff;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
+    @apply absolute
+        bottom-3
+        left-4
+        z-10
+        rounded-full
+        border
+        px-3
+        py-1.5
+        text-[0.6875rem]
+        font-extrabold
+        uppercase
+        tracking-wider
+        text-(--neon)
+        sm:bottom-3.5
+        sm:left-5;
+
+    border-color: var(--neon-cyan-soft);
+    background: var(--overlay-dark);
 }
+
+/* =========================================
+   CONTENT
+========================================= */
 
 .learning-preview-content {
-    min-height: 0;
-    padding: 22px 26px 20px;
+    @apply min-h-0
+        flex-1
+        overflow-y-auto
+        overscroll-contain
+        p-4
+        sm:px-6
+        sm:pb-5
+        sm:pt-5;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        var(--neon-cyan-soft)
+        transparent;
 }
+
+.learning-preview-content::-webkit-scrollbar {
+    width: 0.35rem;
+}
+
+.learning-preview-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.learning-preview-content::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--neon-cyan-soft);
+}
+
+.learning-preview-content::-webkit-scrollbar-thumb:hover {
+    background: var(--neon);
+}
+
+/* =========================================
+   EYEBROW
+========================================= */
 
 .learning-preview-eyebrow {
-    display: inline-block;
-    margin-bottom: 6px;
-    color: #00e0ff;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    @apply mb-1.5
+        inline-block
+        text-[0.6875rem]
+        font-extrabold
+        uppercase
+        tracking-[0.0625em]
+        text-(--neon);
 }
+
+/* =========================================
+   TITLE
+========================================= */
 
 .learning-preview-content h2 {
-    margin: 0;
-    color: #f7fbff;
-    font-size: clamp(22px, 3vw, 31px);
-    font-weight: 800;
-    line-height: 1.18;
+    @apply m-0
+        text-[clamp(1.25rem,4vw,1.9375rem)]
+        font-extrabold
+        leading-tight
+        text-(--text);
 }
+
+/* =========================================
+   DESCRIPTION
+========================================= */
 
 .learning-preview-description {
-    display: -webkit-box;
-    margin: 12px 0 0;
-    overflow: hidden;
-    color: rgba(220, 231, 245, 0.68);
-    font-size: 14px;
-    line-height: 1.55;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    @apply mt-2.5
+        text-[clamp(0.75rem,1.8vw,0.875rem)]
+        leading-relaxed;
+
+    color: var(--muted);
 }
 
+/* =========================================
+   META
+========================================= */
+
 .learning-preview-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 16px;
+    @apply mt-3
+        flex
+        flex-wrap
+        gap-2
+        sm:mt-4;
 }
 
 .learning-preview-meta-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 11px;
-    border: 1px solid rgba(0, 224, 255, 0.18);
-    border-radius: 9px;
-    background: rgba(0, 224, 255, 0.055);
-    color: rgba(235, 244, 255, 0.82);
-    font-size: 12px;
-    font-weight: 650;
+    @apply inline-flex
+        items-center
+        gap-1.5
+        rounded-[0.5625rem]
+        border
+        px-2.5
+        py-1.5
+        text-[0.6875rem]
+        font-semibold
+        sm:px-2.75
+        sm:py-2
+        sm:text-xs;
+
+    border-color: var(--neon-cyan-faint);
+    background: var(--neon-cyan-faint);
+    color: var(--text);
 }
 
 .learning-preview-meta-item svg {
-    color: #00e0ff;
+    @apply size-4
+        shrink-0
+        text-(--neon)
+        sm:size-4.25;
 }
 
+/* =========================================
+   ACTIONS
+========================================= */
+
 .learning-preview-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 18px;
+    @apply mt-4
+        flex
+        flex-col
+        gap-2.5
+        sm:flex-row
+        sm:justify-end
+        sm:mt-4.5;
 }
 
 .learning-preview-actions button {
-    min-width: 116px;
-    min-height: 42px;
-    padding: 9px 17px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 750;
-    cursor: pointer;
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        border-color 0.2s ease;
+    @apply min-h-10
+        w-full
+        cursor-pointer
+        rounded-[0.625rem]
+        px-4
+        py-2
+        text-[0.8125rem]
+        font-bold
+        transition-[transform,box-shadow,border-color]
+        duration-200
+        ease-in-out
+        sm:min-h-10.5
+        sm:w-auto
+        sm:min-w-26;
 }
 
 .learning-preview-actions button:hover {
-    transform: translateY(-2px);
+    @apply -translate-y-0.5;
 }
 
 .learning-preview-actions button:active {
-    transform: translateY(0);
+    @apply translate-y-0;
 }
 
+/* =========================================
+   CANCEL
+========================================= */
+
 .learning-preview-cancel {
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.035);
-    color: rgba(235, 244, 255, 0.82);
+    @apply border
+        bg-(--surface)
+        text-(--text);
+
+    border-color: var(--surface);
 }
 
 .learning-preview-cancel:hover {
-    border-color: rgba(255, 255, 255, 0.32);
+    border-color: var(--gray);
 }
 
+/* =========================================
+   ENROLL
+========================================= */
+
 .learning-preview-enroll {
-    border: 1px solid rgba(0, 224, 255, 0.45);
-    background: #00d9f5;
-    color: #03101b;
-    box-shadow: 0 0 20px rgba(0, 224, 255, 0.18);
+    @apply border
+        text-(--dark)
+        shadow-[0_0_1.25rem_var(--neon-cyan-faint)];
+
+    border-color: var(--neon-cyan-soft);
+    background: var(--neon);
 }
 
 .learning-preview-enroll:hover {
-    box-shadow: 0 0 26px rgba(0, 224, 255, 0.34);
-}
-
-@media (max-width: 640px) {
-    .learning-preview-overlay {
-        padding: 10px;
-    }
-
-    .learning-preview-modal {
-        max-height: calc(100dvh - 20px);
-        border-radius: 18px;
-    }
-
-    .learning-preview-thumbnail {
-        flex-basis: 150px;
-        height: 150px;
-    }
-
-    .learning-preview-content {
-        padding: 17px 16px 15px;
-    }
-
-    .learning-preview-content h2 {
-        font-size: 21px;
-    }
-
-    .learning-preview-description {
-        margin-top: 9px;
-        font-size: 13px;
-        -webkit-line-clamp: 2;
-    }
-
-    .learning-preview-meta {
-        margin-top: 12px;
-    }
-
-    .learning-preview-meta-item {
-        padding: 7px 9px;
-        font-size: 11px;
-    }
-
-    .learning-preview-actions {
-        margin-top: 14px;
-    }
-
-    .learning-preview-actions button {
-        min-height: 40px;
-        min-width: 105px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .learning-preview-close,
-    .learning-preview-thumbnail img,
-    .learning-preview-actions button {
-        transition: none;
-    }
+    box-shadow: 0 0 1.625rem var(--neon-cyan-soft);
 }

@@ -44,9 +44,11 @@ export default function ProfileView({
     onUpdateData
   });
 
+
   const male = data.gender === "male";
   const female = data.gender === "female";
   const other = data.gender === "other";
+
 
   const {
     badges,
@@ -54,12 +56,9 @@ export default function ProfileView({
   } = useBadgesData();
 
 
-
-
   return (
-
     <motion.div
-      id="profile-view-container"
+      className="profile-view-container"
 
       initial={{
         opacity: 0,
@@ -80,33 +79,36 @@ export default function ProfileView({
       {/* PROFILE VIEW HEADER */}
       {/* ============================== */}
 
-      <div id="profile-view-header">
+      <div className="profile-view-header">
 
         <h2>
           My Profile
+
           <span
             className={`profile-check ${male
-              ? "profile-check-male"
-              : female
-                ? "profile-check-female"
-                : other
-                  ? "profile-check-other"
-                  : ""
+                ? "profile-check-male"
+                : female
+                  ? "profile-check-female"
+                  : other
+                    ? "profile-check-other"
+                    : ""
               }`}
           >
             <FaCheck />
           </span>
         </h2>
 
+
         <button
           type="button"
-          id="edit-profile-btn"
+          className="edit-profile-btn"
           onClick={onEdit}
         >
           Edit Profile
         </button>
 
       </div>
+
 
       {/* ============================== */}
       {/* PROFILE HEADER */}
@@ -115,9 +117,7 @@ export default function ProfileView({
       <ProfileHeader
         data={data}
         imageLoading={imageLoading}
-        handleImageUpdate={
-          handleImageUpdate
-        }
+        handleImageUpdate={handleImageUpdate}
       />
 
 
@@ -132,17 +132,9 @@ export default function ProfileView({
         tempValue={tempValue}
         setTempValue={setTempValue}
 
-        handleEditClick={
-          handleEditClick
-        }
-
-        handleCancel={
-          handleCancel
-        }
-
-        handleSave={
-          handleSave
-        }
+        handleEditClick={handleEditClick}
+        handleCancel={handleCancel}
+        handleSave={handleSave}
 
         saving={saving}
       />
@@ -159,17 +151,9 @@ export default function ProfileView({
         tempValue={tempValue}
         setTempValue={setTempValue}
 
-        handleEditClick={
-          handleEditClick
-        }
-
-        handleCancel={
-          handleCancel
-        }
-
-        handleSave={
-          handleSave
-        }
+        handleEditClick={handleEditClick}
+        handleCancel={handleCancel}
+        handleSave={handleSave}
 
         saving={saving}
       />
@@ -195,17 +179,9 @@ export default function ProfileView({
         tempValue={tempValue}
         setTempValue={setTempValue}
 
-        handleEditClick={
-          handleEditClick
-        }
-
-        handleCancel={
-          handleCancel
-        }
-
-        handleSave={
-          handleSave
-        }
+        handleEditClick={handleEditClick}
+        handleCancel={handleCancel}
+        handleSave={handleSave}
 
         saving={saving}
       />
@@ -222,17 +198,9 @@ export default function ProfileView({
         tempValue={tempValue}
         setTempValue={setTempValue}
 
-        handleEditClick={
-          handleEditClick
-        }
-
-        handleCancel={
-          handleCancel
-        }
-
-        handleSave={
-          handleSave
-        }
+        handleEditClick={handleEditClick}
+        handleCancel={handleCancel}
+        handleSave={handleSave}
 
         saving={saving}
       />

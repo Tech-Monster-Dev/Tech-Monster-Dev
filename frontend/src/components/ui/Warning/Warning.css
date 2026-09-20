@@ -1,110 +1,184 @@
+@import "tailwindcss";
+
+/* =========================================
+   WARNING OVERLAY
+========================================= */
+
 .warning-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.78);
-    backdrop-filter: blur(8px);
+    @apply fixed inset-0 z-9999
+        flex items-center justify-center
+        overflow-hidden
+        p-3
+        sm:p-4;
+
+    background: var(--surface-overlay);
+    backdrop-filter: blur(0.5rem);
+    -webkit-backdrop-filter: blur(0.5rem);
 }
+
+/* =========================================
+   WARNING MODAL
+========================================= */
 
 .warning-modal {
-    width: min(100%, 520px);
-    padding: 32px;
-    border: 1px solid rgba(255, 51, 102, 0.45);
-    border-radius: 20px;
-    background: #111827;
-    color: #ffffff;
-    text-align: center;
+    @apply flex w-full
+        max-w-130
+        max-h-[calc(100dvh-1.5rem)]
+        min-h-0
+        flex-col
+        overflow-y-auto
+        rounded-[1.25rem]
+        border
+        p-5
+        text-center
+        text-(--text)
+        sm:max-h-[calc(100dvh-2rem)]
+        sm:p-7
+        md:p-8;
+
+    border-color: var(--danger-soft);
+    background: var(--dark);
+
     box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.55),
-        0 0 30px rgba(255, 51, 102, 0.12);
+        0 1.25rem 3.75rem var(--surface-overlay),
+        0 0 1.875rem var(--danger-soft);
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--danger-soft) transparent;
 }
+
+/* =========================================
+   MODAL SCROLLBAR
+========================================= */
+
+.warning-modal::-webkit-scrollbar {
+    width: 0.35rem;
+}
+
+.warning-modal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.warning-modal::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--danger-soft);
+}
+
+.warning-modal::-webkit-scrollbar-thumb:hover {
+    background: var(--danger);
+}
+
+/* =========================================
+   WARNING ICON
+========================================= */
 
 .warning-icon {
-    width: 58px;
-    height: 58px;
-    margin: 0 auto 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #ff3366;
-    border-radius: 50%;
-    color: #ff3366;
-    font-size: 32px;
-    font-weight: 800;
+    @apply mx-auto mb-4
+        flex size-[clamp(3rem,14vw,3.625rem)]
+        shrink-0
+        items-center justify-center
+        rounded-full
+        border-2
+        text-[clamp(1.5rem,7vw,2rem)]
+        font-extrabold
+        text-(--danger);
+
+    border-color: var(--danger);
 }
+
+/* =========================================
+   TITLE
+========================================= */
 
 .warning-modal h2 {
-    margin: 0 0 14px;
-    color: #ff3366;
-    font-size: 22px;
-    font-weight: 700;
+    @apply m-0 mb-3.5
+        text-[clamp(1.125rem,4vw,1.375rem)]
+        font-bold
+        leading-tight
+        text-(--danger);
 }
+
+/* =========================================
+   DESCRIPTION
+========================================= */
 
 .warning-modal p {
-    margin: 0 auto;
-    max-width: 430px;
-    color: #cbd5e1;
-    font-size: 14px;
-    line-height: 1.7;
+    @apply mx-auto
+        w-full
+        max-w-107.5
+        m-0
+        text-[clamp(0.75rem,2vw,0.875rem)]
+        leading-[1.7];
+
+    color: var(--muted);
 }
+
+/* =========================================
+   ACTIONS
+========================================= */
 
 .warning-actions {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 26px;
+    @apply mt-6
+        flex
+        flex-col-reverse
+        justify-center
+        gap-3
+        sm:flex-row;
 }
 
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
 .warning-actions button {
-    min-width: 120px;
-    padding: 11px 20px;
-    border-radius: 9px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    @apply min-h-11
+        w-full
+        min-w-0
+        rounded-[0.5625rem]
+        px-5
+        py-2.5
+        text-[clamp(0.75rem,2vw,0.875rem)]
+        font-semibold
+        cursor-pointer
+        transition-[transform,box-shadow]
+        duration-200
+        ease-in-out
+        sm:w-auto
+        sm:min-w-30;
 }
 
 .warning-actions button:hover {
-    transform: translateY(-2px);
+    @apply -translate-y-0.5;
 }
 
+/* =========================================
+   CANCEL BUTTON
+========================================= */
+
 .warning-cancel-btn {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
+    @apply border
+        text-(--text);
+
+    border-color: var(--surface);
+    background: var(--surface);
 }
 
 .warning-cancel-btn:hover {
-    box-shadow: 0 0 14px rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0.875rem var(--surface);
 }
 
+/* =========================================
+   CONFIRM BUTTON
+========================================= */
+
 .warning-confirm-btn {
-    border: 1px solid #ff3366;
-    background: #ff3366;
-    color: #ffffff;
+    @apply border
+        text-(--text);
+
+    border-color: var(--danger);
+    background: var(--danger);
 }
 
 .warning-confirm-btn:hover {
-    box-shadow: 0 0 18px rgba(255, 51, 102, 0.35);
-}
-
-@media (max-width: 480px) {
-    .warning-modal {
-        padding: 24px 20px;
-    }
-
-    .warning-actions {
-        flex-direction: column-reverse;
-    }
-
-    .warning-actions button {
-        width: 100%;
-    }
+    box-shadow: 0 0 1.125rem var(--danger-soft);
 }

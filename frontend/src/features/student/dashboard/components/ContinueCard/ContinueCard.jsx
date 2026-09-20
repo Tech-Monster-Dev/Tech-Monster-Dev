@@ -44,7 +44,7 @@ const ContinueCard = ({ learning }) => {
 
   return (
     <motion.div
-      id="continue-card"
+      className="continue-card"
       initial={{
         opacity: 0,
         y: 20
@@ -59,16 +59,14 @@ const ContinueCard = ({ learning }) => {
       }}
     >
 
-      <div id="card-bg">
-
+      <div className="continue-card-bg">
         <img
           src={thumbnail || defaultThumbnail}
           alt={title}
         />
-
       </div>
 
-      <div id="continue-card-type">
+      <div className="continue-card-type">
         {learningLabel}
       </div>
 
@@ -80,10 +78,10 @@ const ContinueCard = ({ learning }) => {
         {progress}% Completed
       </span>
 
-      <div id="progress">
+      <div className="progress">
 
         <motion.div
-          id="progress-fill"
+          className="progress-fill"
           initial={{
             width: 0
           }}
@@ -97,7 +95,7 @@ const ContinueCard = ({ learning }) => {
 
       </div>
 
-      <div id="continue-card-content">
+      <div className="continue-card-content">
 
         <small>
           {remainingTasks} Tasks Left
@@ -114,7 +112,6 @@ const ContinueCard = ({ learning }) => {
         onClick={handleContinue}
       >
         Continue
-
         <ArrowRight size={18} />
       </button>
 

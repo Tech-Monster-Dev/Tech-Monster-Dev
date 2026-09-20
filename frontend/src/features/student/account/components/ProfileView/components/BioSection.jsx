@@ -1,5 +1,6 @@
 import EditableField from "./EditableField";
 
+
 export default function BioSection({
     data,
 
@@ -15,7 +16,7 @@ export default function BioSection({
 }) {
 
     return (
-        <div id="bio-profile-box">
+        <div className="bio-profile-box">
 
             <EditableField
                 field="bio"

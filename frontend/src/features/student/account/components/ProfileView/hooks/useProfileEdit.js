@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import {
-    updateProfile,
+    updateProfileField,
     uploadProfileImage
 } from "../../../../../../services/api/profileService";
 
@@ -83,7 +83,7 @@ export default function useProfileEdit({
             setSaving(true);
 
             const response =
-                await updateProfile({
+                await updateProfileField({
                     [field]: tempValue
                 });
 

@@ -9,9 +9,9 @@ const AllCourses = ({ courses = [], onPreview }) => {
   const allCount = Array.isArray(courses) ? courses.length : 0;
 
   return (
-    <section id="all-courses">
+    <section className="student-all-courses">
       <motion.div
-        id="course-heading"
+        className="student-all-courses-heading"
         initial={{ opacity: 0, x: -40 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
@@ -26,9 +26,8 @@ const AllCourses = ({ courses = [], onPreview }) => {
           paragraph="You have not joined any course yet. Explore the available learning programs below."
         />
       ) : (
-        <div id="course-grid">
+        <div className="student-all-courses-grid">
           {courses.map((course, index) => (
-
             <LearningCard
               key={course._id || course.slug}
               index={index}
@@ -37,10 +36,8 @@ const AllCourses = ({ courses = [], onPreview }) => {
               onClick={onPreview}
             />
           ))}
-
         </div>
       )}
-
     </section>
   );
 };

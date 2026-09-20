@@ -1,14 +1,14 @@
 import "./Dashboard.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import SectionTabs from "../../../layouts/SectionTabs";
+import EmptyState from "../../../components/ui/EmptyState";
 import AllInternship from "./components/AllInternship";
 import AllCourses from "./components/AllCourses";
 import LearningPreviewModal from "./components/LearningPreviewModal";
-import EmptyState from "../../../components/ui/EmptyState";
 import LearningCard from "./components/LearningCard";
-import SectionTabs from "../../../layouts/SectionTabs";
 import Warning from "../../../components/ui/Warning";
 
 import DashboardSkeleton from "./DashboardSkeleton";
@@ -19,10 +19,10 @@ import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 function Dashboard() {
     const navigate = useNavigate();
 
-    const { 
+    const {
         dashboard,
-        loading, 
-        setLoading, 
+        loading,
+        setLoading,
         loadDashboard,
         api,
         toast,
@@ -64,6 +64,18 @@ function Dashboard() {
     });
 
     const [activeSection, setActiveSection] = useState("enrolled");
+
+    useEffect(() => {
+        const dashboardContent = document.querySelector(".dashboard-content");
+
+        if (dashboardContent) {
+            dashboardContent.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "auto",
+            });
+        }
+    }, [activeSection]);
 
     const [warning, setWarning] = useState({
         open: false,
@@ -159,7 +171,10 @@ function Dashboard() {
                     : "Internship enrolled successfully."
             );
 
+            navigate(`/student/lessons/${type}/${item.slug}`);
             await loadDashboard();
+
+
 
         } catch (err) {
             console.error("Enrollment failed:", err);
