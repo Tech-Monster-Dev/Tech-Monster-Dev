@@ -11,6 +11,7 @@ function DashButton({
     iconPosition = "right",
     fullWidth = false,
     loading = false,
+    loadingText = "Loading...",
     size = "medium",
     ariaLabel,
     title,
@@ -37,7 +38,7 @@ function DashButton({
             {loading ? (
                 <span className="dash-button-loading">
                     <span className="dash-button-spinner" />
-                    <span>Loading...</span>
+                    <span>{loadingText}</span>
                 </span>
             ) : (
                 <span className="dash-button-content">

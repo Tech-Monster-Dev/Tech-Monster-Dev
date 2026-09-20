@@ -1,7 +1,7 @@
 import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-export default function useScrollToTop() {
+export default function useScrollToTop(trigger) {
     const location = useLocation();
 
     useLayoutEffect(() => {
@@ -17,6 +17,5 @@ export default function useScrollToTop() {
             dashboardContent.scrollTop = 0;
             dashboardContent.scrollLeft = 0;
         }
-    }, [location.pathname]);
-
+    }, [location.pathname, trigger]);
 }

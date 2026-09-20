@@ -17,6 +17,12 @@ export const updateProfile=(data)=>{
 
 }
 
+export const updateProfileField=(data)=>{
+
+    return api.patch(API.PROFILE.UPDATE,data);
+
+}
+
 export const uploadProfileImage=(formData)=>{
 
     return api.put(

@@ -1,5 +1,6 @@
 import EditableField from "./EditableField";
 
+
 export default function EducationDetails({
     data,
 
@@ -16,12 +17,12 @@ export default function EducationDetails({
 
     return (
         <>
-            <h3 id="form-section-title">
+            <h3 className="form-section-title">
                 2. Education Details
             </h3>
 
 
-            <div id="form-grid">
+            <div className="form-grid">
 
                 <EditableField
                     field="college"

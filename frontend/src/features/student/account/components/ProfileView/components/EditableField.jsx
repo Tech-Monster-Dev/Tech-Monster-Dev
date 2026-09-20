@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
+
 import {
     FaPencilAlt,
     FaCheck,
     FaTimes
 } from "react-icons/fa";
+
 
 export default function EditableField({
     field,
@@ -102,6 +104,7 @@ export default function EditableField({
                     {isEditing ? (
 
                         <>
+
                             <button
                                 type="button"
                                 className="field-save-btn"
@@ -118,12 +121,11 @@ export default function EditableField({
                                 type="button"
                                 className="field-cancel-btn"
                                 disabled={saving}
-                                onClick={
-                                    handleCancel
-                                }
+                                onClick={handleCancel}
                             >
                                 <FaTimes />
                             </button>
+
                         </>
 
                     ) : (

@@ -37,11 +37,7 @@ const LearningPreviewModal = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onMouseDown={(event) => {
-                        if (event.target === event.currentTarget) {
-                            onCancel?.();
-                        }
-                    }}
+                    onClick={onCancel}
                 >
                     <motion.div
                         className="learning-preview-modal"
@@ -63,6 +59,9 @@ const LearningPreviewModal = ({
                         transition={{
                             duration: 0.25,
                             ease: "easeOut",
+                        }}
+                        onClick={(event) => {
+                            event.stopPropagation();
                         }}
                     >
                         <button

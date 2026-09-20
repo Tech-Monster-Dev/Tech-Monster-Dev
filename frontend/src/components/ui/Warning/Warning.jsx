@@ -1,4 +1,4 @@
-import './Warning.css';
+import "./Warning.css";
 
 export default function Warning({
     open,
@@ -7,9 +7,8 @@ export default function Warning({
     confirmText = "Confirm",
     cancelText = "Cancel",
     onConfirm,
-    onCancel
+    onCancel,
 }) {
-
     if (!open) {
         return null;
     }
@@ -20,10 +19,18 @@ export default function Warning({
             role="dialog"
             aria-modal="true"
             aria-labelledby="warning-title"
+            onClick={onCancel}
         >
-            <div className="warning-modal">
-
-                <div className="warning-icon" aria-hidden="true">
+            <div
+                className="warning-modal"
+                onClick={(event) => {
+                    event.stopPropagation();
+                }}
+            >
+                <div
+                    className="warning-icon"
+                    aria-hidden="true"
+                >
                     !
                 </div>
 
@@ -36,7 +43,6 @@ export default function Warning({
                 </p>
 
                 <div className="warning-actions">
-
                     <button
                         type="button"
                         className="warning-cancel-btn"
@@ -52,9 +58,7 @@ export default function Warning({
                     >
                         {confirmText}
                     </button>
-
                 </div>
-
             </div>
         </div>
     );

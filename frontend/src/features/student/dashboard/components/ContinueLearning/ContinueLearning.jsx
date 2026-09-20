@@ -10,9 +10,9 @@ const ContinueLearning = ({ learningItems = [] }) => {
     : 0;
 
   return (
-    <section id="continue-learning">
+    <section className="continue-learning">
       <motion.div
-        id="section-title"
+        className="section-title"
         initial={{ opacity: 0, x: -40 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
@@ -35,7 +35,7 @@ const ContinueLearning = ({ learningItems = [] }) => {
 
       ) : (
 
-        <div id="continuelearning-grid">
+        <div className="continuelearning-grid">
           {learningItems.map((item, index) => (
 
             <motion.div

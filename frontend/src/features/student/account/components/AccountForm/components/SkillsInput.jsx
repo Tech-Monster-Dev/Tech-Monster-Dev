@@ -5,53 +5,70 @@ function SkillsInput({
     skillInput,
     setSkillInput,
     addSkill,
-    removeSkill
+    removeSkill,
+    error,
+    disabled = false
 }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.6 }}
-            id="form-group"
+            className="account-form-group"
         >
-            <label>Add Skills (Maximum 7) *</label>
+            <label
+                className="account-form-label"
+                htmlFor="skill-input"
+            >
+                Add Skills (Maximum 7)
+                <span className={skills.length > 0 || skillInput.trim() ? "labelSpanGreen" : "labelSpanRed"}>*</span>
+            </label>
 
-            <div id="skills-input-container">
-
+            <div className="skills-input-container">
                 <input
+                    id="skill-input"
                     type="text"
                     value={skillInput}
                     placeholder="Add skill & click add"
                     onChange={(e) =>
                         setSkillInput(e.target.value)
                     }
+                    disabled={disabled}
                 />
 
                 <button
                     type="button"
-                    id="add-skill-btn"
+                    className="add-skill-btn"
                     onClick={addSkill}
+                    disabled={disabled}
                 >
                     Add
                 </button>
-
             </div>
 
-            <div id="skills-tags">
+            {error && (
+                <small className="form-error">
+                    {error}
+                </small>
+            )}
+
+            <div className="skills-tags">
                 {skills.map((skill, index) => (
                     <span
                         key={`${skill}-${index}`}
-                        id="skill-tag"
+                        className="skill-tag"
                     >
                         {skill}
 
-                        <span
+                        <button
+                            type="button"
+                            className="skill-tag-remove"
                             onClick={() => removeSkill(index)}
-                            role="button"
-                            tabIndex={0}
+                            disabled={disabled}
+                            aria-label={`Remove ${skill}`}
                         >
                             ×
-                        </span>
+                        </button>
                     </span>
                 ))}
             </div>

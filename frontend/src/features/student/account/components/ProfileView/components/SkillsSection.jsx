@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
 import EmptyState from "../../../../../../components/ui/EmptyState";
 
+
 export default function SkillsSection({
     skills
 }) {
 
     return (
         <motion.div
-            id="skills-profile-box"
+            className="skills-profile-box"
 
             initial={{
                 opacity: 0,
@@ -25,7 +26,7 @@ export default function SkillsSection({
             </label>
 
 
-            <div id="skills-tags">
+            <div className="skills-tags">
 
                 {skills?.length > 0 ? (
 

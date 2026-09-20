@@ -1,108 +1,95 @@
+@import "tailwindcss";
+
 .auth-button {
-    width: 100%;
-    min-height: 52px;
+    @apply flex
+        min-h-12.5
+        w-full
+        items-center
+        justify-center
+        rounded-[0.625rem]
+        px-4.5
+        text-[0.9375rem]
+        font-bold
+        tracking-[0.0125em]
+        text-(--text)
+        cursor-pointer
+        transition-all
+        duration-250
+        ease-in-out
+        sm:min-h-13
+        sm:px-6
+        sm:text-base;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 24px;
-
-    border-radius: 10px;
-
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-
-    color: #ffffff;
-
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-
-    cursor: pointer;
-
-    transition: all 0.25s ease;
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        color-mix(
+            in srgb,
+            var(--primary) 80%,
+            var(--dark)
+        )
+    );
 }
 
-
-/* Content */
+/* ==========================================
+   CONTENT
+========================================== */
 
 .auth-button-content {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
+    @apply inline-flex
+        items-center
+        justify-center
+        gap-2;
 }
 
-
-/* Hover */
+/* ==========================================
+   HOVER
+========================================== */
 
 .auth-button:not(:disabled):hover {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    @apply -translate-y-px;
+
+    background: linear-gradient(
+        135deg,
+        color-mix(
+            in srgb,
+            var(--primary) 85%,
+            var(--text)
+        ),
+        var(--primary)
+    );
+
     box-shadow:
-        0 0 12px rgba(0, 238, 255, 0.25),
-        0 0 28px rgba(37, 99, 235, 0.25);
-    transform: translateY(-1px);
+        0 0 0.75rem var(--neon-cyan-soft),
+        0 0 1.75rem var(--neon-blue-soft);
 }
 
-
-/* Active */
+/* ==========================================
+   ACTIVE
+========================================== */
 
 .auth-button:not(:disabled):active {
-    transform: translateY(0);
+    @apply translate-y-0;
 }
 
-
-/* Focus */
+/* ==========================================
+   FOCUS
+========================================== */
 
 .auth-button:focus-visible {
-    outline: 2px solid #00eaff;
-    outline-offset: 3px;
+    @apply outline-2
+        outline-(--neon)
+        outline-offset-3;
 }
 
-
-/* Disabled */
+/* ==========================================
+   DISABLED
+========================================== */
 
 .auth-button:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+    @apply cursor-not-allowed
+        opacity-55;
 
     box-shadow: none;
     transform: none;
-}
-
-
-/* Loading spinner */
-
-.auth-button-spinner {
-    width: 17px;
-    height: 17px;
-
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: #ffffff;
-
-    border-radius: 50%;
-
-    animation: authButtonSpin 0.7s linear infinite;
-}
-
-
-@keyframes authButtonSpin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-
-/* Mobile */
-
-@media (max-width: 480px) {
-
-    .auth-button {
-        min-height: 50px;
-
-        padding: 0 18px;
-
-        font-size: 15px;
-    }
-
 }

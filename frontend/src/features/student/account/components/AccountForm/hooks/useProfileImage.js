@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import defaultProfileImg from '../../../../../../assets/profile/default-profile.svg';
 
 export default function useProfileImage(initialImage = "") {
 
@@ -13,7 +12,7 @@ export default function useProfileImage(initialImage = "") {
             !initialImage ||
             initialImage === "/profile/default-profile.svg"
         ) {
-            return defaultProfileImg;
+            return "";
         }
 
         return initialImage;

@@ -9,10 +9,10 @@ const AllInternship = ({ internships = [], onPreview }) => {
   const allCount = Array.isArray(internships) ? internships.length : 0;
 
   return (
-    <section id="all-courses">
+    <section className="student-all-courses">
 
       <motion.div
-        id="course-heading"
+        className="student-all-courses-heading"
         initial={{ opacity: 0, x: -40 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
@@ -27,7 +27,7 @@ const AllInternship = ({ internships = [], onPreview }) => {
           paragraph="You have not joined any Internship yet. Explore the available Internships below."
         />
       ) : (
-        <div id="course-grid">
+        <div className="student-all-courses-grid">
           {internships.map((internship, index) => (
             <LearningCard
               key={internship._id || internship.slug}

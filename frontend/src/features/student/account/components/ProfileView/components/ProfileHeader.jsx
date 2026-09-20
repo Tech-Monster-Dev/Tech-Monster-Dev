@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import defaultProfileImage from "../../../../../../assets/profile/default-profile.svg";
 
+
 export default function ProfileHeader({
     data,
     imageLoading,
@@ -9,7 +10,7 @@ export default function ProfileHeader({
 
     return (
         <motion.div
-            id="profile-header"
+            className="profile-header"
 
             initial={{
                 opacity: 0,
@@ -30,27 +31,32 @@ export default function ProfileHeader({
             {/* AVATAR */}
             {/* ============================== */}
 
-            <div id="profile-avatar-section">
+            <div className="profile-avatar-section">
 
-                <div id="profile-avatar-wrapper">
+                <div className="profile-avatar-wrapper">
 
                     <img
                         src={
-                            data?.avatar && data.avatar !== "/profile/default-profile.svg" ? data.avatar : defaultProfileImage
+                            data?.avatar &&
+                                data.avatar !== "/profile/default-profile.svg"
+                                ? data.avatar
+                                : defaultProfileImage
                         }
 
                         alt="Profile"
 
-                        id="profile-large-avatar"
+                        className="profile-large-avatar"
+
                         onError={(event) => {
-                            event.currentTarget.src = defaultProfileImage;
+                            event.currentTarget.src =
+                                defaultProfileImage;
                         }}
                     />
 
 
                     {imageLoading && (
 
-                        <div id="avatar-loading">
+                        <div className="avatar-loading">
                             Uploading...
                         </div>
 
@@ -61,7 +67,7 @@ export default function ProfileHeader({
 
                 <label
                     htmlFor="profile-image-input"
-                    id="edit-photo-btn"
+                    className="edit-photo-btn"
                 >
 
                     {imageLoading
@@ -72,15 +78,9 @@ export default function ProfileHeader({
 
                     <input
                         id="profile-image-input"
-
                         type="file"
-
                         accept="image/*"
-
-                        onChange={
-                            handleImageUpdate
-                        }
-
+                        onChange={handleImageUpdate}
                         disabled={imageLoading}
                     />
 
@@ -93,29 +93,34 @@ export default function ProfileHeader({
             {/* PROFILE INFO */}
             {/* ============================== */}
 
-            <div id="profile-header-info">
+            <div className="profile-header-info">
 
-                <div id="profile-name-row">
+                <div className="profile-name-row">
+
                     <h2>
                         {data?.firstName || ""}
                         {" "}
                         {data?.lastName || ""}
                     </h2>
 
-                    <span id="profile-username">
+
+                    <span className="profile-username">
                         @{data?.username || "username"}
                     </span>
+
                 </div>
 
-                <p id="profile-email">
+
+                <p className="profile-email">
                     {data?.email || "No email"}
                 </p>
+
 
                 {/* ============================== */}
                 {/* STATS */}
                 {/* ============================== */}
 
-                <div id="profile-stats-row">
+                <div className="profile-stats-row">
 
                     <div className="profile-stat">
 
@@ -157,17 +162,25 @@ export default function ProfileHeader({
 
                     </div>
 
+
                     <div className="profile-stat">
+
                         <strong>
                             {data?.profileStats?.completedCourses ?? 0}
                             {" / "}
                             {data?.profileStats?.totalCourses ?? 0}
                         </strong>
-                        <span>Courses</span>
+
+                        <span>
+                            Courses
+                        </span>
+
                     </div>
 
                 </div>
+
             </div>
+
         </motion.div>
     );
 }

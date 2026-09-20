@@ -1,297 +1,337 @@
-import { useState } from "react";
+import "./AccountForm.css";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
-import "./AccountForm.css";
-import Spinner from "../../../../dashboard/common/LoaderPage/Spinner";
+
+import Form from "../../../../../components/ui/Form/Form";
+import Textinput from "../../../../../components/ui/Form/component/Textinput";
+import DashButton from "../../../../../components/ui/Button/DashButton";
 
 import useAuth from "../../../../../shared/hooks/useAuth";
 import { tokenStorage } from "../../../../../services/auth/tokenStorage";
 
 import {
-  updateProfile,
-  uploadProfileImage
+    updateProfile,
+    uploadProfileImage
 } from "../../../../../services/api/profileService";
 
 import {
-  getInitialFormData
+    getInitialFormData
 } from "../../../../../shared/utils/initialFormData";
 
 import {
-  validateForm
-} from "../../../../../shared/utils/validation";
+    validateField,
+    validateForm
+} from "../../../../../shared/utils/validation/formValidation";
+
+import { accountRules } from "./validation/accountRules";
 
 import useProfileImage from "./hooks/useProfileImage";
 import usePincode from "./hooks/usePincode";
 import useSkills from "./hooks/useSkills";
 
 import {
-  PersonalDetails,
-  EducationDetails,
-  AddressDetails,
+    SkillsInput
 } from "./components";
+
+import {
+    getAccountFormSections
+} from "./accountFormData";
 
 
 export default function AccountForm({
-  initialEmail,
-  editData,
-  onSubmitForm
+    initialEmail,
+    editData,
+    onSubmitForm
 }) {
-
-  const { updateUser } = useAuth();
-
-  const loginUser = tokenStorage.getUser();
-
-  const [formData, setFormData] = useState(() => {
-
-    const initialData =
-      getInitialFormData(
+    const { updateUser } = useAuth();
+    const loginUser = tokenStorage.getUser();
+    const draftUserId =
+        loginUser?._id ||
+        loginUser?.id ||
+        editData?._id ||
+        editData?.id ||
         loginUser?.email ||
         initialEmail ||
-        ""
-      );
+        "guest";
+    const draftStorageKey = `accountFormDraft:${draftUserId}`;
 
-    if (editData) {
-
-      return {
-        ...initialData,
-        ...editData
-      };
-
-    }
-
-    return initialData;
-
-  });
-
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-
-
-  // ==============================
-  // PROFILE IMAGE
-  // ==============================
-
-  const {
-    imageFile,
-    preview,
-    handleImageChange
-  } = useProfileImage(
-    editData?.avatar
-  );
-
-
-  // ==============================
-  // PINCODE
-  // ==============================
-
-  const {
-    handlePincode
-  } = usePincode(setFormData);
-
-
-  // ==============================
-  // SKILLS
-  // ==============================
-
-  const {
-    skillInput,
-    setSkillInput,
-    addSkill,
-    removeSkill
-  } = useSkills(
-    formData,
-    setFormData
-  );
-
-
-  // ==============================
-  // INPUT CHANGE
-  // ==============================
-
-  const handleChange = (e) => {
-
-    const {
-      name,
-      value
-    } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-
-    if (name === "pincode") {
-      handlePincode(value);
-    }
-  };
-
-
-  // ==============================
-  // FORM SUBMIT
-  // ==============================
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const {
-      errors: validationErrors,
-      isValid
-    } = validateForm(formData);
-
-    setErrors(validationErrors);
-    if (!isValid) return;
-    setLoading(true);
-
-    try {
-      let latestUser = null;
-
-      // ==============================
-      // UPLOAD PROFILE IMAGE
-      // ==============================
-
-      if (imageFile) {
-
-        const form = new FormData();
-
-        form.append(
-          "avatar",
-          imageFile
+    const [formData, setFormData] = useState(() => {
+        const initialData = getInitialFormData(
+            loginUser?.email ||
+            initialEmail ||
+            ""
         );
 
-        const response = await uploadProfileImage(form);
+        let savedDraft = {};
 
-        latestUser = response.data.user;
-      }
+        try {
+            const storedDraft = localStorage.getItem(draftStorageKey);
+            savedDraft = storedDraft ? JSON.parse(storedDraft) : {};
+        } catch (error) {
+            console.error("Account form draft load error:", error);
+        }
 
+        return {
+            ...initialData,
+            ...(editData || {}),
+            ...(savedDraft || {})
+        };
+    });
 
-      // ==============================
-      // UPDATE PROFILE
-      // ==============================
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                draftStorageKey,
+                JSON.stringify(formData)
+            );
+        } catch (error) {
+            console.error("Account form draft save error:", error);
+        }
+    }, [formData, draftStorageKey]);
 
-      const response = await updateProfile(formData);
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
-      latestUser = response.data.user;
+    const {
+        imageFile,
+        preview,
+        handleImageChange
+    } = useProfileImage(editData?.avatar);
 
-      const latestStats = response.data.stats;
+    const {
+        handlePincode
+    } = usePincode(setFormData);
 
+    const {
+        skillInput,
+        setSkillInput,
+        addSkill,
+        removeSkill
+    } = useSkills(formData, setFormData);
 
-      // ==============================
-      // UPDATE AUTH CONTEXT
-      // ==============================
+    const isProfileCompleted = Boolean(
+        editData?.profileCompleted
+    );
 
-      updateUser(latestUser);
+    const isProfileImageRequired = !isProfileCompleted;
 
+    const handleChange = (event) => {
+        const {
+            name,
+            value
+        } = event.target;
 
-      // ==============================
-      // UPDATE PROFILE PAGE DATA
-      // ==============================
+        if (name === "avatar") {
+            handleImageChange(event);
 
-      onSubmitForm({
-        ...latestUser,
-        profileStats: latestStats
-      });
+            setErrors((prev) => ({
+                ...prev,
+                avatar: ""
+            }));
 
+            return;
+        }
 
-      toast.success(
-        "Profile updated successfully!"
-      );
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
 
-    } catch (error) {
+        setErrors((prev) => ({
+            ...prev,
+            [name]: validateField(
+                name,
+                value,
+                accountRules
+            )
+        }));
 
-      console.error(
-        "Profile Update Error:",
-        error
-      );
+        if (name === "pincode") {
+            handlePincode(value);
+        }
+    };
 
-      toast.error(
-        error.response?.data?.message ||
-        "Profile update failed"
-      );
+    const handleAddSkill = () => {
+        const skill = skillInput.trim();
+        const canAddSkill =
+            Boolean(skill) &&
+            formData.skills.length < 7 &&
+            !formData.skills.includes(skill);
 
-    } finally {
+        addSkill();
 
-      setLoading(false);
+        const nextSkills = canAddSkill
+            ? [...formData.skills, skill]
+            : formData.skills;
 
-    }
-  };
+        setErrors((prev) => ({
+            ...prev,
+            skills: validateField(
+                "skills",
+                nextSkills,
+                accountRules
+            )
+        }));
+    };
 
+    const handleRemoveSkill = (index) => {
+        const nextSkills = formData.skills.filter(
+            (_, skillIndex) => skillIndex !== index
+        );
 
-  return (
-    <>
+        removeSkill(index);
 
-      {
-        loading && (
-          <Spinner
-            size={50}
-            message="loading your profile..."
-          />
-        )
-      }
+        setErrors((prev) => ({
+            ...prev,
+            skills: validateField(
+                "skills",
+                nextSkills,
+                accountRules
+            )
+        }));
+    };
 
-      {/* Username */}
-      <div id="username-box">
-        <h2>
-          @{loginUser?.username}
-        </h2>
-      </div>
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-      {/* Account Form */}
+        const {
+            errors: validationErrors,
+            isValid: formIsValid
+        } = validateForm(
+            formData,
+            accountRules
+        );
 
-      <motion.form
-        id="account-form-container"
+        const nextErrors = {
+            ...validationErrors
+        };
 
-        initial={{
-          opacity: 0,
-          y: 20
-        }}
+        if (
+            isProfileImageRequired &&
+            !imageFile
+        ) {
+            nextErrors.avatar =
+                "Profile photo is required";
+        }
 
-        animate={{
-          opacity: 1,
-          y: 0
-        }}
+        const isValid =
+            formIsValid &&
+            (
+                !isProfileImageRequired ||
+                Boolean(imageFile)
+            );
 
-        transition={{
-          duration: 0.5
-        }}
+        setErrors(nextErrors);
 
-        onSubmit={handleSubmit}
-      >
+        if (!isValid) {
+            return;
+        }
 
-        <PersonalDetails
-          formData={formData}
-          errors={errors}
-          preview={preview}
-          handleChange={handleChange}
-          handleImageChange={handleImageChange}
-        />
+        setLoading(true);
 
-        <EducationDetails
-          formData={formData}
-          errors={errors}
-          handleChange={handleChange}
-          skillInput={skillInput}
-          setSkillInput={setSkillInput}
-          addSkill={addSkill}
-          removeSkill={removeSkill}
-        />
+        try {
+            let latestUser = null;
 
-        <AddressDetails
-          formData={formData}
-          errors={errors}
-          handleChange={handleChange}
-        />
+            if (imageFile) {
+                const form = new FormData();
 
-        {/* Submit */}
+                form.append(
+                    "avatar",
+                    imageFile
+                );
 
-        <button
-          disabled={loading}
-          type="submit"
-          id="submit-btn"
-        >
-          {loading ? "saving..." : "save & profile view"}
-        </button>
-      </motion.form>
-    </>
-  );
+                const response =
+                    await uploadProfileImage(form);
+
+                latestUser = response.data.user;
+            }
+
+            const response =
+                await updateProfile(formData);
+
+            latestUser = response.data.user;
+
+            const latestStats =
+                response.data.stats;
+
+            updateUser(latestUser);
+
+            onSubmitForm({
+                ...latestUser,
+                profileStats: latestStats
+            });
+
+            localStorage.removeItem(draftStorageKey);
+
+            toast.success(
+                "Profile updated successfully!"
+            );
+        } catch (error) {
+            console.error(
+                "Profile Update Error:",
+                error
+            );
+
+            toast.error(
+                error.response?.data?.message ||
+                "Profile update failed"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const sections = getAccountFormSections({
+        isProfileImageRequired,
+        formData,
+        preview,
+        skillInput,
+        setSkillInput,
+        handleAddSkill,
+        handleRemoveSkill,
+        SkillsInput,
+        Textinput
+    });
+
+    const actions = [
+        {
+            label: isProfileCompleted ? "Update Profile" : "Save & Profile view",
+            loading,
+            loadingText: isProfileCompleted ? "Updating..." : "Saving...",
+            type: "submit",
+            component: DashButton,
+            variant: "primary",
+        }
+    ];
+
+    return (
+        <>
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    y: 20
+                }}
+                animate={{
+                    opacity: 1,
+                    y: 0
+                }}
+                transition={{
+                    duration: 0.5
+                }}
+            >
+                <Form
+                    sections={sections}
+                    values={formData}
+                    errors={errors}
+                    onChange={handleChange}
+                    onSubmit={handleSubmit}
+                    actions={actions}
+                    formClassName="account-form-container"
+                    disabled={loading}
+                />
+            </motion.div>
+        </>
+    );
 }
