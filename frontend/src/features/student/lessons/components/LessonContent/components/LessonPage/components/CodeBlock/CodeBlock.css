@@ -1,42 +1,68 @@
+@import "tailwindcss";
+
 /* ==========================================
    LESSON CODE BLOCK
 ========================================== */
 
 .lesson-codeblock {
-    position: relative;
-    width: 100%;
-    margin: 1.6rem 0 1.9rem;
+    @apply relative
+        my-[clamp(1rem,3vw,1.6rem)]
+        w-full
+        min-w-0
+        max-w-full
+        overflow-hidden
+        rounded-[clamp(0.875rem,2vw,1rem)]
+        border
+        transition-[border-color,box-shadow,transform]
+        duration-250
+        ease-in-out;
 
-    border: 1px solid rgba(34, 211, 238, 0.18);
-    border-radius: 16px;
-
-    overflow: hidden;
+    border-color: var(--neon-cyan-soft);
 
     background:
         linear-gradient(
             135deg,
-            rgba(8, 20, 35, 0.98),
-            rgba(5, 13, 25, 0.98)
+            color-mix(
+                in srgb,
+                var(--dark) 98%,
+                var(--secondary)
+            ),
+            color-mix(
+                in srgb,
+                var(--dark) 98%,
+                var(--primary)
+            )
         );
 
     box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.25),
-        0 0 28px rgba(34, 211, 238, 0.045),
-        inset 0 1px 0 rgba(255, 255, 255, 0.035);
-
-    transition:
-        border-color 0.25s ease,
-        box-shadow 0.25s ease,
-        transform 0.25s ease;
+        0 1.125rem 2.5rem var(--surface-overlay),
+        0 0 1.75rem color-mix(
+            in srgb,
+            var(--neon-cyan-soft) 27%,
+            transparent
+        ),
+        inset 0 0.0625rem 0 var(--surface);
 }
 
 .lesson-codeblock:hover {
-    border-color: rgba(34, 211, 238, 0.3);
+    border-color: color-mix(
+        in srgb,
+        var(--neon) 30%,
+        transparent
+    );
 
     box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.28),
-        0 0 32px rgba(34, 211, 238, 0.07),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        0 1.25rem 2.8125rem var(--surface-overlay),
+        0 0 2rem color-mix(
+            in srgb,
+            var(--neon-cyan-soft) 42%,
+            transparent
+        ),
+        inset 0 0.0625rem 0 color-mix(
+            in srgb,
+            var(--text) 4%,
+            transparent
+        );
 }
 
 /* ==========================================
@@ -44,24 +70,25 @@
 ========================================== */
 
 .lesson-codeblock::before {
+    @apply pointer-events-none
+        absolute
+        inset-x-0
+        top-0
+        h-px;
+
     content: "";
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-
-    height: 1px;
 
     background: linear-gradient(
         90deg,
         transparent,
-        rgba(34, 211, 238, 0.55),
-        rgba(52, 211, 153, 0.35),
+        var(--neon-cyan-soft),
+        color-mix(
+            in srgb,
+            var(--success) 35%,
+            transparent
+        ),
         transparent
     );
-
-    pointer-events: none;
 }
 
 /* ==========================================
@@ -69,27 +96,42 @@
 ========================================== */
 
 .lesson-codeblock__header {
-    position: relative;
-    z-index: 1;
+    @apply relative
+        z-1
+        flex
+        min-h-[clamp(2.75rem,6vw,3rem)]
+        min-w-0
+        items-center
+        justify-between
+        gap-[clamp(0.5rem,1.5vw,1rem)]
+        border-b
+        px-[clamp(0.625rem,2vw,1rem)]
+        py-[clamp(0.5rem,1.5vw,0.65rem)];
 
-    min-height: 48px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 1rem;
-
-    padding: 0.65rem 0.8rem 0.65rem 1rem;
-
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-color: color-mix(
+        in srgb,
+        var(--text) 7%,
+        transparent
+    );
 
     background:
         linear-gradient(
             90deg,
-            rgba(34, 211, 238, 0.065),
-            rgba(255, 255, 255, 0.018),
-            rgba(16, 185, 129, 0.035)
+            color-mix(
+                in srgb,
+                var(--neon-cyan) 6.5%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--text) 1.8%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--success) 3.5%,
+                transparent
+            )
         );
 }
 
@@ -98,14 +140,12 @@
 ========================================== */
 
 .lesson-codeblock__meta {
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-
-    gap: 0.55rem;
-
-    overflow: hidden;
+    @apply flex
+        min-w-0
+        max-w-full
+        items-center
+        gap-[clamp(0.375rem,1vw,0.55rem)]
+        overflow-hidden;
 }
 
 /* ==========================================
@@ -113,21 +153,33 @@
 ========================================== */
 
 .lesson-codeblock__filename {
-    display: inline-flex;
-    align-items: center;
+    @apply inline-flex
+        min-w-0
+        max-w-[48%]
+        items-center
+        overflow-hidden
+        rounded-[0.4375rem]
+        border
+        bg-(--surface)
+        px-[clamp(0.5rem,1.5vw,0.55rem)]
+        py-[clamp(0.25rem,0.8vw,0.3rem)]
+        text-[clamp(0.625rem,1.3vw,0.74rem)]
+        font-semibold
+        leading-tight
+        text-ellipsis
+        whitespace-nowrap;
 
-    min-width: 0;
+    border-color: color-mix(
+        in srgb,
+        var(--text) 8%,
+        transparent
+    );
 
-    max-width: min(70%, 420px);
-
-    padding: 0.3rem 0.55rem;
-
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 7px;
-
-    background: rgba(255, 255, 255, 0.045);
-
-    color: #e2e8f0;
+    color: color-mix(
+        in srgb,
+        var(--text) 88%,
+        var(--gray)
+    );
 
     font-family:
         "JetBrains Mono",
@@ -135,14 +187,6 @@
         "Cascadia Code",
         Consolas,
         monospace;
-
-    font-size: 0.74rem;
-    font-weight: 650;
-    line-height: 1.2;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 /* ==========================================
@@ -150,20 +194,33 @@
 ========================================== */
 
 .lesson-codeblock__language {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @apply inline-flex
+        min-w-0
+        shrink-0
+        items-center
+        justify-center
+        rounded-[0.4375rem]
+        border
+        px-[clamp(0.5rem,1.5vw,0.55rem)]
+        py-[clamp(0.25rem,0.8vw,0.28rem)]
+        text-[clamp(0.6rem,1.2vw,0.7rem)]
+        font-bold
+        uppercase
+        leading-tight
+        tracking-wide;
 
-    flex-shrink: 0;
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 16%,
+        transparent
+    );
 
-    padding: 0.28rem 0.55rem;
-
-    border: 1px solid rgba(34, 211, 238, 0.16);
-    border-radius: 7px;
-
-    background: rgba(34, 211, 238, 0.08);
-
-    color: #67e8f9;
+    background: var(--neon-cyan-faint);
+    color: color-mix(
+        in srgb,
+        var(--neon-cyan) 70%,
+        var(--text)
+    );
 
     font-family:
         "JetBrains Mono",
@@ -171,14 +228,6 @@
         "Cascadia Code",
         Consolas,
         monospace;
-
-    font-size: 0.7rem;
-    font-weight: 750;
-
-    line-height: 1.2;
-    letter-spacing: 0.025em;
-
-    text-transform: uppercase;
 }
 
 /* ==========================================
@@ -186,59 +235,67 @@
 ========================================== */
 
 .lesson-codeblock__copy {
-    flex-shrink: 0;
+    @apply inline-flex
+        min-h-[clamp(2rem,5vw,2.25rem)]
+        shrink-0
+        cursor-pointer
+        items-center
+        justify-center
+        rounded-lg
+        border
+        px-[clamp(0.5rem,1.5vw,0.72rem)]
+        py-[clamp(0.375rem,1vw,0.42rem)]
+        text-[clamp(0.625rem,1.3vw,0.76rem)]
+        font-bold
+        leading-none
+        text-(--muted)
+        transition-[color,background-color,border-color,transform,box-shadow]
+        duration-200
+        ease-in-out;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    border-color: color-mix(
+        in srgb,
+        var(--gray) 16%,
+        transparent
+    );
 
-    min-height: 32px;
-
-    padding: 0.42rem 0.72rem;
-
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    border-radius: 8px;
-
-    background: rgba(255, 255, 255, 0.045);
-
-    color: #cbd5e1;
+    background: color-mix(
+        in srgb,
+        var(--text) 4.5%,
+        transparent
+    );
 
     font-family: inherit;
-    font-size: 0.76rem;
-    font-weight: 700;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
 }
 
 .lesson-codeblock__copy:hover {
-    color: #ffffff;
+    @apply -translate-y-px
+        text-(--text);
 
-    border-color: rgba(34, 211, 238, 0.3);
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 30%,
+        transparent
+    );
 
-    background: rgba(34, 211, 238, 0.09);
+    background: var(--neon-cyan-faint);
 
     box-shadow:
-        0 0 14px rgba(34, 211, 238, 0.07);
-
-    transform: translateY(-1px);
+        0 0 0.875rem color-mix(
+            in srgb,
+            var(--neon-cyan) 7%,
+            transparent
+        );
 }
 
 .lesson-codeblock__copy:active {
-    transform: translateY(0);
+    @apply translate-y-0;
 }
 
 .lesson-codeblock__copy:focus-visible {
-    outline: 2px solid rgba(34, 211, 238, 0.65);
-    outline-offset: 2px;
+    @apply outline-2
+        outline-(--neon-cyan-soft)
+        outline-offset-2;
 }
 
 /* ==========================================
@@ -246,27 +303,34 @@
 ========================================== */
 
 .lesson-codeblock__body {
-    position: relative;
-
-    width: 100%;
-
-    margin: 0;
-
-    padding: 1.15rem 1.2rem 1.25rem;
-
-    box-sizing: border-box;
-
-    overflow-x: auto;
-    overflow-y: hidden;
+    @apply relative
+        m-0
+        box-border
+        w-full
+        min-w-0
+        overflow-x-auto
+        overflow-y-hidden
+        px-[clamp(0.625rem,2.5vw,1.2rem)]
+        py-[clamp(0.75rem,2.5vw,1.15rem)]
+        text-[clamp(0.68rem,1.5vw,0.84rem)]
+        font-medium
+        leading-[1.7]
+        text-(--text);
 
     background:
         linear-gradient(
             180deg,
-            rgba(2, 6, 23, 0.3),
-            rgba(2, 6, 23, 0.52)
+            color-mix(
+                in srgb,
+                var(--dark) 30%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--dark) 52%,
+                transparent
+            )
         );
-
-    color: #dbeafe;
 
     font-family:
         "JetBrains Mono",
@@ -276,23 +340,17 @@
         "Courier New",
         monospace;
 
-    font-size: 0.84rem;
-    font-weight: 500;
-
-    line-height: 1.75;
-
     white-space: pre;
-
     tab-size: 4;
 
     scrollbar-width: thin;
     scrollbar-color:
-        rgba(34, 211, 238, 0.42)
+        var(--neon-cyan-soft)
         transparent;
 }
 
 .lesson-codeblock__body::-webkit-scrollbar {
-    height: 7px;
+    height: clamp(0.3rem, 0.8vw, 0.4375rem);
 }
 
 .lesson-codeblock__body::-webkit-scrollbar-track {
@@ -301,11 +359,15 @@
 
 .lesson-codeblock__body::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: rgba(34, 211, 238, 0.42);
+    background: var(--neon-cyan-soft);
 }
 
 .lesson-codeblock__body::-webkit-scrollbar-thumb:hover {
-    background: rgba(34, 211, 238, 0.62);
+    background: color-mix(
+        in srgb,
+        var(--neon-cyan) 62%,
+        transparent
+    );
 }
 
 /* ==========================================
@@ -313,82 +375,16 @@
 ========================================== */
 
 .lesson-codeblock__body code {
-    display: block;
-
-    min-width: max-content;
-
-    margin: 0;
-    padding: 0;
+    @apply block
+        min-w-max
+        m-0
+        p-0;
 
     color: inherit;
-
     font: inherit;
     line-height: inherit;
-
     background: transparent;
-
     white-space: inherit;
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 768px) {
-    .lesson-codeblock {
-        margin: 1.25rem 0 1.55rem;
-        border-radius: 13px;
-    }
-
-    .lesson-codeblock__header {
-        min-height: 44px;
-        padding: 0.55rem 0.7rem 0.55rem 0.8rem;
-    }
-
-    .lesson-codeblock__filename {
-        max-width: 55%;
-        font-size: 0.7rem;
-    }
-
-    .lesson-codeblock__language {
-        font-size: 0.66rem;
-        padding: 0.26rem 0.48rem;
-    }
-
-    .lesson-codeblock__copy {
-        min-height: 30px;
-        padding: 0.38rem 0.62rem;
-        font-size: 0.72rem;
-    }
-
-    .lesson-codeblock__body {
-        padding: 0.95rem 0.9rem 1rem;
-        font-size: 0.78rem;
-        line-height: 1.7;
-    }
-}
-
-@media (max-width: 480px) {
-    .lesson-codeblock {
-        border-radius: 11px;
-    }
-
-    .lesson-codeblock__header {
-        gap: 0.55rem;
-    }
-
-    .lesson-codeblock__meta {
-        gap: 0.4rem;
-    }
-
-    .lesson-codeblock__filename {
-        max-width: 48%;
-    }
-
-    .lesson-codeblock__body {
-        padding: 0.85rem 0.8rem 0.9rem;
-        font-size: 0.74rem;
-    }
 }
 
 /* ==========================================
@@ -399,11 +395,11 @@
 .lesson-codeblock__body .token.prolog,
 .lesson-codeblock__body .token.doctype,
 .lesson-codeblock__body .token.cdata {
-    color: #64748b;
+    color: var(--gray);
 }
 
 .lesson-codeblock__body .token.punctuation {
-    color: #cbd5e1;
+    color: var(--muted);
 }
 
 .lesson-codeblock__body .token.property,
@@ -412,7 +408,7 @@
 .lesson-codeblock__body .token.number,
 .lesson-codeblock__body .token.constant,
 .lesson-codeblock__body .token.symbol {
-    color: #7dd3fc;
+    color: var(--secondary);
 }
 
 .lesson-codeblock__body .token.selector,
@@ -420,38 +416,46 @@
 .lesson-codeblock__body .token.string,
 .lesson-codeblock__body .token.char,
 .lesson-codeblock__body .token.builtin {
-    color: #86efac;
+    color: var(--success);
 }
 
 .lesson-codeblock__body .token.operator,
 .lesson-codeblock__body .token.entity,
 .lesson-codeblock__body .token.url,
 .lesson-codeblock__body .language-css .token.string {
-    color: #facc15;
+    color: var(--golden);
 }
 
 .lesson-codeblock__body .token.atrule,
 .lesson-codeblock__body .token.attr-value,
 .lesson-codeblock__body .token.keyword {
-    color: #c084fc;
+    color: color-mix(
+        in srgb,
+        var(--neon) 70%,
+        var(--primary)
+    );
 }
 
 .lesson-codeblock__body .token.function,
 .lesson-codeblock__body .token.class-name {
-    color: #67e8f9;
+    color: var(--neon-cyan);
 }
 
 .lesson-codeblock__body .token.regex,
 .lesson-codeblock__body .token.important,
 .lesson-codeblock__body .token.variable {
-    color: #fb923c;
+    color: color-mix(
+        in srgb,
+        var(--golden) 75%,
+        var(--danger)
+    );
 }
 
 .lesson-codeblock__body .token.important,
 .lesson-codeblock__body .token.bold {
-    font-weight: 700;
+    @apply font-bold;
 }
 
 .lesson-codeblock__body .token.italic {
-    font-style: italic;
+    @apply italic;
 }

@@ -1,7 +1,6 @@
+import "./LessonSearch.css";
 import { Search, X } from "lucide-react";
 import { motion } from "framer-motion";
-
-import "./LessonSearch.css";
 
 export default function LessonSearch({
     search,
@@ -10,7 +9,7 @@ export default function LessonSearch({
 
     return (
         <motion.div
-            id="lesson-search"
+            className="lesson-search"
             initial={{
                 opacity: 0,
                 y: -15
@@ -22,7 +21,7 @@ export default function LessonSearch({
         >
             <Search
                 size={18}
-                id="search-icon"
+                className="lesson-search-icon"
             />
 
             <input
@@ -44,5 +43,4 @@ export default function LessonSearch({
             }
         </motion.div>
     );
-
 }

@@ -1,7 +1,7 @@
+import "./Bookmark.css";
 import { motion } from "framer-motion";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 
-import "./Bookmark.css";
 
 export default function LessonBookmark({
     bookmarked,

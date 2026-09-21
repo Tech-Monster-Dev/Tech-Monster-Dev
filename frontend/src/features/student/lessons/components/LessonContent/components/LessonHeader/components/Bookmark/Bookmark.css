@@ -1,30 +1,49 @@
+@import "tailwindcss";
+
 .bookmark-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.8rem;
-    cursor: pointer;
-    font-weight: 600;
+    @apply flex
+        min-w-0
+        items-center
+        justify-center
+        gap-[clamp(0.4rem,1vw,0.625rem)]
+        rounded-[clamp(0.625rem,1.5vw,0.8rem)]
+        border
+        px-[clamp(0.625rem,1.5vw,1rem)]
+        py-[clamp(0.5rem,1vw,0.625rem)]
+        font-semibold
+        text-(--text)
+        cursor-pointer
+        transition-[border-color,color,box-shadow,background-color]
+        duration-350
+        ease-in-out;
+
     background: var(--surface);
-    color: var(--text);
-    border: 1px solid rgba(255, 255, 255, .08);
-    transition: .35s;
+    border-color: var(--neon-grid);
 }
 
 .bookmark-btn:hover {
+    @apply text-(--neon);
+
     border-color: var(--neon);
-    color: var(--neon);
-    box-shadow: 0 0 15px rgba(0, 255, 255, .18);
+    box-shadow: 0 0 0.9375rem var(--neon-cyan-faint);
 }
 
 .bookmark-btn.active {
-    background: linear-gradient(135deg, #ffd93d, #ffb703);
-    color: var(--dark);
-    border: none;
+    @apply border-0
+        text-(--dark);
+
+    background: linear-gradient(
+        135deg,
+        var(--golden),
+        color-mix(
+            in srgb,
+            var(--golden) 75%,
+            var(--danger)
+        )
+    );
 }
 
 .bookmark-btn svg {
-    flex-shrink: 0;
+    @apply size-[clamp(0.875rem,2vw,1.125rem)]
+        shrink-0;
 }

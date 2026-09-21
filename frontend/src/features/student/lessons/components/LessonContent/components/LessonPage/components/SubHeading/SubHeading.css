@@ -1,21 +1,23 @@
+@import "tailwindcss";
+
 /* ==========================================
    LESSON SUB HEADING
 ========================================== */
 
 .lesson-subheading {
-    position: relative;
-
-    margin: 1.45rem 0 0.7rem;
-    padding-left: 0.75rem;
-
-    color: var(--text, #f8fafc);
-
-    font-size: clamp(1.05rem, 1.35vw, 1.2rem);
-    font-weight: 700;
-    line-height: 1.45;
-    letter-spacing: -0.01em;
-
-    overflow-wrap: anywhere;
+    @apply relative
+        my-[clamp(1.15rem,3vw,1.45rem)]
+        mb-[clamp(0.55rem,1.5vw,0.7rem)]
+        min-w-0
+        max-w-full
+        pl-[clamp(0.65rem,1.8vw,0.75rem)]
+        text-[clamp(0.98rem,2vw,1.2rem)]
+        font-bold
+        leading-[1.45]
+        tracking-[-0.01em]
+        wrap-anywhere;
+        
+    color: var(--text);
 }
 
 /* ==========================================
@@ -25,40 +27,20 @@
 .lesson-subheading::before {
     content: "";
 
-    position: absolute;
-    left: 0;
-    top: 0.2em;
+    @apply absolute
+        left-0
+        top-[0.2em]
+        h-[1.1em]
+        w-[clamp(0.1875rem,0.5vw,0.25rem)]
+        rounded-full;
 
-    width: 3px;
-    height: 1.1em;
-
-    border-radius: 999px;
-
-    background: linear-gradient(
-        180deg,
-        #22d3ee,
-        #34d399
-    );
+    background:
+        linear-gradient(
+            180deg,
+            var(--neon-cyan),
+            var(--success)
+        );
 
     box-shadow:
-        0 0 10px rgba(34, 211, 238, 0.25);
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 768px) {
-    .lesson-subheading {
-        margin-top: 1.2rem;
-        margin-bottom: 0.6rem;
-        padding-left: 0.65rem;
-        font-size: 1.02rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .lesson-subheading {
-        font-size: 0.98rem;
-    }
+        0 0 0.625rem var(--neon-cyan-faint);
 }

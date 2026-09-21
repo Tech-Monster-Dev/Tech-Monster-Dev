@@ -8,11 +8,17 @@ const BackButton = ({
     to = "/",
     label = "Back",
     className = "",
+    onClick,
 }) => {
 
     const navigate = useNavigate();
 
     const handleBack = () => {
+        if (typeof onClick === "function") {
+            onClick();
+            return;
+        }
+
         navigate(to);
     };
 

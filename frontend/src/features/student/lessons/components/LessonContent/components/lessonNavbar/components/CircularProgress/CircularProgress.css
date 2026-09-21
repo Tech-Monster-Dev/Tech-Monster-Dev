@@ -1,83 +1,71 @@
+@import "tailwindcss";
+
 /* ==========================================
    CIRCULAR PROGRESS
 ========================================== */
 
-#circle-progress {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: .35s;
-}
-
-#circle-progress:hover {
-    transform: translateY(-4px);
+.lesson-navbar-circle-progress {
+    @apply relative
+        flex
+        size-[clamp(2.5rem,6vw,3.5rem)]
+        min-w-[clamp(2.5rem,6vw,3.5rem)]
+        shrink-0
+        items-center
+        justify-center
+        overflow-visible
+        transition-transform
+        duration-350
+        ease-in-out;
 }
 
 /* ==========================================
    SVG
 ========================================== */
 
-#circle-progress svg {
-    transform: rotate(-90deg);
-    overflow: visible;
+.lesson-navbar-circle-progress svg {
+    @apply block
+        size-full
+        aspect-square
+        max-w-full
+        max-h-full
+        overflow-visible
+        -rotate-90;
 }
 
-#circle-bg {
-    fill: transparent;
-    stroke: rgba(255, 255, 255, .08);
+.lesson-navbar-circle-progress-bg {
+    @apply fill-transparent;
+
+    stroke: var(--neon-grid);
 }
 
-#circle-bar {
-    fill: transparent;
-    filter: drop-shadow(0 0 10px rgba(0, 255, 255, .45));
+.lesson-navbar-circle-progress-bar {
+    @apply fill-transparent;
 }
 
 /* ==========================================
    CONTENT
 ========================================== */
 
-#circle-content {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.lesson-navbar-circle-progress-content {
+    @apply pointer-events-none
+        absolute
+        inset-0
+        flex
+        min-w-0
+        items-center
+        justify-center
+        overflow-hidden;
 }
 
-#circle-content h2 {
-    color: var(--text);
-    font-size: 0.7rem;
-    font-weight: 700;
-    margin-bottom: 6px;
+.lesson-navbar-circle-progress-content h2 {
+    @apply m-0
+        max-w-full
+        min-w-0
+        px-[clamp(0.125rem,0.5vw,0.25rem)]
+        text-center
+        text-[clamp(0.5625rem,1.4vw,0.75rem)]
+        font-bold
+        leading-none
+        tracking-tight
+        text-(--text);
 }
-
-#circle-content p {
-    color: var(--neon);
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-#circle-content span {
-    margin-top: 6px;
-    color: var(--muted);
-    font-size: 0.7rem;
-}
-
-/* ==========================================
-   GLOW
-========================================== */
-
-#circle-progress::before {
-    content: "";
-    position: absolute;
-    width: 165px;
-    height: 165px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 255, 255, .12), transparent 70%);
-    z-index: -1;
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */

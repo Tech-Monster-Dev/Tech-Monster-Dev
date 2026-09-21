@@ -1,121 +1,164 @@
+@import "tailwindcss";
+
 .lesson-callout {
-    width: 100%;
+    @apply flex
+        w-full
+        min-w-0
+        items-start
+        gap-[clamp(0.5rem,1.5vw,0.875rem)]
+        rounded-[clamp(0.75rem,1.8vw,0.875rem)]
+        border
+        p-[clamp(0.75rem,2.5vw,1rem)]
+        transition-[border-color,transform,box-shadow]
+        duration-200
+        ease-in-out;
+
     box-sizing: border-box;
 
-    display: flex;
-    align-items: flex-start;
-    gap: 0.9rem;
-
-    margin: 1.2rem 0 1.5rem;
-    padding: 1rem 1.1rem;
-
-    border: 1px solid;
-    border-radius: 14px;
-
     box-shadow:
-        0 12px 28px rgba(0, 0, 0, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.025);
-
-    transition:
-        border-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        0 0.75rem 1.75rem var(--surface-overlay),
+        inset 0 0.0625rem 0 var(--surface);
 }
 
 .lesson-callout:hover {
-    transform: translateY(-1px);
+    @apply -translate-y-px;
 }
+
+/* ==========================================
+   TIP
+========================================== */
 
 .lesson-callout--tip {
-    border-color: rgba(34, 211, 238, 0.2);
+    border-color: var(--neon-cyan-soft);
 
     background:
         linear-gradient(
             135deg,
-            rgba(34, 211, 238, 0.07),
-            rgba(15, 23, 42, 0.45)
+            var(--neon-cyan-faint),
+            color-mix(
+                in srgb,
+                var(--background) 45%,
+                transparent
+            )
         );
-}
-
-.lesson-callout--warning {
-    border-color: rgba(248, 113, 113, 0.22);
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(239, 68, 68, 0.07),
-            rgba(15, 23, 42, 0.45)
-        );
-}
-
-.lesson-callout__icon {
-    flex: 0 0 auto;
-
-    width: 30px;
-    height: 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 9px;
-
-    font-size: 0.9rem;
-    font-weight: 800;
 }
 
 .lesson-callout--tip .lesson-callout__icon {
-    color: #67e8f9;
+    color: color-mix(
+        in srgb,
+        var(--neon-cyan) 70%,
+        var(--text)
+    );
 
-    background: rgba(34, 211, 238, 0.1);
-    border: 1px solid rgba(34, 211, 238, 0.18);
+    background: color-mix(
+        in srgb,
+        var(--neon-cyan) 10%,
+        transparent
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 18%,
+        transparent
+    );
+}
+
+/* ==========================================
+   WARNING
+========================================== */
+
+.lesson-callout--warning {
+    border-color: var(--danger-soft);
+
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(
+                in srgb,
+                var(--danger) 7%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--background) 45%,
+                transparent
+            )
+        );
 }
 
 .lesson-callout--warning .lesson-callout__icon {
-    color: #fca5a5;
+    color: color-mix(
+        in srgb,
+        var(--danger) 65%,
+        var(--text)
+    );
 
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(248, 113, 113, 0.18);
+    background: color-mix(
+        in srgb,
+        var(--danger) 10%,
+        transparent
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--danger) 18%,
+        transparent
+    );
 }
+
+/* ==========================================
+   ICON
+========================================== */
+
+.lesson-callout__icon {
+    @apply flex
+        size-[clamp(1.75rem,5vw,1.875rem)]
+        shrink-0
+        items-center
+        justify-center
+        rounded-[clamp(0.5625rem,1.5vw,0.625rem)]
+        text-[clamp(0.8rem,1.8vw,0.9rem)]
+        font-extrabold;
+}
+
+/* ==========================================
+   CONTENT
+========================================== */
 
 .lesson-callout__content {
-    min-width: 0;
+    @apply min-w-0
+        max-w-full
+        flex-1;
 }
+
+/* ==========================================
+   TITLE
+========================================== */
 
 .lesson-callout__title {
-    margin: 0 0 0.3rem;
+    @apply m-0
+        mb-1
+        min-w-0
+        max-w-full
+        text-[clamp(0.85rem,2vw,0.96rem)]
+        font-bold
+        leading-[1.4]
+        wrap-anywhere;
 
-    color: var(--text, #f8fafc);
-
-    font-size: 0.96rem;
-    font-weight: 750;
-    line-height: 1.4;
+    color: var(--text);
 }
+
+/* ==========================================
+   TEXT
+========================================== */
 
 .lesson-callout__text {
-    margin: 0;
+    @apply m-0
+        min-w-0
+        max-w-full
+        text-[clamp(0.8rem,1.8vw,0.93rem)]
+        leading-[1.65]
+        wrap-anywhere;
 
-    color: var(--text-secondary, #c7d2e0);
-
-    font-size: 0.93rem;
-    line-height: 1.7;
-
-    overflow-wrap: anywhere;
-}
-
-@media (max-width: 480px) {
-    .lesson-callout {
-        gap: 0.7rem;
-        padding: 0.85rem;
-        border-radius: 12px;
-    }
-
-    .lesson-callout__icon {
-        width: 28px;
-        height: 28px;
-    }
-
-    .lesson-callout__text {
-        font-size: 0.9rem;
-    }
+    color: var(--muted);
 }

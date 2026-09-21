@@ -1,37 +1,41 @@
-.reading-mode-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0.6rem 1rem;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text);
-    background: rgba(255, 255, 255, .05);
-    border: 1px solid rgba(0, 255, 255, .15);
-    transition: .35s;
-}
+@import "tailwindcss";
 
-.reading-mode-btn.compact {
-    padding: 0.45rem;
-    min-width: 46px;
-    border-radius: 999px;
-    gap: 0;
+.reading-mode-btn {
+    @apply
+        min-w-0
+        border
+        p-[clamp(0.625rem,1.5vw,1rem)]
+        font-semibold
+        text-(--text)
+        cursor-pointer
+        transition-[border-color,color,box-shadow,background-color]
+        duration-350
+        ease-in-out;
+
+    background: var(--surface);
+    border-color: var(--neon-cyan-soft);
+    border-radius: 50%;
 }
 
 .reading-mode-btn.compact svg {
-    margin: 0;
+    @apply m-0
+        size-[clamp(1rem,2vw,1.25rem)];
 }
 
 .reading-mode-btn:hover {
+    @apply text-(--neon);
+
     border-color: var(--neon);
-    color: var(--neon);
-    box-shadow: 0 0 15px rgba(0, 255, 255, .18);
+    box-shadow: 0 0 0.9375rem var(--neon-cyan-faint);
 }
 
 .reading-mode-btn.active {
-    background: linear-gradient(135deg, #00d4ff, #00ff95);
-    color: #02111f;
-    border: none;
+    @apply border-0
+        text-(--dark);
+
+    background: linear-gradient(
+        135deg,
+        var(--neon),
+        var(--success)
+    );
 }

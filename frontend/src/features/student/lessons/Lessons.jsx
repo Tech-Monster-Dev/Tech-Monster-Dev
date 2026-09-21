@@ -1,16 +1,16 @@
+import "./Lessons.css";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
-import "./Lessons.css";
 
 import EmptyState from "../../../components/ui/EmptyState";
+import Spinner from "../../dashboard/common/LoaderPage/Spinner";
 
 import LessonSidebar from "./components/LessonSidebar";
 import LessonContent from "./components/LessonContent";
 import Pagination from "./components/Pagination";
-import Spinner from "../../dashboard/common/LoaderPage/Spinner";
 
 import useLessonData from "./hooks/useLessonData";
 import useLessonProgress from "./hooks/useLessonProgress";
@@ -28,6 +28,7 @@ export default function Lessons() {
 
     const [activeLesson, setActiveLesson] = useState(0);
     const [readPercent, setReadPercent] = useState(0);
+    const [mobileLessonOpen, setMobileLessonOpen] = useState(false);
 
     const { lessonData, setLessonData, loading, error } = useLessonData(courseSlug, contentType);
     const { completedLessonIds, completeLesson } = useLessonProgress(courseSlug, contentType);
@@ -66,7 +67,7 @@ export default function Lessons() {
             approvedModuleIds
         );
     }, [lessonData, completedLessonIds, approvedModuleIds]);
-
+    
     const lessons = finalLessonData?.lessons || [];
     const currentLesson = lessons[activeLesson] || null;
 
@@ -136,7 +137,7 @@ export default function Lessons() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
             >
-                <div id="lesson-right" style={{ width: "100%" }}>
+                <div className="lesson-right" style={{ width: "100%" }}>
                     <Spinner message="Loading lesson content..." size={60} />
                 </div>
             </motion.div>
@@ -156,7 +157,7 @@ export default function Lessons() {
     if (error || !finalLessonData || !lessons.length) {
         return (
             <motion.div className="lesson-layout">
-                <div id="lesson-right" style={{ width: "100%" }}>
+                <div className="lesson-right" style={{ width: "100%" }}>
                     <div className="lesson-page--error">
                         {error || "No lesson content found."}
                     </div>
@@ -170,8 +171,7 @@ export default function Lessons() {
             return;
         }
 
-        const nextLesson =
-            lessons[activeLesson + 1];
+        const nextLesson = lessons[activeLesson + 1];
 
         // Do not allow pagination to bypass lesson/module locking.
         if (nextLesson?.locked) {
@@ -198,7 +198,6 @@ export default function Lessons() {
 
         await completeLesson(currentLesson.id);
         setReadPercent(100);
-        toast.success("Lesson Completed 🎉");
     };
 
     const toggleBookmark = () => {
@@ -231,11 +230,19 @@ export default function Lessons() {
 
     return (
         <motion.div
-            className={`lesson-layout ${readingMode ? "reading" : ""}`}
+            className={`lesson-layout ${readingMode ? "reading" : ""
+                } ${mobileLessonOpen ? "mobile-lesson-open" : ""}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
         >
-            <div id="lession-left">
+            <div
+                className={`lession-left ${readingMode
+                        ? "hidden!"
+                        : mobileLessonOpen
+                            ? "hidden! lg:block!"
+                            : "block!"
+                    }`}
+            >
                 {!readingMode && (
                     <LessonSidebar
                         lessonData={finalLessonData}
@@ -250,17 +257,26 @@ export default function Lessons() {
                         contentType={contentType}
                         approvedModuleIds={approvedModuleIds}
                         setActiveLesson={(lessonId) => {
-                            const index = lessons.findIndex((lesson) => lesson.id === lessonId);
+                            const index = lessons.findIndex(
+                                (lesson) => lesson.id === lessonId
+                            );
+
                             if (index !== -1) {
                                 setActiveLesson(index);
                                 setReadPercent(0);
+                                setMobileLessonOpen(true);
                             }
                         }}
                     />
                 )}
             </div>
 
-            <div id="lesson-right">
+            <div
+                className={`lesson-right ${mobileLessonOpen || readingMode
+                        ? "flex! w-full!"
+                        : "hidden! lg:flex!"
+                    }`}
+            >
                 <LessonContent
                     lesson={currentLesson}
                     lessonData={finalLessonData}
@@ -268,10 +284,12 @@ export default function Lessons() {
                     handleComplete={handleComplete}
                     toggleBookmark={toggleBookmark}
                     readingMode={readingMode}
+                    contentType={contentType}
                     setReadingMode={setReadingMode}
                     readPercent={readPercent}
                     completed={currentLesson.completed}
                     onScrollProgress={setReadPercent}
+                    onBackToLessons={() => setMobileLessonOpen(false)}
                 />
 
                 <Pagination

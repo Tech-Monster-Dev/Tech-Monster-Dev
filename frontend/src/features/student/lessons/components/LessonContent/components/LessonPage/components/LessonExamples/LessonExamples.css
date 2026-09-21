@@ -1,61 +1,123 @@
+@import "tailwindcss";
+
+/* ==========================================
+   LESSON EXAMPLES
+========================================== */
+
 .lesson-examples {
-    margin: 1.6rem 0;
-    padding: 1rem;
-    border: 1px solid rgba(34, 211, 238, 0.16);
-    border-radius: 14px;
-    background: rgba(8, 20, 35, 0.52);
+    @apply my-[clamp(1rem,3vw,1.6rem)]
+        w-full
+        min-w-0
+        box-border
+        rounded-[clamp(0.75rem,1.8vw,0.875rem)]
+        border
+        p-[clamp(0.75rem,2.5vw,1rem)];
+
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 16%,
+        transparent
+    );
+
+    background: color-mix(
+        in srgb,
+        var(--dark) 52%,
+        var(--background)
+    );
 }
 
+/* ==========================================
+   HEADER
+========================================== */
+
 .lesson-examples__header {
-    margin-bottom: 0.8rem;
+    @apply mb-[clamp(0.75rem,2vw,1rem)]
+        min-w-0;
 }
 
 .lesson-examples__eyebrow {
-    color: #67e8f9;
-    font-size: 0.68rem;
-    font-weight: 750;
-    letter-spacing: 0.08em;
+    @apply max-w-full
+        text-[clamp(0.625rem,1.5vw,0.68rem)]
+        font-bold
+        tracking-[0.08em]
+        wrap-anywhere;
+
+    color: color-mix(
+        in srgb,
+        var(--neon-cyan) 70%,
+        var(--text)
+    );
 }
 
 .lesson-examples__title {
-    margin: 0.25rem 0 0;
-    color: #e2e8f0;
-    font-size: 1rem;
+    @apply mt-1
+        mb-0
+        min-w-0
+        max-w-full
+        text-[clamp(0.9rem,2vw,1rem)]
+        wrap-anywhere;
+
+    color: var(--text);
 }
 
+/* ==========================================
+   EXAMPLES LIST
+========================================== */
+
 .lesson-examples__list {
-    display: grid;
-    gap: 0.7rem;
+    @apply grid
+        min-w-0
+        gap-[clamp(0.5rem,1.5vw,0.625rem)];
 }
 
 .lesson-examples__item {
-    padding: 0.8rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.025);
+    @apply min-w-0
+        rounded-[clamp(0.625rem,1.5vw,0.75rem)]
+        border
+        p-[clamp(0.625rem,2vw,0.75rem)];
+
+    border-color: color-mix(
+        in srgb,
+        var(--text) 8%,
+        transparent
+    );
+
+    background: color-mix(
+        in srgb,
+        var(--text) 2.5%,
+        transparent
+    );
 }
 
+/* ==========================================
+   EXAMPLE FIELD
+========================================== */
+
 .lesson-examples__field {
-    display: grid;
-    grid-template-columns: minmax(6rem, 12rem) 1fr;
-    gap: 0.8rem;
-    padding: 0.25rem 0;
-    color: #cbd5e1;
+    @apply grid
+        min-w-0
+        grid-cols-1
+        gap-[clamp(0.125rem,0.5vw,0.25rem)]
+        py-1
+        text-[clamp(0.78rem,1.8vw,0.9rem)]
+        sm:grid-cols-[minmax(6rem,12rem)_minmax(0,1fr)]
+        sm:gap-[clamp(0.75rem,2vw,1rem)];
+
+    color: var(--muted);
 }
 
 .lesson-examples__field strong {
-    color: #7dd3fc;
-    text-transform: capitalize;
+    @apply min-w-0
+        max-w-full
+        capitalize
+        wrap-anywhere;
+
+    color: var(--secondary);
 }
 
 .lesson-examples__field span {
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-}
-
-@media (max-width: 640px) {
-    .lesson-examples__field {
-        grid-template-columns: 1fr;
-        gap: 0.2rem;
-    }
+    @apply min-w-0
+        max-w-full
+        whitespace-pre-wrap
+        wrap-anywhere;
 }

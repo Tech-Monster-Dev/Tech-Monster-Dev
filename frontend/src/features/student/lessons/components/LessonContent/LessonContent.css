@@ -1,20 +1,18 @@
+@import "tailwindcss";
+
 /* ==========================================
    LESSON CONTENT ROOT
 ========================================== */
 
 #lesson-content-wrapper {
-    position: relative;
-
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-
-    flex: 1 1 auto;
-
-    display: flex;
-    flex-direction: column;
-
-    overflow: hidden;
+    @apply relative
+        flex
+        min-h-0
+        min-w-0
+        w-full
+        flex-1
+        flex-col
+        overflow-hidden;
 }
 
 /* ==========================================
@@ -22,11 +20,11 @@
 ========================================== */
 
 .lesson-navbar-fixed {
-    flex: 0 0 auto;
-    width: 100%;
-    min-width: 0;
-    min-height: 60px;
-    z-index: 20;
+    @apply z-20
+        min-h-15
+        w-full
+        min-w-0
+        shrink-0;
 }
 
 /* ==========================================
@@ -34,20 +32,16 @@
 ========================================== */
 
 .lesson-content-scroll-area {
-    position: relative;
-
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-    height: 0;
-
-    flex: 1 1 0;
-
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    padding-right: 0.5rem;
-    padding-bottom: 1rem;
+    @apply relative
+        h-0
+        min-h-0
+        min-w-0
+        w-full
+        flex-1
+        overflow-x-hidden
+        overflow-y-auto
+        pr-[clamp(0.25rem,1vw,0.5rem)]
+        pb-[clamp(0.75rem,2vw,1rem)];
 
     scroll-behavior: auto;
 
@@ -56,12 +50,13 @@
 }
 
 .lesson-content-scroll-area::-webkit-scrollbar {
-    width: 7px;
+    width: clamp(0.25rem, 0.8vw, 0.4375rem);
 }
 
 .lesson-content-scroll-area::-webkit-scrollbar-thumb {
+    @apply rounded-4xl;
+
     background: var(--neon);
-    border-radius: 2rem;
 }
 
 .lesson-content-scroll-area::-webkit-scrollbar-track {
@@ -69,50 +64,24 @@
 }
 
 /* ==========================================
-   GLASS CARD
-========================================== */
-
-.glass-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(0, 255, 255, 0.12);
-    border-radius: 18px;
-    backdrop-filter: blur(15px);
-    padding: 26px;
-    transition: 0.3s;
-}
-
-.glass-card:hover {
-    border-color: rgba(0, 255, 255, 0.25);
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 768px) {
-    .lesson-content-scroll-area {
-        padding-right: 0.3rem;
-        padding-bottom: 0.75rem;
-    }
-}
-
-/* ==========================================
    FLEX HEIGHT SAFETY
 ========================================== */
 
-#lesson-right > .lesson-content-root {
-    flex: 1 1 0;
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-    height: auto;
-    max-height: 100%;
-    overflow: hidden;
+.lesson-right > .lesson-content-root {
+    @apply h-auto
+        max-h-full
+        min-h-0
+        min-w-0
+        w-full
+        flex-1
+        overflow-hidden;
 }
 
 .lesson-content-root > .lesson-content-scroll-area {
-    flex: 1 1 0;
-    min-height: 0;
-    height: auto;
-    max-height: 100%;
+    @apply h-auto
+        max-h-full
+        min-h-0
+        min-w-0
+        w-full
+        flex-1;
 }
