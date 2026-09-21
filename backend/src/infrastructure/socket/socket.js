@@ -9,6 +9,7 @@ const activeChats = new Map();
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5199",
+    "http://localhost:5200",
     "http://localhost:3000",
 
     "https://tech-monster-dev-lac.vercel.app"
@@ -41,17 +42,7 @@ export const initSocket = (server) => {
 
     io.on("connection", (socket) => {
 
-        console.log(
-            "🟢 SOCKET CONNECTED:",
-            socket.id
-        );
-
         socket.on("join", (userId) => {
-
-            console.log(
-                "👤 SOCKET JOIN REQUEST:",
-                userId
-            );
 
             if (!userId) {
                 console.log(
@@ -72,20 +63,6 @@ export const initSocket = (server) => {
             onlineUserActivity.set(
                 id,
                 Date.now()
-            );
-
-            console.log(
-                "✅ USER REGISTERED:",
-                id,
-                "=>",
-                socket.id
-            );
-
-            console.log(
-                "👥 ONLINE USERS:",
-                Array.from(
-                    onlineUsers.entries()
-                )
             );
 
             io.emit(
@@ -122,12 +99,6 @@ export const initSocket = (server) => {
         });
 
         socket.on("disconnect", () => {
-
-            console.log(
-                "🔴 SOCKET DISCONNECTED:",
-                socket.id
-            );
-
             for (
                 const [
                     userId,
@@ -148,12 +119,6 @@ export const initSocket = (server) => {
                     onlineUserActivity.delete(
                         userId
                     );
-
-                    console.log(
-                        "❌ USER REMOVED:",
-                        userId
-                    );
-
                     break;
                 }
             }
@@ -227,46 +192,14 @@ export const emitToUser = (
     const normalizedUserId =
         String(userId);
 
-    const socketId =
-        onlineUsers.get(
-            normalizedUserId
-        );
-
-    console.log(
-        "📡 EMIT TO USER:",
-        {
-            userId: normalizedUserId,
-            socketId,
-            event
-        }
-    );
+    const socketId = onlineUsers.get(normalizedUserId);
 
     if (!socketId) {
-
-        console.log(
-            "❌ USER NOT ONLINE:",
-            normalizedUserId
-        );
-
-        console.log(
-            "👥 CURRENT ONLINE USERS:",
-            Array.from(
-                onlineUsers.entries()
-            )
-        );
-
         return;
     }
 
     io.to(socketId).emit(
         event,
         payload
-    );
-
-    console.log(
-        "✅ NOTIFICATION SENT:",
-        event,
-        "=>",
-        normalizedUserId
     );
 };

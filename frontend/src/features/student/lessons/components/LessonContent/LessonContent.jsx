@@ -12,11 +12,13 @@ export default function LessonContent({
     toggleBookmark,
     handleComplete,
     readingMode,
+    contentType,
     setReadingMode,
     onScrollProgress,
     readPercent = 0,
     completed = false,
     contentRef,
+    onBackToLessons,
 }) {
     const innerRef = useRef(null);
 
@@ -39,14 +41,14 @@ export default function LessonContent({
                 scrollable <= 0
                     ? 100
                     : Math.min(
-                          100,
-                          Math.max(
-                              0,
-                              Math.round(
-                                  (el.scrollTop / scrollable) * 100
-                              )
-                          )
-                      );
+                        100,
+                        Math.max(
+                            0,
+                            Math.round(
+                                (el.scrollTop / scrollable) * 100
+                            )
+                        )
+                    );
 
             if (typeof onScrollProgress === "function") {
                 onScrollProgress(percent);
@@ -95,6 +97,7 @@ export default function LessonContent({
                     readingMode={readingMode}
                     setReadingMode={setReadingMode}
                     readPercent={displayPercent}
+                    onBackToLessons={onBackToLessons}
                 />
             </div>
 
@@ -108,6 +111,7 @@ export default function LessonContent({
                 <LessonHeader
                     toggleBookmark={toggleBookmark}
                     lesson={lesson}
+                    contentType={contentType}
                 />
 
                 <LessonPage

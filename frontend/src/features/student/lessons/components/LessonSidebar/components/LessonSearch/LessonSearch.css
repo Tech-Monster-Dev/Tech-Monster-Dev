@@ -1,48 +1,68 @@
-#lesson-search{
-    display:flex;
-    align-items:center;
-    gap: 0.8rem;
-    padding: 0.8rem 1rem;
-    margin-bottom: 1rem;
-    border-radius: 1rem;
-    background:rgba(255,255,255,.04);
-    border:1px solid rgba(0,255,255,.12);
-    transition:.3s;
+@import "tailwindcss";
+
+.lesson-search {
+    @apply mb-[clamp(0.625rem,1.5vw,1rem)]
+        flex
+        w-full
+        min-w-0
+        items-center
+        gap-[clamp(0.5rem,1vw,0.75rem)]
+        rounded-2xl
+        border
+        px-[clamp(0.625rem,1.5vw,1rem)]
+        py-[clamp(0.5rem,1vw,0.75rem)]
+        transition-[border-color,box-shadow]
+        duration-300
+        ease-in-out;
+
+    background: color-mix(in srgb, var(--text) 4%, transparent);
+    border-color: var(--neon-cyan-soft);
 }
 
-#lesson-search:focus-within{
-    border-color:#00e5ff;
-    box-shadow: 0 0 15px rgba(0,255,255,.18);
+.lesson-search:focus-within {
+    border-color: var(--neon);
+    box-shadow: 0 0 0.9375rem var(--neon-cyan-faint);
 }
 
-#lesson-search input{
-    flex:1;
-    background:none;
-    border:none;
-    outline:none;
-    color: var(--text);
-    font-size: 1rem;
+.lesson-search input {
+    @apply min-w-0
+        w-full
+        flex-1
+        border-0
+        bg-transparent
+        p-0
+        text-[clamp(0.8125rem,1.5vw,1rem)]
+        text-(--text)
+        outline-none;
 }
 
-#lesson-search input::placeholder{
-    color: var(--muted);
+.lesson-search input::placeholder {
+    @apply text-(--muted);
 }
 
-#search-icon{
-    color: var(--neon) !important;
+.lesson-search-icon {
+    @apply size-[clamp(1rem,2vw,1.25rem)]
+        shrink-0
+        text-(--neon)!;
 }
 
-#lesson-search button{
-    background:none;
-    border:none;
-    cursor:pointer;
-    transition:.3s;
+.lesson-search button {
+    @apply size-[clamp(1.5rem,3vw,2rem)]
+        shrink-0
+        cursor-pointer
+        border-0
+        bg-transparent
+        p-0
+        transition-colors
+        duration-300
+        ease-in-out;
 }
 
-#lesson-search button svg{
-    color: var(--muted);
+.lesson-search button svg {
+    @apply size-[clamp(0.875rem,1.8vw,1.125rem)]
+        text-(--muted);
 }
 
-#lesson-search button:hover svg{
-    color:#ff5555;
+.lesson-search button:hover svg {
+    color: var(--danger);
 }

@@ -1,6 +1,6 @@
+import "./CodeBlock.css";
 import { useEffect, useState } from "react";
 
-import "./CodeBlock.css";
 
 import highlightCode from "../TryItYourself/utils/highlightCode.js";
 import {

@@ -1,55 +1,58 @@
+@import "tailwindcss";
+
 /* ==========================================
    LESSON BUTTON
 ========================================== */
 
 .lesson-button {
-    position: relative;
+    @apply relative
+        inline-flex
+        min-w-0
+        min-h-[clamp(2.5rem,5vw,2.625rem)]
+        items-center
+        justify-center
+        overflow-hidden
+        rounded-[clamp(0.625rem,1.5vw,0.6875rem)]
+        border
+        px-[clamp(0.75rem,2vw,1.15rem)]
+        py-[clamp(0.55rem,1.2vw,0.68rem)]
+        font-[inherit]
+        text-[clamp(0.8rem,1.5vw,0.9rem)]
+        font-bold
+        leading-none
+        cursor-pointer
+        select-none
+        transition-[transform,border-color,background-color,box-shadow,color]
+        duration-200
+        ease-in-out
+        max-[30rem]:w-full;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 42px;
-    padding: 0.68rem 1.15rem;
-
-    border: 1px solid transparent;
-    border-radius: 11px;
-
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 700;
-    line-height: 1;
-
-    cursor: pointer;
-    user-select: none;
-
-    overflow: hidden;
-
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease,
-        color 0.2s ease;
+    border-color: transparent;
 }
 
 .lesson-button::before {
     content: "";
 
-    position: absolute;
-    inset: 0;
+    @apply pointer-events-none
+        absolute
+        inset-0;
 
-    background: linear-gradient(
-        120deg,
-        transparent 20%,
-        rgba(255, 255, 255, 0.12),
-        transparent 80%
-    );
+    background:
+        linear-gradient(
+            120deg,
+            transparent 20%,
+            color-mix(
+                in srgb,
+                var(--text) 12%,
+                transparent
+            ),
+            transparent 80%
+        );
 
     transform: translateX(-100%);
-    transition: transform 0.45s ease;
 
-    pointer-events: none;
+    transition:
+        transform 0.45s ease;
 }
 
 .lesson-button:hover::before {
@@ -57,7 +60,7 @@
 }
 
 .lesson-button:hover {
-    transform: translateY(-2px);
+    transform: translateY(-0.125rem);
 }
 
 .lesson-button:active {
@@ -65,8 +68,14 @@
 }
 
 .lesson-button:focus-visible {
-    outline: 2px solid rgba(34, 211, 238, 0.7);
-    outline-offset: 3px;
+    @apply outline-2
+        outline-offset-3;
+
+    outline-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 70%,
+        transparent
+    );
 }
 
 /* ==========================================
@@ -74,35 +83,67 @@
 ========================================== */
 
 .lesson-button--primary {
-    color: #ecfeff;
+    color: color-mix(
+        in srgb,
+        var(--neon-cyan) 10%,
+        var(--text)
+    );
 
-    border-color: rgba(34, 211, 238, 0.35);
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 35%,
+        transparent
+    );
 
     background:
         linear-gradient(
             135deg,
-            rgba(34, 211, 238, 0.22),
-            rgba(16, 185, 129, 0.16)
+            color-mix(
+                in srgb,
+                var(--neon-cyan) 22%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--success) 16%,
+                transparent
+            )
         );
 
     box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.18),
-        0 0 18px rgba(34, 211, 238, 0.08);
+        0 0.5rem 1.25rem var(--surface-overlay),
+        0 0 1.125rem var(--neon-cyan-faint);
 }
 
 .lesson-button--primary:hover {
-    border-color: rgba(34, 211, 238, 0.58);
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 58%,
+        transparent
+    );
 
     background:
         linear-gradient(
             135deg,
-            rgba(34, 211, 238, 0.3),
-            rgba(16, 185, 129, 0.22)
+            color-mix(
+                in srgb,
+                var(--neon-cyan) 30%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--success) 22%,
+                transparent
+            )
         );
 
     box-shadow:
-        0 12px 25px rgba(0, 0, 0, 0.22),
-        0 0 24px rgba(34, 211, 238, 0.13);
+        0 0.75rem 1.5625rem var(--surface-overlay),
+        0 0 1.5rem color-mix(
+            in srgb,
+            var(--neon-cyan) 13%,
+            transparent
+        );
 }
 
 /* ==========================================
@@ -110,26 +151,50 @@
 ========================================== */
 
 .lesson-button--secondary {
-    color: #a5f3fc;
+    color: color-mix(
+        in srgb,
+        var(--neon-cyan) 65%,
+        var(--text)
+    );
 
-    border-color: rgba(34, 211, 238, 0.24);
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 24%,
+        transparent
+    );
 
-    background: rgba(34, 211, 238, 0.045);
+    background: color-mix(
+        in srgb,
+        var(--neon-cyan) 4.5%,
+        transparent
+    );
 
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+        inset 0 0.0625rem 0 color-mix(
+            in srgb,
+            var(--text) 2.5%,
+            transparent
+        );
 }
 
 .lesson-button--secondary:hover {
-    color: #ecfeff;
+    color: var(--text);
 
-    border-color: rgba(34, 211, 238, 0.48);
+    border-color: color-mix(
+        in srgb,
+        var(--neon-cyan) 48%,
+        transparent
+    );
 
-    background: rgba(34, 211, 238, 0.1);
+    background: color-mix(
+        in srgb,
+        var(--neon-cyan) 10%,
+        transparent
+    );
 
     box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.16),
-        0 0 20px rgba(34, 211, 238, 0.08);
+        0 0.5rem 1.25rem var(--surface-overlay),
+        0 0 1.25rem var(--neon-cyan-faint);
 }
 
 /* ==========================================
@@ -137,32 +202,13 @@
 ========================================== */
 
 .lesson-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    @apply cursor-not-allowed
+        opacity-50;
+
     transform: none;
     box-shadow: none;
 }
 
 .lesson-button:disabled::before {
-    display: none;
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 768px) {
-    .lesson-button {
-        min-height: 40px;
-        padding: 0.62rem 1rem;
-        font-size: 0.88rem;
-        border-radius: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .lesson-button {
-        width: 100%;
-        min-height: 42px;
-    }
+    @apply hidden;
 }

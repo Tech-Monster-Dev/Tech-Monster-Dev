@@ -1,3 +1,4 @@
+import "./LessonAccordion.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,7 +12,6 @@ import {
 import { FiLock, FiCheckSquare } from "react-icons/fi";
 import { toast } from "react-toastify";
 
-import "./LessonAccordion.css";
 
 export default function LessonAccordion({
     lesson,
@@ -62,11 +62,10 @@ export default function LessonAccordion({
     }
 
     return (
-        <div id="lesson-module">
+        <div className="lesson-module">
             {/* Module Header */}
             <motion.div
-                whileTap={{ scale: 0.98 }}
-                id="module-header"
+                className="module-header"
                 onClick={() => {
                     if (!canStart) {
                         toast.warning(
@@ -78,7 +77,7 @@ export default function LessonAccordion({
                     setOpen(!open);
                 }}
             >
-                <div id="module-title">
+                <div className="module-title">
                     {canStart ? (
                         <BookOpen size={18} />
                     ) : (
@@ -109,7 +108,7 @@ export default function LessonAccordion({
 
                 {open && (
                     <motion.div
-                        id="module-lessons"
+                        className="module-lessons"
                         initial={{
                             height: 0,
                             opacity: 0,
@@ -130,7 +129,6 @@ export default function LessonAccordion({
                             <motion.div
                                 key={lessonItem.id}
                                 whileHover={{ x: 6 }}
-                                whileTap={{ scale: 0.98 }}
                                 className={`accordion-lesson ${activeLesson === lessonItem.id ? "active" : ""} ${lessonItem.locked ? "locked" : ""}`}
                                 onClick={() => handleLessonClick(lessonItem)}
                             >
@@ -147,7 +145,7 @@ export default function LessonAccordion({
                                     )}
                                 </div>
 
-                                <div id="lesson-text">
+                                <div className="lesson-text">
                                     <h4>{lessonItem.heading}</h4>
                                 </div>
                             </motion.div>
@@ -158,7 +156,6 @@ export default function LessonAccordion({
                         {hasTasks && isModuleCompleted && (
                             <motion.div
                                 whileHover={{ x: 6 }}
-                                whileTap={{ scale: 0.98 }}
                                 className="accordion-task task-unlocked"
                                 onClick={() => handleModuleTaskClick()}
                             >
@@ -176,7 +173,7 @@ export default function LessonAccordion({
                                     )}
                                 </div>
 
-                                <div id="task-text">
+                                <div className="task-text">
                                     <h4>
                                         Module {moduleNumber} Tasks
                                     </h4>

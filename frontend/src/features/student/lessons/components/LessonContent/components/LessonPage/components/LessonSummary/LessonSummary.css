@@ -1,134 +1,181 @@
+@import "tailwindcss";
+
+/* ==========================================
+   LESSON SUMMARY
+========================================== */
+
 .lesson-summary {
-    width: 100%;
-    box-sizing: border-box;
+    @apply w-full
+        min-w-0
+        box-border
+        my-[clamp(1rem,3vw,1.7rem)]
+        mb-[clamp(1.5rem,4vw,2rem)]
+        rounded-[clamp(0.6875rem,1.8vw,0.9375rem)]
+        border
+        p-[clamp(0.75rem,2.5vw,1.25rem)];
 
-    margin: 1.7rem 0 2rem;
-    padding: 1.15rem 1.2rem;
-
-    border: 1px solid rgba(16, 185, 129, 0.16);
-    border-radius: 15px;
+    border-color: color-mix(
+        in srgb,
+        var(--success) 16%,
+        transparent
+    );
 
     background:
         linear-gradient(
             135deg,
-            rgba(16, 185, 129, 0.055),
-            rgba(15, 23, 42, 0.45) 60%,
-            rgba(34, 211, 238, 0.025)
+            color-mix(
+                in srgb,
+                var(--success) 5.5%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--background) 45%,
+                transparent
+            ) 60%,
+            color-mix(
+                in srgb,
+                var(--neon-cyan) 2.5%,
+                transparent
+            )
         );
 
     box-shadow:
-        0 12px 30px rgba(0, 0, 0, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+        0 0.75rem 1.875rem var(--surface-overlay),
+        inset 0 0.0625rem 0 var(--surface);
 }
 
+/* ==========================================
+   HEADER
+========================================== */
+
 .lesson-summary__header {
-    margin-bottom: 1rem;
+    @apply mb-[clamp(0.875rem,2.5vw,1rem)]
+        min-w-0;
 }
 
 .lesson-summary__eyebrow {
-    display: inline-block;
+    @apply mb-1
+        inline-block
+        max-w-full
+        text-[clamp(0.625rem,1.5vw,0.7rem)]
+        font-extrabold
+        tracking-[0.12em]
+        wrap-anywhere;
 
-    margin-bottom: 0.3rem;
-
-    color: #6ee7b7;
-
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
+    color: color-mix(
+        in srgb,
+        var(--success) 70%,
+        var(--text)
+    );
 }
 
 .lesson-summary__title {
-    margin: 0;
+    @apply m-0
+        min-w-0
+        max-w-full
+        text-[clamp(0.95rem,2.5vw,1.12rem)]
+        font-extrabold
+        leading-[1.4]
+        wrap-anywhere;
 
-    color: var(--text, #f8fafc);
-
-    font-size: 1.12rem;
-    font-weight: 800;
-    line-height: 1.4;
+    color: var(--text);
 }
 
+/* ==========================================
+   SUMMARY LIST
+========================================== */
+
 .lesson-summary__list {
-    display: grid;
-    gap: 0.6rem;
+    @apply grid
+        min-w-0
+        gap-[clamp(0.5rem,1.5vw,0.6rem)];
 }
 
 .lesson-summary__item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
+    @apply flex
+        min-w-0
+        items-start
+        gap-[clamp(0.5rem,1.5vw,0.75rem)]
+        rounded-[clamp(0.625rem,1.5vw,0.75rem)]
+        border
+        p-[clamp(0.625rem,2vw,0.75rem)]
+        transition-[border-color,transform,background-color]
+        duration-200
+        ease-in-out;
 
-    padding: 0.7rem 0.75rem;
+    border-color: color-mix(
+        in srgb,
+        var(--text) 5.5%,
+        transparent
+    );
 
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    border-radius: 10px;
-
-    background: rgba(2, 6, 23, 0.25);
-
-    transition:
-        border-color 0.2s ease,
-        transform 0.2s ease,
-        background 0.2s ease;
+    background: color-mix(
+        in srgb,
+        var(--dark) 25%,
+        transparent
+    );
 }
 
 .lesson-summary__item:hover {
-    border-color: rgba(16, 185, 129, 0.2);
-    background: rgba(16, 185, 129, 0.035);
-    transform: translateX(2px);
+    @apply translate-x-0.5;
+
+    border-color: color-mix(
+        in srgb,
+        var(--success) 20%,
+        transparent
+    );
+
+    background: color-mix(
+        in srgb,
+        var(--success) 3.5%,
+        transparent
+    );
 }
+
+/* ==========================================
+   MARKER
+========================================== */
 
 .lesson-summary__marker {
-    width: 27px;
-    height: 27px;
-    flex: 0 0 27px;
+    @apply grid
+        size-[clamp(1.5rem,4vw,1.6875rem)]
+        shrink-0
+        place-items-center
+        rounded-lg
+        border
+        text-[clamp(0.68rem,1.6vw,0.78rem)]
+        font-black;
 
-    display: grid;
-    place-items: center;
+    border-color: color-mix(
+        in srgb,
+        var(--success) 25%,
+        transparent
+    );
 
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    border-radius: 8px;
+    color: color-mix(
+        in srgb,
+        var(--success) 70%,
+        var(--text)
+    );
 
-    color: #6ee7b7;
-
-    background: rgba(16, 185, 129, 0.07);
-
-    font-size: 0.78rem;
-    font-weight: 900;
+    background: color-mix(
+        in srgb,
+        var(--success) 7%,
+        transparent
+    );
 }
+
+/* ==========================================
+   TEXT
+========================================== */
 
 .lesson-summary__text {
-    min-width: 0;
+    @apply min-w-0
+        max-w-full
+        text-[clamp(0.78rem,1.8vw,0.9rem)]
+        leading-[1.6]
+        wrap-anywhere;
 
-    color: var(--text-secondary, #cbd5e1);
-
-    font-size: 0.9rem;
-    line-height: 1.6;
-
-    overflow-wrap: anywhere;
-}
-
-@media (max-width: 768px) {
-    .lesson-summary {
-        padding: 0.95rem;
-        border-radius: 12px;
-    }
-
-    .lesson-summary__title {
-        font-size: 1.05rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .lesson-summary {
-        padding: 0.8rem;
-        border-radius: 11px;
-    }
-
-    .lesson-summary__item {
-        gap: 0.6rem;
-        padding: 0.65rem;
-    }
-
-    .lesson-summary__text {
-        font-size: 0.88rem;
-    }
+    color: var(--muted);
 }

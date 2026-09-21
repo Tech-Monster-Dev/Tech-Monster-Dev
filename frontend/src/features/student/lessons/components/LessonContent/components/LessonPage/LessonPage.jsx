@@ -2,17 +2,16 @@ import "./LessonPage.css";
 
 import Heading from "./components/Heading";
 import Paragraph from "./components/Paragraph";
-import Image from "./components/Image";
 import Lists from "./components/Lists";
 import CodeBlock from "./components/CodeBlock";
 import NotePoint from "./components/NotePoint";
 import LessonCallout from "./components/LessonCallout";
 import Practical from "./components/Practical";
 import Quiz from "./components/Quiz";
-import LearningObjectives from "./components/LearningObjectives/LearningObjectives.jsx";
+import LearningObjectives from "./components/LearningObjectives";
 import LessonSummary from "./components/LessonSummary";
 import LessonResources from "./components/LessonResources";
-import LessonExamples from "./components/LessonExamples/LessonExamples";
+import LessonExamples from "./components/LessonExamples";
 
 
 export default function LessonPage({ lesson }) {
@@ -106,16 +105,6 @@ export default function LessonPage({ lesson }) {
                     />
                 );
 
-            case "image":
-                return (
-                    <Image
-                        key={key}
-                        src={note.src}
-                        alt={note.alt}
-                        caption={note.caption}
-                    />
-                );
-
             case "unorderedList":
                 return (
                     <Lists
@@ -182,7 +171,7 @@ export default function LessonPage({ lesson }) {
 
     if (!notes.length && !practicals.length) {
         return (
-            <div id="lesson-page">
+            <div className="lesson-content-page">
                 <Paragraph
                     text="No lesson content is available for this lesson yet."
                 />
@@ -191,8 +180,8 @@ export default function LessonPage({ lesson }) {
     }
 
     return (
-        <div id="lesson-page">
-            <section className="lesson-section">
+        <div className="lesson-content-page">
+            <section className="lesson-content-page-section">
                 <LearningObjectives
                     objectives={rawLesson.learningObjectives}
                 />
@@ -213,7 +202,7 @@ export default function LessonPage({ lesson }) {
                 <LessonExamples examples={rawLesson.examples} />
 
                 {practicals.length > 0 ? (
-                    <div className="lesson-practicals">
+                    <div className="lesson-content-page-practicals">
                         {practicals.map(
                             (practical, index) => (
                                 <Practical

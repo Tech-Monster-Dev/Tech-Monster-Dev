@@ -1,11 +1,12 @@
+import "./LessonSidebar.css";
 import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
 
-import "./LessonSidebar.css";
-import LessonAccordion from "./components/LessonAccordion";
 import LessonSearch from "./components/LessonSearch";
+import LessonAccordion from "./components/LessonAccordion";
 
 export default function LessonSidebar({
+    lessonData,
     lessons,
     activeLesson,
     setActiveLesson,
@@ -21,7 +22,7 @@ export default function LessonSidebar({
 
     return (
         <motion.aside
-            id="lesson-sidebar"
+            className="lesson-sidebar"
             initial={{ x: -40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{
@@ -30,23 +31,24 @@ export default function LessonSidebar({
         >
             {/* Header */}
 
-            <div id="lesson-sidebar-header">
+            <div className="lesson-sidebar-header">
                 <LessonSearch
                     search={search}
                     setSearch={setSearch}
                 />
 
-                <div id="lesson_sidebar_heading_content">
-                    <BookOpen size={22} />
-                    <h2>Course Lessons</h2>
-                    <p>{lessons.length} Lessons</p>
+                <div className="lesson_sidebar_heading_content">
+                    <div className="lesson_sidebar_heading_icon">
+                        <BookOpen size={22} />
+                        <h2>{contentType.charAt(0).toUpperCase() + contentType.slice(1)} Lessons</h2>
+                    </div>
+                    <p>{lessonData?.modules?.length} Modules</p>
                 </div>
             </div>
 
             {/* Lesson List */}
 
-            <div id="lesson-list">
-
+            <div className="lesson-lists">
                 {
                     filteredLessons.map((lesson, moduleIndex) => (
                         <LessonAccordion
@@ -68,12 +70,12 @@ export default function LessonSidebar({
 
             {/* Footer */}
 
-            <div id="lesson-sidebar-footer">
+            <div className="lesson-sidebar-footer">
                 <h4>Course Progress</h4>
-                <div id="sidebar-progress">
+                <div className="sidebar-progress">
                     <div
-                        id="sidebar-progress-fill"
-                        style={{width: `${progress}%`}}
+                        className="sidebar-progress-fill"
+                        style={{ width: `${progress}%` }}
                     />
                 </div>
                 <span>

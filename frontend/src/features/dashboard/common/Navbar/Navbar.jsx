@@ -134,14 +134,13 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                 )}
                             </NavLink>
 
-
                             <AnimatePresence>
                                 {showNotificationPopup && (
                                     <motion.div
                                         className="dashboard-navbar-notification-dropdown"
                                         initial={{
                                             opacity: 0,
-                                            y: 10,
+                                            y: 0,
                                             scale: 0.95
                                         }}
 
@@ -153,7 +152,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
                                         exit={{
                                             opacity: 0,
-                                            y: 10,
+                                            y: 0,
                                             scale: 0.95
                                         }}
 
@@ -181,13 +180,10 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
 
                                         <div className="dashboard-navbar-notif-list">
-
                                             {notifications.length === 0 ? (
-
                                                 <div className="dashboard-navbar-notif-item">
                                                     No notifications
                                                 </div>
-
                                             ) : (
 
                                                 notifications
@@ -198,7 +194,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                                             key={item._id}
 
                                                             className={
-                                                                `dashboard-navbar-notif-item-notif-item ${!item.isRead
+                                                                `dashboard-navbar-notif-item ${!item.isRead
                                                                     ? "unread"
                                                                     : ""
                                                                 }`

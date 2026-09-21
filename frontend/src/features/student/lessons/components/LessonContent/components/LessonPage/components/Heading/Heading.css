@@ -1,20 +1,20 @@
+@import "tailwindcss";
+
 /* ==========================================
    LESSON HEADING
 ========================================== */
 
 .lesson-heading {
-    position: relative;
-
-    margin: 0;
-
-    color: var(--text, #f8fafc);
-
-    font-weight: 800;
-    line-height: 1.25;
-    letter-spacing: -0.025em;
-
-    text-wrap: balance;
-    overflow-wrap: anywhere;
+    @apply relative
+        m-0
+        min-w-0
+        max-w-full
+        font-extrabold
+        leading-tight
+        tracking-tight
+        text-(--text)
+        text-balance
+        wrap-anywhere;
 }
 
 /* ==========================================
@@ -22,35 +22,30 @@
 ========================================== */
 
 .lesson-heading--level-2 {
-    margin-top: 2.4rem;
-    margin-bottom: 1rem;
-
-    padding-left: 0.9rem;
-
-    font-size: clamp(1.45rem, 2.1vw, 1.85rem);
+    @apply mt-[clamp(1.5rem,4vw,2rem)]
+        mb-[clamp(0.65rem,1.8vw,0.85rem)]
+        pl-[clamp(0.55rem,1.5vw,0.9rem)]
+        text-[clamp(1.2rem,3vw,1.85rem)];
 }
 
 .lesson-heading--level-2::before {
+    @apply absolute
+        left-0
+        top-[0.18em]
+        h-[1.05em]
+        w-1
+        rounded-full;
+
     content: "";
-
-    position: absolute;
-
-    left: 0;
-    top: 0.18em;
-
-    width: 4px;
-    height: 1.05em;
-
-    border-radius: 999px;
 
     background: linear-gradient(
         180deg,
-        #22d3ee,
-        #34d399
+        var(--secondary),
+        var(--success)
     );
 
     box-shadow:
-        0 0 12px rgba(34, 211, 238, 0.3);
+        0 0 0.75rem var(--neon-cyan-soft);
 }
 
 /* ==========================================
@@ -58,33 +53,32 @@
 ========================================== */
 
 .lesson-heading--level-3 {
-    margin-top: 1.8rem;
-    margin-bottom: 0.75rem;
+    @apply mt-[clamp(1.25rem,3vw,1.8rem)]
+        mb-[clamp(0.5rem,1.5vw,0.65rem)]
+        pl-[clamp(0.5rem,1.2vw,0.7rem)]
+        text-[clamp(1.05rem,2.4vw,1.45rem)];
 
-    padding-left: 0.7rem;
-
-    color: #e2e8f0;
-
-    font-size: clamp(1.2rem, 1.75vw, 1.45rem);
+    color: color-mix(
+        in srgb,
+        var(--text) 88%,
+        var(--gray)
+    );
 }
 
 .lesson-heading--level-3::before {
+    @apply absolute
+        left-0
+        top-[0.22em]
+        h-[1em]
+        w-0.75
+        rounded-full;
+
     content: "";
 
-    position: absolute;
-
-    left: 0;
-    top: 0.22em;
-
-    width: 3px;
-    height: 1em;
-
-    border-radius: 999px;
-
-    background: #22d3ee;
+    background: var(--secondary);
 
     box-shadow:
-        0 0 9px rgba(34, 211, 238, 0.22);
+        0 0 0.5625rem var(--neon-cyan-faint);
 }
 
 /* ==========================================
@@ -92,31 +86,26 @@
 ========================================== */
 
 .lesson-heading--level-4 {
-    margin-top: 1.35rem;
-    margin-bottom: 0.6rem;
+    @apply mt-[clamp(1rem,2.5vw,1.35rem)]
+        mb-[clamp(0.4rem,1vw,0.6rem)]
+        pl-[clamp(0.45rem,1vw,0.6rem)]
+        text-[clamp(0.9rem,1.8vw,1.08rem)]
+        font-bold;
 
-    padding-left: 0.6rem;
-
-    color: #cbd5e1;
-
-    font-size: 1.08rem;
-    font-weight: 750;
+    color: var(--gray);
 }
 
 .lesson-heading--level-4::before {
+    @apply absolute
+        left-0
+        top-[0.2em]
+        h-[0.95em]
+        w-0.75
+        rounded-full;
+
     content: "";
 
-    position: absolute;
-
-    left: 0;
-    top: 0.2em;
-
-    width: 3px;
-    height: 0.95em;
-
-    border-radius: 999px;
-
-    background: #34d399;
+    background: var(--success);
 }
 
 /* ==========================================
@@ -124,47 +113,7 @@
 ========================================== */
 
 .lesson-heading:first-child {
-    margin-top: 0;
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 768px) {
-    .lesson-heading--level-2 {
-        margin-top: 2rem;
-        margin-bottom: 0.85rem;
-        padding-left: 0.8rem;
-    }
-
-    .lesson-heading--level-3 {
-        margin-top: 1.5rem;
-        margin-bottom: 0.65rem;
-        padding-left: 0.65rem;
-    }
-
-    .lesson-heading--level-4 {
-        margin-top: 1.15rem;
-        margin-bottom: 0.5rem;
-        padding-left: 0.55rem;
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .lesson-heading--level-2 {
-        padding-left: 0.7rem;
-        font-size: 1.3rem;
-    }
-
-    .lesson-heading--level-3 {
-        font-size: 1.12rem;
-    }
-
-    .lesson-heading--level-4 {
-        font-size: 0.98rem;
-    }
+    @apply mt-0;
 }
 
 /* ==========================================
@@ -174,70 +123,100 @@
 /* ---------- WARNING / MISTAKES ---------- */
 
 .lesson-heading--warning {
-    color: #fecaca;
+    color: color-mix(
+        in srgb,
+        var(--danger) 45%,
+        var(--text)
+    );
 }
 
 .lesson-heading--warning::before {
     background: linear-gradient(
         180deg,
-        #fb7185,
-        #ef4444
+        color-mix(in srgb, var(--danger) 65%, var(--text)),
+        var(--danger)
     );
 
     box-shadow:
-        0 0 12px rgba(239, 68, 68, 0.32);
+        0 0 0.75rem var(--danger-soft);
 }
 
 /* ---------- INFORMATION / CORE IDEAS ---------- */
 
 .lesson-heading--info {
-    color: #cffafe;
+    color: color-mix(
+        in srgb,
+        var(--secondary) 35%,
+        var(--text)
+    );
 }
 
 .lesson-heading--info::before {
     background: linear-gradient(
         180deg,
-        #22d3ee,
-        #06b6d4
+        var(--secondary),
+        var(--neon-cyan)
     );
 
     box-shadow:
-        0 0 12px rgba(34, 211, 238, 0.32);
+        0 0 0.75rem var(--neon-cyan-soft);
 }
 
 /* ---------- SUCCESS / BEST PRACTICES ---------- */
 
 .lesson-heading--success {
-    color: #bbf7d0;
+    color: color-mix(
+        in srgb,
+        var(--success) 35%,
+        var(--text)
+    );
 }
 
 .lesson-heading--success::before {
     background: linear-gradient(
         180deg,
-        #34d399,
-        #10b981
+        color-mix(in srgb, var(--success) 75%, var(--text)),
+        var(--success)
     );
 
     box-shadow:
-        0 0 12px rgba(16, 185, 129, 0.32);
+        0 0 0.75rem color-mix(
+            in srgb,
+            var(--success) 32%,
+            transparent
+        );
 }
 
-/* Keep semantic colors stronger than generic level colors */
+/* ==========================================
+   SEMANTIC COLOR PRIORITY
+========================================== */
 
 .lesson-heading--warning.lesson-heading--level-2,
 .lesson-heading--warning.lesson-heading--level-3,
 .lesson-heading--warning.lesson-heading--level-4 {
-    color: #fecaca;
+    color: color-mix(
+        in srgb,
+        var(--danger) 45%,
+        var(--text)
+    );
 }
 
 .lesson-heading--info.lesson-heading--level-2,
 .lesson-heading--info.lesson-heading--level-3,
 .lesson-heading--info.lesson-heading--level-4 {
-    color: #cffafe;
+    color: color-mix(
+        in srgb,
+        var(--secondary) 35%,
+        var(--text)
+    );
 }
 
 .lesson-heading--success.lesson-heading--level-2,
 .lesson-heading--success.lesson-heading--level-3,
 .lesson-heading--success.lesson-heading--level-4 {
-    color: #bbf7d0;
+    color: color-mix(
+        in srgb,
+        var(--success) 35%,
+        var(--text)
+    );
 }
