@@ -1,7 +1,7 @@
 import "./Dashboard.css";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import SectionTabs from "../../../layouts/SectionTabs";
 import EmptyState from "../../../components/ui/EmptyState";
@@ -18,6 +18,7 @@ import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 function Dashboard() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const {
         dashboard,
@@ -64,6 +65,21 @@ function Dashboard() {
     });
 
     const [activeSection, setActiveSection] = useState("enrolled");
+    const requestedSection = location.state?.activeSection;
+    const selectedSection = ["enrolled", "courses", "internships"].includes(requestedSection)
+        ? requestedSection
+        : activeSection;
+
+    const handleSectionChange = (section) => {
+        setActiveSection(section);
+
+        if (requestedSection) {
+            navigate(location.pathname, {
+                replace: true,
+                state: null,
+            });
+        }
+    };
 
     useEffect(() => {
         const dashboardContent = document.querySelector(".dashboard-content");
@@ -75,7 +91,7 @@ function Dashboard() {
                 behavior: "auto",
             });
         }
-    }, [activeSection]);
+    }, [selectedSection]);
 
     const [warning, setWarning] = useState({
         open: false,
@@ -202,11 +218,11 @@ function Dashboard() {
                     { label: "Courses", value: "courses" },
                     { label: "Internships", value: "internships" },
                 ]}
-                activeTab={activeSection}
-                onChange={setActiveSection}
+                activeTab={selectedSection}
+                onChange={handleSectionChange}
             />
 
-            {activeSection === "enrolled" && (
+            {selectedSection === "enrolled" && (
                 <div className="learning-card-grid">
                     {(dashboard?.courses || []).map((course, index) => (
                         <LearningCard
@@ -244,7 +260,7 @@ function Dashboard() {
                 </div>
             )}
 
-            {activeSection === "courses" && (
+            {selectedSection === "courses" && (
                 <AllCourses
                     setLoading={setLoading}
                     courses={dashboard?.allCourses || []}
@@ -253,7 +269,7 @@ function Dashboard() {
                 />
             )}
 
-            {activeSection === "internships" && (
+            {selectedSection === "internships" && (
                 <AllInternship
                     internships={dashboard?.allInternships || []}
                     refreshDashboard={loadDashboard}

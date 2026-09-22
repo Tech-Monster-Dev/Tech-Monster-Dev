@@ -98,32 +98,9 @@ const Task = () => {
 
     useTaskRealtime({
         user,
-        courseSlug,
         applySubmissionState,
         setActiveTaskId,
         onModuleCompleted: () => {
-            try {
-                localStorage.setItem(
-                    "daily_task_unlocked_" + courseSlug,
-                    "false"
-                );
-            } catch {
-                // Ignore localStorage errors.
-            }
-
-            window.dispatchEvent(
-                new CustomEvent(
-                    "dailyTaskAccessChanged",
-                    {
-                        detail: {
-                            courseSlug,
-                            unlocked: false,
-                            moduleId: null,
-                        },
-                    }
-                )
-            );
-
             toast.success(
                 "Module completed. Returning to lessons..."
             );

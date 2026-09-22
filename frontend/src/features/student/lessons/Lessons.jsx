@@ -1,5 +1,5 @@
 import "./Lessons.css";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -70,52 +70,6 @@ export default function Lessons() {
     
     const lessons = finalLessonData?.lessons || [];
     const currentLesson = lessons[activeLesson] || null;
-
-    // =========================================
-    // DAILY TASK LIVE ACCESS
-    // =========================================
-    useEffect(() => {
-        if (!courseSlug || !finalLessonData?.modules) {
-            return;
-        }
-
-        const readyModule = finalLessonData.modules.find((module) => {
-            const moduleId = String(module.id || module.moduleId || "");
-            const sections = module.sections || [];
-
-            return (
-                sections.length > 0 &&
-                sections.every((section) =>
-                    section.completed
-                ) && !approvedModuleIds.has(moduleId)
-            );
-        });
-
-        const dailyTaskUnlocked = Boolean(readyModule);
-
-        try {
-            localStorage.setItem(
-                "daily_task_unlocked_" + courseSlug,
-                dailyTaskUnlocked ? "true" : "false"
-            );
-        } catch {
-            // Ignore localStorage errors.
-        }
-
-        window.dispatchEvent(new CustomEvent("dailyTaskAccessChanged",
-            {
-                detail: {
-                    courseSlug,
-                    unlocked: dailyTaskUnlocked,
-                    moduleId: readyModule?.id || null,
-                },
-            }
-        ));
-    }, [
-        courseSlug,
-        finalLessonData,
-        approvedModuleIds,
-    ]);
 
     const filteredLessons = useMemo(() => {
         if (!finalLessonData?.modules) return [];
