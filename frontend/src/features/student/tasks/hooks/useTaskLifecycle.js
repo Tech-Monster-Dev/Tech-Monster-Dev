@@ -132,19 +132,6 @@ const useTaskLifecycle = ({
         allTasks.length > 0 &&
         approvedCount === allTasks.length;
 
-    useEffect(() => {
-        try {
-            localStorage.setItem(
-                "all_tasks_completed",
-                allCompleted
-                    ? "true"
-                    : "false"
-            );
-        } catch {
-            // Ignore localStorage errors.
-        }
-    }, [allCompleted]);
-
     return {
         currentTask,
         currentTaskKey,

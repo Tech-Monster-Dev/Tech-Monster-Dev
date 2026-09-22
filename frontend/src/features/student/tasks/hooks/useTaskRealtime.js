@@ -8,7 +8,6 @@ import { getTaskKey } from "../utils/taskUtils";
 
 const useTaskRealtime = ({
     user,
-    courseSlug,
     applySubmissionState,
     setActiveTaskId,
     onModuleCompleted,
@@ -150,26 +149,6 @@ const useTaskRealtime = ({
                     submission.taskId
                     }`
                 );
-            }
-
-            if (unlockedSubmission) {
-                try {
-                    localStorage.setItem(
-                        `daily_task_unlocked_${courseSlug}`,
-                        "true"
-                    );
-
-                    window.dispatchEvent(
-                        new CustomEvent("dailyTaskAccessChanged", {
-                            detail: {
-                                courseSlug,
-                                unlocked: true,
-                            },
-                        })
-                    );
-                } catch {
-                    // Ignore storage errors.
-                }
             }
 
             if (moduleCompleted && onModuleCompleted) {
@@ -322,7 +301,6 @@ const useTaskRealtime = ({
     }, [
         user?._id,
         user?.id,
-        courseSlug,
         applySubmissionState,
         setActiveTaskId,
         onModuleCompleted,

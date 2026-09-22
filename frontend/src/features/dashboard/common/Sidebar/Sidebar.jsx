@@ -6,10 +6,13 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
 import Tooltip from '../../../../components/ui/Tooltip';
+import Warning from '../../../../components/ui/Warning';
 
 
 import SearchBar from "../../../../components/ui/SearchBar";
 import Loader from "../../../../components/ui/Loader";
+import api from "../../../../services/api/axios";
+import { API } from "../../../../services/api/endpoints";
 
 import {
     FiHome,
@@ -23,7 +26,6 @@ import {
     FiSettings,
     FiLogOut,
     FiX,
-    FiLock,
     FiHelpCircle,
     FiBell,
     FiChevronLeft,
@@ -33,8 +35,6 @@ import {
 
 function Sidebar({
     role = "student",
-    isCourseCompleted = false,
-    dailyTaskUnlocked = false,
     collapsed = false,
     onToggleCollapse,
     mobileSidebarOpen = false,
@@ -46,6 +46,7 @@ function Sidebar({
     const location = useLocation();
 
     const [loading, setLoading] = useState(false);
+    const [showDailyTaskWarning, setShowDailyTaskWarning] = useState(false);
     const activeLinkRef = useRef(null);
     useEffect(() => {
         activeLinkRef.current?.scrollIntoView({
@@ -55,8 +56,6 @@ function Sidebar({
     }, [location.pathname]);
 
 
-    const dailyTaskLocked = role === "student" && (!enrolledCourse || !dailyTaskUnlocked);
-
     useEffect(() => {
         if (mobileSidebarOpen) {
             onCloseMobileSidebar?.();
@@ -65,10 +64,6 @@ function Sidebar({
     }, [location.pathname]);
 
     const lessonPath = enrolledCourse?.type && enrolledCourse?.slug ? `/student/lessons/${enrolledCourse.type}/${enrolledCourse.slug}` : "/student/lessons";
-
-    const taskPath = enrolledCourse?.type && enrolledCourse?.slug
-        ? `/student/tasks/${enrolledCourse.type}/${enrolledCourse.slug}`
-        : `/student/tasks/`;
 
     const studentLinks = [
         { name: "Home", path: "/student", icon: <FiHome /> },
@@ -82,9 +77,8 @@ function Sidebar({
 
         {
             name: "Daily Task",
-            path: taskPath,
+            path: "/student/tasks",
             icon: <FiCheckSquare />,
-            locked: dailyTaskLocked && !isCourseCompleted,
         },
 
         { name: "Attendance", path: "/student/attendance", icon: <FiCalendar /> },
@@ -110,23 +104,76 @@ function Sidebar({
     const navLinks = role === 'admin' ? adminLinks : studentLinks;
 
     const handleLinkClick = (e, link) => {
-        if (!link.locked) {
-            return;
+        if (role === "student" && link.name === "Daily Task") {
+            e.preventDefault();
+            setShowDailyTaskWarning(true);
         }
+    };
 
-        e.preventDefault();
+    const handleDailyTaskContinue = async () => {
+        try {
+            setLoading(true);
 
-        if (link.name === "Certificate") {
-            toast.warning(
-                "Complete all internship tasks to unlock your certificate!"
+            const { data } = await api.get(API.DASHBOARD.STUDENT);
+            const dashboard = data?.dashboard || {};
+            const enrolledItems = [
+                ...(dashboard?.courses || []).map((item) => ({
+                    ...item,
+                    type: "course",
+                })),
+                ...(dashboard?.internships || []).map((item) => ({
+                    ...item,
+                    type: "internship",
+                })),
+            ];
+
+            setShowDailyTaskWarning(false);
+
+            if (enrolledItems.length === 1) {
+                const item = enrolledItems[0];
+
+                if (!item.slug) {
+                    toast.error("Lesson could not be opened for this enrollment.");
+                    return;
+                }
+
+                try {
+                    localStorage.setItem(
+                        "activeLearning",
+                        JSON.stringify({
+                            programId: item.type === "course"
+                                ? item.courseId
+                                : item.internshipId,
+                            type: item.type,
+                            slug: item.slug,
+                            title: item.title,
+                        })
+                    );
+
+                    window.dispatchEvent(new CustomEvent("activeLearningChanged"));
+                } catch {
+                    // Navigation can continue even if localStorage is unavailable.
+                }
+
+                navigate(`/student/lessons/${item.type}/${item.slug}`);
+                onCloseMobileSidebar?.();
+                return;
+            }
+
+            navigate("/student/dashboard", {
+                state: {
+                    activeSection: "enrolled",
+                },
+            });
+            onCloseMobileSidebar?.();
+        } catch (error) {
+            console.error("Failed to load enrollments for Daily Task:", error);
+            toast.error(
+                error?.response?.data?.message ||
+                "Unable to load your enrolled courses and internships."
             );
-            return;
-        }
-
-        if (link.name === "Daily Task") {
-            toast.warning(
-                "Complete the previous module tasks to unlock Daily Task!"
-            );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -237,14 +284,14 @@ function Sidebar({
                                 <li
                                     key={index}
                                     ref={isActive ? activeLinkRef : null}
-                                    className={`${isActive ? "active" : ""} ${link.locked ? "locked-link" : ""}`}
+                                    className={isActive ? "active" : ""}
                                 >
                                     <Tooltip
                                         label={link.name}
                                         disabled={!collapsed}
                                     >
                                         <Link
-                                            to={link.locked ? "#" : link.path}
+                                            to={link.path}
                                             state={
                                                 (link.name === "Daily Task" || link.name === "Certificate") && enrolledCourse
                                                     ? {
@@ -258,10 +305,7 @@ function Sidebar({
                                             }
                                             onClick={(e) => {
                                                 handleLinkClick(e, link);
-
-                                                if (!link.locked) {
-                                                    onCloseMobileSidebar?.();
-                                                }
+                                                onCloseMobileSidebar?.();
                                             }}
                                         >
                                             <span className="sidebar-link-icon">
@@ -274,9 +318,6 @@ function Sidebar({
                                                 </span>
                                             )}
 
-                                            {link.locked && !collapsed && (
-                                                <FiLock className="lock-icon-right" />
-                                            )}
                                         </Link>
                                     </Tooltip>
 
@@ -343,6 +384,18 @@ function Sidebar({
                 </div>
 
             </motion.aside>
+
+            <Warning
+                open={showDailyTaskWarning}
+                title="Open Daily Task From Lessons"
+                message="Daily Task cannot be opened directly from the sidebar. Continue to your enrolled course or internship, then choose the task inside a lesson module."
+                confirmText="Continue"
+                cancelText="Cancel"
+                onConfirm={handleDailyTaskContinue}
+                onCancel={() => {
+                    setShowDailyTaskWarning(false);
+                }}
+            />
         </>
     );
 }

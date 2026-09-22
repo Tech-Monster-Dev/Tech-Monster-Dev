@@ -7,7 +7,6 @@ import Sidebar from "../../features/dashboard/common/Sidebar";
 import Main from "../../features/dashboard/common/Main";
 import Footer from "../../features/dashboard/common/Footer";
 
-import { socket } from "../../services/socket/socket";
 import useAuth from "../../shared/hooks/useAuth";
 import useActiveWebsiteTime from "../../shared/hooks/useActiveWebsiteTime";
 import api from "../../services/api/axios";
@@ -19,8 +18,6 @@ function DashboardLayout({ role = "student" }) {
     const [collapsed, setCollapsed] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [enrolledCourse, setEnrolledCourse] = useState(null);
-    const [dailyTaskUnlocked, setDailyTaskUnlocked] = useState(false);
-    const [allTasksCompleted, setAllTasksCompleted] = useState(false);
     const [activeWebsiteSeconds, setActiveWebsiteSeconds] = useState(0);
     const [activeTimeInitialized, setActiveTimeInitialized] = useState(false);
 
@@ -41,8 +38,6 @@ function DashboardLayout({ role = "student" }) {
         handleActiveWebsiteTime,
         activeWebsiteSeconds
     );
-
-    const enrolledCourseSlug = enrolledCourse?.slug;
 
     // LOAD TODAY ACTIVE TIME
     useEffect(() => {
@@ -107,163 +102,6 @@ function DashboardLayout({ role = "student" }) {
 
     }, []);
 
-
-    // ==========================================
-    // DAILY TASK ACCESS Locked or Unlocked
-    // ==========================================
-
-    useEffect(() => {
-        if (role !== "student" || !enrolledCourseSlug) {
-            return;
-        }
-
-        const storageKey = `daily_task_unlocked_${enrolledCourse.slug}`;
-        const storeValue = localStorage.getItem(storageKey);
-
-        if (!storeValue) {
-            localStorage.setItem(storageKey, "false");
-        }
-
-        const readDailyTaskAccess = () => {
-            try {
-                setDailyTaskUnlocked(localStorage.getItem(storageKey) === "true");
-            } catch {
-                setDailyTaskUnlocked(false);
-            }
-        };
-        readDailyTaskAccess();
-
-        const handleAccessChanged = (event) => {
-            if (event.detail?.courseSlug === enrolledCourse.slug) {
-                setDailyTaskUnlocked(Boolean(event.detail?.unlocked));
-            }
-        };
-
-        window.addEventListener("dailyTaskAccessChanged", handleAccessChanged);
-        window.addEventListener("storage", readDailyTaskAccess);
-
-        return () => {
-            window.removeEventListener("dailyTaskAccessChanged", handleAccessChanged);
-            window.removeEventListener("storage", readDailyTaskAccess);
-        };
-    }, [role, enrolledCourseSlug, enrolledCourse?.slug]);
-
-    // ========================================================================================================
-
-
-    // ==========================================
-    // GLOBAL TASK APPROVAL REALTIME
-    // Keeps Daily Task access synchronized even
-    // when the student is on another page.
-    // ==========================================
-    useEffect(() => {
-        if (role !== "student" || (!user?._id && !user?.id)
-        ) {
-            return;
-        }
-
-        const userId = String(user._id || user.id);
-
-        const handleConnect = () => {
-            socket.emit("join", userId);
-        };
-
-        const handleTaskApproved = ({
-            submission,
-            moduleCompleted,
-            allTasksCompleted: courseCompleted,
-        }) => {
-            if (!submission) {
-                return;
-            }
-
-            const activeLearning = enrolledCourse;
-
-            if (!activeLearning?.slug || String(submission.courseSlug || "") !== String(activeLearning.slug)) {
-                return;
-            }
-
-            // Every task approval is received here.
-            // The final course completion signal is
-            // maintained separately by the task lifecycle.
-            if (courseCompleted) {
-                try {
-                    localStorage.setItem(
-                        "all_tasks_completed",
-                        "true"
-                    );
-                } catch {
-                    // Ignore storage errors.
-                }
-
-                setAllTasksCompleted(true);
-            }
-
-            if (moduleCompleted) {
-                try {
-                    localStorage.setItem(
-                        "daily_task_unlocked_" +
-                        activeLearning.slug,
-                        "false"
-                    );
-                } catch {
-                    // Ignore storage errors.
-                }
-
-                setDailyTaskUnlocked(false);
-
-                window.dispatchEvent(
-                    new CustomEvent(
-                        "dailyTaskAccessChanged",
-                        {
-                            detail: {
-                                courseSlug:
-                                    activeLearning.slug,
-                                unlocked: false,
-                                moduleId: null,
-                            },
-                        }
-                    )
-                );
-            }
-        };
-
-        socket.on(
-            "connect",
-            handleConnect
-        );
-
-        socket.on(
-            "taskApproved",
-            handleTaskApproved
-        );
-
-        if (socket.connected) {
-            socket.emit(
-                "join",
-                userId
-            );
-        } else {
-            socket.connect();
-        }
-
-        return () => {
-            socket.off(
-                "connect",
-                handleConnect
-            );
-            socket.off(
-                "taskApproved",
-                handleTaskApproved
-            );
-        };
-    }, [
-        role,
-        user?._id,
-        user?.id,
-        enrolledCourse,
-    ]);
-
     // ==========================================
     // SIDEBAR COLLAPSE
     // ==========================================
@@ -282,25 +120,6 @@ function DashboardLayout({ role = "student" }) {
         setMobileSidebarOpen(false);
     };
 
-    // ==========================================
-    // COURSE COMPLETION
-    // ==========================================
-
-    const readAllTasksCompleted = () => {
-        try {
-            return (
-                allTasksCompleted ||
-                localStorage.getItem(
-                    "all_tasks_completed"
-                ) === "true"
-            );
-
-        } catch {
-            return false;
-        }
-    };
-
-
     return (
 
         <div
@@ -318,8 +137,6 @@ function DashboardLayout({ role = "student" }) {
                 {/* ================= SIDEBAR ================= */}
                 <Sidebar
                     role={role}
-                    dailyTaskUnlocked={dailyTaskUnlocked}
-                    isCourseCompleted={role === "student" ? readAllTasksCompleted() : false}
                     collapsed={collapsed}
                     onToggleCollapse={
                         handleToggleCollapse
