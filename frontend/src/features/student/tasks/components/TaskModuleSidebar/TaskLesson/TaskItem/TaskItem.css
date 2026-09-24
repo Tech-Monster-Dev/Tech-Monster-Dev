@@ -1,31 +1,35 @@
+@import "tailwindcss";
+
 /* =========================================
    TASK ITEM
 ========================================= */
 
 .task-item {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-    padding: 0.5rem 0.65rem;
-    border-radius: 0.6rem;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px solid transparent;
-    transition: all 0.25s ease;
-    min-width: 0;
+    @apply flex
+        min-w-0
+        flex-wrap
+        items-center
+        gap-[clamp(0.5rem,1.8vw,0.65rem)]
+        rounded-[clamp(0.5rem,1.5vw,0.6rem)]
+        px-[clamp(0.5rem,2vw,0.65rem)]
+        py-[clamp(0.4rem,1.5vw,0.5rem)]
+        cursor-pointer
+        border
+        transition-all
+        duration-250
+        ease-in-out;
+    background: color-mix(in srgb, var(--text) 1.5%, transparent);
+    border-color: transparent;
 }
-
 
 /* =========================================
    HOVER
 ========================================= */
 
 .task-item:hover {
-    background: rgba(0, 234, 255, 0.055);
-    border-color: rgba(0, 234, 255, 0.12);
+    background: color-mix(in srgb, var(--neon) 5.5%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 12%, transparent);
 }
-
 
 /* =========================================
    ACTIVE TASK
@@ -33,62 +37,56 @@
 
 .task-item.active {
     background:
-        linear-gradient(90deg,
-            rgba(0, 234, 255, 0.18),
-            rgba(0, 102, 255, 0.08));
-
+        linear-gradient(
+            90deg,
+            color-mix(in srgb, var(--neon) 18%, transparent),
+            color-mix(in srgb, var(--glow) 8%, transparent)
+        );
     border-color: var(--neon);
-
     box-shadow:
-        0 0 10px rgba(0, 234, 255, 0.18);
+        0 0 0.625rem
+        color-mix(in srgb, var(--neon) 18%, transparent);
 }
-
 
 /* =========================================
    LOCKED TASK
 ========================================= */
 
 .task-item.locked {
-    opacity: 0.5;
-    cursor: not-allowed;
+    @apply cursor-not-allowed opacity-50;
 }
-
 
 .task-item.locked:hover {
-    background: rgba(255, 51, 102, 0.08);
-    border-color: rgba(255, 51, 102, 0.25);
+    background: color-mix(in srgb, var(--danger) 8%, transparent);
+    border-color: color-mix(in srgb, var(--danger) 25%, transparent);
     box-shadow: none;
 }
-
 
 /* =========================================
    EXPIRED TASK
 ========================================= */
 
 .task-item.expired {
-    opacity: 0.75;
+    @apply opacity-75;
 }
-
 
 .task-item.expired:hover {
-    background: rgba(220, 38, 38, 0.06);
-    border-color: rgba(220, 38, 38, 0.18);
+    background: color-mix(in srgb, var(--danger) 6%, transparent);
+    border-color: color-mix(in srgb, var(--danger) 18%, transparent);
 }
-
 
 /* =========================================
    TASK ICON
 ========================================= */
 
 .task-item-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    min-width: 20px;
-    flex-shrink: 0;
+    @apply flex
+        size-[clamp(1.25rem,5vw,1.25rem)]
+        min-w-[clamp(1.25rem,5vw,1.25rem)]
+        shrink-0
+        items-center
+        justify-center;
 }
-
 
 /* =========================================
    APPROVED ICON
@@ -96,29 +94,34 @@
 
 .task-approved {
     color: var(--success);
-    filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.45));
+    filter:
+        drop-shadow(
+            0 0 0.3125rem
+            color-mix(in srgb, var(--success) 45%, transparent)
+        );
 }
-
 
 /* =========================================
    LOCKED ICON
 ========================================= */
 
 .task-locked {
-    color: #ff3366;
-    opacity: 0.75;
+    color: var(--danger);
+    @apply opacity-75;
 }
-
 
 /* =========================================
    EXPIRED ICON
 ========================================= */
 
 .task-expired {
-    color: #dc2626;
-    filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.35));
+    color: var(--danger);
+    filter:
+        drop-shadow(
+            0 0 0.25rem
+            color-mix(in srgb, var(--danger) 35%, transparent)
+        );
 }
-
 
 /* =========================================
    STATUS ICONS
@@ -126,117 +129,122 @@
 
 .task-unlocked {
     color: var(--neon);
-    filter: drop-shadow(0 0 5px rgba(0, 234, 255, 0.4));
+    filter:
+        drop-shadow(
+            0 0 0.3125rem
+            color-mix(in srgb, var(--neon) 40%, transparent)
+        );
 }
 
 .task-pending {
     color: var(--golden);
-    filter: drop-shadow(0 0 5px rgba(255, 200, 0, 0.45));
+    filter:
+        drop-shadow(
+            0 0 0.3125rem
+            color-mix(in srgb, var(--golden) 45%, transparent)
+        );
     animation: pendingIconPulse 1.4s infinite;
 }
 
 .task-rejected {
-    color: #fb923c;
-    filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.4));
+    color: var(--golden);
+    filter:
+        drop-shadow(
+            0 0 0.3125rem
+            color-mix(in srgb, var(--golden) 40%, transparent)
+        );
 }
-
 
 /* =========================================
    TASK TEXT
 ========================================= */
 
 .task-item-text {
-    min-width: 0;
-    flex: 1 1 140px;
-    overflow: visible;
+    @apply min-w-0
+        flex-[1_1_8.75rem]
+        overflow-visible;
 }
-
 
 /* =========================================
    TASK TITLE
 ========================================= */
 
 .task-item-text h5 {
+    @apply m-0
+        overflow-hidden
+        text-[clamp(0.74rem,1.8vw,0.78rem)]
+        font-semibold
+        leading-[1.35]
+        whitespace-nowrap
+        text-ellipsis;
     color: var(--text);
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.35;
 }
-
 
 /* =========================================
    TASK LEVEL
 ========================================= */
 
 .task-item-text small {
-    display: block;
+    @apply mt-0.5
+        block
+        text-[clamp(0.61rem,1.5vw,0.65rem)]
+        leading-[1.2];
     color: var(--muted);
-    font-size: 0.65rem;
-    margin-top: 2px;
-    line-height: 1.2;
 }
-
 
 /* =========================================
    COUNTDOWN
 ========================================= */
 
 .task-item-countdown {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 6px;
-    width: fit-content;
-    max-width: 100%;
-    padding: 0.18rem 0.4rem;
-    border-radius: 0.4rem;
-    background: rgba(0, 234, 255, 0.08);
-    border: 1px solid rgba(0, 234, 255, 0.18);
+    @apply mt-[clamp(0.3rem,1.5vw,0.375rem)]
+        flex
+        w-fit
+        max-w-full
+        items-center
+        gap-[clamp(0.3rem,1vw,0.3125rem)]
+        rounded-[clamp(0.35rem,1vw,0.4rem)]
+        border
+        px-[clamp(0.35rem,1.5vw,0.4rem)]
+        py-[clamp(0.14rem,0.5vw,0.18rem)]
+        text-[clamp(0.62rem,1.5vw,0.65625rem)]
+        font-bold
+        leading-none;
+    background: color-mix(in srgb, var(--neon) 8%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 18%, transparent);
     color: var(--neon);
-    font-size: 10.5px;
-    font-weight: 700;
     letter-spacing: 0;
-    line-height: 1;
 }
-
 
 .task-item-countdown svg {
-    flex-shrink: 0;
+    @apply shrink-0;
 }
-
 
 .task-item-countdown span {
+    @apply overflow-visible whitespace-nowrap;
     font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    overflow: visible;
     text-overflow: clip;
 }
-
 
 /* =========================================
    COUNTDOWN DANGER
 ========================================= */
 
 .task-item-countdown.danger {
-    color: #dc2626;
+    color: var(--danger);
     animation: countdownDanger 1s infinite;
 }
-
 
 @keyframes countdownDanger {
     0%,
     100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.55;
     }
 }
-
 
 /* =========================================
    STATUS CHIPS - COMMON
@@ -248,87 +256,85 @@
 .task-approved-chip,
 .task-unlocked-chip,
 .task-rejected-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    font-size: 0.62rem;
-    font-weight: 600;
-    line-height: 1.3;
-    white-space: nowrap;
-    flex-shrink: 0;
+    @apply inline-flex
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        px-[clamp(0.4rem,1.5vw,0.5rem)]
+        py-[clamp(0.12rem,0.5vw,0.15rem)]
+        text-[clamp(0.56rem,1.5vw,0.62rem)]
+        font-semibold
+        leading-[1.3]
+        whitespace-nowrap;
 }
-
 
 /* =========================================
    LOCKED CHIP
 ========================================= */
 
 .task-locked-chip {
-    background: rgba(156, 163, 175, 0.15);
-    color: #9ca3af;
-    border: 1px solid rgba(156, 163, 175, 0.3);
+    background: color-mix(in srgb, var(--gray) 15%, transparent);
+    color: var(--gray);
+    border: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
 }
-
 
 /* =========================================
    UNLOCKED CHIP
 ========================================= */
 
 .task-unlocked-chip {
-    background: rgba(0, 234, 255, 0.12);
+    background: color-mix(in srgb, var(--neon) 12%, transparent);
     color: var(--neon);
-    border: 1px solid rgba(0, 234, 255, 0.35);
-    box-shadow: 0 0 5px rgba(0, 234, 255, 0.08);
+    border: 1px solid color-mix(in srgb, var(--neon) 35%, transparent);
+    box-shadow:
+        0 0 0.3125rem
+        color-mix(in srgb, var(--neon) 8%, transparent);
 }
-
 
 /* =========================================
    PENDING CHIP
 ========================================= */
 
 .task-pending-chip {
-    background: rgba(255, 200, 0, 0.14);
+    background: color-mix(in srgb, var(--golden) 14%, transparent);
     color: var(--golden);
-    border: 1px solid rgba(255, 200, 0, 0.4);
+    border: 1px solid color-mix(in srgb, var(--golden) 40%, transparent);
     animation: pendingPulse 1.6s infinite;
 }
-
 
 /* =========================================
    APPROVED CHIP
 ========================================= */
 
 .task-approved-chip {
-    background: rgba(34, 197, 94, 0.14);
+    background: color-mix(in srgb, var(--success) 14%, transparent);
     color: var(--success);
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    box-shadow: 0 0 5px rgba(34, 197, 94, 0.08);
+    border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
+    box-shadow:
+        0 0 0.3125rem
+        color-mix(in srgb, var(--success) 8%, transparent);
 }
-
 
 /* =========================================
    REJECTED CHIP
 ========================================= */
 
 .task-rejected-chip {
-    background: rgba(249, 115, 22, 0.14);
-    color: #fb923c;
-    border: 1px solid rgba(249, 115, 22, 0.42);
+    background: color-mix(in srgb, var(--golden) 14%, transparent);
+    color: var(--golden);
+    border: 1px solid color-mix(in srgb, var(--golden) 42%, transparent);
 }
-
 
 /* =========================================
    EXPIRED CHIP
 ========================================= */
 
 .task-expired-chip {
-    background: rgba(220, 38, 38, 0.12);
+    background: color-mix(in srgb, var(--danger) 12%, transparent);
     color: var(--danger);
-    border: 1px solid rgba(220, 38, 38, 0.35);
+    border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
 }
-
 
 /* =========================================
    PENDING PULSE
@@ -338,49 +344,14 @@
     0%,
     100% {
         box-shadow:
-            0 0 3px rgba(255, 200, 0, 0.4);
+            0 0 0.1875rem
+            color-mix(in srgb, var(--golden) 40%, transparent);
     }
+
     50% {
         box-shadow:
-            0 0 10px rgba(255, 200, 0, 0.8);
-    }
-}
-
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
-@media (max-width: 480px) {
-
-    .task-item {
-        gap: 0.5rem;
-
-        padding:
-            0.5rem;
-    }
-
-
-    .task-item-text h5 {
-        font-size: 0.74rem;
-    }
-
-
-    .task-item-text small {
-        font-size: 0.61rem;
-    }
-
-
-    .task-locked-chip,
-    .task-expired-chip,
-    .task-pending-chip,
-    .task-approved-chip,
-    .task-unlocked-chip,
-    .task-rejected-chip {
-        font-size: 0.56rem;
-
-        padding:
-            0.12rem 0.4rem;
+            0 0 0.625rem
+            color-mix(in srgb, var(--golden) 80%, transparent);
     }
 }
 
@@ -389,6 +360,7 @@
     100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.55;
     }

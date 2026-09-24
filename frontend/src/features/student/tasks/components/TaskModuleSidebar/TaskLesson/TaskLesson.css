@@ -1,10 +1,12 @@
+@import "tailwindcss";
+
 /* =========================================
    LESSON
 ========================================= */
 
 .task-lesson {
-    margin-top: 0.35rem;
-    overflow: hidden;
+    @apply mt-[clamp(0.25rem,1vw,0.35rem)]
+        overflow-hidden;
 }
 
 
@@ -13,20 +15,24 @@
 ========================================= */
 
 .task-lesson-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.6rem;
-    padding: 0.55rem 0.65rem;
-    cursor: pointer;
-    background: rgba(0, 234, 255, 0.035);
-    border: 1px solid rgba(0, 234, 255, 0.06);
-    transition:all 0.25s ease;
+    @apply flex
+        items-center
+        justify-between
+        gap-[clamp(0.5rem,1.8vw,0.6rem)]
+        px-[clamp(0.5rem,2vw,0.65rem)]
+        py-[clamp(0.45rem,1.5vw,0.55rem)]
+        cursor-pointer
+        border
+        transition-all
+        duration-250
+        ease-in-out;
+    background: color-mix(in srgb, var(--neon) 3.5%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 6%, transparent);
 }
 
 .task-lesson-header:hover {
-    background: rgba(0, 234, 255, 0.075);
-    border-color: rgba(0, 234, 255, 0.16);
+    background: color-mix(in srgb, var(--neon) 7.5%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 16%, transparent);
 }
 
 
@@ -35,50 +41,46 @@
 ========================================= */
 
 .task-lesson-title {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-width: 0;
-    flex: 1;
+    @apply flex
+        min-w-0
+        flex-1
+        items-center
+        gap-[clamp(0.5rem,1.8vw,0.6rem)];
 }
 
 .task-lesson-title > div {
-    min-width: 0;
+    @apply min-w-0;
 }
-
 
 .task-lesson-title > svg {
+    @apply shrink-0;
     color: var(--glow);
-    flex-shrink: 0;
 }
-
 
 .task-lesson-title h5 {
+    @apply m-0
+        overflow-visible
+        text-[clamp(0.82rem,2.5vw,1rem)]
+        font-semibold
+        leading-[1.35]
+        whitespace-normal
+        wrap-break-word;
     color: var(--text);
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
     overflow-wrap: anywhere;
-    word-break: break-word;
-    line-height: 1.35;
+    text-overflow: clip;
 }
-
 
 .task-lesson-title span {
-    display: block;
+    @apply mt-px
+        block
+        text-[clamp(0.68rem,2vw,0.8rem)];
     color: var(--muted);
-    font-size: 0.8rem;
-    margin-top: 1px;
 }
 
-
 .task-lesson-header > svg {
+    @apply mt-[0.05rem]
+        shrink-0;
     color: var(--muted);
-    flex-shrink: 0;
-    margin-top: 0.05rem;
 }
 
 
@@ -87,9 +89,9 @@
 ========================================= */
 
 .task-lesson-items {
-    overflow: hidden;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
+    @apply flex
+        flex-col
+        gap-[clamp(0.25rem,1vw,0.35rem)]
+        overflow-hidden
+        p-[clamp(0.4rem,1.5vw,0.5rem)];
 }

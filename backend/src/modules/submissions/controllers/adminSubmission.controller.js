@@ -127,6 +127,18 @@ export const getSubmissionDetails =
         }
     );
 
+export const getSubmissionByTaskId = asyncHandler(async (req,res) => {
+    const submission = await Submission.findOne({ taskId: req.params.taskId })
+        .populate('student','firstName lastName username email avatar github linkedin')
+        .populate('internship','title slug description');
+    if (!submission) {
+        const error = new Error('Submission not found for task');
+        error.statusCode = 404;
+        throw error;
+    }
+    return res.status(200).json({ success:true, submission });
+});
+
 export const approveSubmission =
     asyncHandler(
         async (req, res) => {

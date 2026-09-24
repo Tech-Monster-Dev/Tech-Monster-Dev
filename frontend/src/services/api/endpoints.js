@@ -79,16 +79,12 @@ export const API = {
     },
 
     SUBMISSIONS: {
-
       BASE: "/admin/submissions",
-
       DETAILS: (id) => `/admin/submissions/${id}`,
-
       APPROVE: (id) => `/admin/submissions/${id}/approve`,
-
       REJECT: (id) => `/admin/submissions/${id}/reject`,
-
-      EXTEND: (id) => `/admin/submissions/${id}/extend`
+      EXTEND: (id) => `/admin/submissions/${id}/extend`,
+      BY_TASK: (taskId) => `/admin/submissions/by-task/${taskId}`
 
     },
 

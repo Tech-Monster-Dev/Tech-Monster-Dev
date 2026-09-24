@@ -1,5 +1,4 @@
 import "./LessonAccordion.css";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,6 +17,8 @@ export default function LessonAccordion({
     module,
     moduleId,
     activeLesson,
+    open,
+    onToggle,
     setActiveLesson,
     courseSlug,
     contentType,
@@ -25,7 +26,6 @@ export default function LessonAccordion({
     canStart = true,
     moduleNumber = 1,
 }) {
-    const [open, setOpen] = useState(canStart);
     const navigate = useNavigate();
 
     // All lessons in this module must be completed before the task unlocks.
@@ -74,7 +74,7 @@ export default function LessonAccordion({
                         return;
                     }
 
-                    setOpen(!open);
+                    onToggle(!open);
                 }}
             >
                 <div className="module-title">
@@ -160,7 +160,7 @@ export default function LessonAccordion({
                                 onClick={() => handleModuleTaskClick()}
                             >
                                 <div className="task-icon">
-                                    {approvedModuleIds.has(moduleId) ? (
+                                    {approvedModuleIds.has(String(moduleId)) ? (
                                         <FiCheckSquare
                                             size={18}
                                             className="task-ready"
@@ -179,12 +179,12 @@ export default function LessonAccordion({
                                     </h4>
 
                                     <small>
-                                        {approvedModuleIds.has(moduleId) ? "All tasks approved" : "Ready to attempt"}
+                                        {approvedModuleIds.has(String(moduleId)) ? "All tasks approved" : "Ready to attempt"}
                                     </small>
                                 </div>
 
                                 <span className="task-badge">
-                                    {approvedModuleIds.has(moduleId) ? "Approved" : "READY"}
+                                    {approvedModuleIds.has(String(moduleId)) ? "Approved" : "READY"}
                                 </span>
                             </motion.div>
                         )}

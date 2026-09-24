@@ -32,10 +32,6 @@ import useTaskLocking from "./hooks/useTaskLocking";
 import useTaskLifecycle from "./hooks/useTaskLifecycle";
 
 import {
-} from "../../../utils/taskStorage";
-import {
-} from "./utils/taskUtils";
-import {
     getScopedTaskModule,
     buildScopedTaskModule,
 } from "./utils/taskModuleScope";
@@ -49,6 +45,7 @@ const Task = () => {
         slug,
         courseSlug: routeCourseSlug,
     } = useParams();
+
     const location = useLocation();
     const navigate = useNavigate();
     const contentType = routeType === "internship" ? "internship" : "course";
@@ -100,7 +97,7 @@ const Task = () => {
         user,
         applySubmissionState,
         setActiveTaskId,
-        onModuleCompleted: () => {
+        onModuleCompleted: (submission) => {
             toast.success(
                 "Module completed. Returning to lessons..."
             );
@@ -109,7 +106,12 @@ const Task = () => {
                 "/student/lessons/" +
                 contentType +
                 "/" +
-                courseSlug
+                courseSlug,
+                {
+                    state: {
+                        approvedModuleId: submission?.moduleId || null,
+                    },
+                }
             );
         },
     });
@@ -128,12 +130,6 @@ const Task = () => {
         const moduleId = String(
             taskScope.moduleId || ""
         ).trim();
-
-        console.log("=== TASK MODULE SCOPE DEBUG ===");
-        console.log("taskScope:", taskScope);
-        console.log("requested moduleId:", moduleId);
-        console.log("modules:", modules);
-        console.log("taskStatusMap:", taskStatusMap);
 
         const activeModule = getScopedTaskModule(
             modules,
@@ -239,7 +235,7 @@ const Task = () => {
         const expiredByTime =
             expiresAt &&
             new Date(expiresAt).getTime() <=
-                Date.now();
+            Date.now();
 
         const alreadyExpired =
             taskStatusMap[taskId] ===
@@ -438,17 +434,17 @@ const Task = () => {
                             started.
                         </div>
                     )}
+                    <CertificateBanner
+                        completedCount={currentModuleApprovedCount}
+                        courseTitle={courseTitle}
+                        totalCount={visibleTasks.length}
+                        allCompleted={allCompleted}
+                        programId={programId}
+                        programType={contentType}
+                    />
                 </div>
             </div>
 
-            <CertificateBanner
-                completedCount={currentModuleApprovedCount}
-                courseTitle={courseTitle}
-                totalCount={visibleTasks.length}
-                allCompleted={allCompleted}
-                programId={programId}
-                programType={contentType}
-            />
         </motion.div>
     );
 };

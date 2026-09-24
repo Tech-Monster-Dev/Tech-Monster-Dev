@@ -1,19 +1,24 @@
+@import "tailwindcss";
+
 .code-submission {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(0, 234, 255, 0.12);
-    border-radius: 1.25rem;
-    padding: 1.4rem;
-    backdrop-filter: blur(12px);
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
+    @apply flex
+        min-w-0
+        flex-col
+        gap-[clamp(0.7rem,2vw,0.9rem)]
+        rounded-[clamp(1rem,2.5vw,1.25rem)]
+        p-[clamp(0.8rem,3vw,1.4rem)]
+        backdrop-blur-md
+        border;
+    background: color-mix(in srgb, var(--text) 2%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 12%, transparent);
 }
 
 .code-submission-title {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+    @apply flex
+        min-w-0
+        flex-wrap
+        items-center
+        gap-[clamp(0.45rem,1.5vw,0.6rem)];
 }
 
 .code-submission-title svg {
@@ -21,16 +26,16 @@
 }
 
 .code-submission-title h3 {
+    @apply m-0
+        text-[clamp(0.9rem,2vw,1rem)]
+        font-semibold;
     color: var(--text);
-    font-size: 1rem;
-    margin: 0;
-    font-weight: 600;
 }
 
 .code-submission-title span {
+    @apply w-full
+        text-[clamp(0.72rem,1.8vw,0.8rem)];
     color: var(--muted);
-    font-size: 0.8rem;
-    width: 100%;
 }
 
 /* =========================================
@@ -38,20 +43,25 @@
 ========================================= */
 
 .code-submission-editor-wrapper {
-    position: relative;
-    width: 100%;
-    height: 320px;
-    min-height: 200px;
-    overflow: hidden;
-    background: #010409;
-    border: 1px solid rgba(0, 234, 255, 0.2);
-    border-radius: 0.8rem;
-    transition: 0.25s;
+    @apply relative
+        min-h-50
+        w-full
+        overflow-hidden
+        rounded-[clamp(0.65rem,2vw,0.8rem)]
+        border
+        transition-all
+        duration-300
+        ease-in-out;
+    height: clamp(15.625rem, 42vw, 20rem);
+    background: color-mix(in srgb, var(--dark) 96%, var(--text) 4%);
+    border-color: color-mix(in srgb, var(--neon) 20%, transparent);
 }
 
 .code-submission-editor-wrapper:focus-within {
     border-color: var(--neon);
-    box-shadow: 0 0 14px rgba(0, 234, 255, 0.2);
+    box-shadow:
+        0 0 0.875rem
+        color-mix(in srgb, var(--neon) 20%, transparent);
 }
 
 /* =========================================
@@ -59,19 +69,16 @@
 ========================================= */
 
 .code-submission-highlight {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-
-    margin: 0;
-    padding: 1rem;
-
-    overflow: auto;
-    pointer-events: none;
-
+    @apply pointer-events-none
+        absolute
+        inset-0
+        z-1
+        m-0
+        overflow-auto
+        p-[clamp(0.75rem,2.5vw,1rem)]
+        whitespace-pre;
     scrollbar-width: none;
-
-    color: #e5e7eb;
+    color: var(--text);
 
     font-family:
         "Fira Code",
@@ -79,11 +86,10 @@
         "Consolas",
         monospace;
 
-    font-size: 0.85rem;
+    font-size: clamp(0.72rem, 1.5vw, 0.85rem);
     line-height: 1.6;
 
     tab-size: 4;
-    white-space: pre;
 
     word-wrap: normal;
 }
@@ -102,32 +108,20 @@
 ========================================= */
 
 .code-submission-editor {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-
-    width: 100%;
-    height: 100%;
-
-    margin: 0;
-    padding: 1rem;
-
-    resize: none;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-
-    /*
-     * Text transparent rakhiba.
-     * Prism layer underneath actual colors show kariba.
-     */
+    @apply absolute
+        inset-0
+        z-2
+        m-0
+        h-full
+        w-full
+        resize-none
+        border-none
+        outline-none
+        bg-transparent
+        overflow-auto
+        p-[clamp(0.75rem,2.5vw,1rem)]
+        whitespace-pre;
     color: transparent;
-
-    /*
-     * Cursor visible rahiba.
-     */
     caret-color: var(--neon);
 
     font-family:
@@ -136,17 +130,9 @@
         "Consolas",
         monospace;
 
-    font-size: 0.85rem;
+    font-size: clamp(0.72rem, 1.5vw, 0.85rem);
     line-height: 1.6;
-
     tab-size: 4;
-    white-space: pre;
-
-    overflow: auto;
-
-    /*
-     * Hide scrollbar but scrolling functional rahiba.
-     */
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -158,12 +144,12 @@
 }
 
 .code-submission-editor::selection {
-    background: rgba(0, 234, 255, 0.22);
+    background: color-mix(in srgb, var(--neon) 22%, transparent);
     color: transparent;
 }
 
 .code-submission-editor::placeholder {
-    color: rgba(203, 213, 225, 0.35);
+    color: color-mix(in srgb, var(--muted) 35%, transparent);
     opacity: 1;
 }
 
@@ -176,11 +162,11 @@
 .code-submission-highlight .token.prolog,
 .code-submission-highlight .token.doctype,
 .code-submission-highlight .token.cdata {
-    color: #64748b;
+    color: var(--gray);
 }
 
 .code-submission-highlight .token.punctuation {
-    color: #cbd5e1;
+    color: var(--muted);
 }
 
 .code-submission-highlight .token.property,
@@ -189,7 +175,7 @@
 .code-submission-highlight .token.number,
 .code-submission-highlight .token.constant,
 .code-submission-highlight .token.symbol {
-    color: #7dd3fc;
+    color: var(--neon-sky);
 }
 
 .code-submission-highlight .token.selector,
@@ -197,31 +183,31 @@
 .code-submission-highlight .token.string,
 .code-submission-highlight .token.char,
 .code-submission-highlight .token.builtin {
-    color: #86efac;
+    color: var(--success);
 }
 
 .code-submission-highlight .token.operator,
 .code-submission-highlight .token.entity,
 .code-submission-highlight .token.url,
 .code-submission-highlight .language-css .token.string {
-    color: #facc15;
+    color: var(--golden);
 }
 
 .code-submission-highlight .token.atrule,
 .code-submission-highlight .token.attr-value,
 .code-submission-highlight .token.keyword {
-    color: #c084fc;
+    color: var(--secondary);
 }
 
 .code-submission-highlight .token.function,
 .code-submission-highlight .token.class-name {
-    color: #67e8f9;
+    color: var(--neon);
 }
 
 .code-submission-highlight .token.regex,
 .code-submission-highlight .token.important,
 .code-submission-highlight .token.variable {
-    color: #fb923c;
+    color: var(--danger);
 }
 
 .code-submission-highlight .token.important,
@@ -238,9 +224,9 @@
 ========================================= */
 
 .code-submission-guideline {
+    @apply m-0
+        text-[clamp(0.7rem,1.8vw,0.78rem)];
     color: var(--muted);
-    font-size: 0.78rem;
-    margin: 0;
 }
 
 /* =========================================
@@ -248,80 +234,36 @@
 ========================================= */
 
 .code-submission-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-
+    @apply inline-flex
+        shrink-0
+        items-center
+        justify-center
+        self-start
+        gap-[clamp(0.4rem,1.5vw,0.5rem)]
+        rounded-[clamp(0.6rem,1.5vw,0.7rem)]
+        border-none
+        px-[clamp(0.8rem,3vw,1.25rem)]
+        py-[clamp(0.65rem,2vw,0.8rem)]
+        font-bold
+        cursor-pointer
+        transition-all
+        duration-300
+        ease-in-out;
     background: linear-gradient(
         90deg,
         var(--glow),
         var(--neon)
     );
-
     color: var(--dark);
-    font-weight: 700;
-
-    border: none;
-    padding: 0.8rem 1.25rem;
-
-    border-radius: 0.7rem;
-    cursor: pointer;
-
-    transition: 0.3s;
-    align-self: flex-start;
 }
 
 .code-submission-btn:hover:not(:disabled) {
-    filter: brightness(1.1);
-
+    @apply brightness-110;
     box-shadow:
-        0 0 16px
-        rgba(0, 234, 255, 0.45);
+        0 0 1rem
+        color-mix(in srgb, var(--neon) 45%, transparent);
 }
 
 .code-submission-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
-@media (max-width: 768px) {
-    .code-submission {
-        padding: 1rem;
-    }
-
-    .code-submission-editor-wrapper {
-        height: 280px;
-    }
-
-    .code-submission-editor,
-    .code-submission-highlight {
-        font-size: 0.78rem;
-        padding: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .code-submission {
-        padding: 0.8rem;
-    }
-
-    .code-submission-editor-wrapper {
-        height: 250px;
-    }
-
-    .code-submission-editor,
-    .code-submission-highlight {
-        font-size: 0.72rem;
-        line-height: 1.6;
-        padding: 0.75rem;
-    }
-
-    .code-submission-btn {
-        width: 100%;
-    }
+    @apply cursor-not-allowed opacity-50;
 }

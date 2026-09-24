@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import EmptyState from "../../../../components/ui/EmptyState";
 import useNotification from "../../../../shared/hooks/useNotification";
 import { followUser } from "../../../../services/api/follow.service";
+import { getSubmissionByTaskId } from "../../../../services/api/adminTask.service";
 
 
 export default function Notification() {
@@ -106,12 +107,31 @@ export default function Notification() {
 
     if (context.taskId) {
       if (role === "admin") {
+        if (context.submissionId) {
+          navigate(`/admin/tasks/${context.submissionId}`);
+          return;
+        }
+
+        try {
+          const res = await getSubmissionByTaskId(context.taskId);
+
+          if (res?.submission?._id) {
+            navigate(`/admin/tasks/${res.submission._id}`);
+            return;
+          }
+        } catch {
+          // Fall back to legacy Task notification.
+        }
+
         navigate(`/admin/tasks/${context.taskId}`);
         return;
       }
 
       if (context.courseSlug) {
-        const type = context.internshipId && !context.courseId ? "internship" : "course";
+        const type =
+          context.internshipId && !context.courseId
+            ? "internship"
+            : "course";
 
         navigate(`/student/tasks/${type}/${context.courseSlug}`, {
           state: {
@@ -129,9 +149,7 @@ export default function Notification() {
 
     if (context.submissionId) {
       if (role === "admin") {
-        if (context.taskId) {
-          navigate(`/admin/tasks/${context.taskId}`);
-        }
+        navigate(`/admin/tasks/${context.submissionId}`);
         return;
       }
 

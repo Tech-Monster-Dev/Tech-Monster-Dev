@@ -13,7 +13,7 @@ export const applyModuleLocking = (
             const canStart =
                 moduleIndex === 0 ||
                 approvedModuleIds.has(
-                    data.modules[moduleIndex - 1].id
+                    String(data.modules[moduleIndex - 1].id)
                 );
 
             const sections = (

@@ -10,8 +10,7 @@ const TaskDeadlineCard = ({
     status,
 }) => {
 
-    const expiresAt =
-        getTaskExpiresAt(deadline);
+    const expiresAt = getTaskExpiresAt(deadline);
 
     const countdown =
         formatCountdown(

@@ -1,124 +1,136 @@
+@import "tailwindcss";
+
 .task-header {
-    position: relative;
-    overflow: hidden;
-    padding: 1.5rem 1.75rem;
-    border-radius: 1.25rem;
+    @apply relative
+        mb-[clamp(0.5rem,3vw,1rem)]
+        rounded-[clamp(1rem,2.5vw,1.25rem)]
+        px-[clamp(0.8rem,4vw,1.5rem)]
+        py-[clamp(0.7rem,3vw,1rem)]
+        border
+        backdrop-blur-[0.875rem];
     background: linear-gradient(
         135deg,
-        rgba(0, 234, 255, 0.08),
-        rgba(0, 102, 255, 0.04)
+        color-mix(in srgb, var(--neon) 8%, transparent),
+        color-mix(in srgb, var(--glow) 4%, transparent)
     );
-    border: 1px solid rgba(0, 234, 255, 0.18);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 0 28px rgba(0, 234, 255, 0.08);
-    margin-bottom: 1.5rem;
+    border-color: color-mix(in srgb, var(--neon) 18%, transparent);
+    overflow: hidden;
 }
 
 .task-header-glow {
-    position: absolute;
-    top: -60%;
-    right: -10%;
-    width: 320px;
-    height: 320px;
+    @apply pointer-events-none
+        absolute
+        top-[-60%]
+        right-[-10%]
+        size-[clamp(14rem,35vw,20rem)];
     background: radial-gradient(
         circle,
-        rgba(0, 234, 255, 0.18),
+        var(--neon-fog),
         transparent 70%
     );
-    pointer-events: none;
 }
 
 .task-header-top {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    justify-content: space-between;
-    align-items: flex-start;
-    position: relative;
+    @apply relative
+        flex
+        flex-wrap
+        items-start
+        justify-between
+        gap-[clamp(1rem,3vw,1.5rem)];
 }
 
 .task-header-user,
 .task-header-internship,
 .task-header-module {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
+    @apply flex
+        min-w-0
+        items-center
+        gap-[clamp(0.6rem,2vw,0.85rem)];
 }
 
 .task-header-icon {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 0.75rem;
-    background: rgba(0, 234, 255, 0.1);
-    border: 1px solid rgba(0, 234, 255, 0.22);
+    @apply grid
+        size-[clamp(2.5rem,8vw,2.625rem)]
+        shrink-0
+        place-items-center
+        rounded-[clamp(0.65rem,2vw,0.75rem)]
+        border;
+    background: color-mix(in srgb, var(--neon) 10%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 22%, transparent);
     color: var(--neon);
-    flex-shrink: 0;
 }
 
 .task-header-icon svg {
-    font-size: 1.15rem;
+    @apply text-[clamp(1rem,3vw,1.15rem)];
 }
 
 .task-header small {
+    @apply text-[clamp(0.65rem,1.8vw,0.72rem)]
+        uppercase
+        tracking-[0.08em];
     color: var(--muted);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
 }
 
 .task-header h2 {
+    @apply m-0
+        text-[clamp(1.05rem,3vw,1.25rem)]
+        font-bold;
     color: var(--text);
-    font-size: 1.25rem;
-    margin: 0;
-    font-weight: 700;
 }
 
 .task-header h3 {
+    @apply m-0
+        text-[clamp(0.88rem,2.5vw,1rem)]
+        font-semibold;
     color: var(--text);
-    font-size: 1rem;
-    margin: 0;
-    font-weight: 600;
 }
 
 .task-header-module {
-    margin-top: 1.1rem;
-    position: relative;
+    @apply relative
+        mt-[clamp(0.8rem,2.5vw,1.1rem)];
 }
 
 .task-header-module h4 {
+    @apply m-0
+        text-[clamp(0.82rem,2.2vw,0.92rem)]
+        font-semibold;
     color: var(--neon);
-    font-size: 0.92rem;
-    margin: 0;
-    font-weight: 600;
-    text-shadow: 0 0 12px rgba(0, 234, 255, 0.35);
+    text-shadow:
+        0 0 0.75rem
+        color-mix(in srgb, var(--neon) 35%, transparent);
 }
 
 .task-header-progress {
-    margin-top: 1.4rem;
-    position: relative;
+    @apply relative
+        mt-[clamp(1rem,3vw,1.4rem)];
 }
 
 .task-header-progress-label {
-    display: flex;
-    justify-content: space-between;
+    @apply mb-[clamp(0.35rem,1.5vw,0.5rem)]
+        flex
+        justify-between
+        text-[clamp(0.72rem,2vw,0.82rem)];
     color: var(--muted);
-    font-size: 0.82rem;
-    margin-bottom: 0.5rem;
 }
 
 .task-header-progress-track {
-    height: 10px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(0, 234, 255, 0.12);
-    overflow: hidden;
+    @apply h-[clamp(0.5rem,1.5vw,0.625rem)]
+        overflow-hidden
+        rounded-full
+        border;
+    background: color-mix(in srgb, var(--text) 6%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 12%, transparent);
 }
 
 .task-header-progress-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--glow), var(--neon));
-    box-shadow: 0 0 14px rgba(0, 234, 255, 0.5);
+    @apply h-full
+        rounded-full;
+    background: linear-gradient(
+        90deg,
+        var(--glow),
+        var(--neon)
+    );
+    box-shadow:
+        0 0 0.875rem
+        color-mix(in srgb, var(--neon) 50%, transparent);
 }

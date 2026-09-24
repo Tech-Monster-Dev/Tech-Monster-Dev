@@ -9,6 +9,10 @@ import { toast } from "react-toastify";
 
 import {
     getSubmissionDetails,
+    getSubmissionByTaskId,
+    getTaskDetails,
+    approveTask,
+    rejectTask,
     approveSubmission,
     rejectSubmission,
     extendSubmissionDeadline
@@ -26,6 +30,7 @@ export default function TaskApprovalDetails() {
     const [loading, setLoading] = useState(true);
 
     const [task, setTask] = useState(null);
+    const [isLegacyTask, setIsLegacyTask] = useState(false);
 
     const [comment, setComment] = useState("");
     const [extending, setExtending] = useState(false);
@@ -34,13 +39,40 @@ export default function TaskApprovalDetails() {
 
         try {
 
-            const res = await getSubmissionDetails(id);
+            try {
 
-            setTask(res.submission);
+                const res = await getSubmissionDetails(id);
 
-        } catch (err) {
+                setTask(res.submission);
+                setIsLegacyTask(false);
 
-            console.log(err);
+                return;
+
+            } catch {
+
+                const res = await getSubmissionByTaskId(id);
+
+                setTask(res.submission);
+                setIsLegacyTask(false);
+
+                return;
+
+            }
+
+        } catch {
+
+            try {
+
+                const res = await getTaskDetails(id);
+
+                setTask(res.task);
+                setIsLegacyTask(true);
+
+            } catch (err) {
+
+                console.log(err);
+
+            }
 
         } finally {
 
@@ -62,35 +94,36 @@ export default function TaskApprovalDetails() {
 
         try {
 
-            await approveSubmission(id, comment);
+            if (isLegacyTask) {
+                await approveTask(id, comment);
+            } else {
+                await approveSubmission(id, comment);
+            }
 
             toast.success("Task Approved");
 
             navigate("/admin/tasks", {
                 replace: true
             });
-
-        }
-
-        catch (err) {
-
+        } catch (err) {
+            console.error("APPROVE TASK ERROR:", err);
+            console.error("APPROVE RESPONSE:", err.response?.data);
             toast.error(
-
                 err.response?.data?.message ||
-
                 "Something went wrong"
-
             );
-
         }
-
     };
 
     const handleReject = async () => {
 
         try {
 
-            await rejectSubmission(id, comment);
+            if (isLegacyTask) {
+                await rejectTask(id, comment);
+            } else {
+                await rejectSubmission(id, comment);
+            }
 
             toast.success("Task Rejected");
 
@@ -330,29 +363,31 @@ export default function TaskApprovalDetails() {
 
                     </motion.button>
 
-                    <motion.button
+                    {!isLegacyTask && (
+                        <motion.button
 
-                        whileHover={{
+                            whileHover={{
 
-                            scale: 1.05
+                                scale: 1.05
 
-                        }}
+                            }}
 
-                        whileTap={{
+                            whileTap={{
 
-                            scale: .95
+                                scale: .95
 
-                        }}
+                            }}
 
-                        className="rejectBtn"
+                            className="rejectBtn"
 
-                        onClick={handleReject}
+                            onClick={handleReject}
 
-                    >
+                        >
 
-                        Incorrect
+                            Incorrect
 
-                    </motion.button>
+                        </motion.button>
+                    )}
 
                     <motion.button
 
