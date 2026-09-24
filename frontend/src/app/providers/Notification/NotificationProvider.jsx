@@ -41,30 +41,12 @@ function NotificationProvider({ children }) {
         }
 
         try {
-
             setLoading(true);
-
-            // console.log(
-            //     "📥 Loading notifications for:",
-            //     userId
-            // );
-
             const res = await getNotifications();
-
-            // console.log(
-            //     "📦 FULL NOTIFICATION RESPONSE:",
-            //     res
-            // );
-
             const notificationList =
                 Array.isArray(res?.notifications)
                     ? res.notifications
                     : [];
-
-            // console.log(
-            //     "📦 NOTIFICATION ARRAY:",
-            //     notificationList
-            // );
 
             setNotifications(notificationList);
 
@@ -116,22 +98,10 @@ function NotificationProvider({ children }) {
         }
 
         const handleConnect = () => {
-
-            // console.log(
-            //     "🟢 Notification socket connected:",
-            //     socket.id
-            // );
-
             socket.emit(
                 "join",
                 String(userId)
             );
-
-            // console.log(
-            //     "👤 Notification socket joined:",
-            //     userId
-            // );
-
         };
 
         const handleDisconnect = (reason) => {
@@ -153,12 +123,6 @@ function NotificationProvider({ children }) {
         };
 
         const handleNewNotification = (notification) => {
-
-            console.log(
-                "🔔 LIVE NOTIFICATION RECEIVED:",
-                notification
-            );
-
             setNotifications((prev) => [
 
                 notification,
@@ -213,11 +177,6 @@ function NotificationProvider({ children }) {
         );
 
         if (!socket.connected) {
-
-            // console.log(
-            //     "🔌 Connecting notification socket..."
-            // );
-
             socket.connect();
 
         } else {
@@ -390,31 +349,19 @@ function NotificationProvider({ children }) {
 
         <NotificationContext.Provider
             value={{
-
                 notifications,
-
                 loading,
-
                 unreadCount,
-
                 loadNotifications,
-
                 markAsRead,
-
                 markAllAsRead,
-
                 removeNotification
 
             }}
         >
-
             {children}
-
         </NotificationContext.Provider>
-
     );
-
 }
-
 
 export default NotificationProvider;

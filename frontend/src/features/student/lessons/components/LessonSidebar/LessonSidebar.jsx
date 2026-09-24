@@ -1,4 +1,5 @@
 import "./LessonSidebar.css";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
 
@@ -19,6 +20,58 @@ export default function LessonSidebar({
     contentType,
     approvedModuleIds = new Set()
 }) {
+
+    const [openModuleId, setOpenModuleId] = useState(null);
+    const moduleRefs = useRef({});
+
+    useEffect(() => {
+        if (!filteredLessons?.length) {
+            return;
+        }
+
+        const allModulesCompleted = filteredLessons.every(
+            (module) =>
+                module.sections?.length > 0 &&
+                module.sections.every(
+                    (section) => section.completed
+                )
+        );
+
+        const latestUnlockedModule = [
+            ...filteredLessons,
+        ]
+            .reverse()
+            .find(
+                (module) => module.canStart
+            );
+
+        const targetModule = allModulesCompleted
+            ? filteredLessons[0]
+            : latestUnlockedModule || filteredLessons[0];
+
+        if (!targetModule) {
+            return;
+        }
+
+        setOpenModuleId(String(targetModule.id));
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const moduleElement =
+                    moduleRefs.current[String(targetModule.id)];
+
+                if (!moduleElement) {
+                    return;
+                }
+
+                moduleElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "nearest",
+                });
+            });
+        });
+    }, [filteredLessons]);
 
     return (
         <motion.aside
@@ -51,26 +104,44 @@ export default function LessonSidebar({
             <div className="lesson-lists">
                 {
                     filteredLessons.map((lesson, moduleIndex) => (
-                        <LessonAccordion
-                            lesson={lesson}
+                        <div
                             key={lesson.id}
-                            module={lesson.sections}
-                            moduleId={lesson.id}
-                            activeLesson={activeLesson}
-                            setActiveLesson={setActiveLesson}
-                            courseSlug={courseSlug}
-                            contentType={contentType}
-                            approvedModuleIds={approvedModuleIds}
-                            canStart={lesson.canStart !== false}
-                            moduleNumber={moduleIndex + 1}
-                        />
+                            ref={(element) => {
+                                moduleRefs.current[
+                                    String(lesson.id)
+                                ] = element;
+                            }}
+                        >
+                            <LessonAccordion
+                                lesson={lesson}
+                                module={lesson.sections}
+                                moduleId={lesson.id}
+                                open={
+                                    openModuleId ===
+                                    String(lesson.id)
+                                }
+                                onToggle={(nextOpen) => {
+                                    setOpenModuleId(
+                                        nextOpen
+                                            ? String(lesson.id)
+                                            : null
+                                    );
+                                }}
+                                activeLesson={activeLesson}
+                                setActiveLesson={setActiveLesson}
+                                courseSlug={courseSlug}
+                                contentType={contentType}
+                                approvedModuleIds={approvedModuleIds}
+                                canStart={lesson.canStart !== false}
+                                moduleNumber={moduleIndex + 1}
+                            />
+                        </div>
                     ))
                 }
             </div>
 
             {/* Footer */}
-
-            <div className="lesson-sidebar-footer">
+            <div className="lesson-sidebar-footer" >
                 <h4>Course Progress</h4>
                 <div className="sidebar-progress">
                     <div

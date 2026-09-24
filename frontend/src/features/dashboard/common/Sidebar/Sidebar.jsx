@@ -47,6 +47,7 @@ function Sidebar({
 
     const [loading, setLoading] = useState(false);
     const [showDailyTaskWarning, setShowDailyTaskWarning] = useState(false);
+    const [showLessonsWarning, setShowLessonsWarning] = useState(false);
     const activeLinkRef = useRef(null);
     useEffect(() => {
         activeLinkRef.current?.scrollIntoView({
@@ -107,7 +108,25 @@ function Sidebar({
         if (role === "student" && link.name === "Daily Task") {
             e.preventDefault();
             setShowDailyTaskWarning(true);
+            return;
         }
+
+        if (role === "student" && link.name === "Lessons") {
+            e.preventDefault();
+            setShowLessonsWarning(true);
+        }
+    };
+
+    const handleLessonsContinue = () => {
+        setShowLessonsWarning(false);
+
+        navigate("/student/dashboard", {
+            state: {
+                activeSection: "enrolled",
+            },
+        });
+
+        onCloseMobileSidebar?.();
     };
 
     const handleDailyTaskContinue = async () => {
@@ -278,7 +297,9 @@ function Sidebar({
                             const isActive =
                                 link.name === "Lessons"
                                     ? location.pathname.startsWith("/student/lessons")
-                                    : location.pathname === link.path;
+                                    : link.name === "Daily Task"
+                                        ? location.pathname.startsWith("/student/tasks")
+                                        : location.pathname === link.path;
 
                             return (
                                 <li
@@ -384,6 +405,18 @@ function Sidebar({
                 </div>
 
             </motion.aside>
+
+            <Warning
+                open={showLessonsWarning}
+                title="Continue From Your Latest Lesson"
+                message="Continue to your enrolled lessons and pick up from the lesson you completed most recently."
+                confirmText="Continue"
+                cancelText="Cancel"
+                onConfirm={handleLessonsContinue}
+                onCancel={() => {
+                    setShowLessonsWarning(false);
+                }}
+            />
 
             <Warning
                 open={showDailyTaskWarning}

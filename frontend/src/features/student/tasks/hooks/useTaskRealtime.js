@@ -28,17 +28,6 @@ const useTaskRealtime = ({
         );
 
         const handleConnect = () => {
-
-            console.log(
-                "🟢 TASK SOCKET CONNECTED:",
-                socket.id
-            );
-
-            console.log(
-                "👤 TASK SOCKET JOIN:",
-                userId
-            );
-
             socket.emit(
                 "join",
                 userId
@@ -77,13 +66,7 @@ const useTaskRealtime = ({
         );
 
         if (!socket.connected) {
-
-            console.log(
-                "🔌 TASK SOCKET CONNECTING..."
-            );
-
             socket.connect();
-
         } else {
 
             socket.emit(
@@ -98,16 +81,6 @@ const useTaskRealtime = ({
             moduleCompleted,
             allTasksCompleted,
         }) => {
-
-            console.log(
-                "🚨🚨 TASK APPROVED EVENT RECEIVED 🚨🚨",
-                {
-                    submission,
-                    unlockedSubmission,
-                    socketId: socket.id,
-                    connected: socket.connected,
-                }
-            );
             if (submission) {
                 applySubmissionState(submission);
 

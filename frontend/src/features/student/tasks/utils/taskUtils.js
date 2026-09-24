@@ -141,7 +141,6 @@ export const getTaskExpiresAt = (deadline) => {
 // =========================================
 
 export const buildModules = (contentData) => {
-    console.log("contentData:=", contentData);
 
     if (
         !contentData ||

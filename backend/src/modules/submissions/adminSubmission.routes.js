@@ -9,6 +9,7 @@ import authorizeRoles from "../../core/security/role.middleware.js";
 import {
     getAllSubmissions,
     getSubmissionDetails,
+    getSubmissionByTaskId,
     approveSubmission,
     rejectSubmission,
     extendSubmissionDeadline,
@@ -22,6 +23,13 @@ router.get(
     protect,
     authorizeRoles("admin"),
     getAllSubmissions
+);
+
+router.get(
+    "/by-task/:taskId",
+    protect,
+    authorizeRoles("admin"),
+    getSubmissionByTaskId
 );
 
 router.get(

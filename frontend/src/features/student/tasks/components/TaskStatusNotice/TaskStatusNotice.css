@@ -1,95 +1,114 @@
+@import "tailwindcss";
+
 .task-status-notice {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
+    @apply flex
+        items-start
+        gap-[clamp(0.7rem,2.5vw,1rem)]
+        rounded-[clamp(0.85rem,2.5vw,1rem)]
+        border
+        px-[clamp(0.85rem,3vw,1.3rem)]
+        py-[clamp(0.8rem,2.5vw,1.1rem)];
     background: linear-gradient(
         135deg,
-        rgba(255, 200, 0, 0.08),
-        rgba(255, 170, 0, 0.03)
+        color-mix(in srgb, var(--golden) 8%, transparent),
+        color-mix(in srgb, var(--golden) 3%, transparent)
     );
-    border: 1px solid rgba(255, 200, 0, 0.35);
-    border-radius: 1rem;
-    padding: 1.1rem 1.3rem;
-    box-shadow: 0 0 18px rgba(255, 200, 0, 0.08);
+    border-color: color-mix(in srgb, var(--golden) 35%, transparent);
+    box-shadow: 0 0 1.125rem color-mix(in srgb, var(--golden) 8%, transparent);
     animation: noticeGlow 2s infinite;
 }
 
 @keyframes noticeGlow {
-    0%, 100% { box-shadow: 0 0 10px rgba(255, 200, 0, 0.08); }
-    50% { box-shadow: 0 0 20px rgba(255, 200, 0, 0.22); }
+    0%,
+    100% {
+        box-shadow:
+            0 0 0.625rem
+            color-mix(in srgb, var(--golden) 8%, transparent);
+    }
+
+    50% {
+        box-shadow:
+            0 0 1.25rem
+            color-mix(in srgb, var(--golden) 22%, transparent);
+    }
 }
 
 .task-status-notice-icon {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    border-radius: 0.75rem;
-    background: rgba(255, 200, 0, 0.15);
-    border: 1px solid rgba(255, 200, 0, 0.4);
-    color: #ffd700;
+    @apply grid
+        size-[clamp(2.25rem,8vw,2.5rem)]
+        shrink-0
+        place-items-center
+        rounded-[clamp(0.65rem,2vw,0.75rem)]
+        border;
+    background: color-mix(in srgb, var(--golden) 15%, transparent);
+    border-color: color-mix(in srgb, var(--golden) 40%, transparent);
+    color: var(--golden);
 }
 
 .task-status-notice-body {
-    flex: 1;
+    @apply min-w-0 flex-1;
 }
 
 .task-status-notice-body h4 {
-    color: #ffd700;
-    font-size: 0.92rem;
-    margin: 0 0 0.35rem;
-    font-weight: 600;
+    @apply m-0
+        mb-[clamp(0.25rem,1vw,0.35rem)]
+        text-[clamp(0.78rem,2.4vw,0.92rem)]
+        font-semibold;
+    color: var(--golden);
 }
 
 .task-status-notice-body p {
+    @apply m-0
+        text-[clamp(0.72rem,2.2vw,0.85rem)]
+        leading-[1.55];
     color: var(--muted);
-    font-size: 0.85rem;
-    line-height: 1.55;
-    margin: 0;
 }
 
 .task-support-delay {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.7rem;
+    @apply mt-[clamp(0.55rem,2vw,0.7rem)]
+        flex
+        items-center
+        gap-[clamp(0.35rem,1.5vw,0.5rem)]
+        rounded-[clamp(0.5rem,1.8vw,0.6rem)]
+        border
+        px-[clamp(0.55rem,2vw,0.75rem)]
+        py-[clamp(0.4rem,1.5vw,0.5rem)]
+        text-[clamp(0.7rem,2.2vw,0.84rem)];
     color: var(--text);
-    font-size: 0.84rem;
-    background: rgba(255, 51, 102, 0.08);
-    border: 1px solid rgba(255, 51, 102, 0.25);
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.6rem;
+    background: color-mix(in srgb, var(--danger) 8%, transparent);
+    border-color: color-mix(in srgb, var(--danger) 25%, transparent);
 }
 
 .task-support-delay svg {
-    color: #ff3366;
-    flex-shrink: 0;
+    @apply shrink-0;
+    color: var(--danger);
 }
 
 .task-support-delay a {
+    @apply font-semibold;
     color: var(--neon);
     text-decoration: none;
-    font-weight: 600;
 }
 
 .task-support-delay a:hover {
-    text-decoration: underline;
+    @apply underline;
 }
 
 /* Approved success state styling (used when status flips to approved) */
 .task-status-approved {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.35);
-    border-radius: 1rem;
-    padding: 1.1rem 1.3rem;
-    color: #4ade80;
-    font-weight: 600;
+    @apply flex
+        items-center
+        gap-[clamp(0.6rem,2vw,0.8rem)]
+        rounded-[clamp(0.85rem,2.5vw,1rem)]
+        border
+        px-[clamp(0.85rem,3vw,1.3rem)]
+        py-[clamp(0.8rem,2.5vw,1.1rem)]
+        font-semibold;
+    background: color-mix(in srgb, var(--success) 10%, transparent);
+    border-color: color-mix(in srgb, var(--success) 35%, transparent);
+    color: var(--success);
 }
 
 .task-status-approved svg {
-    font-size: 1.3rem;
+    @apply text-[clamp(1.1rem,3.5vw,1.3rem)];
 }

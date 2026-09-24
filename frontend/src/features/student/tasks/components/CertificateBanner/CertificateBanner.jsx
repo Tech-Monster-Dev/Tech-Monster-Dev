@@ -42,7 +42,7 @@ export default function CertificateBanner({
 
             {locked ? (
                 <div className="certificate-banner-info">
-                    <h4>Internship Certificate</h4>
+                    <h4>{programType.charAt(0).toUpperCase() + programType.slice(1)} Certificate</h4>
                     <p>
                         Complete all tasks to unlock Certificate (
                         {completedCount}/{totalCount} completed)

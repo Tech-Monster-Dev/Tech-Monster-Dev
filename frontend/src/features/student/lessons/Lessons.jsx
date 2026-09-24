@@ -1,6 +1,12 @@
 import "./Lessons.css";
-import { useLayoutEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import {
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
+import { useLocation, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -26,14 +32,38 @@ export default function Lessons() {
     const contentType = routeType === "internship" ? "internship" : "course";
     const courseSlug = normalizeSlug(routeSlug || routeCourseSlug || "");
 
+    const location = useLocation();
+    const navigationApprovedModuleId = location.state?.approvedModuleId || null;
+    const navigationRecentCompletedLessonId =
+        location.state?.recentCompletedLessonId || null;
+
     const [activeLesson, setActiveLesson] = useState(0);
     const [readPercent, setReadPercent] = useState(0);
     const [mobileLessonOpen, setMobileLessonOpen] = useState(false);
 
     const { lessonData, setLessonData, loading, error } = useLessonData(courseSlug, contentType);
-    const { completedLessonIds, completeLesson } = useLessonProgress(courseSlug, contentType);
+    const {
+        completedLessonIds,
+        completeLesson,
+        completedLessonsLoading,
+    } = useLessonProgress(courseSlug, contentType);
 
-    const approvedModuleIds = useApprovedModules(courseSlug, lessonData);
+    const {
+        approvedModuleIds: approvedModuleIdsFromHook,
+        approvedModulesLoading,
+    } = useApprovedModules(
+        courseSlug,
+        lessonData
+    );
+    const approvedModuleIds = useMemo(() => {
+        const next = new Set(approvedModuleIdsFromHook);
+
+        if (navigationApprovedModuleId) {
+            next.add(String(navigationApprovedModuleId).trim());
+        }
+
+        return next;
+    }, [approvedModuleIdsFromHook, navigationApprovedModuleId]);
 
     const { search, setSearch, readingMode, setReadingMode } = useLessonPreferences();
 
@@ -67,9 +97,74 @@ export default function Lessons() {
             approvedModuleIds
         );
     }, [lessonData, completedLessonIds, approvedModuleIds]);
-    
+
     const lessons = finalLessonData?.lessons || [];
     const currentLesson = lessons[activeLesson] || null;
+
+    const initialLessonSelected = useRef(false);
+
+    useEffect(() => {
+        if (
+            initialLessonSelected.current ||
+            completedLessonsLoading ||
+            approvedModulesLoading ||
+            !finalLessonData?.modules?.length
+        ) {
+            return;
+        }
+
+        const allModulesCompleted = finalLessonData.modules.every(
+            (module) =>
+                module.sections?.length > 0 &&
+                module.sections.every(
+                    (section) => section.completed
+                )
+        );
+
+        const latestUnlockedModule = [
+            ...finalLessonData.modules,
+        ].reverse().find(
+            (module) => module.canStart
+        );
+
+        const recentCompletedLessonIndex =
+            navigationRecentCompletedLessonId
+                ? lessons.findIndex(
+                    (lesson) =>
+                        String(lesson.id) ===
+                        String(navigationRecentCompletedLessonId)
+                )
+                : -1;
+
+        const targetModule = allModulesCompleted
+            ? finalLessonData.modules[0]
+            : latestUnlockedModule || finalLessonData.modules[0];
+
+        const targetLessonIndex = allModulesCompleted
+            ? lessons.findIndex(
+                (lesson) =>
+                    lesson.id === targetModule?.sections?.[0]?.id
+            )
+            : recentCompletedLessonIndex !== -1
+                ? recentCompletedLessonIndex
+                : lessons.findIndex(
+                    (lesson) =>
+                        lesson.id === targetModule?.sections?.[0]?.id
+                );
+
+        if (targetLessonIndex !== -1) {
+            setActiveLesson(targetLessonIndex);
+            setReadPercent(0);
+        }
+
+        initialLessonSelected.current = true;
+    }, [
+        finalLessonData,
+        lessons,
+        completedLessonsLoading,
+        approvedModulesLoading,
+        navigationRecentCompletedLessonId,
+    ]);
 
     const filteredLessons = useMemo(() => {
         if (!finalLessonData?.modules) return [];
@@ -191,10 +286,10 @@ export default function Lessons() {
         >
             <div
                 className={`lession-left ${readingMode
-                        ? "hidden!"
-                        : mobileLessonOpen
-                            ? "hidden! lg:block!"
-                            : "block!"
+                    ? "hidden!"
+                    : mobileLessonOpen
+                        ? "hidden! lg:block!"
+                        : "block!"
                     }`}
             >
                 {!readingMode && (
@@ -227,8 +322,8 @@ export default function Lessons() {
 
             <div
                 className={`lesson-right ${mobileLessonOpen || readingMode
-                        ? "flex! w-full!"
-                        : "hidden! lg:flex!"
+                    ? "flex! w-full!"
+                    : "hidden! lg:flex!"
                     }`}
             >
                 <LessonContent

@@ -12,14 +12,9 @@ const getTaskKey = ({
     lessonId,
     taskId,
 }) => {
-    const normalizedModuleId =
-        normalizeId(moduleId);
-
-    const normalizedLessonId =
-        normalizeId(lessonId);
-
-    const normalizedTaskId =
-        normalizeId(taskId);
+    const normalizedModuleId = normalizeId(moduleId);
+    const normalizedLessonId = normalizeId(lessonId);
+    const normalizedTaskId = normalizeId(taskId);
 
     if (
         !normalizedModuleId ||
@@ -99,6 +94,8 @@ export default function useApprovedModules(
         approvedModuleIds,
         setApprovedModuleIds,
     ] = useState(new Set());
+
+    const [approvedModulesLoading, setApprovedModulesLoading] = useState(true);
 
     const calculateApprovedModules =
         useCallback(
@@ -284,6 +281,10 @@ export default function useApprovedModules(
                     } catch {
                         // Ignore cache errors.
                     }
+                } finally {
+                    if (active) {
+                        setApprovedModulesLoading(false);
+                    }
                 }
             };
 
@@ -326,6 +327,7 @@ export default function useApprovedModules(
 
         const handleTaskApproved = async ({
             submission,
+            moduleCompleted,
         } = {}) => {
             if (!submission) {
                 return;
@@ -365,14 +367,30 @@ export default function useApprovedModules(
                         submissions
                     );
 
+                const approvedModuleId = normalizeId(
+                    submission.moduleId
+                );
+
+                const nextApprovedModules =
+                    new Set(fullyApprovedModules);
+
+                if (
+                    moduleCompleted &&
+                    approvedModuleId
+                ) {
+                    nextApprovedModules.add(
+                        approvedModuleId
+                    );
+                }
+
                 setApprovedModuleIds(
-                    fullyApprovedModules
+                    nextApprovedModules
                 );
 
                 localStorage.setItem(
                     `approvedModules_${courseSlug}`,
                     JSON.stringify([
-                        ...fullyApprovedModules,
+                        ...nextApprovedModules,
                     ])
                 );
 
@@ -415,5 +433,8 @@ export default function useApprovedModules(
         calculateApprovedModules,
     ]);
 
-    return approvedModuleIds;
+    return {
+        approvedModuleIds,
+        approvedModulesLoading,
+    };
 }

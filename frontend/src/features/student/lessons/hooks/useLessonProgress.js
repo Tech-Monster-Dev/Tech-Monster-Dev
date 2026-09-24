@@ -10,6 +10,7 @@ const useLessonProgress = (
 ) => {
 
     const [completedLessonIds, setCompletedLessonIds] = useState([]);
+    const [completedLessonsLoading, setCompletedLessonsLoading] = useState(true);
 
     useEffect(() => {
         if (!courseSlug) return;
@@ -55,6 +56,10 @@ const useLessonProgress = (
                 const message = err?.response?.data?.message || err?.message;
                 console.error(message);
                 toast.error("Unable to load completed lessons.");
+            } finally {
+                if (active) {
+                    setCompletedLessonsLoading(false);
+                }
             }
         };
 
@@ -119,7 +124,8 @@ const useLessonProgress = (
     return {
         completedLessonIds,
         setCompletedLessonIds,
-        completeLesson
+        completeLesson,
+        completedLessonsLoading
     };
 };
 

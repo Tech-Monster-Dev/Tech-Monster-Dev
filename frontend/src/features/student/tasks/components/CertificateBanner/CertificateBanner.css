@@ -1,81 +1,101 @@
+@import "tailwindcss";
+
 .certificate-banner {
-    /* position: sticky; */
-    /* bottom: 1rem; */
-    /* z-index: 20; */
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    border-radius: 1.1rem;
-    background: rgba(2, 6, 23, 0.85);
-    border: 1px solid rgba(0, 234, 255, 0.2);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-    margin-top: 1.5rem;
+    @apply flex
+        min-w-0
+        items-center
+        gap-[clamp(0.65rem,2vw,1rem)]
+        rounded-[clamp(0.9rem,2vw,1.1rem)]
+        border
+        p-[clamp(0.75rem,2.5vw,1.25rem)]
+        backdrop-blur-lg
+        max-sm:flex-wrap;
+
+    background: color-mix(in srgb, var(--dark) 85%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 20%, transparent);
+
+    box-shadow: 0 0.5rem 1.875rem
+        color-mix(in srgb, var(--dark) 40%, transparent);
 }
 
 .certificate-banner-icon {
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    border-radius: 0.8rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(0, 234, 255, 0.2);
+    @apply grid
+        size-[clamp(2.5rem,8vw,2.75rem)]
+        shrink-0
+        place-items-center
+        rounded-[clamp(0.65rem,1.5vw,0.8rem)]
+        border;
+    background: var(--surface);
+    border-color: color-mix(in srgb, var(--neon) 20%, transparent);
     color: var(--muted);
 }
 
 .certificate-banner-icon svg {
-    font-size: 1.3rem;
+    @apply text-[clamp(1rem,3vw,1.3rem)];
 }
 
 .certificate-banner-info {
-    flex: 1;
-    min-width: 0;
+    @apply min-w-0 flex-1;
 }
 
 .certificate-banner-info h4 {
+    @apply m-0
+        mb-[clamp(0.15rem,0.5vw,0.2rem)]
+        text-[clamp(0.82rem,2vw,0.95rem)]
+        font-semibold;
     color: var(--text);
-    font-size: 0.95rem;
-    margin: 0 0 0.2rem;
-    font-weight: 600;
 }
 
 .certificate-banner-info p {
+    @apply m-0
+        text-[clamp(0.7rem,1.8vw,0.8rem)]
+        leading-relaxed;
     color: var(--muted);
-    font-size: 0.8rem;
-    margin: 0;
 }
 
 .certificate-banner-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-weight: 700;
-    font-size: 0.82rem;
-    border: none;
-    padding: 0.7rem 1.1rem;
-    border-radius: 0.7rem;
-    cursor: pointer;
-    transition: 0.3s;
-    white-space: nowrap;
+    @apply inline-flex
+        shrink-0
+        items-center
+        justify-center
+        gap-[clamp(0.35rem,1vw,0.45rem)]
+        rounded-[clamp(0.55rem,1.5vw,0.7rem)]
+        border-none
+        px-[clamp(0.7rem,2vw,1.1rem)]
+        py-[clamp(0.55rem,1.5vw,0.7rem)]
+        text-[clamp(0.72rem,1.8vw,0.82rem)]
+        font-bold
+        cursor-pointer
+        whitespace-nowrap
+        transition-all
+        duration-300
+        ease-in-out
+        max-sm:order-3
+        max-sm:w-full;
 }
 
 .certificate-banner-btn.locked {
-    background: rgba(255, 255, 255, 0.06);
+    background: color-mix(in srgb, var(--text) 6%, transparent);
     color: var(--muted);
     cursor: not-allowed;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
 }
 
 .certificate-banner-btn.unlocked {
-    background: linear-gradient(90deg, var(--glow), var(--neon));
+    background: linear-gradient(
+        90deg,
+        var(--glow),
+        var(--neon)
+    );
     color: var(--dark);
-    box-shadow: 0 0 18px rgba(0, 234, 255, 0.45);
+    box-shadow:
+        0 0 1.125rem
+        color-mix(in srgb, var(--neon) 45%, transparent);
 }
 
 .certificate-banner-btn.unlocked:hover {
-    filter: brightness(1.12);
-    box-shadow: 0 0 26px rgba(0, 234, 255, 0.7);
+    @apply brightness-[1.12];
+    box-shadow:
+        0 0 1.625rem
+        color-mix(in srgb, var(--neon) 70%, transparent);
 }

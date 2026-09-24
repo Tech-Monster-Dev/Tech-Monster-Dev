@@ -130,6 +130,18 @@ export const getSubmissionDetails = async (id) => {
 
 };
 
+export const getSubmissionByTaskId = async (taskId) => {
+
+    const { data } = await api.get(
+
+        API.ADMIN.SUBMISSIONS.BY_TASK(taskId)
+
+    );
+
+    return data;
+
+};
+
 export const approveSubmission = async (id, comment) => {
 
     const { data } = await api.put(
