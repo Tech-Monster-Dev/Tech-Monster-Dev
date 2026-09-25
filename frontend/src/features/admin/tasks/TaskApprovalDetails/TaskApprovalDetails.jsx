@@ -24,84 +24,53 @@ import "./TaskApprovalDetails.css";
 
 export default function TaskApprovalDetails() {
     const navigate = useNavigate();
-
     const { id } = useParams();
-
     const [loading, setLoading] = useState(true);
-
     const [task, setTask] = useState(null);
     const [isLegacyTask, setIsLegacyTask] = useState(false);
-
     const [comment, setComment] = useState("");
     const [extending, setExtending] = useState(false);
 
     const loadTask = useCallback(async () => {
-
         try {
-
             try {
-
                 const res = await getSubmissionDetails(id);
-
                 setTask(res.submission);
                 setIsLegacyTask(false);
-
                 return;
-
             } catch {
-
                 const res = await getSubmissionByTaskId(id);
-
                 setTask(res.submission);
                 setIsLegacyTask(false);
-
                 return;
-
             }
-
         } catch {
-
             try {
-
                 const res = await getTaskDetails(id);
-
                 setTask(res.task);
                 setIsLegacyTask(true);
-
             } catch (err) {
-
                 console.log(err);
-
             }
-
         } finally {
-
             setLoading(false);
-
         }
-
     }, [id]);
 
     useEffect(() => {
-
         queueMicrotask(() => {
             loadTask();
         });
-
     }, [loadTask]);
 
     const handleApprove = async () => {
-
         try {
-
             if (isLegacyTask) {
                 await approveTask(id, comment);
             } else {
                 await approveSubmission(id, comment);
             }
-
             toast.success("Task Approved");
-
             navigate("/admin/tasks", {
                 replace: true
             });
@@ -116,101 +85,58 @@ export default function TaskApprovalDetails() {
     };
 
     const handleReject = async () => {
-
         try {
-
             if (isLegacyTask) {
                 await rejectTask(id, comment);
             } else {
                 await rejectSubmission(id, comment);
             }
-
             toast.success("Task Rejected");
-
             navigate("/admin/tasks");
-
         }
-
         catch (err) {
-
             toast.error(
-
                 err.response?.data?.message ||
-
                 "Something went wrong"
-
             );
-
         }
-
     };
 
     const handleExtendDeadline = async () => {
-
         try {
-
             setExtending(true);
-
             const res = await extendSubmissionDeadline(id, 24);
-
             setTask(res.submission);
-
             toast.success("Deadline extended by 24 hours");
-
         } catch (err) {
-
             toast.error(
-
                 err.response?.data?.message ||
-
                 "Could not extend deadline"
-
             );
-
         } finally {
-
             setExtending(false);
-
         }
-
     };
 
     if (loading) {
-
         return <h2>Loading...</h2>;
-
     }
 
     return (
-
         <motion.div
-
             className="taskApprovalDetails"
-
             initial={{ opacity: 0, y: 40 }}
-
             animate={{ opacity: 1, y: 0 }}
-
             transition={{ duration: .5 }}
-
         >
-
             <motion.div
-
                 className="taskDetailsCard"
-
                 initial={{ opacity: 0, scale: .95 }}
-
                 animate={{ opacity: 1, scale: 1 }}
-
                 transition={{ delay: .2 }}
-
             >
-
                 <h1>
-
                     Student Task Details
-
                 </h1>
 
                 <div className="detailRow">
@@ -324,103 +250,57 @@ export default function TaskApprovalDetails() {
 
                 <textarea
                     className="taskapprovalDetails-textarea"
-
                     placeholder="Admin Comment..."
-
                     value={comment}
-
                     onChange={(e) =>
-
                         setComment(e.target.value)
-
                     }
-
                 />
 
                 <div className="approvalButtons">
-
                     <motion.button
-
                         whileHover={{
-
                             scale: 1.05
-
                         }}
-
                         whileTap={{
-
                             scale: .95
-
                         }}
-
                         className="approveBtn"
-
                         onClick={handleApprove}
-
                     >
-
                         Approve
-
                     </motion.button>
 
                     {!isLegacyTask && (
                         <motion.button
-
                             whileHover={{
-
                                 scale: 1.05
-
                             }}
-
                             whileTap={{
-
                                 scale: .95
-
                             }}
-
                             className="rejectBtn"
-
                             onClick={handleReject}
-
                         >
-
                             Incorrect
-
                         </motion.button>
                     )}
 
                     <motion.button
-
                         whileHover={{
-
                             scale: 1.05
-
                         }}
-
                         whileTap={{
-
                             scale: .95
-
                         }}
-
                         className="extendBtn"
-
                         onClick={handleExtendDeadline}
-
                         disabled={extending}
-
                     >
-
                         {extending ? "Extending..." : "Extend Deadline"}
-
                     </motion.button>
-
                 </div>
-
             </motion.div>
-
         </motion.div>
-
     );
-
 }

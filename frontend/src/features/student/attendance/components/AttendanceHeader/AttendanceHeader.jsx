@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
 import './AttendanceHeader.css';
+import { motion } from 'framer-motion';
 import defaultProfileImg from '../../../../../assets/profile/default-profile.svg';
 
 export default function AttendanceHeader({
@@ -24,13 +24,8 @@ export default function AttendanceHeader({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="attendance-title">
-        Attendance
-      </h2>
-
       <div className="user-info-container">
         <div className="user-profile-left">
-
           <img
             src={profileImage}
             alt="Profile"
@@ -41,16 +36,13 @@ export default function AttendanceHeader({
             <h3>
               {username}
             </h3>
-
             <p>
               {user?.email || 'No email available'}
             </p>
           </div>
-
         </div>
 
         <div className="attendance-stats-right">
-
           <div className="stat-box present">
             <span className="label">
               Present Days

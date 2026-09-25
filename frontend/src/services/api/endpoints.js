@@ -1,54 +1,34 @@
 export const API = {
-
   PUBLIC: {
     HERO_STATS: "/public/hero-stats"
   },
 
-
   AUTH: {
-
     LOGIN: "/auth/login",
-
     SIGNUP: "/auth/signup",
-
     LOGOUT: "/auth/logout",
-
     FORGOT_PASSWORD: "/auth/forgot-password",
-
     RESET_PASSWORD: "/auth/reset-password",
-
     VERIFY_OTP: "/auth/verify-otp",
-
     RESEND_OTP: "/auth/resend-otp",
-
     COMPLETE_PROFILE: "/auth/profile",
-
     ADMIN_LOGIN: "/auth/admin/login",
-
   },
-
 
   USER: {
     DELETE_ACCOUNT: "/users/delete-account"
   },
 
   STUDENT: {
-
     PROFILE: "/student/profile",
-
     TASKS: "/student/tasks",
-
     ATTENDANCE: "/student/attendance",
-
   },
 
   NOTICE: {
     BASE: "/notices",
     BY_ID: (id) => "/notices/" + id
   },
-
-
-
 
   FEEDBACK: {
     WEBSITE: "/feedback/website",
@@ -57,27 +37,16 @@ export const API = {
     SUBMIT: "/feedback"
   },
 
-
   ADMIN: {
-
     USERS: "/admin/users",
-
     INTERNSHIPS: "/admin/internships",
-
     TASKS: {
-
       PENDING: "/admin/tasks/pending",
-
       APPROVED: "/admin/tasks/approved",
-
       DETAILS: (id) => `/admin/tasks/${id}`,
-
       APPROVE: (id) => `/admin/tasks/${id}/approve`,
-
       REJECT: (id) => `/admin/tasks/${id}/reject`
-
     },
-
     SUBMISSIONS: {
       BASE: "/admin/submissions",
       DETAILS: (id) => `/admin/submissions/${id}`,
@@ -85,21 +54,13 @@ export const API = {
       REJECT: (id) => `/admin/submissions/${id}/reject`,
       EXTEND: (id) => `/admin/submissions/${id}/extend`,
       BY_TASK: (taskId) => `/admin/submissions/by-task/${taskId}`
-
     },
-
     CERTIFICATE_PAYMENTS: {
-
       PENDING: "/certificate-payments/admin/pending",
-
       DETAILS: (id) => `/certificate-payments/admin/${id}`,
-
       APPROVE: (id) => `/certificate-payments/admin/${id}/approve`,
-
       REJECT: (id) => `/certificate-payments/admin/${id}/reject`
-
     }
-
   },
 
   PROFILE: {
@@ -114,9 +75,7 @@ export const API = {
   },
 
   SERVER: {
-
     STATUS: "/server/status"
-
   },
 
   INTERNSHIPS: {
@@ -152,10 +111,10 @@ export const API = {
     COURSE: (courseSlug) => `/submissions/course/${courseSlug}`,
   },
 
-    CERTIFICATES: {
-      MY: "/certificates/my",
-      DOWNLOAD: (id) => `/certificates/download/${id}`,
-    },
+  CERTIFICATES: {
+    MY: "/certificates/my",
+    DOWNLOAD: (id) => `/certificates/download/${id}`,
+  },
 
   CERTIFICATE_PAYMENTS: {
     CREATE: "/certificate-payments/create",
@@ -166,28 +125,17 @@ export const API = {
   },
 
   MESSAGE: {
-
     BASE: "/messages",
-
     USERS: "/messages/users",
-
     SEARCH: "/messages/search"
-
   },
 
   SUPPORT: {
-
     CONVERSATION: "/support/conversation",
     CONVERSATION_BY_ID: (conversationId) => `/support/conversation/${conversationId}`,
-
     INBOX: "/support/inbox",
-
-    MESSAGES: (conversationId) =>
-      `/support/conversation/${conversationId}/messages`,
-
-    UPDATE_CONVERSATION: (conversationId) =>
-      `/support/conversation/${conversationId}`
-
+    MESSAGES: (conversationId) => `/support/conversation/${conversationId}/messages`,
+    UPDATE_CONVERSATION: (conversationId) => `/support/conversation/${conversationId}`
   },
 
   FOLLOW: {

@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+.day-cell {
+    @apply relative
+        flex
+        min-h-[clamp(3.5rem,10vw,6.5625rem)]
+        w-full
+        min-w-0
+        flex-col
+        items-center
+        justify-center
+        gap-[clamp(0.15rem,0.6vw,0.25rem)]
+        rounded-[clamp(0.4rem,1.2vw,0.625rem)]
+        border
+        px-[clamp(0.15rem,0.5vw,0.35rem)]
+        py-[clamp(0.25rem,0.8vw,0.5rem)]
+        text-[clamp(0.6rem,1.5vw,0.875rem)]
+        font-semibold
+        cursor-pointer
+        transition-all
+        duration-200
+        ease-in-out
+        overflow-hidden;
+    aspect-ratio: 1;
+    background: color-mix(in srgb, var(--text) 2.5%, transparent);
+    border-color: color-mix(in srgb, var(--text) 6%, transparent);
+    color: var(--text);
+}
+
+.day-cell:hover {
+    @apply -translate-y-0.5;
+    border-color: var(--neon);
+}
+
+.day-cell.empty {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+.day-cell.before-account {
+    background: color-mix(in srgb, var(--gray) 10%, transparent);
+    border-color: color-mix(in srgb, var(--gray) 12%, transparent);
+    color: color-mix(in srgb, var(--gray) 45%, transparent);
+    cursor: default;
+}
+
+.day-cell.present {
+    background: color-mix(in srgb, var(--success) 14%, transparent);
+    border-color: color-mix(in srgb, var(--success) 65%, transparent);
+    color: var(--success);
+    box-shadow:
+        0 0 1.125rem
+        color-mix(in srgb, var(--success) 8%, transparent);
+}
+
+.day-cell.absent {
+    background: color-mix(in srgb, var(--danger) 14%, transparent);
+    border-color: color-mix(in srgb, var(--danger) 65%, transparent);
+    color: var(--danger);
+}
+
+.day-cell.enrollment-day {
+    background: color-mix(in srgb, var(--golden) 14%, transparent);
+    border-color: color-mix(in srgb, var(--golden) 70%, transparent);
+    color: var(--golden);
+    box-shadow:
+        0 0 1.125rem
+        color-mix(in srgb, var(--golden) 8%, transparent);
+}
+
+.day-cell.account-created-day {
+    background: color-mix(in srgb, var(--secondary) 15%, transparent);
+    border-color: color-mix(in srgb, var(--secondary) 75%, transparent);
+    color: var(--secondary);
+    box-shadow:
+        0 0 1.125rem
+        color-mix(in srgb, var(--secondary) 8%, transparent);
+}
+
+.day-cell.current-day {
+    outline: 1px solid color-mix(in srgb, var(--neon) 75%, transparent);
+    outline-offset: 0.125rem;
+}
+
+.calendar-day-number {
+    @apply text-[clamp(0.65rem,2.5vw,1.0625rem)]
+        font-bold
+        leading-none;
+}
+
+.day-status-label {
+    @apply max-w-full
+        text-center
+        text-[clamp(0.38rem,1.2vw,0.625rem)]
+        font-bold
+        leading-[1.1]
+        whitespace-normal
+        wrap-break-word;
+}
+
+.active-time {
+    @apply mt-0.5
+        max-w-full
+        text-center
+        text-[clamp(0.35rem,1.1vw,0.5625rem)]
+        font-bold
+        leading-none
+        break-all;
+    color: var(--neon);
+}
+
+.enrollment-time {
+    @apply max-w-full
+        text-center
+        text-[clamp(0.35rem,1vw,0.5rem)]
+        font-semibold
+        leading-none
+        whitespace-normal
+        wrap-break-word;
+}
+
+.day-cell.before-account .active-time,
+.day-cell.before-account .enrollment-time {
+    @apply hidden;
+}
