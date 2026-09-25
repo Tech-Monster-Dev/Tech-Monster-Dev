@@ -1,16 +1,48 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import Textinput from "../../../../../components/ui/Form/component/Textinput";
-import Select from "../../../../../components/ui/Form/component/Select";
-import TextArea from "../../../../../components/ui/Form/component/TextArea";
-import Button from "../../../../../components/ui/Button";
-import FeedbackRating from "../FeedbackRating";
+
+import Form from "../../../../../components/ui/Form";
+import DashButton from "../../../../../components/ui/Button/DashButton";
+import Rating from "../../../../../components/ui/Form/component/Rating";
 import { submitFeedback } from "../../../../../services/api/feedback.service";
-import { INITIAL_FEEDBACK_FORM, buildFeedbackPayload, getResourceOptions } from "../../utils/feedback";
-import { validateFeedbackForm } from "../../utils/feedback.validation";
+import {
+    INITIAL_FEEDBACK_FORM,
+    buildFeedbackPayload,
+    getResourceOptions,
+} from "../../utils/feedback";
+import {
+    validateField,
+    validateForm,
+} from "../../../../../shared/utils/validation/formValidation";
+
 import "./FeedbackForm.css";
 
-
+const feedbackValidationRules = {
+    subject: {
+        required: true,
+        requiredMessage: "Subject field is required",
+        minLength: 3,
+        minLengthMessage: "Subject must be at least 3 characters",
+    },
+    message: {
+        required: true,
+        requiredMessage: "Message is required",
+        minLength: 10,
+        minLengthMessage: "Feedback must be at least 10 characters",
+    },
+    rating: {
+        required: true,
+        requiredMessage: "Please select a rating",
+    },
+    courseId: {
+        required: true,
+        requiredMessage: "Please select a course",
+    },
+    internshipId: {
+        required: true,
+        requiredMessage: "Please select an internship",
+    },
+};
 
 export default function FeedbackForm({
     type,
@@ -25,6 +57,20 @@ export default function FeedbackForm({
 
     const resourceOptions = getResourceOptions(resources);
 
+    const validationRules = {
+        subject: feedbackValidationRules.subject,
+        message: feedbackValidationRules.message,
+        ...(type !== "bug" && {
+            rating: feedbackValidationRules.rating,
+        }),
+        ...(type === "course" && {
+            courseId: feedbackValidationRules.courseId,
+        }),
+        ...(type === "internship" && {
+            internshipId: feedbackValidationRules.internshipId,
+        }),
+    };
+
     const handleChange = (event) => {
         const { name, value } = event.target;
 
@@ -35,29 +81,28 @@ export default function FeedbackForm({
 
         setErrors((current) => ({
             ...current,
-            [name]: "",
-        }));
-    };
-
-    const handleRatingChange = (rating) => {
-        setForm((current) => ({
-            ...current,
-            rating,
-        }));
-
-        setErrors((current) => ({
-            ...current,
-            rating: "",
+            [name]: validateField(
+                name,
+                value,
+                validationRules
+            ),
         }));
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const validationErrors = validateFeedbackForm(type, form);
+        const {
+            errors: validationErrors,
+            isValid,
+        } = validateForm(
+            form,
+            validationRules
+        );
 
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
+        setErrors(validationErrors);
+
+        if (!isValid) {
             return;
         }
 
@@ -65,102 +110,154 @@ export default function FeedbackForm({
             setSubmitting(true);
 
             const payload = buildFeedbackPayload(type, form);
-
             const response = await submitFeedback(payload);
 
             if (response?.success === false) {
-                throw new Error(response.message || "Unable to submit feedback");
+                throw new Error(
+                    response.message ||
+                    "Unable to submit feedback"
+                );
             }
 
-            toast.success("Feedback submitted successfully.");
+            toast.success(
+                "Feedback submitted successfully."
+            );
+
             setForm(INITIAL_FEEDBACK_FORM);
             setErrors({});
             onSubmitted?.();
         } catch (error) {
-            console.error("Feedback submission error:", error);
+            console.error(
+                "Feedback submission error:",
+                error
+            );
+
             toast.error(
                 error.response?.data?.message ||
-                    error.message ||
-                    "Unable to submit feedback."
+                error.message ||
+                "Unable to submit feedback."
             );
         } finally {
             setSubmitting(false);
         }
     };
 
+    const fields = [
+        ...(type === "course"
+            ? [
+                {
+                    name: "courseId",
+                    type: "select",
+                    label: "Course",
+                    value: form.courseId,
+                    placeholder: "Select a course",
+                    options: resourceOptions,
+                    required: true,
+                    disabled: submitting,
+                },
+            ]
+            : []),
+
+        ...(type === "internship"
+            ? [
+                {
+                    name: "internshipId",
+                    type: "select",
+                    label: "Internship",
+                    value: form.internshipId,
+                    placeholder: "Select an internship",
+                    options: resourceOptions,
+                    required: true,
+                    disabled: submitting,
+                },
+            ]
+            : []),
+
+        {
+            name: "subject",
+            type: "text",
+            label: "Subject",
+            value: form.subject,
+            placeholder: "Enter a short subject",
+            required: true,
+            maxLength: 150,
+            disabled: submitting,
+        },
+
+        {
+            name: "message",
+            type: "textarea",
+            label: "Feedback",
+            value: form.message,
+            placeholder:
+                "Share your experience, suggestion, or issue...",
+            rows: 6,
+            maxLength: 3000,
+            required: true,
+            disabled: submitting,
+        },
+
+        ...(type !== "bug"
+            ? [
+                {
+                    name: "rating",
+                    value: form.rating,
+                    required: true,
+                    render: ({
+                        value,
+                        error,
+                        onChange,
+                    }) => (
+                        <Rating
+                            rating={value}
+                            max={5}
+                            interactive
+                            onChange={(rating) =>
+                                onChange({
+                                    target: {
+                                        name: "rating",
+                                        value: rating,
+                                    },
+                                })
+                            }
+                            error={error}
+                            label="Rating"
+                        />
+                    ),
+                },
+            ]
+            : []),
+    ];
+
+    const actions = [
+        {
+            component: DashButton,
+            type: "submit",
+            label: submitting
+                ? "Submitting..."
+                : "Submit Feedback",
+            disabled: submitting,
+        },
+    ];
+
     return (
-        <form className="feedback-form" onSubmit={handleSubmit}>
+        <Form
+            fields={fields}
+            values={form}
+            errors={errors}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            actions={actions}
+            formClassName="feedback-form"
+            noValidate
+        >
             <div className="feedback-form-heading">
                 <h2>{title}</h2>
 
-                {description && <p>{description}</p>}
+                {description && (
+                    <p>{description}</p>
+                )}
             </div>
-
-            {type === "course" && (
-                <Select
-                    label="Course"
-                    name="courseId"
-                    value={form.courseId}
-                    onChange={handleChange}
-                    options={resourceOptions}
-                    placeholder="Select a course"
-                    error={errors.courseId}
-                    required
-                    disabled={submitting}
-                />
-            )}
-
-            {type === "internship" && (
-                <Select
-                    label="Internship"
-                    name="internshipId"
-                    value={form.internshipId}
-                    onChange={handleChange}
-                    options={resourceOptions}
-                    placeholder="Select an internship"
-                    error={errors.internshipId}
-                    required
-                    disabled={submitting}
-                />
-            )}
-
-            <Textinput
-                label="Subject"
-                name="subject"
-                value={form.subject}
-                placeholder="Enter a short subject"
-                onChange={handleChange}
-                error={errors.subject}
-                required
-                maxLength={150}
-                disabled={submitting}
-            />
-
-            <TextArea
-                label="Feedback"
-                name="message"
-                value={form.message}
-                placeholder="Share your experience, suggestion, or issue..."
-                onChange={handleChange}
-                error={errors.message}
-                rows={6}
-                maxLength={3000}
-                disabled={submitting}
-            />
-
-            {type !== "bug" && (
-                <FeedbackRating
-                    value={form.rating}
-                    onChange={handleRatingChange}
-                    error={errors.rating}
-                />
-            )}
-
-            <div className="feedback-form-actions">
-                <Button type="submit" disabled={submitting}>
-                    {submitting ? "Submitting..." : "Submit Feedback"}
-                </Button>
-            </div>
-        </form>
+        </Form>
     );
 }

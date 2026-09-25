@@ -5,17 +5,16 @@
         items-center
         gap-1
         mb-4.5
-        justify-center
-        sm:justify-start;
+        justify-start;
 }
 
 .rating svg {
-    @apply text-[1.125rem]
+    @apply text-[clamp(1.35rem,4vw,1.75rem)]
         text-(--golden);
 }
 
 .star {
-    @apply text-[1.125rem]
+    @apply text-[clamp(1.35rem,4vw,1.75rem)]
         transition-transform
         duration-300
         ease-in-out;
@@ -31,4 +30,44 @@
 
 .empty {
     @apply text-(--gray);
+}
+
+.rating-wrapper {
+    @apply flex
+        flex-col
+        gap-[clamp(0.4rem,1.5vw,0.5rem)];
+}
+
+.rating-wrapper .rating {
+    @apply mb-0;
+}
+
+.rating-label {
+    @apply font-semibold;
+    color: var(--text);
+}
+
+.rating-star-button {
+    @apply inline-flex
+        cursor-pointer
+        items-center
+        justify-center
+        border-0
+        bg-transparent
+        p-0;
+}
+
+.rating-star-button:disabled {
+    @apply cursor-not-allowed;
+}
+
+.rating-star-button:focus-visible {
+    @apply rounded-sm
+        outline-2
+        outline-offset-[3px];
+    outline-color: currentColor;
+}
+
+.rating-error {
+    color: var(--danger);
 }
