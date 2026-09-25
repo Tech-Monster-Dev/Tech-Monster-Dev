@@ -11,6 +11,7 @@ import useAttendanceData from "./hooks/useAttendanceData";
 import AttendanceHeader from "./components/AttendanceHeader";
 import CalendarGrid from "./components/CalendarGrid";
 import AttendanceLoading from "./components/AttendanceLoading";
+
 import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 import {
@@ -29,7 +30,6 @@ export default function AttendancePage() {
   } = useAttendanceData();
 
   useSkeletonScrollLock(loading);
-
   const [monthlyCounts, setMonthlyCounts] =
     useState({
       presentCount: 0,
@@ -53,11 +53,8 @@ export default function AttendancePage() {
     };
 
     const handleLiveActiveTime = event => {
-      const milliseconds =
-        Number(event.detail?.milliseconds) || 0;
-
+      const milliseconds = Number(event.detail?.milliseconds) || 0;
       const key = getTodayKey();
-
       setActiveTimeData(prev => ({
         ...prev,
         [key]: milliseconds
@@ -71,10 +68,8 @@ export default function AttendancePage() {
 
     const timer = window.setInterval(() => {
       const key = getTodayKey();
-
       setActiveTimeData(prev => {
-        const currentMilliseconds =
-          Number(prev?.[key]) || 0;
+        const currentMilliseconds = Number(prev?.[key]) || 0;
 
         if (currentMilliseconds <= 0) {
           return prev;
@@ -93,7 +88,6 @@ export default function AttendancePage() {
         ACTIVE_TIME_EVENT,
         handleLiveActiveTime
       );
-
       window.clearInterval(timer);
     };
   }, [setActiveTimeData]);
@@ -106,12 +100,8 @@ export default function AttendancePage() {
     <div className="attendance-page">
       <AttendanceHeader
         user={dashboard?.user}
-        presentCount={
-          monthlyCounts.presentCount
-        }
-        absentCount={
-          monthlyCounts.absentCount
-        }
+        presentCount={monthlyCounts.presentCount}
+        absentCount={monthlyCounts.absentCount}
       />
 
       <CalendarGrid
@@ -119,9 +109,7 @@ export default function AttendancePage() {
         activeTimeData={activeTimeData}
         accountCreatedAt={accountCreatedAt}
         enrollments={enrollments}
-        onMonthlyCountsChange={
-          handleMonthlyCountsChange
-        }
+        onMonthlyCountsChange={handleMonthlyCountsChange}
       />
     </div>
   );
