@@ -1,13 +1,17 @@
+import "./Certificate.css";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FiAward, FiDownload, FiCreditCard } from "react-icons/fi";
 import { motion } from "framer-motion";
 
-import "./Certificate.css";
+import SectionTabs from "../../../layouts/SectionTabs";
+import EmptyState from "../../../components/ui/EmptyState";
+import Spinner from "../../../features/dashboard/common/LoaderPage/Spinner";
 
 import CertificateView from "./components/CertificateView";
 import Congratulations from "./components/Congratulations";
+
 import { getMyCertificates, downloadCertificate } from "../../../services/api/certificate.service";
 import useAttendanceData from "../attendance/hooks/useAttendanceData";
 
@@ -118,9 +122,10 @@ export default function Certificate() {
     if (loading) {
         return (
             <div className="certificate-page-wrapper">
-                <div className="certificate-loading">
-                    Loading your certificates...
-                </div>
+                <Spinner
+                    message="Loading your certificates..."
+                    size={60}
+                />
             </div>
         );
     }
@@ -128,25 +133,23 @@ export default function Certificate() {
     return (
         <div className="certificate-page-wrapper">
 
-            <div className="certificate-tabs">
-                <button
-                    type="button"
-                    className={activeTab === "all" ? "active" : ""}
-                    onClick={() => setActiveTab("all")}
-                >
-                    <FiAward />
-                    All Certificates
-                </button>
-
-                <button
-                    type="button"
-                    className={activeTab === "payment" ? "active" : ""}
-                    onClick={() => setActiveTab("payment")}
-                >
-                    <FiCreditCard />
-                    Payment All Certificates
-                </button>
-            </div>
+            <SectionTabs
+                tabs={[
+                    {
+                        label: "All Certificates",
+                        value: "all",
+                        icon: <FiAward />,
+                    },
+                    {
+                        label: "Payment All Certificates",
+                        value: "payment",
+                        icon: <FiCreditCard />,
+                    },
+                ]}
+                activeTab={activeTab}
+                onChange={setActiveTab}
+                className="certificate-section-tabs"
+            />
 
             {activeTab === "all" && (
                 <motion.section
@@ -154,22 +157,11 @@ export default function Certificate() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <div className="certificate-section-heading">
-                        <h2>All Certificates</h2>
-                        <p>
-                            Your completed courses and internships.
-                        </p>
-                    </div>
-
                     {certificates.length === 0 ? (
-                        <div className="certificate-empty-state">
-                            <FiAward />
-                            <h3>No completed programs yet</h3>
-                            <p>
-                                Complete a course or internship to see
-                                your certificate here.
-                            </p>
-                        </div>
+                        <EmptyState
+                            heading="No completed programs yet"
+                            paragraph="Complete a course or internship to see your certificate here."
+                        />
                     ) : (
                         <div className="certificate-list">
                             {certificates.map((certificate) => (
@@ -232,37 +224,23 @@ export default function Certificate() {
             {activeTab === "payment" && (
                 <section className="certificate-payment-detail">
                     {!selectedCertificate ? (
-                        <div className="certificate-empty-state">
-                            <FiCreditCard />
-                            <h3>Select a certificate</h3>
-                            <p>
-                                Choose a completed program from All
-                                Certificates to continue.
-                            </p>
-                        </div>
+                        <EmptyState
+                            heading="Select a certificate"
+                            paragraph="Choose a completed program from All Certificates to continue."
+                        />
                     ) : (
                         <>
                             <Congratulations
-                                courseType={
-                                    selectedCertificate.programTitle
-                                }
+                                courseType={selectedCertificate.programTitle}
                                 userName={userName}
                             />
 
                             <CertificateView
-                                courseType={
-                                    selectedCertificate.programTitle
-                                }
+                                courseType={selectedCertificate.programTitle}
                                 userName={userName}
-                                programId={
-                                    selectedCertificate.programId
-                                }
-                                programType={
-                                    selectedCertificate.programType
-                                }
-                                onDownload={(event) =>
-                                    handleDownload(event, selectedCertificate)
-                                }
+                                programId={selectedCertificate.programId}
+                                programType={selectedCertificate.programType}
+                                onDownload={(event) => handleDownload(event, selectedCertificate)}
                             />
                         </>
                     )}
