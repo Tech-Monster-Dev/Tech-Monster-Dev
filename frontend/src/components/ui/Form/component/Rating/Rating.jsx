@@ -62,6 +62,7 @@ function Rating({
                             type="button"
                             className="rating-star-button"
                             onClick={() => handleChange(number)}
+                            onPointerDown={() => handleChange(number)}
                             onMouseEnter={() => setHovered(number)}
                             onMouseLeave={() => setHovered(0)}
                             disabled={disabled}
