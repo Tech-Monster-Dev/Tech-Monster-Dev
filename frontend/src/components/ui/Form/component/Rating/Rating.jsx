@@ -1,45 +1,83 @@
+import { useState } from "react";
 import "./Rating.css";
 
 import {
-  FaStar,
-  FaRegStar,
-  FaStarHalfAlt
+    FaStar,
+    FaRegStar,
+    FaStarHalfAlt,
 } from "react-icons/fa";
 
-function Rating({ rating = 0, max = 5 }) {
+function Rating({
+    rating = 0,
+    max = 5,
+    interactive = false,
+    onChange,
+    disabled = false,
+    error = "",
+    label,
+}) {
+    const [hovered, setHovered] = useState(0);
 
-  return (
+    const handleChange = (value) => {
+        if (!interactive || disabled || !onChange) return;
+        onChange(value);
+    };
 
-    <div className="rating">
+    const renderStar = (number, displayRating = rating) => {
+        if (displayRating >= number) {
+            return <FaStar className="star filled" />;
+        }
 
-      {
+        if (displayRating >= number - 0.5) {
+            return <FaStarHalfAlt className="star half" />;
+        }
 
-        [...Array(max)].map((_, index) => {
+        return <FaRegStar className="star empty" />;
+    };
 
-          const number = index + 1;
+    return (
+        <div className={`rating-wrapper${error ? " has-error" : ""}`}>
+            {label && <span className="rating-label">{label}</span>}
 
-          if (rating >= number) {
+            <div
+                className={`rating${interactive ? " rating-interactive" : ""}`}
+                role={interactive ? "radiogroup" : undefined}
+                aria-label={interactive ? label || "Rating" : undefined}
+            >
+                {[...Array(max)].map((_, index) => {
+                    const number = index + 1;
+                    const displayRating = hovered || rating;
 
-            return <FaStar key={index} className="star filled" />;
+                    if (!interactive) {
+                        return (
+                            <span key={index}>
+                                {renderStar(number)}
+                            </span>
+                        );
+                    }
 
-          }
+                    return (
+                        <button
+                            key={index}
+                            type="button"
+                            className="rating-star-button"
+                            onClick={() => handleChange(number)}
+                            onMouseEnter={() => setHovered(number)}
+                            onMouseLeave={() => setHovered(0)}
+                            disabled={disabled}
+                            role="radio"
+                            aria-checked={rating === number}
+                            aria-label={`${number} star${number > 1 ? "s" : ""}`}
+                        >
+                            {renderStar(number, displayRating)}
+                        </button>
+                    );
+                })}
+            </div>
 
-          if (rating >= number - 0.5) {
-
-            return <FaStarHalfAlt key={index} className="star half" />;
-
-          }
-
-          return <FaRegStar key={index} className="star empty" />;
-
-        })
-
-      }
-
-    </div>
-
-  );
-
+            {error && <small className="rating-error">{error}</small>}
+        </div>
+    );
 }
 
 export default Rating;

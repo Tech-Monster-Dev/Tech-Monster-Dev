@@ -1,169 +1,127 @@
+@import "tailwindcss";
+
 .feedback-page {
-    width: 100%;
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 1.5rem;
+    @apply w-full;
 }
 
 .feedback-page-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    margin-bottom: 1.75rem;
-    padding: 1.5rem 1.6rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
+    @apply mb-[clamp(1.25rem,4vw,1.75rem)]
+        flex
+        flex-col
+        gap-[clamp(0.4rem,1.5vw,0.55rem)]
+        rounded-[clamp(0.9375rem,2.5vw,1.125rem)]
+        border
+        p-[clamp(1.1rem,4vw,1.5rem)]
+        shadow-[0_clamp(0.6rem,2vw,0.75rem)_clamp(1.75rem,5vw,2.2rem)_color-mix(in_srgb,var(--dark)_18%,transparent)];
+    border-color: color-mix(in srgb, var(--text) 8%, transparent);
     background: linear-gradient(
         135deg,
-        rgba(0, 229, 255, 0.06),
-        rgba(255, 255, 255, 0.025)
+        color-mix(in srgb, var(--neon) 6%, transparent),
+        color-mix(in srgb, var(--text) 2.5%, transparent)
     );
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
 }
 
 .feedback-page-eyebrow {
-    margin: 0;
+    @apply m-0
+        text-[clamp(0.7rem,2vw,0.78rem)]
+        font-bold
+        uppercase
+        tracking-[0.12em];
     color: var(--neon);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
 }
 
 .feedback-page-header h1 {
-    margin: 0;
+    @apply m-0
+        text-[clamp(1.75rem,3vw,2.35rem)]
+        font-extrabold;
     color: var(--text);
-    font-size: clamp(1.75rem, 3vw, 2.35rem);
-    font-weight: 800;
 }
 
 .feedback-page-header > p:last-child {
-    max-width: 760px;
-    margin: 0;
+    @apply m-0
+        max-w-[min(100%,47.5rem)];
     color: var(--muted);
     line-height: 1.7;
 }
 
 .feedback-page-content {
-    margin-top: 1.5rem;
+    @apply mt-[clamp(1rem,3vw,1.5rem)];
 }
 
 .feedback-tab-content {
-    width: 100%;
+    @apply w-full;
 }
 
 .feedback-resource-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    @apply flex
+        flex-col
+        gap-[clamp(1rem,3vw,1.5rem)];
 }
 
 .feedback-form-heading {
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
+    @apply flex
+        flex-col
+        gap-[clamp(0.35rem,1.5vw,0.45rem)];
 }
 
 .feedback-form-heading h2 {
-    margin: 0;
+    @apply m-0
+        text-[clamp(1.15rem,3vw,1.4rem)]
+        font-[750];
     color: var(--text);
-    font-size: 1.4rem;
-    font-weight: 750;
 }
 
 .feedback-form-heading p {
-    margin: 0;
+    @apply m-0;
     color: var(--muted);
     line-height: 1.7;
 }
 
 .feedback-empty {
-    margin: 0;
-    padding: 1.75rem;
-    border: 1px dashed rgba(255, 255, 255, 0.14);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.025);
+    @apply m-0
+        rounded-[clamp(0.75rem,2vw,1rem)]
+        border
+        border-dashed
+        p-[clamp(1rem,4vw,1.75rem)]
+        text-center;
+    border-color: color-mix(in srgb, var(--text) 14%, transparent);
+    background: color-mix(in srgb, var(--text) 2.5%, transparent);
     color: var(--muted);
-    text-align: center;
 }
 
 .feedback-skeleton-page {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    @apply flex
+        flex-col
+        gap-[clamp(1rem,3vw,1.5rem)];
 }
 
 .feedback-skeleton-header,
 .feedback-skeleton-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    @apply flex
+        flex-col
+        gap-[clamp(0.55rem,2vw,0.75rem)];
 }
 
 .feedback-skeleton-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+    @apply grid
+        grid-cols-[repeat(auto-fit,minmax(min(100%,clamp(14rem,38vw,16rem)),1fr))]
+        gap-[clamp(0.75rem,2.5vw,1rem)];
 }
 
 .feedback-skeleton-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.025);
+    @apply flex
+        flex-col
+        gap-[clamp(0.55rem,2vw,0.75rem)]
+        rounded-[clamp(0.75rem,2vw,0.875rem)]
+        border
+        p-[clamp(1rem,3vw,1.25rem)];
+    border-color: color-mix(in srgb, var(--text) 8%, transparent);
+    background: color-mix(in srgb, var(--text) 2.5%, transparent);
 }
 
 .feedback-resource-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-    margin-top: 28px;
-}
-
-@media (max-width: 900px) {
-    .feedback-resource-list {
-        grid-template-columns: 1fr;
-    }
-
-    .feedback-skeleton-cards {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .feedback-page {
-        padding: 1rem;
-    }
-
-    .feedback-page-header {
-        padding: 1.25rem;
-        border-radius: 15px;
-    }
-}
-
-@media (max-width: 600px) {
-    .feedback-page {
-        padding: 0.75rem;
-    }
-
-    .feedback-page-header {
-        margin-bottom: 1.25rem;
-        padding: 1.1rem;
-    }
-
-    .feedback-page-content {
-        margin-top: 1rem;
-    }
-
-    .feedback-resource-list {
-        gap: 14px;
-        margin-top: 22px;
-    }
-
-    .feedback-empty {
-        padding: 1.35rem 1rem;
-    }
+    @apply mt-[clamp(1.25rem,4vw,1.75rem)]
+        grid
+        grid-cols-[repeat(auto-fit,minmax(min(100%,clamp(17rem,42vw,20rem)),1fr))]
+        gap-[clamp(0.875rem,3vw,1.125rem)];
 }
