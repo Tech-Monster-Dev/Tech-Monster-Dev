@@ -5,31 +5,18 @@ import Task from "../../tasks/models/Task.js";
 import Certificate from "../../certificates/models/Certificate.js";
 
 const getStats = async () => {
-
     const [
-
         totalStudents,
-
         totalAdmins,
-
         totalInternships,
-
         activeInternships,
-
         activeStudents,
-
         completedStudents,
-
         totalCertificates,
-
         totalTasks,
-
         submittedTasks,
-
         approvedTasks,
-
         incorrectTasks
-
     ] = await Promise.all([
 
         User.countDocuments({
@@ -41,7 +28,6 @@ const getStats = async () => {
         }),
 
         Internship.countDocuments(),
-
         Internship.countDocuments({
             status: "Active"
         }),
@@ -53,11 +39,8 @@ const getStats = async () => {
         StudentInternship.countDocuments({
             status: "Completed"
         }),
-
         Certificate.countDocuments(),
-
         Task.countDocuments(),
-
         Task.countDocuments({
             status: "Submitted"
         }),
@@ -69,35 +52,21 @@ const getStats = async () => {
         Task.countDocuments({
             status: "Incorrect"
         })
-
     ]);
 
     return {
-
         totalStudents,
-
         totalAdmins,
-
         totalInternships,
-
         activeInternships,
-
         activeStudents,
-
         completedStudents,
-
         totalCertificates,
-
         totalTasks,
-
         submittedTasks,
-
         approvedTasks,
-
         incorrectTasks
-
     };
-
 };
 
 export default getStats;

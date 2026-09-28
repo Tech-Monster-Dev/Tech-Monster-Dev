@@ -20,8 +20,8 @@ export default function Certificate() {
 
     const [certificates, setCertificates] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("all");
-    const [selectedCertificate, setSelectedCertificate] = useState(null);
+    const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem("certificateActiveTab") || "all");
+    const [selectedCertificate, setSelectedCertificate] = useState(() => { const stored = sessionStorage.getItem("certificateSelected"); return stored ? JSON.parse(stored) : null; });
     const [downloadingId, setDownloadingId] = useState(null);
 
     const { dashboard } = useAttendanceData();
@@ -41,16 +41,32 @@ export default function Certificate() {
 
                 setCertificates(loadedCertificates);
 
-                const notificationProgramId =
-                    location.state?.programId;
+                const storedSelected = sessionStorage.getItem("certificateSelected");
+                if (storedSelected) {
+                    const parsedSelected = JSON.parse(storedSelected);
+                    const freshSelected = loadedCertificates.find(
+                        (certificate) =>
+                            String(certificate.programId) ===
+                            String(parsedSelected.programId)
+                    );
+
+                    if (freshSelected) {
+                        setSelectedCertificate(freshSelected);
+                        sessionStorage.setItem(
+                            "certificateSelected",
+                            JSON.stringify(freshSelected)
+                        );
+                    }
+                }
+
+                const notificationProgramId = location.state?.programId;
 
                 if (notificationProgramId) {
-                    const matchedCertificate =
-                        loadedCertificates.find(
-                            (certificate) =>
-                                String(certificate.programId) ===
-                                String(notificationProgramId)
-                        );
+                    const matchedCertificate = loadedCertificates.find(
+                        (certificate) =>
+                            String(certificate.programId) ===
+                            String(notificationProgramId)
+                    );
 
                     if (matchedCertificate) {
                         setSelectedCertificate(
@@ -74,7 +90,9 @@ export default function Certificate() {
 
     const handleProgramClick = (certificate) => {
         setSelectedCertificate(certificate);
+        sessionStorage.setItem("certificateSelected", JSON.stringify(certificate));
         setActiveTab("payment");
+        sessionStorage.setItem("certificateActiveTab", "payment");
     };
 
     const handleDownload = async (event, certificate) => {
@@ -99,8 +117,7 @@ export default function Certificate() {
             const link = document.createElement("a");
 
             link.href = url;
-            link.download =
-                `Certificate-${certificate.programTitle}.pdf`;
+            link.download = `Certificate-${certificate.programTitle}.pdf`;
 
             document.body.appendChild(link);
             link.click();
@@ -121,7 +138,7 @@ export default function Certificate() {
 
     if (loading) {
         return (
-            <div className="certificate-page-wrapper">
+            <div className="certificate-page-wrapper certificate-loading">
                 <Spinner
                     message="Loading your certificates..."
                     size={60}
@@ -132,7 +149,6 @@ export default function Certificate() {
 
     return (
         <div className="certificate-page-wrapper">
-
             <SectionTabs
                 tabs={[
                     {
@@ -147,7 +163,7 @@ export default function Certificate() {
                     },
                 ]}
                 activeTab={activeTab}
-                onChange={setActiveTab}
+                onChange={(tab) => { setActiveTab(tab); sessionStorage.setItem("certificateActiveTab", tab); }}
                 className="certificate-section-tabs"
             />
 

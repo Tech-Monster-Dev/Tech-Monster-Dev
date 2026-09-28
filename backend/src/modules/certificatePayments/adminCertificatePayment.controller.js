@@ -42,11 +42,10 @@ export const getPendingPayments =
 export const getPaymentDetails =
     asyncHandler(async (req, res) => {
 
-        const {
-            CertificatePayment,
-        } = await import(
-            "./models/CertificatePayment.js"
-        );
+        const CertificatePayment =
+            (await import(
+                "./models/CertificatePayment.js"
+            )).default;
 
 
         const payment =

@@ -171,6 +171,7 @@ const Home = () => {
 
       <ProfileSummary
         username={dashboard?.user}
+        latestBadge={dashboard?.badges?.[0] || null}
       />
 
       <StatsCards

@@ -75,21 +75,17 @@ const certificateSchema = new mongoose.Schema(
 
 certificateSchema.pre(
     "validate",
-    function (next) {
+    async function () {
 
         if (!this.internship && !this.course) {
-            return next(
-                new Error(
-                    "Either internship or course is required."
-                )
+            throw new Error(
+                "Either internship or course is required."
             );
         }
 
         if (this.internship && this.course) {
-            return next(
-                new Error(
-                    "Certificate cannot belong to both internship and course."
-                )
+            throw new Error(
+                "Certificate cannot belong to both internship and course."
             );
         }
 
@@ -97,10 +93,8 @@ certificateSchema.pre(
             this.programType === "internship" &&
             !this.internship
         ) {
-            return next(
-                new Error(
-                    "Internship is required for internship certificate."
-                )
+            throw new Error(
+                "Internship is required for internship certificate."
             );
         }
 
@@ -108,14 +102,11 @@ certificateSchema.pre(
             this.programType === "course" &&
             !this.course
         ) {
-            return next(
-                new Error(
-                    "Course is required for course certificate."
-                )
+            throw new Error(
+                "Course is required for course certificate."
             );
         }
 
-        next();
     }
 );
 

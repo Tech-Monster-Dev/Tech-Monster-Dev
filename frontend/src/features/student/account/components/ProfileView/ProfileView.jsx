@@ -116,6 +116,7 @@ export default function ProfileView({
 
       <ProfileHeader
         data={data}
+        latestBadge={badges[0] || null}
         imageLoading={imageLoading}
         handleImageUpdate={handleImageUpdate}
       />

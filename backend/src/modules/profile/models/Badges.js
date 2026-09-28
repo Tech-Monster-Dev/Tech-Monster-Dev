@@ -30,7 +30,8 @@ const badgeSchema = new mongoose.Schema({
         enum: [
             "COURSE",
             "TASK",
-            "ATTENDANCE"
+            "ATTENDANCE",
+            "INTERNSHIP"
         ],
         default: "COURSE"
     }

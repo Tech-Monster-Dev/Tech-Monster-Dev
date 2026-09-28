@@ -1,14 +1,14 @@
+import "./CertificateView.css";
 import { motion } from "framer-motion";
 import CertificatePaymentSection from "./components/CertificatePaymentSection";
 import CertificatePaymentModal from "./components/CertificatePaymentModal";
+import PaidFormModal from "./components/PaidFormModal";
 import CertificateApprovalStatus from "./components/CertificateApprovalStatus";
 import CertificateRejected from "./components/CertificateRejected";
 import CertificateExpired from "./components/CertificateExpired";
 import CertificateIssued from "./components/CertificateIssued";
 import CertificateSupport from "./components/CertificateSupport";
 import useCertificatePayment from "./hooks/useCertificatePayment";
-
-import "./CertificateView.css";
 
 export default function CertificateView({
     courseType,
@@ -22,10 +22,15 @@ export default function CertificateView({
         qrCode,
         loading,
         creatingPayment,
+        submitting,
         cancelling,
         isModalOpen,
+        isPaidFormOpen,
         timeLeft,
         handleCreatePayment,
+        handleOpenPaidForm,
+        handleClosePaidForm,
+        handleSubmitPayment,
         handleCancelPayment,
     } = useCertificatePayment({
         programId,
@@ -123,7 +128,16 @@ export default function CertificateView({
                 currency={payment?.currency || "INR"}
                 timeLeft={timeLeft}
                 onCancel={handleCancelPayment}
+                onSubmit={handleOpenPaidForm}
                 cancelling={cancelling}
+                submitting={submitting}
+            />
+
+            <PaidFormModal
+                open={isPaidFormOpen}
+                onClose={handleClosePaidForm}
+                onSubmit={handleSubmitPayment}
+                submitting={submitting}
             />
 
             <CertificateSupport />

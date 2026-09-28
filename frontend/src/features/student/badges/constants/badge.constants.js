@@ -7,7 +7,7 @@ export const ATTENDANCE_BADGES = [
     },
     {
         title: "11 Days Present",
-        emoji: "🔥",
+        emoji: "⚡",
         description: "Present for 11 consecutive days.",
         requirement: "Be present for 11 consecutive days."
     },
@@ -45,3 +45,33 @@ export const TIME_BADGES = [
         requirement: "Use Tech Monster for 10+ active hours in one day."
     }
 ];
+export const COURSE_BADGES = [
+    {
+        title: "Course Starter",
+        emoji: "🎓",
+        description: "Completed your first course.",
+        requirement: "Complete 1 course."
+    },
+    {
+        title: "Course Finisher",
+        emoji: "🏆",
+        description: "Completed 3 courses.",
+        requirement: "Complete 3 courses."
+    },
+    {
+        title: "Course Master",
+        emoji: "👑",
+        description: "Completed 5 courses.",
+        requirement: "Complete 5 courses."
+    }
+];
+
+export const INTERNSHIP_BADGES = [
+    {
+        title: "Internship Completed",
+        emoji: "💼",
+        description: "Successfully completed an internship.",
+        requirement: "Complete 1 internship."
+    }
+];
+

@@ -53,9 +53,9 @@ export default function LessonSidebar({
             return;
         }
 
-        setOpenModuleId(String(targetModule.id));
-
         requestAnimationFrame(() => {
+            setOpenModuleId(String(targetModule.id));
+
             requestAnimationFrame(() => {
                 const moduleElement =
                     moduleRefs.current[String(targetModule.id)];

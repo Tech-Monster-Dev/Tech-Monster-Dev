@@ -4,6 +4,7 @@ import defaultProfileImage from "../../../../../assets/profile/default-profile.s
 import { motion } from "framer-motion";
 import EmptyState from "../../../../../components/ui/EmptyState";
 import DashButton from "../../../../../components/ui/Button/DashButton";
+import StudentBadgeAvatar from "../../../../dashboard/common/StudentBadgeAvatar";
 
 import {
   HiUsers,
@@ -91,22 +92,11 @@ const SuggestedUsers = ({
               >
                 <div className="user-top">
                   <div className="user-avatar">
-                    <img
-                      src={
-                        user?.avatar && user.avatar !== "/profile/default-profile.svg"
-                          ? user.avatar
-                          : defaultProfileImage
-                      }
-                      alt={
-                        user?.fullName ||
-                        "User"
-                      }
-                      onError={(
-                        event
-                      ) => {
-                        event.currentTarget.src =
-                          defaultProfileImage;
-                      }}
+                    <StudentBadgeAvatar
+                      avatar={user?.avatar}
+                      latestBadge={user?.latestBadge}
+                      alt={user?.fullName || "User"}
+                      className="suggested-user-badge-avatar"
                     />
                     <span
                       className="online-dot"

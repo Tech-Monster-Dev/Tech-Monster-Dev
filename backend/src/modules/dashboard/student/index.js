@@ -12,29 +12,16 @@ import getBadges from "./getBadges.js";
 import getActiveTime from "./getActiveTime.js";
 
 export {
-
     getUserInfo,
-
     getStats,
-
     getAttendance,
-
     getWeeklyAnalytics,
-
     getMyInternships,
-
     getMyCourses,
-
     getAllInternships,
-
     getAllCourses,
-
     getRecommendedInternships,
-
     getSuggestedUsers,
-
     getBadges,
-
     getActiveTime
-
 };

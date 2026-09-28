@@ -108,10 +108,6 @@ const userSchema = new mongoose.Schema(
             default: null
         },
 
-
-
-
-
         // ==========================
         // EDUCATION
         // ==========================
@@ -119,7 +115,6 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
-
 
         college: {
             type: String,

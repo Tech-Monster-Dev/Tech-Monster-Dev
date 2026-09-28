@@ -6,15 +6,11 @@ import StudentInternship from "../../internships/models/StudentInternship.js";
 import UserBadge from "../../profile/models/UserBadge.js";
 
 const getCurrentStreak = learningDays => {
-
     const qualifiedDays = new Set(
         learningDays
             .filter(day => day.qualified)
             .map(day => {
-
-                const date =
-                    new Date(day.date);
-
+                const date = new Date(day.date);
                 return [
                     date.getFullYear(),
                     date.getMonth(),
@@ -28,7 +24,6 @@ const getCurrentStreak = learningDays => {
     }
 
     const cursor = new Date();
-
     cursor.setHours(0, 0, 0, 0);
 
     const todayKey = [
@@ -40,7 +35,7 @@ const getCurrentStreak = learningDays => {
     /*
      * If today is not qualified yet, start from
      * the most recent qualified day.
-     */
+    */
     if (!qualifiedDays.has(todayKey)) {
 
         cursor.setDate(
@@ -61,7 +56,6 @@ const getCurrentStreak = learningDays => {
     let streak = 0;
 
     while (true) {
-
         const dayKey = [
             cursor.getFullYear(),
             cursor.getMonth(),
@@ -133,7 +127,6 @@ const getStats = async (userId) => {
     // ==========================
     // Internship / Course Analytics
     // ==========================
-
     const internships = studentPrograms.filter(
         item => item.internship
     );
@@ -145,7 +138,6 @@ const getStats = async (userId) => {
     // ==========================
     // Internship Analytics
     // ==========================
-
     const totalInternships = internships.length;
 
     const completedInternships = internships.filter(
@@ -162,7 +154,6 @@ const getStats = async (userId) => {
     // ==========================
     // Course Analytics
     // ==========================
-
     const totalCourses = courses.length;
 
     const completedCourses = courses.filter(
@@ -179,7 +170,6 @@ const getStats = async (userId) => {
     // ==========================
     // Task Analytics
     // ==========================
-
     const totalTasks = tasks.length;
 
     const approvedTasks = tasks.filter(
@@ -208,7 +198,6 @@ const getStats = async (userId) => {
     // ==========================
     // Attendance Analytics
     // ==========================
-
     const totalAttendance = attendance.length;
 
     const presentDays = attendance.filter(
@@ -223,21 +212,18 @@ const getStats = async (userId) => {
         item => item.status === "Leave"
     ).length;
 
-    const attendancePercentage =
-        totalAttendance === 0
-            ? 0
-            : Math.round(
-                (presentDays / totalAttendance) * 100
-            );
+    const attendancePercentage = totalAttendance === 0
+        ? 0
+        : Math.round(
+            (presentDays / totalAttendance) * 100
+        );
 
     // ==========================
     // Attendance Streak
     // ==========================
-
-    const currentStreak =
-        getCurrentStreak(
-            learningDays
-        );
+    const currentStreak = getCurrentStreak(
+        learningDays
+    );
 
     // ==========================
     // Learning Hours
@@ -261,53 +247,47 @@ const getStats = async (userId) => {
             )
             : null;
 
-    const learningSeconds =
-        attendanceActivities.reduce(
-            (sum, item) => {
+    const learningSeconds = attendanceActivities.reduce(
+        (sum, item) => {
 
-                const activityDate =
-                    new Date(item.date);
+            const activityDate =
+                new Date(item.date);
 
-                if (
-                    earliestEnrollmentDate &&
-                    activityDate >= earliestEnrollmentDate
-                ) {
-                    return sum +
-                        Number(
-                            item.activeSeconds || 0
-                        );
-                }
+            if (
+                earliestEnrollmentDate &&
+                activityDate >= earliestEnrollmentDate
+            ) {
+                return sum +
+                    Number(
+                        item.activeSeconds || 0
+                    );
+            }
 
-                return sum;
-            },
-            0
-        );
+            return sum;
+        },
+        0
+    );
 
-    const totalLearningHours =
-        Number(
-            (
-                learningSeconds / 3600
-            ).toFixed(2)
-        );
+    const totalLearningHours = Number(
+        (
+            learningSeconds / 3600
+        ).toFixed(2)
+    );
 
     // ==========================
     // Return Stats
     // ==========================
-
     return {
-
         internships: {
             total: totalInternships,
             completed: completedInternships,
             progress: internshipProgress
         },
-
         courses: {
             total: totalCourses,
             completed: completedCourses,
             progress: courseProgress
         },
-
         tasks: {
             total: totalTasks,
             approved: approvedTasks,
@@ -316,7 +296,6 @@ const getStats = async (userId) => {
             pending: pendingTasks,
             progress: taskProgress
         },
-
         attendance: {
             total: totalAttendance,
             present: presentDays,
@@ -324,17 +303,12 @@ const getStats = async (userId) => {
             leave: leaveDays,
             percentage: attendancePercentage
         },
-
         learning: {
             totalHours: totalLearningHours
         },
-
         badges: badges.length,
-
         streak: currentStreak
-
     };
-
 };
 
 export default getStats;

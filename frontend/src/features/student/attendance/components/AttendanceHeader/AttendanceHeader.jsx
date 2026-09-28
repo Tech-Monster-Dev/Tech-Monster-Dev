@@ -1,18 +1,13 @@
 import './AttendanceHeader.css';
 import { motion } from 'framer-motion';
-import defaultProfileImg from '../../../../../assets/profile/default-profile.svg';
+import StudentBadgeAvatar from '../../../../dashboard/common/StudentBadgeAvatar';
 
 export default function AttendanceHeader({
   user,
+  latestBadge = null,
   presentCount,
   absentCount
 }) {
-  const profileImage =
-    user?.avatar &&
-    user.avatar !== '/profile/default-profile.svg'
-      ? user.avatar
-      : defaultProfileImg;
-
   const username =
     user?.username ||
     `${user?.firstName || ""} ${user?.lastName || ""}`.trim() ||
@@ -26,10 +21,11 @@ export default function AttendanceHeader({
     >
       <div className="user-info-container">
         <div className="user-profile-left">
-          <img
-            src={profileImage}
+          <StudentBadgeAvatar
+            avatar={user?.avatar}
+            latestBadge={latestBadge}
             alt="Profile"
-            className="user-avatar"
+            className="attendance-badge-avatar"
           />
 
           <div className="user-details">

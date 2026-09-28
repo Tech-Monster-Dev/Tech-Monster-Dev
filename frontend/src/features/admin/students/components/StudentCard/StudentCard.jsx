@@ -70,15 +70,11 @@ export default function StudentCard({
 
                 className="studentCardTop"
 
-                onClick={()=>
-
-                    navigate(
-
-                        `/admin/students/${student._id}`
-
-                    )
-
-                }
+                onClick={() => {
+                    if (!student.isDeleted) {
+                        navigate(`/admin/students/${student._id}`);
+                    }
+                }}
 
             >
 

@@ -29,7 +29,6 @@ const getRecommendedInternships = async (userId) => {
         }).select(
             "internship completedTasks progress status"
         )
-
     ]);
 
     const enrolledMap = new Map();
@@ -41,22 +40,13 @@ const getRecommendedInternships = async (userId) => {
         }
 
         enrolledMap.set(
-
             item.internship.toString(),
-
             {
-                completedTasks:
-                    item.completedTasks || 0,
-
-                progress:
-                    item.progress || 0,
-
-                status:
-                    item.status || "Not Started"
+                completedTasks: item.completedTasks || 0,
+                progress: item.progress || 0,
+                status: item.status || "Not Started"
             }
-
         );
-
     });
 
     return internships.map(item => {
@@ -66,46 +56,24 @@ const getRecommendedInternships = async (userId) => {
         );
 
         return {
-
             _id: item._id,
-
             title: item.title,
-
             slug: item.slug,
-
             thumbnail: item.thumbnail,
-
             description: item.description,
-
             category: item.category,
-
             level: item.level,
-
             duration: item.duration,
-
             totalTasks: item.totalTasks,
-
             totalNotes: item.totalNotes,
-
             certificate: item.certificate,
-
             badge: item.badge,
-
             enrolled: !!enrolled,
-
-            progress:
-                enrolled?.progress || 0,
-
-            completedTasks:
-                enrolled?.completedTasks || 0,
-
-            status:
-                enrolled?.status || "Not Started"
-
+            progress: enrolled?.progress || 0,
+            completedTasks: enrolled?.completedTasks || 0,
+            status: enrolled?.status || "Not Started"
         };
-
     });
-
 };
 
 export default getRecommendedInternships;

@@ -2,7 +2,6 @@ import Internship from "../../internships/models/Internship.js";
 import StudentInternship from "../../internships/models/StudentInternship.js";
 
 const getAllInternships = async (userId) => {
-
     const [
         internships,
         enrolledInternships
@@ -26,11 +25,8 @@ const getAllInternships = async (userId) => {
     ]);
 
     const enrolledMap = new Map();
-
     enrolledInternships.forEach(item => {
-
         if (!item.internship) return;
-
         enrolledMap.set(
             item.internship.toString(),
             {
@@ -39,59 +35,32 @@ const getAllInternships = async (userId) => {
                 status: item.status
             }
         );
-
     });
 
     return internships.map(item => {
-
         const enrolled = enrolledMap.get(
-
             item._id.toString()
-
         );
 
         return {
-
             _id: item._id,
-
             title: item.title,
-
             slug: item.slug,
-
             thumbnail: item.thumbnail,
-
             description: item.description,
-
             category: item.category,
-
             level: item.level,
-
             duration: item.duration,
-
             totalTasks: item.totalTasks,
-
             totalNotes: item.totalNotes,
-
             certificate: item.certificate,
-
             badge: item.badge,
-
             enrolled: !!enrolled,
-
             progress: enrolled?.progress || 0,
-
-            completedTasks:
-
-                enrolled?.completedTasks || 0,
-
-            status:
-
-                enrolled?.status || "Not Started"
-
+            completedTasks: enrolled?.completedTasks || 0,
+            status: enrolled?.status || "Not Started"
         };
-
     });
-
 };
 
 export default getAllInternships;

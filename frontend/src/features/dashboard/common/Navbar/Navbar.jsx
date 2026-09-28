@@ -3,7 +3,7 @@ import './Navbar.css';
 import useAuth from '../../../../shared/hooks/useAuth';
 import defaultProfileImg from '../../../../assets/profile/default-profile.svg';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -19,6 +19,8 @@ import SearchBar from '../../../../components/ui/SearchBar';
 import Loader from "../../../../components/ui/Loader";
 
 import useNotification from "../../../../shared/hooks/useNotification";
+import { getProfile } from "../../../../services/api/profileService";
+import StudentBadgeAvatar from "../StudentBadgeAvatar";
 
 function Navbar({ role = "student", onMobileMenuClick }) {
 
@@ -35,6 +37,40 @@ function Navbar({ role = "student", onMobileMenuClick }) {
     const [loading, setLoading] = useState(false);
     const [showNotificationPopup, setShowNotificationPopup] = useState(false);
     const [showProfilePopup, setShowProfilePopup] = useState(false);
+    const [latestBadge, setLatestBadge] = useState(null);
+
+    useEffect(() => {
+        if (role !== "student" || !user?.id) {
+            setLatestBadge(null);
+            return;
+        }
+
+        let mounted = true;
+
+        const loadLatestBadge = async () => {
+            try {
+                const response = await getProfile();
+                if (mounted) {
+                    setLatestBadge(response?.data?.latestBadge || null);
+                }
+            } catch (error) {
+                console.error("Failed to load latest student badge:", error);
+            }
+        };
+
+        const handleBadgeSync = (event) => {
+            const badges = event?.detail?.badges || [];
+            setLatestBadge(badges[0] || null);
+        };
+
+        loadLatestBadge();
+        window.addEventListener("tech-monster-badge-sync", handleBadgeSync);
+
+        return () => {
+            mounted = false;
+            window.removeEventListener("tech-monster-badge-sync", handleBadgeSync);
+        };
+    }, [role, user, user?.id]);
 
     // Resolve the profile image URL: support `profilePic` or `avatar` fields.
     // If neither is a valid image URL, fall back to the FiUser placeholder.
@@ -68,7 +104,6 @@ function Navbar({ role = "student", onMobileMenuClick }) {
         <>
             <nav className='navDash'>
                 <SystemBar user={capitalName} />
-
                 <header className="dashboard-navbar">
                     <div className="dashboard-navbar-left-section">
                         <button
@@ -103,7 +138,6 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                 setShowNotificationPopup(false)
                             }
                         >
-
                             <NavLink
                                 to={`/${role}/notification`}
                                 className={({ isActive }) =>
@@ -112,11 +146,8 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                         : "dashboard-navbar-notification-btn"
                                 }
                             >
-
                                 <FiBell />
-
                                 {unreadCount > 0 && (
-
                                     <motion.span
                                         className="dashboard-navbar-notification-badge"
                                         initial={{ scale: 0 }}
@@ -143,30 +174,24 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                             y: 0,
                                             scale: 0.95
                                         }}
-
                                         animate={{
                                             opacity: 1,
                                             y: 0,
                                             scale: 1
                                         }}
-
                                         exit={{
                                             opacity: 0,
                                             y: 0,
                                             scale: 0.95
                                         }}
-
                                         transition={{
                                             duration: 0.2
                                         }}
                                     >
-
                                         <div className="dashboard-navbar-notif-header">
-
                                             <span>
                                                 Notifications
                                             </span>
-
                                             <span
                                                 style={{
                                                     fontSize: "11px",
@@ -175,9 +200,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                             >
                                                 {unreadCount} New
                                             </span>
-
                                         </div>
-
 
                                         <div className="dashboard-navbar-notif-list">
                                             {notifications.length === 0 ? (
@@ -185,28 +208,23 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                                     No notifications
                                                 </div>
                                             ) : (
-
                                                 notifications
                                                     .slice(0, 5)
                                                     .map((item) => (
-
                                                         <div
                                                             key={item._id}
-
                                                             className={
                                                                 `dashboard-navbar-notif-item ${!item.isRead
                                                                     ? "unread"
                                                                     : ""
                                                                 }`
                                                             }
-
                                                             onClick={() =>
                                                                 markAsRead(
                                                                     item._id
                                                                 )
                                                             }
                                                         >
-
                                                             <strong>
                                                                 {item.title}
                                                             </strong>
@@ -220,30 +238,20 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                                                     item.createdAt
                                                                 ).toLocaleString()}
                                                             </small>
-
                                                         </div>
-
                                                     ))
-
                                             )}
-
                                         </div>
 
-
                                         <div className="dashboard-navbar-notif-footer">
-
                                             <Link
                                                 to={`/${role}/notification`}
                                             >
                                                 View All Notifications →
                                             </Link>
-
                                         </div>
-
                                     </motion.div>
-
                                 )}
-
                             </AnimatePresence>
 
                         </div>
@@ -261,8 +269,15 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                             onMouseLeave={() => setShowProfilePopup(false)}
                         >
                             <div className="dashboard-navbar-user-profile">
-                                <div className="dashboard-navbar-avatar-circle">
-                                    {profileImg ? (
+                                <div className={role === "student" ? "dashboard-navbar-avatar-circle dashboard-navbar-avatar-circle--student" : "dashboard-navbar-avatar-circle"}>
+                                    {role === "student" ? (
+                                        <StudentBadgeAvatar
+                                            avatar={profileImg}
+                                            latestBadge={latestBadge}
+                                            alt={userName || "Student profile"}
+                                            className="dashboard-navbar-student-badge-avatar"
+                                        />
+                                    ) : profileImg ? (
                                         <img
                                             src={profileImg}
                                             alt={userName || "User"}

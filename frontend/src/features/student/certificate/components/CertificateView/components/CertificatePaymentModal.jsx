@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { IndianRupee } from "lucide-react";
 import PaymentQRCode from "./PaymentQRCode";
+import DashButton from "../../../../../../components/ui/Button/DashButton";
 
 export default function CertificatePaymentModal({
     open,
@@ -9,11 +10,12 @@ export default function CertificatePaymentModal({
     amount,
     timeLeft,
     onCancel,
+    onSubmit,
     cancelling,
+    submitting,
 }) {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-
 
     if (!open) return null;
 
@@ -59,12 +61,36 @@ export default function CertificatePaymentModal({
                     </div>
 
                     <p className="certificate-payment-auto-status">
-                        Payment status is detected automatically. Please keep this window open after completing the payment.
+                        After completing the UPI payment, click "I Have Paid".
+                        Your payment will then be sent for admin verification.
                     </p>
 
-                    <button type="button" className="certificate-payment-cancel" onClick={onCancel} disabled={cancelling}>
-                        {cancelling ? "Cancelling..." : "Cancel Payment"}
-                    </button>
+                    <div className="certificate-payment-actions">
+                        <DashButton
+                            type="button"
+                            className="pay-confirm-btn"
+                            onClick={onSubmit}
+                            disabled={cancelling}
+                            loading={submitting}
+                            loadingText="Submitting..."
+                            fullWidth
+                        >
+                            I Have Paid
+                        </DashButton>
+
+                        <DashButton
+                            type="button"
+                            variant="secondary"
+                            className="certificate-payment-cancel"
+                            onClick={onCancel}
+                            disabled={submitting}
+                            loading={cancelling}
+                            loadingText="Cancelling..."
+                            fullWidth
+                        >
+                            Cancel Payment
+                        </DashButton>
+                    </div>
                 </motion.div>
             </motion.div>
         </AnimatePresence>,

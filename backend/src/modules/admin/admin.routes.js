@@ -12,6 +12,7 @@ import {
     unblockUser,
     deleteUser,
     updateUser,
+    restoreUser,
 } from "./admin.controller.js";
 
 const router = express.Router();
@@ -96,6 +97,18 @@ router.delete(
     authorizeRoles("admin"),
 
     deleteUser
+
+);
+
+router.patch(
+
+    "/users/:id/restore",
+
+    protect,
+
+    authorizeRoles("admin"),
+
+    restoreUser
 
 );
 

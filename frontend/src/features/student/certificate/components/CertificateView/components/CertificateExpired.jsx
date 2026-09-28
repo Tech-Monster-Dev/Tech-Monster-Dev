@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import DashButton from "../../../../../../components/ui/Button/DashButton";
 
 export default function CertificateExpired({
     onCreatePayment,
@@ -17,16 +18,15 @@ export default function CertificateExpired({
                 Generate a new QR code to continue.
             </p>
 
-            <button
+            <DashButton
                 type="button"
                 className="pay-confirm-btn"
                 onClick={onCreatePayment}
-                disabled={creatingPayment}
+                loading={creatingPayment}
+                loadingText="Generating QR..."
             >
-                {creatingPayment
-                    ? "Generating QR..."
-                    : "Regenerate QR"}
-            </button>
+                Regenerate QR
+            </DashButton>
         </motion.div>
     );
 }

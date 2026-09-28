@@ -8,21 +8,12 @@ import getRecentTasks from "./getRecentTasks.js";
 import getCertificates from "./getCertificates.js";
 
 export {
-
     getStats,
-
     getAttendance,
-
     getWeeklyAttendance,
-
     getRecentActivities,
-
     getActiveStudents,
-
     getTopInternships,
-
     getRecentTasks,
-
     getCertificates
-
 };

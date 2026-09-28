@@ -16,7 +16,8 @@ import {
 import {
     blockStudent,
     unblockStudent,
-    deleteStudent
+    deleteStudent,
+    restoreStudent
 } from "../../../../../services/api/adminStudentService";
 
 export default function StudentActionButtons({
@@ -84,6 +85,49 @@ export default function StudentActionButtons({
         }
 
     };
+
+    if (student.isDeleted) {
+
+        const handleRestore = async () => {
+
+            const confirmRestore = window.confirm(
+                "Restore this student and all backed-up data?"
+            );
+
+            if (!confirmRestore) return;
+
+            try {
+
+                await restoreStudent(student._id);
+
+                toast.success("Student Restored");
+
+                onRefresh();
+
+            } catch (err) {
+
+                toast.error(err.response?.data?.message);
+
+            }
+
+        };
+
+        return (
+
+            <div className="studentActionButtons">
+
+                <button
+                    className="restoreBtn"
+                    onClick={handleRestore}
+                >
+                    Restore
+                </button>
+
+            </div>
+
+        );
+
+    }
 
     return (
 

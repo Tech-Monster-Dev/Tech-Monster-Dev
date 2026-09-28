@@ -1,10 +1,10 @@
+import "./SearchBar.css";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiSearch, FiX, FiBookOpen, FiUser } from "react-icons/fi";
-import defaultProfileImage from "../../../assets/profile/default-profile.svg";
+import StudentBadgeAvatar from "../../../features/dashboard/common/StudentBadgeAvatar";
 import { searchInternships, searchUsers } from "../../../services/api/search.service";
-import "./SearchBar.css";
 
 const COURSES_EMPTY_MSG = "We couldn't find any courses or internships matching your search keywords on Tech Monster. Please try searching with a different keyword.";
 const USERS_EMPTY_MSG = "User not found.";
@@ -289,21 +289,12 @@ function SearchBar() {
                                                         className="search-result-item"
                                                         onClick={() => handleUserClick(user)}
                                                     >
-                                                        <div className="search-result-avatar">
-                                                            <img
-                                                                src={
-                                                                    user.avatar ||
-                                                                    defaultProfileImage
-                                                                }
-                                                                alt={
-                                                                    user.username || "User"
-                                                                }
-                                                                onError={(event) => {
-                                                                    event.currentTarget.src =
-                                                                        defaultProfileImage;
-                                                                }}
-                                                            />
-                                                        </div>
+                                                        <StudentBadgeAvatar
+                                                            avatar={user?.avatar}
+                                                            latestBadge={user?.latestBadge}
+                                                            alt={user?.username || "User"}
+                                                            className="search-result-avatar-badge"
+                                                        />
 
                                                         <div className="search-result-text">
                                                             <span className="search-result-title">

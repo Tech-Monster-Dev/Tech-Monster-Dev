@@ -98,7 +98,7 @@ export default function Lessons() {
         );
     }, [lessonData, completedLessonIds, approvedModuleIds]);
 
-    const lessons = finalLessonData?.lessons || [];
+    const lessons = useMemo(() => finalLessonData?.lessons || [], [finalLessonData?.lessons]);
     const currentLesson = lessons[activeLesson] || null;
 
     const initialLessonSelected = useRef(false);
@@ -152,12 +152,18 @@ export default function Lessons() {
                         lesson.id === targetModule?.sections?.[0]?.id
                 );
 
-        if (targetLessonIndex !== -1) {
-            setActiveLesson(targetLessonIndex);
-            setReadPercent(0);
-        }
-
         initialLessonSelected.current = true;
+
+        if (targetLessonIndex !== -1) {
+            const timeoutId = setTimeout(() => {
+                setActiveLesson(targetLessonIndex);
+                setReadPercent(0);
+            }, 0);
+
+            return () => {
+                clearTimeout(timeoutId);
+            };
+        }
     }, [
         finalLessonData,
         lessons,

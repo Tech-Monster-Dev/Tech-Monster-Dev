@@ -11,7 +11,7 @@ export default function PaymentQRCode({ imageUrl }) {
         <div className="certificate-payment-qr-only">
             {!loaded && (
                 <Spinner
-                    message="Generating..."
+                    message="Loading..."
                     size={35}
                 />
             )}
@@ -19,7 +19,7 @@ export default function PaymentQRCode({ imageUrl }) {
             <img
                 src={imageUrl}
                 alt="Certificate payment UPI QR code"
-                onLoad={() => setLoaded(true)}
+                onLoad={() => setTimeout(() => setLoaded(true), 350)}
                 className={loaded ? "qr-code-loaded" : "qr-code-loading"}
             />
         </div>

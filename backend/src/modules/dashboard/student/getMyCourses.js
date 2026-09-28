@@ -47,52 +47,27 @@ const getMyCourses = async (userId) => {
 
             return {
                 _id: item._id,
-
                 type: "course",
-
                 courseId: item.course._id,
-
                 slug: item.course.slug,
-
                 title: item.course.title,
-
                 thumbnail: item.course.thumbnail,
-
                 category: item.course.category,
-
                 level: item.course.level,
-
                 duration: item.course.duration,
-
                 totalTasks: item.course.totalTasks || 0,
-
                 totalNotes: item.course.totalNotes || 0,
-
                 completedTasks,
-
                 completedNotes,
-
                 remainingTasks,
-
                 remainingNotes,
-
                 progress: item.progress || 0,
-
                 status: item.status || "Not Started",
-
-                certificateEligible:
-                    item.course.certificate || false,
-
-                badgeEligible:
-                    item.course.badge || false,
-
-                certificateIssued:
-                    item.certificateIssued || false,
-
+                certificateEligible: item.course.certificate || false,
+                badgeEligible: item.course.badge || false,
+                certificateIssued: item.certificateIssued || false,
                 startedAt: item.startedAt,
-
                 completedAt: item.completedAt,
-
                 enrolledAt: item.createdAt
             };
         });

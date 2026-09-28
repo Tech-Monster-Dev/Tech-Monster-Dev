@@ -1,82 +1,61 @@
 import express from "express";
 
-import {
-    protect,
-} from "../../core/security/auth.middleware.js";
+import {protect} from "../../core/security/auth.middleware.js";
 
 import {
     createPayment,
-    verifyPayment,
-    verifyQRPayment,
+    submitPayment,
     getMyPayment,
     cancelPayment,
 } from "./certificatePayment.controller.js";
 
-
-const router =
-    express.Router();
-
+const router = express.Router();
 
 /*
  * ==========================================
  * CREATE CERTIFICATE PAYMENT
  * ==========================================
- */
+*/
 router.post(
     "/create",
     protect,
     createPayment
 );
 
-
 /*
  * ==========================================
- * VERIFY CERTIFICATE PAYMENT
+ * SUBMIT CERTIFICATE PAYMENT
  * ==========================================
  *
- * Used after Razorpay confirms the payment.
- */
+ * Used after the student completes the
+ * manual UPI QR payment.
+*/
 router.post(
-    "/verify",
+    "/submit",
     protect,
-    verifyPayment
+    submitPayment
 );
-
-
-/*
- * ==========================================
- * VERIFY RAZORPAY QR PAYMENT
- * ==========================================
- */
-router.post(
-    "/verify-qr",
-    protect,
-    verifyQRPayment
-);
-
 
 /*
  * ==========================================
  * CANCEL CERTIFICATE PAYMENT
  * ==========================================
- */
+*/
 router.post(
     "/cancel",
     protect,
     cancelPayment
 );
 
-
 /*
  * ==========================================
  * GET MY PAYMENT STATUS
  * ==========================================
- */
+*/
 router.get(
     "/my",
     protect,
     getMyPayment
 );
-
 
 export default router;

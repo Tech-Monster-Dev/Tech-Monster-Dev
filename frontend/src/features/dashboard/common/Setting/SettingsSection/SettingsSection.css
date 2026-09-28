@@ -1,274 +1,279 @@
+@import "tailwindcss";
+
 .settings-section-card {
-  background: rgba(13, 27, 42, 0.6);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  backdrop-filter: blur(12px);
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  color: #ffffff;
-  margin-bottom: 20px;
+    @apply mb-[clamp(1rem,3vw,1.25rem)]
+        rounded-[clamp(0.75rem,2.5vw,1rem)]
+        border
+        p-[clamp(1rem,4vw,1.5rem)]
+        text-(--text);
+    background: color-mix(in srgb, var(--background) 60%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 20%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--dark) 37%, transparent);
 }
 
 .settings-section-card.danger-zone {
-  border-color: rgba(255, 51, 102, 0.4);
-  background: rgba(255, 51, 102, 0.03);
+    border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+    background: color-mix(in srgb, var(--danger) 3%, transparent);
 }
 
 .settings-section-card h3 {
-  font-size: 18px;
-  color: #00f0ff;
-  margin-top: 0;
-  margin-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
-  padding-bottom: 8px;
+    @apply mt-0
+        mb-[clamp(0.75rem,3vw,1rem)]
+        border-b
+        pb-[clamp(0.35rem,1.5vw,0.5rem)]
+        text-[clamp(1rem,3vw,1.125rem)];
+    color: var(--neon);
+    border-bottom-color: color-mix(in srgb, var(--neon) 20%, transparent);
 }
 
 .danger-zone h3 {
-  color: #ff3366;
-  border-bottom-color: rgba(255, 51, 102, 0.3);
+    color: var(--danger);
+    border-bottom-color: color-mix(in srgb, var(--danger) 30%, transparent);
 }
 
 .settings-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    @apply flex
+        items-center
+        justify-between
+        gap-[clamp(0.75rem,3vw,1rem)]
+        border-b
+        py-[clamp(0.625rem,2vw,0.75rem)];
+    border-bottom-color: color-mix(in srgb, var(--text) 5%, transparent);
 }
 
 .settings-row:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 .setting-info label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
+    @apply block
+        text-[clamp(0.8125rem,2.5vw,0.875rem)]
+        font-medium;
 }
 
 .setting-info p {
-  margin: 4px 0 0 0;
-  font-size: 12px;
-  color: #8a9bb8;
+    @apply mt-[clamp(0.2rem,0.7vw,0.25rem)]
+        mb-0
+        text-[clamp(0.6875rem,2vw,0.75rem)];
+    color: var(--gray);
 }
 
-/* Custom Toggle Switch */
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
+    @apply relative
+        inline-block
+        h-[clamp(1.375rem,6vw,1.5rem)]
+        w-[clamp(2.5rem,10vw,2.75rem)];
 }
 
 .switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+    @apply h-0 w-0 opacity-0;
 }
 
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: .4s;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    @apply absolute
+        inset-0
+        cursor-pointer
+        rounded-full
+        border
+        transition-all
+        duration-400;
+    background-color: color-mix(in srgb, var(--text) 10%, transparent);
+    border-color: color-mix(in srgb, var(--text) 20%, transparent);
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
+    @apply absolute
+        bottom-[clamp(0.1875rem,0.8vw,0.1875rem)]
+        left-[clamp(0.1875rem,0.8vw,0.1875rem)]
+        h-[clamp(0.875rem,4vw,1rem)]
+        w-[clamp(0.875rem,4vw,1rem)]
+        rounded-full
+        bg-white
+        transition-all
+        duration-400;
+    content: "";
 }
 
 input:checked + .slider {
-  background-color: #00f0ff;
-  border-color: #00f0ff;
+    background-color: var(--neon);
+    border-color: var(--neon);
 }
 
 input:checked + .slider:before {
-  transform: translateX(20px);
-  background-color: #000;
+    transform: translateX(clamp(1rem,4vw,1.25rem));
+    background-color: var(--dark);
 }
 
-/* Password Form Fields */
 .settings-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    @apply flex
+        flex-col
+        gap-[clamp(0.625rem,2vw,0.75rem)];
 }
 
 .settings-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    @apply flex
+        flex-col
+        gap-[clamp(0.2rem,0.7vw,0.25rem)];
 }
 
 .settings-input-group label {
-  font-size: 12px;
-  color: #8a9bb8;
+    @apply text-[clamp(0.6875rem,2vw,0.75rem)];
+    color: var(--gray);
 }
 
 .settings-input-group input {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 14px;
-  border-radius: 8px;
-  color: #fff;
-  outline: none;
+    @apply rounded-[clamp(0.4rem,1.5vw,0.5rem)]
+        border
+        px-[clamp(0.75rem,3vw,0.875rem)]
+        py-[clamp(0.5rem,2vw,0.625rem)]
+        text-(--text)
+        outline-none;
+    background: color-mix(in srgb, var(--text) 3%, transparent);
+    border-color: color-mix(in srgb, var(--text) 10%, transparent);
 }
 
 .settings-input-group input:focus {
-  border-color: #00f0ff;
+    border-color: var(--neon);
 }
 
 .settings-btn {
-  background: #00f0ff;
-  color: #000;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 8px;
-  align-self: flex-start;
-  transition: transform 0.2s;
+    @apply mt-[clamp(0.375rem,1vw,0.5rem)]
+        cursor-pointer
+        self-start
+        rounded-[clamp(0.4rem,1.5vw,0.5rem)]
+        border-0
+        px-[clamp(1rem,4vw,1.25rem)]
+        py-[clamp(0.5rem,2vw,0.625rem)]
+        font-semibold
+        transition-transform
+        duration-200;
+    background: var(--neon);
+    color: var(--dark);
 }
 
 .settings-btn:hover {
-  transform: translateY(-2px);
+    transform: translateY(-2px);
 }
 
 .delete-btn {
-  background: #ff3366;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s;
+    @apply cursor-pointer
+        rounded-[clamp(0.4rem,1.5vw,0.5rem)]
+        border-0
+        px-[clamp(1rem,4vw,1.25rem)]
+        py-[clamp(0.5rem,2vw,0.625rem)]
+        font-semibold
+        transition-transform
+        duration-200;
+    background: var(--danger);
+    color: var(--text);
 }
 
 .delete-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--danger) 40%, transparent);
 }
+
 .blocked-users-count {
-  min-width: 32px;
-  padding: 4px 10px;
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  border-radius: 999px;
-  color: #00f0ff;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
+    @apply min-w-[clamp(2rem,8vw,2rem)]
+        rounded-full
+        border
+        px-[clamp(0.5rem,2vw,0.625rem)]
+        py-[clamp(0.2rem,1vw,0.25rem)]
+        text-center
+        text-[clamp(0.6875rem,2vw,0.75rem)]
+        font-semibold;
+    border-color: color-mix(in srgb, var(--neon) 30%, transparent);
+    color: var(--neon);
 }
 
 .blocked-users-empty {
-  padding: 18px 0 4px;
-  color: #8a9bb8;
-  font-size: 13px;
-  text-align: center;
+    @apply px-0
+        pt-[clamp(1rem,4vw,1.125rem)]
+        pb-[clamp(0.2rem,1vw,0.25rem)]
+        text-center
+        text-[clamp(0.75rem,2.2vw,0.8125rem)];
+    color: var(--gray);
 }
 
 .blocked-users-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
+    @apply mt-[clamp(0.375rem,1vw,0.5rem)]
+        flex
+        flex-col
+        gap-[clamp(0.625rem,2vw,0.625rem)];
 }
 
 .blocked-user-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
+    @apply flex
+        items-center
+        justify-between
+        gap-[clamp(0.625rem,3vw,1rem)]
+        rounded-[clamp(0.625rem,2vw,0.75rem)]
+        border
+        p-[clamp(0.625rem,2.5vw,0.75rem)];
+    border-color: color-mix(in srgb, var(--text) 8%, transparent);
+    background: color-mix(in srgb, var(--text) 2.5%, transparent);
 }
 
 .blocked-user-info {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    @apply flex
+        min-w-0
+        items-center
+        gap-[clamp(0.625rem,2vw,0.75rem)];
 }
 
 .blocked-user-avatar {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgba(0, 240, 255, 0.25);
+    @apply h-[clamp(2.5rem,10vw,2.75rem)]
+        w-[clamp(2.5rem,10vw,2.75rem)]
+        shrink-0
+        rounded-full
+        border
+        object-cover;
+    border-color: color-mix(in srgb, var(--neon) 25%, transparent);
 }
 
 .blocked-user-info > div {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+    @apply flex
+        min-w-0
+        flex-col
+        gap-[clamp(0.15rem,0.7vw,0.1875rem)];
 }
 
 .blocked-user-info strong {
-  overflow: hidden;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    @apply overflow-hidden
+        text-ellipsis
+        whitespace-nowrap
+        text-[clamp(0.8125rem,2.5vw,0.875rem)]
+        font-semibold;
+    color: var(--text);
 }
 
 .blocked-user-info span {
-  overflow: hidden;
-  color: #8a9bb8;
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    @apply overflow-hidden
+        text-ellipsis
+        whitespace-nowrap
+        text-[clamp(0.6875rem,2vw,0.75rem)];
+    color: var(--gray);
 }
 
 .unblock-btn {
-  flex: 0 0 auto;
-  padding: 8px 16px;
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  border-radius: 8px;
-  background: rgba(0, 240, 255, 0.08);
-  color: #00f0ff;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
+    @apply shrink-0
+        cursor-pointer
+        rounded-[clamp(0.4rem,1.5vw,0.5rem)]
+        border
+        px-[clamp(0.6875rem,3vw,1rem)]
+        py-[clamp(0.4375rem,2vw,0.5rem)]
+        text-[clamp(0.6875rem,2vw,0.75rem)]
+        font-semibold
+        transition-all
+        duration-200;
+    border-color: color-mix(in srgb, var(--neon) 40%, transparent);
+    background: color-mix(in srgb, var(--neon) 8%, transparent);
+    color: var(--neon);
 }
 
 .unblock-btn:hover {
-  background: #00f0ff;
-  color: #000;
-  box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
-}
-
-@media (max-width: 600px) {
-  .blocked-user-row {
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .blocked-user-avatar {
-    width: 40px;
-    height: 40px;
-    flex-basis: 40px;
-  }
-
-  .unblock-btn {
-    padding: 7px 11px;
-  }
+    background: var(--neon);
+    color: var(--dark);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--neon) 30%, transparent);
 }

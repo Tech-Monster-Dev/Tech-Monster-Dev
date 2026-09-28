@@ -69,7 +69,8 @@ function Form({
             });
         }
 
-        const { wrapperClassName: _wrapperClassName, ...safeFieldProps } = fieldProps;
+        const safeFieldProps = { ...fieldProps };
+        delete safeFieldProps.wrapperClassName;
 
         const commonProps = {
             name,

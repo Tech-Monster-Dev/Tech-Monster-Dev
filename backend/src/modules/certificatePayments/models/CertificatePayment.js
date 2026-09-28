@@ -63,37 +63,31 @@ const certificatePaymentSchema = new mongoose.Schema(
         },
 
         // ==========================================
-        // PAYMENT GATEWAY
+        // PAYMENT METHOD
         // ==========================================
 
         gateway: {
             type: String,
-            enum: ["razorpay"],
-            default: "razorpay",
+            enum: ["manual_qr"],
+            default: "manual_qr",
         },
 
-        gatewayOrderId: {
+        // ==========================================
+        // PAYMENT SUBMISSION
+        // Details submitted by the student after
+        // completing the manual QR payment.
+        // ==========================================
+
+        payerName: {
             type: String,
+            trim: true,
             default: "",
-            trim: true,
-        },
-
-        gatewayPaymentId: {
-            type: String,
-            default: null,
-            trim: true,
-        },
-
-        gatewaySignature: {
-            type: String,
-            default: "",
-            trim: true,
         },
 
         transactionId: {
             type: String,
-            default: null,
             trim: true,
+            default: "",
         },
 
         // ==========================================
@@ -145,21 +139,6 @@ const certificatePaymentSchema = new mongoose.Schema(
             type: String,
             default: "",
             trim: true,
-        },
-
-        // ==========================================
-        // QR / CHECKOUT
-        // ==========================================
-
-        qrCodeId: {
-            type: String,
-            default: "",
-            trim: true,
-        },
-
-        qrCodeData: {
-            type: String,
-            default: "",
         },
 
         // ==========================================
@@ -228,50 +207,6 @@ certificatePaymentSchema.index(
         course: 1,
         internship: 1,
         status: 1,
-    }
-);
-
-// ==========================================
-// GATEWAY IDs MUST BE UNIQUE WHEN PRESENT
-// ==========================================
-
-certificatePaymentSchema.index(
-    {
-        qrCodeId: 1,
-    },
-    {
-        unique: true,
-        sparse: true,
-    }
-);
-
-certificatePaymentSchema.index(
-    {
-        gatewayOrderId: 1,
-    },
-    {
-        unique: true,
-        sparse: true,
-    }
-);
-
-certificatePaymentSchema.index(
-    {
-        gatewayPaymentId: 1,
-    },
-    {
-        unique: true,
-        sparse: true,
-    }
-);
-
-certificatePaymentSchema.index(
-    {
-        transactionId: 1,
-    },
-    {
-        unique: true,
-        sparse: true,
     }
 );
 

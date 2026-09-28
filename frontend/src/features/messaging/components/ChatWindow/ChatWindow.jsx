@@ -5,8 +5,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import MessageBubble from "../MessageBubble";
-
-import defaultProfileImage from "../../../../assets/profile/default-profile.svg";
+import StudentBadgeAvatar from "../../../dashboard/common/StudentBadgeAvatar";
 
 export default function ChatWindow({
     currentUser,
@@ -109,16 +108,11 @@ export default function ChatWindow({
             <div className="chatHeader">
                 <div className="chatHeaderLeft">
                     <button type="button" className="mobileChatBack" onClick={onMobileBack} aria-label="Back to conversations"><FiArrowLeft /></button>
-                    <img
-                        src={
-                            selectedUser.avatar && selectedUser.avatar !== "/profile/default-profile.svg"
-                                ? selectedUser.avatar
-                                : defaultProfileImage
-                        }
+                    <StudentBadgeAvatar
+                        avatar={selectedUser.avatar}
+                        latestBadge={selectedUser.latestBadge}
                         alt="profile"
-                        onError={(event) => {
-                            event.currentTarget.src = defaultProfileImage;
-                        }}
+                        className="chat-window-student-badge-avatar"
                     />
 
                     <div>

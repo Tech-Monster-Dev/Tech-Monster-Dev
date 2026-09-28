@@ -69,6 +69,13 @@ function ForgotPassword() {
         try {
             setLoading(true);
             await forgotPassword(formData);
+
+            const expiresAt = Date.now() + 60 * 1000;
+            localStorage.setItem(
+                "resetOtpExpiresAt",
+                expiresAt.toString()
+            );
+
             navigate("/verify-reset-otp", {
                 state: {
                     email: formData.email

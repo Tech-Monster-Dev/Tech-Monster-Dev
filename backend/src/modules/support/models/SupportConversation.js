@@ -21,6 +21,11 @@ const supportConversationSchema = new mongoose.Schema(
             default: "open"
         },
 
+        autoReplyDisabled: {
+            type: Boolean,
+            default: false
+        },
+
         unreadForAdmin: {
             type: Number,
             default: 0,

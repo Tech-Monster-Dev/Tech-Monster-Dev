@@ -70,7 +70,10 @@ export const updateSupportConversation =
 
         if (isStudent) {
             conversation.unreadForAdmin += 1;
-            conversation.status = "open";
+
+            if (conversation.status !== "pending") {
+                conversation.status = "open";
+            }
         } else {
             conversation.unreadForStudent += 1;
         }

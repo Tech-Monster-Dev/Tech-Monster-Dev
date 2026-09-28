@@ -14,10 +14,9 @@ import AppError from "../../core/errors/AppError.js";
 import cloudinary from "../../infrastructure/storage/cloudinary.js";
 import streamifier from "streamifier";
 import { recordLessonLearningDay } from "../learning/learningDay.service.js";
+import { awardBadge, awardCourseMilestoneBadges, getBadgeDefinition } from "../profile/services/badgeAward.service.js";
 
-import {
-    safeSendActivityEmail,
-} from "../../infrastructure/email/index.js";
+import { safeSendActivityEmail } from "../../infrastructure/email/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,10 +97,7 @@ const getOrderedCourseTasks = (courseData, courseSlug) => {
             ""
         ).trim();
 
-        const moduleTitle =
-            module.moduleTitle ||
-            module.title ||
-            "";
+        const moduleTitle = module.moduleTitle || module.title || "";
 
         // Current structure: module.tasks[]
         if (Array.isArray(module.tasks)) {
@@ -115,9 +111,7 @@ const getOrderedCourseTasks = (courseData, courseSlug) => {
                 if (!taskId || seen.has(taskId)) {
                     return;
                 }
-
                 seen.add(taskId);
-
                 orderedTasks.push({
                     courseSlug,
                     moduleId,
@@ -127,12 +121,8 @@ const getOrderedCourseTasks = (courseData, courseSlug) => {
                         ""
                     ).trim(),
                     taskId,
-                    taskTitle:
-                        task.title ||
-                        "Task",
-                    problemStatement:
-                        task.problemStatement ||
-                        "",
+                    taskTitle: task.title || "Task",
+                    problemStatement: task.problemStatement || "",
                 });
             });
         }
@@ -163,19 +153,14 @@ const getOrderedCourseTasks = (courseData, courseSlug) => {
                     }
 
                     seen.add(taskId);
-
                     orderedTasks.push({
                         courseSlug,
                         moduleId,
                         moduleTitle,
                         lessonId,
                         taskId,
-                        taskTitle:
-                            task.title ||
-                            "Task",
-                        problemStatement:
-                            task.problemStatement ||
-                            "",
+                        taskTitle: task.title || "Task",
+                        problemStatement: task.problemStatement || "",
                     });
                 });
             });
@@ -220,156 +205,107 @@ const unlockFirstEligibleLessonTask = async ({
         return null;
     }
 
-    const studentCourse =
-        await StudentInternship.findOne({
-            student,
-            course: course._id
-        });
+    const studentCourse = await StudentInternship.findOne({
+        student,
+        course: course._id
+    });
 
-    const completedLessons =
-        studentCourse?.completedLessons || [];
+    const completedLessons = studentCourse?.completedLessons || [];
 
-    const currentModuleCompleted =
-        isModuleLessonsCompleted(
-            courseData,
-            moduleId,
-            completedLessons
-        );
+    const currentModuleCompleted = isModuleLessonsCompleted(
+        courseData,
+        moduleId,
+        completedLessons
+    );
 
     if (!currentModuleCompleted) {
         return null;
     }
 
     if (moduleIndex > 0) {
-        const previousModule =
-            modules[moduleIndex - 1];
+        const previousModule = modules[moduleIndex - 1];
 
-        const previousModuleId =
-            String(
-                previousModule.moduleId ||
-                previousModule.id ||
-                ""
-            ).trim();
+        const previousModuleId = String(
+            previousModule.moduleId ||
+            previousModule.id ||
+            ""
+        ).trim();
 
-        const previousModuleApproved =
-            await areModuleTasksApproved({
-                student,
-                course: course._id,
-                courseSlug,
-                moduleId: previousModuleId,
-                courseData
-            });
+        const previousModuleApproved = await areModuleTasksApproved({
+            student,
+            course: course._id,
+            courseSlug,
+            moduleId: previousModuleId,
+            courseData
+        });
 
         if (!previousModuleApproved) {
             return null;
         }
     }
 
-    const currentModuleTasks =
-        getOrderedCourseTasks(
-            {
-                modules: [
-                    currentModule
-                ]
-            },
-            courseSlug
-        );
+    const currentModuleTasks = getOrderedCourseTasks(
+        {
+            modules: [
+                currentModule
+            ]
+        },
+        courseSlug
+    );
 
     if (!currentModuleTasks.length) {
         return null;
     }
 
-    const targetTask =
-        currentModuleTasks[0];
+    const targetTask = currentModuleTasks[0];
 
-    const existing =
-        await Submission.findOne({
-            student,
-            course: course._id,
-            courseSlug,
-            moduleId:
-                targetTask.moduleId,
-            lessonId:
-                targetTask.lessonId,
-            taskId:
-                targetTask.taskId
-        });
+    const existing = await Submission.findOne({
+        student,
+        course: course._id,
+        courseSlug,
+        moduleId: targetTask.moduleId,
+        lessonId: targetTask.lessonId,
+        taskId: targetTask.taskId
+    });
 
     if (existing) {
         return existing;
     }
 
-    const unlockedAt =
-        new Date();
+    const unlockedAt = new Date();
 
-    const submission =
-        await Submission.create({
-            student,
+    const submission = await Submission.create({
+        student,
+        course: course._id,
+        internship: null,
+        courseSlug,
+        moduleId: targetTask.moduleId,
+        moduleTitle: targetTask.moduleTitle,
+        lessonId: targetTask.lessonId,
+        taskId: targetTask.taskId,
+        taskTitle: targetTask.taskTitle,
+        problemStatement: targetTask.problemStatement,
+        status: "unlocked",
+        unlockedAt,
+        expiresAt: new Date(
+            unlockedAt.getTime() +
+            TASK_DEADLINE_MS
+        ),
+        expiredAt: null
+    });
 
-            course:
-                course._id,
-
-            internship:
-                null,
-
-            courseSlug,
-
-            moduleId:
-                targetTask.moduleId,
-
-            moduleTitle:
-                targetTask.moduleTitle,
-
-            lessonId:
-                targetTask.lessonId,
-
-            taskId:
-                targetTask.taskId,
-
-            taskTitle:
-                targetTask.taskTitle,
-
-            problemStatement:
-                targetTask.problemStatement,
-
-            status:
-                "unlocked",
-
-            unlockedAt,
-
-            expiresAt:
-                new Date(
-                    unlockedAt.getTime() +
-                    TASK_DEADLINE_MS
-                ),
-
-            expiredAt:
-                null
-        });
-
-    const taskUnlock =
-        submission;
+    const taskUnlock = submission;
 
     emitToUser(
         student,
         "taskUnlocked",
         {
             taskUnlock,
-
             taskKey:
                 [
-                    String(
-                        taskUnlock.moduleId ||
-                        ""
-                    ),
-                    String(
-                        taskUnlock.lessonId ||
-                        ""
-                    ),
-                    String(
-                        taskUnlock.taskId ||
-                        ""
-                    )
+                    String(taskUnlock.moduleId || ""),
+                    String(taskUnlock.lessonId || ""),
+                    String(taskUnlock.taskId || "")
                 ].join("_")
         }
     );
@@ -378,10 +314,9 @@ const unlockFirstEligibleLessonTask = async ({
 };
 
 const isModuleLessonsCompleted = (courseData, moduleId, completedLessons = []) => {
-    const module = (courseData?.modules || []).find(
-        (item) =>
-            String(item.moduleId || item.id || "") ===
-            String(moduleId)
+    const module = (courseData?.modules || []).find((item) =>
+        String(item.moduleId || item.id || "") ===
+        String(moduleId)
     );
 
     if (
@@ -415,10 +350,9 @@ const areModuleTasksApproved = async ({
     moduleId,
     courseData
 }) => {
-    const module = (courseData?.modules || []).find(
-        (item) =>
-            String(item.moduleId || item.id || "") ===
-            String(moduleId)
+    const module = (courseData?.modules || []).find((item) =>
+        String(item.moduleId || item.id || "") ===
+        String(moduleId)
     );
 
     if (module == null) {
@@ -566,9 +500,7 @@ export const getSingleCourse = asyncHandler(async (req, res) => {
     if (hasSlug) {
         course = await Course.findOne({ slug: normalizedSlug });
     } else {
-        course = await (mongoose.isValidObjectId(identifier)
-            ? Course.findById(identifier)
-            : Course.findOne({ slug: normalizedSlug }));
+        course = await (mongoose.isValidObjectId(identifier) ? Course.findById(identifier) : Course.findOne({ slug: normalizedSlug }));
     }
 
     if (!course) {
@@ -660,6 +592,18 @@ export const updateCourseProgress = asyncHandler(async (req, res) => {
 
     await studentCourse.save();
 
+    if (progress >= 100) {
+        const badgeDefinition = getBadgeDefinition("COURSE", "Course Starter");
+        if (badgeDefinition) {
+            await awardBadge({
+                userId: req.user._id,
+                definition: badgeDefinition,
+                category: "COURSE"
+            });
+        }
+        await awardCourseMilestoneBadges(req.user._id);
+    }
+
     res.status(200).json({
         success: true,
         message: "Progress updated",
@@ -682,6 +626,16 @@ export const completeCourse = asyncHandler(async (req, res) => {
     studentCourse.completedAt = new Date();
 
     await studentCourse.save();
+
+    const badgeDefinition = getBadgeDefinition("COURSE", "Course Starter");
+    if (badgeDefinition) {
+        await awardBadge({
+            userId: req.user._id,
+            definition: badgeDefinition,
+            category: "COURSE"
+        });
+    }
+    await awardCourseMilestoneBadges(req.user._id);
 
     res.status(200).json({
         success: true,
@@ -718,9 +672,7 @@ export const completeLesson = asyncHandler(async (req, res) => {
         });
     }
 
-    const alreadyCompleted =
-        Array.isArray(studentCourse.completedLessons) &&
-        studentCourse.completedLessons.includes(lessonId);
+    const alreadyCompleted = Array.isArray(studentCourse.completedLessons) && studentCourse.completedLessons.includes(lessonId);
 
     if (!alreadyCompleted) {
         studentCourse.completedLessons.push(lessonId);
@@ -729,33 +681,14 @@ export const completeLesson = asyncHandler(async (req, res) => {
     await studentCourse.save();
 
     const courseData = await readCourseDataFromFile(normalizedSlug);
-    console.log("=== LESSON TASK UNLOCK DEBUG ===");
-    console.log("courseSlug:", normalizedSlug);
-    console.log("lessonId:", lessonId);
-    console.log("courseId:", String(course._id));
-    console.log(
-        "completedLessons:",
-        studentCourse.completedLessons
-    );
-    console.log(
-        "courseModules:",
-        courseData?.modules?.length || 0
-    );
 
-    const unlockedSubmission =
-        await unlockFirstEligibleLessonTask({
-            student: req.user._id,
-            course: course._id,
-            courseSlug: normalizedSlug,
-            lessonId,
-            courseData
-        });
-
-    console.log(
-        "unlockedSubmission:",
-        unlockedSubmission
-    );
-    console.log("=== END LESSON TASK UNLOCK DEBUG ===");
+    const unlockedSubmission = await unlockFirstEligibleLessonTask({
+        student: req.user._id,
+        course: course._id,
+        courseSlug: normalizedSlug,
+        lessonId,
+        courseData
+    });
 
     await recordLessonLearningDay({
         studentId: req.user._id,
@@ -770,9 +703,7 @@ export const completeLesson = asyncHandler(async (req, res) => {
         0
     );
 
-    const progress = totalLessons > 0
-        ? Math.min(100, Math.round((studentCourse.completedLessons.length / totalLessons) * 100))
-        : studentCourse.progress;
+    const progress = totalLessons > 0 ? Math.min(100, Math.round((studentCourse.completedLessons.length / totalLessons) * 100)) : studentCourse.progress;
 
     studentCourse.progress = progress;
     studentCourse.status = progress >= 100 ? "Completed" : "In Progress";
@@ -781,6 +712,18 @@ export const completeLesson = asyncHandler(async (req, res) => {
     }
 
     await studentCourse.save();
+
+    if (progress >= 100) {
+        const badgeDefinition = getBadgeDefinition("COURSE", "Course Starter");
+        if (badgeDefinition) {
+            await awardBadge({
+                userId: req.user._id,
+                definition: badgeDefinition,
+                category: "COURSE"
+            });
+        }
+        await awardCourseMilestoneBadges(req.user._id);
+    }
 
     res.status(200).json({
         success: true,

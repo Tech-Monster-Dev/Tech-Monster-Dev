@@ -35,6 +35,9 @@ export const sendSupportMessage = async ({
     let conversation =
         await SupportConversation.findById(
             conversationId
+        ).populate(
+            "assignedAdmin",
+            "firstName lastName avatar role"
         );
 
     if (!conversation) {
@@ -116,6 +119,23 @@ export const sendSupportMessage = async ({
      * Do not notify admin immediately.
      * First check the local knowledge base.
      */
+    if (conversation.autoReplyDisabled) {
+        await notifySupportReceiver({
+            receiver,
+            sender: user,
+            message: newMessage,
+            conversation,
+            createNotification: true
+        });
+
+        return {
+            message: newMessage,
+            conversation,
+            autoReply: null,
+            escalated: false
+        };
+    }
+
     const autoReply =
         await sendSupportAutoReply({
             conversation,

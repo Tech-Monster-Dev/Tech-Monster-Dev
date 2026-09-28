@@ -105,6 +105,10 @@ export const sendSupportAutoReply = async ({
         shouldEscalate &&
         studentMessage
     ) {
+        updatedConversation.status = "pending";
+        updatedConversation.autoReplyDisabled = true;
+        await updatedConversation.save();
+
         await notifySupportReceiver({
             receiver: admin._id || admin,
             sender: student,

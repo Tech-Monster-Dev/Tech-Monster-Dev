@@ -11,6 +11,7 @@ import AppError from "../../core/errors/AppError.js";
 import logActivity from "../activity/logActivity.js";
 import { recordActiveTime as saveActiveTime } from "./activeTime.service.js";
 import { ensureDailyAttendance } from "./services/dailyAttendance.service.js";
+import { getCurrentAttendanceStreak, unlockAttendanceStreakBadges } from "./attendance.service.js";
 import { emitToUser } from "../../infrastructure/socket/socket.js";
 
 export const getMyAttendance = asyncHandler(async (req, res) => {
@@ -234,6 +235,9 @@ export const recordActiveTime = asyncHandler(async (req, res) => {
     await ensureDailyAttendance(
         req.user._id
     );
+
+    const attendanceStreak = await getCurrentAttendanceStreak(req.user._id);
+    await unlockAttendanceStreakBadges(req.user._id, attendanceStreak);
 
 
     const UserBadge = (await import(

@@ -100,6 +100,7 @@ export default function AttendancePage() {
     <div className="attendance-page">
       <AttendanceHeader
         user={dashboard?.user}
+        latestBadge={dashboard?.badges?.[0] || null}
         presentCount={monthlyCounts.presentCount}
         absentCount={monthlyCounts.absentCount}
       />

@@ -1,6 +1,7 @@
 import User from "../user/models/User.js";
 import Internship from "../internships/models/Internship.js";
 import ChatBlock from "../messages/models/ChatBlock.js";
+import { getLatestStudentBadge } from "../profile/services/studentBadge.service.js";
 
 import asyncHandler from "../../core/http/asyncHandler.js";
 
@@ -82,8 +83,17 @@ export const searchUsers = asyncHandler(async (req, res) => {
         .select("-password -refreshToken")
         .limit(Number(limit));
 
+    const usersWithBadges = await Promise.all(
+        users.map(async user => ({
+            ...user.toObject(),
+            latestBadge: user.role === "student"
+                ? await getLatestStudentBadge(user._id)
+                : null
+        }))
+    );
+
     return res.status(200).json({
         success: true,
-        users,
+        users: usersWithBadges,
     });
 });

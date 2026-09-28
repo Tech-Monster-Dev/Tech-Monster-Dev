@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import EmptyState from '../../../components/ui/EmptyState';
+import EmptyState from '../../../../components/ui/EmptyState';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -10,30 +10,32 @@ const cardVariants = {
   })
 };
 
+
 export default function ProfileCards({
   internships = [],
   courses = [],
   certificates = [],
   badges = []
 }) {
+
   return (
-    <div className="cards-grid">
+    <div className="student-profile-cards-grid">
       {/* Internships Card */}
-      <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible" className="profile-card-glass">
-        <h3 className="card-title">💼 Internships ({internships.length})</h3>
-        <div className="card-list">
+      <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible" className="student-profile-card">
+        <h3 className="student-profile-card-title">💼 Internships ({internships.length})</h3>
+        <div className="student-profile-card-list">
           {internships.length > 0 ? (
             internships.map((item, idx) => (
-              <div key={idx} className="item-badge">
-                <p className="item-title">
+              <div key={idx} className="student-profile-item">
+                <p className="student-profile-item-title">
                   {item.title}
                 </p>
 
-                <span className="item-sub">
+                <span className="student-profile-item-sub">
                   {item.category || item.level || "Internship"}
                 </span>
 
-                <span className="item-sub">
+                <span className="student-profile-item-sub">
                   Progress: {item.progress || 0}%
                 </span>
               </div>
@@ -49,21 +51,21 @@ export default function ProfileCards({
       </motion.div>
 
       {/* Enrolled Courses Card */}
-      <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible" className="profile-card-glass">
-        <h3 className="card-title">📚 Courses ({courses.length})</h3>
-        <div className="card-list">
+      <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible" className="student-profile-card">
+        <h3 className="student-profile-card-title">📚 Courses ({courses.length})</h3>
+        <div className="student-profile-card-list">
           {courses.length > 0 ? (
             courses.map((item, idx) => (
-              <div key={idx} className="item-badge">
-                <p className="item-title">
+              <div key={idx} className="student-profile-item">
+                <p className="student-profile-item-title">
                   {item.title}
                 </p>
 
-                <span className="item-sub">
+                <span className="student-profile-item-sub">
                   {item.category || item.level || "Course"}
                 </span>
 
-                <span className="item-sub">
+                <span className="student-profile-item-sub">
                   Progress: {item.progress || 0}%
                 </span>
               </div>
@@ -79,40 +81,35 @@ export default function ProfileCards({
       </motion.div>
 
       {/* Certificates Card */}
-
       <motion.div
         custom={2}
         variants={cardVariants}
         initial="hidden"
         animate="visible"
-        className="profile-card-glass"
+        className="student-profile-card"
       >
-        <h3 className="card-title">
+        <h3 className="student-profile-card-title">
           🏆 Certificates ({certificates.length})
         </h3>
 
-        <div className="card-list">
-
+        <div className="student-profile-card-list">
           {certificates.length > 0 ? (
-
             certificates.map((item) => (
-
               <div
                 key={item._id}
-                className="item-badge"
+                className="student-profile-item"
               >
-
-                <p className="item-title">
+                <p className="student-profile-item-title">
                   {item.internship?.title ||
                     "Internship Certificate"}
                 </p>
 
-                <span className="item-sub">
+                <span className="student-profile-item-sub">
                   Certificate No:{" "}
                   {item.certificateNumber}
                 </span>
 
-                <span className="item-sub">
+                <span className="student-profile-item-sub">
                   Issued:{" "}
                   {item.issueDate
                     ? new Date(
@@ -120,21 +117,15 @@ export default function ProfileCards({
                     ).toLocaleDateString()
                     : "N/A"}
                 </span>
-
               </div>
-
             ))
-
           ) : (
-
             <EmptyState
               compact
               heading="No Certificates Yet"
               paragraph="You have not earned any certificates yet."
             />
-
           )}
-
         </div>
       </motion.div>
 
@@ -143,29 +134,25 @@ export default function ProfileCards({
         variants={cardVariants}
         initial="hidden"
         animate="visible"
-        className="profile-card-glass"
+        className="student-profile-card"
       >
-        <h3 className="card-title">
+        <h3 className="student-profile-card-title">
           🥇 Badges ({badges.length})
         </h3>
 
-        <div className="card-list">
-
+        <div className="student-profile-card-list">
           {badges.length > 0 ? (
-
             badges.map((item) => (
-
               <div
                 key={item._id}
-                className="item-badge"
+                className="student-profile-item"
               >
-
-                <p className="item-title">
+                <p className="student-profile-item-title">
                   {item.badge?.name ||
                     "Achievement Badge"}
                 </p>
 
-                <span className="item-sub">
+                <span className="student-profile-item-sub">
                   Earned:{" "}
                   {item.earnedAt
                     ? new Date(
@@ -173,21 +160,15 @@ export default function ProfileCards({
                     ).toLocaleDateString()
                     : "N/A"}
                 </span>
-
               </div>
-
             ))
-
           ) : (
-
             <EmptyState
               compact
               heading="No Badges Yet"
               paragraph="You have not earned any badges yet."
             />
-
           )}
-
         </div>
 
       </motion.div>

@@ -1,7 +1,6 @@
-import useSkeletonScrollLock from "../../../../../shared/hooks/useSkeletonScrollLock";
+import "./CertificatePaymentDetails.css";
 
 import { useEffect, useState } from "react";
-
 import { toast } from "react-toastify";
 
 import {
@@ -10,30 +9,20 @@ import {
     rejectCertificatePayment,
 } from "../../../../../services/api/adminCertificatePayment.service";
 
-import "./CertificatePaymentDetails.css";
-
+import useSkeletonScrollLock from "../../../../../shared/hooks/useSkeletonScrollLock";
 
 export default function CertificatePaymentDetails({
     paymentId,
     onClose,
     onActionComplete,
 }) {
-
     const [payment, setPayment] = useState(null);
-
     const [loading, setLoading] = useState(true);
-
+    const [actionLoading, setActionLoading] = useState(false);
+    const [rejecting, setRejecting] = useState(false);
+    const [rejectionReason, setRejectionReason] = useState("");
+    
     useSkeletonScrollLock(loading);
-
-    const [actionLoading, setActionLoading] =
-        useState(false);
-
-    const [rejecting, setRejecting] =
-        useState(false);
-
-    const [rejectionReason, setRejectionReason] =
-        useState("");
-
 
     useEffect(() => {
         if (!paymentId) return;
@@ -55,40 +44,28 @@ export default function CertificatePaymentDetails({
                 setLoading(false);
             }
         }
-        
+
         loadDetails();
     }, [paymentId, onClose]);
 
-
     const handleApprove = async () => {
-
         if (!paymentId) return;
-
-        const confirmed =
-            window.confirm(
-                "Approve this payment and issue the certificate?"
-            );
-
+        const confirmed = window.confirm(
+            "Approve this payment and issue the certificate?"
+        );
         if (!confirmed) return;
-
         setActionLoading(true);
-
         try {
-
             await approveCertificatePayment(
                 paymentId
             );
-
             toast.success(
                 "Payment approved and certificate issued successfully."
             );
-
             onActionComplete?.();
-
             onClose?.();
 
         } catch (err) {
-
             console.error(
                 "Certificate payment approval failed:",
                 err
@@ -100,79 +77,54 @@ export default function CertificatePaymentDetails({
             );
 
         } finally {
-
             setActionLoading(false);
-
         }
-
     };
 
-
     const handleReject = async (event) => {
-
         event.preventDefault();
-
-        const reason =
-            rejectionReason.trim();
+        const reason = rejectionReason.trim();
 
         if (!reason) {
-
             toast.error(
                 "Please provide a rejection reason."
             );
-
             return;
-
         }
-
         setActionLoading(true);
-
         try {
-
             await rejectCertificatePayment(
                 paymentId,
                 reason
             );
-
             toast.success(
                 "Certificate payment rejected successfully."
             );
-
             onActionComplete?.();
-
             onClose?.();
-
         } catch (err) {
-
             console.error(
                 "Certificate payment rejection failed:",
                 err
             );
-
             toast.error(
                 err?.response?.data?.message ||
                 "Failed to reject certificate payment."
             );
 
         } finally {
-
             setActionLoading(false);
-
         }
-
     };
-
 
     if (!paymentId) {
         return null;
     }
 
-
     return (
         <div
             className="certificate-payment-details-overlay"
             onMouseDown={(event) => {
-
                 if (
                     event.target === event.currentTarget &&
                     !actionLoading
@@ -182,18 +134,14 @@ export default function CertificatePaymentDetails({
 
             }}
         >
-
             <div
                 className="certificate-payment-details-modal"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="certificate-payment-details-title"
             >
-
                 <div className="certificate-payment-details-header">
-
                     <div>
-
                         <h2 id="certificate-payment-details-title">
                             Certificate Payment Review
                         </h2>
@@ -202,7 +150,6 @@ export default function CertificatePaymentDetails({
                             Verify the payment before issuing
                             the certificate.
                         </p>
-
                     </div>
 
                     <button
@@ -212,27 +159,20 @@ export default function CertificatePaymentDetails({
                         disabled={actionLoading}
                         aria-label="Close"
                     >
-                        ×
+                        Ã—
                     </button>
-
                 </div>
 
-
                 {loading ? (
-
                     <div className="certificate-payment-details-loading">
-
                         <div />
                         <div />
                         <div />
                         <div />
-
                     </div>
 
                 ) : !payment ? (
-
                     <div className="certificate-payment-details-empty">
-
                         <h3>
                             Payment Not Found
                         </h3>
@@ -241,36 +181,26 @@ export default function CertificatePaymentDetails({
                             This certificate payment could not
                             be loaded.
                         </p>
-
                     </div>
-
                 ) : (
-
                     <>
-
                         <div className="certificate-payment-status">
-
                             <span>
                                 Payment Status
                             </span>
 
                             <strong>
-                                {payment.status || "—"}
+                                {payment.status || "â€”"}
                             </strong>
-
                         </div>
 
-
                         <div className="certificate-payment-details-grid">
-
                             <div className="certificate-payment-detail-section">
-
                                 <h3>
                                     Student
                                 </h3>
 
                                 <div className="certificate-payment-detail-row">
-
                                     <span>
                                         Name
                                     </span>
@@ -279,46 +209,37 @@ export default function CertificatePaymentDetails({
                                         {`${payment.student?.firstName || ""} ${payment.student?.lastName || ""}`
                                             .trim() ||
                                             payment.student?.username ||
-                                            "—"}
+                                            "â€”"}
                                     </strong>
-
                                 </div>
 
                                 <div className="certificate-payment-detail-row">
-
                                     <span>
                                         Email
                                     </span>
 
                                     <strong>
-                                        {payment.student?.email || "—"}
+                                        {payment.student?.email || "â€”"}
                                     </strong>
-
                                 </div>
-
                             </div>
 
-
                             <div className="certificate-payment-detail-section">
-
                                 <h3>
                                     Program
                                 </h3>
 
                                 <div className="certificate-payment-detail-row">
-
                                     <span>
                                         Type
                                     </span>
 
                                     <strong>
-                                        {payment.programType || "—"}
+                                        {payment.programType || "â€”"}
                                     </strong>
-
                                 </div>
 
                                 <div className="certificate-payment-detail-row">
-
                                     <span>
                                         Program
                                     </span>
@@ -327,22 +248,17 @@ export default function CertificatePaymentDetails({
                                         {payment.programTitle ||
                                             payment.course?.title ||
                                             payment.internship?.title ||
-                                            "—"}
+                                            "â€”"}
                                     </strong>
-
                                 </div>
-
                             </div>
 
-
                             <div className="certificate-payment-detail-section">
-
                                 <h3>
                                     Payment
                                 </h3>
 
                                 <div className="certificate-payment-detail-row">
-
                                     <span>
                                         Certificate Fee
                                     </span>
@@ -353,11 +269,19 @@ export default function CertificatePaymentDetails({
                                             payment.amount || 0
                                         ).toLocaleString("en-IN")}
                                     </strong>
-
                                 </div>
 
                                 <div className="certificate-payment-detail-row">
+                                    <span>Paid By</span>
+                                    <strong>{payment.payerName || "—"}</strong>
+                                </div>
 
+                                <div className="certificate-payment-detail-row">
+                                    <span>Transaction ID</span>
+                                    <strong>{payment.transactionId || "—"}</strong>
+                                </div>
+
+                                <div className="certificate-payment-detail-row">
                                     <span>
                                         Paid At
                                     </span>
@@ -367,65 +291,14 @@ export default function CertificatePaymentDetails({
                                             ? new Date(
                                                 payment.paidAt
                                             ).toLocaleString("en-IN")
-                                            : "—"}
+                                            : "â€”"}
                                     </strong>
-
                                 </div>
-
                             </div>
-
-
-                            <div className="certificate-payment-detail-section">
-
-                                <h3>
-                                    Gateway Details
-                                </h3>
-
-                                <div className="certificate-payment-detail-row">
-
-                                    <span>
-                                        Order ID
-                                    </span>
-
-                                    <strong>
-                                        {payment.gatewayOrderId || "—"}
-                                    </strong>
-
-                                </div>
-
-                                <div className="certificate-payment-detail-row">
-
-                                    <span>
-                                        Payment ID
-                                    </span>
-
-                                    <strong>
-                                        {payment.gatewayPaymentId || "—"}
-                                    </strong>
-
-                                </div>
-
-                                <div className="certificate-payment-detail-row">
-
-                                    <span>
-                                        Transaction ID
-                                    </span>
-
-                                    <strong>
-                                        {payment.transactionId || "—"}
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
                         </div>
 
-
                         {!rejecting ? (
-
                             <div className="certificate-payment-details-actions">
-
                                 <button
                                     type="button"
                                     className="certificate-payment-reject-btn"
@@ -455,12 +328,10 @@ export default function CertificatePaymentDetails({
                             </div>
 
                         ) : (
-
                             <form
                                 className="certificate-payment-rejection-form"
                                 onSubmit={handleReject}
                             >
-
                                 <h3>
                                     Reject Certificate Payment
                                 </h3>
@@ -485,18 +356,14 @@ export default function CertificatePaymentDetails({
                                 />
 
                                 <div className="certificate-payment-details-actions">
-
                                     <button
                                         type="button"
                                         className="certificate-payment-cancel-btn"
                                         onClick={() => {
-
                                             setRejecting(
                                                 false
                                             );
-
                                             setRejectionReason("");
-
                                         }}
                                         disabled={actionLoading}
                                     >
@@ -515,20 +382,12 @@ export default function CertificatePaymentDetails({
                                             ? "Rejecting..."
                                             : "Confirm Rejection"}
                                     </button>
-
                                 </div>
-
                             </form>
-
                         )}
-
                     </>
-
                 )}
-
             </div>
-
         </div>
     );
-
 }
