@@ -15,54 +15,38 @@ const DAYS = [
 
 const getDayKey = date => {
     const value = new Date(date);
-
     value.setHours(0, 0, 0, 0);
-
     return value;
 };
 
 const getStartOfWeek = date => {
     const value = getDayKey(date);
-
     value.setDate(
         value.getDate() - value.getDay()
     );
-
     return value;
 };
 
 const getEndOfWeek = date => {
     const value = getStartOfWeek(date);
-
     value.setDate(
         value.getDate() + 6
     );
-
     value.setHours(23, 59, 59, 999);
-
     return value;
 };
 
 const getWeeklyAnalytics = async userId => {
-
     const now = new Date();
-
-    const currentWeekStart =
-        getStartOfWeek(now);
-
-    const currentWeekEnd =
-        getEndOfWeek(now);
-
-    const previousWeekStart =
-        new Date(currentWeekStart);
+    const currentWeekStart = getStartOfWeek(now);
+    const currentWeekEnd = getEndOfWeek(now);
+    const previousWeekStart = new Date(currentWeekStart);
 
     previousWeekStart.setDate(
         previousWeekStart.getDate() - 7
     );
 
-    const previousWeekEnd =
-        new Date(currentWeekStart);
-
+    const previousWeekEnd = new Date(currentWeekStart);
     previousWeekEnd.setMilliseconds(-1);
 
     const [
@@ -107,7 +91,6 @@ const getWeeklyAnalytics = async userId => {
     // ==========================================
     // LEARNING ENROLLMENT BOUNDARY
     // ==========================================
-
     const enrollmentStartDates =
         internships
             .map(item => item.startedAt)
@@ -147,25 +130,20 @@ const getWeeklyAnalytics = async userId => {
             : [];
 
     const previousLearningActivity =
-        earliestEnrollmentDate
-            ? previousWeekActivity.filter(
-                item =>
-                    new Date(item.date) >=
-                    earliestEnrollmentDate
-            )
+        earliestEnrollmentDate ? previousWeekActivity.filter(
+            item =>
+                new Date(item.date) >=
+                earliestEnrollmentDate
+        )
             : [];
 
     // ==========================================
     // WEEKLY ATTENDANCE
     // ==========================================
-
-    const attendanceData =
-        new Array(7).fill(0);
+    const attendanceData = new Array(7).fill(0);
 
     attendance.forEach(item => {
-
-        const date =
-            new Date(item.createdAt);
+        const date = new Date(item.createdAt);
 
         if (
             date < currentWeekStart ||
@@ -186,177 +164,130 @@ const getWeeklyAnalytics = async userId => {
     // ==========================================
     // WEEKLY LEARNING HOURS
     // ==========================================
-
-    const learningHours =
-        new Array(7).fill(0);
+    const learningHours = new Array(7).fill(0);
 
     learningActivity.forEach(item => {
-
-        const day =
-            new Date(item.date).getDay();
-
-        learningHours[day] +=
-            (item.activeSeconds || 0) / 3600;
+        const day = new Date(item.date).getDay();
+        learningHours[day] += (item.activeSeconds || 0) / 3600;
     });
 
-    const totalCurrentWeekSeconds =
-        learningActivity.reduce(
-            (sum, item) =>
-                sum +
-                (item.activeSeconds || 0),
-            0
-        );
+    const totalCurrentWeekSeconds = learningActivity.reduce(
+        (sum, item) =>
+            sum +
+            (item.activeSeconds || 0),
+        0
+    );
 
-    const totalPreviousWeekSeconds =
-        previousLearningActivity.reduce(
-            (sum, item) =>
-                sum +
-                (item.activeSeconds || 0),
-            0
-        );
+    const totalPreviousWeekSeconds = previousLearningActivity.reduce(
+        (sum, item) =>
+            sum +
+            (item.activeSeconds || 0),
+        0
+    );
 
     // ==========================================
     // WEEKLY LEARNING CHART
     // ==========================================
+    const maxDailySeconds = Math.max(
+        ...learningActivity.map(
+            item => item.activeSeconds || 0
+        ),
+        0
+    );
 
-    const maxDailySeconds =
-        Math.max(
-            ...learningActivity.map(
-                item => item.activeSeconds || 0
-            ),
-            0
-        );
+    const weeklyData = maxDailySeconds === 0
+        ? new Array(7).fill(0)
+        : learningHours.map(hours => {
+            const seconds = hours * 3600;
 
-    const weeklyData =
-        maxDailySeconds === 0
-            ? new Array(7).fill(0)
-            : learningHours.map(hours => {
-
-                const seconds =
-                    hours * 3600;
-
-                return Math.round(
-                    (seconds /
-                        maxDailySeconds) *
-                    100
-                );
-            });
+            return Math.round(
+                (seconds /
+                    maxDailySeconds) *
+                100
+            );
+        });
 
     // ==========================================
     // COMPLETED TASKS
     // ==========================================
-
-    const completedTasks =
-        new Array(7).fill(0);
+    const completedTasks = new Array(7).fill(0);
 
     tasks
-        .filter(
-            task =>
-                task.status === "Approved" &&
-                new Date(task.updatedAt) >=
-                    currentWeekStart &&
-                new Date(task.updatedAt) <=
-                    currentWeekEnd
+        .filter(task =>
+            task.status === "Approved" &&
+            new Date(task.updatedAt) >= currentWeekStart &&
+            new Date(task.updatedAt) <= currentWeekEnd
         )
         .forEach(task => {
-
-            const day =
-                new Date(task.updatedAt).getDay();
-
+            const day = new Date(task.updatedAt).getDay();
             completedTasks[day]++;
         });
 
     // ==========================================
     // INTERNSHIP PROGRESS
     // ==========================================
-
-    const internshipProgress =
-        internships.map(item => ({
-
-            internship:
-                item.internship,
-
-            progress:
-                item.progress,
-
-            status:
-                item.status
-        }));
+    const internshipProgress = internships.map(item => ({
+        internship: item.internship,
+        progress: item.progress,
+        status: item.status
+    }));
 
     // ==========================================
     // COMPLETED PROGRAMS
     // ==========================================
-
-    const completedCourses =
-        internships.filter(
-            item =>
-                item.status === "Completed"
-        ).length;
+    const completedCourses = internships.filter(
+        item =>
+            item.status === "Completed"
+    ).length;
 
     // ==========================================
     // WEEKLY LEARNING GOAL
     // ==========================================
-
     /*
      * Weekly target:
      * 1 hour of learning per day × 7 days = 7 hours.
      *
      * 7 hours or more = 100%.
      * Below 7 hours = proportional percentage.
-     */
+    */
+    const weeklyLearningTargetSeconds = 7 * 60 * 60;
 
-    const weeklyLearningTargetSeconds =
-        7 * 60 * 60;
-
-    const growth =
-        Math.min(
-            Math.round(
-                (
-                    totalCurrentWeekSeconds /
-                    weeklyLearningTargetSeconds
-                ) * 100
-            ),
-            100
-        );
+    const growth = Math.min(
+        Math.round(
+            (
+                totalCurrentWeekSeconds /
+                weeklyLearningTargetSeconds
+            ) * 100
+        ),
+        100
+    );
 
     // ==========================================
     // TOTAL LEARNING HOURS
     // ==========================================
-
-    const hours =
-        Number(
-            (
-                totalCurrentWeekSeconds /
-                3600
-            ).toFixed(1)
-        );
+    const hours = Number(
+        (
+            totalCurrentWeekSeconds /
+            3600
+        ).toFixed(1)
+    );
 
     return {
-
         labels: DAYS,
-
-        attendance:
-            attendanceData,
-
-        learningHours:
-            learningHours.map(
-                value =>
-                    Number(
-                        value.toFixed(2)
-                    )
-            ),
-
+        attendance: attendanceData,
+        learningHours: learningHours.map(
+            value =>
+                Number(
+                    value.toFixed(2)
+                )
+        ),
         completedTasks,
-
         internshipProgress,
 
         // Home page analytics
         completedCourses,
-
         hours,
-
         growth,
-
         weeklyData
     };
 };

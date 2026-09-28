@@ -48,13 +48,11 @@ import StudentCertificate from '../features/student/certificate';
 import StudentFeedback from '../features/student/feedback';
 import StudentSetting from '../features/student/settings';
 
-import StudentProfile from '../features/profile/StudentProfile';
-
-
+import StudentProfile from '../features/student/profile';
 
 import Notification from '../features/dashboard/common/Notification';
 import Message from '../features/messaging';
-import HelpSupport from '../features/dashboard/common/HelpSupport';
+import HelpSupport from '../features/student/HelpSupport';
 
 // Admin Dashboard
 import Overview from '../features/admin/overview';

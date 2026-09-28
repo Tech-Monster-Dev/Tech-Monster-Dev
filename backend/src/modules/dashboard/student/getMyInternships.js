@@ -45,57 +45,30 @@ const getMyInternships = async (userId) => {
             );
 
             return {
-
                 _id: item._id,
-
                 type: "internship",
-
                 internshipId: item.internship._id,
-
                 slug: item.internship.slug,
-
                 title: item.internship.title,
-
                 thumbnail: item.internship.thumbnail,
-
                 category: item.internship.category,
-
                 level: item.internship.level,
-
                 duration: item.internship.duration,
-
                 totalTasks: item.internship.totalTasks,
-
                 totalNotes: item.internship.totalNotes,
-
                 completedTasks: item.completedTasks || 0,
-
                 remainingTasks,
-
                 remainingNotes,
-
                 progress: item.progress || 0,
-
                 status: item.status || "Not Started",
-
-                certificateEligible:
-                    item.internship.certificate,
-
-                badgeEligible:
-                    item.internship.badge,
-
-                certificateIssued:
-                    item.certificateIssued || false,
-
+                certificateEligible: item.internship.certificate,
+                badgeEligible: item.internship.badge,
+                certificateIssued: item.certificateIssued || false,
                 startedAt: item.startedAt,
-
                 completedAt: item.completedAt,
-
                 enrolledAt: item.createdAt
             };
-
         });
-
 };
 
 export default getMyInternships;

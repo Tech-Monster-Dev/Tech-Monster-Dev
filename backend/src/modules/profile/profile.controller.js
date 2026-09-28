@@ -259,6 +259,17 @@ export const getProfile = asyncHandler(
             user._id
         );
 
+        const latestBadge = await UserBadge.findOne({
+            user: user._id
+        })
+            .populate(
+                "badge",
+                "title icon description color requirement category"
+            )
+            .sort({
+                earnedAt: -1
+            })
+            .lean();
 
         res.status(200).json({
 
@@ -266,7 +277,20 @@ export const getProfile = asyncHandler(
 
             user,
 
-            stats
+            stats,
+
+            latestBadge: latestBadge?.badge
+                ? {
+                    _id: latestBadge.badge._id,
+                    title: latestBadge.badge.title,
+                    icon: latestBadge.badge.icon,
+                    description: latestBadge.badge.description,
+                    color: latestBadge.badge.color,
+                    requirement: latestBadge.badge.requirement,
+                    category: latestBadge.badge.category,
+                    earnedAt: latestBadge.earnedAt
+                }
+                : null
 
         });
 

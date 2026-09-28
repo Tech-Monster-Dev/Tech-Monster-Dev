@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import DashButton from "../../../../../../components/ui/Button/DashButton";
 
 export default function CertificateRejected({
     payment,
@@ -24,16 +25,15 @@ export default function CertificateRejected({
                 </p>
             )}
 
-            <button
+            <DashButton
                 type="button"
                 className="pay-confirm-btn"
                 onClick={onCreatePayment}
-                disabled={creatingPayment}
+                loading={creatingPayment}
+                loadingText="Creating Payment..."
             >
-                {creatingPayment
-                    ? "Creating Payment..."
-                    : "Create New Payment"}
-            </button>
+                Create New Payment
+            </DashButton>
         </motion.div>
     );
 }

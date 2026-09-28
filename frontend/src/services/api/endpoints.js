@@ -118,8 +118,7 @@ export const API = {
 
   CERTIFICATE_PAYMENTS: {
     CREATE: "/certificate-payments/create",
-    VERIFY: "/certificate-payments/verify",
-    VERIFY_QR: "/certificate-payments/verify-qr",
+    SUBMIT: "/certificate-payments/submit",
     CANCEL: "/certificate-payments/cancel",
     MY: "/certificate-payments/my",
   },

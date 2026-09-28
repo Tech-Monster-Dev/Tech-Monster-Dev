@@ -1,18 +1,20 @@
+import './SettingsSection.css';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import './SettingsSection.css';
 import { toast } from 'react-toastify';
-import Warning from '../../../../../components/ui/Warning';
+
 import api from '../../../../../services/api/axios';
 import { API } from '../../../../../services/api/endpoints';
 import { getBlockedUsers, toggleChatBlock } from '../../../../../services/api/message.service';
+
 import defaultProfile from '../../../../../assets/profile/default-profile.svg';
+import Warning from '../../../../../components/ui/Warning';
+import DashButton from '../../../../../components/ui/Button/DashButton';
 
 export default function SettingsSection() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState(true);
-  const [darkModeGlow, setDarkModeGlow] = useState(true);
+
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState([]);
@@ -33,7 +35,7 @@ export default function SettingsSection() {
 
     loadBlockedUsers();
   }, []);
-  
+
   const [passwords, setPasswords] = useState({
     oldPassword: '',
     newPassword: '',
@@ -87,48 +89,8 @@ export default function SettingsSection() {
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
       />
-      {/* Appearance Settings */}
-      <motion.div 
-        className="settings-section-card"
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <h3>Appearance & Theme</h3>
-        <div className="settings-row">
-          <div className="setting-info">
-            <label>Neon Glow Accent</label>
-            <p>Enhance futuristic dashboard borders and shadows</p>
-          </div>
-          <label className="switch">
-            <input type="checkbox" checked={darkModeGlow} onChange={() => setDarkModeGlow(!darkModeGlow)} />
-            <span className="slider"></span>
-          </label>
-        </div>
-      </motion.div>
-
-      {/* Notification Preferences */}
-      <motion.div 
-        className="settings-section-card"
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-      >
-        <h3>Notifications</h3>
-        <div className="settings-row">
-          <div className="setting-info">
-            <label>Push & Email Alerts</label>
-            <p>Receive updates on task approvals and daily reminders</p>
-          </div>
-          <label className="switch">
-            <input type="checkbox" checked={notifications} onChange={() => setNotifications(!notifications)} />
-            <span className="slider"></span>
-          </label>
-        </div>
-      </motion.div>
-
       {/* Security Settings */}
-      <motion.div 
+      <motion.div
         className="settings-section-card"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -138,23 +100,28 @@ export default function SettingsSection() {
         <form className="settings-form" onSubmit={handlePasswordChange}>
           <div className="settings-input-group">
             <label>Current Password</label>
-            <input 
-              type="password" 
-              required 
-              value={passwords.oldPassword} 
-              onChange={(e) => setPasswords({...passwords, oldPassword: e.target.value})} 
+            <input
+              type="password"
+              required
+              value={passwords.oldPassword}
+              onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
             />
           </div>
           <div className="settings-input-group">
             <label>New Password</label>
-            <input 
-              type="password" 
-              required 
-              value={passwords.newPassword} 
-              onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})} 
+            <input
+              type="password"
+              required
+              value={passwords.newPassword}
+              onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
             />
           </div>
-          <button type="submit" className="settings-btn">Update Password</button>
+          <DashButton
+            type="submit"
+            className="settings-btn"
+          >
+            Update Password
+          </DashButton>
         </form>
       </motion.div>
 
@@ -225,7 +192,7 @@ export default function SettingsSection() {
       </motion.div>
 
       {/* Danger Zone: Account Deletion */}
-      <motion.div 
+      <motion.div
         className="settings-section-card danger-zone"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -237,9 +204,12 @@ export default function SettingsSection() {
             <label>Delete Account</label>
             <p>Permanently remove your account and all data from database and logout</p>
           </div>
-          <button className="delete-btn" onClick={handleDeleteAccount}>
+          <DashButton
+            className="delete-btn"
+            onClick={handleDeleteAccount}
+          >
             Delete Account
-          </button>
+          </DashButton>
         </div>
       </motion.div>
     </>

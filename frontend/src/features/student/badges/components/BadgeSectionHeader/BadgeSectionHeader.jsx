@@ -9,10 +9,8 @@ export default function BadgeSectionHeader({
                 <span className="section-icon">
                     {icon}
                 </span>
-
                 <div>
                     <h2>{title}</h2>
-
                     <p>
                         {count} achievements
                     </p>

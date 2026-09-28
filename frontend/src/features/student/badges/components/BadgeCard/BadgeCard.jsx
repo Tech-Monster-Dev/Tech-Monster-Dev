@@ -5,18 +5,9 @@ export default function BadgeCard({
   earnedBadge
 }) {
   const unlocked = Boolean(earnedBadge);
-
-  const emoji =
-    earnedBadge?.icon ||
-    definition.emoji;
-
-  const description =
-    earnedBadge?.description ||
-    definition.description;
-
-  const requirement =
-    earnedBadge?.requirement ||
-    definition.requirement;
+  const emoji = earnedBadge?.icon || definition.emoji;
+  const description = earnedBadge?.description || definition.description;
+  const requirement = earnedBadge?.requirement || definition.requirement;
 
   return (
     <motion.div

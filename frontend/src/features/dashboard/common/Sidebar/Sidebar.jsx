@@ -29,7 +29,10 @@ import {
     FiHelpCircle,
     FiBell,
     FiChevronLeft,
-    FiMenu
+    FiMenu,
+    FiFileText,
+    FiMessageSquare,
+    FiLifeBuoy,
 } from "react-icons/fi";
 
 
@@ -85,9 +88,9 @@ function Sidebar({
         { name: "Attendance", path: "/student/attendance", icon: <FiCalendar /> },
         { name: "Badges", path: "/student/badges", icon: <FiAward /> },
         { name: "Account", path: "/student/account", icon: <FiUser /> },
-        { name: "Certificate", path: "/student/certificate", icon: <FiAward /> },
-        { name: "Feedback", path: "/student/feedback", icon: <FiHelpCircle /> },
-        { name: "Help & Support", path: "/student/help&support", icon: <FiHelpCircle /> },
+        { name: "Certificate", path: "/student/certificate", icon: <FiFileText /> },
+        { name: "Feedback", path: "/student/feedback", icon: <FiMessageSquare /> },
+        { name: "Help & Support", path: "/student/help&support", icon: <FiLifeBuoy /> },
     ];
 
     const adminLinks = [

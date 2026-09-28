@@ -1,25 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
 
+import QRImage from "../../../../../../assets/thumnail/QR.svg";
+
 import {
     createCertificatePayment,
-    verifyCertificateQRPayment,
+    submitCertificatePayment,
     getMyCertificatePayment,
     cancelCertificatePayment,
 } from "../../../../../../services/api/certificatePayment.service";
 
-const PAYMENT_POLL_MS = 5000;
 const APPROVAL_POLL_MS = 10000;
+const PAID_FORM_STORAGE_KEY = "certificatePaidFormPaymentId";
 
 export default function useCertificatePayment({ programId, programType }) {
     const [payment, setPayment] = useState(null);
     const [qrCode, setQrCode] = useState(null);
     const [loading, setLoading] = useState(true);
     const [creatingPayment, setCreatingPayment] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const [cancelling, setCancelling] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isPaidFormOpen, setIsPaidFormOpen] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
 
-    const normalizedProgramType = programType === "course" ? "course" : "internship";
+    const normalizedProgramType =
+        programType === "course" ? "course" : "internship";
 
     const programParams = useMemo(() => {
         if (!programId) return null;
@@ -43,17 +48,22 @@ export default function useCertificatePayment({ programId, programType }) {
 
                 if (mounted) {
                     const loadedPayment = data?.payment || null;
-                    const loadedQrCode = data?.qrCode || null;
 
                     setPayment(loadedPayment);
 
                     if (
                         loadedPayment &&
-                        ["created", "pending"].includes(loadedPayment.status) &&
-                        loadedQrCode?.imageUrl
+                        ["created", "pending"].includes(loadedPayment.status)
                     ) {
-                        setQrCode(loadedQrCode);
+                        setQrCode({ imageUrl: QRImage });
                         setIsModalOpen(true);
+
+                        if (
+                            sessionStorage.getItem(PAID_FORM_STORAGE_KEY) ===
+                            loadedPayment.id
+                        ) {
+                            setIsPaidFormOpen(true);
+                        }
                     }
                 }
             } catch (error) {
@@ -80,10 +90,12 @@ export default function useCertificatePayment({ programId, programType }) {
             const nextPayment = data?.payment || null;
 
             setPayment(nextPayment);
-            setQrCode(data?.qrCode || null);
 
-            if (data?.qrCode?.imageUrl && nextPayment) {
+            if (nextPayment) {
+                setQrCode({ imageUrl: QRImage });
                 setIsModalOpen(true);
+                setIsPaidFormOpen(false);
+                sessionStorage.removeItem(PAID_FORM_STORAGE_KEY);
             }
 
             return true;
@@ -95,20 +107,77 @@ export default function useCertificatePayment({ programId, programType }) {
         }
     };
 
+    const handleOpenPaidForm = () => {
+        if (!payment?.id) return false;
+
+        if (!["created", "pending"].includes(payment.status)) {
+            return false;
+        }
+
+        setIsPaidFormOpen(true);
+        sessionStorage.setItem(PAID_FORM_STORAGE_KEY, payment.id);
+
+        return true;
+    };
+
+    const handleClosePaidForm = () => {
+        setIsPaidFormOpen(false);
+        sessionStorage.removeItem(PAID_FORM_STORAGE_KEY);
+    };
+
+    const handleSubmitPayment = async ({ payerName, transactionId }) => {
+        if (!payment?.id) return false;
+
+        if (!["created", "pending"].includes(payment.status)) {
+            return false;
+        }
+
+        try {
+            setSubmitting(true);
+
+            const { data } = await submitCertificatePayment({
+                paymentId: payment.id,
+                payerName,
+                transactionId,
+            });
+
+            const submittedPayment = data?.payment || null;
+
+            if (submittedPayment) {
+                setPayment(submittedPayment);
+            }
+
+            setIsPaidFormOpen(false);
+            setIsModalOpen(false);
+            setQrCode(null);
+            sessionStorage.removeItem(PAID_FORM_STORAGE_KEY);
+
+            return true;
+        } catch (error) {
+            console.error("Certificate payment submission failed:", error);
+            return false;
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     const handleCancelPayment = async () => {
         if (!payment?.id) return false;
 
-        if (!['created', 'pending'].includes(payment.status)) {
+        if (!["created", "pending"].includes(payment.status)) {
             return false;
         }
 
         try {
             setCancelling(true);
+
             await cancelCertificatePayment({ paymentId: payment.id });
 
+            setIsPaidFormOpen(false);
             setIsModalOpen(false);
             setQrCode(null);
             setPayment(null);
+            sessionStorage.removeItem(PAID_FORM_STORAGE_KEY);
 
             return true;
         } catch (error) {
@@ -125,56 +194,30 @@ export default function useCertificatePayment({ programId, programType }) {
         const updateTimer = () => {
             const remaining = Math.max(
                 0,
-                Math.ceil((new Date(payment.expiresAt).getTime() - Date.now()) / 1000)
+                Math.ceil(
+                    (new Date(payment.expiresAt).getTime() - Date.now()) / 1000
+                )
             );
 
             setTimeLeft(remaining);
 
             if (remaining <= 0) {
+                setIsPaidFormOpen(false);
                 setIsModalOpen(false);
                 setQrCode(null);
                 setPayment((current) =>
                     current ? { ...current, status: "expired" } : current
                 );
+                sessionStorage.removeItem(PAID_FORM_STORAGE_KEY);
             }
         };
 
         updateTimer();
+
         const timer = setInterval(updateTimer, 1000);
 
         return () => clearInterval(timer);
     }, [isModalOpen, payment?.expiresAt]);
-
-    useEffect(() => {
-        if (!isModalOpen || !payment?.id) return;
-
-        const checkPayment = async () => {
-            try {
-                const { data } = await verifyCertificateQRPayment({
-                    paymentId: payment.id,
-                });
-
-                if (data?.paid) {
-                    setPayment(data.payment);
-                    setQrCode(null);
-                    setIsModalOpen(false);
-                }
-            } catch (error) {
-                if (error.response?.status === 410) {
-                    setIsModalOpen(false);
-                    setQrCode(null);
-                    setPayment((current) =>
-                        current ? { ...current, status: "expired" } : current
-                    );
-                }
-            }
-        };
-
-        const poll = setInterval(checkPayment, PAYMENT_POLL_MS);
-        checkPayment();
-
-        return () => clearInterval(poll);
-    }, [isModalOpen, payment?.id]);
 
     useEffect(() => {
         if (!payment?.id) return;
@@ -199,6 +242,7 @@ export default function useCertificatePayment({ programId, programType }) {
         };
 
         const poll = setInterval(checkApproval, APPROVAL_POLL_MS);
+
         checkApproval();
 
         return () => clearInterval(poll);
@@ -209,11 +253,16 @@ export default function useCertificatePayment({ programId, programType }) {
         qrCode,
         loading,
         creatingPayment,
+        submitting,
         cancelling,
         isModalOpen,
+        isPaidFormOpen,
         timeLeft,
         programParams,
         handleCreatePayment,
+        handleOpenPaidForm,
+        handleClosePaidForm,
+        handleSubmitPayment,
         handleCancelPayment,
     };
 }

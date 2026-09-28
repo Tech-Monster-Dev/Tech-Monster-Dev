@@ -1,6 +1,4 @@
 import User from "../user/models/User.js";
-import Message from "../messages/models/Message.js";
-import Certificate from "../certificates/models/Certificate.js";
 import Notification from "../notifications/models/Notification.js";
 import Task from "../tasks/models/Task.js";
 import Attendance from "../attendance/models/Attendance.js";
@@ -10,6 +8,9 @@ import Internship from "../internships/models/Internship.js";
 import logActivity from "../activity/logActivity.js";
 import asyncHandler from "../../core/http/asyncHandler.js";
 import AppError from "../../core/errors/AppError.js";
+import deleteAccountData from "../user/services/deleteAccount.service.js";
+import DeletedStudentBackup from "../user/models/DeletedStudentBackup.js";
+import restoreDeletedStudent from "../user/services/restoreDeletedStudent.service.js";
 
 
 export const getDashboardStats = asyncHandler(async (req, res) => {
@@ -113,6 +114,56 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 
         query.role = role;
 
+    }
+
+    if (role === "student") {
+        const activeUsers = await User.find(query)
+            .select("-password -refreshToken")
+            .lean();
+
+        const backups = await DeletedStudentBackup.find({})
+            .select("originalUserId snapshot.user deletedAt")
+            .lean();
+
+        const deletedUsers = backups
+            .map((backup) => {
+                const user = { ...(backup.snapshot?.user || {}) };
+                delete user.password;
+                delete user.refreshToken;
+
+                return {
+                    ...user,
+                    _id: backup.originalUserId,
+                    isDeleted: true,
+                    deletedAt: backup.deletedAt,
+                };
+            })
+            .filter((student) => {
+                if (!search) return true;
+
+                const value = `${student.firstName || ""} ${student.lastName || ""} ${student.email || ""}`;
+                return value.toLowerCase().includes(search.toLowerCase());
+            });
+
+        const combinedUsers = [...activeUsers, ...deletedUsers].sort(
+            (a, b) =>
+                new Date(b.createdAt || b.deletedAt || 0) -
+                new Date(a.createdAt || a.deletedAt || 0)
+        );
+
+        const totalStudentUsers = combinedUsers.length;
+        const users = combinedUsers.slice(
+            (page - 1) * limit,
+            page * limit
+        );
+
+        return res.status(200).json({
+            success: true,
+            currentPage: page,
+            totalPages: Math.ceil(totalStudentUsers / limit),
+            totalUsers: totalStudentUsers,
+            users,
+        });
     }
 
     const totalUsers = await User.countDocuments(query);
@@ -291,53 +342,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
 
     }
 
-    await StudentInternship.deleteMany({
-        student: user._id
-    });
-
-    await Task.deleteMany({
-        student: user._id
-    });
-
-    await Attendance.deleteMany({
-        student: user._id
-    });
-
-    await Notification.deleteMany({
-        user: user._id
-    });
-
-    await Message.deleteMany({
-
-        $or: [
-
-            {
-
-                sender: user._id
-
-            },
-
-            {
-
-                receiver: user._id
-
-            }
-
-        ]
-
-    });
-
-    await Certificate.deleteMany({
-
-        student: user._id
-
-    });
-
-    await User.findByIdAndDelete(
-
-        user._id
-
-    );
+    await deleteAccountData(user, req.user._id);
 
     await logActivity(
 
@@ -358,6 +363,21 @@ export const deleteUser = asyncHandler(async (req, res) => {
         success: true,
 
         message: "User deleted successfully"
+
+    });
+
+});
+
+
+export const restoreUser = asyncHandler(async (req, res) => {
+
+    await restoreDeletedStudent(req.params.id);
+
+    return res.status(200).json({
+
+        success: true,
+
+        message: "Student restored successfully"
 
     });
 
@@ -387,7 +407,7 @@ export const getSingleUser = asyncHandler(async (req, res) => {
     });
 
     const tasks = await Task.find({
-        student: student._id
+        assignedTo: student._id
     }).sort({
         createdAt: -1
     });

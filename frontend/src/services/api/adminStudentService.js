@@ -19,3 +19,6 @@ export const unblockStudent = (id) =>
 
 export const deleteStudent = (id) =>
     api.delete(`/admin/users/${id}`);
+
+export const restoreStudent = (id) =>
+    api.patch(`/admin/users/${id}/restore`);

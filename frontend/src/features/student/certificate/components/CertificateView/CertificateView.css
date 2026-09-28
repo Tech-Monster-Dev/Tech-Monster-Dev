@@ -5,7 +5,7 @@
         rounded-[clamp(0.75rem,2.5vw,1rem)]
         border
         p-[clamp(1rem,5vw,1.875rem)]
-        text-[var(--text)];
+        text-(--text);
     background: color-mix(in srgb, var(--background) 60%, transparent);
     border-color: color-mix(in srgb, var(--neon) 20%, transparent);
     backdrop-filter: blur(12px);
@@ -20,7 +20,7 @@
         flex-col
         items-center
         gap-[clamp(0.75rem,2.5vw,1rem)]
-        rounded-[var(--radius)]
+        rounded-(--radius)
         border
         p-[clamp(0.875rem,3vw,1.25rem)]
         text-center;
@@ -102,7 +102,7 @@
 }
 
 .certificate-payment-modal-overlay {
-    @apply fixed inset-0 z-[9999]
+    @apply fixed inset-0 z-9999
         flex
         items-center
         justify-center
@@ -113,7 +113,7 @@
 
 .certificate-payment-modal {
     @apply w-full
-        max-w-[27.5rem]
+        max-w-110
         overflow-y-auto
         rounded-[clamp(1rem,3vw,1.25rem)]
         border
@@ -163,27 +163,6 @@
     line-height: 1.6;
 }
 
-.certificate-payment-qr {
-    @apply mb-[clamp(1rem,4vw,1.25rem)]
-        flex
-        w-fit
-        items-center
-        justify-center
-        rounded-[clamp(0.75rem,2.5vw,1rem)]
-        bg-white
-        p-[clamp(0.625rem,3vw,0.875rem)];
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 0 24px color-mix(in srgb, var(--neon) 18%, transparent);
-}
-
-.certificate-payment-qr img {
-    @apply block
-        h-[clamp(11.875rem,55vw,13.75rem)]
-        w-[clamp(11.875rem,55vw,13.75rem)]
-        object-contain;
-}
-
 .certificate-payment-total {
     @apply mb-[clamp(0.5rem,2vw,0.75rem)]
         flex
@@ -211,6 +190,10 @@
     color: var(--gray);
 }
 
+.certificate-payment-actions {
+    @apply flex w-full flex-col gap-[clamp(0.625rem,2vw,0.875rem)];
+}
+
 .certificate-payment-cancel {
     @apply w-full
         cursor-pointer
@@ -236,20 +219,42 @@
 }
 
 .certificate-payment-qr-only {
-    @apply relative
-        h-[clamp(10rem,45vw,11.875rem)]
-        w-[clamp(10rem,45vw,11.875rem)]
-        overflow-hidden
-        bg-transparent;
+    @apply relative flex aspect-square w-[clamp(10rem,50vw,13rem)] items-center justify-center overflow-hidden bg-(--background);
     margin: 0 auto clamp(1rem, 4vw, 1.25rem);
 }
 
+.certificate-payment-qr-only .custom-loader {
+    @apply absolute inset-0 z-10 h-full w-full p-0;
+}
+
+.certificate-payment-qr-only .qr-code-loading {
+    @apply opacity-0;
+}
+
+.certificate-payment-qr-only .qr-code-loaded {
+    @apply opacity-100;
+}
+
 .certificate-payment-qr-only img {
-    @apply absolute
-        h-auto
-        object-contain;
-    width: clamp(17rem, 80vw, 19.9375rem);
-    max-width: none;
-    left: clamp(-3.95rem, -15vw, -3.9375rem);
-    top: clamp(-19rem, -75vw, -19.125rem);
+    @apply block h-full w-full bg-white object-contain transition-opacity duration-200;
+}
+
+.certificate-paid-form-modal-overlay {
+    @apply z-10000;
+}
+
+.certificate-paid-form-modal {
+    @apply text-left;
+}
+
+.certificate-paid-form-modal .certificate-payment-modal-header h3 {
+    @apply text-left;
+}
+
+.certificate-paid-form-modal .certificate-payment-instruction {
+    @apply text-left;
+}
+
+.certificate-paid-form {
+    @apply w-full;
 }

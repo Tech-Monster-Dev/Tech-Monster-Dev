@@ -18,7 +18,6 @@ export default function EarnedBadgesModal({
                 <div className="earned-badges-panel-header">
                     <div>
                         <span>🏆</span>
-
                         <div>
                             <h2>Earned Badges</h2>
                             <p>
@@ -56,9 +55,12 @@ export default function EarnedBadgesModal({
                                     <h3>
                                         {badge.title}
                                     </h3>
-
                                     <p>
-                                        Attendance Achievement
+                                        {badge.category === "COURSE"
+                                            ? "Course Achievement"
+                                            : badge.category === "INTERNSHIP"
+                                                ? "Internship Achievement"
+                                                : "Attendance Achievement"}
                                     </p>
 
                                     <small>

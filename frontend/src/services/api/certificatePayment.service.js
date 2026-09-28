@@ -17,33 +17,18 @@ export const createCertificatePayment = ({
 };
 
 
-export const verifyCertificatePayment = ({
+export const submitCertificatePayment = ({
     paymentId,
-    razorpayOrderId,
-    razorpayPaymentId,
-    razorpaySignature,
+    payerName,
+    transactionId,
 }) => {
 
     return api.post(
-        API.CERTIFICATE_PAYMENTS.VERIFY,
+        API.CERTIFICATE_PAYMENTS.SUBMIT,
         {
             paymentId,
-            razorpayOrderId,
-            razorpayPaymentId,
-            razorpaySignature,
-        }
-    );
-};
-
-
-export const verifyCertificateQRPayment = ({
-    paymentId,
-}) => {
-
-    return api.post(
-        API.CERTIFICATE_PAYMENTS.VERIFY_QR,
-        {
-            paymentId,
+            payerName,
+            transactionId,
         }
     );
 };

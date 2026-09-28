@@ -10,11 +10,26 @@ export const generateCertificatePDF = async (
 
     return new Promise((resolve, reject) => {
 
+        const studentName =
+            `${student?.firstName || ""} ${student?.lastName || ""}`
+                .trim() ||
+            "Student";
+
+        const programTitle =
+            program?.title ||
+            "Program";
+
+        const studentFolder =
+            studentName.replace(/[<>:"/\\|?*]/g, "_").trim();
+
+        const programFileName =
+            `${programTitle.replace(/[<>:"/\\|?*]/g, "_").trim() || "Program"}.pdf`;
+
         const uploadDir = path.join(
             process.cwd(),
-
             "uploads",
-            "certificates"
+            "certificates",
+            studentFolder
         );
 
         if (!fs.existsSync(uploadDir)) {
@@ -25,7 +40,7 @@ export const generateCertificatePDF = async (
 
         const filePath = path.join(
             uploadDir,
-            `Certificate-${student._id}-${certificate._id}.pdf`
+            programFileName
         );
 
         const doc = new PDFDocument({
@@ -38,10 +53,6 @@ export const generateCertificatePDF = async (
 
         doc.pipe(stream);
 
-        const programTitle =
-            program?.title ||
-            "Program";
-
         const programType =
             certificate?.programType === "course"
                 ? "course"
@@ -51,11 +62,6 @@ export const generateCertificatePDF = async (
             programType === "course"
                 ? `has successfully completed the course in ${programTitle}.`
                 : `has successfully completed the internship as ${programTitle}.`;
-
-        const studentName =
-            `${student?.firstName || ""} ${student?.lastName || ""}`
-                .trim() ||
-            "Student";
 
         doc
             .fontSize(28)

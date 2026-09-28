@@ -17,3 +17,7 @@ export {sendProgramCompletedEmail} from "./services/programCompletedEmail.servic
 export {sendApplicationStatusEmail} from "./services/applicationEmail.service.js";
 
 export {sendCertificateEmail} from "./services/certificateEmail.service.js";
+
+export {sendRestoreAccountEmail} from "./services/restoreAccountEmail.service.js";
+
+export {sendAccountDeletedEmail} from "./services/accountDeletedEmail.service.js";

@@ -7,6 +7,7 @@ import User from "../user/models/User.js";
 import Follow from "../follow/models/Follow.js";
 import ChatMute from "./models/ChatMute.js";
 import ChatBlock from "./models/ChatBlock.js";
+import { getLatestStudentBadge } from "../profile/services/studentBadge.service.js";
 
 import asyncHandler from "../../core/http/asyncHandler.js";
 import AppError from "../../core/errors/AppError.js";
@@ -612,6 +613,10 @@ export const getChatUsers = asyncHandler(async (req, res) => {
                 role: user.role,
 
                 avatar: user.avatar,
+
+                latestBadge: user.role === "student"
+                    ? await getLatestStudentBadge(user._id)
+                    : null,
 
                 bio: user.bio,
 

@@ -54,7 +54,7 @@ export default function BadgesSection({
 
           {badges.map(userBadge => {
 
-            const badge = userBadge?.badge;
+            const badge = userBadge?.badge || userBadge;
 
             if (!badge) {
               return null;

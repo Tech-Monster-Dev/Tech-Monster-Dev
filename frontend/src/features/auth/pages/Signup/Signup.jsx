@@ -94,6 +94,12 @@ function Signup() {
     try {
       await signupService(formData);
 
+      const expiresAt = Date.now() + 60 * 1000;
+      localStorage.setItem(
+        "signupOtpExpiresAt",
+        expiresAt.toString()
+      );
+
       setTimeout(() => {
         navigate(
           "/verify-signup-otp",

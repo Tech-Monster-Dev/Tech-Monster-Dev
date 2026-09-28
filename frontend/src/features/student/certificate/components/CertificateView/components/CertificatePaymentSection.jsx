@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import DashButton from "../../../../../../components/ui/Button/DashButton";
 
 export default function CertificatePaymentSection({
     onCreatePayment,
@@ -13,20 +14,19 @@ export default function CertificatePaymentSection({
             <h4>Step 1: Complete Certificate Fee Payment</h4>
 
             <p>
-                Create your secure certificate payment to receive the
-                Razorpay UPI QR code.
+                Start your certificate fee payment and scan the UPI QR
+                code to complete the payment.
             </p>
 
-            <button
+            <DashButton
                 type="button"
                 className="pay-confirm-btn"
                 onClick={onCreatePayment}
-                disabled={creatingPayment}
+                loading={creatingPayment}
+                loadingText="Creating Payment..."
             >
-                {creatingPayment
-                    ? "Creating Payment..."
-                    : "Pay Certificate Fee"}
-            </button>
+                Pay Certificate Fee
+            </DashButton>
         </motion.div>
     );
 }

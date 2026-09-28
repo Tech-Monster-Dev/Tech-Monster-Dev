@@ -1,8 +1,9 @@
 import { useState } from "react";
 
 import "./ChatSidebar.css";
-import defaultProfileImage from "../../../../assets/profile/default-profile.svg";
+
 import EmptyState from "../../../../components/ui/EmptyState";
+import StudentBadgeAvatar from "../../../dashboard/common/StudentBadgeAvatar";
 
 export default function ChatSidebar({
     users = [],
@@ -81,15 +82,11 @@ export default function ChatSidebar({
                                 >
 
                                     <div className="chatAvatarBox">
-                                        <img
-                                            src={
-                                                user.avatar ||
-                                                "/profile/default-profile.svg"
-                                            }
+                                        <StudentBadgeAvatar
+                                            avatar={user.avatar}
+                                            latestBadge={user.latestBadge}
                                             alt="profile"
-                                            onError={(event) => {
-                                                event.currentTarget.src = defaultProfileImage;
-                                            }} className="chatAvatar"
+                                            className="chat-sidebar-student-badge-avatar"
                                         />
 
                                         {

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-export default function CertificateApprovalStatus({ payment }) {
+export default function CertificateApprovalStatus() {
     return (
         <motion.div
             className="approval-section"
@@ -10,16 +10,9 @@ export default function CertificateApprovalStatus({ payment }) {
             <h4>Step 2: Admin Verification ⏳</h4>
 
             <p>
-                Your payment has been successfully verified.
-                It is now waiting for admin approval.
+                Your payment submission has been received.
+                It is now waiting for admin verification and approval.
             </p>
-
-            {payment?.transactionId && (
-                <p className="payment-meta">
-                    Transaction ID:{" "}
-                    <strong>{payment.transactionId}</strong>
-                </p>
-            )}
 
             <p className="certificate-auto-status">
                 Approval status is checked automatically.

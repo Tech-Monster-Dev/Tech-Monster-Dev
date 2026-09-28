@@ -9,13 +9,12 @@ import {
 } from "react-icons/hi2";
 
 import { useNavigate } from "react-router-dom";
-
-import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
 import useAuth from "../../../../../shared/hooks/useAuth";
 
 import DashButton from "../../../../../components/ui/Button/DashButton";
+import StudentBadgeAvatar from "../../../../dashboard/common/StudentBadgeAvatar";
 
-const ProfileSummary = ({ username }) => {
+const ProfileSummary = ({ username, latestBadge = null }) => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -74,16 +73,11 @@ const ProfileSummary = ({ username }) => {
             scale: 1.05,
           }}
         >
-          <img
-            src={
-              username?.avatar ||
-              defaultProfileImage
-            }
-            alt={`${displayName} profile`}
-            onError={(event) => {
-              event.currentTarget.src =
-                defaultProfileImage;
-            }}
+          <StudentBadgeAvatar
+            avatar={username?.avatar}
+            latestBadge={latestBadge}
+            alt="Profile"
+            className="profile-summary-badge-avatar"
           />
         </motion.div>
 

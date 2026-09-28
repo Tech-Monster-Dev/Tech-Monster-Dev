@@ -20,34 +20,34 @@ const ATTENDANCE_STREAK_BADGES = [
     {
         days: 7,
         title: "7 Days Present",
-        icon: "7D",
+        icon: "🔥",
         description: "Present for 7 consecutive days.",
         requirement: "7 consecutive present days"
     },
     {
         days: 11,
         title: "11 Days Present",
-        icon: "11D",
+        icon: "⚡",
         description: "Present for 11 consecutive days.",
         requirement: "11 consecutive present days"
     },
     {
         days: 30,
         title: "30 Days Present",
-        icon: "30D",
+        icon: "🏆",
         description: "Present for 30 consecutive days.",
         requirement: "30 consecutive present days"
     },
     {
         days: 90,
         title: "90 Days Present",
-        icon: "90D",
+        icon: "👑",
         description: "Present for 90 consecutive days.",
         requirement: "90 consecutive present days"
     }
 ];
 
-const getCurrentAttendanceStreak = async (userId) => {
+export const getCurrentAttendanceStreak = async (userId) => {
 
     const records = await Attendance.find({
         student: userId,
@@ -65,8 +65,7 @@ const getCurrentAttendanceStreak = async (userId) => {
     const presentDays = new Set(
         records.map(record =>
             new Date(record.createdAt)
-                .toISOString()
-                .slice(0, 10)
+                .toLocaleDateString("en-CA")
         )
     );
 
@@ -76,7 +75,7 @@ const getCurrentAttendanceStreak = async (userId) => {
     cursor.setHours(0, 0, 0, 0);
 
     while (presentDays.has(
-        cursor.toISOString().slice(0, 10)
+        cursor.toLocaleDateString("en-CA")
     )) {
 
         streak++;
@@ -89,7 +88,7 @@ const getCurrentAttendanceStreak = async (userId) => {
     return streak;
 };
 
-const unlockAttendanceStreakBadges = async (
+export const unlockAttendanceStreakBadges = async (
     userId,
     streak
 ) => {

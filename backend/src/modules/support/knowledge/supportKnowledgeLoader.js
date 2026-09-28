@@ -13,11 +13,11 @@ const DATA_ROOT = path.resolve(
 const SOURCE_DIRECTORIES = [
     {
         type: "course",
-        directory: "course"
+        directory: "Courses"
     },
     {
         type: "internship",
-        directory: "internship"
+        directory: "Internships"
     },
     {
         type: "support",
