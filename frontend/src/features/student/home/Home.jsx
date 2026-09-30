@@ -22,6 +22,7 @@ import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 const Home = () => {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   useSkeletonScrollLock(loading);
 
@@ -44,6 +45,24 @@ const Home = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDashboard();
+
+    const storedUser = localStorage.getItem("user");
+    const currentUser = storedUser ? JSON.parse(storedUser) : null;
+
+    const handleOnlineUsers = (users) => {
+      setOnlineUsers(Array.isArray(users) ? users : []);
+    };
+
+    let homeConnectedSocket = false;
+
+    if (currentUser?._id) {
+      if (socket.connected === false) {
+        socket.connect();
+        homeConnectedSocket = true;
+      }
+      socket.emit("join", currentUser._id);
+      socket.on("onlineUsers", handleOnlineUsers);
+    }
 
     const handleDashboardSync = () => {
       loadDashboard();
@@ -69,6 +88,12 @@ const Home = () => {
         "studentDashboardSync",
         handleDashboardSync
       );
+
+      socket.off("onlineUsers", handleOnlineUsers);
+
+      if (homeConnectedSocket) {
+        socket.disconnect();
+      }
     };
   }, []);
 
@@ -196,6 +221,7 @@ const Home = () => {
         users={
           dashboard?.suggestedUsers || []
         }
+        onlineUsers={onlineUsers}
       />
     </main>
   );

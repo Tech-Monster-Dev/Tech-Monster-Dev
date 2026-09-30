@@ -81,7 +81,7 @@ export default function CalendarDayCell({
         {day}
       </span>
 
-      {activeMilliseconds > 0 && !isBeforeAccountCreation && (
+      {activeMilliseconds > 0 && isPresent && !isBeforeAccountCreation && (
         <span className="active-time">
           {formatActiveTime(
             activeMilliseconds

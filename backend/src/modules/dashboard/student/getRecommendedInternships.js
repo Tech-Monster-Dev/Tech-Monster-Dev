@@ -1,5 +1,6 @@
 import Internship from "../../internships/models/Internship.js";
 import StudentInternship from "../../internships/models/StudentInternship.js";
+import { readCourseData } from "../../submissions/utils/courseData.utils.js";
 
 const getRecommendedInternships = async (userId) => {
 
@@ -49,10 +50,16 @@ const getRecommendedInternships = async (userId) => {
         );
     });
 
-    return internships.map(item => {
+    return Promise.all(internships.map(async item => {
 
         const enrolled = enrolledMap.get(
             item._id.toString()
+        );
+
+        const internshipData = await readCourseData(item.slug);
+        const totalLessons = (internshipData?.modules || []).reduce(
+            (count, module) => count + (module.lessons?.length || 0),
+            0
         );
 
         return {
@@ -65,7 +72,7 @@ const getRecommendedInternships = async (userId) => {
             level: item.level,
             duration: item.duration,
             totalTasks: item.totalTasks,
-            totalNotes: item.totalNotes,
+            totalNotes: totalLessons,
             certificate: item.certificate,
             badge: item.badge,
             enrolled: !!enrolled,
@@ -73,7 +80,7 @@ const getRecommendedInternships = async (userId) => {
             completedTasks: enrolled?.completedTasks || 0,
             status: enrolled?.status || "Not Started"
         };
-    });
+    }));
 };
 
 export default getRecommendedInternships;

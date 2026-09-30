@@ -65,6 +65,35 @@ function Dashboard() {
     });
 
     const [activeSection, setActiveSection] = useState("enrolled");
+
+    useEffect(() => {
+        const requestedSection = location.state?.activeSection;
+
+        if (requestedSection !== "courses" && requestedSection !== "internships") {
+            return;
+        }
+
+        try {
+            const savedPreview = localStorage.getItem("tech-monster-learning-preview");
+
+            if (!savedPreview) {
+                return;
+            }
+
+            const parsedPreview = JSON.parse(savedPreview);
+
+            if (parsedPreview?.open && parsedPreview?.item) {
+                setPreview({
+                    open: true,
+                    item: parsedPreview.item,
+                    type: parsedPreview.type === "internship" ? "internship" : "course",
+                });
+            }
+        } catch {
+            localStorage.removeItem("tech-monster-learning-preview");
+        }
+    }, [location.state?.activeSection]);
+
     const requestedSection = location.state?.activeSection;
     const selectedSection = ["enrolled", "courses", "internships"].includes(requestedSection)
         ? requestedSection

@@ -14,11 +14,9 @@ import {
 } from "../../../services/api/notification.service";
 
 import { socket } from "../../../services/socket/socket";
-
 import useAuth from "../../../shared/hooks/useAuth";
 
 import { toast } from "react-toastify";
-
 
 function NotificationProvider({ children }) {
 
@@ -28,13 +26,10 @@ function NotificationProvider({ children }) {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(false);
 
-
     // ==========================================
     // LOAD NOTIFICATIONS
     // ==========================================
-
     const loadNotifications = useCallback(async () => {
-
         if (!userId || !token) {
             setNotifications([]);
             return;
@@ -58,20 +53,15 @@ function NotificationProvider({ children }) {
             );
 
         } finally {
-
             setLoading(false);
-
         }
 
     }, [userId, token]);
 
-
     // ==========================================
     // INITIAL LOAD
     // ==========================================
-
     useEffect(() => {
-
         if (!userId || !token) {
             return;
         }
@@ -86,13 +76,10 @@ function NotificationProvider({ children }) {
         token
     ]);
 
-
     // ==========================================
     // LIVE SOCKET NOTIFICATION
     // ==========================================
-
     useEffect(() => {
-
         if (!userId || !token) {
             return;
         }
@@ -104,40 +91,25 @@ function NotificationProvider({ children }) {
             );
         };
 
-        const handleDisconnect = (reason) => {
-
-            console.log(
-                "🔴 Notification socket disconnected:",
-                reason
-            );
-
-        };
+        const handleDisconnect = () => {};
 
         const handleConnectError = (error) => {
-
             console.error(
                 "❌ Notification socket connection error:",
                 error.message
             );
-
         };
 
         const handleNewNotification = (notification) => {
             setNotifications((prev) => [
-
                 notification,
-
                 ...prev.filter(
-                    (item) =>
-                        item._id !== notification._id
+                    (item) => item._id !== notification._id
                 )
-
             ]);
 
             toast.info(
-
                 <div>
-
                     <strong>
                         {notification.title}
                     </strong>
@@ -149,11 +121,8 @@ function NotificationProvider({ children }) {
                     >
                         {notification.message}
                     </div>
-
                 </div>
-
             );
-
         };
 
         socket.on(
@@ -178,15 +147,11 @@ function NotificationProvider({ children }) {
 
         if (!socket.connected) {
             socket.connect();
-
         } else {
-
             handleConnect();
-
         }
 
         return () => {
-
             socket.off(
                 "connect",
                 handleConnect
@@ -206,147 +171,91 @@ function NotificationProvider({ children }) {
                 "newNotification",
                 handleNewNotification
             );
-
         };
-
     }, [userId, token]);
-
 
     // ==========================================
     // MARK SINGLE AS READ
     // ==========================================
-
     const markAsRead = async (id) => {
-
         try {
-
-            const res =
-                await markNotificationRead(id);
-
+            const res = await markNotificationRead(id);
 
             setNotifications((prev) =>
-
                 prev.map(
                     (notification) =>
-
-                        String(notification._id) ===
-                            String(id)
-
+                        String(notification._id) === String(id)
                             ? {
                                 ...notification,
                                 isRead: true
                             }
-
                             : notification
                 )
-
             );
-
-
             return res;
-
         } catch (error) {
-
             console.error(
                 "Failed to mark notification as read:",
                 error
             );
-
             throw error;
-
         }
-
     };
-
 
     // ==========================================
     // MARK ALL AS READ
     // ==========================================
-
     const markAllAsRead = async () => {
-
         try {
-
-            const res =
-                await markAllNotificationsRead();
-
-
+            const res = await markAllNotificationsRead();
             setNotifications((prev) =>
-
                 prev.map(
                     (notification) => ({
                         ...notification,
                         isRead: true
                     })
                 )
-
             );
-
-
             return res;
-
         } catch (error) {
-
             console.error(
                 "Failed to mark all notifications:",
                 error
             );
-
             throw error;
-
         }
-
     };
-
 
     // ==========================================
     // DELETE
     // ==========================================
-
     const removeNotification = async (id) => {
-
         try {
-
             await deleteNotification(id);
 
-
             setNotifications((prev) =>
-
                 prev.filter(
-                    (notification) =>
-                        String(notification._id) !==
-                        String(id)
+                    (notification) => String(notification._id) !== String(id)
                 )
-
             );
 
         } catch (error) {
-
             console.error(
                 "Failed to delete notification:",
                 error
             );
-
             throw error;
-
         }
-
     };
-
 
     // ==========================================
     // UNREAD COUNT
     // ==========================================
-
-    const unreadCount =
-        notifications.filter(
-            (notification) =>
-                !notification.isRead
+    const unreadCount = notifications.filter(
+            (notification) => !notification.isRead
         ).length;
 
-
     return (
-
         <NotificationContext.Provider
             value={{
                 notifications,
@@ -356,7 +265,6 @@ function NotificationProvider({ children }) {
                 markAsRead,
                 markAllAsRead,
                 removeNotification
-
             }}
         >
             {children}

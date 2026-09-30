@@ -10,11 +10,8 @@ import {
 } from "../../../utils/attendance.utils";
 
 const getMonthInfo = (year, month) => {
-  const firstDayIndex =
-    new Date(year, month, 1).getDay();
-
-  const daysInMonth =
-    new Date(year, month + 1, 0).getDate();
+  const firstDayIndex = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   return {
     firstDayIndex,
@@ -46,9 +43,7 @@ const getAccountCreationDate = accountCreatedAt => {
 
   const date = new Date(accountCreatedAt);
 
-  return Number.isNaN(date.getTime())
-    ? null
-    : date;
+  return Number.isNaN(date.getTime()) ? null : date;
 };
 
 const getEnrollmentForDay = (
@@ -59,8 +54,7 @@ const getEnrollmentForDay = (
 ) => {
   return (
     enrollments.find(enrollment => {
-      const date =
-        new Date(enrollment.startedAt);
+      const date = new Date(enrollment.startedAt);
 
       return (
         !Number.isNaN(date.getTime()) &&
@@ -92,15 +86,10 @@ export default function useCalendarGrid({
     [accountCreatedAt]
   );
 
-  const [visibleYear, setVisibleYear] =
-    useState(todayInfo.year);
+  const [visibleYear, setVisibleYear] = useState(todayInfo.year);
+  const [visibleMonth, setVisibleMonth] = useState(todayInfo.month);
 
-  const [visibleMonth, setVisibleMonth] =
-    useState(todayInfo.month);
-
-  const isCurrentMonth =
-    visibleYear === todayInfo.year &&
-    visibleMonth === todayInfo.month;
+  const isCurrentMonth = visibleYear === todayInfo.year && visibleMonth === todayInfo.month;
 
   const {
     firstDayIndex,
@@ -136,13 +125,8 @@ export default function useCalendarGrid({
     daysInMonth
   );
 
-  const accountCreatedTime =
-    accountCreationDate?.getTime() || null;
-
-  const monthIsBeforeAccountCreation =
-    accountCreatedTime &&
-    monthEnd.getTime() <
-      accountCreatedTime;
+  const accountCreatedTime = accountCreationDate?.getTime() || null;
+  const monthIsBeforeAccountCreation = accountCreatedTime && monthEnd.getTime() < accountCreatedTime;
 
   const currentMonthStart = new Date(
     new Date().getFullYear(),
@@ -159,13 +143,10 @@ export default function useCalendarGrid({
 
   if (
     accountCreationDate &&
-    visibleYear ===
-      accountCreationDate.getFullYear() &&
-    visibleMonth ===
-      accountCreationDate.getMonth()
+    visibleYear === accountCreationDate.getFullYear() &&
+    visibleMonth === accountCreationDate.getMonth()
   ) {
-    countStartDay =
-      accountCreationDate.getDate();
+    countStartDay = accountCreationDate.getDate();
   }
 
   if (isCurrentMonth) {
@@ -189,23 +170,20 @@ export default function useCalendarGrid({
     Object.keys(attendanceMap)
       .map(Number)
       .filter(
-        day =>
-          day >= countStartDay &&
-          day <= countEndDay
+        day => day >= countStartDay && day <= countEndDay
       );
 
-  const presentCount =
-    presentDays.length;
+  const presentCount = presentDays.length;
 
   const absentCount =
     countEndDay >= countStartDay
       ? Math.max(
-          0,
-          countEndDay -
-            countStartDay +
-            1 -
-            presentCount
-        )
+        0,
+        countEndDay -
+        countStartDay +
+        1 -
+        presentCount
+      )
       : 0;
 
   useEffect(() => {
@@ -221,11 +199,8 @@ export default function useCalendarGrid({
 
   const goPreviousMonth = () => {
     if (accountCreationDate) {
-      const accountYear =
-        accountCreationDate.getFullYear();
-
-      const accountMonth =
-        accountCreationDate.getMonth();
+      const accountYear = accountCreationDate.getFullYear();
+      const accountMonth = accountCreationDate.getMonth();
 
       if (
         visibleYear === accountYear &&
@@ -308,43 +283,32 @@ export default function useCalendarGrid({
     const accountCreationDayStart =
       accountCreationDate
         ? new Date(
-            accountCreationDate.getFullYear(),
-            accountCreationDate.getMonth(),
-            accountCreationDate.getDate()
-          )
+          accountCreationDate.getFullYear(),
+          accountCreationDate.getMonth(),
+          accountCreationDate.getDate()
+        )
         : null;
 
-    const isBeforeAccountCreation =
-      accountCreationDayStart &&
-      calendarDayStart.getTime() <
-        accountCreationDayStart.getTime();
+    const isBeforeAccountCreation = accountCreationDayStart && calendarDayStart.getTime() < accountCreationDayStart.getTime();
 
-    const isFuture =
-      date.getTime() >
-      new Date().getTime();
+    const isFuture = date.getTime() > new Date().getTime();
 
-    const enrollment =
-      getEnrollmentForDay(
-        enrollments,
-        visibleYear,
-        visibleMonth,
-        day
-      );
+    const enrollment = getEnrollmentForDay(
+      enrollments,
+      visibleYear,
+      visibleMonth,
+      day
+    );
 
-    const isAccountCreatedDay =
-      accountCreationDate &&
-      date.getFullYear() ===
-        accountCreationDate.getFullYear() &&
-      date.getMonth() ===
-        accountCreationDate.getMonth() &&
-      date.getDate() ===
-        accountCreationDate.getDate();
+    const isAccountCreatedDay = accountCreationDate &&
+      date.getFullYear() === accountCreationDate.getFullYear() &&
+      date.getMonth() === accountCreationDate.getMonth() &&
+      date.getDate() === accountCreationDate.getDate();
 
     const isPresent =
       !isBeforeAccountCreation &&
       !isFuture &&
-      attendanceMap[day] ===
-        "present";
+      attendanceMap[day] === "present";
 
     const isAbsent =
       !isBeforeAccountCreation &&
@@ -352,10 +316,10 @@ export default function useCalendarGrid({
       !isAccountCreatedDay &&
       !isPresent &&
       date.getTime() >=
-        (
-          accountCreationDate?.getTime() ||
-          Infinity
-        );
+      (
+        accountCreationDate?.getTime() ||
+        Infinity
+      );
 
     days.push({
       type: "day",
@@ -367,54 +331,51 @@ export default function useCalendarGrid({
       isAccountCreatedDay,
       isPresent,
       isAbsent,
-      activeMilliseconds:
-        activeTimeData?.[dateKey] || 0
+      activeMilliseconds: activeTimeData?.[dateKey] || 0
     });
   }
 
   const accountCreatedLabel =
     accountCreationDate
       ? accountCreationDate.toLocaleDateString(
-          "en-IN",
-          {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          }
-        )
+        "en-IN",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        }
+      )
       : "";
 
   const accountCreatedTimeLabel =
     accountCreationDate
       ? accountCreationDate.toLocaleTimeString(
-          "en-IN",
-          {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true
-          }
-        )
+        "en-IN",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }
+      )
       : "";
 
-  const monthEnrollment =
-    enrollments.find(
-      enrollment => {
-        const date =
-          new Date(
-            enrollment.startedAt
-          );
+  const monthEnrollment = enrollments.find(
+    enrollment => {
+      const date = new Date(
+        enrollment.startedAt
+      );
 
-        return (
-          !Number.isNaN(
-            date.getTime()
-          ) &&
-          date.getFullYear() ===
-            visibleYear &&
-          date.getMonth() ===
-            visibleMonth
-        );
-      }
-    );
+      return (
+        !Number.isNaN(
+          date.getTime()
+        ) &&
+        date.getFullYear() ===
+        visibleYear &&
+        date.getMonth() ===
+        visibleMonth
+      );
+    }
+  );
 
   return {
     todayInfo,

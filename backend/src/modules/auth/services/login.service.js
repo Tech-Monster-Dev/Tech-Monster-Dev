@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import User from "../../user/models/User.js";
 
 import logActivity from "../../activity/logActivity.js";
+import { ensureDailyAttendance } from "../../attendance/services/dailyAttendance.service.js";
 
 import {
     createLoginSession
@@ -78,6 +79,8 @@ export const loginUser = async ({
     const session =
         await createLoginSession(user);
 
+
+    await ensureDailyAttendance(user._id);
 
     await logActivity(
 

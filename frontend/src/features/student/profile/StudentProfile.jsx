@@ -35,6 +35,7 @@ export default function StudentProfile() {
   const [badges, setBadges] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [actionLoading, setActionLoading] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   // =================================
   // FETCH USER PROFILE
@@ -97,6 +98,34 @@ export default function StudentProfile() {
       socket.off("chatUsersUpdated", handleFollowUpdate);
     };
   }, [fetchProfile, userId]);
+
+  // =================================
+  // REALTIME ONLINE STATUS
+  // =================================
+  useEffect(() => {
+    if (loginUser?._id == null) return;
+
+    const handleOnlineUsers = (users) => {
+      setOnlineUsers(Array.isArray(users) ? users : []);
+    };
+
+    let profileConnectedSocket = false;
+
+    if (socket.connected === false) {
+      socket.connect();
+      profileConnectedSocket = true;
+    }
+
+    socket.emit("join", loginUser._id);
+    socket.on("onlineUsers", handleOnlineUsers);
+
+    return () => {
+      socket.off("onlineUsers", handleOnlineUsers);
+      if (profileConnectedSocket) {
+        socket.disconnect();
+      }
+    };
+  }, [loginUser?._id]);
 
   // =================================
   // FOLLOW / UNFOLLOW
@@ -165,6 +194,7 @@ export default function StudentProfile() {
         latestBadge={badges?.[0]?.badge || null}
         followersCount={followersCount}
         followingCount={followingCount}
+        isOnline={onlineUsers.some((onlineUserId) => String(onlineUserId) === String(userId))}
       />
 
       {!isOwnProfile && (
