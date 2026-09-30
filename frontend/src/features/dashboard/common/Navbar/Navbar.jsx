@@ -41,7 +41,6 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
     useEffect(() => {
         if (role !== "student" || !user?.id) {
-            setLatestBadge(null);
             return;
         }
 

@@ -6,11 +6,20 @@ import User from "../user/models/User.js";
 import { sendBadgeEarnedEmail } from "../../infrastructure/email/services/badgeEarnedEmail.service.js";
 
 const getTodayStart = () => {
-    const date = new Date();
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(new Date());
 
-    date.setHours(0, 0, 0, 0);
+    const values = Object.fromEntries(
+        parts
+            .filter(({ type }) => type !== "literal")
+            .map(({ type, value }) => [type, value])
+    );
 
-    return date;
+    return new Date(values["year"] + "-" + values["month"] + "-" + values["day"] + "T00:00:00+05:30");
 };
 
 const DAILY_TIME_BADGES = [

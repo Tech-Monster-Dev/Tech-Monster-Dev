@@ -155,7 +155,7 @@ function SearchBar() {
                     searchUsers(term),
                 ]);
 
-                setCourses(courseData?.internships || []);
+                setCourses([...(courseData?.courses || []), ...(courseData?.internships || [])]);
                 setUsers(userData?.users || []);
                 setSearched(true);
             } catch {
@@ -188,9 +188,27 @@ function SearchBar() {
         }
     };
 
-    const handleCourseClick = (internship) => {
+    const handleCourseClick = (item) => {
+        if (item?._id == null && item?.slug == null) return;
+
+        const type = item?.type === "course" ? "course" : "internship";
+        const preview = {
+            open: true,
+            item,
+            type,
+        };
+
         setShowDropdown(false);
-        navigate(`/student/lessons/${internship.slug || internship._id || "frontend-dev"}`);
+        localStorage.setItem(
+            "tech-monster-learning-preview",
+            JSON.stringify(preview)
+        );
+
+        navigate("/student/dashboard", {
+            state: {
+                activeSection: type === "course" ? "courses" : "internships",
+            },
+        });
     };
 
     const handleUserClick = (user) => {
@@ -255,9 +273,14 @@ function SearchBar() {
                                                         <FiBookOpen className="search-result-icon" />
 
                                                         <div className="search-result-text">
-                                                            <span className="search-result-title">
-                                                                {course.title}
-                                                            </span>
+                                                            <div className="search-result-title-row">
+                                                                <span className="search-result-title">
+                                                                    {course.title}
+                                                                </span>
+                                                                <span className="search-result-type-badge">
+                                                                    {course.type === "course" ? "Course" : "Internship"}
+                                                                </span>
+                                                            </div>
 
                                                             <span className="search-result-sub">
                                                                 {course.category ||

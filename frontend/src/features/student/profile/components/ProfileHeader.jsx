@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 import StudentBadgeAvatar from '../../../dashboard/common/StudentBadgeAvatar';
 
-export default function ProfileHeader({ user, latestBadge = null, followersCount, followingCount }) {
+export default function ProfileHeader({ user, latestBadge = null, followersCount, followingCount, isOnline = false }) {
   const fullName = `${user?.firstName || ''} ${user?.middleName || ''} ${user?.lastName || ''}`.trim() || user?.username;
 
   return (
@@ -19,7 +19,7 @@ export default function ProfileHeader({ user, latestBadge = null, followersCount
           alt={user?.username || "Profile"}
           className="student-profile-badge-avatar"
         />
-        <span className="student-profile-status-dot"></span>
+        {isOnline && <span className="student-profile-status-dot" aria-label="Online" title="Online"></span>}
       </div>
 
       <div className="student-profile-header-details">

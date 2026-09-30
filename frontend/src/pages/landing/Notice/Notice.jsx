@@ -27,7 +27,6 @@ function Notice() {
         const loadNotices = async () => {
             try {
                 const response = await getNotices();
-                console.log("NOTICES:", response);
 
                 if (mounted) {
                     setNotices(

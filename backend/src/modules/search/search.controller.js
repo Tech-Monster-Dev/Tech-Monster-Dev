@@ -1,5 +1,6 @@
 import User from "../user/models/User.js";
 import Internship from "../internships/models/Internship.js";
+import Course from "../courses/models/Course.js";
 import ChatBlock from "../messages/models/ChatBlock.js";
 import { getLatestStudentBadge } from "../profile/services/studentBadge.service.js";
 
@@ -20,10 +21,13 @@ export const searchInternships = asyncHandler(async (req, res) => {
 
     const query = { isPublished: true };
 
-    // Search by internship/course title OR category (case-insensitive).
     if (keyword) {
-        const regex = new RegExp(keyword, "i");
-        query.$or = [{ title: regex }, { category: regex }];
+        const regex = new RegExp(keyword.trim(), "i");
+        query.$or = [
+            { title: regex },
+            { category: regex },
+            { description: regex },
+        ];
     }
 
     if (category) {
@@ -34,23 +38,40 @@ export const searchInternships = asyncHandler(async (req, res) => {
         query.level = level;
     }
 
-    let sortOption = { createdAt: -1 };
-    if (sort === "oldest") {
-        sortOption = { createdAt: 1 };
-    }
+    const sortOption = sort === "oldest"
+        ? { createdAt: 1 }
+        : { createdAt: -1 };
 
-    const total = await Internship.countDocuments(query);
-    const internships = await Internship.find(query)
-        .sort(sortOption)
-        .skip((Number(page) - 1) * Number(limit))
-        .limit(Number(limit));
+    const [courses, internships] = await Promise.all([
+        Course.find(query)
+            .sort(sortOption)
+            .limit(Number(limit)),
+        Internship.find(query)
+            .sort(sortOption)
+            .limit(Number(limit)),
+    ]);
+
+    const results = [
+        ...courses.map(item => ({
+            ...item.toObject(),
+            type: "course",
+        })),
+        ...internships.map(item => ({
+            ...item.toObject(),
+            type: "internship",
+        })),
+    ].sort((a, b) => (
+        sort === "oldest"
+            ? new Date(a.createdAt) - new Date(b.createdAt)
+            : new Date(b.createdAt) - new Date(a.createdAt)
+    )).slice(0, Number(limit));
 
     return res.status(200).json({
         success: true,
-        currentPage: Number(page),
-        totalPages: Math.ceil(total / Number(limit)),
-        total,
-        internships,
+        total: results.length,
+        courses: results.filter(item => item.type === "course"),
+        internships: results.filter(item => item.type === "internship"),
+        results,
     });
 });
 

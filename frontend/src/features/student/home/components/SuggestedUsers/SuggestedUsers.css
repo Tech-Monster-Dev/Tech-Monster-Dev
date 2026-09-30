@@ -5,7 +5,7 @@
 ========================================= */
 
 .suggested-users {
-    @apply mt-4 w-full sm:mt-5;
+    @apply mt-4 w-full min-w-0 sm:mt-5;
 }
 
 /* =========================================
@@ -13,9 +13,9 @@
 ========================================= */
 
 .users-header {
-    @apply mb-5 flex w-full min-w-0 flex-row items-center
-        justify-between gap-2 pl-2
-        sm:mb-6 sm:gap-4 sm:pl-4;
+    @apply mb-5 flex w-full min-w-0 items-center
+        justify-between gap-3
+        sm:mb-6 sm:gap-4;
 }
 
 .users-header > div:first-child {
@@ -29,13 +29,12 @@
 }
 
 .users-header h2 svg {
-    @apply shrink-0
-        text-[clamp(1rem,3vw,1.875rem)]
+    @apply size-[clamp(1rem,3vw,1.875rem)] shrink-0
         text-(--neon);
 }
 
 .users-header p {
-    @apply mt-1
+    @apply mt-1 max-w-full
         text-[clamp(0.7rem,1.5vw,0.9375rem)];
     color: var(--muted);
 }
@@ -43,8 +42,9 @@
 /* =========================================
    VIEW ALL
 ========================================= */
+
 .view-all-users {
-    @apply shrink-0 whitespace-nowrap;
+    @apply min-w-0 shrink-0 whitespace-nowrap;
 }
 
 /* =========================================
@@ -52,7 +52,9 @@
 ========================================= */
 
 .users-grid {
-    @apply grid w-full grid-cols-1 gap-4
+    @apply grid w-full min-w-0
+        grid-cols-1
+        gap-4
         sm:grid-cols-2 sm:gap-5
         lg:grid-cols-3 lg:gap-6;
 }
@@ -62,7 +64,7 @@
 ========================================= */
 
 .user-card {
-    @apply relative min-w-0 cursor-pointer
+    @apply relative flex min-w-0 flex-col
         overflow-hidden rounded-3xl border
         p-4 backdrop-blur-lg
         transition-[border-color,box-shadow]
@@ -76,14 +78,6 @@
     );
 
     border-color: var(--neon-grid);
-}
-
-.user-card:hover {
-    border-color: var(--neon);
-
-    box-shadow:
-        0 1.125rem 2.5rem var(--surface-overlay),
-        0 0 1.875rem var(--neon-cyan-faint);
 }
 
 /* =========================================
@@ -118,7 +112,8 @@
 ========================================= */
 
 .user-top {
-    @apply mb-5 flex flex-col items-center gap-4 text-center
+    @apply mb-5 flex min-w-0 flex-col
+        items-center gap-4 text-center
         sm:mb-6 sm:flex-row sm:gap-5 sm:text-left;
 }
 
@@ -130,7 +125,11 @@
     @apply relative size-[clamp(3.75rem,12vw,4.6875rem)] shrink-0;
 }
 
-.user-avatar img {
+.suggested-user-badge-avatar {
+    @apply size-full;
+}
+
+.suggested-user-badge-avatar .student-badge-avatar__image {
     @apply block size-full rounded-full
         border-[0.1875rem] border-(--secondary)
         object-cover;
@@ -154,18 +153,20 @@
 ========================================= */
 
 .user-info {
-    @apply min-w-0;
+    @apply min-w-0 flex-1;
 }
 
 .user-info h3 {
-    overflow-wrap: anywhere;
-    @apply mb-1
+    @apply mb-1 min-w-0
         text-[clamp(1.1rem,2.5vw,1.375rem)]
         font-semibold text-(--text);
+
+    overflow-wrap: anywhere;
 }
 
 .user-info p {
-    @apply text-[clamp(0.75rem,1.5vw,0.9375rem)];
+    @apply truncate
+        text-[clamp(0.75rem,1.5vw,0.9375rem)];
     color: var(--muted);
 }
 
@@ -174,12 +175,13 @@
 ========================================= */
 
 .user-skills {
-    @apply mb-5 flex flex-wrap justify-center gap-2
+    @apply mb-5 flex min-w-0 flex-wrap
+        justify-center gap-2
         sm:mb-6 sm:justify-start;
 }
 
 .user-skills span {
-    @apply inline-block rounded-full
+    @apply inline-block max-w-full rounded-full
         border px-3 py-1.5
         text-xs text-(--neon)
         transition-[background-color,transform,color]
@@ -196,24 +198,19 @@
 }
 
 /* =========================================
-   MUTUAL
-========================================= */
-
-.mutual {
-    @apply mb-5 flex items-center justify-center gap-2
-        text-[clamp(0.75rem,1.5vw,0.9375rem)]
-        sm:mb-6 sm:justify-start;
-
-    color: var(--muted);
-}
-
-.mutual svg {
-    @apply shrink-0 text-(--golden);
-}
-
-/* =========================================
    ACTION BUTTONS
 ========================================= */
+
 .user-buttons {
-    @apply flex flex-col gap-3 sm:flex-row sm:gap-4;
+    @apply mt-auto flex w-full min-w-0
+        flex-col gap-3
+        sm:flex-row sm:gap-4;
+}
+
+.user-buttons .dash-button {
+    @apply min-w-0 flex-1;
+}
+
+.suggested-user-action-button {
+    @apply min-w-0;
 }

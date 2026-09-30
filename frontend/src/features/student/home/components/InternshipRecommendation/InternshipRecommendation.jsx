@@ -19,12 +19,24 @@ const InternshipRecommendation = ({
   const navigate = useNavigate();
 
   const handleContinue = (internship) => {
-    const slug =
-      internship?.slug ||
-      internship?._id;
+    if (internship?._id == null && internship?.slug == null) return;
 
-    if (!slug) return;
-    navigate(`/student/lessons/${slug}`);
+    const preview = {
+      open: true,
+      item: internship,
+      type: "internship",
+    };
+
+    localStorage.setItem(
+      "tech-monster-learning-preview",
+      JSON.stringify(preview)
+    );
+
+    navigate("/student/dashboard", {
+      state: {
+        activeSection: "internships",
+      },
+    });
   };
 
   return (
@@ -79,27 +91,13 @@ const InternshipRecommendation = ({
         <div className="internship-slider">
           {internships.map(
             (internship, index) => (
-              <motion.article
+              <article
                 key={
                   internship?._id ||
                   internship?.slug ||
                   index
                 }
                 className="internship-card"
-                initial={{
-                  opacity: 0,
-                  y: 50,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                transition={{
-                  delay: index * 0.15,
-                }}
-                whileHover={{
-                  y: -10,
-                }}
               >
                 <div className="internship-card-image">
                   <img
@@ -163,7 +161,7 @@ const InternshipRecommendation = ({
                     Continue
                   </DashButton>
                 </div>
-              </motion.article>
+              </article>
             )
           )}
         </div>

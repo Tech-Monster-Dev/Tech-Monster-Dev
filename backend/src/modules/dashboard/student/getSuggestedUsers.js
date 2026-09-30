@@ -1,4 +1,5 @@
 import User from "../../user/models/User.js";
+import Follow from "../../follow/models/Follow.js";
 import { getLatestStudentBadge } from "../../profile/services/studentBadge.service.js";
 
 const getSuggestedUsers = async (userId) => {
@@ -22,6 +23,10 @@ const getSuggestedUsers = async (userId) => {
             avatar: user.avatar,
             bio: user.bio,
             skills: user.skills,
+            isFollowing: !!(await Follow.exists({
+                follower: userId,
+                following: user._id
+            })),
             latestBadge: await getLatestStudentBadge(user._id)
         }))
     );
