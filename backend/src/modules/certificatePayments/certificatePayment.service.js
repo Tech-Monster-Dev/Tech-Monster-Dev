@@ -5,9 +5,10 @@ import Internship from "../internships/models/Internship.js";
 import StudentInternship from "../internships/models/StudentInternship.js";
 
 import AppError from "../../core/errors/AppError.js";
+import crypto from "crypto";
+import { getNextCertificateNumber } from "../certificates/services/getNextCertificateNumber.js";
 
 const PAYMENT_WINDOW_MS = 15 * 60 * 1000;
-
 
 /*
  * ==========================================
@@ -240,6 +241,48 @@ export const submitCertificatePayment = async (
         );
     }
 
+    const studentInternship = await StudentInternship.findOne({
+        student: payment.student,
+        ...(payment.programType === "course"
+            ? { course: payment.course }
+            : { internship: payment.internship }),
+        status: "Completed",
+    }).select("completedAt");
+
+    if (studentInternship == null || !studentInternship.completedAt) {
+        throw new AppError(
+            "Program completion date is missing.",
+            400
+        );
+    }
+
+    const programWords = String(payment.programTitle || "")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    const programCode = programWords
+        .slice(0, 2)
+        .map((word) => word.charAt(0).toUpperCase())
+        .join("");
+
+    if (!programCode) {
+        throw new AppError(
+            "Program code could not be generated.",
+            400
+        );
+    }
+
+    const completionYear = new Date(
+        studentInternship.completedAt
+    ).getFullYear();
+
+    const serial = await getNextCertificateNumber();
+    const verificationToken = crypto.randomUUID();
+
+    payment.verificationToken = verificationToken;
+    payment.certificateNumber =
+        `TM-${programCode}-${completionYear}-${serial}`;
     payment.payerName = payerName.trim();
     payment.transactionId = transactionId.trim();
     payment.status = "approval_pending";

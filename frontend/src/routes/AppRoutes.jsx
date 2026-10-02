@@ -17,6 +17,7 @@ import LearnMore from "../pages/landing/LearnMore";
 
 import Contact from "../pages/landing/Contact";
 import PublicNotice from "../pages/notice";
+import VerifyCertificate from "../pages/verify-certificate";
 
 import TermsAndConditions from "../components/common/TermsAndConditions";
 import PrivacyPolicy from "../components/common/PrivacyPolicy";
@@ -79,6 +80,7 @@ function AppRoutes() {
                 <Route path='/learn-more' element={<LearnMore />} />
                 <Route path='/contact' element={<Contact />} />
                 <Route path='/notice' element={<PublicNotice />} />
+                <Route path='/verify-certificate/:token' element={<VerifyCertificate />} />
 
                 <Route path='/login' element={<Login />} />
                 <Route path='/admin_login' element={<AdminLogin />} />

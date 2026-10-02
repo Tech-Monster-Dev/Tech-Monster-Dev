@@ -36,10 +36,19 @@ export const getCertificatePaymentDetails = async (id) => {
 // APPROVE CERTIFICATE PAYMENT
 // ==========================================
 
-export const approveCertificatePayment = async (id) => {
+export const approveCertificatePayment = async (id, certificateImage) => {
+
+    const formData = new FormData();
+    formData.append("certificateImage", certificateImage);
 
     const { data } = await api.patch(
-        API.ADMIN.CERTIFICATE_PAYMENTS.APPROVE(id)
+        API.ADMIN.CERTIFICATE_PAYMENTS.APPROVE(id),
+        formData,
+        {
+            headers: {
+                "Content-Type": undefined,
+            },
+        }
     );
 
     return data;

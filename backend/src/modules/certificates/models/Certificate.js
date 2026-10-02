@@ -57,6 +57,33 @@ const certificateSchema = new mongoose.Schema(
             default: "",
         },
 
+        studentName: {
+            type: String,
+            required: true,
+        },
+
+        programTitle: {
+            type: String,
+            required: true,
+        },
+
+        duration: {
+            type: String,
+            required: true,
+        },
+
+        completionDate: {
+            type: Date,
+            required: true,
+        },
+
+        verificationToken: {
+            type: String,
+            required: true,
+            unique: true,
+            index: true,
+        },
+
         downloadCount: {
             type: Number,
             default: 0,

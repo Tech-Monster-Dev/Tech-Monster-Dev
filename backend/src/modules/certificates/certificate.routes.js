@@ -1,27 +1,19 @@
 import express from "express";
 
 import {
-    issueCertificate,
     getMyCertificates,
-    downloadCertificate
-
+    downloadCertificate,
+    verifyCertificate
 } from "./certificate.controller.js";
-
 
 import { protect } from "../../core/security/auth.middleware.js";
 
-
 const router = express.Router();
 
-
-
-router.post(
-    "/issue",
-    protect,
-    issueCertificate
+router.get(
+    "/verify/:token",
+    verifyCertificate
 );
-
-
 
 router.get(
     "/my",
@@ -29,14 +21,10 @@ router.get(
     getMyCertificates
 );
 
-
-
 router.get(
     "/download/:id",
     protect,
     downloadCertificate
 );
-
-
 
 export default router;
