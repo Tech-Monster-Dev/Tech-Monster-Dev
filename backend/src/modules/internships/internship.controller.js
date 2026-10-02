@@ -15,7 +15,6 @@ import AppError from "../../core/errors/AppError.js";
 import {
     safeSendActivityEmail,
     sendAllLessonsCompletedEmail,
-    sendInternshipJoinedEmail,
     sendProgramCompletedEmail
 } from "../../infrastructure/email/index.js";
 
@@ -23,7 +22,6 @@ import cloudinary from "../../infrastructure/storage/cloudinary.js";
 import streamifier from "streamifier";
 
 import { readFile as readFileBuffer } from "fs/promises";
-import { generateOfferLetterPDF } from "./services/generateOfferLetterPDF.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -488,59 +486,6 @@ export const joinInternship = asyncHandler(async (req, res) => {
         status: "In Progress",
         startedAt: new Date()
     });
-
-    /*
-     * =====================================
-     * GENERATE PERSONALIZED OFFER LETTER
-     * =====================================
-    */
-
-    let offerLetterAttachment = null;
-    try {
-        const {
-            pdfPath
-        } = await generateOfferLetterPDF({
-            student: req.user,
-            internship,
-            enrollment: studentInternship
-        });
-
-        const pdfBuffer = await readFileBuffer(pdfPath);
-
-        offerLetterAttachment = [
-            {
-                content: pdfBuffer.toString("base64"),
-                name: "Tech-Monster-Internship-Offer-Letter.pdf"
-            }
-        ];
-    } catch (error) {
-        console.error(
-            "❌ Offer letter generation failed:",
-            error.message
-        );
-    }
-
-    /*
-     * =====================================
-     * MARK EMAIL AS SENT
-     * =====================================
-    */
-    studentInternship.emailFlags.joinedEmailSent = true;
-    await studentInternship.save();
-
-    /*
-     * =====================================
-     * SEND EMAIL WITH OFFER LETTER
-     * =====================================
-    */
-    safeSendActivityEmail("internship joined email", () =>
-        sendInternshipJoinedEmail({
-            student: req.user,
-            internship,
-            enrollment: studentInternship,
-            attachment: offerLetterAttachment
-        })
-    );
 
     return res.status(201).json({
         success: true,

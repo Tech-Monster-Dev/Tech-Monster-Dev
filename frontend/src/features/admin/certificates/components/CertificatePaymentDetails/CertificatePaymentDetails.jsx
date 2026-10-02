@@ -21,6 +21,9 @@ export default function CertificatePaymentDetails({
     const [actionLoading, setActionLoading] = useState(false);
     const [rejecting, setRejecting] = useState(false);
     const [rejectionReason, setRejectionReason] = useState("");
+    const [certificateImage, setCertificateImage] = useState(null);
+    const [completionDate, setCompletionDate] = useState(null);
+    const [issuedCertificate, setIssuedCertificate] = useState(null);
     
     useSkeletonScrollLock(loading);
 
@@ -33,6 +36,8 @@ export default function CertificatePaymentDetails({
             try {
                 const response = await getCertificatePaymentDetails(paymentId);
                 setPayment(response?.payment || null);
+                setCompletionDate(response?.completionDate || null);
+                setIssuedCertificate(response?.payment?.certificate || null);
             } catch (err) {
                 console.error("Failed to load certificate payment:", err);
                 toast.error(
@@ -48,22 +53,35 @@ export default function CertificatePaymentDetails({
         loadDetails();
     }, [paymentId, onClose]);
 
+    const handleCertificateImageChange = (event) => {
+        const file = event.target.files?.[0] || null;
+        setCertificateImage(file);
+    };
+
     const handleApprove = async () => {
         if (!paymentId) return;
+
+        if (!certificateImage) {
+            toast.error("Please upload the certificate image before approval.");
+            return;
+        }
+
         const confirmed = window.confirm(
             "Approve this payment and issue the certificate?"
         );
         if (!confirmed) return;
         setActionLoading(true);
         try {
-            await approveCertificatePayment(
-                paymentId
+            const response = await approveCertificatePayment(
+                paymentId,
+                certificateImage
             );
+            setIssuedCertificate(response?.certificate || null);
+            setPayment(response?.payment || payment);
             toast.success(
                 "Payment approved and certificate issued successfully."
             );
             onActionComplete?.();
-            onClose?.();
 
         } catch (err) {
             console.error(
@@ -206,10 +224,7 @@ export default function CertificatePaymentDetails({
                                     </span>
 
                                     <strong>
-                                        {`${payment.student?.firstName || ""} ${payment.student?.lastName || ""}`
-                                            .trim() ||
-                                            payment.student?.username ||
-                                            "â€”"}
+                                        {[payment.student?.firstName, payment.student?.middleName, payment.student?.lastName].filter(Boolean).join(" ") || payment.student?.username || "—"}
                                     </strong>
                                 </div>
 
@@ -250,6 +265,35 @@ export default function CertificatePaymentDetails({
                                             payment.internship?.title ||
                                             "â€”"}
                                     </strong>
+                                </div>
+
+                                <div className="certificate-payment-detail-row">
+                                    <span>
+                                        Duration
+                                    </span>
+
+                                    <strong>
+                                        {payment.course?.duration ||
+                                            payment.internship?.duration ||
+                                            "â€”"}
+                                    </strong>
+                                </div>
+
+                                <div className="certificate-payment-detail-row">
+                                    <span>
+                                        Completion Date
+                                    </span>
+
+                                    <strong>
+                                        {completionDate
+                                            ? new Date(completionDate).toLocaleDateString("en-IN")
+                                            : "â€”"}
+                                    </strong>
+                                </div>
+
+                                <div className="certificate-payment-detail-row">
+                                    <span>Certificate ID</span>
+                                    <strong>{payment.certificateNumber || "—"}</strong>
                                 </div>
                             </div>
 
@@ -297,7 +341,42 @@ export default function CertificatePaymentDetails({
                             </div>
                         </div>
 
+                        {payment.verificationToken && (
+                            <div className="certificate-payment-issued-section">
+                                <h3>{issuedCertificate ? "Certificate Issued" : "Certificate Verification"}</h3>
+
+                                <div className="certificate-payment-detail-row">
+                                    <span>Verification URL</span>
+                                    <p>
+                                        https://tech-monster-dev-lac.vercel.app/verify-certificate/{payment.verificationToken}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {!rejecting ? (
+                            <>
+                            <div className="certificate-payment-certificate-upload">
+                                <label htmlFor="certificate-image-upload">
+                                    Certificate Image
+                                </label>
+                                <input
+                                    id="certificate-image-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleCertificateImageChange}
+                                    disabled={actionLoading}
+                                />
+                                <small>
+                                    Upload the final certificate image. It will be converted to PDF and emailed to the student.
+                                </small>
+                                {certificateImage && (
+                                    <span>
+                                        Selected: {certificateImage.name}
+                                    </span>
+                                )}
+                            </div>
+
                             <div className="certificate-payment-details-actions">
                                 <button
                                     type="button"
@@ -326,6 +405,7 @@ export default function CertificatePaymentDetails({
                                 </button>
 
                             </div>
+                            </>
 
                         ) : (
                             <form
@@ -378,9 +458,7 @@ export default function CertificatePaymentDetails({
                                             !rejectionReason.trim()
                                         }
                                     >
-                                        {actionLoading
-                                            ? "Rejecting..."
-                                            : "Confirm Rejection"}
+                                        {actionLoading ? "Rejecting..." : "Confirm Rejection"}
                                     </button>
                                 </div>
                             </form>

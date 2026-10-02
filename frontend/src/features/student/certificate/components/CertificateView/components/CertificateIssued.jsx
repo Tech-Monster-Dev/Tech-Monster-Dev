@@ -2,8 +2,9 @@ import { motion } from "framer-motion";
 
 export default function CertificateIssued({
     userName,
+    loading,
     courseType,
-    onDownload,
+    onDownload
 }) {
     return (
         <motion.div
@@ -19,7 +20,7 @@ export default function CertificateIssued({
                 <p>This is proudly presented to</p>
 
                 <h2 className="cert-name">
-                    {userName}
+                    {loading ? "Loading..." : userName}
                 </h2>
 
                 <p>

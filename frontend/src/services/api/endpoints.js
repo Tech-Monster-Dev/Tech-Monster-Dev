@@ -114,6 +114,7 @@ export const API = {
   CERTIFICATES: {
     MY: "/certificates/my",
     DOWNLOAD: (id) => `/certificates/download/${id}`,
+    VERIFY: (token) => "/certificates/verify/" + token,
   },
 
   CERTIFICATE_PAYMENTS: {

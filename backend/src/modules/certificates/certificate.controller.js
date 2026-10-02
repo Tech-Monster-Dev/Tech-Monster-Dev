@@ -3,118 +3,10 @@ import CertificatePayment from "../certificatePayments/models/CertificatePayment
 import fs from "fs";
 import path from "path";
 import StudentInternship from "../internships/models/StudentInternship.js";
-import Notification from "../notifications/models/Notification.js";
 
-import { generateCertificatePDF } from "./services/generateCertificatePDF.js";
-import { sendCertificateEmail } from "../../infrastructure/email/index.js";
 
-import logActivity from "../activity/logActivity.js";
 import asyncHandler from "../../core/http/asyncHandler.js";
 import AppError from "../../core/errors/AppError.js";
-
-// =====================================
-// ISSUE CERTIFICATE
-// =====================================
-export const issueCertificate = asyncHandler(async (req, res) => {
-    const { internshipId } = req.body;
-
-    if (!internshipId) {
-        throw new AppError(
-            "Internship ID is required",
-            400
-        );
-    }
-
-    // Check student internship
-    const studentInternship = await StudentInternship.findOne({
-        student: req.user._id,
-        internship: internshipId
-    })
-        .populate("student")
-        .populate("internship");
-
-    if (!studentInternship) {
-        throw new AppError(
-            "Internship enrollment not found",
-            404
-        );
-    }
-
-    // Check completion
-    if (studentInternship.status !== "Completed") {
-        throw new AppError(
-            "Complete internship before certificate",
-            400
-        );
-    }
-
-    // Already certificate?
-    const existingCertificate = await Certificate.findOne({
-        student: req.user._id,
-        internship: internshipId
-    });
-
-    if (existingCertificate) {
-        throw new AppError(
-            "Certificate already issued",
-            409
-        );
-    }
-
-    // Certificate Number
-    const certificateNumber = "TM-" + Date.now();
-
-    // Create certificate
-    const certificate = await Certificate.create({
-        student: req.user._id,
-        internship: internshipId,
-        certificateNumber
-    });
-
-    // Generate PDF
-    const pdfUrl = await generateCertificatePDF(
-        certificate,
-        studentInternship.student,
-        studentInternship.internship
-    );
-    certificate.pdfUrl = pdfUrl;
-
-    await certificate.save();
-
-    // Send Email
-    await sendCertificateEmail(
-        studentInternship.student.email,
-        pdfUrl
-    );
-
-    // Notification
-    await Notification.create({
-        user: req.user._id,
-        title: "Certificate Issued",
-        message: `Your ${studentInternship.internship.title} internship certificate is ready.`,
-        type: "certificate",
-        context: {
-            certificateId: certificate._id,
-            programId: internshipId,
-            programType: "internship"
-        }
-    });
-
-    // Activity Log
-    await logActivity(
-        req,
-        req.user._id,
-        "CERTIFICATE_ISSUED",
-        "Certificate",
-        `Certificate generated for ${studentInternship.internship.title}`
-    );
-
-    res.status(201).json({
-        success: true,
-        message: "Certificate issued successfully",
-        certificate
-    });
-});
 
 // =====================================
 // GET MY CERTIFICATES
@@ -181,6 +73,7 @@ export const getMyCertificates =
                     certificate: certificate
                         ? {
                             id: certificate._id,
+                            studentName: certificate.studentName,
                             certificateNumber: certificate.certificateNumber,
                             issueDate: certificate.issueDate,
                         }
@@ -198,6 +91,38 @@ export const getMyCertificates =
             certificates: certificates.filter(Boolean),
         });
     });
+
+// =====================================
+// VERIFY CERTIFICATE
+// =====================================
+export const verifyCertificate = asyncHandler(async (req, res) => {
+    const certificate = await Certificate.findOne({
+        verificationToken: req.params.token,
+    }).select(
+        'studentName programTitle duration completionDate certificateNumber programType issueDate verificationToken'
+    );
+
+    if (!certificate) {
+        throw new AppError(
+            'Certificate verification failed. Certificate not found.',
+            404
+        );
+    }
+
+    return res.status(200).json({
+        success: true,
+        verified: true,
+        certificate: {
+            studentName: certificate.studentName,
+            programTitle: certificate.programTitle,
+            duration: certificate.duration,
+            completionDate: certificate.completionDate,
+            certificateNumber: certificate.certificateNumber,
+            programType: certificate.programType,
+            issueDate: certificate.issueDate,
+        },
+    });
+});
 
 // =====================================
 // DOWNLOAD CERTIFICATE

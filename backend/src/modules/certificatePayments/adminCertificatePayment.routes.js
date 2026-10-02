@@ -1,10 +1,9 @@
 import express from "express";
 
-import {
-    protect,
-} from "../../core/security/auth.middleware.js";
+import {protect} from "../../core/security/auth.middleware.js";
 
 import authorizeRoles from "../../core/security/role.middleware.js";
+import upload from "../../infrastructure/storage/upload.middleware.js";
 
 import {
     getPendingPayments,
@@ -13,9 +12,7 @@ import {
     rejectPayment,
 } from "./adminCertificatePayment.controller.js";
 
-
 const router = express.Router();
-
 
 router.get(
     "/pending",
@@ -24,7 +21,6 @@ router.get(
     getPendingPayments
 );
 
-
 router.get(
     "/:id",
     protect,
@@ -32,14 +28,13 @@ router.get(
     getPaymentDetails
 );
 
-
 router.patch(
     "/:id/approve",
     protect,
     authorizeRoles("admin"),
+    upload.single("certificateImage"),
     approvePayment
 );
-
 
 router.patch(
     "/:id/reject",
@@ -47,6 +42,5 @@ router.patch(
     authorizeRoles("admin"),
     rejectPayment
 );
-
 
 export default router;

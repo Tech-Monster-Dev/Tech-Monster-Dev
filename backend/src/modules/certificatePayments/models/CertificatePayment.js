@@ -146,6 +146,20 @@ const certificatePaymentSchema = new mongoose.Schema(
         // Populated only after admin approval.
         // ==========================================
 
+        certificateNumber: {
+            type: String,
+            default: "",
+            trim: true,
+            index: true,
+        },
+
+        verificationToken: {
+            type: String,
+            default: "",
+            trim: true,
+            index: true,
+        },
+
         certificate: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Certificate",

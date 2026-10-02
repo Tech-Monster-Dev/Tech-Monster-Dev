@@ -115,6 +115,7 @@ export default function CertificateView({
 
             {status === "approved" && (
                 <CertificateIssued
+                    loading={loading}
                     userName={userName}
                     courseType={courseType}
                     onDownload={onDownload}

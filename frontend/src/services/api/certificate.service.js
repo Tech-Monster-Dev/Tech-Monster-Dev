@@ -6,3 +6,6 @@ export const getMyCertificates = () =>
 
 export const downloadCertificate = (certificateId) =>
   api.get(API.CERTIFICATES.DOWNLOAD(certificateId), { responseType: "blob" });
+
+export const verifyCertificate = (token) =>
+  api.get(API.CERTIFICATES.VERIFY(token));

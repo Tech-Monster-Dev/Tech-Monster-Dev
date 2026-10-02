@@ -9,13 +9,46 @@ import {
 
 export const sendCertificateEmail = async (
     email,
-    pdfPath
+    pdfPath,
+    certificateDetails = {}
 ) => {
 
     try {
 
-        let attachment;
+        const {
+            studentName = "Student",
+            programType = "course",
+            programTitle = "Program",
+            duration = "",
+            completionDate = null,
+            certificateNumber = "",
+        } = certificateDetails;
 
+        const normalizedProgramType =
+            String(programType).toLowerCase() === "internship"
+                ? "Internship"
+                : "Course";
+
+        const safeProgramTitle =
+            String(programTitle || "Program")
+                .trim()
+                .replace(/[\/:*?"<>|]/g, "-")
+                .replace(/\s+/g, " ");
+
+        const attachmentFileName =
+            safeProgramTitle + '-certificate.pdf';
+
+
+        const formattedCompletionDate =
+            completionDate
+                ? new Date(completionDate).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                  })
+                : "";
+
+        let attachment;
 
         if (
             pdfPath &&
@@ -26,28 +59,30 @@ export const sendCertificateEmail = async (
                 fs.readFileSync(pdfPath)
                     .toString("base64");
 
-
             attachment = [
                 {
-                    name:
-                        "Internship-Certificate.pdf",
-
-                    content:
-                        fileContent,
+                    name: attachmentFileName,
+                    content: fileContent,
                 }
             ];
         }
-
 
         return await sendMail({
 
             to: email,
 
             subject:
-                "🎉 Internship Completion Certificate - Tech Monster",
+                'Your ' + normalizedProgramType + ' Certificate is Ready - ' + safeProgramTitle,
 
             htmlContent:
-                certificateTemplate(),
+                certificateTemplate({
+                    studentName,
+                    programType: normalizedProgramType,
+                    programTitle: safeProgramTitle,
+                    duration,
+                    completionDate: formattedCompletionDate,
+                    certificateNumber,
+                }),
 
             attachment,
 

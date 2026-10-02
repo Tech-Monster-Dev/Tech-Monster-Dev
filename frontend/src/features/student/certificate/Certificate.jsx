@@ -27,7 +27,7 @@ export default function Certificate() {
     const { dashboard } = useAttendanceData();
     const rawUserName = dashboard?.user?.username || location.state?.userName || "Username";
 
-    const userName = rawUserName.charAt(0).toUpperCase() + rawUserName.slice(1);
+    const userName = selectedCertificate?.certificate?.studentName || rawUserName.charAt(0).toUpperCase() + rawUserName.slice(1);
 
     useEffect(() => {
         const loadCertificates = async () => {
