@@ -1,76 +1,123 @@
 @import "tailwindcss";
 
 .editStudentOverlay {
-    @apply fixed
-        inset-0
-        z-9999
-        flex
-        items-center
-        justify-center
-        p-[clamp(0.75rem,3vw,1.5rem)];
-    background: color-mix(in srgb, var(--dark) 65%, transparent);
+    @apply fixed inset-0 z-9999 box-border flex min-h-0 h-full w-full items-center justify-center overflow-hidden p-[clamp(0.75rem,3vw,1.5rem)];
+    background: color-mix(in srgb, var(--dark) 72%, transparent);
+    backdrop-filter: blur(clamp(0.25rem, 1vw, 0.5rem));
 }
 
 .editStudentModal {
-    @apply w-full
-        max-w-175
-        rounded-[clamp(0.75rem,2.5vw,1rem)]
-        p-[clamp(1rem,4vw,2rem)];
-    background: var(--surface);
+    @apply relative box-border grid h-full max-h-full w-full min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-[clamp(1rem,2.5vw,1.5rem)] border p-[clamp(0.75rem,3vw,1.5rem)] max-w-[clamp(20rem,92vw,52rem)];
+    background: var(--dark);
+    border-color: color-mix(in srgb, var(--neon) 16%, transparent);
+    box-shadow:
+        0 0 clamp(1.5rem, 5vw, 3rem) color-mix(in srgb, var(--dark) 55%, transparent),
+        0 0 clamp(1rem, 3vw, 2rem) color-mix(in srgb, var(--neon) 8%, transparent);
+}
+
+
+.editStudentBackButton {
+    @apply absolute left-[clamp(0.75rem,2vw,1.25rem)] top-[clamp(0.75rem,2vw,1.25rem)];
+}
+
+.editStudentHeader {
+    @apply min-w-0 pb-[clamp(1rem,2.5vw,1.5rem)] pl-[clamp(3rem,8vw,4rem)] pr-[clamp(0.25rem,1vw,0.5rem)];
+    border-bottom: 0.0625rem solid color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.editStudentHeading {
+    @apply flex min-w-0 flex-col gap-[clamp(0.25rem,1vw,0.5rem)];
+}
+
+.editStudentEyebrow {
+    @apply wrap-break-word text-[clamp(0.65rem,1.2vw,0.75rem)] font-semibold uppercase tracking-[0.12em];
+    color: var(--secondary);
 }
 
 .editStudentModal h2 {
-    @apply mb-[clamp(1rem,3vw,1.5rem)];
-    color: var(--neon);
+    @apply m-0 wrap-break-word text-[clamp(1.25rem,3vw,1.75rem)] font-bold leading-tight;
+    color: var(--text);
 }
 
-.editStudentModal form {
-    @apply flex
-        flex-col
-        gap-[clamp(0.75rem,2.5vw,1rem)];
+.editStudentHeading p {
+    @apply m-0 max-w-3xl wrap-break-word text-[clamp(0.75rem,1.5vw,0.9rem)] leading-relaxed;
+    color: var(--muted);
 }
 
-.editStudentModal input,
-.editStudentModal textarea {
-    @apply w-full
-        rounded-[clamp(0.5rem,2vw,0.625rem)]
-        border-0
-        px-[clamp(0.75rem,3vw,1rem)]
-        py-[clamp(0.7rem,2.5vw,0.9rem)]
-        text-(--text)
-        outline-none;
-    background: color-mix(in srgb, var(--background) 90%, var(--dark));
+.editStudentForm {
+    @apply min-h-0 overflow-hidden pt-[clamp(1rem,2.5vw,1.5rem)];
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-width: 0;
 }
 
-.editStudentModal textarea {
-    @apply min-h-[clamp(7.5rem,25vw,7.5rem)]
-        resize-none;
+
+.editStudentForm .form-fields {
+    @apply min-h-0 grid-cols-2 overflow-y-auto;
+    align-content: start;
+    min-width: 0;
+    grid-row: 1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-.editStudentBtns {
-    @apply mt-[clamp(0.75rem,2.5vw,1rem)]
-        flex
-        flex-wrap
-        justify-end
-        gap-[clamp(0.75rem,2.5vw,1rem)];
+
+.editStudentForm .form-fields::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
-.cancelBtn {
-    @apply cursor-pointer
-        rounded-[clamp(0.5rem,2vw,0.625rem)]
-        border-0
-        px-[clamp(1rem,4vw,1.5rem)]
-        py-[clamp(0.625rem,2.5vw,0.8rem)]
-        text-(--text);
-    background: var(--gray);
+.editStudentForm .editStudentBioField {
+    @apply col-span-2;
 }
 
-.saveBtn {
-    @apply cursor-pointer
-        rounded-[clamp(0.5rem,2vw,0.625rem)]
-        border-0
-        px-[clamp(1rem,4vw,1.5rem)]
-        py-[clamp(0.625rem,2.5vw,0.8rem)]
-        text-(--text);
-    background: var(--primary);
+.editStudentForm .form-actions {
+    @apply m-0 shrink-0 justify-end border-t pt-[clamp(0.875rem,2vw,1.25rem)];
+    grid-row: 2;
+    min-width: 0;
+    border-color: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+
+.editStudentForm .form-actions > * {
+    @apply m-0;
+}
+
+.editStudentModal .input-wrapper .input,
+.editStudentModal .textarea {
+    border-color: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.editStudentModal .input-wrapper .input:focus,
+.editStudentModal .textarea:focus {
+    border-color: var(--neon);
+}
+
+.editStudentForm .form-fields {
+    @apply max-[48rem]:grid-cols-1;
+}
+
+.editStudentForm .editStudentBioField {
+    @apply max-[48rem]:col-span-1;
+}
+
+.editStudentOverlay {
+    @apply max-[30rem]:items-start max-[30rem]:p-2;
+}
+
+.editStudentModal {
+    @apply max-[30rem]:h-full max-[30rem]:max-h-full max-[30rem]:rounded-2xl max-[30rem]:p-3;
+}
+
+.editStudentHeader {
+    @apply max-[30rem]:pl-12 max-[30rem]:pr-1;
+}
+
+.editStudentForm .form-actions {
+    @apply max-[30rem]:grid max-[30rem]:grid-cols-1;
+}
+
+.editStudentForm .form-actions > * {
+    @apply max-[30rem]:w-full;
 }
