@@ -1,417 +1,223 @@
-// Admin student details
-
 import "./StudentDetails.css";
 import defaultProfileImage from "../../../../assets/profile/default-profile.svg";
 
-import {
-    useCallback,
-    useEffect,
-    useState
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
 
 import api from "../../../../services/api/axios";
-import StudentDetailsSkeleton from "./StudentDetailsSkeleton";
 import useSkeletonScrollLock from "../../../../shared/hooks/useSkeletonScrollLock";
 
-export default function StudentDetails() {
+import StudentDetailsSkeleton from "./StudentDetailsSkeleton";
+import StudentHero from "./components/StudentHero";
+import PersonalInformation from "./components/PersonalInformation";
+import EducationInformation from "./components/EducationInformation";
+import AddressInformation from "./components/AddressInformation";
+import AccountInformation from "./components/AccountInformation";
+import ProfessionalSocial from "./components/ProfessionalSocial";
+import CoursesTable from "./components/CoursesTable";
+import InternshipsTable from "./components/InternshipsTable";
+import AttendanceTable from "./components/AttendanceTable";
+import NotificationHistory from "./components/NotificationHistory";
 
+const formatValue = (value, fallback = "Not provided") => {
+    if (value === null || value === undefined || value === "") {
+        return fallback;
+    }
+
+    return String(value);
+};
+
+const formatDate = (value, fallback = "Not available") => {
+    if (!value) {
+        return fallback;
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return fallback;
+    }
+
+    return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+};
+
+const formatDateTime = (value, fallback = "Not available") => {
+    if (!value) {
+        return fallback;
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return fallback;
+    }
+
+    return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+};
+
+const getFullName = (student) => {
+    const name = [
+        student?.firstName,
+        student?.middleName,
+        student?.lastName
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+    return name || student?.username || "Student";
+};
+
+const getProgramName = (item) => {
+    if (item?.course?.title) {
+        return item.course.title;
+    }
+
+    if (item?.internship?.title) {
+        return item.internship.title;
+    }
+
+    return "Not associated";
+};
+
+const getProgramType = (item) => {
+    if (item?.course) {
+        return "Course";
+    }
+
+    if (item?.internship) {
+        return "Internship";
+    }
+
+    return "Not associated";
+};
+
+export default function StudentDetails() {
     const { id } = useParams();
 
     const [loading, setLoading] = useState(true);
-
     const [student, setStudent] = useState(null);
-
+    const [courses, setCourses] = useState([]);
     const [internships, setInternships] = useState([]);
-
     const [attendance, setAttendance] = useState([]);
-
-    const [tasks, setTasks] = useState([]);
-
     const [notifications, setNotifications] = useState([]);
 
     const fetchStudent = useCallback(async () => {
-
         try {
-
             setLoading(true);
 
-            const res = await api.get(
-                `/admin/users/${id}`
-            );
+            const res = await api.get(`/admin/users/${id}`);
+            const data = res.data || {};
 
-            setStudent(res.data.student);
-
-            setInternships(
-                res.data.internships || []
-            );
-
-            setAttendance(
-                res.data.attendance || []
-            );
-
-            setTasks(
-                res.data.tasks || []
-            );
-
-            setNotifications(
-                res.data.notifications || []
-            );
-
+            setStudent(data.student || null);
+            setCourses(data.courses || []);
+            setInternships(data.internships || []);
+            setAttendance(data.attendance || []);
+            setNotifications(data.notifications || []);
         } catch (err) {
+            console.error("Failed to fetch student:", err);
 
-            console.error(
-                "Failed to fetch student:",
-                err
-            );
-
+            setStudent(null);
+            setCourses([]);
+            setInternships([]);
+            setAttendance([]);
+            setNotifications([]);
         } finally {
-
             setLoading(false);
-
         }
-
     }, [id]);
 
     useEffect(() => {
-
-        queueMicrotask(() => {
-            fetchStudent();
-        });
-
+        queueMicrotask(fetchStudent);
     }, [fetchStudent]);
 
     useSkeletonScrollLock(loading);
 
     if (loading) {
-
         return <StudentDetailsSkeleton />;
-
     }
 
-    return (
-
-        <div className="studentDetailsPage">
-
-            <motion.div
-
-                className="studentHero"
-
-                initial={{
-
-                    opacity: 0,
-
-                    y: 30
-
-                }}
-
-                animate={{
-
-                    opacity: 1,
-
-                    y: 0
-
-                }}
-
-            >
-
-                <img
-
-                    src={student.avatar && student.avatar !== "/profile/default-profile.svg" ? student.avatar : defaultProfileImage}
-
-                    alt=""
-
-                    onError={(event) => {
-                        event.currentTarget.src = defaultProfileImage;
-                    }}
-
-                />
-
-                <div>
-
-                    <h1>
-
-                        {student.firstName} {student.lastName}
-
-                    </h1>
-
-                    <p>{student.email}</p>
-
-                    <p>{student.phone}</p>
-
-                    <span>
-
-                        {student.branch} | {student.year}
-
-                    </span>
-
+    if (!student) {
+        return (
+            <div className="studentDetailsPage">
+                <div className="detailCard studentDetailsError">
+                    <h2>Student Details</h2>
+                    <p>Unable to load the requested student.</p>
                 </div>
+            </div>
+        );
+    }
 
-            </motion.div>
+    const fullName = getFullName(student);
+
+    const avatar =
+        student.avatar &&
+            student.avatar !== "/profile/default-profile.svg"
+            ? student.avatar
+            : defaultProfileImage;
+
+    return (
+        <div className="studentDetailsPage">
+            <StudentHero
+                student={student}
+                fullName={fullName}
+                avatar={avatar}
+                defaultProfileImage={defaultProfileImage}
+                formatValue={formatValue}
+            />
 
             <div className="studentSectionGrid">
+                <PersonalInformation
+                    student={student}
+                    formatDate={formatDate}
+                    formatValue={formatValue}
+                />
 
-                <div className="detailCard">
+                <EducationInformation student={student} />
 
-                    <h2>Profile</h2>
+                <AddressInformation student={student} />
 
-                    <p>Username : {student.username}</p>
+                <AccountInformation
+                    student={student}
+                    formatDateTime={formatDateTime}
+                />
 
-                    <p>College : {student.college}</p>
+                <ProfessionalSocial student={student} />
 
-                    <p>Education : {student.education}</p>
+                <CoursesTable
+                    courses={courses}
+                    formatValue={formatValue}
+                    formatDate={formatDate}
+                />
 
-                    <p>Semester : {student.semester}</p>
+                <InternshipsTable
+                    internships={internships}
+                    formatValue={formatValue}
+                    formatDate={formatDate}
+                />
 
-                    <p>Gender : {student.gender}</p>
+                <AttendanceTable
+                    attendance={attendance}
+                    formatDate={formatDate}
+                    getProgramName={getProgramName}
+                    getProgramType={getProgramType}
+                />
 
-                    <p>Date Of Birth : {student.dateOfBirth}</p>
-
-                    <p>Bio : {student.bio}</p>
-
-                </div>
-
-                <div className="detailCard">
-
-                    <h2>Address</h2>
-
-                    <p>{student.currentAddress}</p>
-
-                    <p>{student.localAddress}</p>
-
-                    <p>{student.district}</p>
-
-                    <p>{student.state}</p>
-
-                    <p>{student.pincode}</p>
-
-                </div>
-
-                <div className="detailCard">
-
-                    <h2>Account</h2>
-
-                    <p>Verified : {student.isVerified ? "Yes" : "No"}</p>
-
-                    <p>Blocked : {student.isBlocked ? "Yes" : "No"}</p>
-
-                    <p>Profile Complete : {student.profileCompleted ? "Yes" : "No"}</p>
-
-                    <p>Role : {student.role}</p>
-
-                </div>
-
-                <div className="detailCard">
-
-                    <h2>Social Links</h2>
-
-                    <a href={student.github} target="_blank">
-
-                        {student.github}
-
-                    </a>
-
-                    <a href={student.linkedin} target="_blank">
-
-                        {student.linkedin}
-
-                    </a>
-
-                </div>
-
+                <NotificationHistory
+                    notifications={notifications}
+                    formatValue={formatValue}
+                    formatDateTime={formatDateTime}
+                />
             </div>
-
-            <div className="tableCard">
-
-                <h2>Internships</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Title</th>
-
-                            <th>Status</th>
-
-                            <th>Progress</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-
-                            internships.map(item => (
-
-                                <tr key={item._id}>
-
-                                    <td>{item.internship?.title}</td>
-
-                                    <td>{item.status}</td>
-
-                                    <td>{item.progress}%</td>
-
-                                </tr>
-
-                            ))
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div className="tableCard">
-
-                <h2>Attendance</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Date</th>
-
-                            <th>Status</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-
-                            attendance.map(item => (
-
-                                <tr key={item._id}>
-
-                                    <td>{item.createdAt}</td>
-
-                                    <td>{item.status}</td>
-
-                                </tr>
-
-                            ))
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div className="tableCard">
-
-                <h2>Tasks</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Task</th>
-
-                            <th>Status</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-
-                            tasks.map(item => (
-
-                                <tr key={item._id}>
-
-                                    <td>{item.title}</td>
-
-                                    <td>{item.status}</td>
-
-                                </tr>
-
-                            ))
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div className="tableCard">
-
-                <h2>Notification History</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Title</th>
-
-                            <th>Message</th>
-
-                            <th>Read</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-
-                            notifications.map(item => (
-
-                                <tr key={item._id}>
-
-                                    <td>{item.title}</td>
-
-                                    <td>{item.message}</td>
-
-                                    <td>
-
-                                        {
-
-                                            item.isRead
-
-                                                ? "Yes"
-
-                                                : "No"
-
-                                        }
-
-                                    </td>
-
-                                </tr>
-
-                            ))
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
         </div>
-
     );
-
 }

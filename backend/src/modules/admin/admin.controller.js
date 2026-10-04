@@ -1,7 +1,8 @@
 import User from "../user/models/User.js";
 import Notification from "../notifications/models/Notification.js";
-import Task from "../tasks/models/Task.js";
 import Attendance from "../attendance/models/Attendance.js";
+import AttendanceActivity from "../attendance/models/AttendanceActivity.js";
+import Course from "../courses/models/Course.js";
 import StudentInternship from "../internships/models/StudentInternship.js";
 import Internship from "../internships/models/Internship.js";
 
@@ -12,9 +13,7 @@ import deleteAccountData from "../user/services/deleteAccount.service.js";
 import DeletedStudentBackup from "../user/models/DeletedStudentBackup.js";
 import restoreDeletedStudent from "../user/services/restoreDeletedStudent.service.js";
 
-
 export const getDashboardStats = asyncHandler(async (req, res) => {
-
     const totalUsers = await User.countDocuments();
 
     const totalStudents = await User.countDocuments({
@@ -32,11 +31,8 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     });
 
     return res.status(200).json({
-
         success: true,
-
         stats: {
-
             totalUsers,
             totalStudents,
             totalEmployers,
@@ -46,74 +42,44 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
             totalInternships,
             activeInternships,
             totalApplications
-
         }
-
     });
-
 });
 
-
 export const getAllUsers = asyncHandler(async (req, res) => {
-
     const page = Number(req.query.page) || 1;
-
     const limit = Number(req.query.limit) || 10;
-
     const search = req.query.search || "";
-
     const role = req.query.role || "";
-
     const query = {};
 
     if (search) {
-
         query.$or = [
-
             {
-
                 firstName: {
-
                     $regex: search,
-
                     $options: "i"
-
                 }
-
             },
 
             {
-
                 lastName: {
-
                     $regex: search,
-
                     $options: "i"
-
                 }
-
             },
 
             {
-
                 email: {
-
                     $regex: search,
-
                     $options: "i"
-
                 }
-
             }
-
         ];
-
     }
 
     if (role) {
-
         query.role = role;
-
     }
 
     if (role === "student") {
@@ -169,223 +135,132 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     const totalUsers = await User.countDocuments(query);
 
     const users = await User.find(query)
-
         .select("-password")
-
         .sort({
-
             createdAt: -1
-
         })
-
         .skip((page - 1) * limit)
-
         .limit(limit);
 
     return res.status(200).json({
-
         success: true,
-
         currentPage: page,
-
         totalPages: Math.ceil(totalUsers / limit),
-
         totalUsers,
-
         users
-
     });
-
 });
 
-
-
 export const blockUser = asyncHandler(async (req, res) => {
-
     const user = await User.findById(req.params.id);
 
     if (!user) {
-
         throw new AppError(
-
             "User not found",
-
             404
-
         );
-
     }
 
     if (user.role === "admin") {
-
         throw new AppError(
-
             "Admin account cannot be blocked",
-
             403
-
         );
-
     }
 
     user.isBlocked = true;
-
     await user.save();
 
     await logActivity(
-
         req,
-
         req.user._id,
-
         "BLOCK_USER",
-
         "Admin",
-
         `Blocked user: ${user.email}`
-
     );
 
     return res.status(200).json({
-
         success: true,
-
         message: "User blocked successfully",
-
         user
-
     });
-
 });
 
-
 export const unblockUser = asyncHandler(async (req, res) => {
-
     const user = await User.findById(
-
         req.params.id
-
     );
 
     if (!user) {
-
         throw new AppError(
-
             "User not found",
-
             404
-
         );
-
     }
 
     user.isBlocked = false;
-
     await user.save();
 
     await logActivity(
-
         req,
-
         req.user._id,
-
         "UNBLOCK_USER",
-
         "Admin",
-
         `Unblocked user: ${user.email}`
-
     );
 
     return res.status(200).json({
-
         success: true,
-
         message: "User unblocked successfully",
-
         user
-
     });
-
 });
 
-
 export const deleteUser = asyncHandler(async (req, res) => {
-
     const user = await User.findById(
-
         req.params.id
-
     );
 
     if (!user) {
-
         throw new AppError(
-
             "User not found",
-
             404
-
         );
-
     }
 
     if (user.role === "admin") {
-
         throw new AppError(
-
             "Admin account cannot be deleted",
-
             403
-
         );
-
     }
 
     await deleteAccountData(user, req.user._id);
 
     await logActivity(
-
         req,
-
         req.user._id,
-
         "DELETE_USER",
-
         "Admin",
-
         `Deleted user: ${user.email}`
-
     );
 
     return res.status(200).json({
-
         success: true,
-
         message: "User deleted successfully"
-
     });
-
 });
 
-
 export const restoreUser = asyncHandler(async (req, res) => {
-
     await restoreDeletedStudent(req.params.id);
 
     return res.status(200).json({
-
         success: true,
-
         message: "Student restored successfully"
-
     });
-
 });
 
-
 export const getSingleUser = asyncHandler(async (req, res) => {
-
     const student = await User.findById(req.params.id)
         .select("-password -refreshToken");
 
@@ -393,56 +268,86 @@ export const getSingleUser = asyncHandler(async (req, res) => {
         throw new AppError("Student not found", 404);
     }
 
-    const internships = await StudentInternship.find({
+    const enrollments = await StudentInternship.find({
         student: student._id
-    }).populate(
-        "internship",
-        "title duration level"
+    })
+        .populate("course")
+        .populate("internship");
+
+    const courses = enrollments.filter(
+        (enrollment) => enrollment.course
     );
 
-    const attendance = await Attendance.find({
-        student: student._id
-    }).sort({
-        createdAt: -1
-    });
+    const internships = enrollments.filter(
+        (enrollment) => enrollment.internship
+    );
 
-    const tasks = await Task.find({
-        assignedTo: student._id
-    }).sort({
-        createdAt: -1
-    });
+    const attendanceRecords = await Attendance.find({
+        student: student._id
+    })
+        .populate("course", "title")
+        .populate("internship", "title")
+        .sort({
+            createdAt: -1
+        });
+
+    const attendance = await Promise.all(
+        attendanceRecords.map(async (record) => {
+            const attendanceDate = new Intl.DateTimeFormat("en-CA", {
+                timeZone: "Asia/Kolkata",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            }).format(new Date(record.createdAt));
+
+            const activityDate = new Date(
+                attendanceDate + "T00:00:00+05:30"
+            );
+
+            const activity = await AttendanceActivity.findOne({
+                student: student._id,
+                date: activityDate,
+                course: record.course?._id || null,
+                internship: record.internship?._id || null
+            }).select("activeSeconds");
+
+            return {
+                ...record.toObject(),
+                activeSeconds: activity?.activeSeconds || 0
+            };
+        })
+    );
+
+    const adminIds = await User.find({
+        role: "admin"
+    }).distinct("_id");
 
     const notifications = await Notification.find({
-        user: student._id
+        user: student._id,
+        sender: { $in: adminIds }
     })
-    .sort({
-        createdAt: -1
-    })
-    .limit(10);
+        .sort({
+            createdAt: -1
+        })
+        .limit(10)
+        .populate(
+            "sender",
+            "firstName middleName lastName username"
+        );
 
     res.status(200).json({
-
         success: true,
-
         student,
-
+        courses,
         internships,
-
         attendance,
-
-        tasks,
-
         notifications
-
     });
-
 });
 
 
 // backend/controllers/admin.controller.js
-
 export const updateUser = asyncHandler(async (req, res) => {
-
     const student = await User.findById(req.params.id);
 
     if (!student) {
@@ -477,54 +382,31 @@ export const updateUser = asyncHandler(async (req, res) => {
     student.firstName = firstName ?? student.firstName;
     student.middleName = middleName ?? student.middleName;
     student.lastName = lastName ?? student.lastName;
-
     student.username = username ?? student.username;
     student.email = email ?? student.email;
-
     student.phone = phone ?? student.phone;
-
     student.bio = bio ?? student.bio;
-
     student.gender = gender ?? student.gender;
-
     student.dateOfBirth = dateOfBirth ?? student.dateOfBirth;
-
     student.education = education ?? student.education;
     student.college = college ?? student.college;
     student.branch = branch ?? student.branch;
     student.year = year ?? student.year;
     student.semester = semester ?? student.semester;
-
     student.github = github ?? student.github;
     student.linkedin = linkedin ?? student.linkedin;
-
     student.skills = skills ?? student.skills;
-
-    student.currentAddress =
-        currentAddress ?? student.currentAddress;
-
-    student.localAddress =
-        localAddress ?? student.localAddress;
-
-    student.district =
-        district ?? student.district;
-
-    student.state =
-        state ?? student.state;
-
-    student.pincode =
-        pincode ?? student.pincode;
+    student.currentAddress = currentAddress ?? student.currentAddress;
+    student.localAddress = localAddress ?? student.localAddress;
+    student.district = district ?? student.district;
+    student.state = state ?? student.state;
+    student.pincode = pincode ?? student.pincode;
 
     await student.save();
 
     res.status(200).json({
-
         success: true,
-
         message: "Student updated successfully",
-
         student
-
     });
-
 });

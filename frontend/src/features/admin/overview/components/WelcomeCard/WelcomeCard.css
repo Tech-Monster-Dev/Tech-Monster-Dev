@@ -1,120 +1,91 @@
-#adminWelcomeCard {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.8rem;
-    padding: 1.8rem;
-    margin-bottom: 1.8rem;
-    border-radius: 22px;
-    background: linear-gradient(135deg, #0f172a, #112240);
-    border: 1px solid rgba(0, 255, 255, .18);
-    overflow: hidden;
-    position: relative;
+@import "tailwindcss";
+
+.adminWelcomeCard {
+    @apply relative
+        flex
+        flex-wrap
+        items-center
+        justify-between
+        gap-[clamp(1rem,3vw,1.8rem)]
+        overflow-hidden
+        rounded-[clamp(1rem,3vw,1.375rem)]
+        border
+        p-[clamp(1rem,4vw,1.8rem)]
+        mb-[clamp(0.5rem,3vw,1.8rem)];
+    background: linear-gradient(135deg, var(--dark), var(--background));
+    border-color: color-mix(in srgb, var(--neon-bright) 18%, transparent);
 }
 
-#adminWelcomeCard::before {
+.adminWelcomeCard::before {
     content: "";
-    position: absolute;
-    width: 280px;
-    height: 280px;
-    background: rgba(0, 255, 255, .08);
-    border-radius: 50%;
-    right: -120px;
-    top: -120px;
+    @apply absolute
+        -right-[clamp(4rem,10vw,7.5rem)]
+        -top-[clamp(4rem,10vw,7.5rem)]
+        h-[clamp(14rem,25vw,17.5rem)]
+        w-[clamp(14rem,25vw,17.5rem)]
+        rounded-full;
+    background: color-mix(in srgb, var(--neon-bright) 8%, transparent);
 }
 
-#adminWelcomeLeft {
-    z-index: 2;
+.adminWelcomeLeft {
+    @apply relative z-2 min-w-0;
 }
 
-#adminWelcomeLeft h1 {
+.adminWelcomeLeft h1 {
+    @apply mb-[clamp(0.5rem,2vw,0.625rem)]
+        text-[clamp(1.5rem,5vw,2rem)]
+        font-bold;
     color: var(--neon);
     text-shadow: 0 0 10px var(--neon);
-    font-size: 2rem;
-    margin-bottom: 10px;
 }
 
-#adminWelcomeLeft p {
-    color: #bdbdbd;
-    margin-bottom: 10px;
+.adminWelcomeLeft p {
+    @apply mb-[clamp(0.5rem,2vw,0.625rem)];
+    color: var(--gray);
 }
 
-#adminWelcomeLeft span {
-    color: cyan;
-    font-size: 14px;
+.adminWelcomeLeft span {
+    @apply text-[clamp(0.75rem,2.5vw,0.875rem)];
+    color: var(--neon-bright);
 }
 
-#adminWelcomeRight {
-    display: flex;
-    gap: 20px;
-    z-index: 2;
+.adminWelcomeRight {
+    @apply relative z-2
+        flex
+        flex-wrap
+        gap-[clamp(0.75rem,3vw,1.25rem)];
 }
 
-#adminWelcomeMiniCard {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px;
-    background: rgba(255, 255, 255, .05);
-    border-radius: 15px;
-    min-width: 170px;
-    transition: .35s;
+.adminWelcomeMiniCard {
+    @apply flex
+        min-w-[clamp(10rem,20vw,10.625rem)]
+        items-center
+        gap-[clamp(0.625rem,2vw,0.75rem)]
+        rounded-[clamp(0.75rem,2.5vw,0.9375rem)]
+        p-[clamp(0.875rem,3vw,1.125rem)]
+        transition-all
+        duration-300
+        ease-in-out;
+    background: color-mix(in srgb, var(--text) 5%, transparent);
 }
 
-#adminWelcomeMiniCard:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 0 20px rgba(0, 255, 255, .2);
+.adminWelcomeMiniCard:hover {
+    transform: translateY(-0.375rem);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--neon-bright) 20%, transparent);
 }
 
-#adminWelcomeMiniCard svg {
-    font-size: 34px;
-    color: cyan;
+.adminWelcomeMiniCard svg {
+    @apply shrink-0
+        text-[clamp(1.75rem,5vw,2.125rem)];
+    color: var(--neon-bright);
 }
 
-#adminWelcomeMiniCard h3 {
-    color: white;
-    margin-bottom: 4px;
+.adminWelcomeMiniCard h3 {
+    @apply mb-[clamp(0.2rem,1vw,0.25rem)];
+    color: var(--text);
 }
 
-#adminWelcomeMiniCard p {
-    color: #bdbdbd;
-    font-size: 14px;
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 1200px) {
-    #adminWelcomeCard{
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-        margin-bottom: 1.3rem;
-    }
-
-    #adminWelcomeRight{
-        width: 100%;
-        justify-content: space-around;
-    }
-}
-
-@media (max-width: 991px) {
-    #adminWelcomeRight{
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
-}
-
-@media (max-width: 439px) {
-    #adminWelcomeCard{
-        padding: 1rem;
-        margin-bottom: 0.5rem;
-    }
-    #adminWelcomeRight{
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
+.adminWelcomeMiniCard p {
+    @apply text-[clamp(0.75rem,2.5vw,0.875rem)];
+    color: var(--gray);
 }

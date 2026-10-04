@@ -19,11 +19,6 @@ import {
     getStats as getAdminStats,
     getAttendance as getAdminAttendance,
     getWeeklyAttendance,
-    getRecentActivities,
-    getActiveStudents,
-    getTopInternships,
-    getRecentTasks,
-    getCertificates
 } from "./admin/index.js";
 
 export const studentDashboard = asyncHandler(async (req, res) => {
@@ -96,21 +91,11 @@ export const adminDashboard = asyncHandler(async (req, res) => {
         stats,
         attendanceSummary,
         weeklyAttendance,
-        recentActivities,
-        activeStudents,
-        topInternships,
-        recentTasks,
-        certificateAnalytics
 
     ] = await Promise.all([
         getAdminStats(),
         getAdminAttendance(),
         getWeeklyAttendance(),
-        getRecentActivities(),
-        getActiveStudents(),
-        getTopInternships(),
-        getRecentTasks(),
-        getCertificates()
     ]);
 
     return res.status(200).json({
@@ -122,12 +107,7 @@ export const adminDashboard = asyncHandler(async (req, res) => {
             streak: stats?.streak || 0,
             attendanceSummary,
             weeklyAttendance,
-            recentActivities,
-            activeStudents,
-            topInternships,
-            recentTasks,
-            certificateAnalytics
-        }
+                            }
 
     });
 

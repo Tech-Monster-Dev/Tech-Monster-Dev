@@ -1,10 +1,15 @@
 import User from "../../user/models/User.js";
 import Internship from "../../internships/models/Internship.js";
 import StudentInternship from "../../internships/models/StudentInternship.js";
+import { getOnlineUsers } from "../../../infrastructure/socket/socket.js";
 import Task from "../../tasks/models/Task.js";
 import Certificate from "../../certificates/models/Certificate.js";
 
 const getStats = async () => {
+    const onlineUsers = getOnlineUsers();
+
+    const onlineStudentIds = Array.from(onlineUsers.keys());
+
     const [
         totalStudents,
         totalAdmins,
@@ -32,8 +37,10 @@ const getStats = async () => {
             status: "Active"
         }),
 
-        StudentInternship.countDocuments({
-            status: "In Progress"
+        User.countDocuments({
+            _id: { $in: onlineStudentIds },
+            role: "student",
+            isBlocked: false
         }),
 
         StudentInternship.countDocuments({

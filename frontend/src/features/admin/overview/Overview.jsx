@@ -1,56 +1,50 @@
+import "./Overview.css";
 import { useEffect, useState } from "react";
 
-import "./Overview.css";
 
 import api from "../../../services/api/axios";
 import { API } from "../../../services/api/endpoints";
+import { socket } from "../../../services/socket/socket";
 
 import WelcomeCard from './components/WelcomeCard';
 import ServerStatus from './components/ServerStatus';
 import StatsCards from "./components/StatsCards";
-import ActiveStudents from "./components/ActiveStudents";
 import LineChart from "./components/LineChart";
 import AttendanceSummary from './components/AttendanceSummary';
-import TopInternships from "./components/TopInternships";
-import RecentTasks from "./components/RecentTasks";
-import CertificateAnalytics from "./components/CertificateAnalytics";
-import QuickActions from "./components/QuickActions";
-import RecentActivities from "./components/RecentActivities";
 
-import FadeInSection from "../../dashboard/common/FadeInSection";
 import OverviewSkeleton from "./OverviewSkeleton";
 import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 export default function Overview() {
-
     const [dashboard, setDashboard] = useState(null);
-
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/immutability
         fetchDashboard();
 
+        const handleOnlineUsers = () => {
+            fetchDashboard();
+        };
+
+        socket.on("onlineUsers", handleOnlineUsers);
+
+        return () => {
+            socket.off("onlineUsers", handleOnlineUsers);
+        };
     }, []);
 
     const fetchDashboard = async () => {
-
         try {
-
             const { data } = await api.get(API.DASHBOARD.ADMIN);
-
             setDashboard(data.dashboard);
 
         } catch (err) {
-
             console.error(err);
 
         } finally {
-
             setLoading(false);
-
         }
-
     };
 
     useSkeletonScrollLock(loading);
@@ -64,80 +58,28 @@ export default function Overview() {
     }
 
     return (
-
         <>
-
-            <div id="overviewContainer">
-                <div id="overviewTop">
-                    <FadeInSection>
-                        <WelcomeCard
-                            stats={dashboard.stats}
-                        />
-                    </FadeInSection>
-                    <FadeInSection>
-                        <ServerStatus />
-                    </FadeInSection>
-                </div>
-
-                <FadeInSection>
-                    <StatsCards
+            <div className="overviewContainer">
+                <div className="overviewTop">
+                    <WelcomeCard
                         stats={dashboard.stats}
                     />
-                </FadeInSection>
-
-                <div id="overviewChart">
-                    <FadeInSection>
-                        <LineChart
-                            chartData={dashboard.weeklyAttendance}
-                        />
-                    </FadeInSection>
-
-                    <FadeInSection>
-                        <AttendanceSummary
-                            attendanceSummary={dashboard.attendanceSummary}
-                        />
-                    </FadeInSection>
+                    <ServerStatus />
                 </div>
 
-                <div id="overviewMiddle">
-                    <FadeInSection>
-                        <RecentActivities
-                            activities={dashboard.recentActivities}
-                        />
-                    </FadeInSection>
+                <StatsCards
+                    stats={dashboard.stats}
+                />
 
-                    <FadeInSection>
-                        <ActiveStudents
-                            students={dashboard.activeStudents}
-                        />
-                    </FadeInSection>
+                <div className="overviewChart">
+                    <LineChart
+                        chartData={dashboard.weeklyAttendance}
+                    />
 
+                    <AttendanceSummary
+                        attendanceSummary={dashboard.attendanceSummary}
+                    />
                 </div>
-
-                <div id="overviewBottom">
-                    <FadeInSection>
-                        <TopInternships
-                            internships={dashboard.topInternships}
-                        />
-                    </FadeInSection>
-                    <FadeInSection>
-                        <RecentTasks
-                            tasks={dashboard.recentTasks}
-                        />
-                    </FadeInSection>
-                </div>
-
-                <div id="overviewFooter">
-                    <FadeInSection>
-                        <CertificateAnalytics
-                            analytics={dashboard.certificateAnalytics}
-                        />
-                    </FadeInSection>
-                    <FadeInSection>
-                        <QuickActions />
-                    </FadeInSection>
-                </div>
-
             </div>
         </>
     );

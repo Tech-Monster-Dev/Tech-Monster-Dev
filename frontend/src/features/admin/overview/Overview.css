@@ -1,95 +1,39 @@
-#overviewContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    position: relative;
-    padding-bottom: 40px;
+@import "tailwindcss";
+
+.overviewContainer {
+    @apply relative flex flex-col gap-[clamp(0.5rem,3vw,1rem)];
 }
 
-#overviewContainer::before {
+.overviewContainer::before {
     content: "";
-    position: fixed;
-    width: 420px;
-    height: 420px;
-    border-radius: 50%;
-    background: rgba(0, 255, 255, .05);
-    filter: blur(120px);
-    top: -100px;
-    right: -100px;
-    z-index: -1;
+    @apply fixed
+        -right-[clamp(3rem,8vw,6.25rem)]
+        -top-[clamp(3rem,8vw,6.25rem)]
+        -z-10
+        h-[clamp(16rem,35vw,26.25rem)]
+        w-[clamp(16rem,35vw,26.25rem)]
+        rounded-full;
+    background: color-mix(in srgb, var(--neon-bright) 5%, transparent);
+    filter: blur(clamp(5rem,10vw,7.5rem));
 }
 
-#overviewContainer::after {
+.overviewContainer::after {
     content: "";
-    position: fixed;
-    width: 320px;
-    height: 320px;
-    border-radius: 50%;
-    background: rgba(0, 153, 255, .06);
-    filter: blur(120px);
-    left: -120px;
-    bottom: -120px;
-    z-index: -1;
+    @apply fixed
+        -bottom-[clamp(3rem,8vw,7.5rem)]
+        -left-[clamp(3rem,8vw,7.5rem)]
+        -z-10
+        h-[clamp(14rem,27vw,20rem)]
+        w-[clamp(14rem,27vw,20rem)]
+        rounded-full;
+    background: color-mix(in srgb, var(--neon-blue) 6%, transparent);
+    filter: blur(clamp(5rem,10vw,7.5rem));
 }
 
-#overviewTop {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 25px;
+.overviewTop {
+    @apply grid gap-[clamp(0.5rem,3vw,1rem)] grid-cols-[2fr_1fr] max-md:grid-cols-1;
 }
 
-#overviewChart {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 25px;
-}
-
-#overviewMiddle {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 25px;
-}
-
-#overviewBottom {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-#overviewFooter {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 1200px) {
-    #overviewTop{
-        grid-template-columns: 1fr;
-        gap: 1.3rem;
-    }
-    #overviewChart{
-        gap: 1rem;
-    }
-    #overviewMiddle{
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-}
-
-@media (max-width: 991px) {
-    #overviewChart{
-        grid-template-columns: 1fr;
-    }
-    #overviewBottom{
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    #overviewFooter{
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
+.overviewChart {
+    @apply grid gap-[clamp(0.5rem,3vw,1rem)] grid-cols-[2fr_1fr] max-md:grid-cols-1;
 }

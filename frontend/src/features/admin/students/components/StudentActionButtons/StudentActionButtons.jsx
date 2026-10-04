@@ -1,5 +1,3 @@
-// Admin student action buttons
-
 import "./StudentActionButtons.css";
 
 import { useNavigate } from "react-router-dom";
@@ -21,49 +19,31 @@ import {
 } from "../../../../../services/api/adminStudentService";
 
 export default function StudentActionButtons({
-
     student,
-
     onRefresh,
-
     onEdit,
-
     onNotify
-
 }) {
 
     const navigate = useNavigate();
 
     const handleBlock = async () => {
-
         try {
-
             if (student.isBlocked) {
-
                 await unblockStudent(student._id);
-
                 toast.success("Student Unblocked");
-
             } else {
-
                 await blockStudent(student._id);
-
                 toast.success("Student Blocked");
-
             }
-
             onRefresh();
 
         } catch (err) {
-
             toast.error(err.response?.data?.message);
-
         }
-
     };
 
     const handleDelete = async () => {
-
         const confirmDelete = window.confirm(
             "Delete this student?"
         );
@@ -71,25 +51,17 @@ export default function StudentActionButtons({
         if (!confirmDelete) return;
 
         try {
-
             await deleteStudent(student._id);
-
             toast.success("Student Deleted");
-
             onRefresh();
 
         } catch (err) {
-
             toast.error(err.response?.data?.message);
-
         }
-
     };
 
     if (student.isDeleted) {
-
         const handleRestore = async () => {
-
             const confirmRestore = window.confirm(
                 "Restore this student and all backed-up data?"
             );
@@ -97,42 +69,28 @@ export default function StudentActionButtons({
             if (!confirmRestore) return;
 
             try {
-
                 await restoreStudent(student._id);
-
                 toast.success("Student Restored");
-
                 onRefresh();
-
             } catch (err) {
-
                 toast.error(err.response?.data?.message);
-
             }
-
         };
 
         return (
-
             <div className="studentActionButtons">
-
                 <button
                     className="restoreBtn"
                     onClick={handleRestore}
                 >
                     Restore
                 </button>
-
             </div>
-
         );
-
     }
 
     return (
-
         <div className="studentActionButtons">
-
             <button
                 className="viewBtn"
                 onClick={() =>
@@ -169,9 +127,6 @@ export default function StudentActionButtons({
             >
                 <FiTrash2 />
             </button>
-
         </div>
-
     );
-
 }
