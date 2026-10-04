@@ -1,110 +1,89 @@
-#adminStatsCards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.3rem;
-    margin: 1.5rem 0;
+@import "tailwindcss";
+
+.adminStatsCards {
+    @apply my-[clamp(0.75rem,3vw,1rem)]
+        grid
+        gap-[clamp(0.75rem,2.5vw,1.3rem)]
+        grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))];
 }
 
-#adminStatsCard {
-    background: rgba(20, 20, 30, .9);
-    border: 1px solid rgba(0, 255, 255, .15);
-    border-radius: 18px;
-    padding: 22px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    transition: .35s;
-    cursor: pointer;
+.adminStatsCard {
+    @apply relative
+        flex
+        min-w-0
+        cursor-pointer
+        items-center
+        gap-[clamp(0.75rem,2.5vw,1.125rem)]
+        overflow-hidden
+        rounded-[clamp(0.875rem,3vw,1.125rem)]
+        border
+        p-[clamp(1rem,3vw,1.375rem)]
+        transition-all
+        duration-300
+        ease-in-out;
+    background: color-mix(in srgb, var(--dark) 90%, var(--background));
+    border-color: color-mix(in srgb, var(--neon-bright) 15%, transparent);
     backdrop-filter: blur(12px);
-    overflow: hidden;
-    position: relative;
 }
 
-#adminStatsCard::before {
+.adminStatsCard::before {
     content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg,
-
-            cyan,
-
-            #00ff95,
-
-            cyan);
-    transform: scaleX(0);
-    transition: .4s;
+    @apply absolute
+        left-0
+        top-0
+        h-0.75
+        w-full
+        origin-center
+        scale-x-0
+        transition-transform
+        duration-300
+        ease-in-out;
+    background: linear-gradient(
+        90deg,
+        var(--neon-bright),
+        var(--success),
+        var(--neon-bright)
+    );
 }
 
-#adminStatsCard:hover {
-    transform: translateY(-8px);
-    box-shadow:
-
-        0 0 30px rgba(0, 255, 255, .18);
-    border-color: cyan;
+.adminStatsCard:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 0 0 30px color-mix(in srgb, var(--neon-bright) 18%, transparent);
+    border-color: var(--neon-bright);
 }
 
-#adminStatsCard:hover::before {
-    transform: scaleX(1);
+.adminStatsCard:hover::before {
+    @apply scale-x-100;
 }
 
-#adminStasCardIcon {
-    width: 70px;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(0, 255, 255, .12);
-    font-size: 34px;
-    color: cyan;
+.adminStasCardIcon {
+    @apply flex
+        h-[clamp(3.5rem,9vw,4.375rem)]
+        w-[clamp(3.5rem,9vw,4.375rem)]
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        text-[clamp(1.75rem,5vw,2.125rem)];
+    background: color-mix(in srgb, var(--neon-bright) 12%, transparent);
+    color: var(--neon-bright);
 }
 
-#adminStasCardInfo {
-    display: flex;
-    flex-direction: column;
+.adminStasCardInfo {
+    @apply flex
+        min-w-0
+        flex-col;
 }
 
-#adminStasCardInfo h4 {
-    color: #bfbfbf;
-    font-size: .95rem;
-    font-weight: 500;
-    margin-bottom: 8px;
+.adminStasCardInfo h4 {
+    @apply mb-[clamp(0.375rem,1.5vw,0.5rem)]
+        text-[clamp(0.8125rem,2.5vw,0.95rem)]
+        font-medium;
+    color: var(--gray);
 }
 
-#adminStasCardInfo h2 {
-    color: white;
-    font-size: 2rem;
-    font-weight: 700;
-}
-
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 1200px) {
-    #adminStatsCards{
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.2rem;
-        margin: 1rem 0;
-    }
-}
-
-@media (max-width: 991px) {
-    #adminStatsCards{
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        margin: 1rem 0;
-    }
-}
-
-@media (max-width: 439px) {
-    #adminStatsCards{
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        margin: 1rem 0;
-    }
+.adminStasCardInfo h2 {
+    @apply text-[clamp(1.5rem,5vw,2rem)]
+        font-bold;
+    color: var(--text);
 }

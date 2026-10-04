@@ -1,25 +1,32 @@
 import Attendance from "../../attendance/models/Attendance.js";
+import User from "../../user/models/User.js";
 
 const getAttendance = async () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     const [
+        totalStudents,
+        presentStudents,
         totalAttendance,
-        present,
-        absent,
-        leave,
         workingHours
     ] = await Promise.all([
+        User.countDocuments({
+            role: "student"
+        }),
+
+        Attendance.distinct("student", {
+            status: "Present",
+            createdAt: {
+                $gte: today,
+                $lt: tomorrow
+            }
+        }),
+
         Attendance.countDocuments(),
-        Attendance.countDocuments({
-            status: "Present"
-        }),
-
-        Attendance.countDocuments({
-            status: "Absent"
-        }),
-
-        Attendance.countDocuments({
-            status: "Leave"
-        }),
 
         Attendance.aggregate([
             {
@@ -28,7 +35,6 @@ const getAttendance = async () => {
                     totalHours: {
                         $sum: "$workingHours"
                     },
-
                     totalMinutes: {
                         $sum: "$workingMinutes"
                     }
@@ -37,21 +43,20 @@ const getAttendance = async () => {
         ])
     ]);
 
-    // ==========================
-    // Attendance Percentage
-    // ==========================
+    const present = presentStudents.length;
+
+    const absent = Math.max(
+        totalStudents - present,
+        0
+    );
+
     const attendancePercentage =
-        totalAttendance === 0
+        totalStudents === 0
             ? 0
             : Number(
-                (
-                    (present / totalAttendance) * 100
-                ).toFixed(1)
+                ((present / totalStudents) * 100).toFixed(1)
             );
 
-    // ==========================
-    // Working Hours
-    // ==========================
     const totalWorkingHours =
         workingHours.length > 0
             ? workingHours[0].totalHours
@@ -66,17 +71,13 @@ const getAttendance = async () => {
         totalAttendance === 0
             ? 0
             : Number(
-                (
-                    totalWorkingHours /
-                    totalAttendance
-                ).toFixed(1)
+                (totalWorkingHours / totalAttendance).toFixed(1)
             );
 
     return {
-        totalAttendance,
+        totalStudents,
         present,
         absent,
-        leave,
         attendancePercentage,
         totalWorkingHours,
         totalWorkingMinutes,

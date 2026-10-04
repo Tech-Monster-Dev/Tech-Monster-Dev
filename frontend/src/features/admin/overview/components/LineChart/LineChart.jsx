@@ -7,16 +7,15 @@ import {
     CartesianGrid,
     Tooltip,
     XAxis,
-    YAxis
+    YAxis,
+    Legend
 } from "recharts";
 
 export default function LineChart({ chartData = [] }) {
 
     return (
-
-        <div id="adminChart">
-
-            <div id="adminChartHeader">
+        <div className="adminChart">
+            <div className="adminChartHeader">
                 <h2>Weekly Attendance</h2>
             </div>
 
@@ -24,13 +23,12 @@ export default function LineChart({ chartData = [] }) {
                 width="100%"
                 height={350}
             >
-
                 <AreaChart
                     data={chartData}
                 >
                     <defs>
                         <linearGradient
-                            id="attendance"
+                            id="presentAttendance"
                             x1="0"
                             y1="0"
                             x2="0"
@@ -38,17 +36,36 @@ export default function LineChart({ chartData = [] }) {
                         >
                             <stop
                                 offset="5%"
-                                stopColor="#00ffff"
+                                stopColor="#00e676"
                                 stopOpacity={0.8}
                             />
 
                             <stop
                                 offset="95%"
-                                stopColor="#00ffff"
+                                stopColor="#00e676"
                                 stopOpacity={0}
                             />
                         </linearGradient>
 
+                        <linearGradient
+                            id="absentAttendance"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                        >
+                            <stop
+                                offset="5%"
+                                stopColor="#ff5252"
+                                stopOpacity={0.8}
+                            />
+
+                            <stop
+                                offset="95%"
+                                stopColor="#ff5252"
+                                stopOpacity={0}
+                            />
+                        </linearGradient>
                     </defs>
 
                     <CartesianGrid
@@ -62,22 +79,32 @@ export default function LineChart({ chartData = [] }) {
 
                     <YAxis
                         stroke="#cfcfcf"
+                        allowDecimals={false}
                     />
 
                     <Tooltip />
 
+                    <Legend />
+
                     <Area
                         type="monotone"
-                        dataKey="attendance"
-                        stroke="#00ffff"
+                        dataKey="present"
+                        name="Present"
+                        stroke="#00e676"
                         strokeWidth={3}
-                        fill="url(#attendance)"
+                        fill="url(#presentAttendance)"
+                    />
+
+                    <Area
+                        type="monotone"
+                        dataKey="absent"
+                        name="Absent"
+                        stroke="#ff5252"
+                        strokeWidth={3}
+                        fill="url(#absentAttendance)"
                     />
                 </AreaChart>
             </ResponsiveContainer>
-
         </div>
-
     );
-
 }

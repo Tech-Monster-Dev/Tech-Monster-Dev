@@ -3,9 +3,6 @@ import "./StatsCards.css";
 import {
     HiUserGroup,
     HiFolder,
-    HiFire,
-    HiBadgeCheck,
-    HiClipboardList,
     HiCalendar
 } from "react-icons/hi";
 
@@ -23,21 +20,6 @@ export default function StatsCards({ stats }) {
             value: stats.activeInternships
         },
         {
-            icon: <HiFire />,
-            title: "Pending Review",
-            value: stats.submittedTasks
-        },
-        {
-            icon: <HiBadgeCheck />,
-            title: "Approved Tasks",
-            value: stats.approvedTasks
-        },
-        {
-            icon: <HiClipboardList />,
-            title: "Incorrect Tasks",
-            value: stats.incorrectTasks
-        },
-        {
             icon: <HiCalendar />,
             title: "Certificates",
             value: stats.totalCertificates
@@ -45,18 +27,17 @@ export default function StatsCards({ stats }) {
     ];
 
     return (
-
-        <div id="adminStatsCards">
+        <div className="adminStatsCards">
             {
                 cards.map((card, index) => (
                     <div
-                        id="adminStatsCard"
+                        className="adminStatsCard"
                         key={index}
                     >
-                        <div id="adminStasCardIcon">
+                        <div className="adminStasCardIcon">
                             {card.icon}
                         </div>
-                        <div id="adminStasCardInfo">
+                        <div className="adminStasCardInfo">
                             <h4>
                                 {card.title}
                             </h4>
@@ -69,5 +50,4 @@ export default function StatsCards({ stats }) {
             }
         </div>
     );
-
 }

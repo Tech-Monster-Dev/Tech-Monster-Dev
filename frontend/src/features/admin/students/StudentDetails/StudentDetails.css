@@ -1,149 +1,414 @@
-/* Admin student details styles */
+@import "tailwindcss";
 
-.studentDetailsPage{
-
-    padding:30px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:30px;
-
+.studentDetailsPage {
+    @apply flex
+        w-full
+        min-w-0
+        flex-col
+        gap-[clamp(1rem,3vw,1.875rem)] max-[640px]:gap-4;
 }
 
-.studentHero{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:30px;
-
-    background:var(--surface);
-
-    border-radius:20px;
-
-    padding:30px;
-
+.studentHero {
+    @apply relative w-full
+        overflow-hidden
+        rounded-[clamp(1rem,3vw,1.5rem)]
+        p-[clamp(1rem,3vw,1.875rem)] max-[640px]:p-3;
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--neon) 8%, var(--surface)),
+            var(--surface)
+        );
+    border: 1px solid color-mix(in srgb, var(--neon) 18%, transparent);
+    box-shadow: 0 0.625rem 2.5rem color-mix(in srgb, var(--dark) 35%, transparent);
 }
 
-.studentHero img{
-
-    width:130px;
-
-    height:130px;
-
-    border-radius:50%;
-
-    object-fit:cover;
-
-    border:4px solid var(--neon);
-
+.studentDetailsBackButton {
+    @apply absolute
+        top-[clamp(0.1rem,1vw,0.5rem)]
+        left-[clamp(0.1rem,1vw,0.5rem)]
+        z-20;
 }
 
-.studentHero h1{
-
-    color:#fff;
-
+.studentHeroIdentity {
+    @apply flex
+        min-w-0
+        flex-wrap
+        items-center
+        gap-[clamp(1rem,3vw,1.875rem)] max-[640px]:flex-col max-[640px]:items-start max-[640px]:gap-4;
 }
 
-.studentHero p{
-
-    color:#9ca3af;
-
+.studentHeroIdentity img {
+    @apply h-[clamp(5.5rem,18vw,8rem)]
+        w-[clamp(5.5rem,18vw,8rem)]
+        shrink-0
+        rounded-full
+        border-4
+        object-cover
+        max-md:h-[clamp(5rem,18vw,6rem)]
+        max-md:w-[clamp(5rem,18vw,6rem)]
+        max-md:border-[0.1875rem]
+        max-md:self-center;
+    border-color: var(--neon);
+    box-shadow: 0 0 1.5rem color-mix(in srgb, var(--neon) 25%, transparent);
 }
 
-.studentHero span{
-
-    color:var(--neon);
-
+.studentHeroInfo {
+    @apply flex
+        min-w-0
+        flex-1
+        flex-col
+        gap-[clamp(0.75rem,2vw,1rem)] max-[640px]:w-full;
 }
 
-.studentSectionGrid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-
-    gap:20px;
-
+.studentHeroTitleRow {
+    @apply flex
+        min-w-0
+        flex-wrap
+        items-center
+        justify-between
+        gap-[clamp(0.75rem,2vw,1.25rem)]
+        max-[640px]:items-start max-[640px]:w-full;
 }
 
-.detailCard{
-
-    background:var(--surface);
-
-    border-radius:18px;
-
-    padding:22px;
-
+.studentHero h1 {
+    @apply m-0
+        wrap-break-word
+        text-[clamp(1.35rem,4vw,2rem)]
+        font-bold
+        leading-tight;
+    color: var(--text);
 }
 
-.detailCard h2{
-
-    margin-bottom:15px;
-
-    color:var(--neon);
-
+.studentHero p {
+    @apply m-0
+        mt-1
+        wrap-break-word
+        text-[clamp(0.8rem,2vw,0.95rem)];
+    color: var(--gray);
 }
 
-.detailCard p,
-
-.detailCard a{
-
-    display:block;
-
-    color:#d1d5db;
-
-    margin-bottom:10px;
-
-    word-break:break-word;
-
+.studentHeroMeta {
+    @apply flex
+        min-w-0
+        flex-wrap
+        gap-x-[clamp(0.75rem,2vw,1.25rem)] max-[640px]:w-full max-[640px]:flex-col max-[640px]:gap-1 gap-y-2;
 }
 
-.tableCard{
-
-    background:var(--surface);
-
-    border-radius:20px;
-
-    padding:20px;
-
-    overflow:auto;
-
+.studentHeroMeta span {
+    @apply min-w-0
+        wrap-break-word
+        text-[clamp(0.75rem,2vw,0.875rem)];
+    color: var(--gray);
 }
 
-.tableCard h2{
-
-    color:var(--neon);
-
-    margin-bottom:15px;
-
+.studentSectionGrid {
+    @apply grid
+        min-w-0
+        gap-[clamp(0.875rem,2.5vw,1.25rem)]
+        grid-cols-[repeat(auto-fit,minmax(min(100%,19rem),1fr))] max-[640px]:grid-cols-1 max-[640px]:gap-3;
 }
 
-.tableCard table{
+.detailCard {
+    @apply min-w-0
+        overflow-hidden
+        rounded-[clamp(0.875rem,2.5vw,1.25rem)]
+        p-[clamp(1rem,2.5vw,1.375rem)] max-[640px]:p-3;
+    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--text) 7%, transparent);
+}
 
-    width:100%;
+.detailCardHeader {
+    @apply mb-[clamp(0.875rem,2vw,1.125rem)];
+}
 
-    border-collapse:collapse;
+.detailCardHeader h2,
+.tableCardHeader h2 {
+    @apply m-0
+        text-[clamp(1rem,2.5vw,1.2rem)]
+        font-semibold;
+    color: var(--neon);
+}
 
+.detailRows {
+    @apply flex
+        flex-col
+        gap-[clamp(0.625rem,2vw,0.875rem)];
+}
+
+.detailRow {
+    @apply grid
+        min-w-0
+        gap-2
+        grid-cols-[minmax(6.5rem,0.75fr)_minmax(0,1.25fr)]
+        max-[640px]:grid-cols-1
+        max-[640px]:gap-1;
+    align-items: start;
+}
+
+.studentDetailsPage .studentDetailsLabel {
+    @apply min-w-0
+        wrap-break-word
+        text-[clamp(0.68rem,1.7vw,0.78rem)]
+        font-semibold
+        uppercase
+        tracking-[0.06em];
+    color: var(--text);
+}
+
+.studentDetailsPage .studentDetailsValue {
+    @apply min-w-0
+        wrap-break-word
+        text-[clamp(0.82rem,2vw,0.95rem)]
+        font-medium;
+    color: var(--muted);
+}
+
+.studentDetailsLongField {
+    @apply mt-[clamp(0.875rem,2.5vw,1.125rem)]
+        flex
+        min-w-0
+        flex-col
+        gap-2;
+}
+
+.studentDetailsLongField p {
+    @apply m-0
+        wrap-break-word
+        whitespace-pre-wrap
+        text-[clamp(0.8rem,2vw,0.9rem)]
+        leading-relaxed;
+    color: var(--gray);
+}
+
+.skillList {
+    @apply flex
+        flex-wrap
+        gap-2;
+}
+
+.skillBadge,
+.statusBadge {
+    @apply inline-flex
+        max-w-full
+        items-center
+        justify-center
+        wrap-break-word
+        rounded-full
+        px-[clamp(0.55rem,1.5vw,0.75rem)]
+        py-1
+        text-[clamp(0.68rem,1.7vw,0.78rem)]
+        font-medium;
+}
+
+.skillBadge {
+    background: color-mix(in srgb, var(--neon) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--neon) 20%, transparent);
+    color: var(--neon);
+}
+
+.socialLinks {
+    @apply mt-[clamp(0.875rem,2.5vw,1.125rem)]
+        flex
+        flex-col
+        items-start
+        gap-2;
+}
+
+.socialLinks a {
+    @apply rounded-lg
+        px-3
+        py-2
+        text-[clamp(0.75rem,2vw,0.875rem)]
+        font-medium
+        no-underline
+        transition-all
+        duration-300;
+    background: color-mix(in srgb, var(--neon) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--neon) 22%, transparent);
+    color: var(--neon);
+}
+
+.socialLinks a:hover {
+    background: color-mix(in srgb, var(--neon) 18%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 40%, transparent);
+}
+
+.statusBadge-default {
+    background: color-mix(in srgb, var(--gray) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
+    color: var(--gray);
+}
+
+.statusBadge-success {
+    background: color-mix(in srgb, var(--success) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--success) 25%, transparent);
+    color: var(--success);
+}
+
+.statusBadge-danger {
+    background: color-mix(in srgb, var(--danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent);
+    color: var(--danger);
+}
+
+.tableCard {
+    @apply min-w-0
+        overflow-hidden
+        rounded-[clamp(0.875rem,2.5vw,1.25rem)]
+        p-[clamp(0.875rem,2.5vw,1.25rem)] col-span-full max-[640px]:p-3;
+    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.tableCardHeader {
+    @apply mb-[clamp(0.875rem,2vw,1.125rem)]
+        flex
+        min-w-0
+        flex-wrap
+        items-center
+        justify-between
+        gap-3;
+}
+
+.tableCardHeader p {
+    @apply m-0
+        mt-1
+        text-[clamp(0.7rem,1.8vw,0.8rem)];
+    color: var(--gray);
+}
+
+.responsiveTableWrapper {
+    @apply w-full
+        min-w-0
+        overflow-x-auto;
+}
+
+.tableCard table {
+    @apply w-full
+        min-w-248
+        max-[640px]:min-w-0;
+    border-collapse: collapse;
 }
 
 .tableCard th,
-
-.tableCard td{
-
-    padding:15px;
-
-    border-bottom:1px solid rgba(255,255,255,.08);
-
-    color:#d1d5db;
-
+.tableCard td {
+    @apply border-b
+        px-[clamp(0.65rem,1.8vw,0.9375rem)]
+        py-[clamp(0.7rem,2vw,0.9375rem)]
+        text-left
+        align-middle;
+    border-color: color-mix(in srgb, var(--text) 7%, transparent);
 }
 
-.tableCard th{
+.tableCard th {
+    @apply whitespace-nowrap
+        text-[clamp(0.68rem,1.7vw,0.78rem)]
+        font-semibold
+        uppercase
+        tracking-[0.04em]
+        max-[640px]:hidden;
+    color: var(--text);
+}
 
-    color:#fff;
+.tableCard td {
+    @apply wrap-break-word
+        text-[clamp(0.75rem,1.8vw,0.875rem)]
+        max-[640px]:w-full
+        max-[640px]:border-b
+        max-[640px]:px-0
+        max-[640px]:py-2
+        max-[640px]:grid
+        max-[640px]:grid-cols-[minmax(6.5rem,0.75fr)_minmax(0,1.25fr)]
+        max-[640px]:gap-3;
+    color: var(--gray);
+}
 
+.tableCard td:last-child {
+    @apply max-[640px]:border-b-0;
+}
+
+.tableCard tbody {
+    @apply max-[640px]:block
+        max-[640px]:space-y-3;
+}
+
+.tableCard tbody tr {
+    transition: background var(--transition);
+    @apply max-[640px]:block
+        max-[640px]:w-full
+        max-[640px]:rounded-lg
+        max-[640px]:p-3;
+}
+
+.tableCard tbody tr:hover {
+    background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.tableCard tbody tr {
+    @apply max-[640px]:border;
+    border-color: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.tableCard td::before {
+    content: attr(data-label);
+    @apply hidden
+        max-[640px]:block
+        max-[640px]:font-medium
+        max-[640px]:text-[clamp(0.68rem,1.8vw,0.78rem)]
+        max-[640px]:uppercase;
+    color: var(--muted);
+}
+
+.progressCell {
+    @apply flex
+        min-w-32
+        items-center
+        gap-2
+        max-[640px]:min-w-0;
+}
+
+.progressTrack {
+    @apply h-1.5
+        min-w-16
+        flex-1
+        overflow-hidden
+        rounded-full;
+    background: color-mix(in srgb, var(--gray) 15%, transparent);
+}
+
+.progressTrack span {
+    @apply block
+        h-full
+        rounded-full;
+    background: var(--neon);
+    box-shadow: 0 0 0.5rem color-mix(in srgb, var(--neon) 35%, transparent);
+}
+
+.progressCell strong {
+    @apply shrink-0
+        text-xs
+        font-semibold;
+    color: var(--text);
+}
+
+.notificationMessage {
+    @apply max-w-100
+        whitespace-normal
+        max-[640px]:max-w-none;
+}
+
+
+.studentDetailsError {
+    @apply text-center;
+}
+
+.studentDetailsError h2 {
+    @apply mb-2;
+    color: var(--neon);
+}
+
+.studentDetailsError p {
+    @apply m-0;
+    color: var(--gray);
 }

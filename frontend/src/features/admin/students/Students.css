@@ -1,23 +1,33 @@
+@import "tailwindcss";
+
 .studentsPage {
-    width: 100%;
-    padding: 20px;
+    @apply flex w-full flex-col gap-[clamp(1rem,3vw,1.5rem)];
 }
 
 .studentGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-    gap: 25px;
+    @apply grid gap-[clamp(1.125rem,3vw,1.5625rem)] grid-cols-[repeat(auto-fill,minmax(min(100%,20.625rem),1fr))];
 }
 
-@media (max-width: 767px) {
+.studentTabsSkeleton {
+    @apply flex
+        w-full
+        min-w-0
+        flex-wrap
+        items-center
+        gap-[clamp(0.5rem,2vw,0.75rem)]
+        overflow-hidden;
+}
 
-    .studentsPage {
-        padding: 15px;
+.studentTabsSkeleton > * {
+    @apply shrink-0;
+}
+
+@media (max-width: 40rem) {
+    .studentTabsSkeleton {
+        @apply grid grid-cols-3;
     }
 
-    .studentGrid {
-        grid-template-columns: 1fr;
-        gap: 18px;
+    .studentTabsSkeleton > * {
+        @apply w-full;
     }
-
 }

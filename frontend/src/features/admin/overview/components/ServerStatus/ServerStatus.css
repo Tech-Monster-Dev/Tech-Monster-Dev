@@ -1,123 +1,77 @@
+@import "tailwindcss";
+
 .serverStatus {
-
-    background: #171b29;
-
-    padding: 22px;
-
-    border-radius: 20px;
-
-    border: 1px solid rgba(0, 255, 255, .15);
-
+    @apply rounded-[clamp(0.875rem,3vw,1.25rem)]
+        border
+        p-[clamp(1rem,3vw,1.375rem)];
+    background: color-mix(in srgb, var(--dark) 90%, var(--background));
+    border-color: color-mix(in srgb, var(--neon-bright) 15%, transparent);
 }
 
 .serverStatus h2 {
-
-    color: white;
-
-    margin-bottom: 20px;
-
+    @apply mb-[clamp(0.875rem,3vw,1.25rem)];
+    color: var(--text);
 }
 
 .statusItem {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    padding: 14px 0;
-
-    border-bottom: 1px solid rgba(255, 255, 255, .05);
-
+    @apply flex
+        items-center
+        justify-between
+        py-[clamp(0.625rem,2vw,0.875rem)]
+        border-b;
+    border-color: color-mix(in srgb, var(--text) 5%, transparent);
 }
 
 .statusItem:last-child {
-
-    border: none;
-
+    @apply border-b-0;
 }
 
 .statusLeft {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    color: white;
-
+    @apply flex
+        items-center
+        gap-[clamp(0.625rem,2vw,0.75rem)];
+    color: var(--text);
 }
 
 .statusLeft svg {
-
-    font-size: 24px;
-
-    color: cyan;
-
+    @apply text-[clamp(1.25rem,4vw,1.5rem)];
+    color: var(--neon-bright);
 }
 
 .statusRight {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
+    @apply flex
+        items-center
+        gap-[clamp(0.5rem,2vw,0.625rem)];
 }
 
 .statusRight small {
-
-    color: #d8d8d8;
-
+    color: var(--gray);
 }
 
 .dot {
-
-    width: 10px;
-
-    height: 10px;
-
-    border-radius: 50%;
-
-    background: #00ff66;
-
+    @apply h-[clamp(0.5rem,1.5vw,0.625rem)]
+        w-[clamp(0.5rem,1.5vw,0.625rem)]
+        rounded-full;
+    background: var(--success);
     box-shadow:
-
-        0 0 10px #00ff66,
-
-        0 0 20px #00ff66;
-
+        0 0 10px var(--success),
+        0 0 20px var(--success);
     animation: pulse 1.5s infinite;
-
 }
 
 @keyframes pulse {
-
     0% {
-
-        transform: scale(.8);
-
-        opacity: .6;
-
+        transform: scale(0.8);
+        opacity: 0.6;
     }
 
     50% {
-
         transform: scale(1.2);
-
         opacity: 1;
-
     }
 
     100% {
-
-        transform: scale(.8);
-
-        opacity: .6;
-
+        transform: scale(0.8);
+        opacity: 0.6;
     }
-
 }

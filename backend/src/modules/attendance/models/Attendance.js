@@ -20,30 +20,11 @@ const attendanceSchema = new mongoose.Schema(
             required: false
         },
 
-        checkIn: {
-            type: Date
-        },
-
-        checkOut: {
-            type: Date
-        },
-
-        workingHours: {
-            type: Number,
-            default: 0
-        },
-
-        workingMinutes: {
-            type: Number,
-            default: 0
-        },
-
         status: {
             type: String,
             enum: [
                 "Present",
                 "Absent",
-                "Leave"
             ],
             default: "Present"
         }

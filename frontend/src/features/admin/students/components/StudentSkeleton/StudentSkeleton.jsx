@@ -5,10 +5,8 @@ import Skeleton from "../../../../dashboard/common/LoaderPage/Skeleton";
 export default function StudentSkeleton() {
     return (
         <div className="studentSkeletonCard">
-
             {/* Top section */}
             <div className="studentSkeletonTop">
-
                 <Skeleton
                     width="85px"
                     height="85px"
@@ -16,7 +14,6 @@ export default function StudentSkeleton() {
                 />
 
                 <div className="studentSkeletonInfo">
-
                     <Skeleton
                         width="150px"
                         height="18px"
@@ -31,14 +28,11 @@ export default function StudentSkeleton() {
                         width="100px"
                         height="12px"
                     />
-
                 </div>
-
             </div>
 
             {/* Stats */}
             <div className="studentSkeletonStats">
-
                 <div>
                     <Skeleton
                         width="45px"
@@ -74,12 +68,10 @@ export default function StudentSkeleton() {
                         height="11px"
                     />
                 </div>
-
             </div>
 
             {/* Action buttons */}
             <div className="studentSkeletonActions">
-
                 {[1, 2, 3, 4, 5].map((item) => (
                     <Skeleton
                         key={item}
@@ -88,9 +80,7 @@ export default function StudentSkeleton() {
                         borderRadius="10px"
                     />
                 ))}
-
             </div>
-
         </div>
     );
 }

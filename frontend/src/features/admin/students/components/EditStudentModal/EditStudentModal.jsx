@@ -1,5 +1,3 @@
-// Admin student edit modal
-
 import "./EditStudentModal.css";
 
 import { useEffect, useState } from "react";
@@ -8,80 +6,54 @@ import { toast } from "react-toastify";
 import { updateStudent } from "../../../../../services/api/adminStudentService";
 
 export default function EditStudentModal({
-
     open,
-
     student,
-
     onClose,
-
     onRefresh
-
 }) {
 
     const [form, setForm] = useState({});
 
     useEffect(() => {
-
         if (student) {
-
             queueMicrotask(() => {
                 setForm(student);
             });
-
         }
-
     }, [student]);
 
     if (!open) return null;
 
     const handleChange = (e) => {
-
         setForm({
-
             ...form,
-
             [e.target.name]: e.target.value
-
         });
-
     };
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
 
         try {
-
             await updateStudent(student._id, form);
-
             toast.success("Student Updated Successfully");
-
             onRefresh();
-
             onClose();
 
         } catch (err) {
-
             toast.error(
                 err.response?.data?.message ||
                 "Update Failed"
             );
-
         }
-
     };
 
     return (
-
         <div className="editStudentOverlay">
-
             <div className="editStudentModal">
-
                 <h2>Edit Student</h2>
 
                 <form onSubmit={handleSubmit}>
-
                     <input
                         name="firstName"
                         placeholder="First Name"
@@ -146,7 +118,6 @@ export default function EditStudentModal({
                     />
 
                     <div className="editStudentBtns">
-
                         <button
                             type="button"
                             className="cancelBtn"
@@ -161,15 +132,9 @@ export default function EditStudentModal({
                         >
                             Save Changes
                         </button>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
     );
-
 }

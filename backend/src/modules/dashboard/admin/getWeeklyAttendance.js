@@ -1,4 +1,5 @@
 import Attendance from "../../attendance/models/Attendance.js";
+import User from "../../user/models/User.js";
 
 const getWeeklyAttendance = async () => {
     const today = new Date();
@@ -12,25 +13,43 @@ const getWeeklyAttendance = async () => {
         "Fri",
         "Sat"
     ];
+
+    const totalStudents = await User.countDocuments({
+        role: "student"
+    });
+
     const weeklyAttendance = [];
 
     for (let i = 6; i >= 0; i--) {
         const start = new Date(today);
         start.setDate(today.getDate() - i);
         start.setHours(0, 0, 0, 0);
-        const end = new Date(start);
-        end.setHours(23, 59, 59, 999);
 
-        const attendance = await Attendance.countDocuments({
-            createdAt: {
-                $gte: start,
-                $lte: end
+        const end = new Date(start);
+        end.setDate(start.getDate() + 1);
+
+        const presentStudents = await Attendance.distinct(
+            "student",
+            {
+                status: "Present",
+                createdAt: {
+                    $gte: start,
+                    $lt: end
+                }
             }
-        });
+        );
+
+        const present = presentStudents.length;
+
+        const absent = Math.max(
+            totalStudents - present,
+            0
+        );
 
         weeklyAttendance.push({
             day: days[start.getDay()],
-            attendance
+            present,
+            absent
         });
     }
 

@@ -7,7 +7,6 @@ import {
 } from "react-icons/hi";
 
 export default function WelcomeCard({ stats }) {
-
     const today = new Date().toLocaleDateString("en-IN", {
         weekday: "long",
         day: "numeric",
@@ -16,9 +15,8 @@ export default function WelcomeCard({ stats }) {
     });
 
     return (
-
-        <div id="adminWelcomeCard">
-            <div id="adminWelcomeLeft">
+        <div className="adminWelcomeCard">
+            <div className="adminWelcomeLeft">
                 <h1>
                     Welcome Back 👋
                 </h1>
@@ -33,8 +31,8 @@ export default function WelcomeCard({ stats }) {
 
             </div>
 
-            <div id="adminWelcomeRight">
-                <div id="adminWelcomeMiniCard">
+            <div className="adminWelcomeRight">
+                <div className="adminWelcomeMiniCard">
                     <HiUserGroup />
                     <div>
                         <h3>
@@ -46,7 +44,7 @@ export default function WelcomeCard({ stats }) {
                     </div>
                 </div>
 
-                <div id="adminWelcomeMiniCard">
+                <div className="adminWelcomeMiniCard">
                     <HiAcademicCap />
                     <div>
                         <h3>
@@ -58,14 +56,14 @@ export default function WelcomeCard({ stats }) {
                     </div>
                 </div>
 
-                <div id="adminWelcomeMiniCard">
+                <div className="adminWelcomeMiniCard">
                     <HiCalendar />
                     <div>
                         <h3>
-                            {stats.submittedTasks}
+                            {stats.activeStudents}
                         </h3>
                         <p>
-                            Pending Reviews
+                            Active Students
                         </p>
                     </div>
                 </div>

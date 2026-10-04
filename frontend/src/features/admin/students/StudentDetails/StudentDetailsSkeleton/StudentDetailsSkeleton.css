@@ -1,171 +1,104 @@
+@import "tailwindcss";
+
+/* ============================= */
+/* MAIN */
+/* ============================= */
 .studentDetailsSkeleton {
-    padding: 30px;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 30px;
+    @apply flex
+        w-full
+        flex-col
+        gap-[clamp(1.25rem,4vw,1.875rem)];
 }
-
 
 /* ============================= */
 /* HERO */
 /* ============================= */
-
 .studentDetailsSkeletonHero {
-    display: flex;
-
-    align-items: center;
-
-    gap: 30px;
-
+    @apply flex
+        min-w-0
+        flex-wrap
+        items-center
+        gap-[clamp(1rem,4vw,1.875rem)]
+        rounded-[clamp(1rem,3vw,1.25rem)]
+        p-[clamp(1rem,4vw,1.875rem)]
+        max-[640px]:p-3
+        max-[640px]:flex-col
+        max-[640px]:items-center
+        max-[640px]:gap-4;
     background: var(--surface);
+}
 
-    border-radius: 20px;
-
-    padding: 30px;
+.studentDetailsSkeletonHero > :first-child {
+    @apply shrink-0
+        max-[640px]:self-center;
 }
 
 .studentDetailsSkeletonHeroInfo {
-    flex: 1;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
+    @apply flex
+        min-w-0
+        flex-1
+        flex-col
+        gap-[clamp(0.625rem,2vw,0.75rem)]
+        max-[640px]:w-full;
 }
-
 
 /* ============================= */
 /* DETAIL GRID */
 /* ============================= */
 
 .studentDetailsSkeletonGrid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit,
-            minmax(300px, 1fr));
-
-    gap: 20px;
+    @apply grid
+        gap-[clamp(0.9375rem,3vw,1.25rem)]
+        grid-cols-[repeat(auto-fit,minmax(min(100%,18.75rem),1fr))];
 }
-
 
 /* ============================= */
 /* DETAIL CARD */
 /* ============================= */
 
 .studentDetailsSkeletonCard {
+    @apply flex
+        flex-col
+        gap-[clamp(0.75rem,2.5vw,0.875rem)]
+        rounded-[clamp(0.875rem,3vw,1.125rem)]
+        p-[clamp(1rem,3vw,1.375rem)];
     background: var(--surface);
-
-    border-radius: 18px;
-
-    padding: 22px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 14px;
 }
 
 .studentDetailsSkeletonCardContent {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
+    @apply flex
+        flex-col
+        gap-[clamp(0.625rem,2vw,0.75rem)];
 }
-
 
 /* ============================= */
 /* TABLE */
 /* ============================= */
 
 .studentDetailsSkeletonTable {
+    @apply overflow-hidden
+        rounded-[clamp(1rem,3vw,1.25rem)]
+        p-[clamp(1rem,3vw,1.25rem)];
     background: var(--surface);
-
-    border-radius: 20px;
-
-    padding: 20px;
-
-    overflow: hidden;
 }
 
 .studentDetailsSkeletonTableHeader {
-    margin-bottom: 20px;
+    @apply mb-[clamp(0.875rem,3vw,1.25rem)];
 }
 
 .studentDetailsSkeletonRows {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 15px;
+    @apply flex
+        flex-col
+        gap-[clamp(0.75rem,2.5vw,0.9375rem)];
 }
 
 .studentDetailsSkeletonRow {
-    display: grid;
-
-    gap: 20px;
-
-    padding-bottom: 15px;
-
-    border-bottom:
-        1px solid rgba(255, 255, 255, 0.08);
-}
-
-
-/* ============================= */
-/* RESPONSIVE */
-/* ============================= */
-
-@media (max-width: 767px) {
-
-    .studentDetailsSkeleton {
-        padding: 15px;
-
-        gap: 20px;
-    }
-
-    .studentDetailsSkeletonHero {
-        padding: 20px;
-
-        gap: 18px;
-
-        align-items: flex-start;
-    }
-
-    .studentDetailsSkeletonGrid {
-        grid-template-columns: 1fr;
-
-        gap: 15px;
-    }
-
-    .studentDetailsSkeletonCard {
-        padding: 18px;
-    }
-
-    .studentDetailsSkeletonTable {
-        padding: 18px;
-    }
-
-    .studentDetailsSkeletonRow {
-        gap: 10px;
-    }
-
-}
-
-
-@media (max-width: 439px) {
-
-    .studentDetailsSkeletonHero {
-        flex-direction: column;
-
-        align-items: center;
-
-        text-align: center;
-    }
-
+    @apply grid
+        min-w-0
+        gap-[clamp(0.5rem,2.5vw,1.25rem)]
+        border-b
+        pb-[clamp(0.75rem,2.5vw,0.9375rem)]
+        grid-cols-[repeat(var(--skeleton-columns),minmax(0,1fr))]
+        max-[640px]:grid-cols-2;
+    border-color: color-mix(in srgb, var(--text) 8%, transparent);
 }

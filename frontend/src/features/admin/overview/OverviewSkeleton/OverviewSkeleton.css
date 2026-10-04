@@ -1,166 +1,119 @@
+@import "tailwindcss";
+
 .overview-skeleton {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    @apply flex
+        w-full
+        flex-col
+        gap-[clamp(1rem,3vw,1.5rem)];
 }
 
 .skeleton-card {
-    padding: 1.5rem;
-    border-radius: 1rem;
-    background: rgba(13, 27, 42, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    @apply flex
+        flex-col
+        gap-[clamp(0.75rem,2vw,1rem)]
+        rounded-[clamp(0.75rem,2.5vw,1rem)]
+        border
+        p-[clamp(1rem,3vw,1.5rem)];
+    background: color-mix(in srgb, var(--background) 55%, transparent);
+    border-color: color-mix(in srgb, var(--text) 8%, transparent);
 }
-
 
 /* TOP */
 
 .overview-skeleton-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
+    @apply grid
+        gap-[clamp(1rem,3vw,1.5rem)]
+        grid-cols-[minmax(0,2fr)_minmax(0,1fr)] max-lg:grid-cols-1;
 }
 
-.welcome-skeleton {
-    min-height: 180px;
-}
-
+.welcome-skeleton,
 .server-skeleton {
-    min-height: 180px;
+    @apply min-h-[clamp(10rem,20vw,11.25rem)];
 }
-
 
 /* STATS */
 
 .stats-skeleton {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    @apply grid
+        gap-[clamp(1rem,3vw,1.5rem)]
+        grid-cols-4 max-lg:grid-cols-2 max-[30rem]:grid-cols-1;
 }
 
 .stats-item {
-    flex-direction: row;
-    align-items: center;
+    @apply flex
+        flex-row
+        items-center;
 }
 
 .stats-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    @apply flex
+        flex-col
+        gap-[clamp(0.5rem,1.5vw,0.6rem)];
 }
-
 
 /* CHART */
 
 .overview-skeleton-chart {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
+    @apply grid
+        gap-[clamp(1rem,3vw,1.5rem)]
+        grid-cols-[minmax(0,2fr)_minmax(0,1fr)] max-lg:grid-cols-1;
 }
 
-.chart-skeleton {
-    min-height: 350px;
-}
-
+.chart-skeleton,
 .attendance-skeleton {
-    min-height: 350px;
+    @apply min-h-[clamp(18rem,30vw,21.875rem)];
 }
 
 .attendance-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @apply flex
+        items-center
+        justify-between;
 }
-
 
 /* MIDDLE */
 
 .overview-skeleton-middle {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    @apply grid
+        gap-[clamp(1rem,3vw,1.5rem)]
+        grid-cols-2 max-md:grid-cols-1;
 }
 
 .large-list-skeleton {
-    min-height: 320px;
+    @apply min-h-[clamp(17rem,28vw,20rem)];
 }
 
 .list-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    @apply flex
+        items-center
+        gap-[clamp(0.75rem,2vw,1rem)];
 }
 
 .list-row > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    @apply flex
+        flex-col
+        gap-[clamp(0.3rem,1vw,0.4rem)];
 }
-
 
 /* BOTTOM */
 
 .overview-skeleton-bottom {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    @apply grid
+        gap-[clamp(1rem,3vw,1.5rem)]
+        grid-cols-2 max-md:grid-cols-1;
 }
 
 .bottom-skeleton {
-    min-height: 300px;
+    @apply min-h-[clamp(16rem,25vw,18.75rem)];
 }
-
 
 /* FOOTER */
 
 .overview-skeleton-footer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    @apply grid
+        gap-[clamp(1rem,3vw,1.5rem)]
+        grid-cols-2 max-md:grid-cols-1;
 }
 
 .footer-skeleton {
-    min-height: 250px;
-}
-
-
-/* RESPONSIVE */
-
-@media (max-width: 991px) {
-
-    .overview-skeleton-top,
-    .overview-skeleton-chart {
-        grid-template-columns: 1fr;
-    }
-
-    .stats-skeleton {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-}
-
-@media (max-width: 767px) {
-
-    .overview-skeleton-middle,
-    .overview-skeleton-bottom,
-    .overview-skeleton-footer {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-@media (max-width: 439px) {
-
-    .stats-skeleton {
-        grid-template-columns: 1fr;
-    }
-
-    .skeleton-card {
-        padding: 1rem;
-    }
-
+    @apply min-h-[clamp(13.75rem,22vw,15.625rem)];
 }

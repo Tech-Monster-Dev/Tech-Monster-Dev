@@ -73,6 +73,13 @@ export const initSocket = (server) => {
             );
         });
 
+        socket.on("getOnlineUsers", () => {
+            socket.emit(
+                "onlineUsers",
+                Array.from(onlineUsers.keys())
+            );
+        });
+
         socket.on("activeChat", ({ withUser }) => {
             const userId = Array.from(onlineUsers.entries()).find(([, socketId]) => socketId === socket.id)?.[0];
             if (!userId) return;
@@ -119,6 +126,14 @@ export const initSocket = (server) => {
                     onlineUserActivity.delete(
                         userId
                     );
+
+                    io.emit(
+                        "onlineUsers",
+                        Array.from(
+                            onlineUsers.keys()
+                        )
+                    );
+
                     break;
                 }
             }
