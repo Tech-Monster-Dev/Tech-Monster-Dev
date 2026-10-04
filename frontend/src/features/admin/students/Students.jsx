@@ -24,9 +24,82 @@ export default function Students() {
     const [selectedTab, setSelectedTab] = useState("all");
     const [onlineUsers, setOnlineUsers] = useState([]);
 
+    const MODAL_STORAGE_KEY = "adminStudentsModal";
+
+    const openEditModal = (student) => {
+        setSelectedStudent(student);
+        setEditOpen(true);
+        setNotifyOpen(false);
+
+        sessionStorage.setItem(
+            MODAL_STORAGE_KEY,
+            JSON.stringify({
+                type: "edit",
+                studentId: student._id,
+            })
+        );
+    };
+
+    const openNotificationModal = (student) => {
+        setSelectedStudent(student);
+        setNotifyOpen(true);
+        setEditOpen(false);
+
+        sessionStorage.setItem(
+            MODAL_STORAGE_KEY,
+            JSON.stringify({
+                type: "notification",
+                studentId: student._id,
+            })
+        );
+    };
+
+    const closeEditModal = () => {
+        setEditOpen(false);
+        sessionStorage.removeItem(MODAL_STORAGE_KEY);
+    };
+
+    const closeNotificationModal = () => {
+        setNotifyOpen(false);
+        sessionStorage.removeItem(MODAL_STORAGE_KEY);
+    };
+
     useEffect(() => {
         fetchStudents();
     }, []);
+
+    useEffect(() => {
+        if (!students.length || editOpen || notifyOpen) return;
+
+        const savedModal = sessionStorage.getItem(MODAL_STORAGE_KEY);
+
+        if (!savedModal) return;
+
+        try {
+            const { type, studentId } = JSON.parse(savedModal);
+
+            const student = students.find(
+                (item) => String(item._id) === String(studentId)
+            );
+
+            if (!student) {
+                sessionStorage.removeItem(MODAL_STORAGE_KEY);
+                return;
+            }
+
+            setSelectedStudent(student);
+
+            if (type === "edit") {
+                setEditOpen(true);
+            } else if (type === "notification") {
+                setNotifyOpen(true);
+            } else {
+                sessionStorage.removeItem(MODAL_STORAGE_KEY);
+            }
+        } catch {
+            sessionStorage.removeItem(MODAL_STORAGE_KEY);
+        }
+    }, [students, editOpen, notifyOpen]);
 
     useEffect(() => {
         const handleOnlineUsers = (users) => {
@@ -62,33 +135,38 @@ export default function Students() {
         }
     }
 
+    const availableStudents = useMemo(() => {
+        return students.filter((student) => !student.isBlocked);
+    }, [students]);
+
     const activeStudents = useMemo(() => {
 
-        return students.filter((student) =>
+        return availableStudents.filter((student) =>
             onlineUsers.some((userId) =>
                 String(userId) === String(student._id)
             )
         );
 
-    }, [students, onlineUsers]);
+    }, [availableStudents, onlineUsers]);
 
     const filteredStudents = useMemo(() => {
 
         if (selectedTab === "active") {
-            return students.filter((student) =>
-                onlineUsers.some((userId) =>
-                    String(userId) === String(student._id)
-                )
-            );
+            return activeStudents;
         }
 
         if (selectedTab === "blocked") {
             return students.filter((student) => student.isBlocked);
         }
 
-        return students;
+        return availableStudents;
 
-    }, [students, selectedTab, onlineUsers]);
+    }, [
+        students,
+        selectedTab,
+        activeStudents,
+        availableStudents
+    ]);
 
     useSkeletonScrollLock(loading);
 
@@ -123,7 +201,7 @@ export default function Students() {
                         {
                             label: "All Student",
                             value: "all",
-                            count: students.length
+                            count: availableStudents.length
                         },
                         {
                             label: "Active Student",
@@ -165,15 +243,9 @@ export default function Students() {
                                 key={student._id}
                                 student={student}
                                 onRefresh={fetchStudents}
-                                onEdit={(user) => {
-                                    setSelectedStudent(user);
-                                    setEditOpen(true);
-                                }}
+                                onEdit={openEditModal}
 
-                                onNotify={(user) => {
-                                    setSelectedStudent(user);
-                                    setNotifyOpen(true);
-                                }}
+                                onNotify={openNotificationModal}
                             />
 
                         ))}
@@ -184,14 +256,14 @@ export default function Students() {
             <EditStudentModal
                 open={editOpen}
                 student={selectedStudent}
-                onClose={() => setEditOpen(false)}
+                onClose={closeEditModal}
                 onRefresh={fetchStudents}
             />
 
             <NotificationModal
                 open={notifyOpen}
                 student={selectedStudent}
-                onClose={() => setNotifyOpen(false)}
+                onClose={closeNotificationModal}
             />
         </>
     );
