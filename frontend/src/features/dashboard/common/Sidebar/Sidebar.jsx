@@ -1,15 +1,16 @@
 import './Sidebar.css';
 
-import useAuth from '../../../../shared/hooks/useAuth';
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
+
+import useAuth from '../../../../shared/hooks/useAuth';
+
 import Tooltip from '../../../../components/ui/Tooltip';
 import Warning from '../../../../components/ui/Warning';
-
-
 import SearchBar from "../../../../components/ui/SearchBar";
+
 import Loader from "../../../../components/ui/Loader";
 import api from "../../../../services/api/axios";
 import { API } from "../../../../services/api/endpoints";
@@ -96,8 +97,7 @@ function Sidebar({
     const adminLinks = [
         { name: "Overview", path: "/admin", icon: <FiHome /> },
         { name: "Manage Students", path: "/admin/students", icon: <FiUser /> },
-        { name: "Internships", path: "/admin/internships", icon: <FiBookOpen /> },
-        { name: "Courses", path: "/admin/courses", icon: <FiBookOpen /> },
+        { name: "Dashboard", path: "/admin/dashboard", icon: <FiBookOpen /> },
         { name: "Task Approval", path: "/admin/tasks", icon: <FiCheckSquare /> },
         { name: "Reports", path: "/admin/reports", icon: <FiGrid /> },
         { name: "Certificate Approval", path: "/admin/certificates", icon: <FiCreditCard /> },

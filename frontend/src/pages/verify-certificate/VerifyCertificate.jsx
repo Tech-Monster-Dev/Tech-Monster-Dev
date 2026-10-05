@@ -41,8 +41,10 @@ export default function VerifyCertificate() {
         if (token) {
             loadCertificate();
         } else {
-            setError("Certificate verification token is missing.");
-            setLoading(false);
+            queueMicrotask(() => {
+                setError("Certificate verification token is missing.");
+                setLoading(false);
+            });
         }
 
         return () => {

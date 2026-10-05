@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+.enrolledStudentsOverlay {
+    @apply fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden p-[clamp(0.5rem,2vw,1rem)];
+    background: color-mix(in srgb, var(--dark) 84%, transparent);
+    backdrop-filter: blur(0.625rem);
+}
+
+.enrolledStudentsModal {
+    @apply relative flex min-h-0 max-h-[calc(100dvh-1rem)] w-full max-w-[clamp(38rem,82vw,62rem)] flex-col overflow-hidden rounded-[clamp(1rem,2.5vw,1.5rem)] border;
+    border-color: var(--neon-cyan-soft);
+    background:
+        radial-gradient(
+            circle at top right,
+            color-mix(in srgb, var(--neon) 10%, transparent),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--dark) 96%, var(--neon) 4%),
+            var(--dark)
+        );
+    box-shadow:
+        0 1.5rem 4rem color-mix(in srgb, var(--dark) 70%, transparent),
+        0 0 2rem color-mix(in srgb, var(--neon) 8%, transparent);
+}
+
+.enrolledStudentsClose {
+    @apply absolute top-[clamp(0.5rem,2vw,0.9rem)] right-[clamp(0.5rem,2vw,0.9rem)] z-30 flex size-[clamp(2.25rem,6vw,2.75rem)] cursor-pointer items-center justify-center rounded-full border text-[clamp(1rem,2.5vw,1.25rem)] transition-all duration-300;
+    border-color: var(--neon-cyan-soft);
+    background: color-mix(in srgb, var(--dark) 78%, transparent);
+    color: var(--text);
+}
+
+.enrolledStudentsClose:hover {
+    border-color: var(--neon);
+    background: var(--neon-cyan-faint);
+    color: var(--neon);
+    transform: rotate(90deg);
+}
+
+.enrolledStudentsContent {
+    @apply min-h-0 flex-1 overflow-y-auto overscroll-contain p-[clamp(1rem,3vw,2rem)];
+    scrollbar-width: none;
+}
+
+.enrolledStudentsContent::-webkit-scrollbar {
+    display: none;
+}
+
+.enrolledStudentsHeader {
+    @apply flex flex-col items-center text-center;
+    padding-top: clamp(2.5rem, 6vw, 4rem);
+}
+
+.enrolledStudentsEyebrow {
+    @apply text-[clamp(0.65rem,1.5vw,0.75rem)] font-extrabold uppercase tracking-[0.08em];
+    color: var(--neon);
+}
+
+.enrolledStudentsHeader h2 {
+    @apply mt-2 max-w-3xl text-[clamp(1.35rem,4vw,2.2rem)] font-extrabold leading-tight;
+    color: var(--text);
+}
+
+.enrolledStudentsHeader p {
+    @apply mt-2 max-w-2xl text-[clamp(0.75rem,1.8vw,0.95rem)] leading-relaxed;
+    color: var(--muted);
+}
+
+.enrolledStudentsCount {
+    @apply mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[clamp(0.7rem,1.6vw,0.8rem)] font-bold;
+    border-color: var(--neon-cyan-soft);
+    background: var(--neon-cyan-faint);
+    color: var(--neon);
+}
+
+.enrolledStudentsCount svg {
+    @apply size-[clamp(0.9rem,2vw,1rem)];
+}
+
+.enrolledStudentsList {
+    @apply mt-[clamp(1.25rem,3vw,2rem)] flex flex-col gap-[clamp(0.65rem,2vw,0.9rem)];
+}
+
+.enrolledStudentItem {
+    @apply flex w-full min-w-0 cursor-pointer flex-wrap items-center gap-[clamp(0.75rem,2vw,1rem)] rounded-[clamp(0.75rem,2vw,1rem)] border p-[clamp(0.75rem,2vw,1rem)] text-left transition-all duration-300;
+    border-color: var(--neon-cyan-faint);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    color: var(--text);
+}
+
+.enrolledStudentItem:hover {
+    border-color: var(--neon-cyan-soft);
+    background: color-mix(in srgb, var(--neon) 6%, var(--surface));
+}
+
+.enrolledStudentItem > img {
+    @apply size-[clamp(2.75rem,7vw,3.75rem)] shrink-0 rounded-full border object-cover;
+    border-color: var(--neon-cyan-soft);
+}
+
+.enrolledStudentInfo {
+    @apply flex min-w-0 flex-1 flex-col gap-1;
+}
+
+.enrolledStudentInfo strong {
+    @apply truncate text-[clamp(0.85rem,2vw,1rem)] font-bold;
+    color: var(--text);
+}
+
+.enrolledStudentInfo > span {
+    @apply truncate text-[clamp(0.65rem,1.6vw,0.78rem)];
+    color: var(--muted);
+}
+
+.enrolledStudentInfo .enrolledStudentEmail {
+    @apply inline-flex min-w-0 items-center gap-1.5;
+}
+
+.enrolledStudentEmail svg {
+    @apply size-[clamp(0.75rem,1.8vw,0.9rem)] shrink-0;
+    color: var(--neon);
+}
+
+.enrolledStudentDate {
+    @apply ml-auto flex min-w-[clamp(7rem,18vw,9rem)] shrink-0 flex-col items-end gap-1;
+}
+
+.enrolledStudentDate span {
+    @apply inline-flex items-center gap-1 text-[clamp(0.6rem,1.5vw,0.7rem)] uppercase tracking-[0.05em];
+    color: var(--muted);
+}
+
+.enrolledStudentDate span svg {
+    @apply size-[clamp(0.75rem,1.8vw,0.9rem)];
+    color: var(--neon);
+}
+
+.enrolledStudentDate strong {
+    @apply text-[clamp(0.7rem,1.7vw,0.82rem)] font-bold;
+    color: var(--text);
+}
+
+.enrolledStudentsEmpty {
+    @apply mt-[clamp(1.5rem,4vw,2.5rem)] flex flex-col items-center justify-center rounded-[clamp(0.85rem,2vw,1.1rem)] border p-[clamp(2rem,6vw,3.5rem)] text-center;
+    border-color: var(--neon-cyan-faint);
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
+}
+
+.enrolledStudentsEmpty > svg {
+    @apply size-[clamp(2rem,6vw,3rem)];
+    color: var(--neon);
+}
+
+.enrolledStudentsEmpty h3 {
+    @apply mt-3 text-[clamp(0.95rem,2.5vw,1.2rem)] font-bold;
+    color: var(--text);
+}
+
+.enrolledStudentsEmpty p {
+    @apply mt-1 max-w-md text-[clamp(0.7rem,1.7vw,0.82rem)];
+    color: var(--muted);
+}
+

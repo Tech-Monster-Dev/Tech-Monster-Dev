@@ -49,6 +49,11 @@ function TextInput({
                     } ${className}`.trim()}
                     maxLength={maxLength}
                     {...props}
+                    onWheel={
+                        type === "number"
+                            ? (event) => event.currentTarget.blur()
+                            : props.onWheel
+                    }
                 />
             </div>
 
