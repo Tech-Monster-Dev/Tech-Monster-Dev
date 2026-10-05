@@ -5,6 +5,7 @@ import authorizeRoles from "../../core/security/role.middleware.js";
 
 import {
     getDashboardStats,
+    getEnrolledPrograms,
     getSingleUser,
     getAllUsers,
     blockUser,
@@ -21,6 +22,13 @@ router.get(
     protect,
     authorizeRoles("admin"),
     getDashboardStats
+);
+
+router.get(
+    "/enrollments",
+    protect,
+    authorizeRoles("admin"),
+    getEnrolledPrograms
 );
 
 router.get(

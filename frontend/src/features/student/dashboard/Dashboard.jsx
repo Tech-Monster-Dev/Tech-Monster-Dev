@@ -83,10 +83,12 @@ function Dashboard() {
             const parsedPreview = JSON.parse(savedPreview);
 
             if (parsedPreview?.open && parsedPreview?.item) {
-                setPreview({
-                    open: true,
-                    item: parsedPreview.item,
-                    type: parsedPreview.type === "internship" ? "internship" : "course",
+                queueMicrotask(() => {
+                    setPreview({
+                        open: true,
+                        item: parsedPreview.item,
+                        type: parsedPreview.type === "internship" ? "internship" : "course",
+                    });
                 });
             }
         } catch {

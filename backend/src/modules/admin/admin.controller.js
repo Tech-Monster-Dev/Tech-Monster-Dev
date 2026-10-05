@@ -347,6 +347,59 @@ export const getSingleUser = asyncHandler(async (req, res) => {
 
 
 // backend/controllers/admin.controller.js
+export const getEnrolledPrograms = asyncHandler(async (req, res) => {
+    const enrollments = await StudentInternship.find({})
+        .populate(
+            "student",
+            "firstName middleName lastName username email avatar"
+        )
+        .populate("course")
+        .populate("internship")
+        .sort({
+            startedAt: -1,
+            createdAt: -1
+        });
+
+    const courseMap = new Map();
+    const internshipMap = new Map();
+
+    for (const enrollment of enrollments) {
+        const program = enrollment.course || enrollment.internship;
+        const student = enrollment.student;
+
+        if (!program || !student) {
+            continue;
+        }
+
+        const isCourse = Boolean(enrollment.course);
+        const targetMap = isCourse
+            ? courseMap
+            : internshipMap;
+        const programId = String(program._id);
+
+        if (!targetMap.has(programId)) {
+            targetMap.set(programId, {
+                ...program.toObject(),
+                students: []
+            });
+        }
+
+        targetMap.get(programId).students.push({
+            ...student.toObject(),
+            enrollmentId: enrollment._id,
+            startedAt:
+                enrollment.startedAt ||
+                enrollment.createdAt
+        });
+    }
+
+    res.status(200).json({
+        success: true,
+        courses: Array.from(courseMap.values()),
+        internships: Array.from(internshipMap.values())
+    });
+});
+
 export const updateUser = asyncHandler(async (req, res) => {
     const student = await User.findById(req.params.id);
 

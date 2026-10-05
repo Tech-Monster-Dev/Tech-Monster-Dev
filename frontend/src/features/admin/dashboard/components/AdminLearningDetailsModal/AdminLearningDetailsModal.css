@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+.adminLearningDetailsOverlay {
+    @apply fixed inset-0 z-[99999] box-border flex h-full min-h-0 w-full items-center justify-center overflow-hidden p-[clamp(0.5rem,2vw,1rem)];
+    background: color-mix(in srgb, var(--dark) 84%, transparent);
+    backdrop-filter: blur(0.625rem);
+}
+
+.adminLearningDetailsModal {
+    @apply relative box-border flex h-[min(100%,52rem)] min-h-0 max-h-full w-full max-w-[clamp(42rem,88vw,70rem)] flex-col overflow-hidden rounded-[clamp(1rem,2.5vw,1.5rem)] border;
+    border-color: var(--neon-cyan-soft);
+    background:
+        radial-gradient(
+            circle at top right,
+            color-mix(in srgb, var(--neon) 10%, transparent),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--dark) 96%, var(--neon) 4%),
+            var(--dark)
+        );
+    box-shadow:
+        0 1.5rem 4rem color-mix(in srgb, var(--dark) 70%, transparent),
+        0 0 2rem color-mix(in srgb, var(--neon) 8%, transparent);
+}
+
+.adminLearningDetailsClose {
+    @apply absolute top-[clamp(0.5rem,2vw,0.9rem)] right-[clamp(0.5rem,2vw,0.9rem)] z-30 flex size-[clamp(2.25rem,6vw,2.75rem)] cursor-pointer items-center justify-center rounded-full border text-[clamp(1rem,2.5vw,1.25rem)] transition-all duration-300;
+    border-color: var(--neon-cyan-soft);
+    background: color-mix(in srgb, var(--dark) 78%, transparent);
+    color: var(--text);
+}
+
+.adminLearningDetailsClose:hover {
+    border-color: var(--neon);
+    background: var(--neon-cyan-faint);
+    color: var(--neon);
+    transform: rotate(90deg);
+}
+
+.adminLearningDetailsClose:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.adminLearningDetailsContent {
+    @apply min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain p-[clamp(1rem,3vw,2rem)];
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.adminLearningDetailsContent::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+.adminLearningDetailsHero {
+    @apply grid min-w-0 items-stretch gap-[clamp(1rem,3vw,1.75rem)] grid-cols-[repeat(auto-fit,minmax(min(100%,20rem),1fr))];
+}
+
+.adminLearningDetailsThumbnail {
+    @apply relative flex min-h-[clamp(10rem,24vw,17rem)] items-end overflow-hidden rounded-[clamp(0.85rem,2vw,1.25rem)] border;
+    border-color: var(--neon-cyan-soft);
+    background:
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--neon) 12%, var(--surface)),
+            var(--surface)
+        );
+}
+
+.adminLearningDetailsThumbnail img {
+    @apply absolute inset-0 size-full object-cover;
+}
+
+.adminLearningDetailsThumbnail::after {
+    content: "";
+    @apply absolute inset-0;
+    background:
+        linear-gradient(
+            to top,
+            color-mix(in srgb, var(--dark) 82%, transparent),
+            transparent 60%
+        );
+}
+
+.adminLearningDetailsThumbnail > svg {
+    @apply absolute left-1/2 top-1/2 z-10 size-[clamp(3rem,8vw,5rem)] -translate-x-1/2 -translate-y-1/2;
+    color: var(--neon);
+}
+
+.adminLearningDetailsThumbnail span {
+    @apply relative z-10 m-[clamp(0.75rem,2vw,1.25rem)] rounded-full border px-3 py-1 text-[clamp(0.65rem,1.5vw,0.75rem)] font-bold uppercase tracking-[0.08em];
+    border-color: var(--neon-cyan-soft);
+    background: color-mix(in srgb, var(--dark) 72%, transparent);
+    color: var(--neon);
+}
+
+.adminLearningDetailsIntro {
+    @apply flex min-w-0 flex-col justify-center;
+}
+
+.adminLearningDetailsEyebrow {
+    @apply mb-2 text-[clamp(0.65rem,1.5vw,0.75rem)] font-extrabold uppercase tracking-[0.08em];
+    color: var(--neon);
+}
+
+.adminLearningDetailsIntro h2 {
+    @apply m-0 text-[clamp(1.35rem,4vw,2.35rem)] font-extrabold leading-tight;
+    color: var(--text);
+}
+
+.adminLearningDetailsIntro p {
+    @apply mt-[clamp(0.75rem,2vw,1rem)] max-w-3xl text-[clamp(0.75rem,1.8vw,0.95rem)] leading-relaxed;
+    color: var(--muted);
+}
+
+.adminLearningDetailsGrid {
+    @apply mt-[clamp(1.25rem,3vw,2rem)] grid gap-[clamp(0.75rem,2vw,1rem)] grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))];
+}
+
+.adminLearningDetailItem {
+    @apply flex min-w-0 items-center gap-3 rounded-[clamp(0.7rem,1.8vw,1rem)] border p-[clamp(0.75rem,2vw,1rem)];
+    border-color: var(--neon-cyan-faint);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+}
+
+.adminLearningDetailItem > svg {
+    @apply size-[clamp(1.1rem,2.5vw,1.35rem)] shrink-0;
+    color: var(--neon);
+}
+
+.adminLearningDetailItem div {
+    @apply flex min-w-0 flex-col gap-1;
+}
+
+.adminLearningDetailItem span {
+    @apply text-[clamp(0.65rem,1.5vw,0.75rem)] uppercase tracking-[0.05em];
+    color: var(--muted);
+}
+
+.adminLearningDetailItem strong {
+    @apply truncate text-[clamp(0.8rem,1.8vw,0.95rem)] font-bold;
+    color: var(--text);
+}
+
+.adminLearningDetailsFooter {
+    @apply flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-[clamp(0.5rem,2vw,0.75rem)] border-t p-[clamp(0.5rem,2vw,0.9rem)];
+    border-color: var(--neon-cyan-faint);
+    background: color-mix(in srgb, var(--dark) 94%, transparent);
+}
+
+.adminLearningDetailsFooter .dash-button {
+    @apply min-w-[clamp(7.5rem,18vw,10rem)];
+}

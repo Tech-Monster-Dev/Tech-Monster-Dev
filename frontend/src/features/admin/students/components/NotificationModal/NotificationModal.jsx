@@ -43,12 +43,14 @@ export default function NotificationModal({
 
     useEffect(() => {
         if (!open) {
-            setForm({
-                title: "",
-                message: "",
+            queueMicrotask(() => {
+                setForm({
+                    title: "",
+                    message: "",
+                });
+                setErrors({});
+                setLoading(false);
             });
-            setErrors({});
-            setLoading(false);
         }
     }, [open]);
 

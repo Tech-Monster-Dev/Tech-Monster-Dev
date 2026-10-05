@@ -87,15 +87,17 @@ export default function Students() {
                 return;
             }
 
-            setSelectedStudent(student);
+            queueMicrotask(() => {
+                setSelectedStudent(student);
 
-            if (type === "edit") {
-                setEditOpen(true);
-            } else if (type === "notification") {
-                setNotifyOpen(true);
-            } else {
-                sessionStorage.removeItem(MODAL_STORAGE_KEY);
-            }
+                if (type === "edit") {
+                    setEditOpen(true);
+                } else if (type === "notification") {
+                    setNotifyOpen(true);
+                } else {
+                    sessionStorage.removeItem(MODAL_STORAGE_KEY);
+                }
+            });
         } catch {
             sessionStorage.removeItem(MODAL_STORAGE_KEY);
         }

@@ -29,10 +29,8 @@ import AdminLogin from '../features/auth/pages/AdminLogin';
 import ForgotPassword from '../features/auth/pages/ForgotPassword';
 import ResetPassword from '../features/auth/pages/ResetPassword';
 
-
 import DashboardLayout from '../layouts/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
-
 
 import VerifySignupOTP from '../features/auth/pages/VerifySignupOTP';
 import VerifyResetOTP from '../features/auth/pages/VerifyResetOTP';
@@ -60,14 +58,13 @@ import Overview from '../features/admin/overview';
 import Students from '../features/admin/students';
 import StudentDetails from "../features/admin/students/StudentDetails";
 import Reports from '../features/admin/reports';
-import Internships from '../features/admin/internships';
-import Course from '../features/admin/courses';
-import CourseForm from '../features/admin/courses/components/CoursesForm';
+import AdminCoursesInternships from '../features/admin/dashboard';
+import CourseForm from '../features/admin/dashboard/components/CoursesForm';
 import TaskApproval from '../features/admin/tasks';
 import TaskApprovalDetails from "../features/admin/tasks/TaskApprovalDetails";
 import CertificateApproval from '../features/admin/certificates';
 import SupportInbox from '../features/admin/support';
-import InternshipsForm from '../features/admin/internships/components/InternshipsForm';
+import InternshipsForm from '../features/admin/dashboard/components/InternshipsForm';
 import Notice from '../features/admin/notices';
 
 function AppRoutes() {
@@ -105,8 +102,6 @@ function AppRoutes() {
                 <Route path="/account-blocked" element={<AccountBlocked />} />
                 <Route path="/something-went-wrong" element={<SomethingWentWrong />} />
                 <Route path="/offline" element={<Offline />} />
-
-
 
                 {/* Student Dashboard Routes (Protected) */}
                 <Route
@@ -173,8 +168,6 @@ function AppRoutes() {
                     />
                 </Route>
 
-
-
                 {/* Admin Dashboard Routes (Protected) */}
                 <Route
                     path="/admin"
@@ -187,10 +180,8 @@ function AppRoutes() {
                     <Route index element={<Overview />} />
                     <Route path='students' element={<Students />} />
                     <Route path="students/:id" element={<StudentDetails />} />
-                    <Route path='internships' element={<Internships />} />
                     <Route path='internships-form' element={<InternshipsForm />} />
-
-                    <Route path='courses' element={<Course />} />
+                    <Route path='dashboard' element={<AdminCoursesInternships />} />
                     <Route path='course-form' element={<CourseForm />} />
 
                     <Route path='tasks' element={<TaskApproval />} />
