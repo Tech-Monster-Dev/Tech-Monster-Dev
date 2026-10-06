@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+.approval-preview-modal {
+    @apply fixed inset-0 z-[100]
+        flex items-center justify-center
+        overflow-hidden
+        p-[clamp(0.75rem,3vw,2.5rem)];
+    background: color-mix(in srgb, var(--dark) 88%, transparent);
+    backdrop-filter: blur(0.8rem);
+}
+
+.approval-preview-dialog {
+    @apply flex min-h-0 w-full
+        max-w-[74rem]
+        max-h-[calc(100dvh-clamp(6rem,12vw,9rem))]
+        flex-col overflow-hidden
+        rounded-[clamp(1.1rem,2.5vw,1.7rem)]
+        border border-(--neon-cyan-soft);
+    background: var(--dark);
+    box-shadow:
+        0 2rem 5rem color-mix(in srgb, var(--dark) 65%, transparent),
+        0 0 2rem color-mix(in srgb, var(--neon) 8%, transparent);
+}
+
+.approval-preview-header {
+    @apply flex shrink-0 items-start justify-between
+        gap-[clamp(0.75rem,2vw,1rem)]
+        border-b border-(--border)
+        px-[clamp(1rem,3vw,2rem)]
+        py-[clamp(0.9rem,2.5vw,1.4rem)];
+}
+
+.approval-preview-header > div {
+    @apply min-w-0;
+}
+
+.approval-preview-header span {
+    @apply text-[clamp(0.65rem,1.5vw,0.75rem)]
+        font-extrabold uppercase tracking-[0.12em];
+    color: var(--neon);
+}
+
+.approval-preview-header h2 {
+    @apply mt-1 text-[clamp(1.15rem,3vw,1.55rem)]
+        font-extrabold;
+    color: var(--text);
+}
+
+.approval-preview-close {
+    @apply flex h-[clamp(2rem,5vw,2.5rem)]
+        w-[clamp(2rem,5vw,2.5rem)]
+        shrink-0 cursor-pointer items-center justify-center
+        rounded-full border border-(--border)
+        bg-transparent
+        text-[clamp(1.25rem,3vw,1.6rem)]
+        leading-none transition-colors duration-200;
+    color: var(--muted);
+}
+
+.approval-preview-close:hover {
+    background: var(--surface);
+    color: var(--neon);
+}
+
+.approval-preview-student {
+    @apply flex shrink-0 min-w-0 flex-wrap items-center
+        gap-[clamp(0.75rem,2.5vw,1rem)]
+        border-b border-(--border)
+        px-[clamp(1rem,3vw,2rem)]
+        py-[clamp(1rem,3vw,1.5rem)];
+    background: color-mix(in srgb, var(--surface) 18%, var(--dark));
+}
+
+.approval-preview-avatar {
+    @apply h-[clamp(3.25rem,8vw,4.5rem)]
+        w-[clamp(3.25rem,8vw,4.5rem)]
+        shrink-0 rounded-full object-cover;
+    border: 0.12rem solid color-mix(in srgb, var(--neon) 45%, transparent);
+}
+
+.approval-preview-student-info {
+    @apply flex min-w-0 flex-1 flex-col gap-1;
+}
+
+.approval-preview-student-info strong {
+    @apply truncate text-[clamp(1rem,2.5vw,1.25rem)] font-extrabold;
+}
+
+.approval-preview-student-info span,
+.approval-preview-student-info small {
+    @apply truncate text-[clamp(0.7rem,1.7vw,0.82rem)];
+    color: var(--muted);
+}
+
+.approval-preview-status {
+    @apply rounded-full px-[clamp(0.55rem,1.5vw,0.8rem)]
+        py-[clamp(0.25rem,1vw,0.4rem)]
+        text-[clamp(0.62rem,1.4vw,0.72rem)]
+        font-extrabold uppercase tracking-[0.08em];
+    background: var(--neon-cyan-faint);
+    color: var(--neon);
+}
+
+.approval-preview-status--expired {
+    background: color-mix(in srgb, var(--expired) 10%, transparent);
+    color: var(--expired);
+}
+
+.approval-preview-status--approved {
+    background: color-mix(in srgb, var(--success) 10%, transparent);
+    color: var(--success);
+}
+
+.approval-preview-status--rejected {
+    background: color-mix(in srgb, var(--expired) 10%, transparent);
+    color: var(--expired);
+}
+
+.approval-preview-details {
+    @apply min-h-0 flex-1 overflow-y-auto
+        grid min-w-0
+        grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))]
+        content-start
+        gap-[clamp(0.65rem,2vw,1rem)]
+        px-[clamp(1rem,3vw,2rem)]
+        pt-[clamp(1rem,3vw,1.5rem)]
+        pb-[clamp(1.5rem,4vw,2.5rem)];
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.approval-preview-details::-webkit-scrollbar {
+    display: none;
+}
+
+.approval-preview-detail {
+    @apply flex min-w-0 flex-col gap-1
+        rounded-[clamp(0.75rem,2vw,1rem)]
+        border border-(--border)
+        p-[clamp(0.75rem,2vw,1rem)];
+    background: color-mix(in srgb, var(--surface) 45%, transparent);
+}
+
+.approval-preview-detail--wide {
+    @apply col-span-full;
+}
+
+.approval-preview-detail span {
+    @apply text-[clamp(0.62rem,1.5vw,0.7rem)]
+        font-bold uppercase tracking-[0.08em];
+    color: var(--muted);
+}
+
+.approval-preview-detail strong {
+    @apply min-w-0 break-words
+        text-[clamp(0.78rem,1.8vw,0.9rem)];
+    color: var(--text);
+}
+
+.approval-preview-detail small {
+    @apply text-[clamp(0.65rem,1.5vw,0.72rem)];
+    color: var(--neon);
+}
+
+.approval-preview-detail.expired strong {
+    color: var(--expired);
+}
+
+.approval-preview-footer {
+    @apply flex shrink-0 flex-wrap justify-end
+        gap-[clamp(0.6rem,2vw,0.9rem)]
+        border-t border-(--border)
+        px-[clamp(1rem,3vw,2rem)]
+        py-[clamp(0.9rem,2.5vw,1.25rem)];
+    background: var(--dark);
+}
+
+.approval-preview-cancel,
+.approval-preview-details-button {
+    @apply inline-flex min-h-[clamp(2.4rem,6vw,2.8rem)]
+        cursor-pointer items-center justify-center
+        gap-2 rounded-[clamp(0.65rem,1.5vw,0.85rem)]
+        px-[clamp(0.9rem,2.5vw,1.25rem)]
+        text-[clamp(0.72rem,1.7vw,0.84rem)]
+        font-bold transition-[transform,background-color,border-color]
+        duration-200;
+}
+
+.approval-preview-cancel {
+    @apply border border-(--border) bg-transparent;
+    color: var(--muted);
+}
+
+.approval-preview-cancel:hover {
+    background: var(--surface);
+    color: var(--text);
+}
+
+.approval-preview-details-button {
+    @apply border border-transparent;
+    background: var(--neon);
+    color: var(--dark);
+}
+
+.approval-preview-details-button:hover {
+    @apply -translate-y-0.5;
+    box-shadow: 0 0 1.5rem color-mix(in srgb, var(--neon) 18%, transparent);
+}

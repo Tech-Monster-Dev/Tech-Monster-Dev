@@ -78,6 +78,10 @@ export const getAllSubmissions =
                         "internship",
                         "title slug"
                     )
+                    .populate(
+                        "course",
+                        "title slug"
+                    )
                     .sort({
                         submittedAt:
                             -1,
@@ -106,6 +110,10 @@ export const getSubmissionDetails =
                     .populate(
                         "internship",
                         "title slug description"
+                    )
+                    .populate(
+                        "course",
+                        "title slug"
                     );
 
             if (!submission) {
@@ -130,7 +138,8 @@ export const getSubmissionDetails =
 export const getSubmissionByTaskId = asyncHandler(async (req,res) => {
     const submission = await Submission.findOne({ taskId: req.params.taskId })
         .populate('student','firstName lastName username email avatar github linkedin')
-        .populate('internship','title slug description');
+        .populate('internship','title slug description')
+        .populate('course','title slug');
     if (!submission) {
         const error = new Error('Submission not found for task');
         error.statusCode = 404;
