@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+.approval-card {
+    @apply relative flex min-w-0 w-full cursor-pointer items-center
+        overflow-hidden rounded-[clamp(1rem,2vw,1.4rem)]
+        border border-(--border)
+        p-[clamp(0.9rem,2.5vw,1.25rem)]
+        text-left
+        transition-[transform,border-color,background-color,box-shadow]
+        duration-300 ease-out;
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
+    color: var(--text);
+    box-shadow: 0 0 0 transparent;
+}
+
+.approval-card::before {
+    content: "";
+    @apply absolute inset-y-0 left-0 w-[0.15rem]
+        scale-y-0 origin-center
+        transition-transform duration-300 ease-out;
+    background: var(--neon);
+}
+
+.approval-card:hover {
+    @apply -translate-y-1;
+    border-color: color-mix(in srgb, var(--neon) 42%, var(--border));
+    background: color-mix(in srgb, var(--surface) 96%, var(--neon) 4%);
+    box-shadow:
+        0 1rem 2.5rem color-mix(in srgb, var(--dark) 35%, transparent),
+        0 0 1.5rem color-mix(in srgb, var(--neon) 7%, transparent);
+}
+
+.approval-card:hover::before,
+.approval-card:focus-visible::before {
+    @apply scale-y-100;
+}
+
+.approval-card:focus-visible {
+    @apply outline-none ring-2 ring-(--neon) ring-offset-2;
+    --tw-ring-offset-color: var(--dark);
+}
+
+.approval-card-index {
+    @apply absolute right-[clamp(0.75rem,2vw,1rem)]
+        top-[clamp(0.65rem,1.5vw,0.85rem)]
+        text-[clamp(0.65rem,1.4vw,0.75rem)]
+        font-extrabold tracking-[0.08em];
+    color: var(--muted);
+}
+
+.approval-card-content {
+    @apply flex min-w-0 w-full items-center
+        gap-[clamp(0.75rem,2.5vw,1rem)]
+        pr-[clamp(1.5rem,4vw,2rem)];
+}
+
+.approval-card-avatar {
+    @apply h-[clamp(3rem,8vw,4rem)]
+        w-[clamp(3rem,8vw,4rem)]
+        shrink-0 rounded-full object-cover;
+    border: 0.1rem solid color-mix(in srgb, var(--neon) 40%, transparent);
+    background: var(--dark);
+}
+
+.approval-card-name {
+    @apply min-w-0 flex-1 truncate
+        text-[clamp(0.95rem,2.5vw,1.15rem)]
+        font-bold;
+}
+
+.approval-card-status {
+    @apply shrink-0 rounded-full
+        px-[clamp(0.55rem,1.5vw,0.75rem)]
+        py-[clamp(0.25rem,1vw,0.35rem)]
+        text-[clamp(0.6rem,1.4vw,0.7rem)]
+        font-extrabold uppercase
+        tracking-[0.08em];
+    background: var(--neon-cyan-faint);
+    color: var(--neon);
+}
+
+.approval-card-status--expired {
+    color: var(--expired);
+    background: color-mix(in srgb, var(--expired) 10%, transparent);
+}
+
+.approval-card-status--approved {
+    color: var(--success);
+    background: color-mix(in srgb, var(--success) 10%, transparent);
+}
+
+.approval-card-status--rejected {
+    color: var(--expired);
+    background: color-mix(in srgb, var(--expired) 10%, transparent);
+}

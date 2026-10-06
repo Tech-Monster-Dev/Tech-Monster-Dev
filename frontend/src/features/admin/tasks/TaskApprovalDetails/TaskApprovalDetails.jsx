@@ -1,3 +1,5 @@
+import "./TaskApprovalDetails.css";
+
 import {
     useCallback,
     useEffect,
@@ -6,6 +8,13 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+
+import BackButton from "../../../../components/ui/Button/BackButton";
+import DashButton from "../../../../components/ui/Button/DashButton";
+import Form from "../../../../components/ui/Form";
+import Spinner from "../../../../features/dashboard/common/LoaderPage/Spinner";
+
+import { validateField } from "../../../../shared/utils/validation/formValidation";
 
 import {
     getSubmissionDetails,
@@ -18,18 +27,28 @@ import {
     extendSubmissionDeadline
 } from "../../../../services/api/adminTask.service";
 
-import CodeBlock from "../../../student/lessons/components/LessonContent/components/LessonPage/components/CodeBlock/CodeBlock";
-
-import "./TaskApprovalDetails.css";
+import CodeBlock from "../../../student/lessons/components/LessonContent/components/LessonPage/components/CodeBlock";
 
 export default function TaskApprovalDetails() {
+
     const navigate = useNavigate();
     const { id } = useParams();
+
     const [loading, setLoading] = useState(true);
     const [task, setTask] = useState(null);
     const [isLegacyTask, setIsLegacyTask] = useState(false);
     const [comment, setComment] = useState("");
+    const [errors, setErrors] = useState({});
     const [extending, setExtending] = useState(false);
+
+    const validationRules = {
+        comment: {
+            required: true,
+            requiredMessage: "Admin comment is required",
+        },
+    };
+
+    const isApproved = task?.status?.toLowerCase() === "approved";
 
     const loadTask = useCallback(async () => {
         try {
@@ -118,8 +137,45 @@ export default function TaskApprovalDetails() {
         }
     };
 
+    const handleCommentChange = (event) => {
+        const { value } = event.target;
+        setComment(value);
+        setErrors((current) => ({
+            ...current,
+            comment: validateField("comment", value, validationRules),
+        }));
+    };
+
+    const validateComment = () => {
+        const commentError = validateField(
+            "comment",
+            comment,
+            validationRules
+        );
+
+        setErrors({ comment: commentError });
+        return !commentError;
+    };
+
+    const handleApproveWithValidation = async () => {
+        if (!validateComment()) return;
+        await handleApprove();
+    };
+
+    const handleRejectWithValidation = async () => {
+        if (!validateComment()) return;
+        await handleReject();
+    };
+
     if (loading) {
-        return <h2>Loading...</h2>;
+        return (
+            <div className="taskApprovalLoading">
+                <Spinner
+                    message="Loading task details..."
+                    size={45}
+                />
+            </div>
+        );
     }
 
     return (
@@ -129,6 +185,14 @@ export default function TaskApprovalDetails() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: .5 }}
         >
+            <div className="taskApprovalDetailsHeader">
+                <BackButton
+                    to="/admin/tasks"
+                    label="Back to Task Approval"
+                    className="taskApprovalBackButton"
+                />
+            </div>
+
             <motion.div
                 className="taskDetailsCard"
                 initial={{ opacity: 0, scale: .95 }}
@@ -201,12 +265,6 @@ export default function TaskApprovalDetails() {
                     </p>
                 </div>
                 <div className="detailRow">
-                    <span>Expired At</span>
-                    <p>
-                        {task.expiredAt ? new Date(task.expiredAt).toLocaleString() : "-"}
-                    </p>
-                </div>
-                <div className="detailRow">
                     <span>Github</span>
                     <a
                         href={task.githubLink}
@@ -214,16 +272,6 @@ export default function TaskApprovalDetails() {
                         rel="noreferrer"
                     >
                         {task.githubLink || "-"}
-                    </a>
-                </div>
-                <div className="detailRow">
-                    <span>Live</span>
-                    <a
-                        href={task.liveLink}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        {task.liveLink || "-"}
                     </a>
                 </div>
                 <div className="detailRow">
@@ -248,58 +296,64 @@ export default function TaskApprovalDetails() {
                     )}
                 </div>
 
-                <textarea
-                    className="taskapprovalDetails-textarea"
-                    placeholder="Admin Comment..."
-                    value={comment}
-                    onChange={(e) =>
-                        setComment(e.target.value)
-                    }
+                {isApproved ? (
+                    <div className="taskApprovalStatusBadge" role="status">
+                        Approved
+                    </div>
+                ) : (
+                <Form
+                    fields={[
+                        {
+                            name: "comment",
+                            type: "textarea",
+                            label: "Admin Comment",
+                            placeholder: "Admin Comment...",
+                            rows: 5,
+                            required: true,
+                            value: comment,
+                            error: errors.comment,
+                            className: "taskapprovalDetails-textarea",
+                        },
+                    ]}
+                    values={{ comment }}
+                    errors={errors}
+                    onChange={handleCommentChange}
+                    formClassName="taskApprovalForm"
+                    buttonComponent={DashButton}
+                    actions={[
+                        {
+                            label: "Approve",
+                            type: "button",
+                            variant: "success",
+                            size: "medium",
+                            className: "approveBtn",
+                            onClick: handleApproveWithValidation,
+                        },
+                        ...(!isLegacyTask
+                            ? [
+                                {
+                                    label: "Incorrect",
+                                    type: "button",
+                                    variant: "danger",
+                                    size: "medium",
+                                    className: "rejectBtn",
+                                    onClick: handleRejectWithValidation,
+                                },
+                            ]
+                            : []),
+                        {
+                            label: extending ? "Extending..." : "Extend Deadline",
+                            type: "button",
+                            variant: "primary",
+                            size: "medium",
+                            loading: extending,
+                            loadingText: "Extending...",
+                            className: "extendBtn",
+                            onClick: handleExtendDeadline,
+                        },
+                    ]}
                 />
-
-                <div className="approvalButtons">
-                    <motion.button
-                        whileHover={{
-                            scale: 1.05
-                        }}
-                        whileTap={{
-                            scale: .95
-                        }}
-                        className="approveBtn"
-                        onClick={handleApprove}
-                    >
-                        Approve
-                    </motion.button>
-
-                    {!isLegacyTask && (
-                        <motion.button
-                            whileHover={{
-                                scale: 1.05
-                            }}
-                            whileTap={{
-                                scale: .95
-                            }}
-                            className="rejectBtn"
-                            onClick={handleReject}
-                        >
-                            Incorrect
-                        </motion.button>
-                    )}
-
-                    <motion.button
-                        whileHover={{
-                            scale: 1.05
-                        }}
-                        whileTap={{
-                            scale: .95
-                        }}
-                        className="extendBtn"
-                        onClick={handleExtendDeadline}
-                        disabled={extending}
-                    >
-                        {extending ? "Extending..." : "Extend Deadline"}
-                    </motion.button>
-                </div>
+                )}
             </motion.div>
         </motion.div>
     );
