@@ -45,7 +45,7 @@ export const API = {
       APPROVED: "/admin/tasks/approved",
       DETAILS: (id) => `/admin/tasks/${id}`,
       APPROVE: (id) => `/admin/tasks/${id}/approve`,
-      REJECT: (id) => `/admin/tasks/${id}/reject`
+        REJECT: (id) => `/admin/tasks/${id}/reject`,
     },
     SUBMISSIONS: {
       BASE: "/admin/submissions",
@@ -57,9 +57,11 @@ export const API = {
     },
     CERTIFICATE_PAYMENTS: {
       PENDING: "/certificate-payments/admin/pending",
+      ISSUED: "/certificate-payments/admin/issued",
       DETAILS: (id) => `/certificate-payments/admin/${id}`,
       APPROVE: (id) => `/certificate-payments/admin/${id}/approve`,
-      REJECT: (id) => `/certificate-payments/admin/${id}/reject`
+      REJECT: (id) => `/certificate-payments/admin/${id}/reject`,
+      DOWNLOAD: (id) => `/certificate-payments/admin/download/${id}`
     }
   },
 

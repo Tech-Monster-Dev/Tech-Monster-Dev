@@ -191,3 +191,47 @@ export const downloadCertificate = asyncHandler(async (req, res) => {
         }
     );
 });
+
+// =====================================
+// ADMIN DOWNLOAD CERTIFICATE
+// =====================================
+export const adminDownloadCertificate = asyncHandler(async (req, res) => {
+    const certificate = await Certificate.findById(req.params.id);
+
+    if (certificate === null) {
+        throw new AppError(
+            "Certificate not found",
+            404
+        );
+    }
+
+    const payment = await CertificatePayment.findOne({
+        certificate: certificate._id,
+        status: "approved",
+    });
+
+    if (payment === null) {
+        throw new AppError(
+            "Certificate is not available for download until payment is approved.",
+            403
+        );
+    }
+
+    const filePath = certificate.pdfUrl;
+
+    if (filePath === null || filePath === undefined || fs.existsSync(filePath) === false) {
+        throw new AppError(
+            "Certificate PDF file not found.",
+            404
+        );
+    }
+
+    certificate.downloadCount += 1;
+    await certificate.save();
+
+    return res.download(
+        filePath,
+        path.basename(filePath)
+    );
+});
+

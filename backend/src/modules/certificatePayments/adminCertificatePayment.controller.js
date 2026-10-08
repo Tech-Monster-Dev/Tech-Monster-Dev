@@ -4,6 +4,7 @@ import StudentInternship from "../internships/models/StudentInternship.js";
 
 import {
     getPendingCertificatePayments,
+    getIssuedCertificatesByStudent,
     approveCertificatePayment,
     rejectCertificatePayment,
 } from "./services/certificatePaymentApproval.service.js";
@@ -19,6 +20,21 @@ export const getPendingPayments = asyncHandler(async (req, res) => {
         success: true,
         total: payments.length,
         payments,
+    });
+});
+
+/*
+ * ==========================================
+ * GET ISSUED CERTIFICATES BY STUDENT
+ * ==========================================
+*/
+export const getIssuedCertificates = asyncHandler(async (req, res) => {
+    const students = await getIssuedCertificatesByStudent();
+
+    return res.status(200).json({
+        success: true,
+        total: students.length,
+        students,
     });
 });
 
