@@ -34,12 +34,12 @@ const sanitizeFileName = (value, fallback) =>
 */
 
 export const getPendingCertificatePayments = async () => {
-    return CertificatePayment.find({
+    const payments = await CertificatePayment.find({
         status: "approval_pending",
     })
         .populate(
             "student",
-            "firstName lastName username email avatar"
+            "firstName middleName lastName username email avatar"
         )
         .populate(
             "course",
@@ -53,6 +53,29 @@ export const getPendingCertificatePayments = async () => {
             paidAt: -1,
             createdAt: -1,
         });
+
+    const students = new Map();
+
+    for (const payment of payments) {
+        const student = payment.student;
+
+        if (!student?._id) {
+            continue;
+        }
+
+        const studentId = String(student._id);
+
+        if (!students.has(studentId)) {
+            students.set(studentId, {
+                student,
+                payments: [],
+            });
+        }
+
+        students.get(studentId).payments.push(payment);
+    }
+
+    return Array.from(students.values());
 };
 
 /*
@@ -355,6 +378,102 @@ export const approveCertificatePayment = async (paymentId, reviewerId, certifica
  * REJECT CERTIFICATE PAYMENT
  * ==========================================
 */
+export const getIssuedCertificatesByStudent = async () => {
+    const certificates = await Certificate.find({})
+        .populate(
+            "student",
+            "firstName middleName lastName username email avatar"
+        )
+        .populate(
+            "course",
+            "title slug category duration price"
+        )
+        .populate(
+            "internship",
+            "title slug category duration price"
+        )
+        .sort({
+            issueDate: -1,
+            createdAt: -1,
+        })
+        .lean();
+
+    if (!certificates.length) {
+        return [];
+    }
+
+    const certificateIds = certificates.map(
+        (certificate) => certificate._id
+    );
+
+    const payments = await CertificatePayment.find({
+        certificate: { $in: certificateIds },
+        status: "approved",
+    })
+        .select(
+            "certificate amount currency programType programTitle paidAt payerName transactionId verificationToken"
+        )
+        .lean();
+
+    const paymentByCertificate = new Map(
+        payments.map((payment) => [
+            String(payment.certificate),
+            payment,
+        ])
+    );
+
+    const students = new Map();
+
+    for (const certificate of certificates) {
+        const student = certificate.student;
+
+        if (!student?._id) {
+            continue;
+        }
+
+        const studentId = String(student._id);
+        const payment = paymentByCertificate.get(
+            String(certificate._id)
+        );
+
+        const certificateItem = {
+            id: certificate._id,
+            paymentId: payment?._id || null,
+            certificateNumber: certificate.certificateNumber,
+            programType: certificate.programType,
+            programTitle: certificate.programTitle,
+            duration: certificate.duration,
+            completionDate: certificate.completionDate,
+            issueDate: certificate.issueDate,
+            amount: payment?.amount ?? null,
+            currency: payment?.currency || "INR",
+            paidAt: payment?.paidAt || null,
+            payerName: payment?.payerName || "",
+            transactionId: payment?.transactionId || "",
+            verificationToken: payment?.verificationToken || "",
+        };
+
+        if (!students.has(studentId)) {
+            students.set(studentId, {
+                student: {
+                    _id: student._id,
+                    firstName: student.firstName,
+                    middleName: student.middleName,
+                    lastName: student.lastName,
+                    username: student.username,
+                    email: student.email,
+                    avatar: student.avatar,
+                },
+                certificates: [],
+            });
+        }
+
+        students.get(studentId).certificates.push(certificateItem);
+    }
+
+    return Array.from(students.values());
+};
+
 export const rejectCertificatePayment = async (paymentId, reviewerId, rejectionReason) => {
     const payment = await CertificatePayment.findById(
         paymentId

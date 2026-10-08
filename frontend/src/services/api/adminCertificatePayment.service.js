@@ -18,6 +18,21 @@ export const getPendingCertificatePayments = async () => {
 
 
 // ==========================================
+// GET ISSUED CERTIFICATES BY STUDENT
+// ==========================================
+
+export const getIssuedCertificates = async () => {
+
+    const { data } = await api.get(
+        API.ADMIN.CERTIFICATE_PAYMENTS.ISSUED
+    );
+
+    return data;
+
+};
+
+
+// ==========================================
 // GET CERTIFICATE PAYMENT DETAILS
 // ==========================================
 
@@ -28,6 +43,22 @@ export const getCertificatePaymentDetails = async (id) => {
     );
 
     return data;
+
+};
+
+
+// ==========================================
+// DOWNLOAD ISSUED CERTIFICATE
+// ==========================================
+
+export const downloadIssuedCertificate = async (id) => {
+
+    return api.get(
+        API.ADMIN.CERTIFICATE_PAYMENTS.DOWNLOAD(id),
+        {
+            responseType: "blob",
+        }
+    );
 
 };
 

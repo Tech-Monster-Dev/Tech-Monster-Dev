@@ -1,15 +1,19 @@
-import "./CertificatePaymentDetails.css";
-
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
+import DashButton from "../../../../components/ui/Button/DashButton";
+import ImageInput from "../../../../components/ui/Form/component/ImageInput";
+import Form from "../../../../components/ui/Form";
+import Warning from "../../../../components/ui/Warning";
 
 import {
     getCertificatePaymentDetails,
     approveCertificatePayment,
     rejectCertificatePayment,
-} from "../../../../../services/api/adminCertificatePayment.service";
+} from "../../../../services/api/adminCertificatePayment.service";
 
-import useSkeletonScrollLock from "../../../../../shared/hooks/useSkeletonScrollLock";
+import { validateForm } from "../../../../shared/utils/validation/formValidation";
+import useSkeletonScrollLock from "../../../../shared/hooks/useSkeletonScrollLock";
 
 export default function CertificatePaymentDetails({
     paymentId,
@@ -21,9 +25,11 @@ export default function CertificatePaymentDetails({
     const [actionLoading, setActionLoading] = useState(false);
     const [rejecting, setRejecting] = useState(false);
     const [rejectionReason, setRejectionReason] = useState("");
+    const [rejectionErrors, setRejectionErrors] = useState({});
     const [certificateImage, setCertificateImage] = useState(null);
     const [completionDate, setCompletionDate] = useState(null);
     const [issuedCertificate, setIssuedCertificate] = useState(null);
+    const [showApprovalWarning, setShowApprovalWarning] = useState(false);
     
     useSkeletonScrollLock(loading);
 
@@ -58,7 +64,7 @@ export default function CertificatePaymentDetails({
         setCertificateImage(file);
     };
 
-    const handleApprove = async () => {
+    const handleApprove = () => {
         if (!paymentId) return;
 
         if (!certificateImage) {
@@ -66,10 +72,11 @@ export default function CertificatePaymentDetails({
             return;
         }
 
-        const confirmed = window.confirm(
-            "Approve this payment and issue the certificate?"
-        );
-        if (!confirmed) return;
+        setShowApprovalWarning(true);
+    };
+
+    const handleApproveConfirm = async () => {
+        setShowApprovalWarning(false);
         setActionLoading(true);
         try {
             const response = await approveCertificatePayment(
@@ -101,14 +108,32 @@ export default function CertificatePaymentDetails({
 
     const handleReject = async (event) => {
         event.preventDefault();
-        const reason = rejectionReason.trim();
 
-        if (!reason) {
+        const validation = validateForm(
+            { rejectionReason },
+            {
+                rejectionReason: {
+                    required: true,
+                    requiredMessage: "Please provide a rejection reason.",
+                    minLength: 3,
+                    minLengthMessage: "Rejection reason must be at least 3 characters.",
+                    maxLength: 1000,
+                    maxLengthMessage: "Rejection reason cannot exceed 1000 characters.",
+                },
+            }
+        );
+
+        setRejectionErrors(validation.errors);
+
+        if (!validation.isValid) {
             toast.error(
-                "Please provide a rejection reason."
+                validation.errors.rejectionReason ||
+                "Please provide a valid rejection reason."
             );
             return;
         }
+
+        const reason = rejectionReason.trim();
         setActionLoading(true);
         try {
             await rejectCertificatePayment(
@@ -177,11 +202,12 @@ export default function CertificatePaymentDetails({
                         disabled={actionLoading}
                         aria-label="Close"
                     >
-                        Ã—
+                        ×
                     </button>
                 </div>
 
-                {loading ? (
+                <div className="certificate-payment-details-content">
+                    {loading ? (
                     <div className="certificate-payment-details-loading">
                         <div />
                         <div />
@@ -208,7 +234,7 @@ export default function CertificatePaymentDetails({
                             </span>
 
                             <strong>
-                                {payment.status || "â€”"}
+                                {payment.status || "—"}
                             </strong>
                         </div>
 
@@ -234,7 +260,7 @@ export default function CertificatePaymentDetails({
                                     </span>
 
                                     <strong>
-                                        {payment.student?.email || "â€”"}
+                                        {payment.student?.email || "—"}
                                     </strong>
                                 </div>
                             </div>
@@ -250,7 +276,7 @@ export default function CertificatePaymentDetails({
                                     </span>
 
                                     <strong>
-                                        {payment.programType || "â€”"}
+                                        {payment.programType || "—"}
                                     </strong>
                                 </div>
 
@@ -263,7 +289,7 @@ export default function CertificatePaymentDetails({
                                         {payment.programTitle ||
                                             payment.course?.title ||
                                             payment.internship?.title ||
-                                            "â€”"}
+                                            "—"}
                                     </strong>
                                 </div>
 
@@ -275,7 +301,7 @@ export default function CertificatePaymentDetails({
                                     <strong>
                                         {payment.course?.duration ||
                                             payment.internship?.duration ||
-                                            "â€”"}
+                                            "—"}
                                     </strong>
                                 </div>
 
@@ -287,7 +313,7 @@ export default function CertificatePaymentDetails({
                                     <strong>
                                         {completionDate
                                             ? new Date(completionDate).toLocaleDateString("en-IN")
-                                            : "â€”"}
+                                            : "—"}
                                     </strong>
                                 </div>
 
@@ -335,7 +361,7 @@ export default function CertificatePaymentDetails({
                                             ? new Date(
                                                 payment.paidAt
                                             ).toLocaleString("en-IN")
-                                            : "â€”"}
+                                            : "—"}
                                     </strong>
                                 </div>
                             </div>
@@ -357,61 +383,53 @@ export default function CertificatePaymentDetails({
                         {!rejecting ? (
                             <>
                             <div className="certificate-payment-certificate-upload">
-                                <label htmlFor="certificate-image-upload">
-                                    Certificate Image
-                                </label>
-                                <input
-                                    id="certificate-image-upload"
-                                    type="file"
-                                    accept="image/*"
+                                <ImageInput
+                                    label="Certificate Image"
+                                    name="certificateImage"
+                                    value={certificateImage}
                                     onChange={handleCertificateImageChange}
+                                    accept="image/*"
+                                    preview
                                     disabled={actionLoading}
+                                    placeholder="Choose certificate image"
                                 />
                                 <small>
                                     Upload the final certificate image. It will be converted to PDF and emailed to the student.
                                 </small>
-                                {certificateImage && (
-                                    <span>
-                                        Selected: {certificateImage.name}
-                                    </span>
-                                )}
                             </div>
 
                             <div className="certificate-payment-details-actions">
-                                <button
-                                    type="button"
-                                    className="certificate-payment-reject-btn"
+                                <DashButton
+                                    variant="danger"
+                                    size="medium"
                                     onClick={() =>
                                         setRejecting(true)
                                     }
                                     disabled={actionLoading}
                                 >
                                     Reject Payment
-                                </button>
+                                </DashButton>
 
-                                <button
-                                    type="button"
-                                    className="certificate-payment-approve-btn"
+                                <DashButton
+                                    variant="primary"
+                                    size="medium"
                                     onClick={handleApprove}
                                     disabled={
                                         actionLoading ||
                                         payment.status !==
                                         "approval_pending"
                                     }
+                                    loading={actionLoading}
+                                    loadingText="Processing..."
                                 >
-                                    {actionLoading
-                                        ? "Processing..."
-                                        : "Approve & Issue Certificate"}
-                                </button>
+                                    Approve & Issue Certificate
+                                </DashButton>
 
                             </div>
                             </>
 
                         ) : (
-                            <form
-                                className="certificate-payment-rejection-form"
-                                onSubmit={handleReject}
-                            >
+                            <div className="certificate-payment-rejection-form">
                                 <h3>
                                     Reject Certificate Payment
                                 </h3>
@@ -421,51 +439,70 @@ export default function CertificatePaymentDetails({
                                     student will be notified.
                                 </p>
 
-                                <textarea
-                                    value={rejectionReason}
-                                    onChange={(event) =>
-                                        setRejectionReason(
-                                            event.target.value
-                                        )
-                                    }
-                                    placeholder="Enter rejection reason..."
-                                    rows={5}
-                                    maxLength={1000}
+                                <Form
+                                    fields={[
+                                        {
+                                            name: "rejectionReason",
+                                            type: "textarea",
+                                            label: "Rejection Reason",
+                                            placeholder: "Enter rejection reason...",
+                                            rows: 5,
+                                            maxLength: 1000,
+                                            required: true,
+                                        },
+                                    ]}
+                                    values={{ rejectionReason }}
+                                    errors={rejectionErrors}
+                                    onChange={(event) => {
+                                        const value = event.target.value;
+                                        setRejectionReason(value);
+                                        setRejectionErrors((previous) => ({
+                                            ...previous,
+                                            rejectionReason: "",
+                                        }));
+                                    }}
+                                    onSubmit={handleReject}
+                                    buttonComponent={DashButton}
                                     disabled={actionLoading}
-                                    required
+                                    formClassName="certificate-payment-rejection-form-content"
+                                    actions={[
+                                        {
+                                            label: "Cancel",
+                                            type: "button",
+                                            variant: "secondary",
+                                            size: "medium",
+                                            onClick: () => {
+                                                setRejecting(false);
+                                                setRejectionReason("");
+                                                setRejectionErrors({});
+                                            },
+                                        },
+                                        {
+                                            label: "Confirm Rejection",
+                                            type: "submit",
+                                            variant: "danger",
+                                            size: "medium",
+                                            loading: actionLoading,
+                                            loadingText: "Rejecting...",
+                                        },
+                                    ]}
                                 />
-
-                                <div className="certificate-payment-details-actions">
-                                    <button
-                                        type="button"
-                                        className="certificate-payment-cancel-btn"
-                                        onClick={() => {
-                                            setRejecting(
-                                                false
-                                            );
-                                            setRejectionReason("");
-                                        }}
-                                        disabled={actionLoading}
-                                    >
-                                        Cancel
-                                    </button>
-
-                                    <button
-                                        type="submit"
-                                        className="certificate-payment-reject-confirm-btn"
-                                        disabled={
-                                            actionLoading ||
-                                            !rejectionReason.trim()
-                                        }
-                                    >
-                                        {actionLoading ? "Rejecting..." : "Confirm Rejection"}
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         )}
                     </>
-                )}
+                    )}
+                </div>
             </div>
+
+            <Warning
+                open={showApprovalWarning}
+                title="Approve Certificate Payment"
+                message="Approve this payment and issue the certificate?"
+                confirmText="Confirm"
+                cancelText="Cancel"
+                onConfirm={handleApproveConfirm}
+                onCancel={() => setShowApprovalWarning(false)}
+            />
         </div>
     );
 }
