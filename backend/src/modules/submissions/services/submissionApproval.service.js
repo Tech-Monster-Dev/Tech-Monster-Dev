@@ -1,34 +1,20 @@
 import Submission from "../models/Submission.js";
 import StudentInternship from "../../internships/models/StudentInternship.js";
 import Notification from "../../notifications/models/Notification.js";
-
 import AppError from "../../../core/errors/AppError.js";
 
-import {
-    emitToUser,
-} from "../../../infrastructure/socket/socket.js";
-
+import { emitToUser } from "../../../infrastructure/socket/socket.js";
 import {
     normalizeSlug,
     getSubmissionTaskKey,
 } from "../utils/submission.utils.js";
-
 import {
     readCourseData,
     getOrderedCourseTasks,
 } from "../utils/courseTask.utils.js";
-
-import {
-    markExpiredIfNeeded,
-} from "./taskExpiry.service.js";
-
-import {
-    unlockTaskForStudent,
-} from "./taskUnlock.service.js";
-
-import {
-    qualifyLearningDay,
-} from "../../learning/learningDay.service.js";
+import { markExpiredIfNeeded } from "./taskExpiry.service.js";
+import { unlockTaskForStudent } from "./taskUnlock.service.js";
+import { qualifyLearningDay } from "../../learning/learningDay.service.js";
 
 export const approveSubmission =
     async (
@@ -36,10 +22,9 @@ export const approveSubmission =
         reviewerId,
         comment
     ) => {
-        const submission =
-            await Submission.findById(
-                submissionId
-            );
+        const submission = await Submission.findById(
+            submissionId
+        );
 
         if (!submission) {
             throw new AppError(
@@ -62,81 +47,70 @@ export const approveSubmission =
             );
         }
 
-        submission.status =
-            "approved";
-
-        submission.reviewedBy =
-            reviewerId;
-
-        submission.reviewedAt =
-            new Date();
-
-        submission.reviewComment =
-            comment || "";
+        submission.status = "approved";
+        submission.reviewedBy = reviewerId;
+        submission.reviewedAt = new Date();
+        submission.reviewComment = comment || "";
 
         await submission.save();
 
-        const courseSlug =
-            normalizeSlug(
-                submission.courseSlug
-            );
+        const courseSlug = normalizeSlug(
+            submission.courseSlug
+        );
 
-        const courseData =
-            await readCourseData(
-                courseSlug
-            );
+        const courseData = await readCourseData(
+            courseSlug
+        );
 
-        const orderedTasks =
-            getOrderedCourseTasks(
-                courseData
-            );
+        const orderedTasks = getOrderedCourseTasks(
+            courseData
+        );
 
-        const currentIndex =
-            orderedTasks.findIndex(
-                (task) =>
-                    String(
-                        task.moduleId ||
-                        ""
-                    ) ===
-                    String(
-                        submission.moduleId ||
-                        ""
-                    ) &&
-                    String(
-                        task.lessonId ||
-                        ""
-                    ) ===
-                    String(
-                        submission.lessonId ||
-                        ""
-                    ) &&
-                    String(
-                        task.taskId ||
-                        ""
-                    ) ===
-                    String(
-                        submission.taskId ||
-                        ""
-                    )
-            );
+        const currentIndex = orderedTasks.findIndex(
+            (task) =>
+                String(
+                    task.moduleId ||
+                    ""
+                ) ===
+                String(
+                    submission.moduleId ||
+                    ""
+                ) &&
+                String(
+                    task.lessonId ||
+                    ""
+                ) ===
+                String(
+                    submission.lessonId ||
+                    ""
+                ) &&
+                String(
+                    task.taskId ||
+                    ""
+                ) ===
+                String(
+                    submission.taskId ||
+                    ""
+                )
+        );
 
         const candidate =
             currentIndex >= 0
                 ? orderedTasks[
-                    currentIndex + 1
+                currentIndex + 1
                 ]
                 : null;
 
         const nextTask =
             candidate &&
-            String(
-                candidate.moduleId ||
-                ""
-            ) ===
-            String(
-                submission.moduleId ||
-                ""
-            )
+                String(
+                    candidate.moduleId ||
+                    ""
+                ) ===
+                String(
+                    submission.moduleId ||
+                    ""
+                )
                 ? candidate
                 : null;
 
@@ -154,16 +128,11 @@ export const approveSubmission =
                 )
             );
 
-        const approvedCount =
-            await Submission.countDocuments({
-                student:
-                    submission.student,
-
-                courseSlug,
-
-                status:
-                    "approved",
-            });
+        const approvedCount = await Submission.countDocuments({
+            student: submission.student,
+            courseSlug,
+            status: "approved",
+        });
 
         const allTasksCompleted =
             orderedTasks.length > 0 &&
@@ -178,10 +147,9 @@ export const approveSubmission =
                     : { internship: submission.internship }),
             };
 
-            const enrollment =
-                await StudentInternship.findOne(
-                    enrollmentFilter
-                );
+            const enrollment = await StudentInternship.findOne(
+                enrollmentFilter
+            );
 
             if (enrollment) {
                 enrollment.status = "Completed";
@@ -192,36 +160,14 @@ export const approveSubmission =
         }
 
         await qualifyLearningDay({
-            studentId:
-                submission.student,
-
+            studentId: submission.student,
             courseSlug,
-
-            courseId:
-                submission.course || null,
-
-            internshipId:
-                submission.internship || null,
-
-            lessonId:
-                submission.lessonId,
-
-            taskId:
-                submission.taskId,
-
-            approvedAt:
-                submission.reviewedAt || new Date()
-        });
-
-        console.log("=== TASK APPROVAL UNLOCK DEBUG ===");
-        console.log("currentIndex:", currentIndex);
-        console.log("approvedTask:", {
-            moduleId: submission.moduleId,
+            courseId: submission.course || null,
+            internshipId: submission.internship || null,
             lessonId: submission.lessonId,
             taskId: submission.taskId,
+            approvedAt: submission.reviewedAt || new Date()
         });
-        console.log("candidate:", candidate);
-        console.log("nextTask:", nextTask);
 
         const unlockedSubmission =
             nextTask
@@ -232,22 +178,11 @@ export const approveSubmission =
                 )
                 : null;
 
-        console.log("unlockedSubmission:", unlockedSubmission);
-        console.log("=== END TASK APPROVAL UNLOCK DEBUG ===");
-
         await Notification.create({
-            user:
-                submission.student,
-
-            title:
-                "Task Approved",
-
-            message:
-                `Your task "${submission.taskTitle || submission.taskId}" has been approved.`,
-
-            type:
-                "system",
-
+            user: submission.student,
+            title: "Task Approved",
+            message: `Your task "${submission.taskTitle || submission.taskId}" has been approved.`,
+            type: "system",
             context: {
                 submissionId: submission._id,
                 courseId: submission.course || null,
@@ -265,12 +200,9 @@ export const approveSubmission =
             {
                 submission,
                 unlockedSubmission,
-
-                approvedTaskKey:
-                    getSubmissionTaskKey(
-                        submission
-                    ),
-
+                approvedTaskKey: getSubmissionTaskKey(
+                    submission
+                ),
                 unlockedTaskKey:
                     unlockedSubmission
                         ? [

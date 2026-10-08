@@ -2,6 +2,21 @@ import "./ApprovalCard.css";
 
 import DEFAULT_PROFILE_IMAGE from "../../../../../assets/profile/default-profile.svg";
 
+const formatApprovalDateTime = (value) => {
+    if (!value) return "Not available";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Not available";
+    }
+
+    return new Intl.DateTimeFormat("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short",
+    }).format(date);
+};
+
 const getStudentName = (submission) => {
     const firstName = submission?.student?.firstName || "";
     const lastName = submission?.student?.lastName || "";
@@ -43,8 +58,14 @@ export default function ApprovalCard({
                     }}
                 />
 
-                <span className="approval-card-name">
-                    {studentName}
+                <span className="approval-card-student-info">
+                    <span className="approval-card-name">
+                        {studentName}
+                    </span>
+
+                    <span className="approval-card-approved-at">
+                        {formatApprovalDateTime(submission?.reviewedAt)}
+                    </span>
                 </span>
 
                 <span

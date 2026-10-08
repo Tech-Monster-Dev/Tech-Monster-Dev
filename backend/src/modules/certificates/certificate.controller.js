@@ -3,6 +3,7 @@ import CertificatePayment from "../certificatePayments/models/CertificatePayment
 import fs from "fs";
 import path from "path";
 import StudentInternship from "../internships/models/StudentInternship.js";
+import logActivity from "../activity/logActivity.js";
 
 
 import asyncHandler from "../../core/http/asyncHandler.js";
@@ -160,9 +161,6 @@ export const downloadCertificate = asyncHandler(async (req, res) => {
         );
     }
 
-    certificate.downloadCount += 1;
-    await certificate.save();
-
     const filePath = certificate.pdfUrl;
 
     if (!filePath || !fs.existsSync(filePath)) {
@@ -172,8 +170,24 @@ export const downloadCertificate = asyncHandler(async (req, res) => {
         );
     }
 
+    certificate.downloadCount += 1;
+    await certificate.save();
+
     return res.download(
         filePath,
-        path.basename(filePath)
+        path.basename(filePath),
+        async (error) => {
+            if (error) {
+                return;
+            }
+
+            await logActivity(
+                req,
+                req.user._id,
+                "DOWNLOAD_CERTIFICATE",
+                "Certificate",
+                "Downloaded certificate: " + certificate.certificateNumber
+            );
+        }
     );
 });

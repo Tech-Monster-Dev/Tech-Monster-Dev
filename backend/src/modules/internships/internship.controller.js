@@ -9,6 +9,7 @@ import { recordLessonLearningDay } from "../learning/learningDay.service.js";
 import { awardBadge, getBadgeDefinition } from "../profile/services/badgeAward.service.js";
 import Submission from "../submissions/models/Submission.js";
 import { emitToUser } from "../../infrastructure/socket/socket.js";
+import logActivity from "../activity/logActivity.js";
 
 import asyncHandler from "../../core/http/asyncHandler.js";
 import AppError from "../../core/errors/AppError.js";
@@ -487,6 +488,14 @@ export const joinInternship = asyncHandler(async (req, res) => {
         startedAt: new Date()
     });
 
+    await logActivity(
+        req,
+        req.user._id,
+        "JOIN_INTERNSHIP",
+        "Internship",
+        "Joined internship: " + internship.title
+    );
+
     return res.status(201).json({
         success: true,
         message: "Internship joined successfully",
@@ -574,11 +583,25 @@ export const completeInternship = asyncHandler(async (req, res) => {
         );
     }
 
+    const wasAlreadyCompleted = studentInternship.status === "Completed";
+
     studentInternship.status = "Completed";
     studentInternship.progress = 100;
     studentInternship.completedAt = new Date();
 
     await studentInternship.save();
+
+    if (!wasAlreadyCompleted) {
+        const internship = await Internship.findById(studentInternship.internship).select("title").lean();
+
+        await logActivity(
+            req,
+            req.user._id,
+            "COMPLETE_INTERNSHIP",
+            "Internship",
+            "Completed internship: " + (internship?.title || "Internship")
+        );
+    }
 
     const badgeDefinition = getBadgeDefinition("INTERNSHIP", "Internship Completed");
     if (badgeDefinition) {
@@ -674,6 +697,8 @@ export const completeLesson = asyncHandler(async (req, res) => {
     const completedCount = studentInternship.completedLessons.length;
     const progress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : studentInternship.progress;
 
+    const wasAlreadyCompleted = studentInternship.status === "Completed";
+
     studentInternship.progress = progress;
     studentInternship.status = "In Progress";
     if (progress >= 100) {
@@ -682,6 +707,26 @@ export const completeLesson = asyncHandler(async (req, res) => {
     }
 
     await studentInternship.save();
+
+    if (!alreadyCompleted) {
+        await logActivity(
+            req,
+            req.user._id,
+            "COMPLETE_LESSON",
+            "Internship",
+            "Completed lesson: " + findLessonName(courseData, lessonId)
+        );
+    }
+
+    if (!wasAlreadyCompleted && progress >= 100) {
+        await logActivity(
+            req,
+            req.user._id,
+            "COMPLETE_INTERNSHIP",
+            "Internship",
+            "Completed internship: " + internship.title
+        );
+    }
 
     if (progress >= 100) {
         const badgeDefinition = getBadgeDefinition("INTERNSHIP", "Internship Completed");

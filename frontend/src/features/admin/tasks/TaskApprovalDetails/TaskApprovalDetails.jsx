@@ -275,12 +275,6 @@ export default function TaskApprovalDetails() {
                     </a>
                 </div>
                 <div className="detailRow">
-                    <span>Answer</span>
-                    <pre>
-                        {task.answer || "-"}
-                    </pre>
-                </div>
-                <div className="detailRow">
                     <span>Code</span>
                     {task.code ? (
                         <CodeBlock
