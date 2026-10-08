@@ -58,6 +58,7 @@ import Overview from '../features/admin/overview';
 import Students from '../features/admin/students';
 import StudentDetails from "../features/admin/students/StudentDetails";
 import Reports from '../features/admin/reports';
+import ActivityDetails from '../features/admin/reports/components/ActivityDetails';
 import AdminCoursesInternships from '../features/admin/dashboard';
 import CourseForm from '../features/admin/dashboard/components/CoursesForm';
 import TaskApproval from '../features/admin/tasks';
@@ -190,6 +191,7 @@ function AppRoutes() {
                         element={<TaskApprovalDetails />}
                     />
                     <Route path='reports' element={<Reports />} />
+                    <Route path='reports/activity/:userId' element={<ActivityDetails />} />
                     <Route path='certificates' element={<CertificateApproval />} />
                     <Route path='support' element={<SupportInbox />} />
                     <Route path='notice' element={<Notice />} />

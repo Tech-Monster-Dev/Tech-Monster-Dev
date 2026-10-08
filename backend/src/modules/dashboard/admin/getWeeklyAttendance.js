@@ -14,9 +14,8 @@ const getWeeklyAttendance = async () => {
         "Sat"
     ];
 
-    const totalStudents = await User.countDocuments({
-        role: "student"
-    });
+    const studentIds = await User.find({ role: "student" }).distinct("_id");
+    const totalStudents = studentIds.length;
 
     const weeklyAttendance = [];
 
@@ -31,6 +30,7 @@ const getWeeklyAttendance = async () => {
         const presentStudents = await Attendance.distinct(
             "student",
             {
+                student: { $in: studentIds },
                 status: "Present",
                 createdAt: {
                     $gte: start,

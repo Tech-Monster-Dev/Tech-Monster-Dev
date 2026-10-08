@@ -17,6 +17,7 @@ import { recordLessonLearningDay } from "../learning/learningDay.service.js";
 import { awardBadge, awardCourseMilestoneBadges, getBadgeDefinition } from "../profile/services/badgeAward.service.js";
 
 import { safeSendActivityEmail } from "../../infrastructure/email/index.js";
+import logActivity from "../activity/logActivity.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -673,6 +674,7 @@ export const completeLesson = asyncHandler(async (req, res) => {
     }
 
     const alreadyCompleted = Array.isArray(studentCourse.completedLessons) && studentCourse.completedLessons.includes(lessonId);
+    const wasAlreadyCompleted = studentCourse.status === "Completed";
 
     if (!alreadyCompleted) {
         studentCourse.completedLessons.push(lessonId);
@@ -712,6 +714,16 @@ export const completeLesson = asyncHandler(async (req, res) => {
     }
 
     await studentCourse.save();
+
+    if (progress >= 100 && !wasAlreadyCompleted) {
+        await logActivity(
+            req,
+            req.user._id,
+            "COMPLETE_COURSE",
+            "Course",
+            "Completed course: " + course.title
+        );
+    }
 
     if (progress >= 100) {
         const badgeDefinition = getBadgeDefinition("COURSE", "Course Starter");
