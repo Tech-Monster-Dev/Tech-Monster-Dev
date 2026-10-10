@@ -140,8 +140,7 @@ const countWords = (
 export const detectSupportLanguage = (
     text
 ) => {
-    const normalized =
-        normalizeText(text);
+    const normalized = normalizeText(text);
 
     if (!normalized) {
         return "en";
@@ -163,23 +162,20 @@ export const detectSupportLanguage = (
         return "hi";
     }
 
-    const englishScore =
-        countWords(
-            normalized,
-            ENGLISH_WORDS
-        );
+    const englishScore = countWords(
+        normalized,
+        ENGLISH_WORDS
+    );
 
-    const hindiScore =
-        countWords(
-            normalized,
-            HINDI_ROMAN_WORDS
-        );
+    const hindiScore = countWords(
+        normalized,
+        HINDI_ROMAN_WORDS
+    );
 
-    const odiaScore =
-        countWords(
-            normalized,
-            ODIA_ROMAN_WORDS
-        );
+    const odiaScore = countWords(
+        normalized,
+        ODIA_ROMAN_WORDS
+    );
 
     const scores = {
         en: englishScore,
@@ -187,18 +183,14 @@ export const detectSupportLanguage = (
         or: odiaScore
     };
 
-    const sorted =
-        Object.entries(scores)
-            .sort(
-                ([, a], [, b]) =>
-                    b - a
-            );
+    const sorted = Object.entries(scores)
+        .sort(
+            ([, a], [, b]) =>
+                b - a
+        );
 
-    const [topLanguage, topScore] =
-        sorted[0];
-
-    const [, secondScore] =
-        sorted[1];
+    const [topLanguage, topScore] = sorted[0];
+    const [, secondScore] = sorted[1];
 
     if (topScore === 0) {
         return "en";
@@ -214,7 +206,7 @@ export const detectSupportLanguage = (
      * A concrete Hindi/Odia signal wins
      * unless the competing language has
      * equally strong language evidence.
-     */
+    */
     if (
         topLanguage === "hi" ||
         topLanguage === "or"
@@ -230,7 +222,7 @@ export const detectSupportLanguage = (
     /*
      * Genuine mixed-language questions
      * require comparable language signals.
-     */
+    */
     if (
         secondScore > 0 &&
         topScore - secondScore <= 1
@@ -241,5 +233,4 @@ export const detectSupportLanguage = (
     return topLanguage;
 };
 
-export const normalizeSupportQuestion =
-    normalizeText;
+export const normalizeSupportQuestion = normalizeText;

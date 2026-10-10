@@ -46,6 +46,8 @@ const formatDate = (date) => {
     });
 };
 
+const SELECTED_SUPPORT_CONVERSATION_KEY = "admin-support-selected-conversation";
+
 export default function SupportInbox() {
 
     const location = useLocation();
@@ -91,22 +93,31 @@ export default function SupportInbox() {
 
                 setConversations(inbox);
 
-                setSelectedConversation(
-                    (previous) => {
-
-                        if (!previous?._id) {
-                            return previous;
-                        }
-
-                        return (
-                            inbox.find(
-                                (item) =>
-                                    item._id ===
-                                    previous._id
-                            ) || null
+                setSelectedConversation((previous) => {
+                    const selectedId =
+                        previous?._id ||
+                        sessionStorage.getItem(
+                            SELECTED_SUPPORT_CONVERSATION_KEY
                         );
+
+                    if (!selectedId) {
+                        return previous;
                     }
-                );
+
+                    const restoredConversation = inbox.find(
+                        (item) => String(item._id) === String(selectedId)
+                    );
+
+                    if (restoredConversation) {
+                        return restoredConversation;
+                    }
+
+                    sessionStorage.removeItem(
+                        SELECTED_SUPPORT_CONVERSATION_KEY
+                    );
+
+                    return null;
+                });
 
             } catch (err) {
 
@@ -136,8 +147,7 @@ export default function SupportInbox() {
     }, [loadInbox]);
 
     useEffect(() => {
-        const notificationConversationId =
-            location.state?.notificationConversationId;
+        const notificationConversationId = location.state?.notificationConversationId;
 
         if (
             !notificationConversationId ||
@@ -155,6 +165,11 @@ export default function SupportInbox() {
         if (!targetConversation) {
             return;
         }
+
+        sessionStorage.setItem(
+            SELECTED_SUPPORT_CONVERSATION_KEY,
+            String(targetConversation._id)
+        );
 
         queueMicrotask(() => {
             setSelectedConversation(targetConversation);
@@ -194,7 +209,7 @@ export default function SupportInbox() {
                 return previous
                     .map((item) =>
                         String(item._id) ===
-                        String(updatedConversation._id)
+                            String(updatedConversation._id)
                             ? {
                                 ...item,
                                 ...updatedConversation
@@ -230,22 +245,30 @@ export default function SupportInbox() {
         };
     }, []);
 
-    const handleSelectConversation = (
-        conversation
-    ) => {
+    const handleSelectConversation = (conversation) => {
         setSelectedConversation(conversation);
+
+        if (conversation?._id) {
+            sessionStorage.setItem(
+                SELECTED_SUPPORT_CONVERSATION_KEY,
+                String(conversation._id)
+            );
+        }
     };
 
     const handleBack = () => {
         setSelectedConversation(null);
+
+        sessionStorage.removeItem(
+            SELECTED_SUPPORT_CONVERSATION_KEY
+        );
+
         loadInbox(true);
     };
 
     if (selectedConversation) {
-
         return (
             <section className="support-inbox">
-
                 <SupportChat
                     conversation={
                         selectedConversation
@@ -253,18 +276,14 @@ export default function SupportInbox() {
                     currentUser={currentUser}
                     onBack={handleBack}
                 />
-
             </section>
         );
     }
 
     return (
         <section className="support-inbox">
-
             <div className="support-inbox__header">
-
                 <div>
-
                     <span className="support-inbox__eyebrow">
                         ADMIN SUPPORT
                     </span>
@@ -277,7 +296,6 @@ export default function SupportInbox() {
                         Manage student support conversations
                         from one place.
                     </p>
-
                 </div>
 
                 <button
@@ -289,7 +307,6 @@ export default function SupportInbox() {
                         refreshing
                     }
                 >
-
                     <FiRefreshCw
                         className={
                             refreshing
@@ -301,15 +318,11 @@ export default function SupportInbox() {
                     <span>
                         Refresh
                     </span>
-
                 </button>
-
             </div>
 
             <div className="support-inbox__summary">
-
                 <div className="support-inbox__summary-card">
-
                     <span>
                         Total Conversations
                     </span>
@@ -317,11 +330,9 @@ export default function SupportInbox() {
                     <strong>
                         {conversations.length}
                     </strong>
-
                 </div>
 
                 <div className="support-inbox__summary-card">
-
                     <span>
                         Unread
                     </span>
@@ -342,27 +353,20 @@ export default function SupportInbox() {
                             )
                         }
                     </strong>
-
                 </div>
-
             </div>
 
             {loading ? (
-
                 <div className="support-inbox__state">
-
                     <div className="support-inbox__loader" />
-
                     <p>
                         Loading support inbox...
                     </p>
-
                 </div>
 
             ) : error ? (
 
                 <div className="support-inbox__state support-inbox__state--error">
-
                     <FiMessageCircle />
 
                     <h3>
@@ -381,15 +385,12 @@ export default function SupportInbox() {
                     >
                         Try Again
                     </button>
-
                 </div>
 
             ) : conversations.length === 0 ? (
 
                 <div className="support-inbox__state">
-
                     <FiMessageCircle />
-
                     <h3>
                         No support conversations
                     </h3>
@@ -398,36 +399,27 @@ export default function SupportInbox() {
                         Student support conversations
                         will appear here.
                     </p>
-
                 </div>
 
             ) : (
 
                 <div className="support-inbox__list">
-
                     {conversations.map(
                         (conversation) => {
-
-                            const student =
-                                conversation.student;
-
-                            const unread =
-                                Number(
-                                    conversation.unreadForAdmin ||
-                                    0
-                                );
-
-                            const lastMessage =
-                                conversation.lastMessage;
+                            const student = conversation.student;
+                            const unread = Number(
+                                conversation.unreadForAdmin ||
+                                0
+                            );
+                            const lastMessage = conversation.lastMessage;
 
                             return (
                                 <button
                                     type="button"
-                                    className={`support-conversation ${
-                                        unread > 0
-                                            ? "support-conversation--unread"
-                                            : ""
-                                    }`}
+                                    className={`support-conversation ${unread > 0
+                                        ? "support-conversation--unread"
+                                        : ""
+                                        }`}
                                     key={
                                         conversation._id
                                     }
@@ -437,11 +429,8 @@ export default function SupportInbox() {
                                         )
                                     }
                                 >
-
                                     <div className="support-conversation__avatar">
-
                                         {student?.avatar ? (
-
                                             <img
                                                 src={
                                                     student.avatar
@@ -452,19 +441,13 @@ export default function SupportInbox() {
                                                     )
                                                 }
                                             />
-
                                         ) : (
-
                                             <FiUser />
-
                                         )}
-
                                     </div>
 
                                     <div className="support-conversation__content">
-
                                         <div className="support-conversation__top">
-
                                             <strong>
                                                 {getStudentName(
                                                     student
@@ -479,11 +462,9 @@ export default function SupportInbox() {
                                                     )
                                                 }
                                             </time>
-
                                         </div>
 
                                         <div className="support-conversation__bottom">
-
                                             <p>
                                                 {
                                                     lastMessage?.message ||
@@ -496,7 +477,6 @@ export default function SupportInbox() {
                                             </p>
 
                                             <div className="support-conversation__meta">
-
                                                 <span
                                                     className={`support-status support-status--${conversation.status}`}
                                                 >
@@ -506,28 +486,19 @@ export default function SupportInbox() {
                                                 </span>
 
                                                 {unread > 0 && (
-
                                                     <span className="support-unread">
                                                         {unread}
                                                     </span>
-
                                                 )}
-
                                             </div>
-
                                         </div>
-
                                     </div>
-
                                 </button>
                             );
                         }
                     )}
-
                 </div>
-
             )}
-
         </section>
     );
 }
