@@ -5,7 +5,8 @@ function HelpChatMessages({
     supportStarted,
     messages,
     currentUserId,
-    formatTime
+    formatTime,
+    isTyping
 }) {
     return (
         <>
@@ -74,6 +75,24 @@ function HelpChatMessages({
                     </motion.div>
                 );
             })}
+
+            {isTyping && (
+                <motion.div
+                    className="help-msg-bubble-wrapper help-received"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                >
+                    <div
+                        className="help-msg-bubble help-typing-indicator"
+                        aria-label="Support assistant is typing"
+                        role="status"
+                    >
+                        <span className="help-typing-dot" />
+                        <span className="help-typing-dot" />
+                        <span className="help-typing-dot" />
+                    </div>
+                </motion.div>
+            )}
         </>
     );
 }

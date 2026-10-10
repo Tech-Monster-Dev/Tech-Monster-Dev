@@ -11,6 +11,43 @@ import {
     findSupportKnowledgeAnswer
 } from "../knowledge/supportKnowledgeMatcher.js";
 
+import {
+    detectSupportLanguage
+} from "../knowledge/supportLanguage.js";
+
+const GREETING_REPLIES = {
+    en: "Hello! Welcome to Tech Monster Help & Support. Please tell me what you need help with.",
+    or: "Namaskar! Tech Monster Help & Support ku swagat. Apananku keun bisayare help darkar, dayakari kuhantu.",
+    hi: "Namaste! Tech Monster Help & Support mein aapka swagat hai. Kripya batayein, aapko kis baat mein madad chahiye.",
+    mixed: "Namaskar! Welcome to Tech Monster Help & Support. Tumaku keun bisayare help darkar, dayakari kuhantu."
+};
+
+const normalizeGreeting = (value) => String(value || "")
+    .toLowerCase()
+    .normalize("NFKC")
+    .replace(/[^\p{L}\p{M}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+export const detectGreetingLanguage = (value) => {
+    const text = normalizeGreeting(value);
+
+    if (/[\u0B00-\u0B7F]/.test(text)) return "or";
+    if (/[\u0900-\u097F]/.test(text)) return "hi";
+
+    if (/^(namaste|kaise ho|kaise hain|kya haal hai)$/.test(text)) return "hi";
+    if (/^(kemiti achha|kemiti acha)$/.test(text)) return "or";
+    if (/^(namaskar|namaskara)$/.test(text)) return "mixed";
+
+    return "en";
+};
+
+export const isGreetingOnly = (value) => {
+    const text = normalizeGreeting(value);
+
+    return /^(hi+|hey+|hello+|helo+|hallo+|good morning|good afternoon|good evening|namaste|namaskar|namaskara|kemiti achha|kemiti acha|नमस्ते|नमस्कार|हाय|हेलो|ନମସ୍କାର|ହାଏ)$/.test(text);
+};
+
 const FALLBACK_REPLY = {
     en: "I could not find a reliable answer to your question. Please wait, our Tech Monster support team will connect with you shortly.",
     or: "Mu tumara question ra reliable answer pai parili nahi. Dayakari wait kara, Tech Monster support team tum saha khub shighra connect karibe.",
@@ -39,24 +76,54 @@ export const sendSupportAutoReply = async ({
         return null;
     }
 
-    const knowledge =
-        await findSupportKnowledgeAnswer(
-            question
-        );
+    if (isGreetingOnly(question)) {
+        const language = detectGreetingLanguage(question);
+        const autoReply = await createSupportMessage({
+            conversation,
+            user: admin,
+            receiver: student._id,
+            message: GREETING_REPLIES[language] || GREETING_REPLIES.en,
+            file: ""
+        });
 
-    const shouldEscalate =
-        !knowledge ||
-        knowledge.escalate;
+        const updatedConversation = await updateSupportConversation({
+            conversation,
+            messageId: autoReply._id,
+            isStudent: false
+        });
 
-    const language =
-        knowledge?.language || "en";
+        await notifySupportReceiver({
+            receiver: student._id,
+            sender: admin,
+            message: autoReply,
+            conversation: updatedConversation,
+            createNotification: false
+        });
 
-    const replyText =
-        shouldEscalate
-            ? (
-                FALLBACK_REPLY[language] ||
-                FALLBACK_REPLY.en
-            )
+        return {
+            message: autoReply,
+            conversation: updatedConversation,
+            knowledge: { intent: "greeting", language, escalate: false },
+            escalated: false
+        };
+    }
+
+    const knowledge = await findSupportKnowledgeAnswer(question);
+    const language = knowledge?.language || detectSupportLanguage(question);
+    const wasAwaitingClarification = Boolean(conversation.awaitingClarification);
+    const isClarificationIntent = knowledge?.intent === "unknown_support_question";
+    const needsClarification = !knowledge || isClarificationIntent;
+    const shouldEscalate = knowledge?.intent === "support_unresolved" || Boolean(knowledge && knowledge.escalate && !isClarificationIntent) || (needsClarification && wasAwaitingClarification);
+    const clarificationReplies = {
+        en: "Please describe your question or issue in a little more detail so I can check the available support information.",
+        or: "Dayakari tumara question ba issue bisayare tike adhika detail re kuhantu, jaha dwara mu available support information check kariparibi.",
+        hi: "Kripya apne question ya issue ke baare mein thodi aur jaankari dein, taaki main available support information check kar sakun.",
+        mixed: "Tumara question ba issue bisayare tike adhika detail re kuhantu, so mu available support information check kariparibi."
+    };
+    const replyText = shouldEscalate
+        ? (FALLBACK_REPLY[language] || FALLBACK_REPLY.en)
+        : needsClarification
+            ? (clarificationReplies[language] || clarificationReplies.en)
             : knowledge.answer;
 
     /*
@@ -78,6 +145,10 @@ export const sendSupportAutoReply = async ({
             messageId: autoReply._id,
             isStudent: false
         });
+
+    updatedConversation.awaitingClarification =
+        needsClarification && !shouldEscalate;
+    await updatedConversation.save();
 
     /*
      * Auto-reply must NEVER create a

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiSend } from "react-icons/fi";
 
@@ -8,14 +9,23 @@ function HelpChatInput({
     supportStarted,
     inputMessage,
     onInputChange,
-    onSendMessage
+    onSendMessage,
+    inputRef
 }) {
+
+    useEffect(() => {
+        if (!sending) {
+            inputRef?.current?.focus();
+        }
+    }, [sending, inputRef]);
+
     return (
         <form
             className="help-chat-input-area"
             onSubmit={onSendMessage}
         >
             <input
+                ref={inputRef}
                 type="text"
                 placeholder="Type your problem or question here..."
                 value={inputMessage}

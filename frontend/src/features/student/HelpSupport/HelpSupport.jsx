@@ -74,10 +74,14 @@ function HelpSupport() {
     const [inputMessage, setInputMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
+    const isTypingRef = useRef(false);
+    const pendingSupportReplyRef = useRef(null);
     const [supportStarted, setSupportStarted] = useState(false);
     const [showClearWarning, setShowClearWarning] = useState(false);
 
     const messagesEndRef = useRef(null);
+    const chatInputRef = useRef(null);
     const conversationIdRef = useRef(null);
 
     const currentUser = (() => {
@@ -160,15 +164,13 @@ function HelpSupport() {
                     currentConversation
                 );
 
-                conversationIdRef.current =
-                    String(
-                        currentConversation._id
-                    );
+                conversationIdRef.current = String(
+                    currentConversation._id
+                );
 
-                const messagesResponse =
-                    await getSupportMessages(
-                        currentConversation._id
-                    );
+                const messagesResponse = await getSupportMessages(
+                    currentConversation._id
+                );
 
                 if (!mounted) {
                     return;
@@ -227,44 +229,38 @@ function HelpSupport() {
             );
         };
 
-        const handleSupportMessage = (
-            incomingMessage
-        ) => {
-            if (!incomingMessage) {
-                return;
-            }
 
-            const messageConversationId =
-                String(
-                    incomingMessage.supportConversation ||
-                    ""
-                );
+        const handleSupportMessage = (incomingMessage) => {
+            if (!incomingMessage) return;
+
+            const messageConversationId = String(
+                incomingMessage.supportConversation || ""
+            );
 
             if (
                 !conversationIdRef.current ||
-                messageConversationId !==
-                String(conversationIdRef.current)
+                messageConversationId !== String(conversationIdRef.current)
             ) {
                 return;
             }
 
-            setMessages((previous) => {
-                const exists = previous.some(
-                    (item) =>
-                        String(item._id) ===
-                        String(incomingMessage._id)
-                );
+            const isOwnMessage = String(
+                incomingMessage.sender?._id ||
+                incomingMessage.sender ||
+                ""
+            ) === currentUserId;
 
-                if (exists) {
-                    return previous;
-                }
+            if (!isOwnMessage && isTypingRef.current) {
+                pendingSupportReplyRef.current = incomingMessage;
+                return;
+            }
 
-                return mergeSupportMessages(
-                    previous,
-                    incomingMessage
-                );
-            });
+            setMessages((previous) =>
+                mergeSupportMessages(previous, incomingMessage)
+            );
         };
+
+
 
         socket.on(
             "connect",
@@ -360,21 +356,17 @@ function HelpSupport() {
             conversationIdRef.current = null;
             setSupportStarted(false);
 
-            const conversationResponse =
-                await getMySupportConversation();
-
-            const newConversation =
-                conversationResponse?.conversation;
+            const conversationResponse = await getMySupportConversation();
+            const newConversation = conversationResponse?.conversation;
 
             if (newConversation) {
                 setConversation(
                     newConversation
                 );
 
-                conversationIdRef.current =
-                    String(
-                        newConversation._id
-                    );
+                conversationIdRef.current = String(
+                    newConversation._id
+                );
             }
         } catch (error) {
             console.error(
@@ -386,62 +378,64 @@ function HelpSupport() {
         }
     };
 
-    const sendMessageText = async (
-        text
-    ) => {
-        const normalizedText =
-            text?.trim();
 
-        if (
-            !normalizedText ||
-            !conversation?._id ||
-            sending
-        ) {
+    const sendMessageText = async (text) => {
+        const normalizedText = text?.trim();
+
+        if (!normalizedText || !conversation?._id || sending) {
             return;
         }
 
         try {
             setSending(true);
+            isTypingRef.current = true;
+            setIsTyping(true);
 
-            const response =
-                await sendSupportMessage({
-                    conversationId:
-                        conversation._id,
-                    message: normalizedText
-                });
+            const response = await sendSupportMessage({
+                conversationId: conversation._id,
+                message: normalizedText
+            });
 
-            const sentMessage =
-                response?.data;
+            const sentMessage = response?.data;
+            const autoReply = response?.autoReply;
 
-            const messagesToAdd = [
-                sentMessage,
-                response?.autoReply
-            ].filter(Boolean);
-
-            if (messagesToAdd.length) {
+            if (sentMessage) {
                 setMessages((previous) =>
-                    mergeSupportMessages(
-                        previous,
-                        messagesToAdd
-                    )
+                    mergeSupportMessages(previous, sentMessage)
                 );
             }
 
             if (response?.conversation) {
-                setConversation(
-                    response.conversation
+                setConversation(response.conversation);
+            }
+
+            if (autoReply) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, 2000)
+                );
+
+                setMessages((previous) =>
+                    mergeSupportMessages(previous, autoReply)
                 );
             }
 
             return response;
         } catch (error) {
-            console.error(
-                "Failed to send support message:",
-                error
-            );
-
+            console.error("Failed to send support message:", error);
             return null;
         } finally {
+            isTypingRef.current = false;
+            setIsTyping(false);
+
+            const pendingReply = pendingSupportReplyRef.current;
+            pendingSupportReplyRef.current = null;
+
+            if (pendingReply) {
+                setMessages((previous) =>
+                    mergeSupportMessages(previous, pendingReply)
+                );
+            }
+
             setSending(false);
         }
     };
@@ -460,12 +454,17 @@ function HelpSupport() {
             return;
         }
 
-        const response =
-            await sendMessageText(text);
+        const response = await sendMessageText(text);
 
         if (response) {
             setInputMessage("");
         }
+
+        requestAnimationFrame(() => {
+            if (!sending) {
+                chatInputRef.current?.focus();
+            }
+        });
     };
 
     const handleContinueSupport = () => {
@@ -539,6 +538,7 @@ function HelpSupport() {
                                     messages={messages}
                                     currentUserId={currentUserId}
                                     formatTime={formatTime}
+                                    isTyping={isTyping}
                                 />
                             </>
                         )}
@@ -554,8 +554,8 @@ function HelpSupport() {
                         inputMessage={inputMessage}
                         onInputChange={setInputMessage}
                         onSendMessage={handleSendMessage}
+                        inputRef={chatInputRef}
                     />
-
                 </div>
             </motion.div>
 

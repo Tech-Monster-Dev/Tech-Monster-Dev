@@ -26,6 +26,11 @@ const supportConversationSchema = new mongoose.Schema(
             default: false
         },
 
+        awaitingClarification: {
+            type: Boolean,
+            default: false
+        },
+
         unreadForAdmin: {
             type: Number,
             default: 0,

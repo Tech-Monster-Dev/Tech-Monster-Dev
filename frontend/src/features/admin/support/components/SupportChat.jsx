@@ -1,11 +1,11 @@
-import "./SupportChat.css";
-
 import { useEffect, useRef, useState } from "react";
 import {
-    FiArrowLeft,
     FiSend,
     FiUser
 } from "react-icons/fi";
+
+import BackButton from "../../../../components/ui/Button/BackButton/BackButton";
+import Select from "../../../../components/ui/Form/component/Select/Select";
 
 import {
     getSupportMessages,
@@ -270,20 +270,14 @@ export default function SupportChat({
 
     return (
         <section className="support-chat">
-
             <header className="support-chat__header">
-
-                <button
-                    type="button"
+                <BackButton
+                    label="Back to inbox"
                     className="support-chat__back"
                     onClick={onBack}
-                    aria-label="Back to support inbox"
-                >
-                    <FiArrowLeft />
-                </button>
+                />
 
                 <div className="support-chat__avatar">
-
                     {student?.avatar ? (
                         <img
                             src={student.avatar}
@@ -296,7 +290,6 @@ export default function SupportChat({
                 </div>
 
                 <div className="support-chat__user">
-
                     <h2>
                         {getUserName(student)}
                     </h2>
@@ -306,19 +299,10 @@ export default function SupportChat({
                             {student.email}
                         </span>
                     )}
-
                 </div>
 
                 {String(currentUser?.role || "").toLowerCase() === "admin" ? (
-                    <select
-                        className={`support-chat__status support-chat__status--${status}`}
-                        value={status}
-                        onChange={handleStatusChange}
-                    >
-                        <option value="open">Open</option>
-                        <option value="pending">Pending</option>
-                        <option value="resolved">Resolved</option>
-                    </select>
+                    <Select name="supportConversationStatus" value={status} onChange={handleStatusChange} options={[{ value: "open", label: "Open" }, { value: "pending", label: "Pending" }, { value: "resolved", label: "Resolved" }]} className={"support-chat__status support-chat__status--" + status} />
                 ) : (
                     <span
                         className={`support-chat__status support-chat__status--${status}`}
@@ -326,7 +310,6 @@ export default function SupportChat({
                         {status}
                     </span>
                 )}
-
             </header>
 
             <div
@@ -335,7 +318,6 @@ export default function SupportChat({
             >
 
                 {loading ? (
-
                     <div className="support-chat__state">
                         Loading messages...
                     </div>
@@ -355,9 +337,7 @@ export default function SupportChat({
                 ) : (
 
                     messages.map((message) => {
-
-                        const isMine =
-                            String(
+                        const isMine = String(
                                 message.sender?._id ||
                                 message.sender
                             ) ===
@@ -377,7 +357,6 @@ export default function SupportChat({
                             >
 
                                 <div className="support-chat__bubble">
-
                                     {message.message && (
                                         <p>
                                             {message.message}
@@ -399,9 +378,7 @@ export default function SupportChat({
                                             message.createdAt
                                         )}
                                     </time>
-
                                 </div>
-
                             </div>
                         );
                     })
@@ -420,7 +397,6 @@ export default function SupportChat({
                 className="support-chat__input"
                 onSubmit={handleSubmit}
             >
-
                 <input
                     type="text"
                     value={text}
@@ -442,9 +418,7 @@ export default function SupportChat({
                 >
                     <FiSend />
                 </button>
-
             </form>
-
         </section>
     );
 }
