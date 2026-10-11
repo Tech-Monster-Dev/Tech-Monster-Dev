@@ -1,23 +1,71 @@
+import "./NoticeDetailed.css";
+
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { FiEdit2, FiX } from "react-icons/fi";
+import { toast } from "react-toastify";
+import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+
+import DashButton from "../../../../../components/ui/Button/DashButton/DashButton";
+import Warning from "../../../../../components/ui/Warning";
+
+import { deleteNotice } from "../../../../../services/api/notice.service";
 
 import useModalScrollLock from "../../../../../shared/hooks/useModalScrollLock";
-
-import "./NoticeDetailed.css";
 
 export default function NoticeDetailed({
     open = false,
     notice = null,
     onClose,
     onEdit,
+    onDeleted,
 }) {
-    
+    const [deleting, setDeleting] = useState(false);
+    const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+
     useModalScrollLock(open);
 
     if (!notice) return null;
 
     const noticeId = notice._id || notice.id;
     const titleId = `notice-detailed-title-${noticeId}`;
+
+    const handleDelete = () => {
+        if (!deleting) {
+            setShowDeleteWarning(true);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        if (!deleting) {
+            setShowDeleteWarning(false);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deleting || !noticeId) return;
+
+        try {
+            setDeleting(true);
+            const response = await deleteNotice(noticeId);
+
+            if (response?.success === false) {
+                throw new Error(response?.message || "Failed to delete notice.");
+            }
+
+            setShowDeleteWarning(false);
+            toast.success("Notice deleted successfully.");
+            onDeleted?.(noticeId);
+        } catch (error) {
+            console.error("Error deleting notice:", error);
+            toast.error(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Unable to delete notice."
+            );
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     return (
         <AnimatePresence>
@@ -87,22 +135,49 @@ export default function NoticeDetailed({
                                     : "—"}
                             </time>
 
-                            {onEdit && (
-                                <div className="notice-detailed-actions">
-                                    <button
-                                        type="button"
-                                        className="notice-detailed-edit"
+                            <div className="notice-detailed-actions">
+                                {onEdit && (
+                                    <DashButton
+                                        variant="secondary"
+                                        size="medium"
+                                        icon={<FiEdit2 />}
+                                        iconPosition="left"
                                         onClick={() => onEdit(notice)}
+                                        disabled={deleting}
+                                        className="notice-detailed-edit"
                                     >
-                                        <FiEdit2 />
                                         Edit Notice
-                                    </button>
-                                </div>
-                            )}
+                                    </DashButton>
+                                )}
+
+                                <DashButton
+                                    variant="danger"
+                                    size="medium"
+                                    icon={<FiTrash2 />}
+                                    iconPosition="left"
+                                    onClick={handleDelete}
+                                    disabled={deleting}
+                                    loading={deleting}
+                                    loadingText="Deleting..."
+                                    className="notice-detailed-delete"
+                                >
+                                    Delete Notice
+                                </DashButton>
+                            </div>
                         </div>
                     </motion.div>
                 </motion.div>
             )}
+
+            <Warning
+                open={showDeleteWarning}
+                title="Delete Notice?"
+                message={`Are you sure you want to delete "${notice.shortTitle || "this notice"}"? This action cannot be undone.`}
+                confirmText={deleting ? "Deleting..." : "Confirm"}
+                cancelText="Cancel"
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
         </AnimatePresence>
     );
 }

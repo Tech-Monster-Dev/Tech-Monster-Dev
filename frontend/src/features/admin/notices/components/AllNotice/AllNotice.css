@@ -1,54 +1,66 @@
+@import "tailwindcss";
+
 .admin-all-notice {
-    width: min(100%, 1000px);
-    margin: 0 auto;
+    @apply mx-auto w-full;
 }
 
 .admin-all-notice-header {
-    margin-bottom: 16px;
+    @apply mb-4;
 }
 
 .admin-all-notice-header h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: clamp(20px, 3vw, 26px);
+    @apply m-0
+        text-[clamp(1.25rem,3vw,1.625rem)]
+        text-(--text);
 }
 
 .admin-all-notice-header p {
-    margin: 5px 0 0;
-    color: var(--gray);
-    font-size: 13px;
+    @apply mt-1.25
+        mb-0
+        text-[0.8125rem]
+        text-(--gray);
 }
 
 .admin-notice-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    @apply m-0
+        flex
+        list-none
+        flex-col
+        gap-2.5
+        p-0;
 }
 
 .admin-notice-list-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    width: 100%;
-    padding: 15px 17px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    @apply flex
+        w-full
+        items-center
+        justify-between
+        gap-4
+        rounded-xl
+        border
+        px-4.25
+        py-3.75
+        text-left
+        text-(--text)
+        cursor-pointer
+        transition-[transform,border-color,box-shadow,background]
+        duration-250
+        ease-in-out
+        max-[600px]:flex-col
+        max-[600px]:items-start
+        max-[600px]:gap-1.5
+        max-[600px]:px-3.5
+        max-[600px]:py-3.25;
+
+    border-color: var(--border);
     background: var(--surface);
-    color: var(--text);
-    text-align: left;
-    cursor: pointer;
-    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .25s ease;
 }
 
 .admin-notice-list-item:hover {
-    transform: translateY(-2px);
+    transform: translateY(-0.125rem);
     border-color: var(--neon);
-    background: rgba(0, 234, 255, .04);
-    box-shadow: 0 8px 24px rgba(0, 234, 255, .08);
+    background: color-mix(in srgb, var(--neon) 4%, transparent);
+    box-shadow: 0 0.5rem 1.5rem color-mix(in srgb, var(--neon) 8%, transparent);
 }
 
 .admin-notice-list-item:focus-visible {
@@ -57,83 +69,87 @@
 }
 
 .admin-notice-list-title {
-    min-width: 0;
-    overflow: hidden;
-    font-size: 14px;
-    font-weight: 700;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @apply min-w-0
+        overflow-hidden
+        text-[0.875rem]
+        font-bold
+        text-ellipsis
+        whitespace-nowrap
+        max-[600px]:whitespace-normal;
+
+    overflow-wrap: anywhere;
 }
 
 .admin-notice-list-date {
-    flex: 0 0 auto;
-    color: var(--gray);
-    font-size: 11px;
+    @apply shrink-0
+        text-[0.6875rem]
+        text-(--gray)
+        max-[600px]:text-[0.625rem];
 }
 
+/* ==========================================
+   NOTICE ERROR
+========================================== */
+
 .admin-notice-error {
-    width: min(100%, 700px);
-    margin: 0 auto;
-    padding: 28px 20px;
-    border: 1px solid rgba(239, 68, 68, .3);
-    border-radius: 14px;
-    background: rgba(239, 68, 68, .05);
-    text-align: center;
+    @apply mx-auto
+        w-full
+        max-w-175
+        rounded-[0.875rem]
+        border
+        px-5
+        py-7
+        text-center;
+
+    border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+    background: color-mix(in srgb, var(--danger) 5%, transparent);
 }
 
 .admin-notice-error h3 {
-    margin: 0;
-    color: var(--text);
-    font-size: 18px;
+    @apply m-0
+        text-[1.125rem]
+        text-(--text);
 }
 
 .admin-notice-error p {
-    margin: 8px 0 16px;
-    color: var(--gray);
-    font-size: 13px;
-    line-height: 1.5;
+    @apply mt-2
+        mb-4
+        text-[0.8125rem]
+        leading-normal
+        text-(--gray);
 }
 
 .admin-notice-error button {
-    min-height: 40px;
-    padding: 8px 18px;
-    border: 1px solid var(--primary);
-    border-radius: 9px;
+    @apply min-h-10
+        rounded-[0.5625rem]
+        border
+        px-4.5
+        py-2
+        text-[0.8125rem]
+        font-[inherit]
+        font-bold
+        cursor-pointer
+        transition-[background,transform]
+        duration-200
+        ease-in-out;
+
+    border-color: var(--primary);
     background: transparent;
     color: var(--neon);
-    font: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .2s ease, transform .2s ease;
 }
 
 .admin-notice-error button:hover {
-    transform: translateY(-1px);
-    background: rgba(0, 234, 255, .08);
+    transform: translateY(-0.0625rem);
+    background: color-mix(in srgb, var(--neon) 8%, transparent);
 }
 
-@media (max-width: 600px) {
-    .admin-notice-list-item {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 6px;
-        padding: 13px 14px;
-    }
-
-    .admin-notice-list-title {
-        white-space: normal;
-        overflow-wrap: anywhere;
-    }
-
-    .admin-notice-list-date {
-        font-size: 10px;
-    }
-}
+/* ==========================================
+   REDUCED MOTION ACCESSIBILITY
+========================================== */
 
 @media (prefers-reduced-motion: reduce) {
     .admin-notice-list-item,
-.admin-notice-error button {
+    .admin-notice-error button {
         transition: none;
     }
 }
