@@ -2,17 +2,26 @@ import Attendance from "../models/Attendance.js";
 import StudentInternship from "../../internships/models/StudentInternship.js";
 
 const getTodayRange = () => {
-    const start = new Date();
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(new Date());
 
-    start.setHours(0, 0, 0, 0);
+    const values = Object.fromEntries(
+        parts
+            .filter(({ type }) => type !== "literal")
+            .map(({ type, value }) => [type, value])
+    );
 
-    const end = new Date(start);
-
-    end.setHours(23, 59, 59, 999);
+    const start = new Date(
+        `${values.year}-${values.month}-${values.day}T00:00:00+05:30`
+    );
 
     return {
         start,
-        end
+        end: new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1)
     };
 };
 
@@ -36,8 +45,7 @@ export const ensureDailyAttendance = async (
         return existing;
     }
 
-    const enrollment =
-        await StudentInternship.findOne({
+    const enrollment = await StudentInternship.findOne({
             student: userId,
             status: "In Progress",
             $or: [
@@ -64,13 +72,11 @@ export const ensureDailyAttendance = async (
     };
 
     if (enrollment?.internship) {
-        attendanceData.internship =
-            enrollment.internship;
+        attendanceData.internship = enrollment.internship;
     }
 
     if (enrollment?.course) {
-        attendanceData.course =
-            enrollment.course;
+        attendanceData.course = enrollment.course;
     }
 
     return Attendance.create(

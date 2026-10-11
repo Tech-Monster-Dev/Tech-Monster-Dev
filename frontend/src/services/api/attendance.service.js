@@ -7,11 +7,16 @@ export const getMyAttendance = async () => {
     );
     return data;
 };
-export const recordActiveTime = async (activeSeconds) => {
+
+export const recordActiveTime = async (
+    activeSeconds,
+    dateKey = null
+) => {
     const { data } = await api.post(
         "/attendance/active-time",
         {
-            activeSeconds
+            activeSeconds,
+            ...(dateKey ? { dateKey } : {})
         }
     );
 

@@ -1,10 +1,6 @@
 import "./CalendarDayCell.css";
 
-import { motion } from "framer-motion";
-
-const formatActiveTime = (
-  totalMilliseconds = 0
-) => {
+const formatActiveTime = (totalMilliseconds = 0) => {
   const milliseconds = Math.max(0, Math.floor(totalMilliseconds));
   const hours = String(Math.floor(milliseconds / 3600000)).padStart(2, "0");
   const minutes = String(Math.floor((milliseconds % 3600000) / 60000)).padStart(2, "0");
@@ -25,38 +21,27 @@ export default function CalendarDayCell({
 }) {
   let statusClass = "";
 
-  if (
-    isBeforeAccountCreation
-  ) {
+  if (isBeforeAccountCreation) {
     statusClass = "before-account";
-  } else if (
-    enrollment
-  ) {
+
+  } else if (enrollment) {
     statusClass = "enrollment-day";
-  } else if (
-    isAccountCreatedDay
-  ) {
+
+  } else if (isAccountCreatedDay) {
     statusClass = "account-created-day";
-  } else if (
-    isPresent
-  ) {
+
+  } else if (isPresent) {
     statusClass = "present";
-  } else if (
-    isAbsent
-  ) {
+
+  } else if (isAbsent) {
     statusClass = "absent";
+
   }
 
   const isToday = today === day && !isBeforeAccountCreation;
 
   return (
-    <motion.div
-      whileHover={{
-        scale: 1.04
-      }}
-      whileTap={{
-        scale: 0.97
-      }}
+    <div
       title={
         isBeforeAccountCreation
           ? "Before Account Creation"
@@ -81,11 +66,9 @@ export default function CalendarDayCell({
         {day}
       </span>
 
-      {activeMilliseconds > 0 && isPresent && !isBeforeAccountCreation && (
+      {!isBeforeAccountCreation && (
         <span className="active-time">
-          {formatActiveTime(
-            activeMilliseconds
-          )}
+          {formatActiveTime(activeMilliseconds ?? 0)}
         </span>
       )}
 
@@ -103,6 +86,6 @@ export default function CalendarDayCell({
           )}
         </span>
       )}
-    </motion.div>
+    </div>
   );
 }

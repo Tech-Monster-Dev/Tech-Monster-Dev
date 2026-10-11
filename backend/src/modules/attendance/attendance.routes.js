@@ -1,19 +1,13 @@
 import express from "express";
 
 import { protect } from "../../core/security/auth.middleware.js";
-
 import authorizeRoles from "../../core/security/role.middleware.js";
 
 import {
-
     getMyAttendance,
-
     getInternAttendance,
-
     recordActiveTime,
-
     getTodayActiveTime
-
 } from "./attendance.controller.js";
 
 const router = express.Router();
@@ -41,7 +35,6 @@ router.get(
 
 router.get(
     "/internship/:id",
-
     protect,
     authorizeRoles("employer"),
     getInternAttendance

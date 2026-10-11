@@ -1,3 +1,4 @@
+import "./Notice.css";
 import { useState } from "react";
 
 import SectionTabs from "../../../layouts/SectionTabs";
@@ -7,7 +8,6 @@ import AllNotice from "./components/AllNotice";
 import NoticeDetailed from "./components/NoticeDetailed";
 import { NOTICE_TABS } from "./constants/notice.constants";
 
-import "./Notice.css";
 
 export default function Notice() {
     const [activeTab, setActiveTab] = useState("add");

@@ -51,17 +51,14 @@ const unlockDailyTimeBadges = async (
     activeSeconds
 ) => {
 
-    const student = await User.findById(userId)
-        .select("firstName lastName username email");
+    const student = await User.findById(userId).select("firstName lastName username email");
 
     if (!student?.email) {
         return;
     }
 
     for (const definition of DAILY_TIME_BADGES) {
-
-        const requiredSeconds =
-            definition.hours * 60 * 60;
+        const requiredSeconds = definition.hours * 60 * 60;
 
         if (activeSeconds < requiredSeconds) {
             continue;
@@ -122,141 +119,119 @@ const unlockDailyTimeBadges = async (
 
 export const recordActiveTime = async (
     userId,
-    activeSeconds = 0
+    activeSeconds = 0,
+    dateKey = null
 ) => {
-
     if (!userId || !Number.isFinite(activeSeconds)) {
         return null;
     }
 
     const seconds = Math.max(
         0,
-        Math.min(
-            Math.floor(activeSeconds),
-            120
-        )
+        Math.min(Math.floor(activeSeconds), 120)
     );
 
     if (seconds === 0) {
         return null;
     }
 
-    const date = getTodayStart();
+    let date = getTodayStart();
 
-    const enrollment =
-        await StudentInternship.findOne({
-            student: userId,
-            status: "In Progress",
-            $or: [
-                {
-                    internship: {
-                        $exists: true,
-                        $ne: null
-                    }
-                },
-                {
-                    course: {
-                        $exists: true,
-                        $ne: null
-                    }
-                }
-            ]
-        }).sort({
-            createdAt: -1
-        });
-
-    if (!enrollment) {
-        return null;
-    }
-
-    const activityFilter = {
-        student: userId,
-        date
-    };
-
-    const activityUpdate = {
-        $inc: {
-            activeSeconds: seconds
-        },
-        $set: {
-            course:
-                enrollment.course || null,
-
-            internship:
-                enrollment.internship || null
+    if (dateKey !== null) {
+        if (
+            typeof dateKey !== "string" ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(dateKey)
+        ) {
+            return null;
         }
-    };
 
-    const activity =
-        await AttendanceActivity.findOneAndUpdate(
-            activityFilter,
-            activityUpdate,
-            {
-                new: true,
-                upsert: true,
-                setDefaultsOnInsert: true
-            }
+        const parsedDate = new Date(
+            `${dateKey}T00:00:00+05:30`
         );
 
-    await unlockDailyTimeBadges(
-        userId,
-        activity.activeSeconds || 0
+        if (Number.isNaN(parsedDate.getTime())) {
+            return null;
+        }
+
+        const parts = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }).formatToParts(parsedDate);
+
+        const values = Object.fromEntries(
+            parts
+                .filter(({ type }) => type !== "literal")
+                .map(({ type, value }) => [type, value])
+        );
+
+        const parsedDateKey =
+            `${values.year}-${values.month}-${values.day}`;
+
+        if (parsedDateKey !== dateKey) {
+            return null;
+        }
+
+        date = parsedDate;
+    }
+
+    const activity = await AttendanceActivity.findOneAndUpdate(
+        {
+            student: userId,
+            date,
+            course: null,
+            internship: null
+        },
+        {
+            $inc: { activeSeconds: seconds },
+            $setOnInsert: {
+                student: userId,
+                date,
+                course: null,
+                internship: null
+            }
+        },
+        {
+            new: true,
+            upsert: true,
+            setDefaultsOnInsert: true
+        }
     );
+
+    const dailyActivities = await AttendanceActivity.find({
+        student: userId,
+        date
+    }).select("activeSeconds");
+
+    const totalSeconds = dailyActivities.reduce(
+        (total, item) => total + (item.activeSeconds || 0),
+        0
+    );
+
+    await unlockDailyTimeBadges(userId, totalSeconds);
+
+    activity.activeSeconds = totalSeconds;
 
     return activity;
 };
 
-export const getTodayActiveTime = async (
-    userId
-) => {
-
+export const getTodayActiveTime = async (userId) => {
     if (!userId) {
         return 0;
     }
 
     const date = getTodayStart();
 
-    const enrollment =
-        await StudentInternship.findOne({
-            student: userId,
-            status: "In Progress",
-            $or: [
-                {
-                    internship: {
-                        $exists: true,
-                        $ne: null
-                    }
-                },
-                {
-                    course: {
-                        $exists: true,
-                        $ne: null
-                    }
-                }
-            ]
-        }).sort({
-            createdAt: -1
-        });
-
-    if (!enrollment) {
-        return 0;
-    }
-
-    const activityQuery = {
+    const dailyActivities = await AttendanceActivity.find({
         student: userId,
-        date,
-        course:
-            enrollment.course || null,
-        internship:
-            enrollment.internship || null
-    };
+        date
+    }).select("activeSeconds");
 
-    const activity =
-        await AttendanceActivity.findOne(
-            activityQuery
-        );
-
-    return activity?.activeSeconds || 0;
+    return dailyActivities.reduce(
+        (total, item) => total + (item.activeSeconds || 0),
+        0
+    );
 };
 
 export default {

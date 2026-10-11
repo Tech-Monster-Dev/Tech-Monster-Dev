@@ -17,19 +17,13 @@ import {
 
 export default function useAttendanceData() {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
-
   const [dashboard, setDashboard] = useState(null);
-
   const [activeTimeData, setActiveTimeData] = useState({});
-
   const [accountCreatedAt, setAccountCreatedAt] = useState(null);
-
   const [enrollments, setEnrollments] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
-  const loadAttendance =
-    useCallback(async () => {
+  const loadAttendance = useCallback(async () => {
       try {
         const response =
           await getMyAttendance();
@@ -50,8 +44,7 @@ export default function useAttendanceData() {
       }
     }, []);
 
-  const loadDashboard =
-    useCallback(async () => {
+  const loadDashboard = useCallback(async () => {
       try {
         const { data } =
           await api.get(
