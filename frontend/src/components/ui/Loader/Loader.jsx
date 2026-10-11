@@ -48,16 +48,16 @@ function Loading({ finish }) {
 
     return (
 
-        <div id="loading">
-            <div id="grid"></div>
+        <div className="loading">
+            <div className="grid"></div>
 
             <motion.div
-                id="loading-container"
+                className="loading-container"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: .7 }}
             >
-                <div id="logo-ring">
+                <div className="logo-ring">
                     <img src={logo} alt="" />
                 </div>
 
@@ -67,9 +67,9 @@ function Loading({ finish }) {
 
                 <p>{text}</p>
 
-                <div id="progress-box">
+                <div className="progress-box">
                     <motion.div
-                        id="progress"
+                        className="progress"
                         animate={{
                             width: `${progress}%`
                         }}

@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+.admin-feedback-page {
+    @apply flex min-w-0 w-full flex-col gap-[clamp(1rem,2.5vw,1.5rem)];
+    color: var(--text);
+}
+
+.admin-feedback-header {
+    @apply flex min-w-0 flex-col gap-[clamp(0.875rem,2vw,1.25rem)];
+}
+
+.admin-feedback-eyebrow {
+    @apply m-0 text-[0.7rem] font-extrabold uppercase tracking-[0.18em];
+    color: var(--neon);
+}
+
+.admin-feedback-heading-row {
+    @apply flex min-w-0 flex-wrap items-start justify-between gap-4;
+}
+
+.admin-feedback-heading-row h1 {
+    @apply m-0 text-[clamp(1.5rem,3vw,2.25rem)] font-extrabold tracking-[-0.035em];
+    color: var(--text);
+}
+
+.admin-feedback-heading-row p {
+    @apply mt-2 mb-0 max-w-2xl text-[clamp(0.875rem,1.5vw,1rem)] leading-relaxed;
+    color: var(--text-muted, var(--text));
+    opacity: 0.72;
+}
+
+.admin-feedback-refresh {
+    @apply inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold transition-colors duration-200;
+    border-color: var(--border);
+    background: var(--surface, var(--dark));
+    color: var(--text);
+    cursor: pointer;
+}
+
+.admin-feedback-refresh:hover:not(:disabled) {
+    border-color: var(--neon);
+    color: var(--neon);
+}
+
+.admin-feedback-refresh:disabled {
+    @apply cursor-wait opacity-50;
+}
+
+.admin-feedback-summary {
+    @apply flex w-fit min-w-44 items-center gap-3 rounded-2xl border p-4;
+    border-color: var(--border);
+    background: color-mix(in srgb, var(--dark) 78%, transparent);
+}
+
+.admin-feedback-summary-icon,
+.admin-feedback-empty-icon {
+    @apply flex shrink-0 items-center justify-center rounded-[0.875rem] text-xl;
+    width: clamp(2.75rem, 5vw, 3.25rem);
+    height: clamp(2.75rem, 5vw, 3.25rem);
+    background: color-mix(in srgb, var(--neon) 14%, transparent);
+    color: var(--neon);
+}
+
+.admin-feedback-summary > div:last-child {
+    @apply flex flex-col gap-1;
+}
+
+.admin-feedback-summary span {
+    @apply text-xs font-semibold;
+    opacity: 0.7;
+}
+
+.admin-feedback-summary strong {
+    @apply text-2xl font-extrabold leading-none;
+    color: var(--text);
+}
+
+.admin-feedback-tabs {
+    @apply min-w-0;
+}
+
+.admin-feedback-content {
+    @apply min-w-0 w-full;
+}
+
+.admin-feedback-list {
+    @apply grid min-w-0 grid-cols-1 gap-[clamp(0.875rem,2vw,1.25rem)] sm:grid-cols-2 xl:grid-cols-3;
+}
+
+.admin-feedback-card {
+    @apply flex min-w-0 flex-col gap-4 rounded-[clamp(0.875rem,2vw,1.25rem)] border p-[clamp(0.875rem,2vw,1.25rem)] transition-[border-color,transform,background-color] duration-200;
+    border-color: var(--border);
+    background: color-mix(in srgb, var(--dark) 84%, transparent);
+    box-shadow: 0 0.75rem 2rem color-mix(in srgb, var(--dark) 14%, transparent);
+}
+
+.admin-feedback-card:hover {
+    border-color: color-mix(in srgb, var(--neon) 45%, var(--border));
+}
+
+.admin-feedback-card-top {
+    @apply flex min-w-0 items-start justify-between gap-3;
+}
+
+.admin-feedback-author {
+    @apply flex min-w-0 items-center gap-3;
+}
+
+.admin-feedback-avatar,
+.admin-feedback-avatar-fallback {
+    @apply flex shrink-0 items-center justify-center overflow-hidden rounded-full border object-cover font-extrabold;
+    width: clamp(2.625rem, 5vw, 3.25rem);
+    height: clamp(2.625rem, 5vw, 3.25rem);
+    border-color: var(--border);
+    background: color-mix(in srgb, var(--neon) 12%, var(--dark));
+    color: var(--neon);
+}
+
+.admin-feedback-author-details {
+    @apply flex min-w-0 flex-col gap-1;
+}
+
+.admin-feedback-author-details strong {
+    @apply overflow-hidden text-ellipsis text-sm font-bold;
+    color: var(--text);
+}
+
+.admin-feedback-author-details span {
+    @apply break-all text-xs leading-relaxed;
+    opacity: 0.68;
+}
+
+.admin-feedback-delete {
+    @apply inline-flex shrink-0 items-center justify-center rounded-[0.625rem] border p-2.5 transition-colors duration-200;
+    border-color: var(--border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.admin-feedback-delete:hover {
+    border-color: var(--danger, var(--neon));
+    background: color-mix(in srgb, var(--danger, var(--neon)) 12%, transparent);
+    color: var(--danger, var(--neon));
+}
+
+.admin-feedback-meta {
+    @apply flex flex-wrap items-center gap-2;
+}
+
+.admin-feedback-category,
+.admin-feedback-sentiment,
+.admin-feedback-rating {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.6875rem] font-bold;
+    border-color: var(--border);
+}
+
+.admin-feedback-category {
+    background: color-mix(in srgb, var(--neon) 10%, transparent);
+    color: var(--neon);
+}
+
+.admin-feedback-sentiment.is-negative {
+    border-color: color-mix(in srgb, var(--danger, var(--neon)) 40%, var(--border));
+    background: color-mix(in srgb, var(--danger, var(--neon)) 10%, transparent);
+    color: var(--danger, var(--neon));
+}
+
+.admin-feedback-sentiment.is-positive {
+    border-color: color-mix(in srgb, var(--success, var(--neon)) 40%, var(--border));
+    background: color-mix(in srgb, var(--success, var(--neon)) 10%, transparent);
+    color: var(--success, var(--neon));
+}
+
+.admin-feedback-rating {
+    color: var(--neon);
+}
+
+.admin-feedback-message {
+    @apply flex min-w-0 flex-col gap-2;
+}
+
+.admin-feedback-message h2 {
+    @apply m-0 wrap-break-word text-base font-extrabold leading-snug;
+    color: var(--text);
+}
+
+.admin-feedback-message p {
+    @apply m-0 whitespace-pre-wrap wrap-break-word text-sm leading-relaxed;
+    opacity: 0.82;
+}
+
+.admin-feedback-resource {
+    @apply m-0 wrap-break-word rounded-[0.625rem] p-3 text-xs leading-relaxed;
+    background: color-mix(in srgb, var(--surface, var(--dark)) 75%, transparent);
+    color: var(--text);
+}
+
+.admin-feedback-resource span {
+    @apply font-extrabold;
+    color: var(--neon);
+}
+
+.admin-feedback-card-footer {
+    @apply mt-auto flex min-w-0 flex-wrap items-center justify-between gap-2 border-t pt-3 text-[0.6875rem];
+    border-color: var(--border);
+    opacity: 0.72;
+}
+
+.admin-feedback-id {
+    @apply max-w-full overflow-hidden text-ellipsis;
+}
+
+.admin-feedback-state {
+    @apply flex min-h-56 flex-col items-center justify-center gap-3 rounded-2xl border p-6 text-center;
+    border-color: var(--border);
+    background: color-mix(in srgb, var(--dark) 75%, transparent);
+}
+
+.admin-feedback-state h2 {
+    @apply m-0 text-lg font-extrabold;
+    color: var(--text);
+}
+
+.admin-feedback-state p {
+    @apply m-0 max-w-lg text-sm leading-relaxed;
+    opacity: 0.72;
+}
+
+.admin-feedback-empty-icon {
+    @apply rounded-full;
+}
+
+.admin-feedback-state button {
+    @apply mt-2 rounded-xl border px-4 py-2 text-sm font-bold;
+    border-color: var(--border);
+    background: var(--surface, var(--dark));
+    color: var(--text);
+    cursor: pointer;
+}
+
+.admin-feedback-state button:hover {
+    border-color: var(--neon);
+    color: var(--neon);
+}
+
+.admin-feedback-error {
+    border-color: color-mix(in srgb, var(--danger, var(--neon)) 45%, var(--border));
+}
+
+.admin-feedback-delete-error {
+    @apply rounded-xl border p-3 text-sm font-semibold;
+    border-color: var(--danger, var(--border));
+    color: var(--danger, var(--text));
+}

@@ -3,7 +3,9 @@ import asyncHandler from "../../core/http/asyncHandler.js";
 import {
     createFeedback,
     getPublicWebsiteFeedback,
-    getStudentResourceFeedback
+    getStudentResourceFeedback,
+    getAllAdminFeedback,
+    deleteAdminFeedback
 } from "./feedback.service.js";
 
 export const submitFeedback = asyncHandler(
@@ -33,6 +35,7 @@ export const getWebsiteFeedback = asyncHandler(
         });
     }
 );
+
 export const getMyResourceFeedback = asyncHandler(
     async (req, res) => {
         const type = req.params.type;
@@ -53,6 +56,28 @@ export const getMyResourceFeedback = asyncHandler(
         return res.status(200).json({
             success: true,
             feedback
+        });
+    }
+);
+
+export const getAdminFeedback = asyncHandler(
+    async (req, res) => {
+        const feedback = await getAllAdminFeedback();
+
+        return res.status(200).json({
+            success: true,
+            feedback
+        });
+    }
+);
+
+export const deleteAdminFeedbackById = asyncHandler(
+    async (req, res) => {
+        await deleteAdminFeedback(req.params.id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Feedback deleted successfully"
         });
     }
 );

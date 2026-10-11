@@ -102,6 +102,7 @@ function Sidebar({
         { name: "Reports", path: "/admin/reports", icon: <FiGrid /> },
         { name: "Certificate Approval", path: "/admin/certificates", icon: <FiCreditCard /> },
         { name: "Support Inbox", path: "/admin/support", icon: <FiHelpCircle /> },
+        { name: "Feedback", path: "/admin/feedback", icon: <FiMessageSquare /> },
         { name: "Notice", path: "/admin/notice", icon: <FiBell /> },
     ];
 

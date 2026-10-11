@@ -1,152 +1,196 @@
+@import "tailwindcss";
+
+/* ==========================================
+   REFUND POLICY PAGE
+========================================== */
 .refund-policy-page {
-    position: relative;
-    min-height: 100vh;
-    overflow: hidden;
+    @apply relative min-h-screen overflow-hidden
+        px-5 pt-10 pb-17.5
+        max-[768px]:px-3
+        max-[768px]:pt-6.25
+        max-[768px]:pb-12.5;
+
     background:
-        radial-gradient(circle at 15% 20%,
-            rgba(0, 212, 255, 0.08),
-            transparent 30%),
-        radial-gradient(circle at 85% 75%,
-            rgba(0, 119, 255, 0.08),
-            transparent 30%),
-        #020817;
-    color: #f8fafc;
-    padding: 40px 20px 70px;
+        radial-gradient(
+            circle at 15% 20%,
+            color-mix(in srgb, var(--neon) 8%, transparent),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 75%,
+            color-mix(in srgb, var(--glow) 8%, transparent),
+            transparent 30%
+        ),
+        var(--dark);
+
+    color: var(--text);
 }
 
 .refund-policy-grid {
-    position: fixed;
-    inset: 0;
+    @apply pointer-events-none fixed inset-0;
+
     background-image:
-        linear-gradient(rgba(0, 174, 255, 0.045) 1px,
-            transparent 1px),
-        linear-gradient(90deg,
-            rgba(0, 174, 255, 0.045) 1px,
-            transparent 1px);
-    background-size: 45px 45px;
-    pointer-events: none;
+        linear-gradient(
+            color-mix(in srgb, var(--neon) 4.5%, transparent) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            color-mix(in srgb, var(--neon) 4.5%, transparent) 1px,
+            transparent 1px
+        );
+
+    background-size: 2.8125rem 2.8125rem;
     z-index: 0;
 }
 
 .refund-policy-glow {
-    position: fixed;
-    width: 400px;
-    height: 400px;
-    border-radius: 50%;
-    filter: blur(100px);
+    @apply pointer-events-none fixed
+        h-[clamp(15rem,40vw,25rem)]
+        w-[clamp(15rem,40vw,25rem)]
+        rounded-full;
+
+    filter: blur(clamp(3.75rem,10vw,6.25rem));
     opacity: 0.15;
-    pointer-events: none;
 }
 
 .refund-policy-glow-one {
-    top: -150px;
-    left: -150px;
-    background: #00d9ff;
+    @apply -top-37.5 -left-37.5;
+
+    background: var(--neon);
 }
 
 .refund-policy-glow-two {
-    right: -150px;
-    bottom: -150px;
-    background: #0066ff;
+    @apply -right-37.5 -bottom-37.5;
+
+    background: var(--glow);
 }
 
 .refund-policy-container {
-    position: relative;
-    z-index: 2;
-    width: min(1050px, 100%);
-    margin: auto;
+    @apply relative z-2 mx-auto w-full max-w-262.5;
 }
 
 .refund-policy-back {
-    position: absolute;
-    top: 0;
-    left: -8rem;
+    @apply absolute top-0 -left-32;
 }
 
+/* ==========================================
+   REFUND POLICY HEADER
+========================================== */
+
 .refund-policy-header {
-    text-align: center;
-    padding: 55px 25px;
-    border: 1px solid rgba(0, 183, 255, 0.18);
-    border-radius: 25px;
+    @apply rounded-[clamp(1rem,3vw,1.5625rem)]
+        border
+        px-[clamp(1.25rem,4vw,1.5625rem)]
+        py-[clamp(2.5rem,7vw,3.4375rem)]
+        text-center
+        backdrop-blur-[0.9375rem]
+        max-[768px]:px-5
+        max-[768px]:py-10;
+
+    border-color: color-mix(in srgb, var(--neon) 18%, transparent);
+
     background:
-        linear-gradient(145deg,
-            rgba(7, 25, 51, 0.88),
-            rgba(2, 10, 27, 0.95));
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--background) 88%, transparent),
+            color-mix(in srgb, var(--dark) 95%, transparent)
+        );
+
     box-shadow:
-        0 20px 70px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(15px);
+        0 1.25rem 4.375rem color-mix(in srgb, var(--dark) 35%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--text) 3%, transparent);
 }
 
 .refund-policy-icon {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 20px;
-    color: #00d9ff;
-    font-size: 30px;
-    border: 1px solid rgba(0, 217, 255, 0.35);
-    background: rgba(0, 217, 255, 0.08);
-    box-shadow:
-        0 0 35px rgba(0, 217, 255, 0.15);
+    @apply mx-auto mb-5
+        flex
+        h-[clamp(3.5rem,9vw,4.5rem)]
+        w-[clamp(3.5rem,9vw,4.5rem)]
+        items-center
+        justify-center
+        rounded-[1.25rem]
+        border
+        text-[clamp(1.5rem,4vw,1.875rem)];
+
+    color: var(--neon);
+    border-color: color-mix(in srgb, var(--neon) 35%, transparent);
+    background: color-mix(in srgb, var(--neon) 8%, transparent);
+    box-shadow: 0 0 2.1875rem color-mix(in srgb, var(--neon) 15%, transparent);
 }
 
 .refund-policy-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 15px;
-    border-radius: 50px;
-    border: 1px solid rgba(0, 217, 255, 0.25);
-    background: rgba(0, 217, 255, 0.06);
-    color: #00d9ff;
-    font-size: 13px;
-    font-weight: 600;
+    @apply inline-flex
+        items-center
+        gap-2
+        rounded-full
+        border
+        px-3.75
+        py-2
+        text-[0.8125rem]
+        font-semibold;
+
+    border-color: color-mix(in srgb, var(--neon) 25%, transparent);
+    background: color-mix(in srgb, var(--neon) 6%, transparent);
+    color: var(--neon);
 }
 
 .refund-policy-header h1 {
-    margin: 22px 0 15px;
-    font-size: clamp(36px, 5vw, 58px);
-    line-height: 1.12;
-    letter-spacing: -1.5px;
+    @apply mt-5.5
+        mb-3.75
+        text-[clamp(2rem,5vw,3.625rem)]
+        leading-[1.12]
+        tracking-[-0.09375rem]
+        max-[768px]:text-[2.375rem]
+        max-[480px]:text-[2rem];
 }
 
 .refund-policy-header h1 span {
-    display: block;
-    color: #00d9ff;
-    text-shadow:
-        0 0 20px rgba(0, 217, 255, 0.35);
+    @apply block max-[768px]:inline;
+
+    color: var(--neon);
+    text-shadow: 0 0 1.25rem color-mix(in srgb, var(--neon) 35%, transparent);
 }
 
 .refund-policy-header > p {
-    max-width: 720px;
-    margin: auto;
-    color: #94a3b8;
-    font-size: 16px;
-    line-height: 1.8;
+    @apply mx-auto max-w-180
+        text-base
+        leading-[1.8]
+        max-[480px]:text-sm;
+
+    color: var(--gray);
 }
 
 .refund-policy-updated {
-    margin-top: 22px;
-    color: #64748b;
-    font-size: 13px;
+    @apply mt-5.5 text-[0.8125rem];
+
+    color: var(--gray);
 }
 
+/* ==========================================
+   REFUND POLICY CONTENT
+========================================== */
+
 .refund-policy-content {
-    margin-top: 30px;
-    padding: 20px;
-    border: 1px solid rgba(0, 183, 255, 0.12);
-    border-radius: 25px;
-    background: rgba(3, 13, 30, 0.78);
-    backdrop-filter: blur(12px);
+    @apply mt-7.5
+        rounded-[clamp(1rem,3vw,1.5625rem)]
+        border
+        p-5
+        backdrop-blur-md
+        max-[768px]:p-1.25;
+
+    border-color: color-mix(in srgb, var(--neon) 12%, transparent);
+    background: color-mix(in srgb, var(--dark) 78%, transparent);
 }
 
 .refund-policy-section {
-    padding: 35px 30px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    @apply border-b
+        px-[clamp(1.125rem,4vw,1.875rem)]
+        py-[clamp(1.875rem,5vw,2.1875rem)]
+        max-[768px]:px-4.5
+        max-[768px]:py-7.5;
+
+    border-bottom-color: color-mix(in srgb, var(--gray) 10%, transparent);
 }
 
 .refund-policy-section:last-of-type {
@@ -154,391 +198,393 @@
 }
 
 .refund-section-heading {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 22px;
+    @apply mb-5.5
+        flex
+        items-center
+        gap-[clamp(0.625rem,2vw,0.9375rem)];
 }
 
 .refund-section-heading span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    flex-shrink: 0;
-    border-radius: 12px;
-    color: #00d9ff;
-    background: rgba(0, 217, 255, 0.08);
-    border: 1px solid rgba(0, 217, 255, 0.2);
-    font-size: 12px;
-    font-weight: 700;
+    @apply flex
+        h-10.5
+        w-10.5
+        shrink-0
+        items-center
+        justify-center
+        rounded-xl
+        border
+        text-xs
+        font-bold
+        max-[480px]:h-9
+        max-[480px]:w-9;
+
+    color: var(--neon);
+    background: color-mix(in srgb, var(--neon) 8%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 20%, transparent);
 }
 
 .refund-section-heading h2 {
-    margin: 0;
-    font-size: 24px;
-    color: #f8fafc;
+    @apply m-0
+        text-[clamp(1.25rem,3vw,1.5rem)]
+        text-(--text)
+        max-[480px]:text-xl;
 }
 
 .refund-policy-section > p {
-    color: #94a3b8;
-    font-size: 15px;
-    line-height: 1.9;
-    margin: 0 0 16px;
+    @apply mb-4
+        mt-0
+        text-[0.9375rem]
+        leading-[1.9]
+        max-[480px]:text-sm;
+
+    color: var(--gray);
 }
 
 .refund-policy-section > p:last-child {
-    margin-bottom: 0;
+    @apply mb-0;
 }
 
+/* ==========================================
+   REFUND HIGHLIGHT
+========================================== */
+
 .refund-highlight {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 23px;
-    margin: 25px 0;
-    border-radius: 18px;
-    border: 1px solid rgba(0, 217, 255, 0.18);
-    background: rgba(0, 217, 255, 0.05);
+    @apply my-6.25
+        flex
+        items-start
+        gap-5
+        rounded-[1.125rem]
+        border
+        p-5.75
+        max-[480px]:flex-col;
+
+    border-color: color-mix(in srgb, var(--neon) 18%, transparent);
+    background: color-mix(in srgb, var(--neon) 5%, transparent);
 }
 
 .refund-highlight > svg {
-    flex-shrink: 0;
-    margin-top: 4px;
-    color: #00d9ff;
-    font-size: 25px;
+    @apply mt-1 shrink-0 text-[1.5625rem];
+
+    color: var(--neon);
 }
 
 .refund-highlight h3 {
-    margin: 0 0 8px;
-    font-size: 17px;
+    @apply mt-0 mb-2 text-[1.0625rem];
 }
 
 .refund-highlight p {
-    margin: 0;
-    color: #94a3b8;
-    line-height: 1.8;
-    font-size: 14px;
+    @apply m-0 text-sm leading-[1.8];
+
+    color: var(--gray);
 }
 
+/* ==========================================
+   REFUND PROCESS
+========================================== */
+
 .refund-process {
-    display: grid;
-    gap: 15px;
-    margin-top: 25px;
+    @apply mt-6.25 grid gap-3.75;
 }
 
 .refund-process-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 18px;
-    padding: 20px;
-    border-radius: 16px;
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    background: rgba(255, 255, 255, 0.025);
+    @apply flex
+        items-start
+        gap-4.5
+        rounded-2xl
+        border
+        p-5;
+
+    border-color: color-mix(in srgb, var(--gray) 10%, transparent);
+    background: color-mix(in srgb, var(--text) 2.5%, transparent);
 }
 
 .refund-process-number {
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 11px;
-    background: rgba(0, 217, 255, 0.09);
-    border: 1px solid rgba(0, 217, 255, 0.22);
-    color: #00d9ff;
-    font-size: 13px;
-    font-weight: 700;
+    @apply flex
+        h-9.5
+        w-9.5
+        shrink-0
+        items-center
+        justify-center
+        rounded-[0.6875rem]
+        border
+        text-[0.8125rem]
+        font-bold;
+
+    background: color-mix(in srgb, var(--neon) 9%, transparent);
+    border-color: color-mix(in srgb, var(--neon) 22%, transparent);
+    color: var(--neon);
 }
 
 .refund-process-item h3 {
-    margin: 0 0 6px;
-    font-size: 16px;
+    @apply mt-0 mb-1.5 text-base;
 }
 
 .refund-process-item p {
-    margin: 0;
-    color: #94a3b8;
-    line-height: 1.7;
-    font-size: 14px;
+    @apply m-0 text-sm leading-[1.7];
+
+    color: var(--gray);
 }
 
+/* ==========================================
+   REFUND SUPPORT CARD
+========================================== */
+
 .refund-support-card {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 25px;
-    margin: 25px 0;
-    border-radius: 18px;
-    border: 1px solid rgba(0, 217, 255, 0.18);
+    @apply my-6.25
+        flex
+        items-center
+        gap-5
+        rounded-[1.125rem]
+        border
+        p-[clamp(1rem,4vw,1.5625rem)]
+        max-[768px]:items-start
+        max-[480px]:flex-col;
+
+    border-color: color-mix(in srgb, var(--neon) 18%, transparent);
+
     background:
-        linear-gradient(145deg,
-            rgba(0, 217, 255, 0.07),
-            rgba(0, 102, 255, 0.04));
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--neon) 7%, transparent),
+            color-mix(in srgb, var(--glow) 4%, transparent)
+        );
 }
 
 .refund-support-icon {
-    width: 55px;
-    height: 55px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 15px;
-    color: #00d9ff;
-    background: rgba(0, 217, 255, 0.08);
-    font-size: 22px;
+    @apply flex
+        h-13.75
+        w-13.75
+        shrink-0
+        items-center
+        justify-center
+        rounded-[0.9375rem]
+        text-[1.375rem];
+
+    color: var(--neon);
+    background: color-mix(in srgb, var(--neon) 8%, transparent);
 }
 
 .refund-support-card h3 {
-    margin: 0 0 8px;
-    font-size: 18px;
+    @apply mt-0 mb-2 text-lg;
 }
 
 .refund-support-card p {
-    margin: 0 0 10px;
-    color: #94a3b8;
-    line-height: 1.8;
-    font-size: 14px;
+    @apply mb-2.5
+        mt-0
+        text-sm
+        leading-[1.8];
+
+    color: var(--gray);
 }
 
 .refund-support-card a {
-    color: #00d9ff;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
+    @apply text-sm font-semibold no-underline;
+
+    color: var(--neon);
 }
 
 .refund-support-card a:hover {
-    text-decoration: underline;
+    @apply underline;
 }
 
+/* ==========================================
+   REFUND LIST
+========================================== */
+
 .refund-list {
-    display: grid;
-    gap: 14px;
-    margin: 20px 0 0;
-    padding: 0;
-    list-style: none;
+    @apply mt-5
+        mb-0
+        grid
+        list-none
+        gap-3.5
+        p-0;
 }
 
 .refund-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
-    border-radius: 13px;
-    border: 1px solid rgba(148, 163, 184, 0.08);
-    background: rgba(255, 255, 255, 0.02);
-    color: #94a3b8;
-    line-height: 1.7;
-    font-size: 14px;
+    @apply flex
+        items-start
+        gap-3
+        rounded-[0.8125rem]
+        border
+        p-4
+        text-sm
+        leading-[1.7];
+
+    border-color: color-mix(in srgb, var(--gray) 8%, transparent);
+    background: color-mix(in srgb, var(--text) 2%, transparent);
+    color: var(--gray);
 }
 
 .refund-list svg {
-    flex-shrink: 0;
-    margin-top: 4px;
-    color: #00d9ff;
+    @apply mt-1 shrink-0;
+
+    color: var(--neon);
 }
 
+/* ==========================================
+   REFUND WARNING
+========================================== */
+
 .refund-warning {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 20px;
-    margin: 25px 0;
-    border-radius: 16px;
-    border: 1px solid rgba(245, 158, 11, 0.22);
-    background: rgba(245, 158, 11, 0.05);
+    @apply my-6.25
+        flex
+        items-start
+        gap-3.75
+        rounded-2xl
+        border
+        p-5;
+
+    border-color: color-mix(in srgb, var(--golden) 22%, transparent);
+    background: color-mix(in srgb, var(--golden) 5%, transparent);
 }
 
 .refund-warning svg {
-    flex-shrink: 0;
-    margin-top: 3px;
-    color: #f59e0b;
-    font-size: 20px;
+    @apply mt-0.75
+        shrink-0
+        text-xl;
+
+    color: var(--golden);
 }
 
 .refund-warning p {
-    margin: 0;
-    color: #cbd5e1;
-    line-height: 1.8;
-    font-size: 14px;
+    @apply m-0 text-sm leading-[1.8];
+
+    color: var(--muted);
 }
 
+/* ==========================================
+   REFUND CONTACT BUTTON
+========================================== */
+
 .refund-contact-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 12px;
-    padding: 12px 25px;
-    border-radius: 10px;
-    background: #1265ed;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    box-shadow:
-        0 8px 25px rgba(18, 101, 237, 0.25);
-    transition: 0.3s ease;
+    @apply mt-3
+        inline-flex
+        items-center
+        justify-center
+        rounded-[0.625rem]
+        px-6.25
+        py-3
+        font-semibold
+        no-underline
+        transition-all
+        duration-300
+        ease-in-out;
+
+    background: var(--primary);
+    color: var(--white);
+    box-shadow: 0 0.5rem 1.5625rem color-mix(in srgb, var(--primary) 25%, transparent);
 }
 
 .refund-contact-button:hover {
-    transform: translateY(-2px);
-    background: #0877ff;
-    box-shadow:
-        0 12px 30px rgba(18, 101, 237, 0.35);
+    transform: translateY(-0.125rem);
+    background: var(--glow);
+    box-shadow: 0 0.75rem 1.875rem color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
+/* ==========================================
+   REFUND FINAL CARD
+========================================== */
+
 .refund-final-card {
-    margin-top: 30px;
-    padding: 40px 30px;
-    text-align: center;
-    border-radius: 22px;
-    border: 1px solid rgba(0, 217, 255, 0.22);
+    @apply mt-7.5
+        rounded-[1.375rem]
+        border
+        px-[clamp(1.25rem,4vw,1.875rem)]
+        py-[clamp(1.875rem,5vw,2.5rem)]
+        text-center;
+
+    border-color: color-mix(in srgb, var(--neon) 22%, transparent);
+
     background:
-        linear-gradient(145deg,
-            rgba(0, 217, 255, 0.07),
-            rgba(0, 102, 255, 0.04));
-    box-shadow:
-        0 0 50px rgba(0, 217, 255, 0.05);
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--neon) 7%, transparent),
+            color-mix(in srgb, var(--glow) 4%, transparent)
+        );
+
+    box-shadow: 0 0 3.125rem color-mix(in srgb, var(--neon) 5%, transparent);
 }
 
 .refund-final-card > svg {
-    color: #00d9ff;
-    font-size: 34px;
-    margin-bottom: 12px;
+    @apply mb-3 text-[2.125rem];
+
+    color: var(--neon);
 }
 
 .refund-final-card h2 {
-    margin: 0 0 12px;
-    font-size: 26px;
+    @apply mt-0 mb-3 text-[clamp(1.375rem,3vw,1.625rem)];
 }
 
 .refund-final-card p {
-    max-width: 680px;
-    margin: 0 auto 25px;
-    color: #94a3b8;
-    line-height: 1.8;
+    @apply mx-auto mb-6.25
+        max-w-170
+        leading-[1.8];
+
+    color: var(--gray);
 }
 
 .refund-home-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 25px;
-    border-radius: 10px;
-    background: #1265ed;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    box-shadow:
-        0 8px 25px rgba(18, 101, 237, 0.25);
-    transition: 0.3s ease;
+    @apply inline-flex
+        items-center
+        justify-center
+        rounded-[0.625rem]
+        px-6.25
+        py-3
+        font-semibold
+        no-underline
+        transition-all
+        duration-300
+        ease-in-out;
+
+    background: var(--primary);
+    color: var(--white);
+    box-shadow: 0 0.5rem 1.5625rem color-mix(in srgb, var(--primary) 25%, transparent);
 }
 
 .refund-home-button:hover {
-    transform: translateY(-2px);
-    background: #0877ff;
+    transform: translateY(-0.125rem);
+    background: var(--glow);
 }
 
+/* ==========================================
+   REFUND POLICY FOOTER
+========================================== */
+
 .refund-policy-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 30px 10px 0;
-    color: #64748b;
-    font-size: 13px;
+    @apply flex
+        items-center
+        justify-between
+        gap-5
+        px-2.5
+        pt-7.5
+        text-[0.8125rem]
+        max-[768px]:flex-col
+        max-[768px]:text-center;
+
+    color: var(--gray);
 }
 
 .refund-policy-footer p {
-    margin: 0;
+    @apply m-0;
 }
 
 .refund-policy-footer div {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    @apply flex
+        items-center
+        gap-3
+        max-[480px]:flex-wrap
+        max-[480px]:justify-center;
 }
 
 .refund-policy-footer a {
-    color: #64748b;
-    text-decoration: none;
-    transition: 0.3s ease;
+    @apply no-underline
+        transition-colors
+        duration-300
+        ease-in-out;
+
+    color: var(--gray);
 }
 
 .refund-policy-footer a:hover {
-    color: #00d9ff;
-}
-
-@media (max-width: 768px) {
-    .refund-policy-page {
-        padding: 25px 12px 50px;
-    }
-
-    .refund-policy-header {
-        padding: 40px 20px;
-    }
-
-    .refund-policy-header h1 {
-        font-size: 38px;
-    }
-
-    .refund-policy-header h1 span {
-        display: inline;
-    }
-
-    .refund-policy-content {
-        padding: 5px;
-    }
-
-    .refund-policy-section {
-        padding: 30px 18px;
-    }
-
-    .refund-support-card {
-        align-items: flex-start;
-    }
-
-    .refund-policy-footer {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .refund-policy-header h1 {
-        font-size: 32px;
-    }
-
-    .refund-policy-header > p {
-        font-size: 14px;
-    }
-
-    .refund-section-heading h2 {
-        font-size: 20px;
-    }
-
-    .refund-section-heading span {
-        width: 36px;
-        height: 36px;
-    }
-
-    .refund-policy-section > p {
-        font-size: 14px;
-    }
-
-    .refund-highlight {
-        flex-direction: column;
-    }
-
-    .refund-support-card {
-        flex-direction: column;
-    }
-
-    .refund-policy-footer div {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+    color: var(--neon);
 }
