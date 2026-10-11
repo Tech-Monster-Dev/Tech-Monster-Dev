@@ -195,3 +195,26 @@ export const getPublicWebsiteFeedback = async ({
 };
 
 export { getStudentResourceFeedback };
+
+export const getAllAdminFeedback = async () => {
+    return Feedback.find({})
+        .populate("student", "username firstName lastName avatar email")
+        .populate("course", "_id title")
+        .populate("internship", "_id title")
+        .sort({ createdAt: -1 })
+        .lean();
+};
+
+export const deleteAdminFeedback = async (feedbackId) => {
+    if (!mongoose.isValidObjectId(feedbackId)) {
+        throw new AppError("Invalid feedback ID", 400);
+    }
+
+    const feedback = await Feedback.findByIdAndDelete(feedbackId);
+
+    if (!feedback) {
+        throw new AppError("Feedback not found", 404);
+    }
+
+    return feedback;
+};

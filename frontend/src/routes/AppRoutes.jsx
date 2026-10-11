@@ -67,6 +67,7 @@ import CertificateApproval from '../features/admin/certificates';
 import SupportInbox from '../features/admin/support';
 import InternshipsForm from '../features/admin/dashboard/components/InternshipsForm';
 import Notice from '../features/admin/notices';
+import Feedback from '../features/admin/feedback';
 
 function AppRoutes() {
     return (
@@ -194,6 +195,7 @@ function AppRoutes() {
                     <Route path='reports/activity/:userId' element={<ActivityDetails />} />
                     <Route path='certificates' element={<CertificateApproval />} />
                     <Route path='support' element={<SupportInbox />} />
+                    <Route path='feedback' element={<Feedback />} />
                     <Route path='notice' element={<Notice />} />
                     <Route path='settings' element={<StudentSetting />} />
                     <Route

@@ -1,27 +1,25 @@
+import "./Feedback.css";
+
 import { useState } from "react";
 import SectionTabs from "../../../layouts/SectionTabs";
-import FeedbackLoading from "./components/FeedbackLoading";
 import FeedbackForm from "./components/FeedbackForm";
 import ResourceFeedbackCard from "./components/ResourceFeedbackCard";
 import useFeedbackData from "./hooks/useFeedbackData";
 import { FEEDBACK_TABS } from "./constants/feedback.constants";
-import "./Feedback.css";
 
 export default function Feedback() {
-    const [activeTab, setActiveTab] = useState("website");
+    const [activeTab, setActiveTab] = useState(() => {
+        const savedTab = localStorage.getItem("student-feedback-active-tab");
+        return FEEDBACK_TABS.some((tab) => tab.id === savedTab || tab.value === savedTab) ? savedTab : "website";
+    });
     const {
         courses,
         internships,
         websiteFeedback,
         courseFeedback,
         internshipFeedback,
-        loading,
         reloadFeedback,
     } = useFeedbackData();
-
-    if (loading) {
-        return <FeedbackLoading />;
-    }
 
     return (
         <section className="feedback-page">
@@ -37,7 +35,10 @@ export default function Feedback() {
             <SectionTabs
                 tabs={FEEDBACK_TABS}
                 activeTab={activeTab}
-                onChange={setActiveTab}
+                onChange={(tab) => {
+                    setActiveTab(tab);
+                    localStorage.setItem("student-feedback-active-tab", tab);
+                }}
             />
 
             <div className="feedback-page-content">

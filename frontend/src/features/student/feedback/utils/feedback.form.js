@@ -32,7 +32,9 @@ export function getResourceOptions(resources) {
     return resources.map((resource) => ({
         value:
             resource.course?._id ||
+            resource.courseId ||
             resource.internship?._id ||
+            resource.internshipId ||
             resource._id,
         label:
             resource.course?.title ||

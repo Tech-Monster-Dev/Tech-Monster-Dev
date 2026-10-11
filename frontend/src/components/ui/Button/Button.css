@@ -1,111 +1,129 @@
+@import "tailwindcss";
+
+/* ==========================================
+   BUTTON BASE
+========================================== */
+
 .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 15px 30px;
-    border: none;
-    cursor: pointer;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: .3s;
+    @apply flex
+        items-center
+        justify-center
+        gap-2.5
+        rounded-[0.625rem]
+        border-0
+        px-7.5
+        py-3.75
+        text-base
+        font-semibold
+        cursor-pointer
+        transition-all
+        duration-300
+        ease-in-out;
 }
 
+/* ==========================================
+   PRIMARY BUTTON
+========================================== */
+
 .btn-primary {
-    background: #2563eb;
-    color: white;
+    background: var(--primary);
+    color: var(--white);
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px);
+    transform: translateY(-0.1875rem);
 }
 
+/* ==========================================
+   OUTLINE BUTTON
+========================================== */
+
 .btn-outline {
+    @apply border-2;
+
     background: transparent;
-    border: 2px solid #2563eb;
-    color: white;
+    border-color: var(--primary);
+    color: var(--white);
 }
 
 .btn-outline:hover {
-
-    background: #2563eb;
-
+    background: var(--primary);
 }
 
+/* ==========================================
+   SECONDARY BUTTON
+========================================== */
+
 .btn-secondary {
+    @apply border-2;
+
     background: transparent;
-
-    color: white;
-
-    border: 2px solid rgba(255, 255, 255, .2);
+    color: var(--white);
+    border-color: color-mix(in srgb, var(--white) 20%, transparent);
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, .08);
-
-    transform: translateY(-4px);
+    background: color-mix(in srgb, var(--white) 8%, transparent);
+    transform: translateY(-0.25rem);
 }
+
+/* ==========================================
+   DANGER BUTTON
+========================================== */
 
 .btn-danger {
-
-    background: #ef4444;
-
-    color: white;
-
+    background: var(--danger);
+    color: var(--white);
 }
+
+/* ==========================================
+   FULL WIDTH
+========================================== */
 
 .full-width {
-
-    width: 100%;
-
+    @apply w-full;
 }
 
+/* ==========================================
+   APPLY BUTTON
+========================================== */
+
 .btn-apply {
-  width: 100%;
+    @apply flex
+        w-full
+        items-center
+        justify-center
+        gap-2.5
+        rounded-[0.625rem]
+        border-0
+        px-5
+        py-3.75
+        text-base
+        font-semibold
+        cursor-pointer
+        transition-all
+        duration-300
+        ease-in-out
+        max-[576px]:px-3.5
+        max-[576px]:py-3.5
+        max-[576px]:text-[0.9375rem];
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-
-  padding: 15px 20px;
-
-  border: none;
-  border-radius: 10px;
-
-  background: var(--primary);
-  color: #ffffff;
-
-  font-size: 16px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: var(--transition);
+    background: var(--primary);
+    color: var(--white);
 }
 
 .btn-apply:hover {
-  background: #1d4ed8;
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+    background: color-mix(in srgb, var(--primary) 80%, var(--dark));
+    transform: translateY(-0.1875rem);
+    box-shadow: 0 0.75rem 1.875rem color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
-@media (max-width:768px) {
-    .btn-primary,
+/* ==========================================
+   RESPONSIVE BUTTONS
+========================================== */
 
-    .btn-secondary {
-
-        width: 100%;
-
-        justify-content: center;
-
-    }
-}
-
-@media (max-width: 576px) {
-    .btn-apply {
-    font-size: 15px;
-    padding: 14px;
-  }
+.btn-primary,
+.btn-secondary {
+    @apply max-[768px]:w-full
+        max-[768px]:justify-center;
 }

@@ -3,7 +3,9 @@ import express from "express";
 import {
     submitFeedback,
     getWebsiteFeedback,
-    getMyResourceFeedback
+    getMyResourceFeedback,
+    getAdminFeedback,
+    deleteAdminFeedbackById
 } from "./feedback.controller.js";
 
 import { protect } from "../../core/security/auth.middleware.js";
@@ -13,6 +15,20 @@ import validate from "../../core/validation/validate.middleware.js";
 import { baseFeedbackSchema } from "./feedback.validation.js";
 
 const router = express.Router();
+
+router.get(
+    "/admin",
+    protect,
+    authorizeRoles("admin"),
+    getAdminFeedback
+);
+
+router.delete(
+    "/admin/:id",
+    protect,
+    authorizeRoles("admin"),
+    deleteAdminFeedbackById
+);
 
 router.get(
     "/website",

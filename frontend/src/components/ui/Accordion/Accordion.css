@@ -1,25 +1,19 @@
+@import "tailwindcss";
+
 /* ==========================================
    ACCORDION
 ========================================== */
 
 .accordion {
-  width: 100%;
+  @apply w-full overflow-hidden rounded-(--radius) border transition-all duration-300 ease-in-out;
 
   background: var(--surface);
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  border-radius: var(--radius);
-
-  overflow: hidden;
-
-  transition: var(--transition);
+  border-color: color-mix(in srgb, var(--white) 8%, transparent);
 }
 
 .accordion:hover {
   border-color: var(--primary);
-
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0.75rem 1.875rem color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .accordion.active {
@@ -31,33 +25,10 @@
 ========================================== */
 
 .accordion-header {
-  width: 100%;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  gap: 20px;
-
-  padding: 22px 28px;
-
-  border: none;
+  @apply flex w-full items-center justify-between gap-5 border-0 px-7 py-5.5 text-left text-lg font-semibold cursor-pointer transition-colors duration-300 ease-in-out max-[768px]:px-5 max-[768px]:py-4.5 max-[768px]:text-base max-[480px]:text-[0.9375rem];
 
   background: transparent;
-
   color: var(--text);
-
-  cursor: pointer;
-
-  font-size: 18px;
-
-  font-weight: 600;
-
-  text-align: left;
-
-  transition: var(--transition);
 }
 
 .accordion-header:hover {
@@ -65,13 +36,9 @@
 }
 
 .accordion-header svg {
+  @apply shrink-0 text-lg transition-transform duration-300 ease-in-out;
+
   color: var(--primary);
-
-  font-size: 18px;
-
-  flex-shrink: 0;
-
-  transition: transform 0.3s ease;
 }
 
 .accordion.active .accordion-header svg {
@@ -83,47 +50,15 @@
 ========================================== */
 
 .accordion-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease, padding 0.35s ease;
-  padding: 0 28px;
+  @apply max-h-0 overflow-hidden px-7 py-0 transition-[max-height,padding] duration-350 ease-in-out max-[768px]:px-5;
 }
 
 .accordion-body.open {
-  max-height: 250px;
-  padding: 0 28px 24px;
+  @apply max-h-62.5 px-7 pt-0 pb-6 max-[768px]:px-5 max-[768px]:pb-5;
 }
 
 .accordion-body p {
+  @apply text-[0.9375rem] leading-[1.8];
+
   color: var(--muted);
-
-  line-height: 1.8;
-
-  font-size: 15px;
-}
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
-
-@media (max-width: 768px) {
-
-  .accordion-header {
-    padding: 18px 20px;
-
-    font-size: 16px;
-  }
-
-  .accordion-body {
-    padding: 0 20px 20px;
-  }
-
-}
-
-@media (max-width: 480px) {
-
-  .accordion-header {
-    font-size: 15px;
-  }
-
 }

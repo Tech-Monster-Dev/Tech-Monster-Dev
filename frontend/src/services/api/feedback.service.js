@@ -24,3 +24,13 @@ export const submitFeedback = async (payload) => {
 
     return data;
 };
+
+export const getAdminFeedback = async () => {
+    const { data } = await api.get("/feedback/admin");
+    return data;
+};
+
+export const deleteAdminFeedback = async (feedbackId) => {
+    const { data } = await api.delete(`/feedback/admin/${feedbackId}`);
+    return data;
+};
