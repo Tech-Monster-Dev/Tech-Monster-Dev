@@ -1,17 +1,26 @@
 import { ATTENDANCE_STATUS } from "../constants/attendance.constants";
 
-export const getDateKey = dateValue => {
+export const getDateKey = (dateValue) => {
   const date = new Date(dateValue);
 
   if (Number.isNaN(date.getTime())) {
     return null;
   }
 
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0")
-  ].join("-");
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+
+  const values = Object.fromEntries(
+    parts
+      .filter(({ type }) => type !== "literal")
+      .map(({ type, value }) => [type, value])
+  );
+
+  return `${values.year}-${values.month}-${values.day}`;
 };
 
 export const getCurrentMonthContext = () => {

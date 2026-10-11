@@ -1,21 +1,36 @@
-import { useEffect, useState } from "react";
-
-import { toast } from "react-toastify";
-
-import Button from "../../../../../components/ui/Button";
-import Textinput from "../../../../../components/ui/Form/component/Textinput";
-import TextArea from "../../../../../components/ui/Form/component/TextArea";
-
 import "./AddNotice.css";
 
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+import Form from "../../../../../components/ui/Form";
+import DashButton from "../../../../../components/ui/Button/DashButton/DashButton";
+
+import { validateForm } from "../../../../../shared/utils/validation/formValidation";
 import { createNotice, updateNotice } from "../../../../../services/api/notice.service";
+
+const validationRules = {
+    shortTitle: {
+        required: true,
+        requiredMessage: "Short title is required."
+    },
+    subject: {
+        required: true,
+        requiredMessage: "Notice subject is required."
+    },
+    description: {
+        required: true,
+        requiredMessage: "Notice description is required."
+    },
+};
 
 export default function AddNotice({ editNotice = null, onSaved }) {
     const [formData, setFormData] = useState({
         shortTitle: "",
         subject: "",
-        description: "",
+        description: ""
     });
+    const [errors, setErrors] = useState({});
     const [imageFile, setImageFile] = useState(null);
     const [preview, setPreview] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -23,36 +38,76 @@ export default function AddNotice({ editNotice = null, onSaved }) {
     const isEditMode = Boolean(editNotice?._id || editNotice?.id);
 
     useEffect(() => {
-        if (Boolean(editNotice) === false) {
-            return;
-        }
-
         queueMicrotask(() => {
+            if (!editNotice) {
+                setFormData({
+                    shortTitle: "",
+                    subject: "",
+                    description: ""
+                });
+                setImageFile(null);
+                setPreview("");
+                setErrors({});
+                return;
+            }
+
             setFormData({
                 shortTitle: editNotice.shortTitle || "",
                 subject: editNotice.subject || "",
-                description: editNotice.description || "",
+                description: editNotice.description || ""
             });
             setImageFile(null);
             setPreview(editNotice.image || "");
+            setErrors({});
         });
     }, [editNotice]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setFormData((current) => ({ ...current, [name]: value }));
+
+        if (name === "img") {
+            if (value instanceof File) {
+                setImageFile(value);
+                setPreview(value);
+                setErrors((current) => ({ ...current, img: "" }));
+            } else if (typeof value === "string" && value) {
+                setImageFile(null);
+                setPreview(value);
+                setErrors((current) => ({ ...current, img: "" }));
+            } else {
+                setImageFile(null);
+                setPreview("");
+                setErrors((current) => ({
+                    ...current,
+                    img: "Notice image is required."
+                }));
+            }
+            return;
+        }
+
+        const updatedFormData = { ...formData, [name]: value };
+        setFormData(updatedFormData);
+
+        if (Object.prototype.hasOwnProperty.call(errors, name)) {
+            setErrors((current) => ({
+                ...current,
+                [name]: validateForm(updatedFormData, validationRules).errors[name]
+            }));
+        }
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-        setImageFile(file);
-        setPreview(URL.createObjectURL(file));
-    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (submitting) return;
+
+        const validation = validateForm(
+            { ...formData, img: imageFile || preview },
+            validationRules
+        );
+        setErrors(validation.errors);
+
+        if (!validation.isValid) return;
 
         const data = new FormData();
         data.append("shortTitle", formData.shortTitle);
@@ -65,6 +120,7 @@ export default function AddNotice({ editNotice = null, onSaved }) {
 
         try {
             setSubmitting(true);
+
             const response = isEditMode
                 ? await updateNotice(editNotice._id || editNotice.id, data)
                 : await createNotice(data);
@@ -91,67 +147,70 @@ export default function AddNotice({ editNotice = null, onSaved }) {
         }
     };
 
+    const fields = [
+        {
+            name: "shortTitle",
+            label: "Short Title",
+            type: "text",
+            placeholder: "Enter short title",
+            required: true
+        },
+        {
+            name: "subject",
+            label: "Notice Subject",
+            type: "text",
+            placeholder: "Enter notice subject",
+            required: true
+        },
+        {
+            name: "description",
+            label: "Notice Description",
+            type: "textarea",
+            placeholder: "Enter notice description",
+            rows: 7,
+            required: true
+        },
+        {
+            name: "img",
+            type: "file",
+            label: "Image",
+            accept: "image/*",
+            value: imageFile || preview || "",
+            placeholder: "Choose notice image",
+        }
+    ].map((field) => ({
+        ...field,
+        ...(field.name !== "img" ? {
+            value: formData[field.name],
+            error: errors[field.name]
+        } : {})
+    }));
+
     return (
-        <form className="admin-notice-form" onSubmit={handleSubmit}>
-            <Textinput
-                label="Short Title"
-                type="text"
-                name="shortTitle"
-                value={formData.shortTitle}
-                onChange={handleInputChange}
-                placeholder="Enter short title"
-                required
-            />
-
-            <Textinput
-                label="Notice Subject"
-                type="text"
-                name="subject"
-                value={formData.subject}
-                onChange={handleInputChange}
-                placeholder="Enter notice subject"
-                required
-            />
-
-            <TextArea
-                label="Notice Description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Enter notice description"
-                rows={7}
-                required
-            />
-
-            <div className="admin-notice-image-field">
-                <label htmlFor="notice-image">Image</label>
-                <input
-                    id="notice-image"
-                    name="img"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                />
-                {preview && (
-                    <img
-                        className="admin-notice-image-preview"
-                        src={preview}
-                        alt="Notice preview"
-                    />
-                )}
-            </div>
-
-            <Button
-                type="submit"
-                variant="primary"
-                disabled={submitting}
-            >
-                {submitting
-                    ? "Saving..."
-                    : isEditMode
-                        ? "Update Notice"
-                        : "Save Notice"}
-            </Button>
-        </form>
+        <Form
+            className="admin-notice-form"
+            fields={fields}
+            values={formData}
+            errors={errors}
+            onChange={handleInputChange}
+            onSubmit={handleSubmit}
+            buttonComponent={DashButton}
+            actions={[
+                {
+                    id: "save-notice",
+                    type: "submit",
+                    label: submitting
+                        ? "Saving..."
+                        : isEditMode
+                            ? "Update Notice"
+                            : "Save Notice",
+                    variant: "primary",
+                    disabled: submitting,
+                    loading: submitting,
+                    loadingText: "Saving...",
+                    className: "admin-notice-submit"
+                }
+            ]}
+        />
     );
 }

@@ -1,86 +1,93 @@
+@import "tailwindcss";
+
 .admin-notice-form {
-    width: min(100%, 900px);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: 24px;
-    border: 1px solid var(--border);
-    border-radius: 16px;
+    @apply mx-auto p-[clamp(0.8rem,3.5vw,1.3rem)]
+        flex
+        w-full
+        flex-col
+        gap-[clamp(0.875rem,2.5vw,1.125rem)]
+        rounded-2xl
+        border;
+
+    border-color: var(--border);
     background: var(--surface);
 }
 
 .admin-notice-image-field {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
+    @apply flex flex-col gap-1.75;
 }
 
 .admin-notice-image-field label {
+    @apply text-[1rem] font-semibold;
+
     color: var(--text);
-    font-size: 1rem;
-    font-weight: 600;
 }
 
 .admin-notice-image-field input[type="file"] {
-    width: 100%;
-    min-width: 0;
-    padding: 10px 12px;
-    border: 1px solid rgba(255, 255, 255, .1);
-    border-radius: 10px;
+    @apply w-full
+        min-w-0
+        rounded-[0.625rem]
+        border
+        px-3
+        py-2.5
+        font-[inherit]
+        text-(--text)
+        cursor-pointer;
+
+    border-color: color-mix(in srgb, var(--text) 10%, transparent);
     background: var(--surface);
-    color: var(--text);
-    font: inherit;
-    cursor: pointer;
 }
 
 .admin-notice-image-field input[type="file"]:hover,
 .admin-notice-image-field input[type="file"]:focus {
     border-color: var(--neon);
-    box-shadow: 0 0 7px var(--neon);
+    box-shadow: 0 0 0.4375rem var(--neon);
     outline: none;
 }
 
 .admin-notice-image-field input[type="file"]::file-selector-button {
-    margin-right: 12px;
-    padding: 8px 12px;
-    border: 1px solid var(--primary);
-    border-radius: 7px;
+    @apply mr-3
+        rounded-[0.4375rem]
+        border
+        px-3
+        py-2
+        font-[inherit]
+        cursor-pointer;
+
+    border-color: var(--primary);
     background: var(--primary);
-    color: #fff;
-    font: inherit;
-    cursor: pointer;
+    color: var(--white);
 }
 
 .admin-notice-image-preview {
-    display: block;
-    width: min(100%, 320px);
-    height: 180px;
-    margin-top: 4px;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    @apply mt-1
+        block
+        h-[clamp(9rem,35vw,11.25rem)]
+        w-full
+        max-w-[20rem]
+        rounded-xl
+        border
+        object-cover;
+
+    border-color: var(--border);
 }
 
 .admin-notice-form > .btn-primary {
-    align-self: center;
-    min-width: 180px;
+    @apply min-w-45 self-center;
 }
 
-@media (max-width: 600px) {
-    .admin-notice-form {
-        padding: 16px;
-    }
-
-    .admin-notice-submit {
-        width: 100%;
-    }
+.admin-notice-submit {
+    @apply max-[600px]:w-full;
 }
+
+/* ==========================================
+   REDUCED MOTION ACCESSIBILITY
+========================================== */
 
 @media (prefers-reduced-motion: reduce) {
     .admin-notice-form-group input,
-.admin-notice-form-group textarea,
-.admin-notice-submit {
+    .admin-notice-form-group textarea,
+    .admin-notice-submit {
         transition: none;
     }
 }

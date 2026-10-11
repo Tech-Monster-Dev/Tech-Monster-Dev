@@ -16,104 +16,85 @@ import { emitToUser } from "../../infrastructure/socket/socket.js";
 
 export const getMyAttendance = asyncHandler(async (req, res) => {
 
-    const enrollments =
-        await StudentInternship.find({
-            student: req.user._id,
-            $or: [
-                {
-                    course: {
-                        $exists: true,
-                        $ne: null
-                    }
-                },
-                {
-                    internship: {
-                        $exists: true,
-                        $ne: null
-                    }
+    const enrollments = await StudentInternship.find({
+        student: req.user._id,
+        $or: [
+            {
+                course: {
+                    $exists: true,
+                    $ne: null
                 }
-            ]
-        })
-            .populate("course", "title slug")
-            .populate("internship", "title slug")
-            .sort({
-                startedAt: 1,
-                createdAt: 1
-            });
-
-    const validEnrollments =
-        enrollments.filter(
-            enrollment => enrollment.startedAt
-        );
-
-    const attendanceRecords =
-        await Attendance.find({
-            student: req.user._id,
-            status: "Present"
-        })
-            .select(
-                "student createdAt checkIn checkOut status workingHours workingMinutes"
-            )
-            .sort({
-                createdAt: 1
-            });
-
-    const attendance =
-        attendanceRecords.map(record => {
-
-            const attendanceDate =
-                new Date(record.createdAt);
-
-            const enrollment =
-                validEnrollments
-                    .filter(item =>
-                        new Date(item.startedAt) <=
-                        attendanceDate
-                    )
-                    .sort((a, b) =>
-                        new Date(b.startedAt) -
-                        new Date(a.startedAt)
-                    )[0];
-
-            const program =
-                enrollment?.course ||
-                enrollment?.internship ||
-                null;
-
-            return {
-                _id: record._id,
-                student: record.student,
-                createdAt: record.createdAt,
-                checkIn: record.checkIn || record.createdAt,
-                checkOut: record.checkOut || null,
-                status: "Present",
-
-                workingHours:
-                    record.workingHours || 0,
-
-                workingMinutes:
-                    record.workingMinutes || 0,
-
-                enrollmentDate:
-                    enrollment?.startedAt || null,
-
-                enrollmentType:
-                    enrollment?.course
-                        ? "course"
-                        : enrollment?.internship
-                            ? "internship"
-                            : null,
-
-                enrollmentId:
-                    program?._id || null,
-
-                enrollmentTitle:
-                    program?.title || "",
-
-                enrollmentSlug:
-                    program?.slug || ""
-            };
+            },
+            {
+                internship: {
+                    $exists: true,
+                    $ne: null
+                }
+            }
+        ]
+    })
+        .populate("course", "title slug")
+        .populate("internship", "title slug")
+        .sort({
+            startedAt: 1,
+            createdAt: 1
         });
+
+    const validEnrollments = enrollments.filter(
+        enrollment => enrollment.startedAt
+    );
+
+    const attendanceRecords = await Attendance.find({
+        student: req.user._id,
+        status: "Present"
+    })
+        .select(
+            "student createdAt checkIn checkOut status workingHours workingMinutes"
+        )
+        .sort({
+            createdAt: 1
+        });
+
+    const attendance = attendanceRecords.map(record => {
+        const attendanceDate = new Date(record.createdAt);
+
+        const enrollment =
+            validEnrollments
+                .filter(item =>
+                    new Date(item.startedAt) <=
+                    attendanceDate
+                )
+                .sort((a, b) =>
+                    new Date(b.startedAt) -
+                    new Date(a.startedAt)
+                )[0];
+
+        const program =
+            enrollment?.course ||
+            enrollment?.internship ||
+            null;
+
+        return {
+            _id: record._id,
+            student: record.student,
+            createdAt: record.createdAt,
+            checkIn: record.checkIn || record.createdAt,
+            checkOut: record.checkOut || null,
+            status: "Present",
+            workingHours: record.workingHours || 0,
+            workingMinutes: record.workingMinutes || 0,
+            enrollmentDate: enrollment?.startedAt || null,
+            enrollmentType:
+                enrollment?.course
+                    ? "course"
+                    : enrollment?.internship
+                        ? "internship"
+                        : null,
+            enrollmentId: program?._id || null,
+            enrollmentTitle: program?.title || "",
+            enrollmentSlug: program?.slug || ""
+        };
+    });
 
     const firstAttendanceDate =
         validEnrollments.length > 0
@@ -126,79 +107,39 @@ export const getMyAttendance = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
         success: true,
-
         attendance,
-
         firstAttendanceDate,
-
-        accountCreatedAt:
-            student?.createdAt || null,
-
-        enrollments:
-            validEnrollments.map(enrollment => ({
-                _id: enrollment._id,
-
-                type:
-                    enrollment.course
-                        ? "course"
-                        : "internship",
-
-                programId:
-                    enrollment.course?._id ||
-                    enrollment.internship?._id ||
-                    null,
-
-                title:
-                    enrollment.course?.title ||
-                    enrollment.internship?.title ||
-                    "",
-
-                slug:
-                    enrollment.course?.slug ||
-                    enrollment.internship?.slug ||
-                    "",
-
-                startedAt:
-                    enrollment.startedAt
-            }))
+        accountCreatedAt: student?.createdAt || null,
+        enrollments: validEnrollments.map(enrollment => ({
+            _id: enrollment._id,
+            type: enrollment.course ? "course" : "internship",
+            programId: enrollment.course?._id || enrollment.internship?._id || null,
+            title: enrollment.course?.title || enrollment.internship?.title || "",
+            slug: enrollment.course?.slug || enrollment.internship?.slug || "",
+            startedAt: enrollment.startedAt
+        }))
     });
-
 });
 
-
 export const getInternAttendance = asyncHandler(async (req, res) => {
-
     const attendance = await Attendance.find({
-
         internship: req.params.id
-
     })
-
         .populate(
-
             "student",
-
             "firstName lastName email profileImage"
-
         )
-
         .sort({
-
             createdAt: -1
-
         });
 
     return res.status(200).json({
-
         success: true,
-
         attendance
-
     });
-
 });
-export const getTodayActiveTime = asyncHandler(async (req, res) => {
 
+export const getTodayActiveTime = asyncHandler(async (req, res) => {
     const { getTodayActiveTime: getActiveTime } = await import("./activeTime.service.js");
 
     const activeSeconds = await getActiveTime(req.user._id);
@@ -211,34 +152,57 @@ export const getTodayActiveTime = asyncHandler(async (req, res) => {
 });
 
 export const recordActiveTime = asyncHandler(async (req, res) => {
-
-    const { activeSeconds } = req.body;
+    const { activeSeconds, dateKey } = req.body;
 
     if (
         typeof activeSeconds !== "number" ||
         !Number.isFinite(activeSeconds) ||
         activeSeconds <= 0
     ) {
-
         throw new AppError(
             "Valid active time is required",
             400
         );
-
     }
 
     const activity = await saveActiveTime(
         req.user._id,
-        activeSeconds
+        activeSeconds,
+        dateKey ?? null
     );
 
-    await ensureDailyAttendance(
-        req.user._id
-    );
+    if (!activity) {
+        throw new AppError(
+            "Active time could not be recorded.",
+            409
+        );
+    }
+
+    const todayDateKey = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    })
+        .formatToParts(new Date())
+        .filter(({ type }) => type !== "literal")
+        .reduce((date, { type, value }) => {
+            date[type] = value;
+            return date;
+        }, {});
+
+    const todayKey = `${todayDateKey.year}-${todayDateKey.month}-${todayDateKey.day}`;
+
+    if (!dateKey || dateKey === todayKey) {
+        await ensureDailyAttendance(req.user._id);
+    }
 
     const attendanceStreak = await getCurrentAttendanceStreak(req.user._id);
-    await unlockAttendanceStreakBadges(req.user._id, attendanceStreak);
 
+    await unlockAttendanceStreakBadges(
+        req.user._id,
+        attendanceStreak
+    );
 
     const UserBadge = (await import(
         '../profile/models/UserBadge.js'
@@ -260,8 +224,7 @@ export const recordActiveTime = asyncHandler(async (req, res) => {
         "studentDashboardSync",
         {
             reason: "activeTimeUpdated",
-            activeSeconds:
-                activity?.activeSeconds || 0,
+            activeSeconds: activity?.activeSeconds || 0,
             badges: badges.map(item => ({
                 _id: item.badge?._id,
                 title: item.badge?.title,
@@ -276,12 +239,8 @@ export const recordActiveTime = asyncHandler(async (req, res) => {
     );
 
     return res.status(200).json({
-
         success: true,
-
-        activeSeconds:
-            activity?.activeSeconds || 0,
-
+        activeSeconds: activity?.activeSeconds || 0,
         badges: badges.map(item => ({
             _id: item.badge?._id,
             title: item.badge?.title,
@@ -292,7 +251,5 @@ export const recordActiveTime = asyncHandler(async (req, res) => {
             category: item.badge?.category,
             earnedAt: item.earnedAt
         }))
-
     });
-
 });

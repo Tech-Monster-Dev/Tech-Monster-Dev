@@ -1,6 +1,6 @@
 import "./CalendarDays.css";
 
-import CalendarDayCell from "./components/CalendarDayCell";
+import CalendarDayCell from "./CalendarDayCell";
 
 export default function CalendarDays({
   days,

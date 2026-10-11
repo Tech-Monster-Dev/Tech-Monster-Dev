@@ -1,4 +1,8 @@
-import { useState } from "react";
+import "./Notice.css";
+import { useEffect, useState } from "react";
+
+const NOTICE_TAB_STORAGE_KEY = "admin-notice-active-tab";
+const NOTICE_MODAL_STORAGE_KEY = "admin-notice-selected-modal";
 
 import SectionTabs from "../../../layouts/SectionTabs";
 
@@ -7,16 +11,52 @@ import AllNotice from "./components/AllNotice";
 import NoticeDetailed from "./components/NoticeDetailed";
 import { NOTICE_TABS } from "./constants/notice.constants";
 
-import "./Notice.css";
 
 export default function Notice() {
-    const [activeTab, setActiveTab] = useState("add");
+    const [activeTab, setActiveTab] = useState(() => {
+        const savedTab = sessionStorage.getItem(NOTICE_TAB_STORAGE_KEY);
+        return NOTICE_TABS.some((tab) => tab.value === savedTab)
+            ? savedTab
+            : "add";
+    });
     const [editingNotice, setEditingNotice] = useState(null);
-    const [selectedNotice, setSelectedNotice] = useState(null);
+    const [selectedNotice, setSelectedNotice] = useState(() => {
+        try {
+            const savedNotice = sessionStorage.getItem(NOTICE_MODAL_STORAGE_KEY);
+            return savedNotice ? JSON.parse(savedNotice) : null;
+        } catch {
+            sessionStorage.removeItem(NOTICE_MODAL_STORAGE_KEY);
+            return null;
+        }
+    });
     const [refresh, setRefresh] = useState(0);
+
+    useEffect(() => {
+        sessionStorage.setItem(NOTICE_TAB_STORAGE_KEY, activeTab);
+    }, [activeTab]);
+
+    useEffect(() => {
+        if (selectedNotice) {
+            sessionStorage.setItem(
+                NOTICE_MODAL_STORAGE_KEY,
+                JSON.stringify(selectedNotice)
+            );
+        } else {
+            sessionStorage.removeItem(NOTICE_MODAL_STORAGE_KEY);
+        }
+    }, [selectedNotice]);
 
     const handleSelectNotice = (notice) => {
         setSelectedNotice(notice);
+    };
+
+    const handleCloseNotice = () => {
+        setSelectedNotice(null);
+    };
+
+    const handleNoticeDeleted = () => {
+        setSelectedNotice(null);
+        setRefresh((current) => current + 1);
     };
 
     const handleEditNotice = (notice) => {
@@ -78,8 +118,9 @@ export default function Notice() {
             <NoticeDetailed
                 open={Boolean(selectedNotice)}
                 notice={selectedNotice}
-                onClose={() => setSelectedNotice(null)}
+                onClose={handleCloseNotice}
                 onEdit={handleEditNotice}
+                onDeleted={handleNoticeDeleted}
             />
         </section>
     );
