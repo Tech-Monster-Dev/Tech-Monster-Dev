@@ -1,6 +1,7 @@
 import "./ForgotPassword.css";
 
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -25,7 +26,7 @@ const forgotPasswordRules = {
 
 function ForgotPassword() {
 
-    const navigate = useNavigate();
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
@@ -70,17 +71,14 @@ function ForgotPassword() {
             setLoading(true);
             await forgotPassword(formData);
 
-            const expiresAt = Date.now() + 60 * 1000;
+            const expiresAt = Date.now() + 10 * 60 * 1000;
             localStorage.setItem(
                 "resetOtpExpiresAt",
                 expiresAt.toString()
             );
 
-            navigate("/verify-reset-otp", {
-                state: {
-                    email: formData.email
-                }
-            });
+            sessionStorage.setItem("resetOtpEmail", formData.email);
+            router.push("/auth/verify-reset-otp");
 
             toast.success("OTP sent to your email");
         }
@@ -133,7 +131,7 @@ function ForgotPassword() {
                 >
                     <p className="login-back">
                         Remember password?
-                        <Link to="/login">
+                        <Link href="/auth/login">
                             Login
                         </Link>
                     </p>

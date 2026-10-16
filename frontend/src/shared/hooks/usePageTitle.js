@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
 
 // Map route path segments to a display title (without the brand prefix).
 const ROUTE_TITLES = [
@@ -30,12 +30,11 @@ const resolveTitle = (pathname) => {
  * current `pathname`. Falls back to "Tech Monster" for unknown routes.
  */
 export default function usePageTitle() {
-    const location = useLocation();
+    const pathname = usePathname() || "/";
 
     useEffect(() => {
-        const pathname = location.pathname || "/";
         const title = resolveTitle(pathname);
 
         document.title = title ? `${DEFAULT_TITLE} | ${title}` : DEFAULT_TITLE;
-    }, [location.pathname]);
+    }, [pathname]);
 }

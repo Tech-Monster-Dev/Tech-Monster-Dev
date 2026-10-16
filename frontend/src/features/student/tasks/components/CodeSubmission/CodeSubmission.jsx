@@ -9,7 +9,7 @@ import {
     FiCode,
 } from "react-icons/fi";
 
-import highlightCode from "../../../lessons/components/LessonContent/components/LessonPage/components/TryItYourself/utils/highlightCode.js";
+import highlightCode from "../../../lessons/components/LessonContent/components/LessonPage/components/CodeBlock/utils/highlightCode.js";
 import { inferCodeLanguage } from "../../../../../shared/utils/codeFormatting.js";
 
 import "./CodeSubmission.css";

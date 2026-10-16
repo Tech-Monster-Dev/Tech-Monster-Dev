@@ -1,7 +1,8 @@
 import "./Login.css";
 
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Hash from "../../../dashboard/common/LoaderPage/Hash";
 
@@ -18,7 +19,7 @@ import { loginRules, fields } from "./loginData.js";
 
 
 function Login() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     if (sessionStorage.getItem("logoutSuccess")) {
@@ -34,17 +35,25 @@ function Login() {
   const [errors, setErrors] = useState({});
 
 
-  const [formData, setFormData] = useState(() => ({
-    email:
-      localStorage.getItem("rememberMe") === "true"
-        ? localStorage.getItem("rememberedEmail") || ""
-        : "",
+  const [formData, setFormData] = useState({
+    email: "",
     password: ""
-  }));
-
-  const [rememberMe, setRememberMe] = useState(() => {
-    return localStorage.getItem("rememberMe") === "true";
   });
+
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const shouldRemember = localStorage.getItem("rememberMe") === "true";
+    queueMicrotask(() => {
+      setRememberMe(shouldRemember);
+      if (shouldRemember) {
+        setFormData((prev) => ({
+          ...prev,
+          email: localStorage.getItem("rememberedEmail") || ""
+        }));
+      }
+    });
+  }, []);
 
   
   const handleChange = (e) => {
@@ -164,12 +173,12 @@ function Login() {
       // Role Based Dashboard Navigation
       
       if (user.role === "student") {
-        navigate("/student");
+        router.push("/student");
       } else if (user.role === "admin") {
-        navigate("/admin");
+        router.push("/admin");
       }
       else {
-        navigate("/login");
+        router.push("/auth/login");
       }
     }
     catch (err) {
@@ -229,7 +238,7 @@ function Login() {
             />
 
             <Link
-              to="/forgot-password"
+              href="/auth/forgot-password"
               className="forgot-link"
             >
               Forgot Password?
@@ -238,12 +247,12 @@ function Login() {
 
           <p className="signup-text">
             Don't have an account?
-            <Link to="/signup">Create Account </Link>
+            <Link href="/auth/signup">Create Account </Link>
           </p>
 
           <p className="signup-text">
             Log in as a admin
-            <Link to="/admin_login">Admin login</Link>
+            <Link href="/auth/admin-login">Admin login</Link>
           </p>
         </Form>
         

@@ -1,8 +1,8 @@
 import "./StudentDetails.css";
-import defaultProfileImage from "../../../../assets/profile/default-profile.svg";
+const defaultProfileImage = "/assets/profile/default-profile.svg";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "next/navigation";
 
 import api from "../../../../services/api/axios";
 import useSkeletonScrollLock from "../../../../shared/hooks/useSkeletonScrollLock";

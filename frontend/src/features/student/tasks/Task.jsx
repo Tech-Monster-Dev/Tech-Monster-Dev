@@ -1,13 +1,10 @@
 import {
+    useEffect,
     useMemo,
     useState,
 } from "react";
 
-import {
-    useLocation,
-    useNavigate,
-    useParams,
-} from "react-router-dom";
+import { useRouter, useParams } from "next/navigation";
 
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -46,10 +43,33 @@ const Task = () => {
         courseSlug: routeCourseSlug,
     } = useParams();
 
-    const location = useLocation();
-    const navigate = useNavigate();
+    const router = useRouter();
     const contentType = routeType === "internship" ? "internship" : "course";
-    const taskScope = location.state || EMPTY_TASK_SCOPE;
+    const [taskScope, setTaskScope] = useState(EMPTY_TASK_SCOPE);
+
+    useEffect(() => {
+        try {
+            const savedScope = sessionStorage.getItem("tech-monster-task-scope");
+            const savedNavigationState = sessionStorage.getItem("tech-monster-navigation-state");
+            if (savedScope) {
+                const parsedScope = JSON.parse(savedScope);
+                queueMicrotask(() => {
+                    setTaskScope(parsedScope);
+                });
+                sessionStorage.removeItem("tech-monster-task-scope");
+            } else if (savedNavigationState) {
+                const parsed = JSON.parse(savedNavigationState);
+                if (parsed?.moduleId || parsed?.lessonId || parsed?.taskId) {
+                    queueMicrotask(() => {
+                        setTaskScope(parsed);
+                    });
+                    sessionStorage.removeItem("tech-monster-navigation-state");
+                }
+            }
+        } catch {
+            sessionStorage.removeItem("tech-monster-task-scope");
+        }
+    }, []);
 
     const { user } = useAuth();
 
@@ -102,16 +122,15 @@ const Task = () => {
                 "Module completed. Returning to lessons..."
             );
 
-            navigate(
-                "/student/lessons/" +
-                contentType +
-                "/" +
-                courseSlug,
-                {
-                    state: {
-                        approvedModuleId: submission?.moduleId || null,
-                    },
-                }
+            if (submission?.moduleId) {
+                sessionStorage.setItem(
+                    "tech-monster-approved-module-id",
+                    String(submission.moduleId)
+                );
+            }
+
+            router.push(
+                `/student/lessons/${contentType}/${courseSlug}`
             );
         },
     });

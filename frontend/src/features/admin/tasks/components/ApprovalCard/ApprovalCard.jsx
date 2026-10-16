@@ -1,6 +1,6 @@
 import "./ApprovalCard.css";
 
-import DEFAULT_PROFILE_IMAGE from "../../../../../assets/profile/default-profile.svg";
+const DEFAULT_PROFILE_IMAGE = "/assets/profile/default-profile.svg";
 
 const formatApprovalDateTime = (value) => {
     if (!value) return "Not available";

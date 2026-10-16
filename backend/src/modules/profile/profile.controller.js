@@ -12,6 +12,20 @@ import uploadToCloudinary from "../../infrastructure/storage/uploadCloudinary.js
 import asyncHandler from "../../core/http/asyncHandler.js";
 import AppError from "../../core/errors/AppError.js";
 
+const DEFAULT_PROFILE_AVATAR = "/assets/profile/default-profile.svg";
+
+const ensureProfileAvatar = (user) => {
+    if (
+        user &&
+        (!user.avatar || user.avatar === "/profile/default-profile.svg")
+    ) {
+        user.avatar = DEFAULT_PROFILE_AVATAR;
+    }
+
+    return user;
+};
+
+
 // =====================================
 // PROFILE STATS
 // =====================================
@@ -209,6 +223,8 @@ export const updateProfile = asyncHandler(
         await user.save();
 
 
+        ensureProfileAvatar(user);
+
         const stats = await getProfileStats(
             user._id
         );
@@ -254,6 +270,8 @@ export const getProfile = asyncHandler(
 
         }
 
+
+        ensureProfileAvatar(user);
 
         const stats = await getProfileStats(
             user._id
@@ -323,6 +341,8 @@ export const getUserProfile = asyncHandler(async (req, res) => {
     // ---------------------------------
     // Followers / Following count
     // ---------------------------------
+
+    ensureProfileAvatar(user);
 
     const followersCount = await Follow.countDocuments({
         following: userId

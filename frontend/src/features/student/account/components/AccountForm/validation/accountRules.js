@@ -25,36 +25,33 @@ export const accountRules = {
     },
 
     education: {
-        required: true,
+        required: false,
         requiredMessage: "Education is required"
     },
 
     college: {
-        required: true,
+        required: false,
         requiredMessage: "College is required"
     },
 
     branch: {
-        required: true,
+        required: false,
         requiredMessage: "Branch is required"
     },
 
     year: {
-        required: true,
+        required: false,
         requiredMessage: "Year is required"
     },
 
     semester: {
-        required: true,
+        required: false,
         requiredMessage: "Semester is required"
     },
 
     skills: {
-        required: true,
-        validate: (value) =>
-            Array.isArray(value) && value.length > 0
-                ? ""
-                : "Please add at least one skill"
+        required: false,
+        validate: () => ""
     },
 
     currentAddress: {

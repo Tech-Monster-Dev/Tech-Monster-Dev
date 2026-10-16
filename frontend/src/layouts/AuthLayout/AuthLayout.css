@@ -5,20 +5,20 @@
 ========================================== */
 
 .auth-layout {
-    @apply relative z-9 flex h-dvh min-h-0 w-full flex-col items-center bg-transparent;
+    @apply relative z-9 flex h-dvh min-h-0 w-full flex-col items-center overflow-hidden; background: var(--dark); color: var(--text);
 }
 
-.auth-layout .auth-layout-bg-img {
-    @apply absolute inset-0 z-[-1] h-full w-full bg-cover opacity-50;
-}
 
 .authFullCont {
+    position: relative;
+    z-index: 1;
     @apply grid min-h-0 w-full flex-1 grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] h-auto p-4 items-stretch gap-8 px-10 max-lg:flex max-lg:flex-col max-lg:gap-4 max-lg:p-4 max-sm:gap-3 max-sm:p-2;
 }
 
 /* LEFT */
 
 .auth-left {
+    position: relative;
     @apply flex h-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-4xl bg-transparent p-12 max-lg:p-2 max-lg:px-10 backdrop-blur-[0.0625rem] transition duration-300 max-lg:h-auto max-lg:w-full;
 
     animation: blueNeon 6s linear infinite;
@@ -27,9 +27,24 @@
 .auth-left-content {
     @apply flex flex-col items-center justify-center gap-4 text-center max-lg:w-full max-lg:flex-row max-lg:justify-start max-lg:gap-0;
 }
-
 .auth-back-button {
-    @apply absolute left-8 top-8 z-10 max-lg:static;
+    position: absolute !important;
+    top: 1rem !important;
+    left: 1rem !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: 50;
+    width: clamp(2.25rem, 4vw, 2.75rem);
+    height: clamp(2.25rem, 4vw, 2.75rem);
+    border: 1px solid var(--neon-blue-soft);
+    background: rgba(2, 6, 23, 0.92);
+    color: var(--neon);
+    box-shadow: 0 0 1rem var(--neon-blue-faint);
+}
+
+.auth-back-button:hover {
+    background: var(--neon-overlay);
+    border-color: var(--neon);
 }
 
 .authLogo {

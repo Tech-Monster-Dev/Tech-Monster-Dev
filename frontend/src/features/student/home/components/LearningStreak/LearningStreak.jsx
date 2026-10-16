@@ -18,22 +18,8 @@ const LearningStreak = ({ streak }) => {
   );
 
   return (
-    <motion.section
+    <section
       className="learning-streak"
-      initial={{
-        opacity: 0,
-        y: 80,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-      }}
-      viewport={{
-        once: true,
-      }}
-      transition={{
-        duration: 0.8,
-      }}
     >
       <div className="streak-glow"></div>
 
@@ -104,7 +90,7 @@ const LearningStreak = ({ streak }) => {
           Continue Streak
         </motion.button>
       </div>
-    </motion.section>
+    </section>
   );
 };
 export default LearningStreak;

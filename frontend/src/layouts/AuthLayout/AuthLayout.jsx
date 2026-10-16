@@ -1,16 +1,14 @@
 import "./AuthLayout.css";
 
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 import useAuth from "../../shared/hooks/useAuth";
 
-import logo from "../../assets/logo/logo.webp";
-import authImage from "../../assets/auth/auth-image.webp";
 
 import SystemBar from "../../components/common/navbar/SystemBar";
 import BackButton from "../../components/ui/Button/BackButton/BackButton";
+import CyberBackground from "../../components/common/CyberBackground";
 
 function AuthLayout({
     title,
@@ -46,32 +44,24 @@ function AuthLayout({
 
     return (
 
-        <div className="auth-layout" >
-            <img className="auth-layout-bg-img" src={authImage} alt="Auth image" />
+        <div className="auth-layout cyber-page">
+            <CyberBackground />
             <SystemBar user={capitalName} />
 
             {/* LEFT SIDE */}
             <div className="authFullCont">
-
-                <motion.div
+                <div
                     className="auth-left"
-                    initial={{ opacity: 0, x: -80 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: .8 }}
                 >
+                    <BackButton to="/" label="Back to Landing Page" className="auth-back-button" />
                     <div className="auth-left-content">
-                        <BackButton
-                            to="/"
-                            label="Back to Landing Page"
-                            className="auth-back-button"
-                        />
 
                         <Link
-                            to="/"
+                            href="/"
                             className="authLogo"
                         >
                             <img
-                                src={logo}
+                                src="/assets/logo/logo.webp"
                                 alt="Tech Monster"
                             />
                             <h2>
@@ -80,7 +70,7 @@ function AuthLayout({
                         </Link>
 
                         <img
-                            src={authImage}
+                            src="/assets/auth/auth-image.webp"
                             className="auth-image"
                             alt="Authentication"
                         />
@@ -92,14 +82,11 @@ function AuthLayout({
                             Join Tech Monster Pvt. Ltd. and start your learning journey.
                         </p>
                     </div>
-                </motion.div>
+                </div>
 
                 {/* RIGHT SIDE */}
-                <motion.div
+                <div
                     className="auth-right" ref={rightRef}
-                    initial={{ opacity: 0, x: 80 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: .8 }}
                 >
                     <div className="auth-card" ref={cardRef}>
                         <div className="auth-header">
@@ -112,7 +99,7 @@ function AuthLayout({
                         </div>
                         {children}
                     </div>
-                </motion.div>
+                </div>
             </div>
         </div>
     );

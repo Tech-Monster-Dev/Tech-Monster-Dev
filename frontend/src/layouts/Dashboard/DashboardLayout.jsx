@@ -1,4 +1,5 @@
 import "./DashboardLayout.css";
+import CyberBackground from "../../components/common/CyberBackground";
 
 import { useEffect, useState } from "react";
 
@@ -11,7 +12,7 @@ import useAuth from "../../shared/hooks/useAuth";
 import useActiveWebsiteTime from "../../shared/hooks/useActiveWebsiteTime";
 import api from "../../services/api/axios";
 
-function DashboardLayout({ role = "student" }) {
+function DashboardLayout({ role = "student", children }) {
 
     const { user } = useAuth();
 
@@ -122,9 +123,9 @@ function DashboardLayout({ role = "student" }) {
 
     return (
 
-        <div
-            className={`dashboardContainer ${collapsed ? "sidebar-collapsed" : ""}`}
-        >
+        <div className={`dashboardContainer cyber-page ${collapsed ? "sidebar-collapsed" : ""}`}>
+            <CyberBackground />
+            <div className="dashboard-shell">
             {/* ================= NAVBAR ================= */}
             <Navbar
                 role={role}
@@ -150,12 +151,12 @@ function DashboardLayout({ role = "student" }) {
                     enrolledCourse={enrolledCourse}
                 />
                 {/* ================= MAIN ================= */}
-                <Main />
+                <Main>{children}</Main>
 
             </div>
             {/* ================= FOOTER ================= */}
             <Footer />
-
+            </div>
         </div>
 
     );

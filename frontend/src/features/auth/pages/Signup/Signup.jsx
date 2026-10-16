@@ -1,7 +1,8 @@
 import "./Signup.css";
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import Hash from "../../../../features/dashboard/common/LoaderPage/Hash";
@@ -20,7 +21,7 @@ import { signupRules, fields } from "./signupData.js";
 
 function Signup() {
 
-  const navigate = useNavigate();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
@@ -94,21 +95,15 @@ function Signup() {
     try {
       await signupService(formData);
 
-      const expiresAt = Date.now() + 60 * 1000;
+      const expiresAt = Date.now() + 10 * 60 * 1000;
       localStorage.setItem(
         "signupOtpExpiresAt",
         expiresAt.toString()
       );
 
+      sessionStorage.setItem("signupOtpEmail", formData.email);
       setTimeout(() => {
-        navigate(
-          "/verify-signup-otp",
-          {
-            state: {
-              email: formData.email,
-            },
-          }
-        );
+        router.push("/auth/verify-signup-otp");
       }, 100);
       toast.success("OTP sent to your Gmail account.");
     } catch (err) {
@@ -173,7 +168,7 @@ function Signup() {
               label={
                 <>
                   I accept{" "}
-                  <Link to="/terms-and-conditions">
+                  <Link href="/terms-and-conditions">
                     Terms & Conditions
                   </Link>
                 </>
@@ -184,7 +179,7 @@ function Signup() {
 
           <p className="login-link">
             Already have an account?
-            <Link to="/login">
+            <Link href="/auth/login">
               Login
             </Link>
           </p>

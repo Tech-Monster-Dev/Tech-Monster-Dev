@@ -129,6 +129,10 @@ export default function useActiveWebsiteTime(
         };
 
         const flush = () => {
+            if (sessionStorage.getItem("logoutInProgress") === "true") {
+                return Promise.resolve();
+            }
+
             if (flushPromiseRef.current) {
                 return flushPromiseRef.current;
             }

@@ -1,18 +1,17 @@
-import './Main.css';
-import { Outlet } from 'react-router-dom';
+"use client";
 
-function Main() {
+import "./Main.css";
+
+function Main({ children }) {
     return (
-        <>
-            <main className="dashboard-main">
-                {/* DYNAMIC PAGE CONTENT */}
-                <div className="dashboard-content-wrapper">
-                    <div className="dashboard-content">
-                        <Outlet />
-                    </div>
+        <main className="dashboard-main">
+            <div className="dashboard-content-wrapper">
+                <div className="dashboard-content">
+                    {children}
                 </div>
-            </main>
-        </>
-    )
+            </div>
+        </main>
+    );
 }
+
 export default Main;

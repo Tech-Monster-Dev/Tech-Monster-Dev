@@ -19,22 +19,8 @@ const LearningAnalytics = ({ analytics }) => {
   const growth = analytics?.growth || 0;
 
   return (
-    <motion.section
+    <section
       className="analytics-card"
-      initial={{
-        opacity: 0,
-        y: 80,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-      }}
-      viewport={{
-        once: true,
-      }}
-      transition={{
-        duration: 0.8,
-      }}
     >
       <div className="analytics-glow"></div>
       <div className="analytics-header">
@@ -137,7 +123,7 @@ const LearningAnalytics = ({ analytics }) => {
           </div>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 export default LearningAnalytics;

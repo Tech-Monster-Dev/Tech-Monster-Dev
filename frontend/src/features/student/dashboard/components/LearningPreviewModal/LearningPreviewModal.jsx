@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock3, BookOpen, ListChecks, X } from "lucide-react";
 
-import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
+const defaultThumbnail = "/assets/thumnail/course_internship_default.svg";
 
 import "./LearningPreviewModal.css";
 

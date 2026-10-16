@@ -3,32 +3,33 @@ const USER_KEY = "user";
 
 export const tokenStorage = {
     getToken() {
-        return localStorage.getItem(TOKEN_KEY);
+        return typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
     },
 
     setToken(token) {
-        localStorage.setItem(TOKEN_KEY, token);
+        if (typeof window !== "undefined") localStorage.setItem(TOKEN_KEY, token);
     },
 
     removeToken() {
-        localStorage.removeItem(TOKEN_KEY);
+        if (typeof window !== "undefined") localStorage.removeItem(TOKEN_KEY);
     },
 
     getUser() {
+        if (typeof window === "undefined") return null;
         const user = localStorage.getItem(USER_KEY);
         return user ? JSON.parse(user) : null;
     },
 
     setUser(user) {
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
+        if (typeof window !== "undefined") localStorage.setItem(USER_KEY, JSON.stringify(user));
     },
 
     removeUser() {
-        localStorage.removeItem(USER_KEY);
+        if (typeof window !== "undefined") localStorage.removeItem(USER_KEY);
     },
 
     clear() {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
+        if (typeof window !== "undefined") localStorage.removeItem(TOKEN_KEY);
+        if (typeof window !== "undefined") localStorage.removeItem(USER_KEY);
     }
 };

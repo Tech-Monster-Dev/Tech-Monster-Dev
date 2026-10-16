@@ -1,19 +1,19 @@
 import './SettingsSection.css';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 import api from '../../../../../services/api/axios';
 import { API } from '../../../../../services/api/endpoints';
 import { getBlockedUsers, toggleChatBlock } from '../../../../../services/api/message.service';
 
-import defaultProfile from '../../../../../assets/profile/default-profile.svg';
+const defaultProfile = '/assets/profile/default-profile.svg';
 import Warning from '../../../../../components/ui/Warning';
 import DashButton from '../../../../../components/ui/Button/DashButton';
 
 export default function SettingsSection() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -70,7 +70,7 @@ export default function SettingsSection() {
       localStorage.clear();
       sessionStorage.clear();
       sessionStorage.setItem("accountDeletionInProgress", "true");
-      navigate("/");
+      router.push("/");
     } catch (error) {
       sessionStorage.removeItem("accountDeletionInProgress");
       setIsDeleting(false);
@@ -206,6 +206,7 @@ export default function SettingsSection() {
           </div>
           <DashButton
             className="delete-btn"
+            variant="danger"
             onClick={handleDeleteAccount}
           >
             Delete Account

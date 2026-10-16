@@ -5,7 +5,7 @@ import {
     useEffect,
     useState
 } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -31,7 +31,7 @@ import CodeBlock from "../../../student/lessons/components/LessonContent/compone
 
 export default function TaskApprovalDetails() {
 
-    const navigate = useNavigate();
+    const router = useRouter();
     const { id } = useParams();
 
     const [loading, setLoading] = useState(true);
@@ -90,9 +90,7 @@ export default function TaskApprovalDetails() {
                 await approveSubmission(id, comment);
             }
             toast.success("Task Approved");
-            navigate("/admin/tasks", {
-                replace: true
-            });
+            router.replace("/admin/tasks");
         } catch (err) {
             console.error("APPROVE TASK ERROR:", err);
             console.error("APPROVE RESPONSE:", err.response?.data);
@@ -111,7 +109,7 @@ export default function TaskApprovalDetails() {
                 await rejectSubmission(id, comment);
             }
             toast.success("Task Rejected");
-            navigate("/admin/tasks");
+            router.push("/admin/tasks");
         }
         catch (err) {
             toast.error(

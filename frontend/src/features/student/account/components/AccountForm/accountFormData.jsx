@@ -126,44 +126,44 @@ export const getAccountFormSections = ({
         title: "2. Educational Information",
         className: "account-form-section",
         titleClassName: "account-form-section-title",
-        fieldsClassName: "account-form-grid",
+        fieldsClassName: "account-form-grid account-personal-grid",
         fields: [
             {
                 name: "education",
                 label: "What are you studying?",
                 type: "text",
                 placeholder: "e.g. B.Tech / BCA",
-                required: true
+                required: false
             },
             {
                 name: "college",
                 label: "College Name",
                 type: "text",
-                required: true
+                required: false
             },
             {
                 name: "branch",
                 label: "Branch",
                 type: "text",
-                required: true
+                required: false
             },
             {
                 name: "year",
                 label: "Year",
                 type: "text",
                 placeholder: "e.g. 3rd Year",
-                required: true
+                required: false
             },
             {
                 name: "semester",
                 label: "Semester",
                 type: "text",
                 placeholder: "e.g. 5th Sem",
-                required: true
+                required: false
             },
             {
                 name: "skills",
-                required: true,
+                required: false,
                 render: ({ error, disabled }) => (
                     <SkillsInput
                         skills={formData.skills}
@@ -193,7 +193,7 @@ export const getAccountFormSections = ({
         title: "3. Address Details",
         className: "account-form-section",
         titleClassName: "account-form-section-title",
-        fieldsClassName: "account-form-grid",
+        fieldsClassName: "account-form-grid account-personal-grid",
         fields: [
             {
                 name: "currentAddress",

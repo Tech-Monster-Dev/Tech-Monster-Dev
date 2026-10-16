@@ -1,6 +1,6 @@
 import "./WelcomeCard.css";
 
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import useAuth from "../../../../../shared/hooks/useAuth";
 
@@ -20,7 +20,7 @@ const WelcomeCard = ({
   streak,
 }) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const hour = new Date().getHours();
   let greeting = "Good Evening";
 
@@ -39,19 +39,8 @@ const WelcomeCard = ({
 
 
   return (
-    <motion.section
+    <section
       className="welcome-card"
-      initial={{
-        opacity: 0,
-        y: 50,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: 0.8,
-      }}
     >
       <div className="welcome-glow"></div>
       <div className="welcome-left">
@@ -82,7 +71,7 @@ const WelcomeCard = ({
           size="medium"
           icon={<HiArrowRight />}
           iconPosition="right"
-          onClick={() => navigate("/student/dashboard")}
+          onClick={() => router.push("/student/dashboard")}
           className="w-fit"
         >
           Continue Learning
@@ -129,7 +118,7 @@ const WelcomeCard = ({
           </div>
         </motion.div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 

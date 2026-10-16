@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import QRImage from "../../../../../../assets/thumnail/QR.svg";
+const QRImage = "/assets/thumnail/QR.svg";
 
 import {
     createCertificatePayment,

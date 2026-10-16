@@ -4,80 +4,25 @@
    STATUS PAGE
 ========================================== */
 .status-page {
-    @apply relative flex min-h-screen
+    @apply relative isolate flex min-h-screen
         items-center justify-center
         overflow-hidden
         p-[clamp(1rem,4vw,1.875rem)];
 
-    background: var(--dark);
+    background: #020617;
 }
 
-/* ==========================================
-   ANIMATED GRID
-========================================== */
-
-.grid {
-    @apply absolute inset-0;
-
-    background-image:
-        linear-gradient(
-            color-mix(in srgb, var(--neon-bright) 5%, transparent) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            color-mix(in srgb, var(--neon-bright) 5%, transparent) 1px,
-            transparent 1px
-        );
-
-    background-size: 2.8125rem 2.8125rem;
-    animation: gridMove 15s linear infinite;
+.status-page > .cyber-bg {
+    z-index: 0;
 }
 
-@keyframes gridMove {
-    from {
-        transform: translateY(0);
-    }
-
-    to {
-        transform: translateY(2.8125rem);
-    }
+.status-card .status-buttons {
+    @apply mt-8 flex flex-wrap items-center justify-center gap-3;
 }
 
-/* ==========================================
-   BACKGROUND GLOW
-========================================== */
-
-.blur {
-    @apply absolute rounded-full;
-
-    filter: blur(clamp(3.75rem,10vw,5.625rem));
-    animation: float 7s ease-in-out infinite;
-}
-
-.blur1 {
-    @apply -top-12.5
-        -left-12.5
-        h-[clamp(10rem,35vw,16.25rem)]
-        w-[clamp(10rem,35vw,16.25rem)];
-
-    background: var(--primary);
-}
-
-.blur2 {
-    @apply -right-12.5
-        -bottom-12.5
-        h-[clamp(10rem,35vw,15.625rem)]
-        w-[clamp(10rem,35vw,15.625rem)];
-
-    background: var(--neon-cyan);
-    animation-delay: 2s;
-}
-
-@keyframes float {
-    50% {
-        transform: translateY(1.875rem);
-    }
+.status-card {
+    position: relative;
+    z-index: 1;
 }
 
 /* ==========================================
@@ -110,6 +55,12 @@
 /* ==========================================
    STATUS ICON
 ========================================== */
+
+.status-card > div:first-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .status-icon {
     @apply mb-5
@@ -149,59 +100,4 @@
         max-[768px]:text-[0.9375rem];
 
     color: var(--muted);
-}
-
-/* ==========================================
-   STATUS BUTTONS
-========================================== */
-
-.status-buttons {
-    @apply mt-8.75
-        flex
-        flex-wrap
-        justify-center
-        gap-5;
-}
-
-.status-buttons button {
-    @apply rounded-xl
-        border-0
-        px-[clamp(1.25rem,4vw,2.1875rem)]
-        py-3.75
-        text-base
-        font-semibold
-        cursor-pointer
-        transition-all
-        duration-350
-        ease-in-out;
-}
-
-/* Primary button */
-
-.primary-btn {
-    background: linear-gradient(
-        90deg,
-        var(--neon-cyan),
-        var(--primary)
-    );
-
-    color: var(--white);
-}
-
-.primary-btn:hover {
-    transform: translateY(-0.3125rem) scale(1.05);
-    box-shadow: 0 0 1.875rem var(--neon-bright);
-}
-
-/* Secondary button */
-
-.secondary-btn {
-    background: var(--dark);
-    color: var(--white);
-    border: 1px solid color-mix(in srgb, var(--white) 15%, transparent);
-}
-
-.secondary-btn:hover {
-    background: var(--background);
-    transform: translateY(-0.3125rem);
 }

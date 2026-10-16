@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import "./ContinueCard.css";
-import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
+const defaultThumbnail = "/assets/thumnail/course_internship_default.svg";
 
 const ContinueCard = ({ learning }) => {
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const {
     type,
@@ -37,9 +37,7 @@ const ContinueCard = ({ learning }) => {
     localStorage.setItem("activeLearning", JSON.stringify({programId: isCourse ? learning?.courseId : learning?.internshipId, type, slug, title}));
     window.dispatchEvent(new CustomEvent("activeLearningChanged"));
 
-    navigate(
-      `/student/lessons/${type}/${slug}`
-    );
+    router.push(`/student/lessons/${type}/${slug}`);
   };
 
   return (

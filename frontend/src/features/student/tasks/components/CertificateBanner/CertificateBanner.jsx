@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { FiLock, FiArrowRight, FiAward } from "react-icons/fi";
 
 import "./CertificateBanner.css";
@@ -12,19 +12,11 @@ export default function CertificateBanner({
     programType = "internship",
     courseTitle = "",
 }) {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const handleClaim = () => {
-        navigate(
-            "/student/certificate",
-            {
-                state: {
-                    programId,
-                    programType,
-                    courseTitle,
-                },
-            }
-        );
+        sessionStorage.setItem("tech-monster-navigation-state", JSON.stringify({ programId, programType, courseTitle }));
+        router.push("/student/certificate");
     };
 
     const locked = !allCompleted;

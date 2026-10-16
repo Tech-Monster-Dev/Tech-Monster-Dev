@@ -1,6 +1,5 @@
 import "./HelpSupport.css";
 import { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 
@@ -66,8 +65,24 @@ const mergeSupportMessages = (
 };
 
 function HelpSupport() {
-    const location = useLocation();
-    const navigate = useNavigate();
+    const [notificationConversationId, setNotificationConversationId] = useState(null);
+
+    useEffect(() => {
+        try {
+            const saved = sessionStorage.getItem("tech-monster-navigation-state");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed?.notificationConversationId) {
+                    queueMicrotask(() => {
+                        setNotificationConversationId(parsed.notificationConversationId);
+                    });
+                    sessionStorage.removeItem("tech-monster-navigation-state");
+                }
+            }
+        } catch {
+            sessionStorage.removeItem("tech-monster-navigation-state");
+        }
+    }, []);
 
     const [conversation, setConversation] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -111,9 +126,6 @@ function HelpSupport() {
     }, [messages]);
 
     useEffect(() => {
-        const notificationConversationId =
-            location.state?.notificationConversationId;
-
         if (
             !notificationConversationId ||
             !conversation?._id
@@ -128,15 +140,12 @@ function HelpSupport() {
             return;
         }
 
-        navigate(location.pathname, {
-            replace: true,
-            state: {}
+        queueMicrotask(() => {
+            setNotificationConversationId(null);
         });
     }, [
         conversation?._id,
-        location.pathname,
-        location.state?.notificationConversationId,
-        navigate
+        notificationConversationId
     ]);
 
     // ==========================================

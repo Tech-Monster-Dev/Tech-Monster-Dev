@@ -1,5 +1,5 @@
 import "./LessonAccordion.css";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     ChevronDown,
@@ -26,7 +26,7 @@ export default function LessonAccordion({
     canStart = true,
     moduleNumber = 1,
 }) {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     // All lessons in this module must be completed before the task unlocks.
     const hasTasks = Array.isArray(lesson?.tasks) && lesson.tasks.length > 0;
@@ -49,16 +49,20 @@ export default function LessonAccordion({
     };
 
     const handleModuleTaskClick = () => {
-        navigate(
-            `/student/tasks/${contentType}/${courseSlug}`,
-            {
-                state: {
+        try {
+            sessionStorage.setItem(
+                "tech-monster-navigation-state",
+                JSON.stringify({
                     courseSlug: courseSlug || null,
                     moduleId: moduleId || null,
                     isModuleCompleted,
-                },
-            }
-        );
+                })
+            );
+        } catch {
+            // Navigation can continue without persisted state.
+        }
+
+        router.push(`/student/tasks/${contentType}/${courseSlug}`);
     }
 
     return (

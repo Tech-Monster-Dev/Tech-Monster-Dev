@@ -2,7 +2,6 @@ import "./Loader.css";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import logo from "../../../assets/logo/logo.webp";
 
 function Loading({ finish }) {
     const [progress, setProgress] = useState(0);
@@ -58,7 +57,7 @@ function Loading({ finish }) {
                 transition={{ duration: .7 }}
             >
                 <div className="logo-ring">
-                    <img src={logo} alt="" />
+                    <img src="/assets/logo/logo.webp" alt="" />
                 </div>
 
                 <h1>

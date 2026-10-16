@@ -2,7 +2,7 @@ import "./ChatWindow.css";
 import { FiArrowLeft, FiSearch, FiCheckSquare, FiStar, FiDownload, FiTrash2, FiBellOff, FiUserX } from "react-icons/fi";
 
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import MessageBubble from "../MessageBubble";
 import StudentBadgeAvatar from "../../../dashboard/common/StudentBadgeAvatar";
@@ -69,7 +69,7 @@ export default function ChatWindow({
         };
     }, [setShowChatMenu, setShowStarredMessages]);
 
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({
@@ -167,7 +167,7 @@ export default function ChatWindow({
                             <button type="button" onClick={async () => { setShowChatMenu(false); await handleExportChat(); }}><FiDownload /> Export chat</button>
                             <button type="button" onClick={handleToggleMute}> <FiBellOff />{mutedUsers.some((id) => String(id) === String(selectedUser?._id)) ? "Unmute" : "Mute"}</button>
                             <button type="button" onClick={handleDeleteConversation}><FiTrash2 /> Clear chat</button>
-                            <button type="button" onClick={() => { setShowChatMenu(false); navigate("/student/settings#messages"); }}>⚙ Settings</button>
+                            <button type="button" onClick={() => { setShowChatMenu(false); router.push("/student/settings#messages"); }}>⚙ Settings</button>
                             <button
                                 type="button"
                                 className="danger"

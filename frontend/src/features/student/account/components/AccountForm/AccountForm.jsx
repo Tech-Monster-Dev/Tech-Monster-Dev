@@ -115,7 +115,7 @@ export default function AccountForm({
         editData?.profileCompleted
     );
 
-    const isProfileImageRequired = !isProfileCompleted;
+    const isProfileImageRequired = false;
 
     const handleChange = (event) => {
         const {
@@ -208,20 +208,7 @@ export default function AccountForm({
             ...validationErrors
         };
 
-        if (
-            isProfileImageRequired &&
-            !imageFile
-        ) {
-            nextErrors.avatar =
-                "Profile photo is required";
-        }
-
-        const isValid =
-            formIsValid &&
-            (
-                !isProfileImageRequired ||
-                Boolean(imageFile)
-            );
+        const isValid = formIsValid;
 
         setErrors(nextErrors);
 

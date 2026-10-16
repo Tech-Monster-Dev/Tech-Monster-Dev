@@ -1,7 +1,7 @@
 import "./StudentActionButtons.css";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import {
@@ -26,7 +26,7 @@ export default function StudentActionButtons({
     onEdit,
     onNotify
 }) {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const [showBlockWarning, setShowBlockWarning] = useState(false);
     const [blocking, setBlocking] = useState(false);
@@ -199,7 +199,7 @@ export default function StudentActionButtons({
                 <button
                     className="viewBtn"
                     onClick={() =>
-                        navigate(`/admin/students/${student._id}`)
+                        router.push(`/admin/students/${student._id}`)
                     }
                 >
                     <FiEye />

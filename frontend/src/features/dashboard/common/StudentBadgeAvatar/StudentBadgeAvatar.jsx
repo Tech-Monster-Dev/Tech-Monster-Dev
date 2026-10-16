@@ -1,5 +1,6 @@
 import "./StudentBadgeAvatar.css";
-import defaultProfileImg from "../../../../assets/profile/default-profile.svg";
+
+const defaultProfileImg = "/assets/profile/default-profile.svg";
 
 export default function StudentBadgeAvatar({
     avatar,

@@ -1,8 +1,10 @@
 import "./StatusPage.css";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import useAuth from "../../shared/hooks/useAuth";
+import CyberBackground from "../common/CyberBackground/CyberBackground";
+import PublicButton from "../ui/Button/PublicButton";
 
 function StatusPage({
     code,
@@ -17,18 +19,14 @@ function StatusPage({
 }) {
     const { user, isAuthenticated } = useAuth() || {};
 
-    const navigate = useNavigate();
+    const router = useRouter();
 
 
 
 
     return (
         <section className="status-page">
-
-            <div className="grid"></div>
-
-            <div className="blur blur1"></div>
-            <div className="blur blur2"></div>
+            <CyberBackground />
 
             <motion.div
                 className="status-card"
@@ -56,52 +54,44 @@ function StatusPage({
 
                 <p>{description}</p>
 
-                {showActions && <div className="status-buttons">
-
-                    <button
-                        className="primary-btn"
-                        onClick={() => {
-
-                            if (onPrimaryClick) {
-                                onPrimaryClick();
-                                return;
-                            }
-
-                            if (isAuthenticated) {
-
-                                if (user?.role === "admin") {
-
-                                    navigate("/admin");
-
-                                } else if (user?.role === "student") {
-
-                                    navigate("/student");
-
-                                } else {
-
-                                    navigate(primaryPath);
-
+                {showActions && (
+                    <div className="status-buttons">
+                        <PublicButton
+                            variant="primary"
+                            size="medium"
+                            className="status-primary-button"
+                            onClick={() => {
+                                if (onPrimaryClick) {
+                                    onPrimaryClick();
+                                    return;
                                 }
 
-                            } else {
+                                if (isAuthenticated) {
+                                    if (user?.role === "admin") {
+                                        router.push("/admin");
+                                    } else if (user?.role === "student") {
+                                        router.push("/student");
+                                    } else {
+                                        router.push(primaryPath);
+                                    }
+                                } else {
+                                    router.push(primaryPath);
+                                }
+                            }}
+                        >
+                            {primaryText}
+                        </PublicButton>
 
-                                navigate(primaryPath);
-
-                            }
-
-                        }}
-                    >
-                        {primaryText}
-                    </button>
-
-                    <button
-                        className="secondary-btn"
-                        onClick={() => navigate(-1)}
-                    >
-                        {secondaryText}
-                    </button>
-
-                </div>} 
+                        <PublicButton
+                            variant="outline"
+                            size="medium"
+                            className="status-secondary-button"
+                            onClick={() => router.back()}
+                        >
+                            {secondaryText}
+                        </PublicButton>
+                    </div>
+                )}
 
             </motion.div>
 

@@ -1,10 +1,12 @@
 import axios from "axios";
 
-const serverSideURI = "https://tech-monster-dev.onrender.com/api";
 const testing = false;
+const serverSideURI =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://tech-monster-dev.onrender.com/api";
 
 const api = axios.create({
-    baseURL: `${testing ? "http://localhost:8001/api" : serverSideURI || import.meta.env.VITE_API_URL}`,
+    baseURL: testing ? "http://localhost:8001/api" : serverSideURI,
     withCredentials: true,
     timeout: 30000, // Increased timeout to 60s for slow email sending / cold starts
     headers: {
@@ -71,8 +73,8 @@ api.interceptors.response.use(
                 localStorage.removeItem("user");
                 localStorage.removeItem("admin");
 
-                if (window.location.pathname !== "/session-expired") {
-                    window.location.href = "/session-expired";
+                if (window.location.pathname !== "/error_status/session-expired") {
+                    window.location.href = "/error_status/session-expired";
                 }
 
                 break;
@@ -80,18 +82,18 @@ api.interceptors.response.use(
 
             case 403:
                 if (error.response?.data?.message === "Your account has been blocked.") {
-                    window.location.href = "/account-blocked";
+                    window.location.href = "/error_status/account-blocked";
                 } else {
-                    window.location.href = "/unauthorized";
+                    window.location.href = "/error_status/unauthorized";
                 }
                 break;
 
             case 429:
-                window.location.href = "/429";
+                window.location.href = "/error_status/429";
                 break;
 
             case 503:
-                window.location.href = "/503";
+                window.location.href = "/error_status/503";
                 break;
 
             default:

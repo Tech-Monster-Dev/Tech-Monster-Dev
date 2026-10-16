@@ -1,7 +1,8 @@
 import './Sidebar.css';
 
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
 
@@ -46,8 +47,8 @@ function Sidebar({
     enrolledCourse
 }) {
 
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
+    const pathname = usePathname();
 
     const [loading, setLoading] = useState(false);
     const [showDailyTaskWarning, setShowDailyTaskWarning] = useState(false);
@@ -58,7 +59,7 @@ function Sidebar({
             behavior: "smooth",
             block: "center",
         });
-    }, [location.pathname]);
+    }, [pathname]);
 
 
     useEffect(() => {
@@ -66,7 +67,7 @@ function Sidebar({
             onCloseMobileSidebar?.();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.pathname]);
+    }, [pathname]);
 
     const lessonPath = enrolledCourse?.type && enrolledCourse?.slug ? `/student/lessons/${enrolledCourse.type}/${enrolledCourse.slug}` : "/student/lessons";
 
@@ -124,11 +125,7 @@ function Sidebar({
     const handleLessonsContinue = () => {
         setShowLessonsWarning(false);
 
-        navigate("/student/dashboard", {
-            state: {
-                activeSection: "enrolled",
-            },
-        });
+        router.push("/student/dashboard?section=enrolled");
 
         onCloseMobileSidebar?.();
     };
@@ -178,16 +175,12 @@ function Sidebar({
                     // Navigation can continue even if localStorage is unavailable.
                 }
 
-                navigate(`/student/lessons/${item.type}/${item.slug}`);
+                router.push(`/student/lessons/${item.type}/${item.slug}`);
                 onCloseMobileSidebar?.();
                 return;
             }
 
-            navigate("/student/dashboard", {
-                state: {
-                    activeSection: "enrolled",
-                },
-            });
+            router.push("/student/dashboard?section=enrolled");
             onCloseMobileSidebar?.();
         } catch (error) {
             console.error("Failed to load enrollments for Daily Task:", error);
@@ -208,7 +201,7 @@ function Sidebar({
         try {
             await logout();
             sessionStorage.setItem("logoutSuccess", "true");
-            navigate("/login", { replace: true });
+            router.replace("/auth/login");
         } catch (error) {
             console.error(error);
         } finally {
@@ -300,10 +293,10 @@ function Sidebar({
 
                             const isActive =
                                 link.name === "Lessons"
-                                    ? location.pathname.startsWith("/student/lessons")
+                                    ? pathname.startsWith("/student/lessons")
                                     : link.name === "Daily Task"
-                                        ? location.pathname.startsWith("/student/tasks")
-                                        : location.pathname === link.path;
+                                        ? pathname.startsWith("/student/tasks")
+                                        : pathname === link.path;
 
                             return (
                                 <li
@@ -316,18 +309,7 @@ function Sidebar({
                                         disabled={!collapsed}
                                     >
                                         <Link
-                                            to={link.path}
-                                            state={
-                                                (link.name === "Daily Task" || link.name === "Certificate") && enrolledCourse
-                                                    ? {
-                                                        programId: enrolledCourse.programId,
-                                                        programType: enrolledCourse.type,
-                                                        courseTitle: enrolledCourse.title,
-                                                        courseSlug: enrolledCourse.slug,
-                                                        type: enrolledCourse.type
-                                                    }
-                                                    : undefined
-                                            }
+                                            href={link.path}
                                             onClick={(e) => {
                                                 handleLinkClick(e, link);
                                                 onCloseMobileSidebar?.();
@@ -362,9 +344,9 @@ function Sidebar({
                         disabled={!collapsed}
                     >
                         <Link
-                            to={`/${role}/settings`}
+                            href={`/${role}/settings`}
                             className={
-                                location.pathname.includes("settings")
+                                pathname.includes("settings")
                                     ? "active"
                                     : ""
                             }

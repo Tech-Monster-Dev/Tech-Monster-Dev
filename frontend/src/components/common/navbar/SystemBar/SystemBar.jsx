@@ -1,57 +1,58 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import "./SystemBar.css";
 
-const SystemBar = ({user = ''}) => {
-
-  const [dateTime, setDateTime] = useState(new Date());
+const SystemBar = ({ user = "" }) => {
+  const [mounted, setMounted] = useState(false);
+  const [dateTime, setDateTime] = useState(null);
 
   useEffect(() => {
+    const initialTimer = setTimeout(() => {
+      setMounted(true);
+      setDateTime(new Date());
+    }, 0);
+
     const timer = setInterval(() => {
       setDateTime(new Date());
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(timer);
+    };
   }, []);
 
+  const formattedDate = dateTime
+    ? dateTime.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "--";
+
+  const formattedTime = dateTime
+    ? dateTime.toLocaleTimeString("en-IN")
+    : "--";
 
   return (
     <div className="system-bar">
-
-      {/* Left Side */}
       <div className="hostname">
-        HOST : {user}-SERVER
+        HOST : {mounted ? user : ""}-SERVER
       </div>
 
-
-      {/* Center */}
       <div className="system-status">
-
         <span className="blink-dot"></span>
-
         SYSTEM ONLINE
-
       </div>
 
-
-      {/* Right Side */}
       <div className="datetime">
-
-        {dateTime.toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-        })}
-
+        {formattedDate}
         &nbsp; | &nbsp;
-
-        {dateTime.toLocaleTimeString("en-IN")}
-
+        {formattedTime}
       </div>
-
-
     </div>
   );
 };
-
 
 export default SystemBar;

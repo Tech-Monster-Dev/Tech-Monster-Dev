@@ -1,4 +1,4 @@
-import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
+const defaultProfileImage = "/assets/profile/default-profile.svg";
 import "./ResourceFeedbackCard.css";
 
 const getStudentName = (student) =>

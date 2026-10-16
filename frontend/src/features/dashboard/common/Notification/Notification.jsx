@@ -1,6 +1,6 @@
 import "./Notification.css";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useRouter, usePathname } from "next/navigation";
 import {
   FiArrowRight,
   FiMessageCircle,
@@ -17,8 +17,12 @@ import { getSubmissionByTaskId } from "../../../../services/api/adminTask.servic
 
 
 export default function Notification() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
+  const pathname = usePathname();
+  const navigateWithState = (path, state) => {
+    if (state) sessionStorage.setItem("tech-monster-navigation-state", JSON.stringify(state));
+    router.push(path);
+  };
   const autoReadTriggered = useRef(false);
 
   const [followedBackIds, setFollowedBackIds] = useState(new Set());
@@ -33,7 +37,7 @@ export default function Notification() {
     removeNotification,
   } = useNotification();
 
-  const role = location.pathname.startsWith("/admin") ? "admin" : "student";
+  const role = pathname.startsWith("/admin") ? "admin" : "student";
 
   useEffect(() => {
     if (
@@ -61,30 +65,17 @@ export default function Notification() {
     const type = notification.type;
 
     if (type === "message" && context.conversationId) {
-      navigate(role === "admin" ? "/admin/support" : "/student/help&support",
-        {
-          state: {
-            notificationConversationId: String(
-              context.conversationId
-            ),
-          },
-        }
-      );
+      navigateWithState(role === "admin" ? "/admin/support" : "/student/help&support", { notificationConversationId: String(context.conversationId) });
       return;
     }
 
     if (type === "message" && context.senderId) {
-      navigate(`/${role}/message`, {
-        state: {
-          notificationUserId: String(context.senderId),
-          notificationMessageId: context.messageId ? String(context.messageId) : null,
-        },
-      });
+      navigateWithState(`/${role}/message`, { notificationUserId: String(context.senderId), notificationMessageId: context.messageId ? String(context.messageId) : null });
       return;
     }
 
     if (type === "follow" && context.followerId) {
-      navigate(`/student/user-profile/${context.followerId}`);
+      router.push(`/student/user-profile/${context.followerId}`);
       return;
     }
 
@@ -92,23 +83,18 @@ export default function Notification() {
       const programId = context.programId || context.internshipId || context.courseId;
 
       if (programId) {
-        navigate("/student/certificate", {
-          state: {
-            programId: String(programId),
-            programType: context.programType || null,
-          },
-        });
+        navigateWithState("/student/certificate", { programId: String(programId), programType: context.programType || null });
         return;
       }
 
-      navigate("/student/certificate");
+      router.push("/student/certificate");
       return;
     }
 
     if (context.taskId) {
       if (role === "admin") {
         if (context.submissionId) {
-          navigate(`/admin/tasks/${context.submissionId}`);
+          router.push(`/admin/tasks/${context.submissionId}`);
           return;
         }
 
@@ -116,14 +102,14 @@ export default function Notification() {
           const res = await getSubmissionByTaskId(context.taskId);
 
           if (res?.submission?._id) {
-            navigate(`/admin/tasks/${res.submission._id}`);
+            router.push(`/admin/tasks/${res.submission._id}`);
             return;
           }
         } catch {
           // Fall back to legacy Task notification.
         }
 
-        navigate(`/admin/tasks/${context.taskId}`);
+        router.push(`/admin/tasks/${context.taskId}`);
         return;
       }
 
@@ -133,23 +119,17 @@ export default function Notification() {
             ? "internship"
             : "course";
 
-        navigate(`/student/tasks/${type}/${context.courseSlug}`, {
-          state: {
-            moduleId: context.moduleId || null,
-            lessonId: context.lessonId || null,
-            taskId: context.taskId,
-          },
-        });
+        navigateWithState(`/student/tasks/${type}/${context.courseSlug}`, { moduleId: context.moduleId || null, lessonId: context.lessonId || null, taskId: context.taskId });
         return;
       }
 
-      navigate("/student/tasks");
+      router.push("/student/tasks");
       return;
     }
 
     if (context.submissionId) {
       if (role === "admin") {
-        navigate(`/admin/tasks/${context.submissionId}`);
+        router.push(`/admin/tasks/${context.submissionId}`);
         return;
       }
 
@@ -159,17 +139,11 @@ export default function Notification() {
             ? "internship"
             : "course";
 
-        navigate(`/student/tasks/${type}/${context.courseSlug}`, {
-          state: {
-            moduleId: context.moduleId || null,
-            lessonId: context.lessonId || null,
-            taskId: context.taskId || null,
-          },
-        });
+        navigateWithState(`/student/tasks/${type}/${context.courseSlug}`, { moduleId: context.moduleId || null, lessonId: context.lessonId || null, taskId: context.taskId || null });
         return;
       }
 
-      navigate("/student/tasks");
+      router.push("/student/tasks");
     }
   };
 
