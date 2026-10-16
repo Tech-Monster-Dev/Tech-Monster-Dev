@@ -2,7 +2,7 @@ import "./AdminCoursesInternships.css";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiBookOpen, FiBriefcase, FiUsers, FiPlus } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import SectionTabs from "../../../layouts/SectionTabs";
@@ -27,7 +27,7 @@ export default function AdminCoursesInternships() {
     const [enrolledCourses, setEnrolledCourses] = useState([]);
     const [enrolledInternships, setEnrolledInternships] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const [selectedProgram, setSelectedProgram] = useState(null);
     const [selectedEnrolledProgram, setSelectedEnrolledProgram] = useState(null);
@@ -208,7 +208,7 @@ export default function AdminCoursesInternships() {
                         icon={<FiPlus />}
                         iconPosition="left"
                         className="adminLearningAddButton"
-                        onClick={() => navigate("/admin/course-form")}
+                        onClick={() => router.push("/admin/course-form")}
                     >
                         Add Course
                     </DashButton>
@@ -219,7 +219,7 @@ export default function AdminCoursesInternships() {
                         icon={<FiPlus />}
                         iconPosition="left"
                         className="adminLearningAddButton"
-                        onClick={() => navigate("/admin/internships-form")}
+                        onClick={() => router.push("/admin/internships-form")}
                     >
                         Add Internship
                     </DashButton>

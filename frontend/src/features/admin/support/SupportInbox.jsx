@@ -1,7 +1,6 @@
 import "./SupportInbox.css";
 
 import { useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { FiMessageCircle, FiRefreshCw, FiUser } from "react-icons/fi";
 
 import {
@@ -50,8 +49,26 @@ const SELECTED_SUPPORT_CONVERSATION_KEY = "admin-support-selected-conversation";
 
 export default function SupportInbox() {
 
-    const location = useLocation();
-    const navigate = useNavigate();
+    const [notificationConversationId, setNotificationConversationId] = useState(null);
+
+    useEffect(() => {
+        try {
+            const saved = sessionStorage.getItem("tech-monster-navigation-state");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed?.notificationConversationId) {
+                    queueMicrotask(() => {
+                        setNotificationConversationId(parsed.notificationConversationId);
+                    });
+                    sessionStorage.removeItem("tech-monster-navigation-state");
+                } else {
+                    sessionStorage.setItem("tech-monster-navigation-state", saved);
+                }
+            }
+        } catch {
+            sessionStorage.removeItem("tech-monster-navigation-state");
+        }
+    }, []);
 
     const [conversations, setConversations] = useState([]);
     const [selectedConversation, setSelectedConversation] =
@@ -147,8 +164,6 @@ export default function SupportInbox() {
     }, [loadInbox]);
 
     useEffect(() => {
-        const notificationConversationId = location.state?.notificationConversationId;
-
         if (
             !notificationConversationId ||
             conversations.length === 0
@@ -173,17 +188,11 @@ export default function SupportInbox() {
 
         queueMicrotask(() => {
             setSelectedConversation(targetConversation);
-        });
-
-        navigate(location.pathname, {
-            replace: true,
-            state: {}
+            setNotificationConversationId(null);
         });
     }, [
         conversations,
-        location.pathname,
-        location.state?.notificationConversationId,
-        navigate
+        notificationConversationId
     ]);
 
     useEffect(() => {

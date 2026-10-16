@@ -1,6 +1,5 @@
 import "./Practical.css";
 
-import TryItYourself from "../TryItYourself";
 import CodeBlock from "../CodeBlock";
 
 const parseSolution = (solution) => {
@@ -106,9 +105,9 @@ export default function Practical({
             ) : null}
 
             {practicalCode ? (
-                <TryItYourself key={practicalCode}
+                <CodeBlock
+                    code={practicalCode}
                     language={language}
-                    starterCode={practicalCode}
                 />
             ) : null}
 

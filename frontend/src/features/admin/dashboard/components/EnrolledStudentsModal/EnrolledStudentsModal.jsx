@@ -7,9 +7,9 @@ import {
     FiUsers,
     FiX,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
-import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
+const defaultProfileImage = "/assets/profile/default-profile.svg";
 
 const getStudentName = (student) => {
     const fullName = [
@@ -49,7 +49,7 @@ const EnrolledStudentsModal = ({
     students = [],
     onClose,
 }) => {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     if (!open || !item) {
         return null;
@@ -72,7 +72,7 @@ const EnrolledStudentsModal = ({
         }
 
         onClose?.();
-        navigate(`/admin/students/${student._id}`);
+        router.push(`/admin/students/${student._id}`);
     };
 
     return (

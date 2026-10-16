@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import "./ApprovalPreviewModal.css";
 
-const DEFAULT_PROFILE_IMAGE = "/profile/default-profile.svg";
+const DEFAULT_PROFILE_IMAGE = "/assets/profile/default-profile.svg";
 
 const getStudentName = (submission) => {
     const firstName = submission?.student?.firstName || "";
@@ -108,7 +108,7 @@ export default function ApprovalPreviewModal({
     submission,
     onClose,
 }) {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         if (!submission) return undefined;
@@ -152,7 +152,7 @@ export default function ApprovalPreviewModal({
         if (!submission?._id) return;
 
         onClose?.();
-        navigate(`/admin/tasks/${submission._id}`);
+        router.push(`/admin/tasks/${submission._id}`);
     };
 
     const handleBackdropClick = (event) => {

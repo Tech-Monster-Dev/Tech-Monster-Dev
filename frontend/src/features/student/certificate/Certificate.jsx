@@ -1,6 +1,6 @@
 import "./Certificate.css";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+
 import { toast } from "react-toastify";
 import { FiAward, FiDownload, FiCreditCard } from "react-icons/fi";
 import { motion } from "framer-motion";
@@ -16,7 +16,26 @@ import { getMyCertificates, downloadCertificate } from "../../../services/api/ce
 import useAttendanceData from "../attendance/hooks/useAttendanceData";
 
 export default function Certificate() {
-    const location = useLocation();
+    const [notificationState, setNotificationState] = useState(null);
+
+    useEffect(() => {
+        try {
+            const saved = sessionStorage.getItem("tech-monster-navigation-state");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed?.programId || parsed?.userName) {
+                    queueMicrotask(() => {
+                        setNotificationState(parsed);
+                    });
+                    sessionStorage.removeItem("tech-monster-navigation-state");
+                } else {
+                    sessionStorage.setItem("tech-monster-navigation-state", saved);
+                }
+            }
+        } catch {
+            sessionStorage.removeItem("tech-monster-navigation-state");
+        }
+    }, []);
 
     const [certificates, setCertificates] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,7 +44,7 @@ export default function Certificate() {
     const [downloadingId, setDownloadingId] = useState(null);
 
     const { dashboard } = useAttendanceData();
-    const rawUserName = dashboard?.user?.username || location.state?.userName || "Username";
+    const rawUserName = dashboard?.user?.username || notificationState?.userName || "Username";
 
     const userName = selectedCertificate?.certificate?.studentName || rawUserName.charAt(0).toUpperCase() + rawUserName.slice(1);
 
@@ -59,7 +78,7 @@ export default function Certificate() {
                     }
                 }
 
-                const notificationProgramId = location.state?.programId;
+                const notificationProgramId = notificationState?.programId;
 
                 if (notificationProgramId) {
                     const matchedCertificate = loadedCertificates.find(
@@ -86,7 +105,7 @@ export default function Certificate() {
         };
 
         loadCertificates();
-    }, [location.state?.programId]);
+    }, [notificationState?.programId]);
 
     const handleProgramClick = (certificate) => {
         setSelectedCertificate(certificate);

@@ -1,8 +1,8 @@
 import "./StudentCard.css";
-import defaultProfileImage from "../../../../../assets/profile/default-profile.svg";
+const defaultProfileImage = "/assets/profile/default-profile.svg";
 
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import StudentActionButtons from "../StudentActionButtons";
 
@@ -13,7 +13,7 @@ export default function StudentCard({
     onNotify
 }) {
 
-    const navigate = useNavigate();
+    const router = useRouter();
 
     return (
         <motion.div
@@ -37,7 +37,7 @@ export default function StudentCard({
                 className="studentCardTop"
                 onClick={() => {
                     if (!student.isDeleted) {
-                        navigate(`/admin/students/${student._id}`);
+                        router.push(`/admin/students/${student._id}`);
                     }
                 }}
             >

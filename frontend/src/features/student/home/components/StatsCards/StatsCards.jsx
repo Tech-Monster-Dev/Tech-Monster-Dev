@@ -50,28 +50,12 @@ const StatsCards = ({ stats }) => {
 
   return (
     <div className="stats-grid">
-      {data.map((item, index) => {
+      {data.map((item) => {
         const Icon = item.icon;
         return (
           <motion.div
             key={item.id}
             className="stats-card"
-            initial={{
-              opacity: 0,
-              y: 70,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-            }}
-            viewport={{
-              once: true,
-              amount: 0.25,
-            }}
-            transition={{
-              delay: index * 0.15,
-              duration: 0.6,
-            }}
             whileHover={{
               y: -8,
               scale: 1.02,

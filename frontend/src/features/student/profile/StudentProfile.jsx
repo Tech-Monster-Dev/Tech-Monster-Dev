@@ -5,7 +5,7 @@ import {
   useState
 } from "react";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 import { socket } from "../../../services/socket/socket";
 
 import ProfileHeader from "./components/ProfileHeader";
@@ -21,7 +21,7 @@ import {followUser, unfollowUser} from "../../../services/api/follow.service";
 
 export default function StudentProfile() {
   const { userId } = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const loginUser = tokenStorage.getUser();
   const isOwnProfile = String(loginUser?._id || loginUser?.id || "") === String(userId);
 
@@ -164,11 +164,18 @@ export default function StudentProfile() {
       return;
     }
 
-    navigate("/student/message", {
-      state: {
+    try {
+      sessionStorage.setItem(
+        "tech-monster-navigation-state",
+        JSON.stringify({
         notificationUserId: String(userId)
-      }
-    });
+        })
+      );
+    } catch {
+      // Messaging can still open even if storage is unavailable.
+    }
+
+    router.push("/student/message");
   };
 
   useSkeletonScrollLock(loading);

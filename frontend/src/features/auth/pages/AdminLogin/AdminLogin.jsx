@@ -1,7 +1,8 @@
 import "./AdminLogin.css";
 
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { toast } from "react-toastify";
 
@@ -19,7 +20,7 @@ import { validateField, validateForm } from "../../../../shared/utils/validation
 
 function AdminLogin() {
 
-    const navigate = useNavigate();
+    const router = useRouter();
     const { login } = useAuth();
 
     const [formData, setFormData] = useState({
@@ -70,7 +71,7 @@ function AdminLogin() {
                 user
             });
 
-            navigate("/admin");
+            router.push("/admin");
 
         } catch (err) {
             const msg = err.response?.data?.message || "Something went wrong";
@@ -118,7 +119,7 @@ function AdminLogin() {
                 >
                     <p className="user-login-link">
                         User login !
-                        <Link to="/login">
+                        <Link href="/auth/login">
                             Login
                         </Link>
                     </p>

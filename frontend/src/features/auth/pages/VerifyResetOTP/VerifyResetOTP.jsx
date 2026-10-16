@@ -1,7 +1,7 @@
 import "../../styles/VerifyOTP.css";
 
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
 
 import AuthLayout from "../../../../layouts/AuthLayout";
@@ -26,28 +26,21 @@ const otpRules = {
 
 function VerifyResetOTP() {
 
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
+    const [email, setEmail] = useState(null);
+    const [checkingEmail, setCheckingEmail] = useState(true);
 
-    const email = location.state?.email;
+    useEffect(() => {
+        queueMicrotask(() => {
+            setEmail(sessionStorage.getItem("resetOtpEmail"));
+            setCheckingEmail(false);
+        });
+    }, []);
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
     const [resending, setResending] = useState(false);
     const [errors, setErrors] = useState({});
-    const [timer, setTimer] = useState(() => {
-        const expiresAt = localStorage.getItem("resetOtpExpiresAt");
-
-        if (!expiresAt) {
-            return 0;
-        }
-
-        return Math.max(
-            Math.ceil(
-                (Number(expiresAt) - Date.now()) / 1000
-            ),
-            0
-        );
-    });
+    const [timer, setTimer] = useState(600);
 
     useEffect(() => {
         const updateTimer = () => {
@@ -90,39 +83,6 @@ function VerifyResetOTP() {
     ]
 
 
-
-    useEffect(() => {
-        if (!email) {
-            navigate("/forgot-password");
-        }
-    }, [email, navigate]);
-
-    useEffect(() => {
-        if (timer <= 0) {
-            localStorage.removeItem("resetOtpExpiresAt");
-            return;
-        }
-
-        const interval = setInterval(() => {
-            const expiresAt = Number(
-                localStorage.getItem("resetOtpExpiresAt")
-            );
-
-            const remaining = Math.ceil(
-                (expiresAt - Date.now()) / 1000
-            );
-
-            if (remaining <= 0) {
-                setTimer(0);
-                localStorage.removeItem("resetOtpExpiresAt");
-            } else {
-                setTimer(remaining);
-            }
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [timer]);
-
     const handleChange = (e) => {
         setOtp(e.target.value);
 
@@ -161,11 +121,8 @@ function VerifyResetOTP() {
                 purpose: "forgot-password"
             });
 
-            navigate("/reset-password", {
-                state: {
-                    email
-                }
-            });
+            sessionStorage.setItem("resetPasswordEmail", email);
+            router.push("/auth/reset-password");
         }
         catch (err) {
             toast.error(err.response?.data?.message || "Something went wrong");
@@ -182,7 +139,7 @@ function VerifyResetOTP() {
                 email,
                 purpose: "forgot-password"
             });
-            const expiresAt = Date.now() + 60 * 1000;
+            const expiresAt = Date.now() + 10 * 60 * 1000;
 
             localStorage.setItem(
                 "resetOtpExpiresAt",
@@ -238,7 +195,7 @@ function VerifyResetOTP() {
                     actions={actions}
                 >
                     {timer > 0 ?
-                        <p>Resend OTP in {timer}s</p>
+                        <p>Resend OTP in {String(Math.floor(timer / 60)).padStart(2, "0")}:{String(timer % 60).padStart(2, "0")}</p>
                         :
                         <AuthButton
                             type="button"

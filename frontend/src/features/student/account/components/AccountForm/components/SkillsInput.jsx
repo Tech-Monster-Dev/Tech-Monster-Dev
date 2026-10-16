@@ -21,7 +21,6 @@ function SkillsInput({
                 htmlFor="skill-input"
             >
                 Add Skills (Maximum 7)
-                <span className={skills.length > 0 || skillInput.trim() ? "labelSpanGreen" : "labelSpanRed"}>*</span>
             </label>
 
             <div className="skills-input-container">

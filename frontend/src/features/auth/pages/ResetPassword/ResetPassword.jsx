@@ -1,7 +1,7 @@
 import "./ResetPassword.css";
 
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
@@ -31,9 +31,16 @@ const resetPasswordRules = {
 
 function ResetPassword() {
 
-    const navigate = useNavigate();
-    const location = useLocation();
-    const email = location.state?.email;
+    const router = useRouter();
+    const [email, setEmail] = useState(null);
+    const [checkingEmail, setCheckingEmail] = useState(true);
+
+    useEffect(() => {
+        queueMicrotask(() => {
+            setEmail(sessionStorage.getItem("resetPasswordEmail"));
+            setCheckingEmail(false);
+        });
+    }, []);
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
@@ -43,12 +50,10 @@ function ResetPassword() {
     });
 
     useEffect(() => {
-        if (!email) {
-            navigate("/forgot-password", {
-                replace: true
-            });
+        if (!checkingEmail && !email) {
+            router.replace("/auth/forgot-password");
         }
-    }, [email, navigate]);
+    }, [email, router, checkingEmail]);
 
     const fields = [
         {
@@ -134,12 +139,9 @@ function ResetPassword() {
                 confirmPassword: formData.confirmPassword
             });
 
-            navigate("/login", {
-                replace: true,
-                state: {
-                    success: "Password changed successfully."
-                }
-            });
+            sessionStorage.removeItem("resetOtpEmail");
+            sessionStorage.removeItem("resetPasswordEmail");
+            router.replace("/auth/login");
 
             toast.success("Password changed successfully.");
 

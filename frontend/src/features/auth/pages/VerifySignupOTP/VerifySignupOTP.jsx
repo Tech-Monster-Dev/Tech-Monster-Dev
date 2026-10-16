@@ -1,7 +1,7 @@
 import "../../styles/VerifyOTP.css";
 
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
 
 import useAuth from "../../../../shared/hooks/useAuth";
@@ -18,30 +18,23 @@ import { validateField, validateForm } from "../../../../shared/utils/validation
 
 function VerifySignupOTP() {
 
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
     const { login } = useAuth();
+    const [email, setEmail] = useState(null);
+    const [checkingEmail, setCheckingEmail] = useState(true);
 
-    const email = location.state?.email;
+    useEffect(() => {
+        queueMicrotask(() => {
+            setEmail(sessionStorage.getItem("signupOtpEmail"));
+            setCheckingEmail(false);
+        });
+    }, []);
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
     const [resending, setResending] = useState(false);
     const [errors, setErrors] = useState({});
 
-    const [timer, setTimer] = useState(() => {
-        const expiresAt = localStorage.getItem("signupOtpExpiresAt");
-
-        if (!expiresAt) {
-            return 0;
-        }
-
-        return Math.max(
-            Math.ceil(
-                (Number(expiresAt) - Date.now()) / 1000
-            ),
-            0
-        );
-    });
+    const [timer, setTimer] = useState(0);
 
     useEffect(() => {
         const updateTimer = () => {
@@ -93,37 +86,7 @@ function VerifySignupOTP() {
         },
     }
 
-    useEffect(() => {
-        if (!email) {
-            navigate("/signup");
-        }
-    }, [email, navigate]);
 
-    useEffect(() => {
-        if (timer <= 0) {
-            localStorage.removeItem("signupOtpExpiresAt");
-            return;
-        }
-
-        const interval = setInterval(() => {
-            const expiresAt = Number(
-                localStorage.getItem("signupOtpExpiresAt")
-            );
-
-            const remaining = Math.ceil(
-                (expiresAt - Date.now()) / 1000
-            );
-
-            if (remaining <= 0) {
-                setTimer(0);
-                localStorage.removeItem("signupOtpExpiresAt");
-            } else {
-                setTimer(remaining);
-            }
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [timer]);
 
     const handleChange = (e) => {
         setOtp(e.target.value);
@@ -169,19 +132,16 @@ function VerifySignupOTP() {
             });
 
             const role = response.data.user.role;
+            sessionStorage.removeItem("signupOtpEmail");
             switch (role) {
                 case "student":
-                    navigate("/student", {
-                        replace: true
-                    });
+                    router.replace("/student");
                     break;
                 case "admin":
-                    navigate("/admin", {
-                        replace: true
-                    });
+                    router.replace("/admin");
                     break;
                 default:
-                    navigate("/login");
+                    router.replace("/auth/login");
             }
         }
         catch (err) {
@@ -206,7 +166,7 @@ function VerifySignupOTP() {
                 expiresAt.toString()
             );
 
-            setTimer(60);
+            setTimer(600);
 
             toast.success("OTP sent to your email");
         }
@@ -256,7 +216,7 @@ function VerifySignupOTP() {
                     actions={actions}
                 >
                     {timer > 0 ?
-                        <p>Resend OTP in {timer}s</p>
+                        <p>Resend OTP in {String(Math.floor(timer / 60)).padStart(2, "0")}:{String(timer % 60).padStart(2, "0")}</p>
                         :
                         <AuthButton
                             type="button"

@@ -1,7 +1,8 @@
+"use client";
 import "./SearchBar.css";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { FiSearch, FiX, FiBookOpen, FiUser } from "react-icons/fi";
 import StudentBadgeAvatar from "../../../features/dashboard/common/StudentBadgeAvatar";
 import { searchInternships, searchUsers } from "../../../services/api/search.service";
@@ -10,10 +11,9 @@ const COURSES_EMPTY_MSG = "We couldn't find any courses or internships matching 
 const USERS_EMPTY_MSG = "User not found.";
 
 function SearchBar() {
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const searchParams = new URLSearchParams(location.search);
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const queryParam = searchParams.get("search") || "";
 
     const [searchTerm, setSearchTerm] = useState(queryParam);
@@ -42,10 +42,7 @@ function SearchBar() {
         setSearched(false);
         setShowDropdown(false);
 
-        if (location.pathname.includes("/student/home")) {
-            navigate("/student/home", { replace: true });
-        }
-    }, [location.pathname, navigate]);
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -175,17 +172,7 @@ function SearchBar() {
     }, [searchTerm]);
 
     const handleInputChange = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-
-        // Keep the URL query in sync when on the home page.
-        if (location.pathname.includes("/student/home")) {
-            if (value.trim() !== "") {
-                navigate(`/student/home?search=${encodeURIComponent(value)}`, { replace: true });
-            } else {
-                navigate(`/student/home`, { replace: true });
-            }
-        }
+        setSearchTerm(e.target.value);
     };
 
     const handleCourseClick = (item) => {
@@ -204,18 +191,15 @@ function SearchBar() {
             JSON.stringify(preview)
         );
 
-        navigate("/student/dashboard", {
-            state: {
-                activeSection: type === "course" ? "courses" : "internships",
-            },
-        });
+        sessionStorage.setItem("tech-monster-dashboard-section", type === "course" ? "courses" : "internships");
+        router.push(`/student/dashboard?section=${type === "course" ? "courses" : "internships"}`);
     };
 
     const handleUserClick = (user) => {
 
         setShowDropdown(false);
 
-        navigate(
+        router.push(
             `/student/user-profile/${user?._id}`
         );
     };

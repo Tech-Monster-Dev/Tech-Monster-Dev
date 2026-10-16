@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* ==========================================
+   CONTACT PAGE
+========================================== */
+
+.section[data-section="contact"] { min-height: 100vh; background: #020617 !important; }
+.contact-page > .cyber-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.contact-page > :not(.cyber-bg) { position: relative; z-index: 1; }
+.contact-page {
+    background: #020617 !important;
+    color: #f8fafc;
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+
+
+    @apply relative isolate w-full rounded-(--radius) bg-transparent p-[clamp(1rem,2vw,2rem)] shadow-[0_0_0.625rem_var(--neon)] motion-reduce:animate-none motion-reduce:transition-none;
+
+    animation: blueNeon 3s linear infinite;
+    transition: all 0.3s;
+}
+
+
+/* ==========================================
+   CONTACT CONTAINER
+========================================== */
+
+.contact-container {
+    @apply mx-auto grid w-full items-start gap-[clamp(1.25rem,3vw,3rem)] grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] max-[991px]:flex max-[991px]:flex-col-reverse max-[991px]:items-center;
+}
+
+
+/* ==========================================
+   CONTACT INFORMATION
+========================================== */
+
+.contact-info {
+    @apply flex w-full min-w-0 flex-col gap-[clamp(1rem,1.5vw,1.5rem)];
+}
+
+
+/* ==========================================
+   INFORMATION CARD
+========================================== */
+
+.info-card {
+    @apply flex min-w-0 cursor-pointer items-center gap-[clamp(1rem,2vw,1.3rem)] rounded-(--radius) bg-(--surface) p-[clamp(1rem,2vw,1.5rem)] transition-[transform,border-color,box-shadow] duration-300 ease-in-out motion-reduce:transition-none max-[991px]:w-full max-[991px]:items-start;
+    
+    border: 0.0625rem solid transparent;
+}
+
+
+.info-card:hover {
+    @apply -translate-y-1.5 shadow-[0_0_1.25rem_var(--neon)];
+
+    border-color: var(--neon);
+}
+
+
+/* ==========================================
+   INFORMATION ICON
+========================================== */
+
+.info-icon {
+    @apply flex h-[clamp(3.25rem,5vw,3.75rem)] w-[clamp(3.25rem,5vw,3.75rem)] shrink-0 items-center justify-center rounded-full p-[clamp(0.8rem,2vw,1rem)] text-[clamp(1.1rem,1.5vw,1.25rem)] transition-[filter] duration-300 ease-in-out motion-reduce:transition-none;
+    
+    background: var(--neon-overlay);
+    color: var(--success);
+}
+
+
+.info-card:hover .info-icon {
+    filter: drop-shadow(0 0 1.25rem var(--success));
+}
+
+
+/* ==========================================
+   INFORMATION CONTENT
+========================================== */
+
+.info-content {
+    @apply min-w-0;
+}
+
+
+.info-card h3 {
+    @apply mb-[0.4rem] text-[clamp(1.1rem,1.5vw,1.25rem)];
+}
+
+
+.info-card p {
+    @apply leading-[1.6];
+
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+
+/* ==========================================
+   CONTACT FORM CONTAINER
+========================================== */
+
+.contact-form {
+    @apply rounded-(--radius) bg-(--surface) p-[clamp(1rem,2vw,2rem)] transition-shadow duration-300 ease-in-out motion-reduce:transition-none max-[991px]:w-full;
+    
+    border: 0.0625rem solid var(--neon-grid);
+}
+
+
+.contact-form:hover {
+    box-shadow: 0 0 0.625rem var(--glow);
+}
+
+
+/* ==========================================
+   FORM CONTENT
+========================================== */
+
+.contact-form-fields {
+    @apply w-full;
+}
+
+
+/* ==========================================
+   RESPONSIVE CONTROL
+========================================== */
+
+@media (max-width: 991px) {
+
+    .contact-container {
+        @apply flex flex-col-reverse items-center;
+    }
+
+}

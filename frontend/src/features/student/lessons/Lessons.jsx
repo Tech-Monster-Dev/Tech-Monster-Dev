@@ -6,7 +6,7 @@ import {
     useRef,
     useState,
 } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -32,10 +32,36 @@ export default function Lessons() {
     const contentType = routeType === "internship" ? "internship" : "course";
     const courseSlug = normalizeSlug(routeSlug || routeCourseSlug || "");
 
-    const location = useLocation();
-    const navigationApprovedModuleId = location.state?.approvedModuleId || null;
-    const navigationRecentCompletedLessonId =
-        location.state?.recentCompletedLessonId || null;
+    const [navigationApprovedModuleId, setNavigationApprovedModuleId] = useState(null);
+    const [navigationRecentCompletedLessonId, setNavigationRecentCompletedLessonId] = useState(null);
+
+    useEffect(() => {
+        const approvedModuleId = sessionStorage.getItem("tech-monster-approved-module-id");
+        const navigationState = sessionStorage.getItem("tech-monster-navigation-state");
+
+        if (approvedModuleId) {
+            queueMicrotask(() => {
+                setNavigationApprovedModuleId(approvedModuleId);
+            });
+            sessionStorage.removeItem("tech-monster-approved-module-id");
+        }
+
+        if (navigationState) {
+            try {
+                const parsed = JSON.parse(navigationState);
+                queueMicrotask(() => {
+                    setNavigationRecentCompletedLessonId(parsed.recentCompletedLessonId || null);
+                    if (parsed.approvedModuleId) {
+                        setNavigationApprovedModuleId(parsed.approvedModuleId);
+                    }
+                });
+            } catch {
+                // Ignore malformed navigation state.
+            } finally {
+                sessionStorage.removeItem("tech-monster-navigation-state");
+            }
+        }
+    }, []);
 
     const [activeLesson, setActiveLesson] = useState(0);
     const [readPercent, setReadPercent] = useState(0);

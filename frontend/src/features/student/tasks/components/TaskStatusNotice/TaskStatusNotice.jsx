@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiClock, FiAlertTriangle } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 import "./TaskStatusNotice.css";
 
@@ -62,7 +62,7 @@ export default function TaskStatusNotice({ submittedAt, status }) {
                         <FiAlertTriangle />
                         <span>
                             Taking longer than usual?{" "}
-                            <Link to="/student/help&support">
+                            <Link href="/student/help&support">
                                 Contact Our Support Team
                             </Link>
                         </span>

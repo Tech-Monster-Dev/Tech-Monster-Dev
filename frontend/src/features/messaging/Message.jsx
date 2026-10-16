@@ -1,6 +1,5 @@
 import "./Message.css";
 import { useEffect, useState, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import {
     getChatUsers,
@@ -26,8 +25,24 @@ import ChatInput from "./components/ChatInput";
 
 
 export default function Message() {
-    const location = useLocation();
-    const navigate = useNavigate();
+    const [notificationState, setNotificationState] = useState(null);
+
+    useEffect(() => {
+        try {
+            const saved = sessionStorage.getItem("tech-monster-navigation-state");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed?.notificationUserId) {
+                    queueMicrotask(() => {
+                        setNotificationState(parsed);
+                    });
+                }
+                sessionStorage.removeItem("tech-monster-navigation-state");
+            }
+        } catch {
+            sessionStorage.removeItem("tech-monster-navigation-state");
+        }
+    }, []);
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [mobileChatOpen, setMobileChatOpen] = useState(false);
@@ -288,7 +303,7 @@ export default function Message() {
     };
 
     useEffect(() => {
-        if (users.length === 0 || selectedUser != null || location.state?.notificationUserId) {
+        if (users.length === 0 || selectedUser != null || notificationState?.notificationUserId) {
             return;
         }
 
@@ -304,11 +319,10 @@ export default function Message() {
         } else {
             localStorage.removeItem("messageSelectedUserId");
         }
-    }, [users, selectedUser, location.state?.notificationUserId]);
+    }, [users, selectedUser, notificationState?.notificationUserId]);
 
     useEffect(() => {
-        const notificationUserId =
-            location.state?.notificationUserId;
+        const notificationUserId = notificationState?.notificationUserId;
 
         if (!notificationUserId || users.length === 0) {
             return;
@@ -326,17 +340,11 @@ export default function Message() {
 
         queueMicrotask(() => {
             openChat(targetUser);
-        });
-
-        navigate(location.pathname, {
-            replace: true,
-            state: {}
+            setNotificationState(null);
         });
     }, [
         users,
-        location.pathname,
-        location.state?.notificationUserId,
-        navigate
+        notificationState?.notificationUserId
     ]);
 
     const closeMobileChat = () => {

@@ -6,7 +6,7 @@ import {
     FiBarChart2,
     FiCalendar,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import SectionTabs from "../../../layouts/SectionTabs";
 import Select from "../../../components/ui/Form/component/Select";
@@ -91,7 +91,7 @@ const getMonthName = (month) =>
     MONTHS.find((item) => item.value === month)?.label || "";
 
 const Reports = () => {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const current = useMemo(() => getCurrentDateParts(), []);
 
@@ -293,7 +293,7 @@ const Reports = () => {
     const handleActivityUserClick = (user) => {
         if (!user?._id) return;
 
-        navigate(
+        router.push(
             `/admin/reports/activity/${user._id}?year=${selectedYear}&month=${selectedMonth}`
         );
     };

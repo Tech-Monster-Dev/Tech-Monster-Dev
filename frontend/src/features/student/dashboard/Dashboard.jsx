@@ -1,7 +1,7 @@
 import "./Dashboard.css";
 
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import SectionTabs from "../../../layouts/SectionTabs";
 import EmptyState from "../../../components/ui/EmptyState";
@@ -17,8 +17,9 @@ import useDashboardData from "./hooks/useDashboardData";
 import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 
 function Dashboard() {
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
 
     const {
         dashboard,
@@ -32,42 +33,64 @@ function Dashboard() {
 
     useSkeletonScrollLock(loading);
 
-    const [preview, setPreview] = useState(() => {
+    const [preview, setPreview] = useState({
+        open: false,
+        item: null,
+        type: "course",
+    });
+
+    useEffect(() => {
         try {
             const savedPreview = localStorage.getItem("tech-monster-learning-preview");
-
-            if (!savedPreview) {
-                return {
-                    open: false,
-                    item: null,
-                    type: "course",
-                };
-            }
-
+            if (!savedPreview) return;
             const parsedPreview = JSON.parse(savedPreview);
-
             if (parsedPreview?.open && parsedPreview?.item) {
-                return {
-                    open: true,
-                    item: parsedPreview.item,
-                    type: parsedPreview.type === "internship" ? "internship" : "course",
-                };
+                queueMicrotask(() => {
+                    setPreview({
+                        open: true,
+                        item: parsedPreview.item,
+                        type: parsedPreview.type === "internship" ? "internship" : "course",
+                    });
+                });
             }
         } catch {
             localStorage.removeItem("tech-monster-learning-preview");
         }
-
-        return {
-            open: false,
-            item: null,
-            type: "course",
-        };
-    });
+    }, []);
 
     const [activeSection, setActiveSection] = useState("enrolled");
 
     useEffect(() => {
-        const requestedSection = location.state?.activeSection;
+        try {
+            const savedSection = sessionStorage.getItem("tech-monster-dashboard-section");
+            const savedNavigationState = sessionStorage.getItem("tech-monster-navigation-state");
+            let requestedSavedSection = savedSection;
+
+            if (savedNavigationState) {
+                const parsed = JSON.parse(savedNavigationState);
+                if (parsed?.activeSection) {
+                    requestedSavedSection = parsed.activeSection;
+                    sessionStorage.removeItem("tech-monster-navigation-state");
+                }
+            }
+
+            if (["courses", "internships", "enrolled"].includes(requestedSavedSection)) {
+                queueMicrotask(() => {
+                    setActiveSection(requestedSavedSection);
+                });
+            }
+
+            if (savedSection) {
+                sessionStorage.removeItem("tech-monster-dashboard-section");
+            }
+        } catch {
+            sessionStorage.removeItem("tech-monster-dashboard-section");
+            sessionStorage.removeItem("tech-monster-navigation-state");
+        }
+    }, []);
+
+    useEffect(() => {
+        const requestedSection = searchParams.get("section");
 
         if (requestedSection !== "courses" && requestedSection !== "internships") {
             return;
@@ -94,9 +117,9 @@ function Dashboard() {
         } catch {
             localStorage.removeItem("tech-monster-learning-preview");
         }
-    }, [location.state?.activeSection]);
+    }, [searchParams]);
 
-    const requestedSection = location.state?.activeSection;
+    const requestedSection = searchParams.get("section");
     const selectedSection = ["enrolled", "courses", "internships"].includes(requestedSection)
         ? requestedSection
         : activeSection;
@@ -105,10 +128,7 @@ function Dashboard() {
         setActiveSection(section);
 
         if (requestedSection) {
-            navigate(location.pathname, {
-                replace: true,
-                state: null,
-            });
+            router.replace("/student/dashboard");
         }
     };
 
@@ -164,7 +184,7 @@ function Dashboard() {
         if (item.enrolled) {
             closePreview();
 
-            navigate(
+            router.push(
                 `/student/lessons/${type}/${item.slug}`
             );
 
@@ -218,7 +238,7 @@ function Dashboard() {
                     : "Internship enrolled successfully."
             );
 
-            navigate(`/student/lessons/${type}/${item.slug}`);
+            router.push(`/student/lessons/${type}/${item.slug}`);
             await loadDashboard();
 
 
@@ -324,7 +344,7 @@ function Dashboard() {
                 cancelText="Cancel"
                 onConfirm={() => {
                     setWarning({ open: false, mode: null });
-                    navigate("/student/account");
+                    router.push("/student/account");
                 }}
                 onCancel={() => {
                     setWarning({ open: false, mode: null });

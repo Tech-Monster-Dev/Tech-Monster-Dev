@@ -1,7 +1,7 @@
 import "./EditStudentModal.css";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import Form from "../../../../../components/ui/Form";
@@ -15,7 +15,7 @@ export default function EditStudentModal({
     onClose,
     onRefresh,
 }) {
-    const navigate = useNavigate();
+    const router = useRouter();
     const [form, setForm] = useState({});
     const [saving, setSaving] = useState(false);
 
@@ -39,7 +39,7 @@ export default function EditStudentModal({
 
     const goToStudents = () => {
         onClose?.();
-        navigate("/admin/students");
+        router.push("/admin/students");
     };
 
     const handleOverlayMouseDown = (event) => {

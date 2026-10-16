@@ -1,8 +1,7 @@
 import "./InternshipRecommendation.css";
-import defaultThumbnail from "../../../../../assets/thumnail/course_internship_default.svg";
+const defaultThumbnail = "/assets/thumnail/course_internship_default.svg";
 
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import EmptyState from "../../../../../components/ui/EmptyState";
 import DashButton from "../../../../../components/ui/Button/DashButton";
 
@@ -16,7 +15,7 @@ import {
 const InternshipRecommendation = ({
   internships = [],
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleContinue = (internship) => {
     if (internship?._id == null && internship?.slug == null) return;
@@ -32,30 +31,13 @@ const InternshipRecommendation = ({
       JSON.stringify(preview)
     );
 
-    navigate("/student/dashboard", {
-      state: {
-        activeSection: "internships",
-      },
-    });
+    sessionStorage.setItem("tech-monster-navigation-state", JSON.stringify({ activeSection: "internships" }));
+    router.push("/student/dashboard?section=internships");
   };
 
   return (
-    <motion.section
+    <section
       className="internship-recommendation"
-      initial={{
-        opacity: 0,
-        y: 80,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-      }}
-      viewport={{
-        once: true,
-      }}
-      transition={{
-        duration: 0.7,
-      }}
     >
       <div className="internship-header">
         <div>
@@ -75,7 +57,7 @@ const InternshipRecommendation = ({
           icon={<HiArrowRight />}
           iconPosition="right"
           className="view-btn"
-          onClick={() => navigate("/student/dashboard")}
+          onClick={() => router.push("/student/dashboard?section=internships")}
         >
           View All
         </DashButton>
@@ -166,7 +148,7 @@ const InternshipRecommendation = ({
           )}
         </div>
       )}
-    </motion.section>
+    </section>
   );
 };
 

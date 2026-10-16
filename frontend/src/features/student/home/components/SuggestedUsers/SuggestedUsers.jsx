@@ -1,9 +1,8 @@
 import "./SuggestedUsers.css";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { motion } from "framer-motion";
 
 import EmptyState from "../../../../../components/ui/EmptyState";
 import DashButton from "../../../../../components/ui/Button/DashButton";
@@ -20,7 +19,7 @@ const SuggestedUsers = ({
   users = [],
   onlineUsers = [],
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [followStates, setFollowStates] = useState({});
   const [actionLoading, setActionLoading] = useState({});
@@ -67,26 +66,12 @@ const SuggestedUsers = ({
       return;
     }
 
-    navigate(`/student/user-profile/${userId}`);
+    router.push(`/student/user-profile/${userId}`);
   };
 
   return (
-    <motion.section
+    <section
       className="suggested-users"
-      initial={{
-        opacity: 0,
-        y: 80,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-      }}
-      viewport={{
-        once: true,
-      }}
-      transition={{
-        duration: 0.8,
-      }}
     >
       <div className="users-header">
         <div>
@@ -131,20 +116,9 @@ const SuggestedUsers = ({
             );
 
             return (
-              <motion.article
+              <article
                 key={userId || index}
                 className="user-card"
-                initial={{
-                  opacity: 0,
-                  y: 50,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                transition={{
-                  delay: index * 0.15,
-                }}
               >
                 <div className="user-top">
                   <div className="user-avatar">
@@ -208,12 +182,12 @@ const SuggestedUsers = ({
                     View Profile
                   </DashButton>
                 </div>
-              </motion.article>
+              </article>
             );
           })}
         </div>
       )}
-    </motion.section>
+    </section>
   );
 };
 

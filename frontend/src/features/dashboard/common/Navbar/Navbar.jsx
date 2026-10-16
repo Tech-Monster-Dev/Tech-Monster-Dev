@@ -1,10 +1,11 @@
 import './Navbar.css';
 
 import useAuth from '../../../../shared/hooks/useAuth';
-import defaultProfileImg from '../../../../assets/profile/default-profile.svg';
+const defaultProfileImg = '/assets/profile/default-profile.svg';
 
 import { useEffect, useState } from "react";
-import { Link, useNavigate, NavLink } from "react-router-dom";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     FiUser,
@@ -13,7 +14,6 @@ import {
     FiMessageSquare,
     FiMenu,
 } from "react-icons/fi";
-import logo from "../../../../assets/logo/logo.webp";
 import SystemBar from '../../../../components/common/navbar/SystemBar';
 import SearchBar from '../../../../components/ui/SearchBar';
 import Loader from "../../../../components/ui/Loader";
@@ -79,7 +79,8 @@ function Navbar({ role = "student", onMobileMenuClick }) {
         : defaultProfileImg;
 
 
-    const navigate = useNavigate();
+    const router = useRouter();
+    const pathname = usePathname();
 
     const handleLogout = async () => {
         setLoading(true);
@@ -87,7 +88,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
         try {
             await logout();
             sessionStorage.setItem("logoutSuccess", "true");
-            navigate("/login", { replace: true });
+            router.replace("/auth/login");
         } catch (error) {
             console.error(error);
         } finally {
@@ -115,7 +116,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
                         {/* Logo placed in Navbar */}
                         <div className="dashboard-navbar-logo">
-                            <img src={logo} alt="Logo" />
+                            <img src="/assets/logo/logo.webp" alt="Logo" />
                             <h2>Tech <span>Monster</span></h2>
                         </div>
                     </div>
@@ -137,13 +138,9 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                 setShowNotificationPopup(false)
                             }
                         >
-                            <NavLink
-                                to={`/${role}/notification`}
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? "dashboard-navbar-notification-btn active"
-                                        : "dashboard-navbar-notification-btn"
-                                }
+                            <Link
+                                href={`/${role}/notification`}
+                                className={`dashboard-navbar-notification-btn${pathname === `/${role}/notification` ? " active" : ""}`}
                             >
                                 <FiBell />
                                 {unreadCount > 0 && (
@@ -162,7 +159,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                         }
                                     </motion.span>
                                 )}
-                            </NavLink>
+                            </Link>
 
                             <AnimatePresence>
                                 {showNotificationPopup && (
@@ -244,7 +241,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
                                         <div className="dashboard-navbar-notif-footer">
                                             <Link
-                                                to={`/${role}/notification`}
+                                                href={`/${role}/notification`}
                                             >
                                                 View All Notifications →
                                             </Link>
@@ -255,9 +252,9 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
                         </div>
 
-                        <NavLink to={`/${role}/message`} className={({ isActive }) => isActive ? 'dashboard-navbar-message-btn active' : 'dashboard-navbar-message-btn'}>
+                        <Link href={`/${role}/message`} className={`dashboard-navbar-message-btn${pathname === `/${role}/message` ? " active" : ""}`}>
                             <FiMessageSquare />
-                        </NavLink>
+                        </Link>
 
                         <div className="dashboard-navbar-verticalLine"></div>
 
@@ -298,7 +295,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                         exit={{ opacity: 0, y: 10 }}
                                         transition={{ duration: 0.2 }}
                                     >
-                                        <Link to={`/${role}/account`} className="dashboard-navbar-popup-item">
+                                        <Link href={`/${role}/account`} className="dashboard-navbar-popup-item">
                                             <FiUser /> Profile
                                         </Link>
                                         <button onClick={handleLogout} className="dashboard-navbar-popup-item logout">

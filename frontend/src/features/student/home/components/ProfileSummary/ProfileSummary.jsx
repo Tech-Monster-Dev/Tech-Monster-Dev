@@ -8,7 +8,7 @@ import {
   HiUserCircle,
 } from "react-icons/hi2";
 
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import useAuth from "../../../../../shared/hooks/useAuth";
 
 import DashButton from "../../../../../components/ui/Button/DashButton";
@@ -16,7 +16,7 @@ import StudentBadgeAvatar from "../../../../dashboard/common/StudentBadgeAvatar"
 
 const ProfileSummary = ({ username, latestBadge = null }) => {
 
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user } = useAuth();
 
   const skills =
@@ -43,23 +43,8 @@ const ProfileSummary = ({ username, latestBadge = null }) => {
 
 
   return (
-    <motion.section
+    <section
       className="profile-summary"
-      initial={{
-        opacity: 0,
-        y: 80,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-      }}
-      viewport={{
-        once: true,
-        amount: 0.3,
-      }}
-      transition={{
-        duration: 0.7,
-      }}
     >
 
       <div className="profile-glow profile-glow-one"></div>
@@ -97,17 +82,6 @@ const ProfileSummary = ({ username, latestBadge = null }) => {
                   <motion.span
                     key={`${skill}-${index}`}
                     className="skill-chip"
-                    initial={{
-                      opacity: 0,
-                      scale: 0.8,
-                    }}
-                    whileInView={{
-                      opacity: 1,
-                      scale: 1,
-                    }}
-                    transition={{
-                      delay: index * 0.08,
-                    }}
                   >
                     {skill}
                   </motion.span>
@@ -118,17 +92,8 @@ const ProfileSummary = ({ username, latestBadge = null }) => {
         </div>
       </div>
 
-      <motion.div
+      <div
         className="profile-divider"
-        initial={{
-          scaleY: 0,
-        }}
-        whileInView={{
-          scaleY: 1,
-        }}
-        transition={{
-          duration: 0.7,
-        }}
       />
 
       <div className="profile-right">
@@ -170,14 +135,12 @@ const ProfileSummary = ({ username, latestBadge = null }) => {
           size="medium"
           icon={<HiUserCircle />}
           iconPosition="left"
-          onClick={() => navigate("/student/account")}
+          onClick={() => router.push("/student/account")}
         >
           {progress === 100 ? "Completed" : "Complete Profile"}
         </DashButton>
-
       </div>
-
-    </motion.section>
+    </section>
   );
 };
 

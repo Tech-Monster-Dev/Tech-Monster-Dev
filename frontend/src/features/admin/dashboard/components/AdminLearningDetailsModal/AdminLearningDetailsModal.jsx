@@ -13,7 +13,7 @@ import {
     FiTrash2,
     FiX,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import DashButton from "../../../../../components/ui/Button/DashButton";
@@ -39,7 +39,7 @@ const AdminLearningDetailsModal = ({
     onClose,
     onRefresh,
 }) => {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const [showDeleteWarning, setShowDeleteWarning] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -52,15 +52,18 @@ const AdminLearningDetailsModal = ({
     const label = isCourse ? "Course" : "Internship";
 
     const handleEdit = () => {
-        navigate(
+        sessionStorage.setItem(
+            "adminLearningEditData",
+            JSON.stringify({
+                type,
+                data: item,
+            })
+        );
+
+        router.push(
             isCourse
                 ? "/admin/course-form"
-                : "/admin/internships-form",
-            {
-                state: isCourse
-                    ? { courseData: item }
-                    : { internshipData: item },
-            }
+                : "/admin/internships-form"
         );
     };
 

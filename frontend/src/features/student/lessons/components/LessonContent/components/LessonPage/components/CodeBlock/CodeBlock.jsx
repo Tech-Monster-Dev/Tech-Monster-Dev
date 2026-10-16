@@ -2,7 +2,7 @@ import "./CodeBlock.css";
 import { useEffect, useState } from "react";
 
 
-import highlightCode from "../TryItYourself/utils/highlightCode.js";
+import highlightCode from "./utils/highlightCode.js";
 import {
     formatCodeForDisplay,
     inferCodeLanguage,

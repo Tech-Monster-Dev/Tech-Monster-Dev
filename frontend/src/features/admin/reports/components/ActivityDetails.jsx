@@ -4,7 +4,7 @@ import BackButton from "../../../../components/ui/Button/BackButton";
 import Spinner from "../../../dashboard/common/LoaderPage/Spinner";
 
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 
 import {
     getActivityUsers,
@@ -28,7 +28,7 @@ const getInitialMonth = () => {
 
 const ActivityDetails = () => {
     const { userId } = useParams();
-    const navigate = useNavigate();
+    const router = useRouter();
     const [searchParams] = useSearchParams();
 
     const initialDate = useMemo(() => {
@@ -144,7 +144,7 @@ const ActivityDetails = () => {
                     <button
                         type="button"
                         className="reports-secondary-button"
-                        onClick={() => navigate("/admin/reports")}
+                        onClick={() => router.push("/admin/reports")}
                     >
                         Back to Reports
                     </button>

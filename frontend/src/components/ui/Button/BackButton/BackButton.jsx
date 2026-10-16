@@ -1,6 +1,7 @@
+"use client";
 import { motion } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import "./BackButton.css";
 
@@ -11,7 +12,7 @@ const BackButton = ({
     onClick,
 }) => {
 
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const handleBack = () => {
         if (typeof onClick === "function") {
@@ -19,7 +20,7 @@ const BackButton = ({
             return;
         }
 
-        navigate(to);
+        router.push(to);
     };
 
     return (

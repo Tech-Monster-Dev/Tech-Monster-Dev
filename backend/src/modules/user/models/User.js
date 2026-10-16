@@ -83,7 +83,7 @@ const userSchema = new mongoose.Schema(
 
         avatar: {
             type: String,
-            default: "/profile/default-profile.svg"
+            default: "/assets/profile/default-profile.svg"
         },
 
         phone: {

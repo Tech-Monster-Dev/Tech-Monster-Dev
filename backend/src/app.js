@@ -26,7 +26,6 @@ import submissionRoutes from "./modules/submissions/submission.routes.js";
 import adminSubmissionRoutes from "./modules/submissions/adminSubmission.routes.js";
 import adminReportsRoutes from "./modules/reports/reports.routes.js";
 import supportRoutes from "./modules/support/support.routes.js";
-import codeExecutionRoutes from "./modules/codeExecution/codeExecution.routes.js";
 import feedbackRoutes from "./modules/feedback/feedback.routes.js";
 import noticeRoutes from "./modules/notices/notice.routes.js";
 
@@ -150,7 +149,6 @@ app.use("/api/search", searchRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/learning", learningRoutes);
-app.use("/api/code-execution", codeExecutionRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/notices", noticeRoutes);
 app.use("/api/server", serverRoutes);

@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 import SettingsSection from '../../dashboard/common/Setting/SettingsSection';
 import './Setting.css';
 
 export default function Setting() {
-  const location = useLocation();
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (location.hash === "#messages") {
+    if (typeof window !== "undefined" && window.location.hash === "#messages") {
       requestAnimationFrame(() => {
         document.getElementById("messages")?.scrollIntoView({
           behavior: "smooth",
@@ -15,7 +15,7 @@ export default function Setting() {
         });
       });
     }
-  }, [location.hash]);
+  }, [pathname]);
 
   return (
     <div className="settings-page-wrapper">

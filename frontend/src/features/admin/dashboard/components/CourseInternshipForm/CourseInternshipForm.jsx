@@ -1,7 +1,7 @@
 import "./CourseInternshipForm.css";
 
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { FiSave } from "react-icons/fi";
 import { toast } from "react-toastify";
 
@@ -52,7 +52,9 @@ const getImageUrl = (image) => {
         return image;
     }
 
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://tech-monster-dev.onrender.com/api";
 
     return `${apiUrl}/${image.replace(/^\/+/, "")}`;
 };
@@ -78,15 +80,25 @@ const getInitialFormData = (editData) => {
 };
 
 export default function CourseInternshipForm({ type }) {
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
 
     const isCourse = type === "course";
     const entityLabel = isCourse ? "Course" : "Internship";
 
-    const editData = isCourse
-        ? location.state?.courseData
-        : location.state?.internshipData;
+    const [editData, setEditData] = useState(null);
+
+    useEffect(() => {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem("adminLearningEditData") || "null");
+            if (saved?.type === type && saved?.data) {
+                queueMicrotask(() => {
+                    setEditData(saved.data);
+                });
+            }
+        } catch {
+            sessionStorage.removeItem("adminLearningEditData");
+        }
+    }, [type]);
 
     const isEditMode = Boolean(editData);
 
@@ -286,7 +298,8 @@ export default function CourseInternshipForm({ type }) {
                         : `${entityLabel} created successfully`
                 );
 
-                navigate("/admin/dashboard");
+                sessionStorage.removeItem("adminLearningEditData");
+                router.push("/admin/dashboard");
             }
         } catch (error) {
             console.error(
