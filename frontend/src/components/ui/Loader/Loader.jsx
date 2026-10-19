@@ -57,7 +57,7 @@ function Loading({ finish }) {
                 transition={{ duration: .7 }}
             >
                 <div className="logo-ring">
-                    <img src="/assets/logo/logo.webp" alt="" />
+                    <img src="/assets/logo/logo-optimized.webp" alt="" />
                 </div>
 
                 <h1>

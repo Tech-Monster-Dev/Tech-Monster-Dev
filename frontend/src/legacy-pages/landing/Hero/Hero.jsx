@@ -171,7 +171,7 @@ function Hero() {
                             }}
                         >
                             <img
-                                src="/assets/logo/logo.webp"
+                                src="/assets/logo/logo-optimized.webp"
                                 alt="Hero image"
                                 width={460}
                                 height={460}

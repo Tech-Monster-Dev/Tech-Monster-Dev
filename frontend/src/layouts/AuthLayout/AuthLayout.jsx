@@ -61,7 +61,7 @@ function AuthLayout({
                             className="authLogo"
                         >
                             <img
-                                src="/assets/logo/logo.webp"
+                                src="/assets/logo/logo-optimized.webp"
                                 alt="Tech Monster"
                                 width={80}
                                 height={80}

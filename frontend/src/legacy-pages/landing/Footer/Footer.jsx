@@ -73,7 +73,7 @@ function Footer() {
                 </div>
 
                 <div className="footer-logo">
-                    <img className="footer-logo-image" src="/assets/logo/logo.webp" alt="Footer logo" />
+                    <img className="footer-logo-image" src="/assets/logo/logo-optimized.webp" alt="Footer logo" />
                 </div>
             </div>
 
