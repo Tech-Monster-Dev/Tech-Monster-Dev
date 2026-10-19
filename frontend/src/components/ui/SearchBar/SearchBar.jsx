@@ -1,18 +1,20 @@
 "use client";
+
 import "./SearchBar.css";
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FiSearch, FiX, FiBookOpen, FiUser } from "react-icons/fi";
 import StudentBadgeAvatar from "../../../features/dashboard/common/StudentBadgeAvatar";
 import { searchInternships, searchUsers } from "../../../services/api/search.service";
+import useAuth from "../../../shared/hooks/useAuth";
 
 const COURSES_EMPTY_MSG = "We couldn't find any courses or internships matching your search keywords on Tech Monster. Please try searching with a different keyword.";
 const USERS_EMPTY_MSG = "User not found.";
 
 function SearchBar() {
     const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
     const queryParam = searchParams.get("search") || "";
 
@@ -195,13 +197,21 @@ function SearchBar() {
         router.push(`/student/dashboard?section=${type === "course" ? "courses" : "internships"}`);
     };
 
-    const handleUserClick = (user) => {
+    const { user } = useAuth();
+    const loginUser = user;
 
+    const handleUserClick = (user) => {
         setShowDropdown(false);
 
-        router.push(
-            `/student/user-profile/${user?._id}`
-        );
+        if (loginUser?.role === "admin") {
+            router.push(
+                `admin/students/user-profile/${user?._id}`
+            );
+        } else {
+            router.push(
+                `/student/user-profile/${user?._id}`
+            );
+        }
     };
 
     return (

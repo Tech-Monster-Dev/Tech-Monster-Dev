@@ -10,7 +10,7 @@ export default function useProfileImage(initialImage = "") {
         // Backend default image path
         if (
             !initialImage ||
-            initialImage === "/profile/default-profile.svg"
+            initialImage === "/assets/profile/default-profile.svg"
         ) {
             return "";
         }

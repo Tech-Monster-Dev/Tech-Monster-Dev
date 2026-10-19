@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-    FiSend,
-    FiUser
-} from "react-icons/fi";
+import { FiSend } from "react-icons/fi";
 
 import BackButton from "../../../../components/ui/Button/BackButton/BackButton";
 import Select from "../../../../components/ui/Form/component/Select/Select";
@@ -278,14 +275,14 @@ export default function SupportChat({
                 />
 
                 <div className="support-chat__avatar">
-                    {student?.avatar ? (
-                        <img
-                            src={student.avatar}
-                            alt={getUserName(student)}
-                        />
-                    ) : (
-                        <FiUser />
-                    )}
+                    <img
+                        src={student?.avatar || "/assets/profile/default-profile.svg"}
+                        alt={getUserName(student)}
+                        onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = "/assets/profile/default-profile.svg";
+                        }}
+                    />
 
                 </div>
 

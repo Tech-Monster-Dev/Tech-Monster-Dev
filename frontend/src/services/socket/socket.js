@@ -1,9 +1,7 @@
 import { io } from "socket.io-client";
 
-const testing = false;
-const serverSideURI =
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://tech-monster-dev.onrender.com/api";
+const testing = true;
+const serverSideURI = process.env.NEXT_PUBLIC_API_URL || "https://tech-monster-dev.onrender.com/api";
 
 const API_URL = testing ? "http://localhost:8001/api" : serverSideURI;
 

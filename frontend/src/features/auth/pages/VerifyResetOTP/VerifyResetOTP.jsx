@@ -28,12 +28,10 @@ function VerifyResetOTP() {
 
     const router = useRouter();
     const [email, setEmail] = useState(null);
-    const [checkingEmail, setCheckingEmail] = useState(true);
 
     useEffect(() => {
         queueMicrotask(() => {
             setEmail(sessionStorage.getItem("resetOtpEmail"));
-            setCheckingEmail(false);
         });
     }, []);
     const [otp, setOtp] = useState("");

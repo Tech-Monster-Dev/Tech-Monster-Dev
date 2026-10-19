@@ -174,7 +174,7 @@ const EnrolledStudentsModal = ({
                                         src={
                                             student.avatar &&
                                             student.avatar !==
-                                                "/profile/default-profile.svg"
+                                                "/assets/profile/default-profile.svg"
                                                 ? student.avatar
                                                 : defaultProfileImage
                                         }

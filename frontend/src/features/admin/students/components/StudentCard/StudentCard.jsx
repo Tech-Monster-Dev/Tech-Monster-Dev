@@ -43,10 +43,11 @@ export default function StudentCard({
             >
                 <img
                     src={
-                        student.avatar && student.avatar !== "/profile/default-profile.svg" ? student.avatar : defaultProfileImage
+                        student.avatar && student.avatar !== "/assets/profile/default-profile.svg" ? student.avatar : defaultProfileImage
                     }
                     alt=""
                     onError={(event) => {
+                        event.currentTarget.onerror = null;
                         event.currentTarget.src = defaultProfileImage;
                     }}
                 />

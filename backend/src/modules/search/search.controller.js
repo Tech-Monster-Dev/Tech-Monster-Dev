@@ -94,6 +94,7 @@ export const searchUsers = asyncHandler(async (req, res) => {
     const blockedUserIds = blockedUsers.map((block) => block.blockedUser);
 
     const users = await User.find({
+        role: "student",
         $or: [
             { username: regex },
             { firstName: regex },

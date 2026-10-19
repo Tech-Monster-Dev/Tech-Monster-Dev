@@ -21,12 +21,10 @@ function VerifySignupOTP() {
     const router = useRouter();
     const { login } = useAuth();
     const [email, setEmail] = useState(null);
-    const [checkingEmail, setCheckingEmail] = useState(true);
 
     useEffect(() => {
         queueMicrotask(() => {
             setEmail(sessionStorage.getItem("signupOtpEmail"));
-            setCheckingEmail(false);
         });
     }, []);
     const [otp, setOtp] = useState("");
