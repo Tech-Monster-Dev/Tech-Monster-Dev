@@ -9,7 +9,7 @@ export default function StudentBadgeAvatar({
     className = ""
 }) {
     const profileImage =
-        avatar && avatar !== "/profile/default-profile.svg"
+        avatar && avatar !== "/assets/profile/default-profile.svg"
             ? avatar
             : defaultProfileImg;
 
@@ -22,6 +22,7 @@ export default function StudentBadgeAvatar({
                 alt={alt}
                 className="student-badge-avatar__image"
                 onError={(event) => {
+                    event.currentTarget.onerror = null;
                     event.currentTarget.src = defaultProfileImg;
                 }}
             />

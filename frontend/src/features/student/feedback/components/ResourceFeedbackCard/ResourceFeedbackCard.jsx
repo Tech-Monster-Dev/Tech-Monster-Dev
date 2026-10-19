@@ -29,12 +29,13 @@ export default function ResourceFeedbackCard({ feedback }) {
                     <img
                         src={
                             student?.avatar &&
-                            student.avatar !== "/profile/default-profile.svg"
+                            student.avatar !== "/assets/profile/default-profile.svg"
                                 ? student.avatar
                                 : defaultProfileImage
                         }
                         alt=""
                         onError={(event) => {
+                            event.currentTarget.onerror = null;
                             event.currentTarget.src = defaultProfileImage;
                         }}
                     />

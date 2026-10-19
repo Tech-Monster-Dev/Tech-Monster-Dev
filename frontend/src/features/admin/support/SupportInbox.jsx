@@ -1,7 +1,7 @@
 import "./SupportInbox.css";
 
 import { useCallback, useEffect, useState } from "react";
-import { FiMessageCircle, FiRefreshCw, FiUser } from "react-icons/fi";
+import { FiMessageCircle, FiRefreshCw } from "react-icons/fi";
 
 import {
     getSupportInbox
@@ -439,20 +439,14 @@ export default function SupportInbox() {
                                     }
                                 >
                                     <div className="support-conversation__avatar">
-                                        {student?.avatar ? (
-                                            <img
-                                                src={
-                                                    student.avatar
-                                                }
-                                                alt={
-                                                    getStudentName(
-                                                        student
-                                                    )
-                                                }
-                                            />
-                                        ) : (
-                                            <FiUser />
-                                        )}
+                                        <img
+                                            src={student?.avatar || "/assets/profile/default-profile.svg"}
+                                            alt={getStudentName(student)}
+                                            onError={(event) => {
+                                                event.currentTarget.onerror = null;
+                                                event.currentTarget.src = "/assets/profile/default-profile.svg";
+                                            }}
+                                        />
                                     </div>
 
                                     <div className="support-conversation__content">

@@ -74,7 +74,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
     // Resolve the profile image URL: support `profilePic` or `avatar` fields.
     // If neither is a valid image URL, fall back to the FiUser placeholder.
     const profileImg = user?.avatar &&
-        user.avatar !== "/profile/default-profile.svg"
+        user.avatar !== "/assets/profile/default-profile.svg"
         ? user.avatar
         : defaultProfileImg;
 
@@ -278,6 +278,10 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                                             src={profileImg}
                                             alt={userName || "User"}
                                             className="dashboard-navbar-user-profile-img"
+                                            onError={(event) => {
+                                                event.currentTarget.onerror = null;
+                                                event.currentTarget.src = defaultProfileImg;
+                                            }}
                                         />
                                     ) : (
                                         <img src={defaultProfileImg} alt="defaultProfile" />

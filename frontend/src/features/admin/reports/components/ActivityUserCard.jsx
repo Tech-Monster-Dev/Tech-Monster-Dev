@@ -1,13 +1,13 @@
+
+const DEFAULT_PROFILE_IMAGE = "/assets/profile/default-profile.svg";
+
 const getFullName = (user) =>
     [user?.firstName, user?.middleName, user?.lastName]
         .filter(Boolean)
         .join(" ")
         .trim() || user?.username || "Unknown user";
 
-const ActivityUserCard = ({
-    user,
-    onClick,
-}) => {
+const ActivityUserCard = ({ user, onClick }) => {
     const fullName = getFullName(user);
 
     return (
@@ -18,9 +18,13 @@ const ActivityUserCard = ({
         >
             <img
                 className="activity-user-avatar"
-                src={user?.avatar || "/profile/default-profile.svg"}
-                alt=""
+                src={user?.avatar || DEFAULT_PROFILE_IMAGE}
+                alt={`${fullName}'s profile`}
                 loading="lazy"
+                onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = DEFAULT_PROFILE_IMAGE;
+                }}
             />
 
             <span className="activity-user-info">
@@ -33,10 +37,7 @@ const ActivityUserCard = ({
                 </span>
             </span>
 
-            <span
-                className="activity-user-action"
-                aria-hidden="true"
-            >
+            <span className="activity-user-action" aria-hidden="true">
                 View activity
             </span>
         </button>

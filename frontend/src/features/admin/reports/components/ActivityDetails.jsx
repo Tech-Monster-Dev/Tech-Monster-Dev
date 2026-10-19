@@ -29,7 +29,7 @@ const getInitialMonth = () => {
 const ActivityDetails = () => {
     const { userId } = useParams();
     const router = useRouter();
-    const [searchParams] = useSearchParams();
+    const searchParams = useSearchParams();
 
     const initialDate = useMemo(() => {
         const current = getInitialMonth();
@@ -96,7 +96,7 @@ const ActivityDetails = () => {
 
                 setError(
                     requestError?.response?.data?.message ||
-                        "Unable to load activity details."
+                    "Unable to load activity details."
                 );
             } finally {
                 if (active) {
@@ -159,17 +159,18 @@ const ActivityDetails = () => {
                 <BackButton
                     to="/admin/reports"
                     label="Back to Reports"
-                    className="activity-details-back-button"
+                    className="reports-back-button"
                 />
 
                 <div className="activity-details-user">
                     <img
                         className="activity-details-avatar"
-                        src={
-                            user?.avatar ||
-                            "/profile/default-profile.svg"
-                        }
-                        alt=""
+                        src={user?.avatar || "/assets/profile/default-profile.svg"}
+                        alt={`${getFullName(user)}'s profile`}
+                        onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = "/assets/profile/default-profile.svg";
+                        }}
                     />
 
                     <div className="activity-details-user-info">

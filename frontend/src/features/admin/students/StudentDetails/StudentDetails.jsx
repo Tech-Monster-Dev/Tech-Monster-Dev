@@ -161,7 +161,7 @@ export default function StudentDetails() {
 
     const avatar =
         student.avatar &&
-            student.avatar !== "/profile/default-profile.svg"
+            student.avatar !== "/assets/profile/default-profile.svg"
             ? student.avatar
             : defaultProfileImage;
 

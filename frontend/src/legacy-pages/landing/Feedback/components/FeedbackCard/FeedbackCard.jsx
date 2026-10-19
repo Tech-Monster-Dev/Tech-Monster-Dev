@@ -14,7 +14,7 @@ function FeedbackCard({ feedback }) {
         .join(" ") || student?.username || "Student";
 
     const avatar = student?.avatar &&
-        student.avatar !== "/profile/default-profile.svg"
+        student.avatar !== "/assets/profile/default-profile.svg"
         ? student.avatar
         : defaultProfileImage;
 
@@ -36,7 +36,8 @@ function FeedbackCard({ feedback }) {
                     alt={`${studentName} profile`}
                     className="feedback-student-avatar"
                     onError={(event) => {
-                        event.currentTarget.src = defaultProfileImage;
+                        event.currentTarget.onerror = null;
+                            event.currentTarget.src = defaultProfileImage;
                     }}
                 />
 

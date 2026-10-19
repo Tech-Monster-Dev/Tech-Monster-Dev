@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import AuthContext from "./AuthContext";
 import * as authService from "../../services/api/authService";
 import { tokenStorage } from "../../services/auth/tokenStorage";
@@ -6,21 +6,21 @@ import { socket } from '../../services/socket/socket';
 
 function AuthProvider({ children }) {
 
-    const [token, setToken] = useState(null);
-    const [user, setUser] = useState(null);
-    const [authInitialized, setAuthInitialized] = useState(false);
-
-    useEffect(() => {
+    const [initialAuth] = useState(() => {
         try {
-            setToken(tokenStorage.getToken());
-            setUser(tokenStorage.getUser());
+            return {
+                token: tokenStorage.getToken(),
+                user: tokenStorage.getUser(),
+            };
         } catch (error) {
             console.error("Failed to initialize authentication:", error);
             tokenStorage.clear();
-        } finally {
-            setAuthInitialized(true);
+            return { token: null, user: null };
         }
-    }, []);
+    });
+    const [token, setToken] = useState(initialAuth.token);
+    const [user, setUser] = useState(initialAuth.user);
+    const [authInitialized] = useState(true);
 
 
     // =========================
