@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const testing = true;
+const isLocalhost = typeof window !== "undefined" && ["localhost", "127.0.0.1"].includes(window.location.hostname);
 const serverSideURI = process.env.NEXT_PUBLIC_API_URL || "https://tech-monster-dev.onrender.com/api";
 
 const api = axios.create({
-    baseURL: testing ? "http://localhost:8001/api" : serverSideURI,
+    baseURL: isLocalhost ? "http://localhost:8001/api" : serverSideURI,
     withCredentials: true,
     timeout: 30000, // Increased timeout to 60s for slow email sending / cold starts
     headers: {
