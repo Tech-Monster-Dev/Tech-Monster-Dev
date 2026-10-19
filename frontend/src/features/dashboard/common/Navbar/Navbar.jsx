@@ -116,7 +116,7 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
                         {/* Logo placed in Navbar */}
                         <div className="dashboard-navbar-logo">
-                            <img src="/assets/logo/logo.webp" alt="Logo" width="88" height="88" />
+                            <img src="/assets/logo/logo-optimized.webp" alt="Logo" width="88" height="88" />
                             <h2>Tech <span>Monster</span></h2>
                         </div>
                     </div>
