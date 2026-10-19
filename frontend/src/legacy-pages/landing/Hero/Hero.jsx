@@ -173,6 +173,8 @@ function Hero() {
                             <img
                                 src="/assets/logo/logo.webp"
                                 alt="Hero image"
+                                width={460}
+                                height={460}
                             />
                         </motion.div>
                     </motion.div>

@@ -14,8 +14,11 @@ function FeedbackCard({ feedback }) {
         .join(" ") || student?.username || "Student";
 
     const avatar = student?.avatar &&
-        student.avatar !== "/assets/profile/default-profile.svg"
-        ? student.avatar
+        student.avatar !== defaultProfileImage
+        ? student.avatar.replace(
+            "/image/upload/",
+            "/image/upload/f_auto,q_auto,w_120,h_120,c_fill/"
+        )
         : defaultProfileImage;
 
     return (
