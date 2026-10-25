@@ -427,20 +427,19 @@ const areModuleTasksApproved = async ({
     return approvedCount === taskIds.length;
 };
 
-const uploadToCloudinary = (fileBuffer) =>
-    new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-            { folder: "tech_monster_courses" },
-            (error, result) => {
-                if (result) {
-                    resolve(result);
-                } else {
-                    reject(error);
-                }
+const uploadToCloudinary = (fileBuffer) => new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+        { folder: "tech_monster_courses" },
+        (error, result) => {
+            if (result) {
+                resolve(result);
+            } else {
+                reject(error);
             }
-        );
-        streamifier.createReadStream(fileBuffer).pipe(stream);
-    });
+        }
+    );
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+});
 
 export const createCourse = asyncHandler(async (req, res) => {
     const {
