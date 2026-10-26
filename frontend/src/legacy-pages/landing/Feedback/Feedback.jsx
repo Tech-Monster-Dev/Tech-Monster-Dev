@@ -12,7 +12,6 @@ import EmptyState from "../../../components/ui/EmptyState";
 import Spinner from "../../../features/dashboard/common/LoaderPage/Spinner";
 
 import { getWebsiteFeedback } from "../../../services/api/feedback.service";
-import { socket } from "../../../services/socket/socket";
 import useFeedbackAutoScroll from "./hooks/useFeedbackAutoScroll";
 import useAuth from '../../../shared/hooks/useAuth'; 
 
@@ -44,33 +43,9 @@ function Feedback() {
             }
         };
 
-        const handleFeedbackCreated = (payload) => {
-            const item = payload?.feedback;
-
-            if (!item || item.type !== "website") {
-                return;
-            }
-
-            setFeedback((current) => {
-                if (current.some((feedbackItem) => feedbackItem._id === item._id)) {
-                    return current;
-                }
-
-                return [item, ...current].slice(0, 5);
-            });
-        };
-
-        loadFeedback();
-
-        socket.on("feedbackCreated", handleFeedbackCreated);
-
-        if (!socket.connected) {
-            socket.connect();
-        }
 
         return () => {
             mounted = false;
-            socket.off("feedbackCreated", handleFeedbackCreated);
         };
     }, []);
 
