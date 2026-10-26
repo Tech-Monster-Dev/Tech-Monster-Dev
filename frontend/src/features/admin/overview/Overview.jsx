@@ -1,5 +1,6 @@
 import "./Overview.css";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 
 import api from "../../../services/api/axios";
@@ -9,8 +10,14 @@ import { socket } from "../../../services/socket/socket";
 import WelcomeCard from './components/WelcomeCard';
 import ServerStatus from './components/ServerStatus';
 import StatsCards from "./components/StatsCards";
-import LineChart from "./components/LineChart";
 import AttendanceSummary from './components/AttendanceSummary';
+
+const LineChart = dynamic(
+    () => import("./components/LineChart"),
+    {
+        loading: () => <div className="overviewChart" aria-busy="true" />,
+    }
+);
 
 import OverviewSkeleton from "./OverviewSkeleton";
 import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";

@@ -196,6 +196,8 @@ export default function ApprovalPreviewModal({
                         src={avatar}
                         alt=""
                         className="approval-preview-avatar"
+                        loading="lazy"
+                        decoding="async"
                         onError={(event) => {
                             event.currentTarget.src =
                                 DEFAULT_PROFILE_IMAGE;

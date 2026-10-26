@@ -1,13 +1,17 @@
 import './CertificateApproval.css';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 
 import SectionTabs from '../../../layouts/SectionTabs/SectionTabs.jsx';
 
 import PendingCertificatePayments from './components/PendingCertificatePayments.jsx';
 import CertificatePaymentDetails from './components/CertificatePaymentDetails.jsx';
 import IssuedCertificates from './components/IssuedCertificates.jsx';
-import IssuedCertificatesModal from './components/IssuedCertificatesModal.jsx';
+const IssuedCertificatesModal = dynamic(
+    () => import('./components/IssuedCertificatesModal.jsx'),
+    { ssr: false }
+);
 
 const CERTIFICATE_PAYMENT_MODAL_STORAGE_KEY = 'admin-certificate-payment-modal';
 const CERTIFICATE_ISSUED_MODAL_STORAGE_KEY = 'admin-certificate-issued-modal';

@@ -1,5 +1,6 @@
 import "./Certificate.css";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { toast } from "react-toastify";
 import { FiAward, FiDownload, FiCreditCard } from "react-icons/fi";
@@ -8,12 +9,18 @@ import { motion } from "framer-motion";
 import SectionTabs from "../../../layouts/SectionTabs";
 import EmptyState from "../../../components/ui/EmptyState";
 import Spinner from "../../../features/dashboard/common/LoaderPage/Spinner";
-
-import CertificateView from "./components/CertificateView";
-import Congratulations from "./components/Congratulations";
-
 import { getMyCertificates, downloadCertificate } from "../../../services/api/certificate.service";
 import useAttendanceData from "../attendance/hooks/useAttendanceData";
+
+const CertificateView = dynamic(
+    () => import("./components/CertificateView/CertificateView"),
+    { ssr: false }
+);
+const Congratulations = dynamic(
+    () => import("./components/Congratulations/Congratulations"),
+    { ssr: false }
+);
+
 
 export default function Certificate() {
     const [notificationState, setNotificationState] = useState(null);

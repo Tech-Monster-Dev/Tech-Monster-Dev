@@ -43,6 +43,7 @@ function Feedback() {
             }
         };
 
+        loadFeedback();
 
         return () => {
             mounted = false;
