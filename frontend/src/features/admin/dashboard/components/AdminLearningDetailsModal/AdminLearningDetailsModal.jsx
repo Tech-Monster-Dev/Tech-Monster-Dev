@@ -177,6 +177,8 @@ const AdminLearningDetailsModal = ({
                                     <img
                                         src={item.thumbnail}
                                         alt={item.title || label}
+                                        loading="lazy"
+                                        decoding="async"
                                     />
                                 ) : (
                                     <FiBookOpen aria-hidden="true" />

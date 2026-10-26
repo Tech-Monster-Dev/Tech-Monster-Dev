@@ -77,6 +77,8 @@ const LearningPreviewModal = ({
                             <img
                                 src={thumbnail}
                                 alt={title}
+                                loading="lazy"
+                                decoding="async"
                                 onError={(event) => {
                                     event.currentTarget.onerror = null;
                                     event.currentTarget.src =

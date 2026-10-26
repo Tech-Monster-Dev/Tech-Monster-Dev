@@ -34,6 +34,8 @@ const StudentHero = ({
             <img
                 src={avatar}
                 alt={`${fullName} profile`}
+                loading="lazy"
+                decoding="async"
                 onError={(event) => {
                     event.currentTarget.src = defaultProfileImage;
                 }}

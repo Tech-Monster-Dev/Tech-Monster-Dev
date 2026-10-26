@@ -21,6 +21,8 @@ export default function StudentBadgeAvatar({
                 src={profileImage}
                 alt={alt}
                 className="student-badge-avatar__image"
+                loading="lazy"
+                decoding="async"
                 onError={(event) => {
                     event.currentTarget.onerror = null;
                     event.currentTarget.src = defaultProfileImg;

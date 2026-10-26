@@ -1,6 +1,7 @@
 import "./AdminCoursesInternships.css";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { FiBookOpen, FiBriefcase, FiUsers, FiPlus } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -10,15 +11,22 @@ import LearningCard from "../../student/dashboard/components/LearningCard";
 
 import EmptyState from "../../../components/ui/EmptyState";
 import DashButton from "../../../components/ui/Button/DashButton";
-import AdminLearningDetailsModal from "./components/AdminLearningDetailsModal";
-import EnrolledStudentsModal from "./components/EnrolledStudentsModal";
 import AdminCoursesInternshipsSkeleton from "./components/AdminCoursesInternshipsSkeleton";
-
 import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
-
 import { getAllCourses } from "../../../services/api/course.service";
 import { getAllInternships } from "../../../services/api/internship.service";
 import api from "../../../services/api/axios";
+
+const AdminLearningDetailsModal = dynamic(
+    () => import("./components/AdminLearningDetailsModal"),
+    { ssr: false }
+);
+const EnrolledStudentsModal = dynamic(
+    () => import("./components/EnrolledStudentsModal"),
+    { ssr: false }
+);
+
+
 
 export default function AdminCoursesInternships() {
     const [activeTab, setActiveTab] = useState("enrolled");

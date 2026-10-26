@@ -1,15 +1,20 @@
 import "./Dashboard.css";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import SectionTabs from "../../../layouts/SectionTabs";
 import EmptyState from "../../../components/ui/EmptyState";
 import AllInternship from "./components/AllInternship";
 import AllCourses from "./components/AllCourses";
-import LearningPreviewModal from "./components/LearningPreviewModal";
 import LearningCard from "./components/LearningCard";
 import Warning from "../../../components/ui/Warning";
+
+const LearningPreviewModal = dynamic(
+    () => import("./components/LearningPreviewModal"),
+    { ssr: false }
+);
 
 import DashboardSkeleton from "./DashboardSkeleton";
 

@@ -48,6 +48,7 @@ function Notice() {
             }
         };
 
+        loadNotices();
 
         return () => {
             mounted = false;
@@ -56,7 +57,7 @@ function Notice() {
 
     return (
         <>
-            <section className="section">
+            <section className="section" data-section="notice">
                 <div className="landing-notice-page">
                     <SectionHeader
                         badge="NOTICE"
