@@ -15,7 +15,12 @@ function About() {
         <div className="about-page">
           <div className="about-container">
             <motion.div className='about-image' initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}>
-              <img src="/assets/illustrations/About.webp" alt="About" />
+              <img
+                src="/assets/illustrations/About.webp"
+                alt="About"
+                loading="lazy"
+                decoding="async"
+              />
             </motion.div>
 
             <motion.div className="about-content" initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: .8 }}>

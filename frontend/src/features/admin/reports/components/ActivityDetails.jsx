@@ -167,6 +167,7 @@ const ActivityDetails = () => {
                         className="activity-details-avatar"
                         src={user?.avatar || "/assets/profile/default-profile.svg"}
                         alt={`${getFullName(user)}'s profile`}
+loading="lazy" decoding="async"
                         onError={(event) => {
                             event.currentTarget.onerror = null;
                             event.currentTarget.src = "/assets/profile/default-profile.svg";

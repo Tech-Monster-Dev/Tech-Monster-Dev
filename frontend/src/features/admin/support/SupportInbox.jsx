@@ -442,6 +442,7 @@ export default function SupportInbox() {
                                         <img
                                             src={student?.avatar || "/assets/profile/default-profile.svg"}
                                             alt={getStudentName(student)}
+loading="lazy" decoding="async"
                                             onError={(event) => {
                                                 event.currentTarget.onerror = null;
                                                 event.currentTarget.src = "/assets/profile/default-profile.svg";

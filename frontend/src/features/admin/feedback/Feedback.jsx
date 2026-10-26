@@ -263,6 +263,7 @@ export default function Feedback() {
                                                     className="admin-feedback-avatar"
                                                     src={avatar}
                                                     alt={`${getFullName(student)} profile`}
+loading="lazy" decoding="async"
                                                     onError={(event) => {
                                                         event.currentTarget.style.display = "none";
                                                     }}

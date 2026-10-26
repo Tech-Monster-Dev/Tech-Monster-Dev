@@ -179,6 +179,7 @@ const EnrolledStudentsModal = ({
                                                 : defaultProfileImage
                                         }
                                         alt=""
+loading="lazy" decoding="async"
                                         onError={(event) => {
                                             event.currentTarget.src =
                                                 defaultProfileImage;

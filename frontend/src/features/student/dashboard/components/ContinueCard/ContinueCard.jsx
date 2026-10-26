@@ -60,7 +60,9 @@ const ContinueCard = ({ learning }) => {
       <div className="continue-card-bg">
         <img
           src={thumbnail || defaultThumbnail}
-          alt={title}
+          alt={title || "Course thumbnail"}
+          loading="lazy"
+          decoding="async"
         />
       </div>
 

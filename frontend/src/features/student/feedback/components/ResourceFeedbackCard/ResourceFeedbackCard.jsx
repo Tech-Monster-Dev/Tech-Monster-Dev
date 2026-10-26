@@ -34,6 +34,7 @@ export default function ResourceFeedbackCard({ feedback }) {
                                 : defaultProfileImage
                         }
                         alt=""
+loading="lazy" decoding="async"
                         onError={(event) => {
                             event.currentTarget.onerror = null;
                             event.currentTarget.src = defaultProfileImage;

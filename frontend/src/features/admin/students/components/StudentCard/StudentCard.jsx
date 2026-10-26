@@ -46,6 +46,7 @@ export default function StudentCard({
                         student.avatar && student.avatar !== "/assets/profile/default-profile.svg" ? student.avatar : defaultProfileImage
                     }
                     alt=""
+loading="lazy" decoding="async"
                     onError={(event) => {
                         event.currentTarget.onerror = null;
                         event.currentTarget.src = defaultProfileImage;
