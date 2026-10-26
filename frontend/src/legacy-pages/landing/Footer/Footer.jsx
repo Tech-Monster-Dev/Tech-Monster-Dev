@@ -32,9 +32,9 @@ function Footer() {
 
                     <div className="footer-social">
 
-                        <a className="footer-social-link" aria-label="GitHub"><FaGithub /></a>
-                        <a className="footer-social-link" aria-label="LinkedIn"><FaLinkedin /></a>
-                        <a className="footer-social-link" aria-label="Twitter"><FaTwitter /></a>
+                        <a className="footer-social-link" href="https://github.com/YOUR_USERNAME" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><FaGithub /></a>
+                        <a className="footer-social-link" href="https://www.linkedin.com/in/YOUR_PROFILE/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><FaLinkedin /></a>
+                        <a className="footer-social-link" href="https://x.com/YOUR_USERNAME" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><FaTwitter /></a>
 
                         <a className="footer-social-link" href="https://www.instagram.com/tech_m0nster?igsh=MTdnanFlOG00YnJuNw==" target="_blank" rel="noreferrer" aria-label="Instagram"><FaInstagram /></a>
                     </div>
