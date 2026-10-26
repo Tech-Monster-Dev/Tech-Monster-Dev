@@ -149,7 +149,7 @@ export default function MessageBubble({
                                         <img
                                             src={message.file}
                                             alt="chat"
-                                            className="chatImage"
+                                            className="chatImage" loading="lazy" decoding="async"
                                         />
                                     ) : (
                                         <a

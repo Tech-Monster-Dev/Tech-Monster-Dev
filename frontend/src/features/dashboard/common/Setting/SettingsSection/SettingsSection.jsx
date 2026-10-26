@@ -156,7 +156,7 @@ export default function SettingsSection() {
                   <img
                     src={user.profileImage || defaultProfile}
                     alt={user.firstName || "Blocked user"}
-                    className="blocked-user-avatar"
+                    className="blocked-user-avatar" loading="lazy" decoding="async"
                   />
                   <div>
                     <strong>

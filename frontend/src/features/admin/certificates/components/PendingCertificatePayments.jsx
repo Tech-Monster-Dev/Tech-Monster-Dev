@@ -176,7 +176,7 @@ export default function PendingCertificatePayments({
                                     {avatarUrl ? (
                                         <img
                                             src={avatarUrl}
-                                            alt={studentName}
+                                            alt={studentName} loading="lazy" decoding="async"
                                         />
                                     ) : (
                                         <span>

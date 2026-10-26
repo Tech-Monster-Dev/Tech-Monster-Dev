@@ -278,6 +278,7 @@ export default function SupportChat({
                     <img
                         src={student?.avatar || "/assets/profile/default-profile.svg"}
                         alt={getUserName(student)}
+loading="lazy" decoding="async"
                         onError={(event) => {
                             event.currentTarget.onerror = null;
                             event.currentTarget.src = "/assets/profile/default-profile.svg";

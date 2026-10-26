@@ -161,7 +161,7 @@ export default function IssuedCertificates({
                                     {avatarUrl ? (
                                         <img
                                             src={avatarUrl}
-                                            alt={studentName}
+                                            alt={studentName} loading="lazy" decoding="async"
                                         />
                                     ) : (
                                         <span>

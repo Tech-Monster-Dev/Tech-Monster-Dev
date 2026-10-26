@@ -109,7 +109,7 @@ function Navbar() {
                         onClick={() => scrollToSection('home')}
                         aria-label='Go to Home'
                     >
-                        <img className='navbar-logo-img' src="/assets/logo/logo-optimized.webp" alt='Tech monster Logo' />
+                        <img className='navbar-logo-img' src="/assets/logo/logo-navbar.webp" alt='Tech monster Logo' width={64} height={64} />
 
                         <div>
                             <h2 className='navbar-logo-title'>Tech <span className='navbar-logo-title-accent'>Monster</span></h2>

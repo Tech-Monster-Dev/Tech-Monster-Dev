@@ -91,7 +91,10 @@ const InternshipRecommendation = ({
                       internship?.title ||
                       "Internship"
                     }
+                    loading="lazy"
+                    decoding="async"
                     onError={(event) => {
+                      event.currentTarget.onerror = null;
                       event.currentTarget.src =
                         defaultThumbnail;
                     }}

@@ -38,6 +38,7 @@ function FeedbackCard({ feedback }) {
                     src={avatar}
                     alt={`${studentName} profile`}
                     className="feedback-student-avatar"
+loading="lazy" decoding="async"
                     onError={(event) => {
                         event.currentTarget.onerror = null;
                             event.currentTarget.src = defaultProfileImage;

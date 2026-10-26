@@ -1,6 +1,7 @@
 import "../styles/global.css";
 import "../styles/tailwind.css";
 import Providers from "../providers/Providers.jsx";
+import ImageProtection from "../components/ui/ImageProtection.jsx";
 
 export const metadata = {
   title: "Tech Monster",
@@ -11,7 +12,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body><Providers>{children}</Providers></body>
+      <body>
+        <ImageProtection />
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
