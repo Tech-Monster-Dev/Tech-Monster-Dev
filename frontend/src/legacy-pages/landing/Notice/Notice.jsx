@@ -11,7 +11,6 @@ import Spinner from "../../../features/dashboard/common/LoaderPage/Spinner";
 import NoticeDetailed from "../../../features/admin/notices/components/NoticeDetailed";
 
 import { getNotices } from "../../../services/api/notice.service";
-import { socket } from "../../../services/socket/socket";
 
 const MAX_LANDING_NOTICES = 7;
 
@@ -49,70 +48,9 @@ function Notice() {
             }
         };
 
-        const handleNoticeCreated = (payload) => {
-            const notice = payload?.notice;
-
-            if (!notice) {
-                return;
-            }
-
-            setNotices((current) => {
-                if (current.some((item) => item._id === notice._id)) {
-                    return current;
-                }
-
-                return [notice, ...current].slice(0, MAX_LANDING_NOTICES);
-            });
-        };
-
-        const handleNoticeUpdated = (payload) => {
-            const notice = payload?.notice;
-
-            if (!notice) {
-                return;
-            }
-
-            setNotices((current) =>
-                current
-                    .map((item) =>
-                        item._id === notice._id ? notice : item
-                    )
-                    .sort(
-                        (first, second) =>
-                            new Date(second.createdAt) -
-                            new Date(first.createdAt)
-                    )
-                    .slice(0, MAX_LANDING_NOTICES)
-            );
-        };
-
-        const handleNoticeDeleted = (payload) => {
-            const noticeId = payload?.noticeId;
-
-            if (!noticeId) {
-                return;
-            }
-
-            setNotices((current) =>
-                current.filter((item) => item._id !== noticeId)
-            );
-        };
-
-        loadNotices();
-
-        socket.on("noticeCreated", handleNoticeCreated);
-        socket.on("noticeUpdated", handleNoticeUpdated);
-        socket.on("noticeDeleted", handleNoticeDeleted);
-
-        if (!socket.connected) {
-            socket.connect();
-        }
 
         return () => {
             mounted = false;
-            socket.off("noticeCreated", handleNoticeCreated);
-            socket.off("noticeUpdated", handleNoticeUpdated);
-            socket.off("noticeDeleted", handleNoticeDeleted);
         };
     }, []);
 
