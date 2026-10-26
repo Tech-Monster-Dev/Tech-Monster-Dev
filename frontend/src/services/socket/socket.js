@@ -12,6 +12,7 @@ export const socket = io(
     {
         autoConnect: false,
         withCredentials: true,
-        transports: ["polling", "websocket"]
+        transports: ["polling", "websocket"],
+        tryAllTransports: true
     }
 );
