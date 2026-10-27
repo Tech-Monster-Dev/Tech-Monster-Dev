@@ -3,6 +3,7 @@ import "./TaskApprovalDetails.css";
 import {
     useCallback,
     useEffect,
+    useRef,
     useState
 } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -40,6 +41,7 @@ export default function TaskApprovalDetails() {
     const [comment, setComment] = useState("");
     const [errors, setErrors] = useState({});
     const [extending, setExtending] = useState(false);
+    const taskActionInFlight = useRef(false);
 
     const validationRules = {
         comment: {
@@ -83,6 +85,9 @@ export default function TaskApprovalDetails() {
     }, [loadTask]);
 
     const handleApprove = async () => {
+        if (taskActionInFlight.current) return;
+        taskActionInFlight.current = true;
+
         try {
             if (isLegacyTask) {
                 await approveTask(id, comment);
@@ -98,10 +103,15 @@ export default function TaskApprovalDetails() {
                 err.response?.data?.message ||
                 "Something went wrong"
             );
+        } finally {
+            taskActionInFlight.current = false;
         }
     };
 
     const handleReject = async () => {
+        if (taskActionInFlight.current) return;
+        taskActionInFlight.current = true;
+
         try {
             if (isLegacyTask) {
                 await rejectTask(id, comment);
@@ -110,16 +120,20 @@ export default function TaskApprovalDetails() {
             }
             toast.success("Task Rejected");
             router.push("/admin/tasks");
-        }
-        catch (err) {
+        } catch (err) {
             toast.error(
                 err.response?.data?.message ||
                 "Something went wrong"
             );
+        } finally {
+            taskActionInFlight.current = false;
         }
     };
 
     const handleExtendDeadline = async () => {
+        if (taskActionInFlight.current) return;
+        taskActionInFlight.current = true;
+
         try {
             setExtending(true);
             const res = await extendSubmissionDeadline(id, 24);
@@ -131,6 +145,7 @@ export default function TaskApprovalDetails() {
                 "Could not extend deadline"
             );
         } finally {
+            taskActionInFlight.current = false;
             setExtending(false);
         }
     };

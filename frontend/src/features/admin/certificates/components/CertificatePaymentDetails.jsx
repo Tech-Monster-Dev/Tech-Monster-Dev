@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import DashButton from "../../../../components/ui/Button/DashButton";
@@ -23,6 +23,7 @@ export default function CertificatePaymentDetails({
     const [payment, setPayment] = useState(null);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
+    const paymentActionInFlight = useRef(false);
     const [rejecting, setRejecting] = useState(false);
     const [rejectionReason, setRejectionReason] = useState("");
     const [rejectionErrors, setRejectionErrors] = useState({});
@@ -76,6 +77,8 @@ export default function CertificatePaymentDetails({
     };
 
     const handleApproveConfirm = async () => {
+        if (paymentActionInFlight.current) return;
+        paymentActionInFlight.current = true;
         setShowApprovalWarning(false);
         setActionLoading(true);
         try {
@@ -102,12 +105,14 @@ export default function CertificatePaymentDetails({
             );
 
         } finally {
+            paymentActionInFlight.current = false;
             setActionLoading(false);
         }
     };
 
     const handleReject = async (event) => {
         event.preventDefault();
+        if (paymentActionInFlight.current) return;
 
         const validation = validateForm(
             { rejectionReason },
@@ -134,6 +139,7 @@ export default function CertificatePaymentDetails({
         }
 
         const reason = rejectionReason.trim();
+        paymentActionInFlight.current = true;
         setActionLoading(true);
         try {
             await rejectCertificatePayment(
@@ -156,6 +162,7 @@ export default function CertificatePaymentDetails({
             );
 
         } finally {
+            paymentActionInFlight.current = false;
             setActionLoading(false);
         }
     };

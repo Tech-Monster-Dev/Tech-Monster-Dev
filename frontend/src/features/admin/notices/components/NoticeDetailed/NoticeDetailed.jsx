@@ -1,6 +1,6 @@
 import "./NoticeDetailed.css";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
@@ -20,6 +20,7 @@ export default function NoticeDetailed({
     onDeleted,
 }) {
     const [deleting, setDeleting] = useState(false);
+    const deleteInFlightRef = useRef(false);
     const [showDeleteWarning, setShowDeleteWarning] = useState(false);
 
     useModalScrollLock(open);
@@ -42,7 +43,9 @@ export default function NoticeDetailed({
     };
 
     const handleConfirmDelete = async () => {
-        if (deleting || !noticeId) return;
+        if (deleteInFlightRef.current || !noticeId) return;
+
+        deleteInFlightRef.current = true;
 
         try {
             setDeleting(true);
@@ -63,6 +66,7 @@ export default function NoticeDetailed({
                 "Unable to delete notice."
             );
         } finally {
+            deleteInFlightRef.current = false;
             setDeleting(false);
         }
     };

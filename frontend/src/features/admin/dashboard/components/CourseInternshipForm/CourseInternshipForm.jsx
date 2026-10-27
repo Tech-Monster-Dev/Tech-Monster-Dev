@@ -1,6 +1,6 @@
 import "./CourseInternshipForm.css";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiSave } from "react-icons/fi";
 import { toast } from "react-toastify";
@@ -108,6 +108,7 @@ export default function CourseInternshipForm({ type }) {
 
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
+    const submissionInFlight = useRef(false);
 
     useEffect(() => {
         const nextData = getInitialFormData(editData);
@@ -233,6 +234,7 @@ export default function CourseInternshipForm({ type }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (submissionInFlight.current) return;
 
         if (!isEditMode) {
             const validation = validateForm(
@@ -250,6 +252,7 @@ export default function CourseInternshipForm({ type }) {
             }
         }
 
+        submissionInFlight.current = true;
         setSubmitting(true);
 
         const data = new FormData();
@@ -311,6 +314,7 @@ export default function CourseInternshipForm({ type }) {
                 error.response?.data?.message || `Unable to save ${entityLabel.toLowerCase()}`
             );
         } finally {
+            submissionInFlight.current = false;
             setSubmitting(false);
         }
     };

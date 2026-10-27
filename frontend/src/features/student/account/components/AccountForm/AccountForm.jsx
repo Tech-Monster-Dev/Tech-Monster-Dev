@@ -1,5 +1,5 @@
 import "./AccountForm.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -93,6 +93,7 @@ export default function AccountForm({
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const submitInFlightRef = useRef(false);
 
     const {
         imageFile,
@@ -196,6 +197,8 @@ export default function AccountForm({
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        if (submitInFlightRef.current) return;
+
         const {
             errors: validationErrors,
             isValid: formIsValid
@@ -216,6 +219,7 @@ export default function AccountForm({
             return;
         }
 
+        submitInFlightRef.current = true;
         setLoading(true);
 
         try {
@@ -266,6 +270,7 @@ export default function AccountForm({
                 "Profile update failed"
             );
         } finally {
+            submitInFlightRef.current = false;
             setLoading(false);
         }
     };

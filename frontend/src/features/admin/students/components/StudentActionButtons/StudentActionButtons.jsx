@@ -1,6 +1,6 @@
 import "./StudentActionButtons.css";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -36,6 +36,8 @@ export default function StudentActionButtons({
 
     const [showRestoreWarning, setShowRestoreWarning] = useState(false);
     const [restoring, setRestoring] = useState(false);
+    const [unblocking, setUnblocking] = useState(false);
+    const studentActionInFlightRef = useRef(false);
 
     const getStudentName = () =>
         [
@@ -49,7 +51,12 @@ export default function StudentActionButtons({
         "this student";
 
     const handleBlock = async () => {
+        if (studentActionInFlightRef.current) return;
+
         if (student.isBlocked) {
+            studentActionInFlightRef.current = true;
+            setUnblocking(true);
+
             try {
                 await unblockStudent(student._id);
                 toast.success("Student Unblocked");
@@ -59,6 +66,9 @@ export default function StudentActionButtons({
                     err.response?.data?.message ||
                     "Failed to unblock student"
                 );
+            } finally {
+                studentActionInFlightRef.current = false;
+                setUnblocking(false);
             }
 
             return;
@@ -73,7 +83,9 @@ export default function StudentActionButtons({
     };
 
     const handleConfirmBlock = async () => {
-        if (blocking || student.isBlocked) return;
+        if (studentActionInFlightRef.current || student.isBlocked || !student?._id) return;
+
+        studentActionInFlightRef.current = true;
 
         try {
             setBlocking(true);
@@ -91,6 +103,7 @@ export default function StudentActionButtons({
                 "Failed to block student"
             );
         } finally {
+            studentActionInFlightRef.current = false;
             setBlocking(false);
         }
     };
@@ -108,7 +121,9 @@ export default function StudentActionButtons({
     };
 
     const handleConfirmDelete = async () => {
-        if (deleting || !student?._id) return;
+        if (studentActionInFlightRef.current || !student?._id) return;
+
+        studentActionInFlightRef.current = true;
 
         try {
             setDeleting(true);
@@ -126,6 +141,7 @@ export default function StudentActionButtons({
                 "Failed to delete student"
             );
         } finally {
+            studentActionInFlightRef.current = false;
             setDeleting(false);
         }
     };
@@ -143,7 +159,9 @@ export default function StudentActionButtons({
     };
 
     const handleConfirmRestore = async () => {
-        if (restoring || !student?._id) return;
+        if (studentActionInFlightRef.current || !student?._id) return;
+
+        studentActionInFlightRef.current = true;
 
         try {
             setRestoring(true);
@@ -161,6 +179,7 @@ export default function StudentActionButtons({
                 "Failed to restore student"
             );
         } finally {
+            studentActionInFlightRef.current = false;
             setRestoring(false);
         }
     };
@@ -173,6 +192,7 @@ export default function StudentActionButtons({
                         type="button"
                         className="restoreBtn"
                         onClick={handleRestore}
+                        disabled={restoring}
                     >
                         {restoring ? "Restoring..." : "Restore"}
                     </button>
@@ -222,6 +242,7 @@ export default function StudentActionButtons({
                 <button
                     className="blockBtn"
                     onClick={handleBlock}
+                    disabled={blocking || unblocking || deleting}
                 >
                     <FiSlash />
                 </button>
@@ -229,6 +250,7 @@ export default function StudentActionButtons({
                 <button
                     className="deleteBtn"
                     onClick={handleDelete}
+                    disabled={blocking || unblocking || deleting}
                 >
                     <FiTrash2 />
                 </button>

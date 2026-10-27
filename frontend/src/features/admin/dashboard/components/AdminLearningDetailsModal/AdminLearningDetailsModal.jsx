@@ -1,6 +1,6 @@
 import "./AdminLearningDetailsModal.css";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
     FiAward,
@@ -43,6 +43,7 @@ const AdminLearningDetailsModal = ({
 
     const [showDeleteWarning, setShowDeleteWarning] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const deleteInFlightRef = useRef(false);
 
     if (!open || !item) {
         return null;
@@ -84,9 +85,11 @@ const AdminLearningDetailsModal = ({
     };
 
     const handleConfirmDelete = async () => {
-        if (deleting || !item?._id) {
+        if (deleteInFlightRef.current || !item?._id) {
             return;
         }
+
+        deleteInFlightRef.current = true;
 
         try {
             setDeleting(true);
@@ -115,6 +118,7 @@ const AdminLearningDetailsModal = ({
                 `Failed to delete ${label.toLowerCase()}`
             );
         } finally {
+            deleteInFlightRef.current = false;
             setDeleting(false);
         }
     };

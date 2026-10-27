@@ -1,6 +1,6 @@
 import "./feedback.css";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     FiMessageSquare,
     FiThumbsUp,
@@ -70,6 +70,7 @@ export default function Feedback() {
     const [error, setError] = useState("");
     const [selectedFeedback, setSelectedFeedback] = useState(null);
     const [deleting, setDeleting] = useState(false);
+    const deleteInFlightRef = useRef(false);
     const [deleteError, setDeleteError] = useState("");
 
     const fetchFeedback = useCallback(async () => {
@@ -140,8 +141,9 @@ export default function Feedback() {
     );
 
     const handleDelete = async () => {
-        if (!selectedFeedback?._id || deleting) return;
+        if (!selectedFeedback?._id || deleteInFlightRef.current) return;
 
+        deleteInFlightRef.current = true;
         setDeleting(true);
         setDeleteError("");
 
@@ -161,6 +163,7 @@ export default function Feedback() {
                 "Unable to delete this feedback. Please try again."
             );
         } finally {
+            deleteInFlightRef.current = false;
             setDeleting(false);
         }
     };

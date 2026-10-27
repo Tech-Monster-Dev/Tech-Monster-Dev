@@ -1,6 +1,6 @@
 import "./Login.css";
 
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -32,6 +32,7 @@ function Login() {
   const { login } = useAuth();
 
   const [loading, setLoading] = useState(false);
+  const submitInFlightRef = useRef(false);
   const [errors, setErrors] = useState({});
 
 
@@ -110,6 +111,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitInFlightRef.current || loading) return;
     
     const {
       errors: newErrors,
@@ -120,6 +122,7 @@ function Login() {
 
     if (!isValid) return;
 
+    submitInFlightRef.current = true;
     try {
       setLoading(true);
       const response = await loginService(formData);
@@ -186,6 +189,7 @@ function Login() {
       toast.error(message);
     }
     finally {
+      submitInFlightRef.current = false;
       setLoading(false);
     }
   };

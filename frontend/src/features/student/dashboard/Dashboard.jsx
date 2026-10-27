@@ -1,6 +1,6 @@
 import "./Dashboard.css";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -24,6 +24,7 @@ import useSkeletonScrollLock from "../../../shared/hooks/useSkeletonScrollLock";
 function Dashboard() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const enrollmentInFlight = useRef(false);
 
 
     const {
@@ -219,6 +220,8 @@ function Dashboard() {
             toast.error("Learning item not found.");
             return;
         }
+        if (enrollmentInFlight.current) return;
+        enrollmentInFlight.current = true;
 
         try {
             setLoading(true);
@@ -257,6 +260,7 @@ function Dashboard() {
             );
 
         } finally {
+            enrollmentInFlight.current = false;
             setLoading(false);
         }
     }

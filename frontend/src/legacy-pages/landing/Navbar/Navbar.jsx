@@ -2,7 +2,7 @@ import './Navbar.css';
 
 import { useRouter } from 'next/navigation';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navLinks } from './Navbardata.js';
 import useAuth from '../../../shared/hooks/useAuth.js';
@@ -18,31 +18,32 @@ function Navbar() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [activeLink, setActiveLink] = useState("home");
+    const authNavigationInFlight = useRef(false);
 
     const userName = user?.username || '';
     const capitalName = userName.toUpperCase() || userName;
 
-
     const handleSignUp = () => {
-        router.push("/auth/signup")
-        setIsOpen(false)
-    }
+        if (authNavigationInFlight.current) return;
+        authNavigationInFlight.current = true;
+        setIsOpen(false);
+        router.push("/auth/signup");
+    };
 
     const handleSignIn = () => {
+        if (authNavigationInFlight.current) return;
+        authNavigationInFlight.current = true;
+        setIsOpen(false);
+
         if (isAuthenticated === false) {
             router.push("/auth/login");
-            return;
-        }
-
-        if (user?.role === "student") {
+        } else if (user?.role === "student") {
             router.push("/student");
         } else if (user?.role === "admin") {
             router.push("/admin");
         } else {
             router.push("/auth/login");
         }
-
-        setIsOpen(false)
     };
 
     const scrollToSection = (section) => {
