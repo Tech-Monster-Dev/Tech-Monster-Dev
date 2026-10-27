@@ -2,7 +2,7 @@ import "./ForgotPassword.css";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import AuthLayout from "../../../../layouts/AuthLayout";
@@ -28,6 +28,7 @@ function ForgotPassword() {
 
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const submitInFlightRef = useRef(false);
     const [formData, setFormData] = useState({
         email: "",
     });
@@ -59,6 +60,7 @@ function ForgotPassword() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (submitInFlightRef.current) return;
         const {
             errors: newErrors,
             isValid
@@ -67,6 +69,7 @@ function ForgotPassword() {
         setErrors(newErrors);
         if (!isValid) return;
 
+        submitInFlightRef.current = true;
         try {
             setLoading(true);
             await forgotPassword(formData);
@@ -87,6 +90,7 @@ function ForgotPassword() {
             toast.error(error.response.data.message || "Something went wrong");
         }
         finally {
+            submitInFlightRef.current = false;
             setLoading(false);
         }
     }

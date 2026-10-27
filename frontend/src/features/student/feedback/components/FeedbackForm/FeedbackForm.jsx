@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import Form from "../../../../../components/ui/Form";
@@ -54,6 +54,7 @@ export default function FeedbackForm({
     const [form, setForm] = useState(INITIAL_FEEDBACK_FORM);
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
+    const submissionInFlight = useRef(false);
 
     const resourceOptions = getResourceOptions(resources);
 
@@ -91,6 +92,7 @@ export default function FeedbackForm({
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (submissionInFlight.current) return;
 
         const {
             errors: validationErrors,
@@ -106,6 +108,7 @@ export default function FeedbackForm({
             return;
         }
 
+        submissionInFlight.current = true;
         try {
             setSubmitting(true);
 
@@ -138,6 +141,7 @@ export default function FeedbackForm({
                 "Unable to submit feedback."
             );
         } finally {
+            submissionInFlight.current = false;
             setSubmitting(false);
         }
     };

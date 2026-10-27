@@ -548,6 +548,14 @@ export const joinCourse = asyncHandler(async (req, res) => {
         startedAt: new Date()
     });
 
+    await logActivity(
+        req,
+        req.user._id,
+        "JOIN_COURSE",
+        "Course",
+        "Joined course: " + course.title
+    );
+
     res.status(201).json({
         success: true,
         message: "Course joined successfully",

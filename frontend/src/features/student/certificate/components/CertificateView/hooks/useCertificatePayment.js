@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const QRImage = "/assets/thumnail/QR.svg";
 
@@ -22,6 +22,10 @@ export default function useCertificatePayment({ programId, programType }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isPaidFormOpen, setIsPaidFormOpen] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
+
+    const createPaymentInFlight = useRef(false);
+    const submitPaymentInFlight = useRef(false);
+    const cancelPaymentInFlight = useRef(false);
 
     const normalizedProgramType =
         programType === "course" ? "course" : "internship";
@@ -81,7 +85,8 @@ export default function useCertificatePayment({ programId, programType }) {
     }, [programParams]);
 
     const handleCreatePayment = async () => {
-        if (!programParams) return false;
+        if (!programParams || createPaymentInFlight.current) return false;
+        createPaymentInFlight.current = true;
 
         try {
             setCreatingPayment(true);
@@ -103,6 +108,7 @@ export default function useCertificatePayment({ programId, programType }) {
             console.error("Certificate payment creation failed:", error);
             return false;
         } finally {
+            createPaymentInFlight.current = false;
             setCreatingPayment(false);
         }
     };
@@ -131,6 +137,8 @@ export default function useCertificatePayment({ programId, programType }) {
         if (!["created", "pending"].includes(payment.status)) {
             return false;
         }
+        if (submitPaymentInFlight.current || cancelPaymentInFlight.current) return false;
+        submitPaymentInFlight.current = true;
 
         try {
             setSubmitting(true);
@@ -157,6 +165,7 @@ export default function useCertificatePayment({ programId, programType }) {
             console.error("Certificate payment submission failed:", error);
             return false;
         } finally {
+            submitPaymentInFlight.current = false;
             setSubmitting(false);
         }
     };
@@ -167,6 +176,8 @@ export default function useCertificatePayment({ programId, programType }) {
         if (!["created", "pending"].includes(payment.status)) {
             return false;
         }
+        if (cancelPaymentInFlight.current || submitPaymentInFlight.current) return false;
+        cancelPaymentInFlight.current = true;
 
         try {
             setCancelling(true);
@@ -184,6 +195,7 @@ export default function useCertificatePayment({ programId, programType }) {
             console.error("Certificate payment cancellation failed:", error);
             return false;
         } finally {
+            cancelPaymentInFlight.current = false;
             setCancelling(false);
         }
     };

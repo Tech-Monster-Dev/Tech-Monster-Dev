@@ -67,6 +67,13 @@ export default function Message() {
     const [hasMore, setHasMore] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
 
+    // Prevent duplicate requests without blocking unrelated chat actions.
+    const sendInFlightRef = useRef(false);
+    const muteInFlightRef = useRef(false);
+    const blockInFlightRef = useRef(false);
+    const deleteConversationInFlightRef = useRef(false);
+    const messageDeletionInFlightRef = useRef(new Set());
+
     // ===============================
     // Load Current User
     // ===============================
@@ -395,22 +402,26 @@ export default function Message() {
     // ===============================
 
     const handleSend = async () => {
-        if (
-            !text.trim()
-        ) return;
+        if (sendInFlightRef.current) return;
+        if (!selectedUser?._id || !text.trim()) return;
 
         if (
-            blockedUsers?.some((id) => String(id) === String(selectedUser?._id)) ||
-            blockedByUsers?.some((id) => String(id) === String(selectedUser?._id))
+            blockedUsers?.some((id) => String(id) === String(selectedUser._id)) ||
+            blockedByUsers?.some((id) => String(id) === String(selectedUser._id))
         ) {
             return;
         }
 
+        sendInFlightRef.current = true;
+        const receiverId = selectedUser._id;
+        const messageText = text;
+        const replyTo = replyMessage?._id;
+
         try {
             const res = await sendMessage({
-                receiver: selectedUser._id,
-                message: text,
-                replyTo: replyMessage?._id
+                receiver: receiverId,
+                message: messageText,
+                replyTo
             });
             setMessages(prev => [
                 ...prev,
@@ -422,13 +433,13 @@ export default function Message() {
             socket.emit(
                 "stopTyping",
                 {
-                    receiver: selectedUser._id
+                    receiver: receiverId
                 }
             );
-        }
-
-        catch (err) {
+        } catch (err) {
             console.log(err);
+        } finally {
+            sendInFlightRef.current = false;
         }
     };
 
@@ -478,28 +489,35 @@ export default function Message() {
     };
 
     const handleToggleMute = async () => {
-        if (!selectedUser?._id) return;
+        if (muteInFlightRef.current || !selectedUser?._id) return;
 
+        muteInFlightRef.current = true;
+        const userId = selectedUser._id.toString();
         setShowChatMenu(false);
+
         try {
-            const res = await toggleChatMute(selectedUser._id);
+            const res = await toggleChatMute(userId);
 
             setMutedUsers((prev) =>
                 res.muted
-                    ? [...new Set([...prev, selectedUser._id.toString()])]
-                    : prev.filter((id) => id.toString() !== selectedUser._id.toString())
+                    ? [...new Set([...prev, userId])]
+                    : prev.filter((id) => id.toString() !== userId)
             );
         } catch (err) {
             console.error("Failed to toggle chat mute:", err);
+        } finally {
+            muteInFlightRef.current = false;
         }
     };
 
     const handleToggleBlock = async () => {
-        if (!selectedUser?._id) return;
+        if (blockInFlightRef.current || !selectedUser?._id) return;
+
+        blockInFlightRef.current = true;
+        const userId = selectedUser._id.toString();
 
         try {
-            const result = await toggleChatBlock(selectedUser._id);
-            const userId = selectedUser._id.toString();
+            const result = await toggleChatBlock(userId);
 
             setBlockedUsers((prev) =>
                 result.blocked
@@ -510,22 +528,33 @@ export default function Message() {
             await loadUsers();
         } catch (err) {
             console.error("Block toggle failed:", err);
+        } finally {
+            blockInFlightRef.current = false;
         }
     };
 
     const handleDeleteConversation = async () => {
-        if (!selectedUser) return;
+        if (deleteConversationInFlightRef.current || !selectedUser?._id) return;
+
+        deleteConversationInFlightRef.current = true;
+        const userId = selectedUser._id;
+
         try {
-            await deleteConversationForMe(selectedUser._id);
+            await deleteConversationForMe(userId);
             setMessages([]);
             setShowChatMenu(false);
             await loadUsers();
         } catch (err) {
             console.log(err);
+        } finally {
+            deleteConversationInFlightRef.current = false;
         }
     };
 
     const handleDeleteForMe = async (id) => {
+        if (messageDeletionInFlightRef.current.has(id)) return;
+        messageDeletionInFlightRef.current.add(id);
+
         try {
             await deleteForMe(id);
             await loadUsers();
@@ -534,14 +563,17 @@ export default function Message() {
                     msg => msg._id !== id
                 )
             );
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
+        } finally {
+            messageDeletionInFlightRef.current.delete(id);
         }
-
     };
 
     const handleDeleteForEveryone = async (id) => {
+        if (messageDeletionInFlightRef.current.has(id)) return;
+        messageDeletionInFlightRef.current.add(id);
+
         try {
             await deleteForEveryone(id);
             await loadUsers();
@@ -557,9 +589,10 @@ export default function Message() {
                         : msg
                 )
             );
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
+        } finally {
+            messageDeletionInFlightRef.current.delete(id);
         }
     };
 

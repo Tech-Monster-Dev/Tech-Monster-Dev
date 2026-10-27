@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { toast } from "react-toastify";
 
@@ -19,6 +19,7 @@ const useTaskSubmission = ({
 }) => {
     const {user} = useAuth();
     const [submitting, setSubmitting] = useState(false);
+    const submissionInFlight = useRef(false);
 
     const handleSubmit = async (
         taskId,
@@ -38,6 +39,9 @@ const useTaskSubmission = ({
 
             return;
         }
+
+        if (submissionInFlight.current) return;
+        submissionInFlight.current = true;
 
         setSubmitting(true);
 
@@ -120,6 +124,7 @@ const useTaskSubmission = ({
 
             toast.error(message);
         } finally {
+            submissionInFlight.current = false;
             setSubmitting(false);
         }
     };

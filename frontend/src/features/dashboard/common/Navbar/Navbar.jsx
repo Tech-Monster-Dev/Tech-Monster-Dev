@@ -140,6 +140,11 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                         >
                             <Link
                                 href={`/${role}/notification`}
+                                onClick={(e) => {
+                                    if (pathname === `/${role}/notification`) {
+                                        e.preventDefault();
+                                    }
+                                }}
                                 className={`dashboard-navbar-notification-btn${pathname === `/${role}/notification` ? " active" : ""}`}
                             >
                                 <FiBell />
@@ -252,7 +257,15 @@ function Navbar({ role = "student", onMobileMenuClick }) {
 
                         </div>
 
-                        <Link href={`/${role}/message`} className={`dashboard-navbar-message-btn${pathname === `/${role}/message` ? " active" : ""}`}>
+                        <Link
+                            href={`/${role}/message`}
+                            onClick={(e) => {
+                                if (pathname === `/${role}/message`) {
+                                    e.preventDefault();
+                                }
+                            }}
+                            className={`dashboard-navbar-message-btn${pathname === `/${role}/message` ? " active" : ""}`}
+                        >
                             <FiMessageSquare />
                         </Link>
 
@@ -261,7 +274,9 @@ function Navbar({ role = "student", onMobileMenuClick }) {
                         {/* User Profile with Hover Popup */}
                         <div
                             className="dashboard-navbar-user-profile-wrapper"
-                            onMouseEnter={() => setShowProfilePopup(true)}
+                            onMouseEnter={() => {
+                                if (role !== "admin") setShowProfilePopup(true);
+                            }}
                             onMouseLeave={() => setShowProfilePopup(false)}
                         >
                             <div className="dashboard-navbar-user-profile">

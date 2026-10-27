@@ -110,6 +110,18 @@ function Sidebar({
     const navLinks = role === 'admin' ? adminLinks : studentLinks;
 
     const handleLinkClick = (e, link) => {
+        const isActive =
+            link.name === "Lessons"
+                ? pathname.startsWith("/student/lessons")
+                : link.name === "Daily Task"
+                    ? pathname.startsWith("/student/tasks")
+                    : pathname === link.path;
+
+        if (isActive) {
+            e.preventDefault();
+            return;
+        }
+
         if (role === "student" && link.name === "Daily Task") {
             e.preventDefault();
             setShowDailyTaskWarning(true);

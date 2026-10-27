@@ -1,6 +1,6 @@
 import "./ResetPassword.css";
 
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -43,6 +43,7 @@ function ResetPassword() {
     }, []);
 
     const [loading, setLoading] = useState(false);
+    const submitInFlightRef = useRef(false);
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         password: "",
@@ -103,6 +104,7 @@ function ResetPassword() {
 
     const handleUpdatePassword = async (event) => {
         event.preventDefault();
+        if (submitInFlightRef.current) return;
 
         const {
             errors: newErrors,
@@ -130,6 +132,7 @@ function ResetPassword() {
             return;
         }
 
+        submitInFlightRef.current = true;
         setLoading(true);
 
         try {
@@ -154,6 +157,7 @@ function ResetPassword() {
             toast.error(message);
 
         } finally {
+            submitInFlightRef.current = false;
             setLoading(false);
         }
     };

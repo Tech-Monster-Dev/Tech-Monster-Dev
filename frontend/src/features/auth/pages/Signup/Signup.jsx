@@ -1,6 +1,6 @@
 import "./Signup.css";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -23,6 +23,7 @@ function Signup() {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const submitInFlightRef = useRef(false);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
 
@@ -59,6 +60,7 @@ function Signup() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (submitInFlightRef.current) return;
 
     const {
       errors: newErrors,
@@ -90,6 +92,7 @@ function Signup() {
       return;
     }
 
+    submitInFlightRef.current = true;
     setLoading(true);
 
     try {
@@ -112,6 +115,7 @@ function Signup() {
       toast.error(message);
       setError(message);
     } finally {
+      submitInFlightRef.current = false;
       setLoading(false);
     }
   };

@@ -1,6 +1,6 @@
 import "./AdminLogin.css";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -28,6 +28,7 @@ function AdminLogin() {
         password: ""
     });
     const [loading, setLoading] = useState(false);
+    const submitInFlightRef = useRef(false);
     const [errors, setErrors] = useState({});
 
 
@@ -48,6 +49,7 @@ function AdminLogin() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (submitInFlightRef.current) return;
 
         const {
             errors: newErrors,
@@ -56,7 +58,7 @@ function AdminLogin() {
         setErrors(newErrors);
         if (!isValid) return;
 
-
+        submitInFlightRef.current = true;
         try {
             setLoading(true);
             const response = await adminLogin(formData);
@@ -77,6 +79,7 @@ function AdminLogin() {
             const msg = err.response?.data?.message || "Something went wrong";
             toast.error(msg);
         } finally {
+            submitInFlightRef.current = false;
             setLoading(false);
         }
     };

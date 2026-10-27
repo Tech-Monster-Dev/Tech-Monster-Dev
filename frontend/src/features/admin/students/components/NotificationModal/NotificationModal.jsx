@@ -1,6 +1,6 @@
 import "./NotificationModal.css";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import Form from "../../../../../components/ui/Form";
@@ -40,6 +40,7 @@ export default function NotificationModal({
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const submitInFlightRef = useRef(false);
 
     useEffect(() => {
         if (!open) {
@@ -77,15 +78,17 @@ export default function NotificationModal({
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (submitInFlightRef.current) return;
 
         const validation = validateForm(form, validationRules);
 
         setErrors(validation.errors);
 
-        if (!validation.isValid || loading) {
+        if (!validation.isValid) {
             return;
         }
 
+        submitInFlightRef.current = true;
         try {
             setLoading(true);
 
@@ -113,6 +116,7 @@ export default function NotificationModal({
                 "Failed to send notification"
             );
         } finally {
+            submitInFlightRef.current = false;
             setLoading(false);
         }
     };

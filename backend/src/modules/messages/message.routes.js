@@ -57,6 +57,8 @@ router.get(
 );
 
 // Get Conversation
+router.get("/muted", protect, getMutedChats);
+
 router.get(
     "/:userId",
     protect,
@@ -126,7 +128,7 @@ router.delete(
 
 router.get("/export/:userId", protect, exportChat);
 
-router.get("/muted", protect, getMutedChats);
+
 router.get("/blocked", protect, getBlockedUsers);
 
 router.patch("/mute/:userId", protect, toggleChatMute);

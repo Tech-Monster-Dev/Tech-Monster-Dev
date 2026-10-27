@@ -1,5 +1,5 @@
 import './SettingsSection.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -17,6 +17,8 @@ export default function SettingsSection() {
 
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const deleteAccountInFlight = useRef(false);
+  const unblockingUsersInFlight = useRef(new Set());
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [isLoadingBlockedUsers, setIsLoadingBlockedUsers] = useState(false);
 
@@ -58,10 +60,11 @@ export default function SettingsSection() {
   };
 
   const handleConfirmDelete = async () => {
-    if (isDeleting === true) {
+    if (deleteAccountInFlight.current || isDeleting === true) {
       return;
     }
 
+    deleteAccountInFlight.current = true;
     try {
       setIsDeleting(true);
 
@@ -73,6 +76,7 @@ export default function SettingsSection() {
       router.push("/");
     } catch (error) {
       sessionStorage.removeItem("accountDeletionInProgress");
+      deleteAccountInFlight.current = false;
       setIsDeleting(false);
       toast.error(error.response?.data?.message || "Account deletion failed. Please try again.");
     }
@@ -169,6 +173,11 @@ export default function SettingsSection() {
                   type="button"
                   className="unblock-btn"
                   onClick={async () => {
+                    if (unblockingUsersInFlight.current.has(user._id)) {
+                      return;
+                    }
+
+                    unblockingUsersInFlight.current.add(user._id);
                     try {
                       await toggleChatBlock(user._id);
                       setBlockedUsers((prev) =>
@@ -180,6 +189,8 @@ export default function SettingsSection() {
                         error.response?.data?.message ||
                         "Failed to unblock user."
                       );
+                    } finally {
+                      unblockingUsersInFlight.current.delete(user._id);
                     }
                   }}
                 >

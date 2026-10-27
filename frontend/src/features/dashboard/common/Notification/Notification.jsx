@@ -24,6 +24,20 @@ export default function Notification() {
     router.push(path);
   };
   const autoReadTriggered = useRef(false);
+  const notificationReadInFlight = useRef(new Set());
+  const notificationDeleteInFlight = useRef(new Set());
+  const markAllAsReadInFlight = useRef(false);
+
+  const handleMarkAllAsRead = async () => {
+    if (markAllAsReadInFlight.current) return;
+
+    markAllAsReadInFlight.current = true;
+    try {
+      await markAllAsRead();
+    } finally {
+      markAllAsReadInFlight.current = false;
+    }
+  };
 
   const [followedBackIds, setFollowedBackIds] = useState(new Set());
   const [followLoadingIds, setFollowLoadingIds] = useState(new Set());
@@ -46,7 +60,7 @@ export default function Notification() {
       !autoReadTriggered.current
     ) {
       autoReadTriggered.current = true;
-      markAllAsRead().catch(() => {
+      handleMarkAllAsRead().catch(() => {
         autoReadTriggered.current = false;
       });
     }
@@ -54,10 +68,15 @@ export default function Notification() {
 
   const handleNotificationClick = async (notification) => {
     if (!notification?.isRead) {
+      const notificationId = String(notification?._id || "");
+      if (!notificationId || notificationReadInFlight.current.has(notificationId)) return;
+      notificationReadInFlight.current.add(notificationId);
       try {
         await markAsRead(notification._id);
       } catch {
         return;
+      } finally {
+        notificationReadInFlight.current.delete(notificationId);
       }
     }
 
@@ -257,11 +276,16 @@ export default function Notification() {
 
   const handleDelete = async (event, id) => {
     event.stopPropagation();
+    const notificationId = String(id || "");
+    if (!notificationId || notificationDeleteInFlight.current.has(notificationId)) return;
+    notificationDeleteInFlight.current.add(notificationId);
 
     try {
       await removeNotification(id);
     } catch {
       // Provider handles the error.
+    } finally {
+      notificationDeleteInFlight.current.delete(notificationId);
     }
   };
 
@@ -279,7 +303,7 @@ export default function Notification() {
         {unreadCount > 0 && (
           <button
             className="mark-all-btn"
-            onClick={() => markAllAsRead()}
+            onClick={handleMarkAllAsRead}
           >
             Mark all as read
           </button>
