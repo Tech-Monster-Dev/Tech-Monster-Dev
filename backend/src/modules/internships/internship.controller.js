@@ -103,49 +103,91 @@ const findLessonName = (courseData, lessonId) => {
 };
 
 const getOrderedCourseTasks = (courseData, courseSlug) => {
-    if (!Array.isArray(courseData?.modules)) return [];
+    if (!Array.isArray(courseData?.modules)) {
+        return [];
+    }
 
-    return courseData.modules.flatMap((module) => {
-        const moduleId = module.moduleId || "";
-        const seen = new Set();
-        const tasks = [];
+    const orderedTasks = [];
+    const seen = new Set();
 
-        (module.tasks || []).forEach((task) => {
-            const taskId = task.taskId || task.id || "";
-            if (!taskId || seen.has(taskId)) return;
-            seen.add(taskId);
+    courseData.modules.forEach((module, moduleIndex) => {
+        const moduleId = String(
+            module.moduleId ||
+            module.id ||
+            `module-${moduleIndex + 1}`
+        ).trim();
 
-            tasks.push({
-                courseSlug,
-                moduleId,
-                moduleTitle: module.moduleTitle || module.title || "",
-                lessonId: task.lessonId || "",
-                taskId,
-                taskTitle: task.title || task.taskTitle || "Task",
-                problemStatement: task.problemStatement || task.description || "",
-            });
-        });
+        const moduleTitle =
+            module.moduleTitle ||
+            module.title ||
+            `Module ${moduleIndex + 1}`;
 
-        (module.lessons || []).forEach((lesson) => {
-            (lesson.tasks || []).forEach((task) => {
-                const taskId = task.taskId || "";
-                if (!taskId || seen.has(taskId)) return;
+        if (Array.isArray(module.tasks)) {
+            module.tasks.forEach((task, taskIndex) => {
+                const taskId = String(
+                    task.taskId ||
+                    task.id ||
+                    `task-${taskIndex + 1}`
+                ).trim();
+
+                if (!taskId || seen.has(taskId)) {
+                    return;
+                }
+
                 seen.add(taskId);
-
-                tasks.push({
+                orderedTasks.push({
                     courseSlug,
                     moduleId,
-                    moduleTitle: module.moduleTitle || "",
-                    lessonId: lesson.lessonId || "",
+                    moduleTitle,
+                    lessonId: String(task.lessonId || "").trim(),
                     taskId,
-                    taskTitle: task.title || "Task",
-                    problemStatement: task.problemStatement || ""
+                    taskTitle: task.title || task.taskTitle || "Task",
+                    problemStatement:
+                        task.problemStatement || task.description || "",
                 });
             });
-        });
+        }
 
-        return tasks;
+        if (Array.isArray(module.lessons)) {
+            module.lessons.forEach((lesson, lessonIndex) => {
+                const lessonId = String(
+                    lesson.lessonId ||
+                    lesson.id ||
+                    `lesson-${lessonIndex + 1}`
+                ).trim();
+
+                if (!Array.isArray(lesson.tasks)) {
+                    return;
+                }
+
+                lesson.tasks.forEach((task, taskIndex) => {
+                    const taskId = String(
+                        task.taskId ||
+                        task.id ||
+                        `task-${taskIndex + 1}`
+                    ).trim();
+
+                    if (!taskId || seen.has(taskId)) {
+                        return;
+                    }
+
+                    seen.add(taskId);
+                    orderedTasks.push({
+                        courseSlug,
+                        moduleId,
+                        moduleTitle,
+                        lessonId,
+                        taskId,
+                        taskTitle: task.title || task.taskTitle || "Task",
+                        problemStatement:
+                            task.problemStatement || task.description || "",
+                    });
+                });
+            });
+        }
     });
+
+    return orderedTasks;
 };
 
 const isModuleLessonsCompleted = (courseData, moduleId, completedLessons = []) => {
@@ -356,6 +398,7 @@ export const createInternship = asyncHandler(async (req, res) => {
         description,
         duration,
         price,
+        offer = 0,
         totalTasks,
         totalNotes
     } = req.body || {};
@@ -376,6 +419,7 @@ export const createInternship = asyncHandler(async (req, res) => {
         thumbnail,
         duration,
         price,
+        offer,
         totalTasks,
         totalNotes,
         isPublished: true
@@ -670,6 +714,9 @@ export const completeLesson = asyncHandler(async (req, res) => {
     if (!alreadyCompleted) {
         studentInternship.completedLessons.push(lessonId);
     }
+
+    await studentInternship.save();
+
     // Compute the total number of lessons from the course JSON file.
     const courseData = await readInternshipDataFromFile(normalizedSlug);
 
@@ -786,7 +833,7 @@ export const getCompletedLessons = asyncHandler(async (req, res) => {
 // ADMIN UPDATE INTERNSHIP
 // =====================================
 export const updateInternship = asyncHandler(async (req, res) => {
-    const { title, slug, category, level, description, duration, price, totalTasks, totalNotes } = req.body;
+    const { title, slug, category, level, description, duration, price, offer, totalTasks, totalNotes } = req.body;
 
     let internship = await Internship.findById(req.params.id);
     if (!internship) {
@@ -812,6 +859,7 @@ export const updateInternship = asyncHandler(async (req, res) => {
             thumbnail: thumbnail,
             duration: duration || internship.duration,
             price: price !== undefined ? price : internship.price,
+            offer: offer !== undefined ? offer : internship.offer,
             totalTasks: totalTasks !== undefined ? totalTasks : internship.totalTasks,
             totalNotes: totalNotes !== undefined ? totalNotes : internship.totalNotes,
         },

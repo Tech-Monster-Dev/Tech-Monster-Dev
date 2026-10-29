@@ -18,7 +18,8 @@ export default function LessonSidebar({
     completedLessons,
     courseSlug,
     contentType,
-    approvedModuleIds = new Set()
+    approvedModuleIds = new Set(),
+    onSelectProject,
 }) {
 
     const [openModuleId, setOpenModuleId] = useState(null);
@@ -132,6 +133,7 @@ export default function LessonSidebar({
                                 courseSlug={courseSlug}
                                 contentType={contentType}
                                 approvedModuleIds={approvedModuleIds}
+                                onSelectProject={onSelectProject}
                                 canStart={lesson.canStart !== false}
                                 moduleNumber={moduleIndex + 1}
                             />

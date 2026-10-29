@@ -97,6 +97,11 @@ export const normalizeLessonData = (learningData) => {
                 tasks: Array.isArray(module.tasks)
                     ? module.tasks
                     : [],
+
+                // Keep capstone project data separate from lesson sections.
+                project: module.project && typeof module.project === "object"
+                    ? module.project
+                    : null,
             };
         }
     );

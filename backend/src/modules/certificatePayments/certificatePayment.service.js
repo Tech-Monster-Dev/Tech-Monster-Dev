@@ -100,7 +100,7 @@ export const getCompletedProgramForStudent = async (studentId, { courseId = null
         programId: enrollment.internship._id,
         programTitle: enrollment.internship.title,
         amount: Number(
-            enrollment.internship.price
+            (Number(enrollment.internship.price) * (1 - Number(enrollment.internship.offer || 0) / 100)).toFixed(2)
         ),
         course: null,
         internship: enrollment.internship,
@@ -378,9 +378,9 @@ export const createCertificatePayment = async (studentId, { courseId = null, int
          * Reuse an unexpired checkout.
         */
         if (
+            Number(existingPayment.amount) === program.amount &&
             existingPayment.expiresAt &&
-            existingPayment.expiresAt >
-            new Date()
+            existingPayment.expiresAt > new Date()
         ) {
             return {
                 payment: existingPayment,

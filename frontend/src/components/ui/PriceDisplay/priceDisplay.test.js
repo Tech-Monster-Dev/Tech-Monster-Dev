@@ -42,3 +42,23 @@ test("formats fractional INR values with Indian grouping and two decimals", () =
         discountedPrice: "₹9,876.40",
     });
 });
+
+test("ignores missing, fractional, negative, and over-100 offers", () => {
+    for (const offer of [null, 1.5, -1, 101, "invalid"]) {
+        assert.deepEqual(getProgramPriceDisplay(199, offer), {
+            originalPrice: "₹199",
+            offerPercentage: 0,
+            discountedPrice: null,
+        });
+    }
+});
+
+test("treats zero and invalid original prices as free without discounts", () => {
+    for (const price of [0, -1, "invalid"]) {
+        assert.deepEqual(getProgramPriceDisplay(price, 20), {
+            originalPrice: "Free",
+            offerPercentage: 0,
+            discountedPrice: null,
+        });
+    }
+});

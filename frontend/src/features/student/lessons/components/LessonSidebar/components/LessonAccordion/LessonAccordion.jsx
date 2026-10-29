@@ -23,6 +23,7 @@ export default function LessonAccordion({
     courseSlug,
     contentType,
     approvedModuleIds = new Set(),
+    onSelectProject,
     canStart = true,
     moduleNumber = 1,
 }) {
@@ -154,6 +155,30 @@ export default function LessonAccordion({
                                 </div>
                             </motion.div>
                         ))}
+
+                        {lesson.project && (
+                            <motion.div
+                                whileHover={{ x: 6 }}
+                                className="accordion-lesson capstone-project-entry"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => onSelectProject?.(lesson)}
+                                onKeyDown={(event) => {
+                                    if (event.key === "Enter" || event.key === " ") {
+                                        event.preventDefault();
+                                        onSelectProject?.(lesson);
+                                    }
+                                }}
+                            >
+                                <div className="lesson-icon">
+                                    <BookOpen size={18} />
+                                </div>
+                                <div className="lesson-text">
+                                    <h4>Capstone Project</h4>
+                                    <small>View project brief and implementation guide</small>
+                                </div>
+                            </motion.div>
+                        )}
 
                         {/* Module Task Bar */}
 

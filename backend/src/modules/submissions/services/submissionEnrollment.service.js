@@ -28,12 +28,7 @@ export const resolveEnrollment =
                         }
                     );
 
-                if (
-                    enrollment?.internship
-                ) {
-                    internship =
-                        enrollment.internship;
-                } else {
+                if (!enrollment) {
                     internship = null;
                 }
             }
