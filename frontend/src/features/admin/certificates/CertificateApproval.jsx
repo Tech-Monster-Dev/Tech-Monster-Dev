@@ -8,6 +8,7 @@ import SectionTabs from '../../../layouts/SectionTabs/SectionTabs.jsx';
 import PendingCertificatePayments from './components/PendingCertificatePayments.jsx';
 import CertificatePaymentDetails from './components/CertificatePaymentDetails.jsx';
 import IssuedCertificates from './components/IssuedCertificates.jsx';
+import CertificatePayments from './components/CertificatePayments.jsx';
 const IssuedCertificatesModal = dynamic(
     () => import('./components/IssuedCertificatesModal.jsx'),
     { ssr: false }
@@ -21,6 +22,7 @@ const CERTIFICATE_ISSUED_DETAILS_STORAGE_KEY = 'admin-certificate-issued-details
 const CERTIFICATE_TABS = [
     { value: 'pending', label: 'Pending' },
     { value: 'issued', label: 'Issued' },
+    { value: 'payments', label: 'Payments' },
 ];
 
 export default function CertificateApproval() {
@@ -126,6 +128,10 @@ export default function CertificateApproval() {
                         refresh={refresh}
                         onSelectStudent={handleSelectStudent}
                     />
+                )}
+
+                {activeTab === 'payments' && (
+                    <CertificatePayments refresh={refresh} />
                 )}
             </div>
 

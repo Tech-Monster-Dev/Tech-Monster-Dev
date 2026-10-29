@@ -11,19 +11,22 @@ function AuthProvider({ children }) {
     const [authInitialized, setAuthInitialized] = useState(false);
 
     useEffect(() => {
+        let storedToken = null;
+        let storedUser = null;
+
         try {
-            const storedToken = tokenStorage.getToken();
-            const storedUser = tokenStorage.getUser();
-            setToken(storedToken);
-            setUser(storedUser);
+            storedToken = tokenStorage.getToken();
+            storedUser = tokenStorage.getUser();
         } catch (error) {
             console.error("Failed to initialize authentication:", error);
             tokenStorage.clear();
-            setToken(null);
-            setUser(null);
-        } finally {
-            setAuthInitialized(true);
         }
+
+        queueMicrotask(() => {
+            setToken(storedToken);
+            setUser(storedUser);
+            setAuthInitialized(true);
+        });
     }, []);
 
 

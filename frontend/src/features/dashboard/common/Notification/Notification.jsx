@@ -1,5 +1,5 @@
 import "./Notification.css";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   FiArrowRight,
@@ -28,17 +28,6 @@ export default function Notification() {
   const notificationDeleteInFlight = useRef(new Set());
   const markAllAsReadInFlight = useRef(false);
 
-  const handleMarkAllAsRead = async () => {
-    if (markAllAsReadInFlight.current) return;
-
-    markAllAsReadInFlight.current = true;
-    try {
-      await markAllAsRead();
-    } finally {
-      markAllAsReadInFlight.current = false;
-    }
-  };
-
   const [followedBackIds, setFollowedBackIds] = useState(new Set());
   const [followLoadingIds, setFollowLoadingIds] = useState(new Set());
 
@@ -50,6 +39,17 @@ export default function Notification() {
     markAllAsRead,
     removeNotification,
   } = useNotification();
+
+  const handleMarkAllAsRead = useCallback(async () => {
+    if (markAllAsReadInFlight.current) return;
+
+    markAllAsReadInFlight.current = true;
+    try {
+      await markAllAsRead();
+    } finally {
+      markAllAsReadInFlight.current = false;
+    }
+  }, [markAllAsRead]);
 
   const role = pathname.startsWith("/admin") ? "admin" : "student";
 
@@ -64,7 +64,7 @@ export default function Notification() {
         autoReadTriggered.current = false;
       });
     }
-  }, [loading, unreadCount, markAllAsRead]);
+  }, [loading, unreadCount, handleMarkAllAsRead]);
 
   const handleNotificationClick = async (notification) => {
     if (!notification?.isRead) {
@@ -215,7 +215,7 @@ export default function Notification() {
           key: "open-support",
           label: "Open Support",
           icon: <FiMessageCircle />,
-          onClick: () => handleNotificationClick(notification),
+          action: "notification",
         },
       ];
     }
@@ -226,7 +226,7 @@ export default function Notification() {
           key: "reply",
           label: "Reply",
           icon: <FiMessageCircle />,
-          onClick: () => handleNotificationClick(notification),
+          action: "notification",
         },
       ];
     }
@@ -243,7 +243,7 @@ export default function Notification() {
             ? "Following..."
             : "Follow Back",
           icon: <FiUserPlus />,
-          onClick: () => handleFollowBack(notification),
+          action: "follow-back",
           disabled: followLoadingIds.has(String(context.followerId)),
         },
       ];
@@ -255,7 +255,7 @@ export default function Notification() {
           key: "view",
           label: "View Certificate",
           icon: <FiArrowRight />,
-          onClick: () => handleNotificationClick(notification),
+          action: "notification",
         },
       ];
     }
@@ -266,7 +266,7 @@ export default function Notification() {
           key: "view",
           label: role === "admin" ? "Review Task" : "Open Task",
           icon: <FiArrowRight />,
-          onClick: () => handleNotificationClick(notification),
+          action: "notification",
         },
       ];
     }
@@ -354,7 +354,11 @@ export default function Notification() {
                           key={action.key}
                           type="button"
                           className="notification-action-btn"
-                          onClick={action.onClick}
+                          onClick={() =>
+                            action.action === "follow-back"
+                              ? handleFollowBack(item)
+                              : handleNotificationClick(item)
+                          }
                           disabled={action.disabled}
                         >
                           {action.icon}
