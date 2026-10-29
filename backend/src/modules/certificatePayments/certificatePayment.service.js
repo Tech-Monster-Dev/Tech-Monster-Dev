@@ -63,9 +63,7 @@ export const getCompletedProgramForStudent = async (studentId, { courseId = null
             programType: "course",
             programId: enrollment.course._id,
             programTitle: enrollment.course.title,
-            amount: Number(
-                enrollment.course.price
-            ),
+            amount: Number((Number(enrollment.course.price) * (1 - Number(enrollment.course.offer || 0) / 100)).toFixed(2)),
             course: enrollment.course,
             internship: null,
         };

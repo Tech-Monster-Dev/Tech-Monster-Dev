@@ -450,6 +450,7 @@ export const createCourse = asyncHandler(async (req, res) => {
         description,
         duration,
         price,
+        offer,
         totalTasks,
         totalNotes
     } = req.body || {};
@@ -469,6 +470,7 @@ export const createCourse = asyncHandler(async (req, res) => {
         thumbnail,
         duration,
         price,
+        offer,
         totalTasks,
         totalNotes,
         isPublished: true
@@ -773,7 +775,7 @@ export const getCompletedLessons = asyncHandler(async (req, res) => {
 });
 
 export const updateCourse = asyncHandler(async (req, res) => {
-    const { title, slug, category, level, description, duration, price, totalTasks, totalNotes } = req.body;
+    const { title, slug, category, level, description, duration, price, offer, totalTasks, totalNotes } = req.body;
 
     let course = await Course.findById(req.params.id);
     if (!course) {
@@ -797,6 +799,7 @@ export const updateCourse = asyncHandler(async (req, res) => {
             thumbnail,
             duration: duration || course.duration,
             price: price !== undefined ? price : course.price,
+            offer: offer !== undefined ? offer : course.offer,
             totalTasks: totalTasks !== undefined ? totalTasks : course.totalTasks,
             totalNotes: totalNotes !== undefined ? totalNotes : course.totalNotes
         },

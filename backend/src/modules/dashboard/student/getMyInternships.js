@@ -18,6 +18,7 @@ const getMyInternships = async (userId) => {
                 category
                 level
                 duration
+                price
                 totalTasks
                 totalNotes
                 certificate
@@ -54,6 +55,7 @@ const getMyInternships = async (userId) => {
                 category: item.internship.category,
                 level: item.internship.level,
                 duration: item.internship.duration,
+                price: item.internship.price,
                 totalTasks: item.internship.totalTasks,
                 totalNotes: item.internship.totalNotes,
                 completedTasks: item.completedTasks || 0,

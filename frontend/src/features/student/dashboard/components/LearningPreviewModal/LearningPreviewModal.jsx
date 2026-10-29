@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock3, BookOpen, ListChecks, X } from "lucide-react";
 
+
 const defaultThumbnail = "/assets/thumnail/course_internship_default.svg";
 
 import "./LearningPreviewModal.css";
@@ -132,6 +133,7 @@ const LearningPreviewModal = ({
                                     </div>
                                 )}
                             </div>
+
 
                             <div className="learning-preview-actions">
                                 <button
