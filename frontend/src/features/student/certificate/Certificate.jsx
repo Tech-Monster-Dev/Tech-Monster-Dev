@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 import SectionTabs from "../../../layouts/SectionTabs";
 import EmptyState from "../../../components/ui/EmptyState";
+import PriceDisplay from "../../../components/ui/PriceDisplay/PriceDisplay";
 import Spinner from "../../../features/dashboard/common/LoaderPage/Spinner";
 import { getMyCertificates, downloadCertificate } from "../../../services/api/certificate.service";
 import useAttendanceData from "../attendance/hooks/useAttendanceData";
@@ -227,13 +228,14 @@ export default function Certificate() {
                                                 {certificate.programTitle}
                                             </h3>
 
-                                            <p>
-                                                Certificate Fee:{" "}
-                                                <strong>
-                                                    ₹
-                                                    {certificate.fee || 0}
-                                                </strong>
-                                            </p>
+                                            <div className="certificate-program-pricing">
+                                                <span>Program Price</span>
+                                                <PriceDisplay
+                                                    price={certificate.price}
+                                                    offer={certificate.offer}
+                                                />
+                                            </div>
+
                                         </div>
                                     </div>
 

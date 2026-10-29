@@ -71,6 +71,7 @@ const getRecommendedInternships = async (userId) => {
             category: item.category,
             level: item.level,
             duration: item.duration,
+            price: item.price,
             totalTasks: item.totalTasks,
             totalNotes: totalLessons,
             certificate: item.certificate,

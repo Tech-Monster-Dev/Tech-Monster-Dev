@@ -33,6 +33,7 @@ const INITIAL_FORM = {
     description: "",
     duration: "",
     price: "",
+    offer: "0",
     totalTasks: "",
     totalNotes: "",
 };
@@ -73,6 +74,7 @@ const getInitialFormData = (editData) => {
         description: editData.description || "",
         duration: editData.duration || "",
         price: editData.price ?? "",
+        offer: editData.offer ?? "0",
         totalTasks: editData.totalTasks ?? "",
         totalNotes: editData.totalNotes ?? "",
         image: getImageUrl(editData.img || editData.thumbnail),
@@ -181,6 +183,19 @@ export default function CourseInternshipForm({ type }) {
                 required: !isEditMode,
             },
 
+            ...(isCourse
+                ? [{
+                    name: "offer",
+                    label: "Offer (%)",
+                    placeholder: "Enter offer percentage",
+                    type: "number",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    required: true,
+                }]
+                : []),
+
             {
                 name: "totalTasks",
                 label: "Total Tasks",
@@ -213,7 +228,7 @@ export default function CourseInternshipForm({ type }) {
                     "courseInternshipFormDescriptionField",
             },
         ],
-        [entityLabel, isEditMode]
+        [entityLabel, isCourse, isEditMode]
     );
 
     const handleChange = (event) => {
@@ -226,7 +241,7 @@ export default function CourseInternshipForm({ type }) {
 
         setErrors((current) => ({
             ...current,
-            [name]: isEditMode
+            [name]: isEditMode && name !== "offer"
                 ? ""
                 : validateField(name, value, FIELD_RULES),
         }));
@@ -239,7 +254,13 @@ export default function CourseInternshipForm({ type }) {
         if (!isEditMode) {
             const validation = validateForm(
                 formData,
-                FIELD_RULES
+                isCourse
+                    ? FIELD_RULES
+                    : Object.fromEntries(
+                          Object.entries(FIELD_RULES).filter(
+                              ([name]) => name !== "offer"
+                          )
+                      )
             );
 
             setErrors(validation.errors);
@@ -248,6 +269,22 @@ export default function CourseInternshipForm({ type }) {
                 toast.error(
                     "Please complete all required fields."
                 );
+                return;
+            }
+        }
+
+        if (isCourse) {
+            const offerError = validateField(
+                "offer",
+                formData.offer,
+                FIELD_RULES
+            );
+            if (offerError) {
+                setErrors((current) => ({
+                    ...current,
+                    offer: offerError,
+                }));
+                toast.error(offerError);
                 return;
             }
         }
@@ -265,6 +302,7 @@ export default function CourseInternshipForm({ type }) {
             "description",
             "duration",
             "price",
+            ...(isCourse ? ["offer"] : []),
             "totalTasks",
             "totalNotes",
         ].forEach((field) => {

@@ -27,6 +27,20 @@ export const FIELD_RULES = {
         required: true,
         requiredMessage: "Certificate fee is required",
     },
+    offer: {
+        required: true,
+        requiredMessage: "Offer is required",
+        validate: (value) => {
+            if (!/^\d+$/.test(String(value))) {
+                return "Offer must be a whole number from 0 to 100";
+            }
+
+            const offer = Number(value);
+            return offer >= 0 && offer <= 100
+                ? ""
+                : "Offer must be a whole number from 0 to 100";
+        },
+    },
     totalTasks: {
         required: true,
         requiredMessage: "Total tasks is required",

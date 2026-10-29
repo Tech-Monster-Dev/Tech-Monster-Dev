@@ -61,6 +61,8 @@ export const getMyCertificates =
                     programTitle: program.title,
                     certificateEligible,
                     completedAt: enrollment.completedAt,
+                    price: program.price,
+                    offer: program.offer,
                     fee: payment?.amount ?? (Number(program.price) || 0),
                     payment: payment
                         ? {
@@ -234,4 +236,3 @@ export const adminDownloadCertificate = asyncHandler(async (req, res) => {
         path.basename(filePath)
     );
 });
-

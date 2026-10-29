@@ -47,6 +47,8 @@ const getAllCourses = async (userId) => {
             category: item.category,
             level: item.level,
             duration: item.duration,
+            price: item.price,
+            offer: item.offer,
             totalTasks: item.totalTasks,
             totalNotes: item.totalNotes,
             certificate: item.certificate,

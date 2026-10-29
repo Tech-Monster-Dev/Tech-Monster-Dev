@@ -18,19 +18,10 @@ import { toast } from "react-toastify";
 
 import DashButton from "../../../../../components/ui/Button/DashButton";
 import Warning from "../../../../../components/ui/Warning";
+import PriceDisplay from "../../../../../components/ui/PriceDisplay/PriceDisplay";
 
 import { deleteCourse } from "../../../../../services/api/course.service";
 import { deleteInternship } from "../../../../../services/api/internship.service";
-
-const formatPrice = (price) => {
-    const numericPrice = Number(price);
-
-    if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
-        return "Free";
-    }
-
-    return `₹${numericPrice}`;
-};
 
 const AdminLearningDetailsModal = ({
     open = false,
@@ -254,9 +245,10 @@ const AdminLearningDetailsModal = ({
                                 <FiCalendar />
                                 <div>
                                     <span>Price</span>
-                                    <strong>
-                                        {formatPrice(item.price)}
-                                    </strong>
+                                    <PriceDisplay
+                                        price={item.price}
+                                        offer={item.offer}
+                                    />
                                 </div>
                             </div>
 

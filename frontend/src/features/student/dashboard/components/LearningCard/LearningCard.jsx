@@ -53,6 +53,7 @@ const LearningCard = ({
                 <h3>{cardTitle}</h3>
                 <p>{hint}</p>
 
+
                 {showProgress && (
                     <div className="learning-card-progress">
                         <div className="learning-card-progress-header">

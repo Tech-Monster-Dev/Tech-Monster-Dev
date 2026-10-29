@@ -18,6 +18,8 @@ const getMyCourses = async (userId) => {
                 category
                 level
                 duration
+                price
+                offer
                 totalTasks
                 totalNotes
                 certificate
@@ -55,6 +57,8 @@ const getMyCourses = async (userId) => {
                 category: item.course.category,
                 level: item.course.level,
                 duration: item.course.duration,
+                price: item.course.price,
+                offer: item.course.offer,
                 totalTasks: item.course.totalTasks || 0,
                 totalNotes: item.course.totalNotes || 0,
                 completedTasks,

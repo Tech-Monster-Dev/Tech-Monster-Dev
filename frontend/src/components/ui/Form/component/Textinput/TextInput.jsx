@@ -25,7 +25,7 @@ function TextInput({
                     {required && (
                         <span
                             className={
-                                value?.trim()
+                                String(value ?? "").trim()
                                     ? "labelSpanGreen"
                                     : "labelSpanRed"
                             }
