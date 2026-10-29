@@ -22,13 +22,22 @@ export default function useNearViewport({
 
     if (!element) return;
 
+    let observer;
+    let fallbackFrame = null;
+
+    const revealFallback = () => {
+      fallbackFrame = requestAnimationFrame(() => {
+        setIsNearViewport(true);
+      });
+    };
+
     // Graceful fallback for browsers without IntersectionObserver.
     if (typeof IntersectionObserver === "undefined") {
-      setIsNearViewport(true);
-      return;
+      revealFallback();
+      return () => {
+        if (fallbackFrame !== null) cancelAnimationFrame(fallbackFrame);
+      };
     }
-
-    let observer;
 
     try {
       observer = new IntersectionObserver(
@@ -46,11 +55,12 @@ export default function useNearViewport({
       observer.observe(element);
     } catch {
       // Never leave non-critical content permanently unavailable.
-      setIsNearViewport(true);
+      revealFallback();
     }
 
     return () => {
       observer?.disconnect();
+      if (fallbackFrame !== null) cancelAnimationFrame(fallbackFrame);
     };
   }, [enabled, rootMargin]);
 
