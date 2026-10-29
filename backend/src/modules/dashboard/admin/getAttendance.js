@@ -1,30 +1,59 @@
 import Attendance from "../../attendance/models/Attendance.js";
 import User from "../../user/models/User.js";
 
-const getAttendance = async () => {
-    const today = new Date();
+export const getStudentAttendanceSummary = async ({
+    UserModel = User,
+    AttendanceModel = Attendance,
+    now = new Date()
+} = {}) => {
+    const today = new Date(now);
     today.setHours(0, 0, 0, 0);
 
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const [
-        totalStudents,
-        presentStudents,
-        totalAttendance,
-        workingHours
-    ] = await Promise.all([
-        User.countDocuments({
-            role: "student"
-        }),
+    const studentIds = await UserModel.distinct("_id", {
+        role: "student"
+    });
 
-        Attendance.distinct("student", {
+    const presentStudents = studentIds.length === 0
+        ? []
+        : await AttendanceModel.distinct("student", {
+            student: {
+                $in: studentIds
+            },
             status: "Present",
             createdAt: {
                 $gte: today,
                 $lt: tomorrow
             }
-        }),
+        });
+
+    const totalStudents = studentIds.length;
+    const present = presentStudents.length;
+    const absent = Math.max(totalStudents - present, 0);
+    const attendancePercentage =
+        totalStudents === 0
+            ? 0
+            : Number(
+                ((present / totalStudents) * 100).toFixed(1)
+            );
+
+    return {
+        totalStudents,
+        present,
+        absent,
+        attendancePercentage
+    };
+};
+
+const getAttendance = async () => {
+    const [
+        attendanceSummary,
+        totalAttendance,
+        workingHours
+    ] = await Promise.all([
+        getStudentAttendanceSummary(),
 
         Attendance.countDocuments(),
 
@@ -42,20 +71,6 @@ const getAttendance = async () => {
             }
         ])
     ]);
-
-    const present = presentStudents.length;
-
-    const absent = Math.max(
-        totalStudents - present,
-        0
-    );
-
-    const attendancePercentage =
-        totalStudents === 0
-            ? 0
-            : Number(
-                ((present / totalStudents) * 100).toFixed(1)
-            );
 
     const totalWorkingHours =
         workingHours.length > 0
@@ -75,10 +90,7 @@ const getAttendance = async () => {
             );
 
     return {
-        totalStudents,
-        present,
-        absent,
-        attendancePercentage,
+        ...attendanceSummary,
         totalWorkingHours,
         totalWorkingMinutes,
         averageWorkingHours

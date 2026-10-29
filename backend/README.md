@@ -41,10 +41,11 @@ Run these commands from `backend/`:
 | `npm run dev` | Run `src/server.js` with Nodemon |
 | `npm start` | Run `src/server.js` with Node.js |
 | `npm run seed:catalog` | Read catalog JSON under `data/Courses` and `data/Internships` and import it into the configured database |
+| `node scripts/restore-internships.js --dry-run` | Validate and preview the active internship catalog without writes |
 | `npm test` | Currently a placeholder that prints an error and exits non-zero; it is not a usable test suite |
 
-No backend lint, type-check, migration script, or checked-in test file was
-found. The `test` script listed above is only a failing placeholder.
+No backend lint, type-check, general migration framework, or checked-in test
+file was found. The `test` script listed above is only a failing placeholder.
 
 ## Setup
 
@@ -84,6 +85,27 @@ npm run seed:catalog
 
 There are no Mongoose migration files or general database reset command in
 the tracked backend.
+
+For a catalog-only recovery, `scripts/restore-internships.js` reads the active
+`data/Internships/*/internship.json` files, validates the mapped records
+against the Internship model, and defaults to a read-only dry run. The active
+catalog import mapping uses `price: 0` and `thumbnail: ""` when those values
+are absent from the source JSON; these are importer defaults, not recovered
+historical pricing or image URLs.
+
+An apply run requires explicit confirmation of the exact database name,
+non-production status, and expected current collection count. Remote targets
+also require `--allow-remote`. Before inserting, the script saves and verifies
+a collection-only Extended JSON backup under
+`%USERPROFILE%\TechMonsterBackups` by default. It upserts on `slug` using
+`$setOnInsert`, never overwrites existing records, and does not touch
+enrollments or other collections. Run it from `backend/`; do not use
+`--apply` until the target is positively confirmed:
+
+```powershell
+node scripts/restore-internships.js --dry-run
+node scripts/restore-internships.js --apply --confirm-database <database-name> --confirm-non-production --expect-count <current-count> --allow-remote
+```
 
 ## Environment variables
 
@@ -216,6 +238,11 @@ controllers and are not represented by one shared response schema.
 | `PUT /api/admin/users/:id` | Admin | Update a user. |
 | `PATCH /api/admin/users/:id/block`, `/unblock`, or `/restore` | Admin | Change a user's account state. |
 | `DELETE /api/admin/users/:id` | Admin | Delete a user. |
+
+The admin dashboard's attendance summary counts today's Present attendance
+only for users whose `role` is `student`; Absent is derived from all student
+accounts minus those present. Both counts are zero when no student accounts
+exist.
 
 ### Courses, internships, and learning
 
