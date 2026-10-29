@@ -17,6 +17,7 @@ import Spinner from "../../dashboard/common/LoaderPage/Spinner";
 import LessonSidebar from "./components/LessonSidebar";
 import LessonContent from "./components/LessonContent";
 import Pagination from "./components/Pagination";
+import CapstoneProject from "./components/CapstoneProject/CapstoneProject";
 
 import useLessonData from "./hooks/useLessonData";
 import useLessonProgress from "./hooks/useLessonProgress";
@@ -64,6 +65,7 @@ export default function Lessons() {
     }, []);
 
     const [activeLesson, setActiveLesson] = useState(0);
+    const [selectedProject, setSelectedProject] = useState(null);
     const [readPercent, setReadPercent] = useState(0);
     const [mobileLessonOpen, setMobileLessonOpen] = useState(false);
 
@@ -206,8 +208,14 @@ export default function Lessons() {
         return finalLessonData.modules.filter((module) => {
             const matchesModule = module.title.toLowerCase().includes(query);
             const matchesLesson = module.sections.some((section) => section.heading.toLowerCase().includes(query));
+            const matchesProject = Boolean(
+                module.project &&
+                `${module.project.heading || ""} ${module.project.description || ""}`
+                    .toLowerCase()
+                    .includes(query)
+            );
 
-            return matchesModule || matchesLesson;
+            return matchesModule || matchesLesson || matchesProject;
         });
     }, [finalLessonData, search]);
 
@@ -337,12 +345,21 @@ export default function Lessons() {
                         courseSlug={courseSlug}
                         contentType={contentType}
                         approvedModuleIds={approvedModuleIds}
+                        onSelectProject={(module) => {
+                            if (!module?.project) return;
+                            setSelectedProject({
+                                moduleTitle: module.title,
+                                project: module.project,
+                            });
+                            setMobileLessonOpen(true);
+                        }}
                         setActiveLesson={(lessonId) => {
                             const index = lessons.findIndex(
                                 (lesson) => lesson.id === lessonId
                             );
 
                             if (index !== -1) {
+                                setSelectedProject(null);
                                 setActiveLesson(index);
                                 setReadPercent(0);
                                 setMobileLessonOpen(true);
@@ -358,27 +375,38 @@ export default function Lessons() {
                     : "hidden! lg:flex!"
                     }`}
             >
-                <LessonContent
-                    lesson={currentLesson}
-                    lessonData={finalLessonData}
-                    activeLesson={activeLesson}
-                    handleComplete={handleComplete}
-                    toggleBookmark={toggleBookmark}
-                    readingMode={readingMode}
-                    contentType={contentType}
-                    setReadingMode={setReadingMode}
-                    readPercent={readPercent}
-                    completed={currentLesson.completed}
-                    onScrollProgress={setReadPercent}
-                    onBackToLessons={() => setMobileLessonOpen(false)}
-                />
+                {selectedProject ? (
+                    <div className="lesson-content-scroll-area capstone-project-scroll-area">
+                        <CapstoneProject
+                            project={selectedProject.project}
+                            moduleTitle={selectedProject.moduleTitle}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <LessonContent
+                            lesson={currentLesson}
+                            lessonData={finalLessonData}
+                            activeLesson={activeLesson}
+                            handleComplete={handleComplete}
+                            toggleBookmark={toggleBookmark}
+                            readingMode={readingMode}
+                            contentType={contentType}
+                            setReadingMode={setReadingMode}
+                            readPercent={readPercent}
+                            completed={currentLesson.completed}
+                            onScrollProgress={setReadPercent}
+                            onBackToLessons={() => setMobileLessonOpen(false)}
+                        />
 
-                <Pagination
-                    current={activeLesson}
-                    total={lessons.length}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
-                />
+                        <Pagination
+                            current={activeLesson}
+                            total={lessons.length}
+                            onPrevious={handlePrevious}
+                            onNext={handleNext}
+                        />
+                    </>
+                )}
             </div>
         </motion.div>
     );

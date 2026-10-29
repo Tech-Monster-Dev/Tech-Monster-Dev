@@ -50,6 +50,17 @@ const internshipSchema = new mongoose.Schema({
         min: 0
     },
 
+    offer: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100,
+        validate: {
+            validator: Number.isInteger,
+            message: "Offer must be a whole number"
+        }
+    },
+
     totalTasks: {
         type: Number,
         default: 0

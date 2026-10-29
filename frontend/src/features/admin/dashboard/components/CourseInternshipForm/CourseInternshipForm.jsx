@@ -183,18 +183,16 @@ export default function CourseInternshipForm({ type }) {
                 required: !isEditMode,
             },
 
-            ...(isCourse
-                ? [{
-                    name: "offer",
-                    label: "Offer (%)",
-                    placeholder: "Enter offer percentage",
-                    type: "number",
-                    min: 0,
-                    max: 100,
-                    step: 1,
-                    required: true,
-                }]
-                : []),
+            {
+                name: "offer",
+                label: "Offer (%)",
+                placeholder: "Enter offer percentage",
+                type: "number",
+                min: 0,
+                max: 100,
+                step: 1,
+                required: true,
+            },
 
             {
                 name: "totalTasks",
@@ -228,7 +226,7 @@ export default function CourseInternshipForm({ type }) {
                     "courseInternshipFormDescriptionField",
             },
         ],
-        [entityLabel, isCourse, isEditMode]
+        [entityLabel, isEditMode]
     );
 
     const handleChange = (event) => {
@@ -252,16 +250,7 @@ export default function CourseInternshipForm({ type }) {
         if (submissionInFlight.current) return;
 
         if (!isEditMode) {
-            const validation = validateForm(
-                formData,
-                isCourse
-                    ? FIELD_RULES
-                    : Object.fromEntries(
-                          Object.entries(FIELD_RULES).filter(
-                              ([name]) => name !== "offer"
-                          )
-                      )
-            );
+            const validation = validateForm(formData, FIELD_RULES);
 
             setErrors(validation.errors);
 
@@ -273,7 +262,7 @@ export default function CourseInternshipForm({ type }) {
             }
         }
 
-        if (isCourse) {
+        {
             const offerError = validateField(
                 "offer",
                 formData.offer,
@@ -302,7 +291,7 @@ export default function CourseInternshipForm({ type }) {
             "description",
             "duration",
             "price",
-            ...(isCourse ? ["offer"] : []),
+            "offer",
             "totalTasks",
             "totalNotes",
         ].forEach((field) => {

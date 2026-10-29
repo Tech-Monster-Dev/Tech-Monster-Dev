@@ -13,6 +13,20 @@ export const getPreferredSubmissions = (
 ) => {
     const preferred = {};
 
+    const getTimestamp = (submission) => {
+        const value =
+            submission.updatedAt ||
+            submission.submittedAt ||
+            submission.unlockedAt ||
+            submission.createdAt;
+
+        const timestamp = value
+            ? new Date(value).getTime()
+            : 0;
+
+        return Number.isFinite(timestamp) ? timestamp : 0;
+    };
+
     submissions.forEach((submission) => {
         const key = getTaskKey(submission);
 
@@ -30,6 +44,21 @@ export const getPreferredSubmissions = (
         if (
             submission.status === "approved" &&
             current.status !== "approved"
+        ) {
+            preferred[key] = submission;
+            return;
+        }
+
+        if (
+            current.status === "approved" &&
+            submission.status !== "approved"
+        ) {
+            return;
+        }
+
+        if (
+            getTimestamp(submission) >
+            getTimestamp(current)
         ) {
             preferred[key] = submission;
         }
