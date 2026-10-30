@@ -205,7 +205,7 @@ function SearchBar() {
 
         if (loginUser?.role === "admin") {
             router.push(
-                `admin/students/user-profile/${user?._id}`
+                `/admin/students/user-profile/${user?._id}`
             );
         } else {
             router.push(
